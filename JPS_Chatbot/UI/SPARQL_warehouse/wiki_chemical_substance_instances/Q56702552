@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q3268366"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "1,2-dithiolane"}, "x": {"type": "literal", "value": "C\u2083H\u2086S\u2082"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

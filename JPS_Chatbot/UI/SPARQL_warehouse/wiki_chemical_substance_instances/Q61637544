@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1208433"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "(Z)-diallate"}, "x": {"type": "literal", "value": "C\u2081\u2080H\u2081\u2087Cl\u2082NOS"}, "altLabel_list": {"type": "literal", "value": "Di-allate"}}]}}

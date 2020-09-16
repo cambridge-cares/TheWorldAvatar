@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q413630"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "tropone"}, "x": {"type": "literal", "value": "C\u2087H\u2086O"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

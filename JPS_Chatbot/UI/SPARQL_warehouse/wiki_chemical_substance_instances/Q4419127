@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q5927648"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "Phenylsilatrane"}, "x": {"type": "literal", "value": "C\u2081\u2082H\u2081\u2087NO\u2083Si"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

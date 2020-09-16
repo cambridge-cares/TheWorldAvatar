@@ -1,0 +1,9 @@
+Flask
+fuzzywuzzy
+gensim
+nltk
+rdflib
+requests
+rasa
+SPARQLWrapper
+urllib3

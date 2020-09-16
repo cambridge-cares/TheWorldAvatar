@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q2816678"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "4-hydroxyquinazoline"}, "x": {"type": "literal", "value": "C\u2088H\u2086N\u2082O"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

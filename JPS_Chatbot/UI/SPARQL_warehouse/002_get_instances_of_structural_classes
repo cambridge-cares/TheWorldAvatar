@@ -1,0 +1,7 @@
+# to get all instances under the class "structural class of chemical compounds"
+SELECT ?item ?itemLabel 
+WHERE 
+{
+  ?item wdt:P31 wd:Q47154513 .
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}

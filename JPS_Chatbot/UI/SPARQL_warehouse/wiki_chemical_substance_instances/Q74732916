@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q417535"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "semicarbazide"}, "x": {"type": "literal", "value": "CH\u2085N\u2083O"}, "altLabel_list": {"type": "literal", "value": "carbamylhydrazine$ carbazamide"}}]}}

@@ -1,0 +1,617 @@
+item,itemLabel
+http://www.wikidata.org/entity/Q8054,protein
+http://www.wikidata.org/entity/Q11173,chemical compound
+http://www.wikidata.org/entity/Q12187,antibiotic
+http://www.wikidata.org/entity/Q12190,penicillin
+http://www.wikidata.org/entity/Q18225,vitamin A
+http://www.wikidata.org/entity/Q28742,aminoglycoside
+http://www.wikidata.org/entity/Q43177,chlorophyll
+http://www.wikidata.org/entity/Q72426,Nonoxynols
+http://www.wikidata.org/entity/Q73984,disinfectant
+http://www.wikidata.org/entity/Q74081,Transfer DNA
+http://www.wikidata.org/entity/Q79529,chemical substance
+http://www.wikidata.org/entity/Q81163,polymer
+http://www.wikidata.org/entity/Q103537,antigen
+http://www.wikidata.org/entity/Q135149,harmala alkaloid
+http://www.wikidata.org/entity/Q141180,vitamin E
+http://www.wikidata.org/entity/Q145153,liquid crystal polymer
+http://www.wikidata.org/entity/Q145273,polyamide
+http://www.wikidata.org/entity/Q145407,polyamide-imide
+http://www.wikidata.org/entity/Q163767,reaction inhibitor
+http://www.wikidata.org/entity/Q166774,protease inhibitor
+http://www.wikidata.org/entity/Q167377,pheromone
+http://www.wikidata.org/entity/Q174337,flavin group
+http://www.wikidata.org/entity/Q177941,nylon
+http://www.wikidata.org/entity/Q178859,antimicrobial drug
+http://www.wikidata.org/entity/Q182338,vitamin K
+http://www.wikidata.org/entity/Q183206,vitamin B
+http://www.wikidata.org/entity/Q183453,cardiolipin
+http://www.wikidata.org/entity/Q184651,toxin
+http://www.wikidata.org/entity/Q187607,tannin
+http://www.wikidata.org/entity/Q188152,ginkgolide
+http://www.wikidata.org/entity/Q190016,heparin
+http://www.wikidata.org/entity/Q192949,plant hormone
+http://www.wikidata.org/entity/Q204947,sultone
+http://www.wikidata.org/entity/Q205130,vitamin B6
+http://www.wikidata.org/entity/Q205944,polybrominated diphenyl ether
+http://www.wikidata.org/entity/Q210420,corticosteroid
+http://www.wikidata.org/entity/Q281044,Topoisomerase Inhibitor
+http://www.wikidata.org/entity/Q281166,sulfilimine
+http://www.wikidata.org/entity/Q288407,bisabolene
+http://www.wikidata.org/entity/Q310286,Beta-lactamase inhibitor
+http://www.wikidata.org/entity/Q337038,acidulant
+http://www.wikidata.org/entity/Q343465,actinomycin
+http://www.wikidata.org/entity/Q377458,COX-2 inhibitor
+http://www.wikidata.org/entity/Q385413,endohedral fullerene
+http://www.wikidata.org/entity/Q394316,aglycone
+http://www.wikidata.org/entity/Q407490,hemicellulose
+http://www.wikidata.org/entity/Q408018,enamine
+http://www.wikidata.org/entity/Q408201,Epothilone
+http://www.wikidata.org/entity/Q410539,globotriaosylceramide
+http://www.wikidata.org/entity/Q410897,carbapenem antibiotic
+http://www.wikidata.org/entity/Q410954,monoamine oxidase inhibitor
+http://www.wikidata.org/entity/Q411489,terphenyls
+http://www.wikidata.org/entity/Q412251,Integrase inhibitor
+http://www.wikidata.org/entity/Q412922,cyanine
+http://www.wikidata.org/entity/Q412991,histrionicotoxin
+http://www.wikidata.org/entity/Q414004,nitrogen mustard
+http://www.wikidata.org/entity/Q414162,pigment blue 16
+http://www.wikidata.org/entity/Q414238,carbonic anhydrase inhibitor
+http://www.wikidata.org/entity/Q414506,mycolic acid
+http://www.wikidata.org/entity/Q415168,Ionophore
+http://www.wikidata.org/entity/Q416769,nonylphenol
+http://www.wikidata.org/entity/Q416821,Menotropins
+http://www.wikidata.org/entity/Q417189,opioid peptide
+http://www.wikidata.org/entity/Q417315,monobactam antibiotic
+http://www.wikidata.org/entity/Q417491,pumiliotoxin
+http://www.wikidata.org/entity/Q417662,ribonucleoprotein
+http://www.wikidata.org/entity/Q418744,catenanes
+http://www.wikidata.org/entity/Q419067,pseudohalogen
+http://www.wikidata.org/entity/Q419220,juvenile hormone
+http://www.wikidata.org/entity/Q421924,kinin
+http://www.wikidata.org/entity/Q421998,Cutin
+http://www.wikidata.org/entity/Q422032,cytokinin
+http://www.wikidata.org/entity/Q422235,lincosamides
+http://www.wikidata.org/entity/Q422549,glucocorticoid
+http://www.wikidata.org/entity/Q422637,eosin
+http://www.wikidata.org/entity/Q422649,biopolymer
+http://www.wikidata.org/entity/Q422870,phytoalexin
+http://www.wikidata.org/entity/Q422936,cannabinoids
+http://www.wikidata.org/entity/Q423981,melanocyte-stimulating hormone
+http://www.wikidata.org/entity/Q424190,leukotriene
+http://www.wikidata.org/entity/Q424200,snake venom
+http://www.wikidata.org/entity/Q424544,phallotoxin
+http://www.wikidata.org/entity/Q424673,Autacoid
+http://www.wikidata.org/entity/Q424855,alkylbenzenes
+http://www.wikidata.org/entity/Q425079,polyhydroxyalkanoate
+http://www.wikidata.org/entity/Q425125,fatty acid methyl ester
+http://www.wikidata.org/entity/Q426938,bilins
+http://www.wikidata.org/entity/Q427492,enzyme inhibitor
+http://www.wikidata.org/entity/Q462174,hydrate
+http://www.wikidata.org/entity/Q471724,Aminopenicillin
+http://www.wikidata.org/entity/Q523152,rylene dye
+http://www.wikidata.org/entity/Q526360,stilbenoid
+http://www.wikidata.org/entity/Q669514,limonoid
+http://www.wikidata.org/entity/Q679174,BODIPY
+http://www.wikidata.org/entity/Q700895,green leaf volatiles
+http://www.wikidata.org/entity/Q744364,clastogen
+http://www.wikidata.org/entity/Q779198,melanoidin
+http://www.wikidata.org/entity/Q816759,beta blocker
+http://www.wikidata.org/entity/Q826629,Novichok agent
+http://www.wikidata.org/entity/Q891247,bolaamphiphile
+http://www.wikidata.org/entity/Q898753,acidity regulator
+http://www.wikidata.org/entity/Q901292,rotaxane
+http://www.wikidata.org/entity/Q904973,Holothurin
+http://www.wikidata.org/entity/Q905480,triarylmethane dye
+http://www.wikidata.org/entity/Q906289,heparinoid
+http://www.wikidata.org/entity/Q908054,salvinorins
+http://www.wikidata.org/entity/Q909950,rubiscolin
+http://www.wikidata.org/entity/Q937863,cytolysin
+http://www.wikidata.org/entity/Q943416,N-acyl homoserine lactone
+http://www.wikidata.org/entity/Q1036661,hypohalite
+http://www.wikidata.org/entity/Q1073242,Anthocyanidins
+http://www.wikidata.org/entity/Q1075214,Chlorobenzenesulfonic acid
+http://www.wikidata.org/entity/Q1076381,oligomycins
+http://www.wikidata.org/entity/Q1132599,Corepressor
+http://www.wikidata.org/entity/Q1340762,butyl acetate ester
+http://www.wikidata.org/entity/Q1347057,reductone
+http://www.wikidata.org/entity/Q1384150,exorphin
+http://www.wikidata.org/entity/Q1443801,nonribosomal peptide
+http://www.wikidata.org/entity/Q1528608,Isethionates
+http://www.wikidata.org/entity/Q1573150,karrikin
+http://www.wikidata.org/entity/Q1616871,hexon bases
+http://www.wikidata.org/entity/Q1640403,monohydroxybenzoic acid
+http://www.wikidata.org/entity/Q1718523,xanthene dyes
+http://www.wikidata.org/entity/Q1722299,potassium aluminium silicate
+http://www.wikidata.org/entity/Q1763434,bipolaron
+http://www.wikidata.org/entity/Q1814735,Leichtöl
+http://www.wikidata.org/entity/Q1926141,mitogen
+http://www.wikidata.org/entity/Q1933834,microbicide
+http://www.wikidata.org/entity/Q1984372,molecular knots
+http://www.wikidata.org/entity/Q1992180,bacteriochlorophylls
+http://www.wikidata.org/entity/Q2003014,novolac
+http://www.wikidata.org/entity/Q2020694,nicarbazin
+http://www.wikidata.org/entity/Q2026938,opiate
+http://www.wikidata.org/entity/Q2157332,strigolactones
+http://www.wikidata.org/entity/Q2157881,plant peptide hormone
+http://www.wikidata.org/entity/Q2164462,Linear alkylbenzene
+http://www.wikidata.org/entity/Q2285651,silapharmaceutical
+http://www.wikidata.org/entity/Q2293474,glycopeptide antibiotic
+http://www.wikidata.org/entity/Q2297518,schweinfurthin
+http://www.wikidata.org/entity/Q2322910,polychlorinated terphenyl
+http://www.wikidata.org/entity/Q2352869,acylsilane
+http://www.wikidata.org/entity/Q2377382,Oxaziridine
+http://www.wikidata.org/entity/Q2419375,Q2419375
+http://www.wikidata.org/entity/Q2449942,Grubbs-Hoveyda catalysts
+http://www.wikidata.org/entity/Q2467917,molecular propeller
+http://www.wikidata.org/entity/Q2512777,simple substance
+http://www.wikidata.org/entity/Q2556837,Advanced glycation end-product
+http://www.wikidata.org/entity/Q2592323,cholinesterase inhibitor
+http://www.wikidata.org/entity/Q2610184,Q2610184
+http://www.wikidata.org/entity/Q2623215,carbyne
+http://www.wikidata.org/entity/Q2647303,Q2647303
+http://www.wikidata.org/entity/Q2653638,alpha acid
+http://www.wikidata.org/entity/Q2656940,fuel additive
+http://www.wikidata.org/entity/Q2690011,attractant
+http://www.wikidata.org/entity/Q2740849,glucogenic amino acid
+http://www.wikidata.org/entity/Q2783854,avoparcins
+http://www.wikidata.org/entity/Q2832080,tropane alkaloids
+http://www.wikidata.org/entity/Q2866102,arylcyclohexylamine
+http://www.wikidata.org/entity/Q2927690,bufotoxin
+http://www.wikidata.org/entity/Q3010558,ketenimine
+http://www.wikidata.org/entity/Q3033690,dodecanol
+http://www.wikidata.org/entity/Q3073444,flavagline
+http://www.wikidata.org/entity/Q3073451,flavanone
+http://www.wikidata.org/entity/Q3073502,flavonolignan
+http://www.wikidata.org/entity/Q3083126,glucocerebroside
+http://www.wikidata.org/entity/Q3088681,amphenicols
+http://www.wikidata.org/entity/Q3138043,Ether lipid
+http://www.wikidata.org/entity/Q3139040,hodulcine
+http://www.wikidata.org/entity/Q3139509,Holoprotein
+http://www.wikidata.org/entity/Q3232238,diphosphines
+http://www.wikidata.org/entity/Q3243177,antimonide
+http://www.wikidata.org/entity/Q3258793,loline alkaloids
+http://www.wikidata.org/entity/Q3268331,fumonisin
+http://www.wikidata.org/entity/Q3342206,nitrilimine
+http://www.wikidata.org/entity/Q3342221,N-nitrosamide
+http://www.wikidata.org/entity/Q3381334,phlorotannin
+http://www.wikidata.org/entity/Q3381798,phthalein dyes
+http://www.wikidata.org/entity/Q3381820,phycotoxin
+http://www.wikidata.org/entity/Q3382072,Herbicide safener
+http://www.wikidata.org/entity/Q3483798,silazane
+http://www.wikidata.org/entity/Q3569101,histone deacetylase inhibitors
+http://www.wikidata.org/entity/Q3599051,4-Hydroxycoumarins
+http://www.wikidata.org/entity/Q3604300,acetogenins
+http://www.wikidata.org/entity/Q3616599,molecular Borromean rings
+http://www.wikidata.org/entity/Q3618748,antiozonant
+http://www.wikidata.org/entity/Q3681908,Cocamide DEA
+http://www.wikidata.org/entity/Q3855704,methoxide
+http://www.wikidata.org/entity/Q3874670,neoflavonoid
+http://www.wikidata.org/entity/Q4062481,diyne
+http://www.wikidata.org/entity/Q4064648,amphoteric compound
+http://www.wikidata.org/entity/Q4111657,gluten exorphin
+http://www.wikidata.org/entity/Q4118287,DNA Polymerase Inhibitor
+http://www.wikidata.org/entity/Q4198767,isoprostane
+http://www.wikidata.org/entity/Q4351599,enniatins
+http://www.wikidata.org/entity/Q4392058,regulatory peptide
+http://www.wikidata.org/entity/Q4634107,3-alkylpyridinium
+http://www.wikidata.org/entity/Q4639645,5-alpha-reductase inhibitor
+http://www.wikidata.org/entity/Q4675062,acrasin
+http://www.wikidata.org/entity/Q4691964,agelasimines
+http://www.wikidata.org/entity/Q4712615,albomycins
+http://www.wikidata.org/entity/Q4713968,Aldose reductase inhibitor
+http://www.wikidata.org/entity/Q4733135,allopumiliotoxin
+http://www.wikidata.org/entity/Q4735164,alpha glucan
+http://www.wikidata.org/entity/Q4737407,aluminoxane
+http://www.wikidata.org/entity/Q4769593,annonins
+http://www.wikidata.org/entity/Q4788717,arecatannin
+http://www.wikidata.org/entity/Q4796467,arsenical
+http://www.wikidata.org/entity/Q4860325,prostaglandin E
+http://www.wikidata.org/entity/Q4862650,chondroitin
+http://www.wikidata.org/entity/Q4890802,Benzophenone-n
+http://www.wikidata.org/entity/Q4904770,bifidus factor
+http://www.wikidata.org/entity/Q4915368,biotinylated dextran amine
+http://www.wikidata.org/entity/Q4980762,brydioside
+http://www.wikidata.org/entity/Q5023911,calphostin
+http://www.wikidata.org/entity/Q5047349,cartilage-derived angiogenesis inhibitor
+http://www.wikidata.org/entity/Q5049607,castavinol
+http://www.wikidata.org/entity/Q5051578,catastrophin
+http://www.wikidata.org/entity/Q5090624,chemosterilant
+http://www.wikidata.org/entity/Q5113721,chromate ester
+http://www.wikidata.org/entity/Q5129575,clavam
+http://www.wikidata.org/entity/Q5130987,cleavable detergent
+http://www.wikidata.org/entity/Q5131940,clerodane diterpene
+http://www.wikidata.org/entity/Q5139913,cocrystal
+http://www.wikidata.org/entity/Q5160401,congener
+http://www.wikidata.org/entity/Q5189916,cruentaren
+http://www.wikidata.org/entity/Q5198668,cycloalkylamine
+http://www.wikidata.org/entity/Q5198697,cyclodiphosphazane
+http://www.wikidata.org/entity/Q5198993,cyclopyrrolones
+http://www.wikidata.org/entity/Q5205910,DOx
+http://www.wikidata.org/entity/Q5272258,dibenzothiepin
+http://www.wikidata.org/entity/Q5275135,diethanolamide
+http://www.wikidata.org/entity/Q5276451,dihydrostilbenoid
+http://www.wikidata.org/entity/Q5287251,docosanoid
+http://www.wikidata.org/entity/Q5315852,duocarmycins
+http://www.wikidata.org/entity/Q5382392,epi-lipoxin
+http://www.wikidata.org/entity/Q5383831,epoxyeicosatrienoic acid
+http://www.wikidata.org/entity/Q5398839,Esperamicin
+http://www.wikidata.org/entity/Q5401844,Estrogen ester
+http://www.wikidata.org/entity/Q5403028,ethanolamide
+http://www.wikidata.org/entity/Q5420644,exopolymer
+http://www.wikidata.org/entity/Q5425362,FENE-P
+http://www.wikidata.org/entity/Q5438003,fatty acid amide
+http://www.wikidata.org/entity/Q5551947,germanide
+http://www.wikidata.org/entity/Q5572367,glucuronoxylan
+http://www.wikidata.org/entity/Q5572521,glyceollin
+http://www.wikidata.org/entity/Q5572629,glycomimetic
+http://www.wikidata.org/entity/Q5578916,gold cluster
+http://www.wikidata.org/entity/Q5646485,hamycins
+http://www.wikidata.org/entity/Q5712160,hemithioacetal
+http://www.wikidata.org/entity/Q5790251,cotuzines
+http://www.wikidata.org/entity/Q5820388,aegyptinone
+http://www.wikidata.org/entity/Q5892022,haouamine
+http://www.wikidata.org/entity/Q5955135,hydrolysable tannin
+http://www.wikidata.org/entity/Q5955570,hydroxyethylrutoside
+http://www.wikidata.org/entity/Q6398169,key odorant
+http://www.wikidata.org/entity/Q6413860,kininogen
+http://www.wikidata.org/entity/Q6468987,lactenin
+http://www.wikidata.org/entity/Q6482510,lampricide
+http://www.wikidata.org/entity/Q6556253,triacylglycerol lipase inhibitor
+http://www.wikidata.org/entity/Q6897452,momordin
+http://www.wikidata.org/entity/Q6951350,N-acylethanolamine
+http://www.wikidata.org/entity/Q6980742,Natural oil polyols
+http://www.wikidata.org/entity/Q6992777,neoendorphin
+http://www.wikidata.org/entity/Q7002222,neurofuran
+http://www.wikidata.org/entity/Q7049212,nonclassic eicosanoid
+http://www.wikidata.org/entity/Q7104519,Orthoferrite
+http://www.wikidata.org/entity/Q7115046,oxacephem
+http://www.wikidata.org/entity/Q7115727,oxoeicosanoid
+http://www.wikidata.org/entity/Q7115756,oxovitisin
+http://www.wikidata.org/entity/Q7115966,oxygenate
+http://www.wikidata.org/entity/Q7116890,p-coumaroylated anthocyanin
+http://www.wikidata.org/entity/Q7118993,PEPPSI
+http://www.wikidata.org/entity/Q7133208,papuamide
+http://www.wikidata.org/entity/Q7133609,par stability determinant
+http://www.wikidata.org/entity/Q7162597,penem antibiotic
+http://www.wikidata.org/entity/Q7170043,perseapicroside
+http://www.wikidata.org/entity/Q7181399,phenoxy herbicide
+http://www.wikidata.org/entity/Q7187512,Phosphoinositide 3-kinase inhibitor
+http://www.wikidata.org/entity/Q7187535,phosphopeptide
+http://www.wikidata.org/entity/Q7189843,phytosulfokine
+http://www.wikidata.org/entity/Q7226748,polyphenylsulfone
+http://www.wikidata.org/entity/Q7232213,portosin
+http://www.wikidata.org/entity/Q7240580,prenylflavonoid
+http://www.wikidata.org/entity/Q7248286,profisetinidin
+http://www.wikidata.org/entity/Q7248896,proguibourtinidin
+http://www.wikidata.org/entity/Q7250137,propelargonidin
+http://www.wikidata.org/entity/Q7250491,prorobinetidin
+http://www.wikidata.org/entity/Q7251505,protein synthesis inhibitor
+http://www.wikidata.org/entity/Q7256616,PtaRNA1
+http://www.wikidata.org/entity/Q7263189,pyoverdine
+http://www.wikidata.org/entity/Q7263416,pyrazolopyridine
+http://www.wikidata.org/entity/Q7263629,pyrocitric
+http://www.wikidata.org/entity/Q7314084,replikins
+http://www.wikidata.org/entity/Q7404721,salinosporamide
+http://www.wikidata.org/entity/Q7421001,sapogenin
+http://www.wikidata.org/entity/Q7429913,scandenoside
+http://www.wikidata.org/entity/Q7596580,staffane
+http://www.wikidata.org/entity/Q7636190,sulfate conjugate
+http://www.wikidata.org/entity/Q7706343,Tetrafluoroborate
+http://www.wikidata.org/entity/Q7706535,tetrahydrate
+http://www.wikidata.org/entity/Q7706623,tetranortriterpenoid
+http://www.wikidata.org/entity/Q7709711,thallium halides
+http://www.wikidata.org/entity/Q7900376,ureidopenicillin
+http://www.wikidata.org/entity/Q7920447,venturicidins
+http://www.wikidata.org/entity/Q12347129,ergosine
+http://www.wikidata.org/entity/Q12745402,hydroxy ketone
+http://www.wikidata.org/entity/Q15087448,mogroside
+http://www.wikidata.org/entity/Q15511048,phosphoric acids and phosphates
+http://www.wikidata.org/entity/Q15563089,thevetin
+http://www.wikidata.org/entity/Q15634250,taxuyunnanine
+http://www.wikidata.org/entity/Q15847997,ester of sorbitan
+http://www.wikidata.org/entity/Q15996589,chemerin peptide
+http://www.wikidata.org/entity/Q16245835,astragaloside
+http://www.wikidata.org/entity/Q16466508,etabonate
+http://www.wikidata.org/entity/Q16642579,hyclate
+http://www.wikidata.org/entity/Q16824908,aciculitin
+http://www.wikidata.org/entity/Q16837500,Bambermycin
+http://www.wikidata.org/entity/Q16844123,boletocrocin
+http://www.wikidata.org/entity/Q16847633,bruceanol
+http://www.wikidata.org/entity/Q16850825,callipeltin
+http://www.wikidata.org/entity/Q16864977,phellibaumin
+http://www.wikidata.org/entity/Q16866270,opioid food peptides
+http://www.wikidata.org/entity/Q16878127,wailupemycin
+http://www.wikidata.org/entity/Q16879134,saptomycin
+http://www.wikidata.org/entity/Q16880480,Hericenone
+http://www.wikidata.org/entity/Q16887282,repenin
+http://www.wikidata.org/entity/Q16889248,saponifiable lipid
+http://www.wikidata.org/entity/Q16896277,fumitremorgin
+http://www.wikidata.org/entity/Q16899565,leptosphaerin
+http://www.wikidata.org/entity/Q16900701,tricholomalide
+http://www.wikidata.org/entity/Q16901191,mirabamide
+http://www.wikidata.org/entity/Q16909071,5-lipoxygenase inhibitor
+http://www.wikidata.org/entity/Q16909337,mytilin
+http://www.wikidata.org/entity/Q16909735,hypoglaunine
+http://www.wikidata.org/entity/Q16910934,Erinacine
+http://www.wikidata.org/entity/Q16917815,guadinomine
+http://www.wikidata.org/entity/Q16918879,vermixocin
+http://www.wikidata.org/entity/Q16919031,oxopropaline
+http://www.wikidata.org/entity/Q16920214,taxuspines
+http://www.wikidata.org/entity/Q16929092,discodermin
+http://www.wikidata.org/entity/Q16937813,sargachromanol
+http://www.wikidata.org/entity/Q16943280,Coca alkaloids
+http://www.wikidata.org/entity/Q16951828,biomarker
+http://www.wikidata.org/entity/Q16952160,coumarinolignoid
+http://www.wikidata.org/entity/Q16960647,dianhydrohexitols
+http://www.wikidata.org/entity/Q16966708,birnbaumins
+http://www.wikidata.org/entity/Q16978028,phenolic lipid
+http://www.wikidata.org/entity/Q16992745,eudistomins
+http://www.wikidata.org/entity/Q17007301,cerium nitrate
+http://www.wikidata.org/entity/Q17045516,monolysocardiolipin
+http://www.wikidata.org/entity/Q17096780,metal deactivator
+http://www.wikidata.org/entity/Q17125716,metalloanthocyanin
+http://www.wikidata.org/entity/Q17126165,NacNac
+http://www.wikidata.org/entity/Q17146539,urolithin
+http://www.wikidata.org/entity/Q17149288,furoquinoline alkaloid
+http://www.wikidata.org/entity/Q17325708,Piperidine alkaloids
+http://www.wikidata.org/entity/Q17461023,bacoside
+http://www.wikidata.org/entity/Q17591041,phenylureas
+http://www.wikidata.org/entity/Q17591653,Q17591653
+http://www.wikidata.org/entity/Q17748162,polyorthoester
+http://www.wikidata.org/entity/Q18019260,Q18019260
+http://www.wikidata.org/entity/Q18028966,uranium carbide
+http://www.wikidata.org/entity/Q18029337,Wax acid
+http://www.wikidata.org/entity/Q18206207,cuprophane
+http://www.wikidata.org/entity/Q18213339,lactim
+http://www.wikidata.org/entity/Q18213341,conjugated polymer
+http://www.wikidata.org/entity/Q18214701,cellulose ether
+http://www.wikidata.org/entity/Q18349534,cyclamide
+http://www.wikidata.org/entity/Q18351424,deuterated drug
+http://www.wikidata.org/entity/Q18356011,bactridines
+http://www.wikidata.org/entity/Q18388086,phenacene
+http://www.wikidata.org/entity/Q18388350,phoriospongin
+http://www.wikidata.org/entity/Q18411353,dioctyltin
+http://www.wikidata.org/entity/Q18555422,vinyl toluene
+http://www.wikidata.org/entity/Q18616136,Q18616136
+http://www.wikidata.org/entity/Q18630676,Q18630676
+http://www.wikidata.org/entity/Q19597069,endomorphins
+http://www.wikidata.org/entity/Q19885597,Q19885597
+http://www.wikidata.org/entity/Q19903949,dictyophorine
+http://www.wikidata.org/entity/Q19904078,eoxin
+http://www.wikidata.org/entity/Q19904142,Fatty amine
+http://www.wikidata.org/entity/Q19944476,urushiol
+http://www.wikidata.org/entity/Q20054492,alkanediols
+http://www.wikidata.org/entity/Q20054495,cycloalkanol
+http://www.wikidata.org/entity/Q20054496,Q20054496
+http://www.wikidata.org/entity/Q20054499,Q20054499
+http://www.wikidata.org/entity/Q20054501,Q20054501
+http://www.wikidata.org/entity/Q20054502,dialkylamine
+http://www.wikidata.org/entity/Q20054543,polyvinyl ether
+http://www.wikidata.org/entity/Q20054548,Q20054548
+http://www.wikidata.org/entity/Q20054553,Q20054553
+http://www.wikidata.org/entity/Q20084600,Q20084600
+http://www.wikidata.org/entity/Q20180552,dinogunellin
+http://www.wikidata.org/entity/Q20522059,cyclooxygenase inhibitor
+http://www.wikidata.org/entity/Q20707218,metanephrines
+http://www.wikidata.org/entity/Q21045304,Q21045304
+http://www.wikidata.org/entity/Q21050798,lichen acid
+http://www.wikidata.org/entity/Q21050951,Q21050951
+http://www.wikidata.org/entity/Q22668692,dibutyltin
+http://www.wikidata.org/entity/Q22668752,undecanes
+http://www.wikidata.org/entity/Q22683747,chloropolymer
+http://www.wikidata.org/entity/Q22808254,Haloxyfop
+http://www.wikidata.org/entity/Q22965498,ester lipid
+http://www.wikidata.org/entity/Q23582986,secondary organic aerosol
+http://www.wikidata.org/entity/Q23636739,Q23636739
+http://www.wikidata.org/entity/Q24883404,testosterone ester
+http://www.wikidata.org/entity/Q24887094,ethyleneamine
+http://www.wikidata.org/entity/Q24918982,Q24918982
+http://www.wikidata.org/entity/Q25098757,vitamin B1 analogue
+http://www.wikidata.org/entity/Q25099625,peptitergents
+http://www.wikidata.org/entity/Q25103920,tarocin
+http://www.wikidata.org/entity/Q25105089,methasone
+http://www.wikidata.org/entity/Q25303911,complex oxide
+http://www.wikidata.org/entity/Q25304832,epoxydocosapentaenoic acid
+http://www.wikidata.org/entity/Q25323684,phenylacetylindoles
+http://www.wikidata.org/entity/Q25323859,Diazapentalenes
+http://www.wikidata.org/entity/Q25323866,Gonyautoxins
+http://www.wikidata.org/entity/Q25323875,carbocyclic nucleoside
+http://www.wikidata.org/entity/Q25323898,Cliotide
+http://www.wikidata.org/entity/Q25323959,cyanonickelate
+http://www.wikidata.org/entity/Q25324000,prostamide
+http://www.wikidata.org/entity/Q25385054,Q25385054
+http://www.wikidata.org/entity/Q25385659,Q25385659
+http://www.wikidata.org/entity/Q25385848,tetraalkylammonium salt
+http://www.wikidata.org/entity/Q25385950,Alkenyl peroxides
+http://www.wikidata.org/entity/Q25386748,pimaric acid
+http://www.wikidata.org/entity/Q25386994,butanoic acids
+http://www.wikidata.org/entity/Q25387144,methyl ketone
+http://www.wikidata.org/entity/Q28209338,17β-aminoestrogen
+http://www.wikidata.org/entity/Q28209819,Phytosteroid
+http://www.wikidata.org/entity/Q28209834,Bisnorhopanes
+http://www.wikidata.org/entity/Q28319808,chlorine-releasing compounds
+http://www.wikidata.org/entity/Q28410965,Q28410965
+http://www.wikidata.org/entity/Q28797894,"1-phosphatidyl-1D-myo-inositol 4,5-bisphosphate"
+http://www.wikidata.org/entity/Q28797898,"1-phosphatidyl-1D-myo-inositol 3,4,5-trisphosphate"
+http://www.wikidata.org/entity/Q29455283,Q29455283
+http://www.wikidata.org/entity/Q29471285,diphenylmethyl ester
+http://www.wikidata.org/entity/Q29644938,dialkyl ethers
+http://www.wikidata.org/entity/Q29652983,diaryl ethers
+http://www.wikidata.org/entity/Q29840860,Q29840860
+http://www.wikidata.org/entity/Q30314174,polymorphic toxins
+http://www.wikidata.org/entity/Q30314182,thiopeptide
+http://www.wikidata.org/entity/Q30314564,adrenal steroid
+http://www.wikidata.org/entity/Q30314969,fusarin
+http://www.wikidata.org/entity/Q30594971,cyclacene
+http://www.wikidata.org/entity/Q30681388,Zhan catalyst
+http://www.wikidata.org/entity/Q30686839,kukoamines
+http://www.wikidata.org/entity/Q30688752,pyridine alkaloids
+http://www.wikidata.org/entity/Q33248312,pyridinium compounds
+http://www.wikidata.org/entity/Q34484526,aminophospholipid
+http://www.wikidata.org/entity/Q37713691,phorbol esters
+http://www.wikidata.org/entity/Q39046836,thelephantins
+http://www.wikidata.org/entity/Q39086981,Checkpoint inhibitor
+http://www.wikidata.org/entity/Q44432329,beta-carbolines
+http://www.wikidata.org/entity/Q44439952,theaflavines
+http://www.wikidata.org/entity/Q45355603,aminoglycoside antibiotic
+http://www.wikidata.org/entity/Q48775571,phenylpyrazole insecticides
+http://www.wikidata.org/entity/Q48835757,proteracacinidin
+http://www.wikidata.org/entity/Q48968589,alkenal
+http://www.wikidata.org/entity/Q50316511,Serine Proteinase Inhibitors
+http://www.wikidata.org/entity/Q50349216,iron chelating agent
+http://www.wikidata.org/entity/Q50429164,Poly(ADP-ribose) Polymerase Inhibitors
+http://www.wikidata.org/entity/Q50429165,Adenylyl Cyclase Inhibitors
+http://www.wikidata.org/entity/Q50430405,Adenosine Deaminase Inhibitors
+http://www.wikidata.org/entity/Q50430431,5-Lipoxygenase-Activating Protein Inhibitors
+http://www.wikidata.org/entity/Q50430466,Prolyl-Hydroxylase Inhibitors
+http://www.wikidata.org/entity/Q50430467,Phospholipase A2 Inhibitors
+http://www.wikidata.org/entity/Q50430469,Acetaldehyde Dehydrogenase Inhibitors
+http://www.wikidata.org/entity/Q50430472,steroid synthesis inhibitor
+http://www.wikidata.org/entity/Q50430474,Glycoside Hydrolase Inhibitors
+http://www.wikidata.org/entity/Q50430479,calcineurin inhibitors
+http://www.wikidata.org/entity/Q50430487,Aromatic Amino Acid Decarboxylase Inhibitors
+http://www.wikidata.org/entity/Q50430490,Ornithine Decarboxylase Inhibitors
+http://www.wikidata.org/entity/Q50430501,Cytochrome P-450 Enzyme Inhibitors
+http://www.wikidata.org/entity/Q50573407,Folic Acid Antagonists
+http://www.wikidata.org/entity/Q50808523,alcohol dehyrogenase inhibitor
+http://www.wikidata.org/entity/Q51831414,Labdanes
+http://www.wikidata.org/entity/Q52054393,boviquinones
+http://www.wikidata.org/entity/Q52054501,pyridinoles
+http://www.wikidata.org/entity/Q52162496,methine dyes
+http://www.wikidata.org/entity/Q55095989,Alkylbenzene sulfonates
+http://www.wikidata.org/entity/Q55261298,benzalkonium chloride
+http://www.wikidata.org/entity/Q55352749,Diarylmethane dyes
+http://www.wikidata.org/entity/Q55352798,Acridine dyes
+http://www.wikidata.org/entity/Q55352849,Thiazole dyes
+http://www.wikidata.org/entity/Q55352876,Indophenol dyes
+http://www.wikidata.org/entity/Q55352896,Azin dyes
+http://www.wikidata.org/entity/Q55352970,Anthraquinone dyes
+http://www.wikidata.org/entity/Q55353023,inorganic pigment
+http://www.wikidata.org/entity/Q55633996,steroidal alkaloids
+http://www.wikidata.org/entity/Q56012746,shogaols
+http://www.wikidata.org/entity/Q56090295,tanshinone
+http://www.wikidata.org/entity/Q56244534,azaspiracid
+http://www.wikidata.org/entity/Q56291647,thioacyl chloride
+http://www.wikidata.org/entity/Q56438392,active ester
+http://www.wikidata.org/entity/Q56612744,arylomycin
+http://www.wikidata.org/entity/Q56683182,taxines
+http://www.wikidata.org/entity/Q57202623,hypohalous acids
+http://www.wikidata.org/entity/Q57296183,arsinic acids
+http://www.wikidata.org/entity/Q58466424,magnesium oxychloride
+http://www.wikidata.org/entity/Q95613286,Q95613286
+http://www.wikidata.org/entity/Q95874700,kanamycins
+http://www.wikidata.org/entity/Q96032533,Q96032533
+http://www.wikidata.org/entity/Q96471835,cortistatins
+http://www.wikidata.org/entity/Q96634457,Q96634457
+http://www.wikidata.org/entity/Q96768038,Q96768038
+http://www.wikidata.org/entity/Q96898884,Q96898884
+http://www.wikidata.org/entity/Q96898939,Q96898939
+http://www.wikidata.org/entity/Q96898943,Q96898943
+http://www.wikidata.org/entity/Q96898947,Q96898947
+http://www.wikidata.org/entity/Q96898950,Q96898950
+http://www.wikidata.org/entity/Q96898955,Q96898955
+http://www.wikidata.org/entity/Q96898958,Q96898958
+http://www.wikidata.org/entity/Q96898963,Q96898963
+http://www.wikidata.org/entity/Q96898967,Q96898967
+http://www.wikidata.org/entity/Q96898972,Q96898972
+http://www.wikidata.org/entity/Q58489932,cyanostar
+http://www.wikidata.org/entity/Q59354200,silylone
+http://www.wikidata.org/entity/Q59354219,phosphasilene
+http://www.wikidata.org/entity/Q59378182,plumbylene
+http://www.wikidata.org/entity/Q59397417,sucroglyceride
+http://www.wikidata.org/entity/Q59557624,ammonium phosphates
+http://www.wikidata.org/entity/Q59557836,magnesium phosphates
+http://www.wikidata.org/entity/Q59562085,magnesium carbonates
+http://www.wikidata.org/entity/Q59562205,sodium sulfates
+http://www.wikidata.org/entity/Q59562238,potassium sulfates
+http://www.wikidata.org/entity/Q59662497,ginsenoside
+http://www.wikidata.org/entity/Q59690695,bafilomycin
+http://www.wikidata.org/entity/Q59771128,micropeptide
+http://www.wikidata.org/entity/Q59849010,cucurbituril
+http://www.wikidata.org/entity/Q59954384,nonanone
+http://www.wikidata.org/entity/Q60024598,tiacumicin
+http://www.wikidata.org/entity/Q60037710,N-heterocyclic silylene
+http://www.wikidata.org/entity/Q60464665,Methyl-MDA
+http://www.wikidata.org/entity/Q60569871,methacrylate copolymer
+http://www.wikidata.org/entity/Q60710915,Lewis acid
+http://www.wikidata.org/entity/Q60723480,pyridopyrimidine
+http://www.wikidata.org/entity/Q60756750,polythionates
+http://www.wikidata.org/entity/Q60790469,trisilaallene
+http://www.wikidata.org/entity/Q60790915,tellurophenes
+http://www.wikidata.org/entity/Q60795745,transition metal imido complex
+http://www.wikidata.org/entity/Q60869351,isodiazene
+http://www.wikidata.org/entity/Q61687283,amyrins
+http://www.wikidata.org/entity/Q61913379,justicidin
+http://www.wikidata.org/entity/Q61939480,fullerene whiskers
+http://www.wikidata.org/entity/Q61959095,jojoba wax esters
+http://www.wikidata.org/entity/Q61959305,phakellistatin
+http://www.wikidata.org/entity/Q61959342,piericidin
+http://www.wikidata.org/entity/Q61978373,theasinensin
+http://www.wikidata.org/entity/Q61978387,theonellamide
+http://www.wikidata.org/entity/Q62000075,amurensin
+http://www.wikidata.org/entity/Q62000535,cyphostemmin
+http://www.wikidata.org/entity/Q62010324,ciguatoxins
+http://www.wikidata.org/entity/Q62010421,penams
+http://www.wikidata.org/entity/Q62016493,gnetucleistols
+http://www.wikidata.org/entity/Q62027723,granatins
+http://www.wikidata.org/entity/Q62076182,thunberginol
+http://www.wikidata.org/entity/Q62858552,prodiginines
+http://www.wikidata.org/entity/Q63434725,sterol lipids
+http://www.wikidata.org/entity/Q63979265,macromolecular cages
+http://www.wikidata.org/entity/Q64242317,fatty acyl carnitines
+http://www.wikidata.org/entity/Q64797497,branched glycerol dialkyl glycerol tetraethers
+http://www.wikidata.org/entity/Q65082027,Q65082027
+http://www.wikidata.org/entity/Q65085081,conjugated linoleic acids
+http://www.wikidata.org/entity/Q65659096,collagen hybridizing peptide
+http://www.wikidata.org/entity/Q67087212,terphenylquinones
+http://www.wikidata.org/entity/Q68541106,antimicrobial agent
+http://www.wikidata.org/entity/Q69647353,maltene
+http://www.wikidata.org/entity/Q69658174,inorganic carbodiimide
+http://www.wikidata.org/entity/Q71288571,iron(3+) chelator
+http://www.wikidata.org/entity/Q71659756,diatomic oxygen
+http://www.wikidata.org/entity/Q72185287,flavonoid superclass
+http://www.wikidata.org/entity/Q72296281,gentamycin
+http://www.wikidata.org/entity/Q72844761,calcin
+http://www.wikidata.org/entity/Q73260486,alarm pheromone
+http://www.wikidata.org/entity/Q75011064,Sitosterols
+http://www.wikidata.org/entity/Q76608011,Acridones
+http://www.wikidata.org/entity/Q79003799,blood antigen
+http://www.wikidata.org/entity/Q79004107,blood group antigen
+http://www.wikidata.org/entity/Q79027128,human blood antigen
+http://www.wikidata.org/entity/Q79027776,human blood group antigen
+http://www.wikidata.org/entity/Q84570815,Q84570815
+http://www.wikidata.org/entity/Q84737694,perfluorosulfonic acids
+http://www.wikidata.org/entity/Q85210139,polyribonucleotide
+http://www.wikidata.org/entity/Q87146871,unsaturated polyester
+http://www.wikidata.org/entity/Q87557449,anti-infective agent
+http://www.wikidata.org/entity/Q89414262,Q89414262
+http://www.wikidata.org/entity/Q90799964,Q90799964
+http://www.wikidata.org/entity/Q91435482,Q91435482
+http://www.wikidata.org/entity/Q91776823,Q91776823
+http://www.wikidata.org/entity/Q91777349,Q91777349
+http://www.wikidata.org/entity/Q91777677,Q91777677
+http://www.wikidata.org/entity/Q92312578,Q92312578
+http://www.wikidata.org/entity/Q92424581,Q92424581
+http://www.wikidata.org/entity/Q93861232,Isoquinoline alkaloids
+http://www.wikidata.org/entity/Q93868954,Q93868954
+http://www.wikidata.org/entity/Q93868960,Quinolizidine alkaloids
+http://www.wikidata.org/entity/Q93868965,Q93868965
+http://www.wikidata.org/entity/Q93947091,diatomic astatine
+http://www.wikidata.org/entity/Q94234555,lipoxygenase inhibitor
+http://www.wikidata.org/entity/Q94694977,Q94694977
+http://www.wikidata.org/entity/Q94962610,Q94962610
+http://www.wikidata.org/entity/Q94962616,Q94962616
+http://www.wikidata.org/entity/Q94962622,Q94962622
+http://www.wikidata.org/entity/Q94962636,Q94962636
+http://www.wikidata.org/entity/Q94962650,Q94962650
+http://www.wikidata.org/entity/Q94962666,Q94962666
+http://www.wikidata.org/entity/Q94962681,Q94962681
+http://www.wikidata.org/entity/Q94962697,Q94962697
+http://www.wikidata.org/entity/Q94962713,Q94962713
+http://www.wikidata.org/entity/Q94962729,Q94962729
+http://www.wikidata.org/entity/Q94962746,Q94962746
+http://www.wikidata.org/entity/Q94962761,Q94962761
+http://www.wikidata.org/entity/Q94962774,Q94962774
+http://www.wikidata.org/entity/Q94962789,Q94962789
+http://www.wikidata.org/entity/Q94962804,Q94962804

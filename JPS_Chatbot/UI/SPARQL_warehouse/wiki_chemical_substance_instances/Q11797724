@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q4733439"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "Allylcyclopentane"}, "x": {"type": "literal", "value": "C\u2088H\u2081\u2084"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q58371294"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "Difficidin"}, "x": {"type": "literal", "value": "C31H45O6P"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

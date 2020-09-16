@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q27236113"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "oligomycin a"}, "x": {"type": "literal", "value": "C\u2084\u2085H\u2087\u2084O\u2081\u2081"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

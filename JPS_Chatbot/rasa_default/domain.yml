@@ -1,0 +1,47 @@
+intents:
+  - batch_restriction_binary
+  - batch_restriction_relation_numerical_query
+  - relation_filter
+  - batch_restriction_numerical_query
+  - item_attribute_query_with_condition
+  - batch_restriction_query
+  - item_attribute_query
+  - selection_by_comparison
+  - true_or_false
+  - simple_info
+
+responses:
+  utter_greet:
+  - text: "Hey! How are you?"
+
+  utter_cheer_up:
+  - text: "Here is something to cheer you up:"
+    image: "https://i.imgur.com/nGF1K8f.jpg"
+
+  utter_did_that_help:
+  - text: "Did that help you?"
+
+  utter_happy:
+  - text: "Great, carry on!"
+
+  utter_goodbye:
+  - text: "Bye"
+
+  utter_iamabot:
+  - text: "I am a bot, powered by Rasa."
+actions:
+  - construct_sparql_query
+  - specify_question
+  - batch_restriction_query
+entities:
+  - predicate
+  - species
+  - class
+  - contain_relation
+  - entity
+  - comparision_operator
+  - attribute
+
+session_config:
+  session_expiration_time: 6
+  carry_over_slots_to_new_session: true

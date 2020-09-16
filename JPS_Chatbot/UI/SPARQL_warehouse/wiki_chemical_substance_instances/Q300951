@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q409196"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "Methyl orange"}, "x": {"type": "literal", "value": "C\u2081\u2084H\u2081\u2084N\u2083NaO\u2083S"}, "altLabel_list": {"type": "literal", "value": ""}}]}}
