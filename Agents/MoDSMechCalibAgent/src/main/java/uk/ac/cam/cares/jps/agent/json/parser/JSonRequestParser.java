@@ -50,6 +50,15 @@ public class JSonRequestParser {
 	}
 	
 	// mods part
+	public static boolean getIfOnlyEval(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("onlyEval");
+		if (locateNode.asText().toLowerCase().contains("y")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public static List<String> getRxnsMustInclude(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("reactionMustInclude");
 		List<String> reactionIRI = new ArrayList<>();
