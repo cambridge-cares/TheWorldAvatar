@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Chemistry Knowledge Graph</title>
+        <title>Marie</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="../static/img/favicon.ico" />
         <!-- Latest compiled and minified CSS -->
@@ -22,21 +23,22 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="../static/css/style.css" rel="stylesheet" />
     </head>
-    <body id="page-top">
+    <body id="page-top" style="font-family: Hind">
         <!-- Navigation-->
         <!-- Navigation -->
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
-            <div class="container">
+
+        <nav class="navbar navbar-expand-md  sticky-top" style="background-color:#338cea">
+            <div class="container" style="color:#338cea">
                 <a class="navbar-brand" href="#">
-                    <img src="../static/img/logo.svg">
+                    <img  style="width:180px" src="../static/img/marie.jpg">
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">Chemistry Knowledge Graph</a>
+                        <li class="nav-item active" style="font-size: 50px;">
+                            <a  class="nav-link" href="#">Marie</a>
                         </li>
                     </ul>
                     <!--ml-auto - pushes off navigation to the right hand side-->
@@ -55,12 +57,13 @@
             </div>
         </nav>
         <!-- Masthead-->
+
         <header class="masthead bg-primary text-white text-center">
             <div class="container d-flex align-items-center flex-column">
                 <!-- Masthead Avatar Image-->
                 <!--img class="masthead-avatar mb-5" src="static/img/avataaars.svg" alt="" /-->
                 <!-- Masthead Heading-->
-                <h1 class="mb-2 text-dark">Search Chemistry Knowledge Graph</h1>
+                <h1 class="mb-2 text-white">Marie: Search Chemistry Knowledge Graph</h1><br/>
                 <!-- Icon Divider-->
 				<div class="input-group">
 					<div class="input-group-append">
@@ -70,9 +73,11 @@
 					  </button>
 					</div>
 					<input type="search" class="form-control" placeholder="Type your query" list="ex-queries" id="input-field"/>
-					<datalist id="ex-queries">
-						<option value="what are the boiling points of all alkanol"/>
-						<option value="what are the structures all aromatic hydrocarbon"/>
+					<!--<datalist id="ex-queries">
+                        <option value="stability of FMOC amide + zinc"/>
+						<option value="what are the boiling points of all fatty acids"/>
+                        <option value="what is the melting point of diethylstilbestrol"/>
+						<option value="what are the chemical structures all aromatic hydrocarbon"/>
 						<option value="what reaction has CH4 as reactant"/>
 						<option value="what mechanism contains CH4 + OH"/>
 						<option value="what is the reaction rate for CH4 + OH">
@@ -81,13 +86,54 @@
 						<option value="is the reaction H + H2O == H2 + OH reversible"/>
 						<option value="what reactions produce NO2 + O2"/>
                     </datalist>
+                    -->
+                    <datalist id="ex-queries">
+
+					    <option value="Molecular model of  aromatic hydrocarbons"/>
+                        <option value="Chemical  structure of  aromatic hydrocarbons"/>
+                        <option value="mass of aromatic hydrocarbons"/>
+                        <option value="mass of aromatic hydrocarbons with mass less than 170"/>
+                        <option value="density of aromatic hydrocarbons with mass less than 200"/>
+                        <option value="Molecular weight of ch4."/>
+                   <!--     <option value="chemical structure of aromatic hydrocarbon with molecular weight more than 200"/> -->
+                        <option value="what is the molecular weight of c1ccccc1"/>
+                        <option value="show me the molecular model of  CH2=CHCHO "/>
+                        <option value="show me the ionization energy of C1=CC=CC=C1"/>
+                        <option value="what is the heat capacity of c1=cc=cc=c1"/>
+                        <option value="list the formula of all symmetrical ether "/>
+                        <option value="list all symmetrical ether "/>
+                        <option value="stability of FMOC amide + zinc"/>
+                        <option value="2 kg calcium hydrogen phosphate to moles"/>
+                        <option value="where is the capital of Saudi Arabia">
+                        <option value="reaction rate of H2 + O2 -> H2O"/>
+                        <option value="what is the product of H2 + OH"/>
+						<option value="is the reaction H + H2O == H2 + OH reversible"/>
+						<option value="what reactions produce NO2 + O2"/>
+                        <option value="what reaction has CH4 as reactant"/>
+						<option value="what mechanism contains CH4 + OH"/>
+
+
+                    </datalist>
+
+
+
                 </div>
             </div>
         </header>
 
         <div class="container text-dark font-weight-bold mt-5" id="search-results">
-        </div>
+         </div>
 
+        <div id="google_result_box" >
+            <hr/>
+        <h1 class="container text-dark font-weight-bold mt-5" id="header_google"> Result (from Google Knowledge Graph)</h1>
+        <div style="border-style: ridge;" class="container text-dark font-weight-bold mt-5" id="google-results" style="color: #202124;
+    font-size: 32px;
+    line-height: 1.25;
+    margin-bottom: 5px;
+    margin-top: -3px;
+    word-wrap: break-word;"></div>
+</div>
         <!-- About Section-->
         <section class="page-section about" id="about">
             <div class="container">
@@ -121,8 +167,8 @@
             </div>
         </section>
         <!-- Partners Section-->
-        <section class="page-section bg-primary mb-0" id="partners">
-            <div class="container">
+        <section class="page-section bg-primary mb-0" id="partners" style="background-color:#338cea">
+            <div class="container"  style="background-color:#338cea">
                 <!-- Partners Section Heading-->
                 <h2 class="page-section-heading text-center text-uppercase">Partners</h2>
                 <!-- Icon Divider-->

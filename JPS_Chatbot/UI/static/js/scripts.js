@@ -6,6 +6,9 @@
 
 	$(window).on('load', function(){
 	    google.charts.load('current', {'packages':['table']});
+	    $('#google_result_box').hide()
+
+
 	});
 
     (function($) {
@@ -62,8 +65,9 @@
   })(jQuery);
 
 
-  function ask_question() {
 
+
+  function ask_question() {
 
     document.getElementById('search-icon').style.display = 'none';
     document.getElementById('search-spinner').style.display = 'block';
@@ -74,8 +78,16 @@
     // =========================
     msg = msg.replace(/[/+]/g, 'add_sign')
 
-    $.get("https://kg.cmclinnovations.com/test?question=" + msg, function( data ) {
-      displayResults(data)
+   // to test the code locally, the address need to be changed to  http://127.0.0.1:5000/
+
+    address = 'http://127.0.0.1:5000/'
+    cmcl_address = 'https://kg.cmclinnovations.com/'
+    address = cmcl_address
+
+    $('#google_result_box').hide()
+    $.get(address + "query?question=" + msg, function( data ) {
+      displayResults(data, 'jps')
+
     });
 
 }
@@ -84,13 +96,21 @@ function process_json_result(result){
 
   // result = result.replace(/=\]/g, '=>').replace(/[}][\n ]+[{]/g, '},{')
   console.log('The request has returned a response ', result)
+  if (result == 'Nothing'){
+     address = 'http://127.0.0.1:5000/'
+    cmcl_address = 'https://kg.cmclinnovations.com/'
+    address = cmcl_address
+    query_wolfram_alpha(address, msg);
+    query_google(address, msg);
+  }
+
 
   result = JSON.parse(result)
-
-
-  if ('results' in result){
+  if (result){
+     if ('results' in result){
     bindings = result.results.bindings;
     if (bindings.length == 0){
+        // make a request to google or wolfram alpha
         return null
     }else
 
@@ -103,8 +123,33 @@ function process_json_result(result){
 			let row_object = {}
 			index_counter++
             row_object['result_id'] = index_counter.toString()
-			row_object['result_name'] = v['oLabel']['value']
+
+            if (v['oLabel']){
+            			row_object['result_name'] = v['oLabel']['value']
+            }
+
+             if (v['name']){
+            			row_object['result_name'] = v['name']['value']
+            }
+
+
+               if (v['v']){
 			row_object['result_value'] = v['v']['value']
+            }
+
+
+			if (v['v2'])
+		    {
+		        row_object['result_value_2'] = v['v2']['value']
+		    }
+
+            if (v['unitLabel'])
+
+		    {
+			    row_object['result_unit'] = v['unitLabel']['value']
+		    }
+
+
             table.push(row_object)
         })
 
@@ -113,7 +158,7 @@ function process_json_result(result){
     }
   }else{
   // get a list of variables, which is the keys
-  variables = Object.keys(result[0]);  
+  variables = Object.keys(result[0]);
   console.log('variables', variables)
   index_counter = 0
   result.forEach(function(v){
@@ -126,8 +171,45 @@ function process_json_result(result){
   })
   return table
   }
+  }
+
+  else{
+    // call wolfram_alpha or google
+    address = 'http://127.0.0.1:5000/'
+    cmcl_address = 'https://kg.cmclinnovations.com/'
+    address = cmcl_address
+
+    query_wolfram_alpha(address, msg);
+    query_google(address, msg);
+
+  }
+}
+// if the query to the JPS fails, the system queries both wolfram_alpha and google at the same time
+function query_wolfram_alpha(address, msg){
+    $.get(address + "query_wolfram?question=" + msg, function( data ) {
+      displayResults(data, 'wolfram')
+    });
 }
 
+function query_google(address, msg){
+    // the result returned by google will be in the form of html divisions, the visualization will be different
+        $.get(address + "query_google?question=" + msg, function( data ) {
+            $('#google_result_box').show()
+
+
+        visualize_google_result(data, 'google')
+    });
+}
+
+
+function visualize_google_result(result){
+
+    $("#google-results" ).html(result)
+
+}
+
+// TODO: query wolfram alpha and google no matter what
+// TODO: Make the page Marie Curie
 function removeItemAll(arr, value) {
   var i = 0;
   while (i < arr.length) {
@@ -189,9 +271,8 @@ function drawTable(result_array) {
 
 }
 
-function displayResults(myData) {
+function displayResults(myData, source) {
   myData = process_json_result(myData)
-
   // EXTRACT VALUE FOR HTML HEADER.
   // ('Book ID', 'Book Name', 'Category' and 'Price')
   var col = [];
@@ -207,8 +288,15 @@ function displayResults(myData) {
   divContainer.innerHTML = "";
 
   var h = document.createElement("H1")                // Create a <h1> element
-  var t = document.createTextNode("Results");     // Create a text node
+  h.setAttribute("id", "result");
+  if (source == 'wolfram'){
+    h.innerHTML = 'Results (from wolfram alpha)'
+  }
+  else{
+    var t = document.createTextNode("Results");     // Create a text node
   h.appendChild(t);
+  }
+
   divContainer.appendChild(h);
 
   // ADD JSON DATA TO THE TABLE AS ROWS.
@@ -221,10 +309,26 @@ function displayResults(myData) {
         // Create the list item:
         var div_inner = document.createElement('div');
 
+
+        var data = myData[i][col[j]];
+
+        if (data.includes('.svg') || data.includes('.png')){
+//            var myImage = $('<img/>');
+//            myImage.attr('src', data);
+
+            div_inner.innerHTML = '<img src="' + data + '" style="width:250px">'
+
+
+        }
+        else{
+                div_inner.appendChild(document.createTextNode(data));
+
+        }
+
         // Set its contents:
-        div_inner.appendChild(document.createTextNode(myData[i][col[j]]));
 
         // Add it to the list:
+
         div_row.appendChild(div_inner);
       }
       divContainer.appendChild(div_row);
