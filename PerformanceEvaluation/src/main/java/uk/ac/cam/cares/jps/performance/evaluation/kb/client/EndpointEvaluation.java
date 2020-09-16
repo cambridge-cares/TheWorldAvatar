@@ -50,4 +50,41 @@ public class EndpointEvaluation {
 	public static Map<String, Map<String, String>> performanceMetrices = new HashMap<String, Map<String, String>>(); 
 
 	public static final String QUERY_FILE_NAME = "queries.json";  
+	
+	/**
+	 * Compares the query performance of remote knowledge repository end points. 
+	 */
+	private void compare(){
+		System.out.println("------------------------Endpoint------------------------, -------------Query-------------, time (ms)");
+		for(String endpoint:performanceMetrices.keySet()){
+			int queryCount = 0;
+			for(String query:performanceMetrices.get(endpoint).keySet()){
+				System.out.println(endpoint+", Query ["+ ++queryCount +"] "+ query.substring(query.length()/2-10, query.length()/2+10) +", "+performanceMetrices.get(endpoint).get(query));
+			}
+		}
+	}
+	
+	/**
+	 * Initialises the instances of some classes that allows to read properties<p>
+	 *  from the file src/main/resources/endpoint.properties.<p>
+	 */
+	private void init(){
+		if (applicationContextEndpointEvaluation == null) {
+			applicationContextEndpointEvaluation = new AnnotationConfigApplicationContext(EndpointConfiguration.class);
+		}
+		if (endpointProperty == null) {
+			endpointProperty = applicationContextEndpointEvaluation.getBean(EndpointProperty.class);
+		}
+	}
+	
+	/**
+	 * Retrieves the value from a JSON string if key is provided.
+	 * 
+	 * @param jsonString
+	 * @param queryKey
+	 * @return
+	 */
+	private List<String> readJsonValue(String jsonString){
+				return JsonPath.read(jsonString, "$.query");
+	}
 }
