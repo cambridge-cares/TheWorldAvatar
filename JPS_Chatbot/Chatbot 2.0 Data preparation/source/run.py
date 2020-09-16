@@ -17,13 +17,15 @@ app = Flask(__name__)
 
 @app.route('/query')
 def make_query():
-    question = request.args.get('question')
-    print(question)
-    print('the questions received', question)
-    result = coordinate_agent.run(question)
-    pprint(result)
-    return json.dumps(result)
-
+    try:
+        question = request.args.get('question')
+        print(question)
+        print('the questions received', question)
+        result = coordinate_agent.run(question)
+        pprint(result)
+        return json.dumps(result)
+    except:
+        return 'Nothing'
 
 @app.route('/query_wolfram')
 def make_query_wolfram():

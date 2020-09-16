@@ -48,9 +48,12 @@ class CoordinateAgent():
 
         topics = self.lda_classifier.classify(question)
         print(topics)
+
+
+
         result = self.wiki_query(question)
         return result
-        # for topic in topics:
+        # # for topic in topics:
             # if topic == 'wiki':
             #     try:
             #         result = self.wiki_query(question)
@@ -71,6 +74,7 @@ class CoordinateAgent():
             intent_and_entities['type'] = 'item_attribute_query'
             intent_and_entities['entities']['entity'] = intent_and_entities['entities']['class']
 
+        print('before it breaks 001', intent_and_entities)
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
         print('================= result with uris ================')
         pprint(intent_and_entities_with_uris)

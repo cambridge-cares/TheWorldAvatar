@@ -68,11 +68,14 @@ class SPARQLQuery:
             counter = 0
             for q in queries[:self.query_step]:  # only select the first 5 queries in the list
                 counter = counter + 1
-                rurl = self.endpoint + requests.utils.quote(q)
-                print('the url requested', rurl)
-                processes.append(executor.submit(make_request, rurl, counter, q))
-                time.sleep(1)
-
+                try:
+                    rurl = self.endpoint + requests.utils.quote(q)
+                    print('the url requested', rurl)
+                    processes.append(executor.submit(make_request, rurl, counter, q))
+                    time.sleep(1)
+                except:
+                    time.sleep(1)
+                    pass
         for task in as_completed(processes):
             r = identity_valid_result(task.result())
             print('----------- task result ----------')

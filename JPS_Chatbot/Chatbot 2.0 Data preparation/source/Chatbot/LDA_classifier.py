@@ -64,6 +64,9 @@ class LDAClassifier:
             sorted_topic_names = []
             for topic in sorted_topics:
                 sorted_topic_names.append(self.topic_dictionary[topic[0]])
+
+            if 'wiki' not in sorted_topic_names:
+                sorted_topic_names.append('wiki')
             return sorted_topic_names
 
 

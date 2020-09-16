@@ -1,10 +1,12 @@
 # TODO: load the old dictionary, select out the part of classes ...
+# TODO: the smiles need to go to the dictionary as well
 # The file is : ./source/search_engine/wiki_dictionary'
 import json
 
 with open('../../source/search_engine/wiki_dictionary') as wiki_dictionary_file:
     old_dictionary = json.loads(wiki_dictionary_file.read())
     classes = old_dictionary['class']
+    instances = old_dictionary['entity']
     dict_class = classes['dict']
     list_class = classes['list']
 
@@ -17,6 +19,19 @@ counter = 0
 counter_2 = 0
 
 new_class_list = list_class
+new_instance_list = instances['list']
+
+with open('smile_dict') as f0:
+    smile_dictionary = json.loads(f0.read())
+    for k in smile_dictionary:
+        smile = smile_dictionary[k].strip()
+        print(smile)
+        if smile not in new_instance_list:
+            new_instance_list.append(smile)
+            instances['dict'][smile] = ['http://www.wikidata.org/entity/' + k]
+
+
+
 
 for uri in new_dictionary:
 
@@ -59,9 +74,16 @@ for uri in new_dictionary:
 old_dictionary['class']['dict'] = dict_class
 old_dictionary['class']['list'] = new_class_list
 
+old_dictionary['entity']['dict'] = instances['dict']
+old_dictionary['entity']['list'] = new_instance_list
+
 print(old_dictionary['class']['dict']['diamine'])
 print(old_dictionary['class']['dict']['aromatic hydrocarbon'])
-print(old_dictionary['class']['dict']['polyamides'])
+print(old_dictionary['class']['dict']['polyamide'])
+
+print(old_dictionary['entity']['dict']['CC=O'])
+
+
 
 print('added', counter, 'new class labels')
 print('added', counter_2, 'new class alt labels')

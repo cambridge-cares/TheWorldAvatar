@@ -5,11 +5,11 @@ from datetime import date
 
 ps = PorterStemmer()
 
-size_of_trainning = 10000
+size_of_trainning = 20000
 
-labels = json.loads(open('corpus_for_trainning').read())
+labels = json.loads(open('corpus_for_trainning_new').read())
 c_labels = labels[0]
-i_labels = labels[1]
+i_labels = [i.replace('[','').replace(']', '') for i in labels[1]]
 p_labels = labels[2]
 
 print('number of c_labels', len(c_labels))
@@ -176,13 +176,15 @@ def generate_type_1_questions():
 
 
 superlative_words_pool = ['larger_than', 'smaller_than', 'under', 'over', 'higher than', 'lower than', 'more than',
-                          'less than','above', 'beneath','fewer'
-                          'smaller than', 'bigger than', 'broader']
+                          'less than', 'above', 'beneath', 'fewer'
+                                                           'smaller than', 'bigger than', 'broader']
 mid_words_pool = ['with', 'that have', 'having', 'of']
+
 
 def generate_random_numerical_value():
     numerical_value = random.choices([random.randint(-1000, 1000), random.random()], weights=(75, 25), k=1)[0]
     return numerical_value
+
 
 def generate_type_3_questions():
     type_3_questions = []
@@ -222,7 +224,8 @@ def generate_type_4_questions():
         wh_word = (random.choice(question_pool))
         mid_word = random.choice(mid_words_pool)
         superlative_word = random.choice(superlative_words_pool)
-        question = template % (wh_word, p_label_1, c_label, mid_word, p_label_2, superlative_word ,generate_random_numerical_value())
+        question = template % (
+        wh_word, p_label_1, c_label, mid_word, p_label_2, superlative_word, generate_random_numerical_value())
         type_4_questions.append(question)
 
     with open('type_4_questions', 'wb') as f:
@@ -235,21 +238,19 @@ def generate_type_4_questions():
         f.close()
 
 
-
-def merge_files():
-    # Reading data from file1 
-    with open('type_1_questions') as fp:
+def merge_files(): # .decode('utf-8', 'ignore')
+    # Reading data from file1
+    with open('type_1_questions', encoding="utf8") as fp:
         data = fp.read()
 
         # Reading data from file2
-    with open('type_2_questions') as fp:
+    with open('type_2_questions', encoding="utf8") as fp:
         data2 = fp.read()
-
         # Reading data from file3
-    with open('type_3_questions') as fp:
+    with open('type_3_questions', encoding="utf8") as fp:
         data3 = fp.read()
 
-    with open('type_4_questions') as fp:
+    with open('type_4_questions', encoding="utf8") as fp:
         data4 = fp.read()
         # Merging 2 files
     # To add the data of file2 
@@ -259,8 +260,8 @@ def merge_files():
     data += data3
     data += data4
 
-    with open('nlu_%s.md' % str(date.today()), 'w') as fp:
-        fp.write(data)
+    with open('nlu_%s.md' % str(date.today()), 'wb') as fp:
+        fp.write(data.encode('utf-8', 'ignore'))
 
 
 generate_type_1_questions()
