@@ -20,7 +20,7 @@ function initMapOverlay(map, lines) {
 
         var _line = lines[index];
 
-        console.log('****************');
+        console.log('******initialise lines**********');
         console.log(_line);
 
         var _name = _line['name'];

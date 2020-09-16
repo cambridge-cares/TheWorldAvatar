@@ -16,7 +16,7 @@
  */
 //TODO: test this
 
-const redis = require('redis');
+const redis = require('redis'); //Redis is used as a cache.
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
 const client = redis.createClient(REDIS_PORT);
 const express = require('express');
@@ -53,10 +53,14 @@ function CacheRouter(router) {
      * @param time
      * @param keys
      */
-    function  getDataSetCache(path, getDataFn, time, cb,...keys) {
+    function getDataSetCache(path, getDataFn, time, cb, ...keys) {
+        console.log('The arguments are:')
         console.log(arguments)
+        console.log('The getData Function is:')
         console.log(getDataFn)
+        console.log('The keys are:')
         console.log(keys)
+        console.log('The expired time is:')
         console.log(time)
         getDataFn((err, result)=>{
             if(err){
@@ -70,6 +74,8 @@ function CacheRouter(router) {
             if(typeof  result+"" !== "string"){
                 result = JSON.stringify(result)
             }
+
+            console.log("###########The cached results are:#############")
             console.log(result)
             console.log("SET CACHE key:" + name)
             client.setex(name, time, result);
@@ -91,7 +97,7 @@ function CacheRouter(router) {
 
     /**
      * Private Utility: convert list of args to cache key
-     * @param argsList
+     * @param argsList Extract method arguments names into array.
      * @returns {*|string|Socket}
      */
     function args2Key( path, fnname, args) {
@@ -164,7 +170,7 @@ function CacheRouter(router) {
      * @returns router
      */
     function get(path, dataFn, opts) {
-        console.log('The endpoint path is:');
+        console.log('The get method endpoint path is:');
         console.log(path);
         let mOpts = Object.assign({}, defaultOpts, opts);
         console.log("options:")

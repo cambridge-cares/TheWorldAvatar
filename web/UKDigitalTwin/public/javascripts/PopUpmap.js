@@ -213,33 +213,68 @@ this.googleMap.setCenter(latlng);
         });
     map = this.googleMap;
     initMapOverlay(map, lines);
+
     console.log("request to " + self.curPath + "/coordinates")
     $.ajax({
         url: self.curPath + "/coordinates",
         method: "GET",
-        async: true,
-        success: function (pps) {
+        async: false,
+        success: function (pps) { //pps (array) is the result got from the uri
             console.log('check status of ajax')
-            self.updateMarkers(pps, pps);
+            console.log('#### Router for displaying the markers on the map ####')
+            console.log(pps)
+            self.updateMarkers(pps);
         },
         error: function () {
-            console.log("Can not get location")
+            console.log("Can not get coordinates")
         }
     });
-/*****
+
+    console.log("request to " + self.curPath + "/powerplantAttr")
     $.ajax({
-        url: self.curPath + "/:uri",
+        url: self.curPath + "/powerplantAttr",
         method: "GET",
         async: true,
-        success: function (pps) {
-             console.log('check status of ajax')
-             self.updateMarkers(pps, pps);
+        success: function (ppsAttr) {
+            console.log('check status of ajax')
+            console.log('####Router for displaying the pupup window####')
+            self.setupInfoWin(ppsAttr);
         },
         error: function () {
-            console.log("Can not get uri")
+            console.log("Can not get powerplantAttr")
         }
     });
-*/
+    
+/*
+        console.log("request to " + self.curPath + "/powerplantAttr" + powerplantURI)
+
+         getPowerPlantURI: function (pps) {
+         pps.forEach(function (pp) {
+            let muri = pp.uri;
+        };
+
+        function getPowerPlantAttr(powerplantURI) {
+       
+
+            let ppAttr = "";
+
+            $.ajax({
+                url: self.curPath + "/powerplantAttr/" + powerplantURI, 
+                method: "GET",
+                async: true,
+                success: function (ppAttr) {
+                    console.log('check status of ajax')
+                    this.ppAttr = ppAttr;
+
+
+                },
+                error: function () {
+                    console.log("Can not get location")
+                }
+            });
+            return this.ppAttr;
+        };
+ **/
       animatedLines = []
 },
 
@@ -312,7 +347,7 @@ this.googleMap.setCenter(latlng);
 
                     line.addListener('click', function(lineEvent) {
                         console.log(lineEvent.latLng.toString());
-                        var content = constructLineMenu(this.title,function (_content) {
+                        var content = constructLineMenu1(this.title,function (_content) {
                             infoWindow = new google.maps.InfoWindow({
                                 content: _content
                             });
@@ -352,7 +387,7 @@ this.googleMap.setCenter(latlng);
                     transformer.addListener('click', function() {
                         var that = this;
                         
-                        var content = constructLineMenu(this.title,function (_content) {
+                        var content = constructLineMenu1(this.title,function (_content) {
                             console.log('content',_content);
                             infowindow.setContent(_content);
                             infowindow.open(this.googleMap, that);
@@ -395,12 +430,12 @@ update markers
 pps: coordinates to draw
 definedPopUpAttrPair: map of attributes to appear in popups for markers
 ***/
-    updateMarkers : function (pps, definedPopUpAttrPair) {
+    updateMarkers : function (pps) {
         var self = this;
         self.clearMarkers();
         //Update display
         self.coordinates = pps;
-        self.setMarkers(pps, definedPopUpAttrPair);
+        self.setMarkers(pps);
         if (self.useCluster) {
             self.setCluster();
         }
@@ -485,61 +520,66 @@ getIconByType: function (type, highlight) {
      * Set markers and bind event for each marker
      * @param pps
      */
-    setMarkers: function (pps, attrPairs) {
+    setMarkers: function (pps) {
         var self = this;
         self.markers = {};
-        if(!pps || pps.constructor!== Array){
+        console.log('~~~~~The type of the initial markers is: ' + typeof markers)
+
+        if (!pps || pps.constructor !== Array) {
             return;
         }
         pps.forEach(function (pp) {
             let muri = pp.uri;
             //check type to determine what icon to use
-            
+
             var highlight = false;
-            
-            if(muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl'||muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601008.owl'){
+
+            if (muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl' || muri === 'http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/E-601008.owl') {
                 highlight = true;
             }
-            
-            
+
+
             let icon = self.getIconByType(pp.type, highlight);
 
-            
-            
-            
+
+
+
             /*console.log("drawing type: " + icon)
             console.log("Drawing for "+muri+" at N"+pp.location.lat)
             console.log("Drawing for "+muri+" at E"+pp.location.lng)*/
 
+
+            console.log('<<<<The uri of the marker is: ' + muri)
+
             let marker = new google.maps.Marker({
-                position: { lat: pp.location.Latitute, lng: pp.location.Longitude},
+                position: { lat: pp.location.Latitute, lng: pp.location.Longitude },
                 icon: icon,
                 map: self.googleMap
             });
 
-            marker.changeColor = function(hex){
+            marker.changeColor = function (hex) {
 
                 let icon = marker.getIcon();
                 icon.fillColor = hex;
                 marker.setIcon(icon);
             }
-            marker.changeScale = function(scale){
+            marker.changeScale = function (scale) {
 
                 let icon = marker.getIcon();
                 icon.scale = scale;
                 marker.setIcon(icon);
             }
-            marker.getColor = function(){
+            marker.getColor = function () {
 
                 let icon = marker.getIcon();
                 console.log(icon.fillColor)
-                return icon.fillColor ;
+                return icon.fillColor;
             }
-            marker.getScale = function(){
+            marker.getScale = function () {
 
                 let icon = marker.getIcon();
                 console.log(icon.scale)
-                return icon.scale ;
+                return icon.scale;
             }
 
             function scaleInterp(start, end, factor) {
@@ -549,78 +589,120 @@ getIconByType: function (type, highlight) {
                 let startColor = self.hex2rgb(marker.getColor());
                 let endColor = self.hex2rgb("#FFFC94");
                 let mInterpolate = self.interpolateColor.bind({}, startColor, endColor);
-                let startScale = marker.getScale(), endScale = startScale*1.5;
-                let animationTime= 1000;
-                let step = 10, stepCount = 0, factorStep = 1/(step - 1), stepper = 1;
-                if("animationOngoing" in marker){
+                let startScale = marker.getScale(), endScale = startScale * 1.5;
+                let animationTime = 1000;
+                let step = 10, stepCount = 0, factorStep = 1 / (step - 1), stepper = 1;
+                if ("animationOngoing" in marker) {
                     return;
                 }
                 marker.animationOngoing = true;
-                let colorTimer = window.setInterval(function() {
+                let colorTimer = window.setInterval(function () {
                     let color2 = self.rgb2hex(mInterpolate(factorStep * stepCount));
                     marker.changeColor(color2);
                     marker.changeScale(scaleInterp(startScale, endScale, factorStep * stepCount));
-                    stepCount+=stepper;
-                    if(stepCount >=step -1){
+                    stepCount += stepper;
+                    if (stepCount >= step - 1) {
                         stepper = -1;
                     }
-                    if(stepCount < 0){
+                    if (stepCount < 0) {
                         console.log("stop animation")
                         delete marker.animationOngoing;
                         clearInterval(colorTimer);
                     }
 
-                }, animationTime/step);
+                }, animationTime / step);
             };
-            /**timer for determine double or single click*/
-            marker.timer = 0;
-            marker.sgclickPrevent = false;
-            //bind single click listener
-            marker.addListener('click', $.proxy(function (e) {//open a popup window
-
-                marker.timer = setTimeout(function () {
-                    if (!marker.sglclickPrevent) {
-                        if (pp) {
-                            var attributeArray = {
-                                uri: pp['uri'], location: pp['location'],
-                                Commissioned_year: pp['built_year'],
-                                Annual_Generation: pp['Annual_Generation'],
-                                Owner: pp['Owner'],
-                                Located_country: pp['Country'],
-                                
-                               /*Generation_Technology: pp['Generation_Technology'],
-                                Annual_Generation: pp['Annual_Generation'],
-                                CO2_Emission: pp['CO2_Emission'],
-                                Owner: pp['Owner'],
-                                Country: pp['Country'],
-                                Designed_Capacity: pp['Designed_Capacity'],
-                               */
-                                };
-                            self.formatPopup(attributeArray, pp['uri'], marker);
-                        } else {
-                            self.openEditablePopupNet(muri, marker);
-                        }
-                    }
-                    marker.sglclickPrevent = false;
-                }, 200);
-
-            }, marker));
-
-
-            /*double click listener*/
-            marker.addListener('dblclick', function (e) {//open file
-                clearTimeout(marker.timer);
-                marker.sglclickPrevent = true;
-                window.open(pp.uri);
-            })
             self.markers[muri] = marker;
+            
+            console.log('~~~~ Check marker ~~~~~~:')
+            console.log(marker)
+            console.log('~~~~ Check the type of marker ~~~~~~:')
+            console.log(typeof marker)
+
+            console.log('~~~~ Check markers {} ~~~~~~:')
+            console.log(self.markers[muri])
+            console.log('~~~~ Check the type of markers {} ~~~~~~:')
+            console.log(typeof self.markers[muri])
+
         });
+        console.log('==== Check return markers in setMarkers====:')
+        console.log(markers)
+        return self.markers;
     },
+
+   
+
+    setupInfoWin: function (ppsAttr) {
+        var self = this;
+        console.log('====What is "self"====:')
+        console.log(self)
+        console.log('====What is "this"====:')
+        console.log(this)
+
+        var markers = {};
+        console.log('==== typeof markers is: ' + typeof markers + ' in setupInfoWin Func====')
+        markers = self.setMarkers(ppsAttr);
+        console.log('====Show up markers ====:')
+        console.log(markers)
+
+ //   /**timer for determine double or single click*/
+        ppsAttr.forEach(function (pp) {
+            let muri = pp.uri;
+            // Object.keys(markers).forEach(key => { });
+//           markers.forEach(function (marker) { 
+//                markers[muri].timer = 0;
+//              marker.timer = 0;
+                markers[muri].sgclickPrevent = false;
+//              marker.sgclickPrevent = false;
+
+                //bind single click listener
+                markers[muri].addListener('click', $.proxy(function (e) {//open a popup window
+
+                    markers[muri].timer = setTimeout(function () {
+                        if (!markers[muri].sglclickPrevent) {
+                            if (pp) {
+                                var attributeArray = {
+                                    uri: pp['uri'], location: pp['location'],
+                                    Commissioned_year: pp['built_year'],
+                                    Annual_Generation: pp['Annual_Generation'],
+                                    Owner: pp['Owner'],
+                                    Located_country: pp['Country'],
+
+                                    /*Generation_Technology: pp['Generation_Technology'],
+                                     Annual_Generation: pp['Annual_Generation'],
+                                     CO2_Emission: pp['CO2_Emission'],
+                                     Owner: pp['Owner'],
+                                     Country: pp['Country'],
+                                     Designed_Capacity: pp['Designed_Capacity'],
+                                    */
+                                };
+                                self.formatPopup(attributeArray, pp['uri'], markers[muri]);
+                            } else {
+                                self.openEditablePopupNet(muri, markers[muri]);
+                            }
+                        }
+                        markers[muri].sglclickPrevent = false;
+                    }, 200);
+
+                }, markers[muri]));
+
+
+                /*double click listener*/
+                markers[muri].addListener('dblclick', function (e) {//open file
+                    clearTimeout(markers[muri].timer);
+                    markers[muri].sglclickPrevent = true;
+                    window.open(pp.uri);
+                })
+        });
+
+    },
+
 
     /**
     clean all markers
     ***/
-    clearMarkers : function () {
+    clearMarkers: function () {
+        console.log('####clearmakers is activated#####');
         console.log(this.markers);
         let self = this;
         if(!self.markers || Object.keys(self.markers).length < 1){

@@ -9,7 +9,7 @@ var cacheRouter  = require("../../agents/Cache");
 
 
 
-var mapRouterFactory = function (router, getCoordinatesData, texts, view) {
+var mapRouterFactory = function (router, getCoordinatesData, getAttrData, texts, view) {
 
     var textsOb   = {
         title:texts.title || "Map",
@@ -24,7 +24,11 @@ var mapRouterFactory = function (router, getCoordinatesData, texts, view) {
         //send a file
     });
 
-    router = cacheRouter(router).get('/coordinates', getCoordinatesData, { expiredTime:3600, sendResult});
+    console.log('***********************/coordinates router is called********************************');
+    router = cacheRouter(router).get('/coordinates', getCoordinatesData, { expiredTime: 36, sendResult });
+
+    console.log('***********************/powerplantAttr router is called********************************');
+    router = cacheRouter(router).get('/powerplantAttr', getAttrData, { expiredTime: 3600, sendResult });
 
     function sendResult(result, res) {
         console.log('***********************send result********************************');
