@@ -9,7 +9,7 @@ package uk.ac.ceb.como.molhub.bean;
  */
 public class GaussianUploadReport implements Cloneable{
 
-	/** The uuid. */
+	/** The UUID. */
 	private String uuid;
 	
 	/** The gaussian file name. */
@@ -20,19 +20,19 @@ public class GaussianUploadReport implements Cloneable{
 	/** The validation compchem file. */
 	private boolean validationCompchemFile;
 	
-	/** The consistency compchem ontology file. */
+	/** The consistency compchem ontology (OWL) file. */
 	private boolean consistencyCompchemOntologyFile;
 	
 	private String comment;
 	/**
-	 * Instantiates a new gaussian upload report.
+	 * Instantiates a new Gaussian upload report.
 	 */
 	public GaussianUploadReport() {
 		
 	}
 	
     /**
-     * @param uuid the uuid
+     * @param uuid the UUID
      * @param gaussianFileName the Gaussian file name
      * @param comment comment when OWL file is not generated.
      */
@@ -49,8 +49,8 @@ public class GaussianUploadReport implements Cloneable{
 	/**
 	 * Constructor of a new Gaussian upload report.
 	 *
-	 * @param uuid the uuid
-	 * @param gaussianFileName the gaussian file name
+	 * @param uuid the UUID
+	 * @param gaussianFileName the Gaussian file name
 	 * @param validationCompchemFile the validation of compchem file
 	 * @param consistencyCompchemOntologyFile the consistency of compchem ontology file
 	 */
@@ -72,18 +72,18 @@ public class GaussianUploadReport implements Cloneable{
 	}
 
 	/**
-	 * Gets the gaussian file name.
+	 * Gets the Gaussian file name.
 	 *
-	 * @return the gaussian file name
+	 * @return the Gaussian file name
 	 */
 	public String getGaussianFileName() {
 		return gaussianFileName;
 	}
 
 	/**
-	 * Sets the gaussian file name.
+	 * Sets the Gaussian file name.
 	 *
-	 * @param gaussianFileName the new gaussian file name
+	 * @param gaussianFileName the new Gaussian file name
 	 */
 	public void setGaussianFileName(String gaussianFileName) {
 		this.gaussianFileName = gaussianFileName;
@@ -108,36 +108,36 @@ public class GaussianUploadReport implements Cloneable{
 	}
 
 	/**
-	 * Checks if is consistency compchem ontology file.
+	 * Checks if is consistency compchem ontology (OWL) file.
 	 *
-	 * @return true, if compchem ontology file is consistent
+	 * @return true, if compchem ontology (OWL) file is consistent
 	 */
 	public boolean isConsistencyCompchemOntologyFile() {
 		return consistencyCompchemOntologyFile;
 	}
 
 	/**
-	 * Sets the consistency compchem ontology file.
+	 * Sets the consistency compchem ontology (OWL) file.
 	 *
-	 * @param consistencyCompchemOntologyFile the new consistency of compchem ontology file
+	 * @param consistencyCompchemOntologyFile the new consistency of compchem ontology (OWL) file
 	 */
 	public void setConsistencyCompchemOntologyFile(boolean consistencyCompchemOntologyFile) {
 		this.consistencyCompchemOntologyFile = consistencyCompchemOntologyFile;
 	}
 	
 	/**
-	 * Gets the uuid.
+	 * Gets the UUID.
 	 *
-	 * @return the uuid
+	 * @return the UUID
 	 */
 	public String getUuid() {
 		return uuid;
 	}
 
 	/**
-	 * Sets the uuid.
+	 * Sets the UUID.
 	 *
-	 * @param uuid the new uuid
+	 * @param uuid the new UUID
 	 */
 	public void setUuid(String uuid) {
 		this.uuid = uuid;

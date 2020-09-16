@@ -65,7 +65,7 @@ public class QueryManager {
 	 *                 literal in this query string contains atom name and number of
 	 *                 atoms.
 	 *                 </p>
-	 * @return a list of molecule names as a result of sparql queries on RDF4J triple store
+	 * @return a list of molecule names as a result of SPARQL queries over RDF4J triple store
 	 *
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
@@ -142,7 +142,7 @@ public class QueryManager {
 					/**
 					 * @author nk510
 					 *         <p>
-					 *         If literal is positive then query manager returns sparql query string
+					 *         If literal is positive then query manager returns SPARQL query string
 					 *         that will query those molecule name containing selected atom name and
 					 *         selected number of atoms.
 					 *         </p>
@@ -156,7 +156,7 @@ public class QueryManager {
 					/**
 					 * @author nk510
 					 *         <p>
-					 *         If literal is negative then query manager returns sparql query string
+					 *         If literal is negative then query manager returns SPARQL query string
 					 *         that will query those molecule name not containing selected atom name
 					 *         and selected number of atoms.
 					 *         </p>
@@ -260,7 +260,7 @@ public class QueryManager {
 	 * @param moleculeName a name of a molecule
 	 * @return a Java Set.
 	 *         <p>
-	 *         For given molecule name sparql returns uuid, level of theory, and
+	 *         For given molecule name SPARQL returns UUID, level of theory, and
 	 *         basis set.
 	 *         </p>
 	 */
@@ -397,7 +397,7 @@ public class QueryManager {
 	 * @param uuidFile
 	 * @return A Java List.
 	 *         <p>
-	 *         A list of all frequencies (size, value, unit) for given uuid.
+	 *         A list of all frequencies (size, value, unit) for given UUID.
 	 *         </p>
 
 	 */
@@ -468,8 +468,8 @@ public class QueryManager {
 	 * 
 	 * Gets the all non compositet molecule properties.
 	 *
-	 * @param uuid the uuid is name for unique folder name
-	 * @param uuidFile the uuid of uploaded owl file
+	 * @param uuid the UUID is name for unique folder name
+	 * @param uuidFile the UUID of uploaded OWL file
 	 * @return A Java List.
 	 *         <p>
 	 *         all non composite molecule properties . Non composite molecule
@@ -508,7 +508,7 @@ public class QueryManager {
 					MoleculeProperty moleculeProperty = new MoleculeProperty(uuid,
 							/**
 							 * @author nk510
-							 * It removes any occurrence of "1" and removes  spaces in the resulting output string of species name.
+							 * It removes any occurrence of "1" and removes spaces in the resulting output string for species name.
 							 */
 							SentenceManager.removeNumberAndSpaces(bindingSet.getValue("moleculeName").stringValue()),
 							bindingSet.getValue("basisSetValue").stringValue(),
@@ -551,7 +551,7 @@ public class QueryManager {
 	 * 
 	 * Gets the all rotational symmerty number.
 	 *
-	 * @param uuid the uuid is name for unique folder name.
+	 * @param uuid the UUID is name for unique folder name.
 	 * @return the rotational symmerty number.
 	 * 
 	 */
@@ -617,7 +617,7 @@ public class QueryManager {
 	 * 
 	 * Gets the all spin multiplicity.
 	 *
-	 * @param uuid the uuid is name for unique folder name.
+	 * @param uuid the UUID is name for unique folder name.
 	 * @return the spin multiplicity value.
 	 * 
 	 */
@@ -683,7 +683,7 @@ public class QueryManager {
 	 * 
 	 * Gets the all formal charge.
 	 *
-	 * @param uuid the uuid is unique folder name
+	 * @param uuid the UUID denotes unique folder name
 	 * @return the all formal charge value
 	 * 
 	 */
@@ -751,7 +751,7 @@ public class QueryManager {
 	 * 
 	 * Gets the all atomic mass.
 	 *
-	 * @param uuid the uuid is name for unique folder name.
+	 * @param uuid the UUID denotes unique folder name.
 	 * @return the atomic masses.
 	 *         <p>
 	 *         These data are given as the following 3-tuple (atom name, atomic mass
@@ -839,8 +839,8 @@ public class QueryManager {
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 *
-	 * @param uuid the uuid is name for unique folder.
-	 * @param uuidFile the uuid of owl file used in IRIs
+	 * @param uuid the UUID denotes unique folder name.
+	 * @param uuidFile the UUID of owl file used in IRIs
 	 * @return the rotational constant.
 	 *         <p>
 	 *         These data are given as the following 3-tuple (rotational constant
@@ -916,7 +916,7 @@ public class QueryManager {
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
-	 * @param uuid  the uuid is name for unique folder.
+	 * @param uuid  the UUID stands for unique folder name.
 	 * @param electronicEnergyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy.
 	 * @return The List of electronic energy.
 	 */

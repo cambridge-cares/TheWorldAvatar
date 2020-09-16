@@ -59,13 +59,13 @@ public class TermValidationLogAction extends ActionSupport implements SessionAwa
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1222255700658500383L;
 
-	/** The term. */
+	/** The term. Represents a query term that will be used in search box */
 	private Term term;
 
-	/** The formula. */
+	/** The formula. For example, Cl2. */
 	private String formula;
 
-	/** The satisfiable. */
+	/** The satisfiable. Denotes whether input string added into search box is DPLL satisfiable or not.*/
 	private boolean satisfiable;
 
 	/** The periodic table element. */
@@ -98,7 +98,7 @@ public class TermValidationLogAction extends ActionSupport implements SessionAwa
 		PLParser parser = new PLParser();
 
 		/**
-		 * Calculates satisfiability of search text.
+		 * Calculates satisfiability of query added into search text.
 		 */
 		DPLL dpll = new DPLLSatisfiable();
 
@@ -113,7 +113,7 @@ public class TermValidationLogAction extends ActionSupport implements SessionAwa
 		/**
 		 * 
 		 *         <p>
-		 * 		This part of code is executing when a user presses button "Molhub Search".
+		 * 		This part of code is executing when a user presses button "Search Knowledge Graph".
 		 *         </p>
 		 */
 		if ((term.getName().length() == 0) || (term == null)) {
@@ -251,7 +251,7 @@ public class TermValidationLogAction extends ActionSupport implements SessionAwa
 						 * @author nk510
 						 *         <p>
 						 * 		Returns list of all molecule properties which will appear in query
-						 *         result. It remembers also image file name (.png file).
+						 *         result. It remembers also image file name (PNG file).
 						 *         </p>
 						 */
 
@@ -577,7 +577,7 @@ public class TermValidationLogAction extends ActionSupport implements SessionAwa
 	 *
 	 * @return
 	 *         <p>
-	 * 		The running time needed to query molhub knowledge base and show
+	 * 		The running time needed to query JPS Knowledge Graph and show
 	 *         results.
 	 *         </p>
 	 */

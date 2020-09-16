@@ -43,7 +43,6 @@ public class QueryString {
 		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
 		        + "PREFIX gc: <http://purl.org/gc/>"
 				+ "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
-//				+ "SELECT (strafter(str(?s), 'compchem/') AS ?uuid) ?name " + "WHERE { "
 				+ "SELECT (strafter(str(?s), '.owl#') AS ?uuid) ?name " 
                 + "WHERE { "
 				+ "?s "+ontoCompChemNS+":hasInitialization ?in . " 
@@ -138,8 +137,8 @@ public class QueryString {
 
 	
 	/**
-	 * @param uuid the uuid that denotes unique folder name and used in naming upladed log files.
-	 * @param uuidFile the uuid name of upladed owl file that is used as second parameter in http request.
+	 * @param uuid the UUID that denotes unique folder name and used in naming upladed Log files.
+	 * @param uuidFile the UUID name of uploaded OWL file that is used as second parameter in HTTP request.
 	 * @return the string.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be molecule name,
@@ -175,7 +174,7 @@ public class QueryString {
 	 * Ge frequency.
 	 *
 	 * @param uuid
-	 *            the uuid
+	 *            the UUID
 	 * @return the string.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be frequency size,
@@ -202,6 +201,11 @@ public class QueryString {
 	}
 	
 
+	/**
+	 * @param uuid the UUID
+	 * @param uuidFile the uuidFile 
+	 * @return frequency values as a string
+	 */
 	public static String geFrequency(String uuid, String uuidFile) {
 
 		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
@@ -285,7 +289,7 @@ public class QueryString {
 	/**
 	 * Gets the formal charge.
 	 *
-	 * @param uuid the uuid
+	 * @param uuid the UUID
 	 * @return the formal charge
 	 * <p>Query as a string. Result of that query should be formal charge value. </p>
 	 */
@@ -314,7 +318,7 @@ public class QueryString {
 	 * Gets the rotational symmetry number.
 	 *
 	 * @param uuid
-	 *            the uuid
+	 *            the UUID
 	 * @return the string.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be the rotational symmetry number.
@@ -337,7 +341,7 @@ public class QueryString {
 	}	
 	
 	/**
-	 * @param uuid the uuid as a parameter for SPARQL query.
+	 * @param uuid the UUID as a parameter for SPARQL query.
 	 * @param uuidFile a parameter for SPARQL query used in IRIs.
 	 * @return  the string.
 	 *         <p>
@@ -366,7 +370,7 @@ public class QueryString {
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
-	 * @param uuid the uuid as a parameter for SPARQL query.
+	 * @param uuid the UUID as a parameter for SPARQL query.
 	 * @param energyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy, ElectronicAndZPEEnergy
 	 * @return A SPARQL query as a String. Result of this query should be energy value and  energy unit.
 	 * 

@@ -42,9 +42,9 @@ import uk.ac.ceb.como.molhub.model.PropertiesManager;
 
 
 /**
- * The Class uploads one or more selected Gaussian files (g09)<br>
- * on server, and generates XML, ontology file, image file, and<br>
- * adds ontologies into triple store (RDF4J).
+ * The Class uploads one or more selected Gaussian files (g09, g16, Log)<br>
+ * on server, ontology (OWL) file, image (PNG) file, and<br>
+ * adds ontology (OWL) files into triple store (RDF4J).
  *
  * 
  *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
@@ -61,10 +61,10 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	final static Logger logger = Logger.getLogger(UploadLogAction.class.getName());
 
 	/**
-	 * @author NK510 Adds molhub properties such as: Folder path where g09, xml and
-	 *         png files are stored. Folder path where generated ontology is stored.
-	 *         Xslt file path. Xsd file path. Jmol data file path, that is used to
-	 *         generated png file.
+	 * @author NK510 Adds molhub properties such as: Folder path where  Log, JSON, OWL and
+	 *         PNG files are stored. Folder path where generated ontology is stored.
+	 *         JMOL data file path, that is used to
+	 *         generated PNG file.
 	 */
 	Properties molhubPropreties = PropertiesManager.loadProperties(UploadLogAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
 
@@ -79,7 +79,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 
 	/**
 	 * 
-	 * @author NK510 Adds kb properties such as: OntoCompChem URI, RDF4J server URL.
+	 * @author NK510 Adds KB properties such as: OntoCompChem URI, RDF4J server URL.
 	 * 
 	 */
 	Properties kbProperties = PropertiesManager.loadProperties(UploadLogAction.class.getClassLoader().getResourceAsStream("kb.ontocompchem.management.properties"));
@@ -90,14 +90,11 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	
 	private String REPOSITORY_ID = kbProperties.getProperty("ontocompchem.repository.id").toString();
 
-	/** The files. */
+	/** The Log files that are uploaded on Claudius server. */
 	private List<File> files = new ArrayList<File>();
 
-	/** The upload file name. */
+	/** The uploaded Log file name. */
 	private String[] uploadFileName;
-
-	/** The upload content type. */
-	private String[] uploadContentType;
 	
 	/** The OntoSpecies entry that is connected to the current<br> 
 	 * Gaussian calculation */
@@ -115,8 +112,8 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	 * @author nk510
 	 *         <p>
 	 *         List of column names in table that reports about uploading process of
-	 *         Gaussina file. Columns are named as (uuid, file name, XML validation,
-	 *         OWL consistency).
+	 *         Gaussina file. Columns are named as (UUID, Log file name, OWL file name,
+	 *         OWL consistency, Comment).
 	 *         </p>
 	 */
 
@@ -130,7 +127,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	
 	/**
 	 * When user clicks on the upload button, this method executes<br>
-	 * as it is instructed in the struts2.xml file, which is located in<br>
+	 * as it is instructed in the struts.xml file, which is located in<br>
 	 * molhub\WebContent\WEB-INF\classes.
 	 */
 	/* (non-Javadoc)
@@ -151,13 +148,13 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			
 		}
 		/**
-		 *  If user clicks on the upload button without selecting any files.
+		 *  If user clicks on the Upload button without selecting any files.
 		 */
 		if (files.isEmpty()) {
 			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
 		}
 		/**
-		 *  For each file selected, it iterates once.
+		 *  For each selected Log file, it iterates once, uploads the Log file of server, generates OWL file, generates PNG file, generates JSON files.
 		 */
 		
 		
@@ -166,7 +163,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			boolean consistency=false;
 			
 			/**
-			 *  Creates unique folder name for each uploaded Gaussian file (g09),  XML file, OWL file, and PNG file.
+			 *  Creates unique folder name for each uploaded Gaussian file (g09,g16, log),  JSON files, OWL files, and PNG file.
 			 */
 			String uuidFolderName = FolderManager.generateUniqueFolderName(f.getName());
 			
@@ -174,14 +171,14 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			
 			File inputG09File = new File(dataFolderPath  + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension);
 			
-			/** Png file name is the same as the name of folder where that
+			/** PNG file name is the same as the name of folder where that
 			*
-			* image is saved. Adds .png extension to the png file.
+			* image is saved. Adds .png extension to the PNG file.
 			*/
 			File pngFile = new File(dataFolderPath  + uuidFolderName + "/"
 					+ uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".png");
 			/**
-			 *  Creates folders where molhub stores G09, xml and png files
+			 *  Creates folders where molhub stores Log file, JSON and PNG files
 			 */
 			FolderManager.createFolder(dataFolderPath +  uuidFolderName);
 			/**
@@ -189,20 +186,20 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			 */
 			FolderManager.createFolder(kbFolderPath  + uuidFolderName);
 			/** 
-			 * User uploaded Gaussian file is saved.
+			 * User that uploaded Gaussian file is saved.
 			 * 
 			 */
 			FolderManager.saveFileInFolder(inputG09File, f.getAbsolutePath());
 				
 				 /**
-				 * Both in the if block and else block, it runs the XSLT
-				 *  transformation and the UUID folder name generated earlier
-				 *  is used as part of IRI of the OWL file.
+				  * 
+				 * Checks whether uniqueSpeciesIRI is provided.
+				 *  
 				 */
 				if((getOntoSpeciesIRI() == null) || (getOntoSpeciesIRI().trim().length() == 0)) {
 					
 					/**
-					 * Runs python code that parses uploaded Gaussian file and generates json and owl files.
+					 * Runs python code that parses uploaded Gaussian file and generates JSON and OWL files.
 					 */	
 				  
 					new ExecutorManager().runParser(pythonParserPath+ " -f "+ dataFolderPath + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + uuidFolderName + "/" );
@@ -270,14 +267,13 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				logger.info("owlFiles.getName(): " +owl_File.getName());
 				
 				/**
-				 * It validates generated Compchem xml file against Compchem XML schema,
-				 * and checks consistency of the generated Compchem ontology (ABox).
+				 * It checks the consistency of the generated Compchem ontology (ABox) as OWL file. The HermiT reasoner is used to check the consistency.
 				 */
 				
 				consistency = InconsistencyExplanation.getConsistencyOWLFile(kbFolderPath +  uuidFolderName + "/" + owl_File.getName());
 				
 				/**
-				 * If the generated OWL file is valid, it is loaded to the triple
+				 * If the generated OWL file is consistent, it is loaded to the triple
 				 * store.
 				 */
 				
@@ -286,14 +282,14 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				logger.info("owl_File.getName().toString(): " + owl_File.getName().toString());
 				
 				/**
-				 * Load ontology into triple store.
+				 * Loads OWL file into RDF4J triple store.
 				 */
 				loadOntology(owlFiles, serverURL, owl_File.getName().toString(), kbFolderPath + uuidFolderName + "/",  uuidFolderName , REPOSITORY_ID);
 				
 				}				
 				
 				/**
-				 * An error message is shown if the generated ontology (ABox) is
+				 * An error message is shown if the generated ontology (OWL file) is
 				 * inconsistent.
 				 */
 				if (!consistency) {
@@ -305,7 +301,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				gaussianUploadReport = new GaussianUploadReport(
 						/**
 						 * @author NK510 (caresssd@hermes.cam.ac.uk)
-						 * Generates uploading report without information whether XML file is valid or not. This version of the code does not generate XML file. 
+						 * Generates report about uploded data. This version of the code does not generate XML file. 
 						 */
 						uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], owl_File.getName(),consistency);
 				
@@ -314,7 +310,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				}
 			}
 				/**
-				 * Generates image (.png file) from uploaded Gaussian file by
+				 * Generates image (.png file) from uploaded Gaussian Log file by
 				 * using JmolData.jar.
 				 * 
 				 */
@@ -328,7 +324,9 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			
 			
 		}
-		
+		/**
+		 * Calculates time needed to complete uploading process.
+		 */
 		NumberFormat formatter = new DecimalFormat("#00.000");
 		final long endTime = System.currentTimeMillis();
 		runningTime = formatter.format((endTime - startTime) / 1000d) + " seconds";
@@ -362,18 +360,18 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	}
 
 	/**
-	 * Gets the upload file name.
+	 * Gets the uploaded file name.
 	 *
-	 * @return the upload file name
+	 * @return the uploaded file name
 	 */
 	public String[] getUploadFileName() {
 		return uploadFileName;
 	}
 
 	/**
-	 * Sets the upload file name.
+	 * Sets the uploaded file name.
 	 *
-	 * @param uploadFileName the new upload file name
+	 * @param uploadFileName the new uploaded file name
 	 */
 
 	public void setUploadFileName(String[] uploadFileName) {
@@ -496,24 +494,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	public void setFiles(List<File> files) {
 		this.files = files;
 	}
-
-	/**
-	 * Gets the upload content type.
-	 *
-	 * @return the upload content type
-	 */
-	public String[] getUploadContentType() {
-		return uploadContentType;
-	}
-
-	/**
-	 * Sets the upload content type.
-	 *
-	 * @param uploadContentType the new upload content type
-	 */
-	public void setUploadContentType(String[] uploadContentType) {
-		this.uploadContentType = uploadContentType;
-	}
+	
 	/**
 	 * Sets the URL of the RDF4J server.
 	 * @return

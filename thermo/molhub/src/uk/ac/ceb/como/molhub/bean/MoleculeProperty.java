@@ -3,7 +3,7 @@ package uk.ac.ceb.como.molhub.bean;
 // TODO: Auto-generated Javadoc
 /**
  * 
- * The Class MoleculeProperty saves molecules properties taken form a digital entity  (g09 file).
+ * The Class MoleculeProperty saves molecules properties taken form a digital entity  (g09, g16 files).
  * 
  *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
  *  @author Feroz Farazi (msff2@cam.ac.uk)
@@ -74,7 +74,7 @@ public class MoleculeProperty {
 	/**
 	 * Instantiates a new molecule property.
 	 *
-	 * @param uuid          the uuid for species
+	 * @param uuid          the UUID for species
 	 * @param moleculeName  the molecule name
 	 * @param basisSet      the basis set
 	 * @param levelOfTheory the level of theory (method)
@@ -91,7 +91,7 @@ public class MoleculeProperty {
 	/**
 	 * Instantiates a new molecule property.
 	 *
-	 * @param uuid          the uuid
+	 * @param uuid          the UUID
 	 * @param moleculeName  the molecule name
 	 * @param basisSet      the basis set
 	 * @param levelOfTheory the level of theory
@@ -111,7 +111,7 @@ public MoleculeProperty(String uuid,String moleculeName, String basisSet, String
 	/**
 	 * Instantiates a new molecule property.
 	 *
-	 * @param uuid          the uuid
+	 * @param uuid          the UUID
 	 * @param moleculeName  the molecule name
 	 * @param levelOfTheory the level of theory
 	 */
@@ -126,7 +126,7 @@ public MoleculeProperty(String uuid,String moleculeName, String basisSet, String
 	/**
 	 * Instantiates a new molecule property.
 	 *
-	 * @param uuid         the uuid
+	 * @param uuid         the UUID
 	 * @param moleculeName the molecule name
 	 */
 	public MoleculeProperty(String uuid, String moleculeName) {
@@ -183,18 +183,18 @@ public MoleculeProperty(String uuid,String moleculeName, String basisSet, String
 	}
 
 	/**
-	 * Gets the uuid.
+	 * Gets the UUID.
 	 *
-	 * @return the uuid
+	 * @return the UUID
 	 */
 	public String getUuid() {
 		return uuid;
 	}
 
 	/**
-	 * Sets the uuid.
+	 * Sets the UUID.
 	 *
-	 * @param uuid the new uuid
+	 * @param uuid the new UUID
 	 */
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
@@ -363,21 +363,33 @@ public MoleculeProperty(String uuid,String moleculeName, String basisSet, String
 	}
 
 
+	/**
+	 * @return unique file identifier
+	 */
 	public String getUniqueFileIdentifier() {
 		return uniqueFileIdentifier;
 	}
 
 
+	/**
+	 * @param uniqueFileIdentifier
+	 */
 	public void setUniqueFileIdentifier(String uniqueFileIdentifier) {
 		this.uniqueFileIdentifier = uniqueFileIdentifier;
 	}
 
 
+	/**
+	 * @return the initialization value
+	 */
 	public String getInitialization() {
 		return initialization;
 	}
 
 
+	/**
+	 * @param initialization value
+	 */
 	public void setInitialization(String initialization) {
 		this.initialization = initialization;
 	}

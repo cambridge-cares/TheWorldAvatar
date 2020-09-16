@@ -47,11 +47,11 @@ public class ExecutorManager {
 	
 	
 	/**
-	 * @param commandLine command line that contains python run command, log file path, arguments, and output folder path where generated owl file will be saved. 
-	 * @throws IOException the io exception.
+	 * @param commandLine command line that contains Python run command, Log file path, arguments, and output folder path where generated OWL file will be saved. 
+	 * @throws IOException the IO exception.
 	 * @throws InterruptedException the interrupted exception.
 	 * 
-	 * Runs parser implemented in Python by using command line in Windows machine. 
+	 * Runs parser implemented in Python by using command line on Windows machine. 
 	 * 
 	 */
 	public void runParser(String commandLine) throws IOException, InterruptedException {

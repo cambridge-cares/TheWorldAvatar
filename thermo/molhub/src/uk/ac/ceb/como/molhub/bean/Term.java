@@ -23,7 +23,7 @@ public class Term {
 	private String cnf;
 
 	/**
-	 * Gets the cnf.
+	 * Gets the cnf (Conjunctive normal form).
 	 *
 	 * @return the cnf. <p> Represents conjunctive normal form of input query given as name in this class. </p>
 	 */
@@ -34,7 +34,7 @@ public class Term {
 	/**
 	 * Sets the cnf.
 	 *
-	 * @param cnf the new cnf (Conjunctive normal form)
+	 * @param cnf the new cnf 
 	 */
 	public void setCnf(String cnf) {
 		this.cnf = cnf;

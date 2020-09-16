@@ -20,9 +20,9 @@ import uk.ac.ceb.como.molhub.model.PropertiesManager;
 
 /**
  * 
- * @author nk510
+ * 
  *         <p>
- * 		Class implements method which runs sparql query on generated Abox (owl
+ * 		Class implements method which runs sparql query on generated Abox (OWL
  *         files) of Compchem ontology. Runs thermo calculations implemented in
  *         Python, and generates results using json format.
  *         </p>
@@ -38,7 +38,7 @@ public class CalculationLogAction extends ActionSupport implements SessionAware 
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @author nk510 <p> Session is instance of {@link java.util.Map} that remembers session as pair (uuid, molecule
+	 * @author nk510 <p> Session is instance of {@link java.util.Map} that remembers session as pair (UUID, molecule
 	 *         name).</p>
 	 */
 	
@@ -50,8 +50,8 @@ public class CalculationLogAction extends ActionSupport implements SessionAware 
 	/**
 	 * @author nk510 <p>SPARQL query used in thermo - calculations. It queries
 	 *         generated ontology file (Abox of Compchem ontology) in a given folder
-	 *         name (uuid), and stores sparql results in json file in the same folder
-	 *         (uuid).</p>
+	 *         name (UUID), and stores sparql results in JSON file in the same folder
+	 *         (UUID).</p>
 	 */
 	
 	private String sparql = molhubProperties.getProperty("sparql.file.path").toString();	
@@ -70,7 +70,7 @@ public class CalculationLogAction extends ActionSupport implements SessionAware 
 		File sparqlFile = new File(sparql);
 
 		/**
-		 * @author nk510 <p>If there are no species (uuid, molecule name) appearing in
+		 * @author nk510 <p>If there are no species (UUID, molecule name) appearing in
 		 *         search results, then session map is empty.</p>
 		 */
 		
@@ -83,8 +83,8 @@ public class CalculationLogAction extends ActionSupport implements SessionAware 
 		
 		/**
 		 * 
-		 * @author nk510 <p>Iterates over session HashMap and performs (runs) thermo calculations
-		 *         on generated json files stored in folder named by "uuid".</p>
+		 * @author nk510 <p>Iterates over session (HashMap) and performs (runs) thermo calculations
+		 *         on generated JSON files stored in folder named by UUID.</p>
 		 *         
 		 */
 		
@@ -124,7 +124,7 @@ public class CalculationLogAction extends ActionSupport implements SessionAware 
 				
 				/**
 				 * @author NK510
-				 * Python script stores the result of calculation (json file) in the same folder where owl file is stored.
+				 * Python script stores the result of calculations, as JSON file, in the same folder where owl file is stored.
 				 */
                 String[] cmd = { "python", pyscript, "-j", jsonFiles.get(i).getAbsolutePath(), };
 
