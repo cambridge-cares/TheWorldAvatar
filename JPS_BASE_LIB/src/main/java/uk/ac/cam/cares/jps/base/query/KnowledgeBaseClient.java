@@ -157,13 +157,13 @@ public class KnowledgeBaseClient {
 	 * 
 	 * @return
 	 */
-	public JSONObject executeQuery() throws SQLException{
+	public JSONArray executeQuery() throws SQLException{
 		String connectionUrl = getConnectionUrl();
 		if(connectionUrl.isEmpty()){
 			return null;
 		}
 		if(isConnectionUrlValid(connectionUrl)){
-			executeQuery(this.query);
+			return executeQuery(this.query);
 		}
 		return null;
 	}
@@ -257,6 +257,7 @@ public class KnowledgeBaseClient {
 		if (!connectionUrl.startsWith(JenaDriver.DRIVER_PREFIX
 				.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
 				.concat(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT)
+				.concat("=")
 				.concat(HTTP_PROTOCOL_PREFIX))) {
 			return false;
 		}
