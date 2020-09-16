@@ -58,6 +58,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String objectiveFunction = "SumOfSquares";
 	private String responseRatio = "1.0";
 	private String rangeOfMultipliers = "100.0";
+	private String ignDelayScaling = "logarithmic";
+	private String activeParamScaling = "logarithmic";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -161,6 +163,22 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setRangeOfMultipliers(String rangeOfMultipliers) {
 		this.rangeOfMultipliers = rangeOfMultipliers;
+	}
+
+	public String getIgnDelayScaling() {
+		return ignDelayScaling;
+	}
+
+	public void setIgnDelayScaling(String ignDelayScaling) {
+		this.ignDelayScaling = ignDelayScaling;
+	}
+
+	public String getActiveParamScaling() {
+		return activeParamScaling;
+	}
+
+	public void setActiveParamScaling(String activeParamScaling) {
+		this.activeParamScaling = activeParamScaling;
 	}
 
 	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -403,6 +421,18 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setRangeOfMultipliers(rangeOfMultipliers);
 		}
 		
+		// set up the scaling for ignition delay response
+		String ignDelayScaling = JSonRequestParser.getIgnDelayScaling(otherOptions);
+		if (ignDelayScaling != null && !ignDelayScaling.isEmpty()) {
+			setIgnDelayScaling(ignDelayScaling);
+		}
+		
+		// set up scaling for active parameters
+		String activeParamScaling = JSonRequestParser.getActiveParamScaling(otherOptions);
+		if (activeParamScaling != null && !activeParamScaling.isEmpty()) {
+			setActiveParamScaling(activeParamScaling);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -616,7 +646,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			param.setName("rxn_"+i);
 			param.setSubtype("subtype_"+"rxn_"+i);
 			param.setPreserveWhiteSpace("true");
-			param.setScaling("linear");
+			param.setScaling(getActiveParamScaling());
 			param.setCaseNamesList(caseNames);
 			param.setModelList(caseModel);
 			
@@ -683,7 +713,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			param.setCaseDetailSep(";");
 			param.setNParamsPerCase("1");
 			param.setPreserveWhiteSpace("true");
-			param.setScaling("linear");
+			param.setScaling(getIgnDelayScaling());
 			param.setCaseNamesList(caseNames);
 			param.setModelList(caseModel);
 			
