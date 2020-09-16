@@ -31,4 +31,23 @@ import uk.ac.cam.cares.jps.performance.evaluation.kb.client.configuration.Endpoi
  *
  */
 public class EndpointEvaluation {
+	/**
+	 * Creates a logger that traces info, severe and other messages that<p>
+	 * would be useful in debugging. 
+	 */
+	private static final Logger log = Logger.getLogger(EndpointEvaluation.class.getName());
+	/**
+	 * A member variable declared to hold an instance of ApplicationContext.
+	 */
+	public static ApplicationContext applicationContextEndpointEvaluation;
+	/**
+	 * A member variable declared to hold an instance of EndpointProperty.
+	 */
+	public static EndpointProperty endpointProperty;
+	/**
+	 * A hash map that contains the performance metrices. 
+	 */
+	public static Map<String, Map<String, String>> performanceMetrices = new HashMap<String, Map<String, String>>(); 
+
+	public static final String QUERY_FILE_NAME = "queries.json";  
 }
