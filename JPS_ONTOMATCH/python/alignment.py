@@ -11,9 +11,6 @@ class Alignment(object):
         self.map.append(mapping)
 
 
-    def toRdf(self):
-        pass
-
     def sortById(self, arr):
         s = sorted(arr, key=itemgetter(0, 1))
         return s
@@ -138,6 +135,7 @@ class Alignment(object):
 
 
     #replace ID with IRI to entity
+    #TODO: check this funciton
     def id2Entity(self, onto1, onto2):
         pairList = []
         entityListName = "entities"
@@ -194,22 +192,30 @@ class Alignment(object):
         g.add((onto2, RDF.type, A.ontology))
         g.add((onto2, A.location, Literal(onto2IRI)))
         #add map
-        for t3 in self.map:
+        for triple in self.map:
             #print(t3)
             o = BNode()
             g.add((o, RDF.type, A.Cell))
-            if onto1 in t3[0]:
-                g.add((o, A.entity1, Literal(t3[0])))
-                g.add((o, A.entity2, Literal(t3[1])))
+            if onto1 in triple[0]:
+                g.add((o, A.entity1, Literal(triple[0])))
+                g.add((o, A.entity2, Literal(triple[1])))
             else:
-                g.add((o, A.entity1, Literal(onto1IRI+t3[0])))
-                g.add((o, A.entity2, Literal(onto2IRI+t3[1])))
-            g.add((o, A.measure, Literal(t3[2], datatype=XSD.float)))
+                g.add((o, A.entity1, Literal(onto1IRI+triple[0])))
+                g.add((o, A.entity2, Literal(onto2IRI+triple[1])))
+            g.add((o, A.measure, Literal(triple[2], datatype=XSD.float)))
             g.add((o, A.relation, Literal('=')))
             g.add((aNode,A.map, o))
         g.serialize(destination=addr, format='xml')
 
-
+    def renderJSON(self, onto1, onto2):
+        jo = {}
+        #todo: confirm format is correct
+        for triple in self.map:
+            jo['entity1'] = triple[0]
+            jo['entity2'] = triple[1]
+            jo['measure'] = triple[2]
+        jostr = json.dumps(jo)
+        print(jostr)
 
 
 

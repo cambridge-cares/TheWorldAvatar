@@ -324,8 +324,9 @@ public class MatchAggregator extends JPSAgent {
 	protected void one2oneCardinalityFiltering() throws IOException {
 		// need to call the python for now
 		// input: map rendered as json
-		JSONArray scoreListNow = AlignmentIOHelper.scoreList2Json(finalScoreList);
-		String[] paras = { scoreListNow.toString() };
+		String tmpAddress = OntomatchProperties.getInstance().getProperty(OntomatchProperties.CARDINALITYFILTERING_TMP_ALIGNMENT_PATH);
+		 AlignmentIOHelper.writeAlignment2File(finalScoreList, srcOnto, tgtOnto, tmpAddress);
+		String[] paras = {srcOnto, tgtOnto, tmpAddress};
 		String pyName = OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_ONETOONECARDI);
 		String[] results = AsyncPythonHelper.callPython(pyName, paras, MatchAggregator.class);
 		JSONArray scoreListNew = new JSONArray(results[0]);

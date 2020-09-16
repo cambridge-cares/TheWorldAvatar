@@ -40,6 +40,7 @@ public class OntomatchProperties {
     public final static String OM_KB_URL = "ontomatch.kb.url";
     public final static String OWL_EXT= "owl.extension";
     public final static String SUCCESS_FLAG= "success.flag";
+	public static final String CARDINALITYFILTERING_TMP_ALIGNMENT_PATH = "caridinalityfiltering.tmp.alignment.path";
 
     @Autowired
 	private Environment env;
