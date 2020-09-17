@@ -591,6 +591,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		model.put("executable_name", Property.MODEL_KINETICS_EXE.getPropertyName());
 		model.put("working_directory", "");
 		model.put("args", modsMechCalibAgentProperty.getKineticsFolderPath().concat(SPACE).concat(modsMechCalibAgentProperty.getKineticsExecutableName()));
+		model.put("max_tries", "2");
 		models.put(modelName, model);
 		collectModels(models);
 		
