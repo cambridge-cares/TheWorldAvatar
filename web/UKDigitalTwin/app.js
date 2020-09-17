@@ -18,6 +18,7 @@ var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
 var UKontoTwinMap = require('./routes/ontoTwinUK');
+// var UKontoTwinMapAttr = require('./routes/powerPlantAttr');
 
 var app = express(); // this object app has methods 
                      //for routing HTTP requests, configuring middleware, rendering HTML views, 
@@ -51,6 +52,10 @@ app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}))
 /*posting to dataObserve to get orginal data & register for future data change*/
 // app.use("/getUKPPAttrList", getUKPPAttrList);
 app.use('/ontoTwinUK', UKontoTwinMap);
+
+// test for a new router based on the agent named getPPAttr.js
+// app.use('/powerplant/:url', UKontoTwinMapAttr)
+
 // app.use('/ppmap', ppMap);
 
 var http = require('http').createServer(app);

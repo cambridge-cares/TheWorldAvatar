@@ -656,8 +656,8 @@ getIconByType: function (type, highlight) {
 //              marker.sgclickPrevent = false;
 
                 //bind single click listener
-                markers[muri].addListener('click', $.proxy(function (e) {//open a popup window
-
+            markers[muri].addListener('click', $.proxy(function (e) {//open a popup window
+                    console.log('********the click event is triggered for showing up the popup list*******')
                     markers[muri].timer = setTimeout(function () {
                         if (!markers[muri].sglclickPrevent) {
                             if (pp) {
@@ -667,14 +667,11 @@ getIconByType: function (type, highlight) {
                                     Annual_Generation: pp['Annual_Generation'],
                                     Owner: pp['Owner'],
                                     Located_country: pp['Country'],
-
-                                    /*Generation_Technology: pp['Generation_Technology'],
-                                     Annual_Generation: pp['Annual_Generation'],
-                                     CO2_Emission: pp['CO2_Emission'],
-                                     Owner: pp['Owner'],
-                                     Country: pp['Country'],
-                                     Designed_Capacity: pp['Designed_Capacity'],
-                                    */
+                                    Generation_Technology: pp['Generation_Technology'],
+                                    Primary_Fuel_type: pp['Primary_Fuel_type'],
+                                    Annual_Generation: pp['Annual_Generation'],
+                                    CO2_Emission: pp['CO2_Emission'],
+                                    Designed_Capacity: pp['Designed_Capacity'],
                                 };
                                 self.formatPopup(attributeArray, pp['uri'], markers[muri]);
                             } else {

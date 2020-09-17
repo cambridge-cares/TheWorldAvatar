@@ -30,6 +30,10 @@ var mapRouterFactory = function (router, getCoordinatesData, getAttrData, texts,
     console.log('***********************/powerplantAttr router is called********************************');
     router = cacheRouter(router).get('/powerplantAttr', getAttrData, { expiredTime: 3600, sendResult });
 
+///////new added
+//   console.log('***********************/getPPAttr router is called********************************');
+//   router = cacheRouter(router).get('/getPPAttr', getPPAttr, { expiredTime: 3600, sendResult });
+///////
     function sendResult(result, res) {
         console.log('***********************send result********************************');
         res.json(JSON.parse(result))
