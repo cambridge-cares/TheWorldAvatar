@@ -410,7 +410,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		}
 		
 		// set up the response ratio between two responses
-		String responseRatio = JSonRequestParser.getResponseRatio(otherOptions);
+		String responseRatio = JSonRequestParser.getIgnDelayResponseRatio(otherOptions);
 		if (responseRatio != null && !responseRatio.isEmpty()) {
 			setResponseRatio(responseRatio);
 		}
@@ -627,11 +627,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		String row = "";
 		String lbFactor = "";
 		String ubFactor = "";
-		double sqrtN = Math.sqrt(caseNames.size());
 		double sqrtRatio = Math.sqrt(Double.valueOf(getResponseRatio()));
 		double errFrac = 0.20;
-		double lb_fac = (1-errFrac)*sqrtN/sqrtRatio;
-		double ub_fac = (1+errFrac)*sqrtN/sqrtRatio;
+		double lb_fac = (1-errFrac)/sqrtRatio;
+		double ub_fac = (1+errFrac)/sqrtRatio;
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
 			lbFactor = lbFactor.concat(";"+lb_fac);
