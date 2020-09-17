@@ -318,6 +318,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		} else if (getTranModel().toLowerCase().contains("multi") || getTranModel().toLowerCase().contains("2")) {
 			model.put("args", Property.MODEL_CANTERA_MULTI_OPT.getPropertyName()+" "+FILE_CANTERA_LFSSIMULATION);
 		}
+		model.put("max_tries", "1");
 		models.put(modelName, model);
 		collectModels(models);
 		
