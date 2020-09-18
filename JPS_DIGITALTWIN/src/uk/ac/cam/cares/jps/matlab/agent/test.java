@@ -32,7 +32,7 @@ public class test extends HttpServlet {
 		
 		// Call matlab function to execute the electrical model in matlab
 		
-		//Created a executable script (call_talab.sh) to run the script.
+		//Created a executable script (call_Matalab.sh) to run the script.
 		
 		//For windows machine change the file_name_macos.sh extention to file_name_win.bat 
 		
