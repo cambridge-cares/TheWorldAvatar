@@ -60,6 +60,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String rangeOfMultipliers = "100.0";
 	private String ignDelayScaling = "logarithmic";
 	private String activeParamScaling = "logarithmic";
+	private boolean evalFirst = false;
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -179,6 +180,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setActiveParamScaling(String activeParamScaling) {
 		this.activeParamScaling = activeParamScaling;
+	}
+
+	public boolean isEvalFirst() {
+		return evalFirst;
+	}
+
+	public void setEvalFirst(boolean evalFirst) {
+		this.evalFirst = evalFirst;
 	}
 
 	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -433,6 +442,9 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setActiveParamScaling(activeParamScaling);
 		}
 		
+		boolean evalFirst = JSonRequestParser.getIfEvalFirst(otherOptions);
+		setEvalFirst(evalFirst);
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -549,10 +561,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			active_subtype = active_subtype.concat(" subtype_"+"rxn_"+i);
 		}
 		LinkedHashMap<String, LinkedHashMap<String, String>> algorithms = new LinkedHashMap<String, LinkedHashMap<String, String>>();
-		LinkedHashMap<String, String> algoEvaluation = new LinkedHashMap<String, String>();
-		algoEvaluation.put("algorithm_type", "Run");
-		algoEvaluation.put("n_run", "0");
-		algoEvaluation.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
+		
 		LinkedHashMap<String, String> algoSampling = new LinkedHashMap<String, String>();
 		algoSampling.put("optimisable_param_subtypes", active_subtype.substring(1));
 		algoSampling.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
@@ -580,7 +589,13 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoCalibration.put("rho_factor", getRhoFactor());
 		algoCalibration.put("epsilon", getEpsilon());
 		algoCalibration.put("previous_algorithm", "SamplingAlg");
-		algorithms.put("Evaluation", algoEvaluation);
+		if (isEvalFirst()) {
+			LinkedHashMap<String, String> algoEvaluation = new LinkedHashMap<String, String>();
+			algoEvaluation.put("algorithm_type", "Run");
+			algoEvaluation.put("n_run", "0");
+			algoEvaluation.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
+			algorithms.put("Evaluation", algoEvaluation);
+		}
 		algorithms.put("SamplingAlg", algoSampling);
 		algorithms.put("CalibrationAlg", algoCalibration);
 		collectAlgorithms(algorithms);

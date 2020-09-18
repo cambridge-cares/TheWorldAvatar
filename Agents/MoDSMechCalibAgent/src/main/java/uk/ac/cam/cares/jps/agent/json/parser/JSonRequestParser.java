@@ -59,6 +59,15 @@ public class JSonRequestParser {
 		}
 	}
 	
+	public static boolean getIfEvalFirst(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("evalFirst");
+		if (locateNode.asText().toLowerCase().contains("y")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public static List<String> getRxnsMustInclude(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("reactionMustInclude");
 		List<String> reactionIRI = new ArrayList<>();
