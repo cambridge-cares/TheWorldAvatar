@@ -22,7 +22,6 @@ public class PythonHelperTest {
 	public void testProcessCommand() throws IOException, URISyntaxException {
 		
 		// Path to Python script in target/test-classes
-		// (Method copied from AgentLocator.getCurrentJpsAppDirectory)
 		String path = Paths.get(this.getClass().getResource("/PythonHelperTest.py").toURI()).toFile().getPath();
 		
 		String[] cmd = { "python", path };

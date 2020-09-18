@@ -31,7 +31,7 @@ public class FileUtilTest {
 	@Test
 	public void testReadFileLocally() throws URISyntaxException {
 		
-		// read file from test resources
+		// read file from test resources (in target/test-classes/)
 		String path = Paths.get(this.getClass().getResource("/FileUtilTestInput.txt").toURI()).toFile().getPath();
 		String result = FileUtil.readFileLocally(path);
 		
@@ -41,7 +41,7 @@ public class FileUtilTest {
 	@Test
 	public void testWriteFileLocally() throws IOException {
 		
-		// write a test file
+		// write a test file to temporary folder
 		String content = "This is a test file.\r\nTest write to file.";		
 		String folderPath = tempFolder.getRoot().toString();
 		String filePath = folderPath + "/FileUtilTestOutput.txt";
@@ -90,7 +90,7 @@ public class FileUtilTest {
 	@Test
 	public void testOpenSourceFile() throws URISyntaxException, IOException {
 			
-		// read file from test resources
+		// read file from test resources (in target/test-classes/)
 		String filePath = Paths.get(this.getClass().getResource("/FileUtilTestInput.txt").toURI()).toFile().getPath();
 		
 		BufferedReader result = null;
@@ -121,7 +121,7 @@ public class FileUtilTest {
 	@Test
 	public void testOpenBufferedWriter() throws IOException {
 		
-		// create file in temporary test folder
+		// create file in temporary folder
 		String folderPath = tempFolder.getRoot().toString();
 		String filePath = folderPath + "/Test.txt";
 
@@ -148,7 +148,7 @@ public class FileUtilTest {
 	@Test
 	public void testUnzip() throws URISyntaxException {
 		
-		// unzip file from test resources
+		// unzip file from test resources (in target/test-classes/)
 		String sourcePath = Paths.get(this.getClass().getResource("/FileUtilTestZip.zip").toURI()).toFile().getPath();
 		String targetFolderPath = tempFolder.getRoot().toString();
 		String filePath = targetFolderPath + "/FileUtilTestZip.txt";

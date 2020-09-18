@@ -19,19 +19,21 @@ public class MiscUtilTest {
 
 		assertEquals("testValue", MiscUtil.notNull(jo, "testKey"));
 	}
-	
+
 	@Test(expected = JPSRuntimeException.class)
 	public void testNotNullNull() {
 		
 		JSONObject jo = new JSONObject();
 		jo.put("testKey", JSONObject.NULL);
 
+		// Pass JSONObject with null value. Expect exception.
 		MiscUtil.notNull(jo, "testKey");
 	}
 
 	@Test
 	public void testFormat() {
 		
+		// Check decimals are formatted with decimal point		
 		assertEquals("Test 12.40", MiscUtil.format("Test %.2f", 12.4));
 	}
 	
@@ -39,8 +41,7 @@ public class MiscUtilTest {
 	public void testConcat() {
 		
 		String[] strArray = new String[] {"A", "B", "C"};
-		assertEquals("A/B/C",MiscUtil.concat(strArray, "/"));
-		
+		assertEquals("A/B/C",MiscUtil.concat(strArray, "/"));	
 	}
 	
 	@Test
@@ -67,14 +68,12 @@ public class MiscUtilTest {
 		assertEquals("testValue", MiscUtil.optNullKey(jo, "testKey"));
 	}
 	
-	//Test null 
 	@Test
 	public void testOptNullKeyNull() {
 		JSONObject jo = new JSONObject();
 		jo.put("testKey", JSONObject.NULL);
 
+		// Pass JSONObject with null value. Expect null.
 		assertEquals(null, MiscUtil.optNullKey(jo, "testKey"));
 	}
-	
-	
 }
