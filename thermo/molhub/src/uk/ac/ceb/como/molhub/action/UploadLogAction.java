@@ -96,6 +96,10 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	/** The uploaded Log file name. */
 	private String[] uploadFileName;
 	
+	/** The upload content type. */
+	private String[] uploadContentType;
+	
+	
 	/** The OntoSpecies entry that is connected to the current<br> 
 	 * Gaussian calculation */
 	private String ontoSpeciesIRI;
@@ -202,7 +206,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					 * Runs python code that parses uploaded Gaussian file and generates JSON and OWL files.
 					 */	
 				  
-					new ExecutorManager().runParser(pythonParserPath+ " -f "+ dataFolderPath + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + uuidFolderName + "/" );
+				new ExecutorManager().runParser(pythonParserPath+ " -f "+ dataFolderPath + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + uuidFolderName + "/" );
 					
 				}else {
 					
@@ -493,6 +497,25 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	 */
 	public void setFiles(List<File> files) {
 		this.files = files;
+	}
+	
+	
+	/**
+	 * Gets the upload content type.
+	 *
+	 * @return the upload content type
+	 */
+	public String[] getUploadContentType() {
+		return uploadContentType;
+	}
+
+	/**
+	 * Sets the upload content type.
+	 *
+	 * @param uploadContentType the new upload content type
+	 */
+	public void setUploadContentType(String[] uploadContentType) {
+		this.uploadContentType = uploadContentType;
 	}
 	
 	/**

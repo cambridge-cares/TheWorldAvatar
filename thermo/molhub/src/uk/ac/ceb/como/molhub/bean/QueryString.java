@@ -362,7 +362,8 @@ public class QueryString {
 				+ "?go4 rdf:type "+ontoCompChemNS+":RotationalConstants ."
 				+ "?go4 "+ontoCompChemNS+":hasRotationalConstants ?rotationalConstantsValue ."
 				+ "?go4 gc:hasUnit ?rotationalConstantsUnit ."
-				+ "?go "+ontoCompChemNS+":hasRotationalConstantsCount ?rotationalConstantsSize ." + "}";
+				+ "?go4 "+ontoCompChemNS+":hasRotationalConstantsCount ?rotationalConstantsSize ." 
+				+ "}";
 
 		return query;
 	}
