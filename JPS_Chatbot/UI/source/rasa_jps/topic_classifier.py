@@ -3,7 +3,7 @@ import os.path
 
 from nltk.stem import PorterStemmer
 
-from locations import TOPIC_CLASSIFIERS_DIR
+from .locations import TOPIC_CLASSIFIERS_DIR
 
 class TopicClassifier:
     def __init__(self):

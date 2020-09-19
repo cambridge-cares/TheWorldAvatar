@@ -5,7 +5,7 @@ from pprint import pprint
 from fuzzywuzzy import fuzz
 from more_itertools import take
 
-from locations import LOOKUP_TABS_DIR
+from .locations import LOOKUP_TABS_DIR
 
 class SearchInterface:
 
