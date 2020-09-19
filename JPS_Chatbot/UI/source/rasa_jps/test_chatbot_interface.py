@@ -1,9 +1,8 @@
-import sys
 from pprint import pprint
 
 from chatbot_interface import Chatbot
-from search_interface import SearchInterface
-sys.path.append('/search_engine')
+from search_engine.search_interface import SearchInterface
+
 bot = Chatbot()
 # what is the pka constant of Benzene
 # find all reactions with water as a reactant

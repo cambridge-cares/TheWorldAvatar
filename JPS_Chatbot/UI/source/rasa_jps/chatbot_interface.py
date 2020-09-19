@@ -8,7 +8,7 @@ from .JPS_query_constructor import JPS_query_constructor
 from .jps_fallback_classifier import JPSQuestionClassifier
 from .topic_classifier import TopicClassifier
 #from rasa_nlu.model import Interpreter
-from .wiki_fallback_classifier import WikiQuestionTypeClassifier
+# from .wiki_fallback_classifier import WikiQuestionTypeClassifier
 import json
 import sys
 from SPARQLWrapper import SPARQLWrapper, JSON

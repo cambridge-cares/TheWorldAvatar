@@ -102,10 +102,15 @@ class JPS_query_constructor:
             rst = self.query_by_reaction_only(result['reactants'], result['products'])
         elif intent == 'select_mechanism_by_reaction':
             rst = self.query_mechanism_by_reaction(result['reactants'], result['products'])
+            if rst is None:
+                return None
         return rst.replace('[=]', '->').replace('=]', '->')
 
     def query_mechanism_by_reaction(self, reactants, products):
+        print('query_mechanism_by_reaction')
         q = self.construct_query_reaction_by_species(reactants, products)
+        if q is None:
+            return None
         q = q % ('?MechanismName', '''\n ?reaction ontokin:belongsToPhase ?Phase .
 ?Phase ontokin:containedIn ?MechanismIRI .
 ?MechanismIRI rdfs:label ?MechanismName .''')
@@ -114,6 +119,7 @@ class JPS_query_constructor:
         return rst
 
     def query_by_reaction_only(self, reactants, products):
+        print('query_by_reaction_only')
         q = self.construct_query_reaction_by_species(reactants, products) % ('', '')
         print(q)
         rst = self.fire_query(q).decode('utf-8')
@@ -123,6 +129,8 @@ class JPS_query_constructor:
         # TODO: construct the query by only reactants and products
 
     def query_reaction_property(self, reactants, products, attribute):
+        print('query_reaction_property')
+
         sub_properties = []
         sub_properties_arrhenius = ['ontokin:hasActivationEnergy', 'ontokin:hasActivationEnergyUnits ',
                                     'ontokin:hasPreExponentialFactor', 'ontokin:hasPreExponentialFactorUnits',
@@ -178,6 +186,8 @@ class JPS_query_constructor:
 
     @lru_cache(maxsize=64)
     def fire_query(self, query):
+        print(query)
+        # x = input()
         url = "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy"
         values = {'queryString': query}
         data = urllib.parse.urlencode(values).encode('utf-8')
@@ -187,6 +197,13 @@ class JPS_query_constructor:
         return response
 
     def construct_query_reaction_by_species(self, reactants, products):
+        print('--------- reactants -------------')
+        print(reactants)
+        print('--------- products -------------')
+        print(products)
+
+        if len(reactants) == 0 and len(products) == 0:
+            return None
         query_reaction_by_species_template = self.template_dict['select_reaction_by_species']
         reactants_num = len(reactants)
         reactant_part = ''
