@@ -1,8 +1,15 @@
+import sys
+
 from Chatbot.Interpretation_parser import InterpretationParser
 from Chatbot.SearchEngine import SearchEngine
 from Chatbot.SPARQLConstructor import SPARQLConstructor
 from Chatbot.SPARQLQuery import SPARQLQuery
 from Chatbot.LDA_classifier import LDAClassifier
+from rasa_jps.chatbot_interface import Chatbot
+from functools import lru_cache
+sys.path.append('/source')
+
+
 from pprint import pprint
 from rasa.nlu.model import Interpreter
 import os
@@ -15,8 +22,10 @@ import wolframalpha
 
 def extract_nlu_model(extract_dir='../models/'):
     # Identify the newest trained nlu model
+    # Disable the function when deployed to production server ... 
     path = 'models/'
     files = os.listdir(path)
+    print('the directory of files', files)
     paths = [os.path.join(path, basename) for basename in files if ('.tar' in basename)]
     file_name = max(paths, key=os.path.getctime)
     # Extract the model to a temporary directory
@@ -27,10 +36,12 @@ def extract_nlu_model(extract_dir='../models/'):
 class CoordinateAgent():
     def __init__(self):
         # initialize interpreter
-        extract_nlu_model()
+        # extract_nlu_model()
         self.stopwords = ['all', 'the']
         # self.stopwords.append('all')
         self.interpreter = Interpreter.load('models/nlu')
+
+        self.jps_interface = Chatbot()
 
     def run(self, question):
 
@@ -44,15 +55,36 @@ class CoordinateAgent():
         self.lda_classifier = LDAClassifier()
 
         # TODO: Make the list complete ...
-
-
         topics = self.lda_classifier.classify(question)
+        print('============== topics ==============')
         print(topics)
+        print('====================================')
+        # return None
 
+        for topic in topics:
+            if topic == 'wiki':
+                try:
+                    result = self.wiki_query(question)
+                    if result is None:
+                        pass
+                    else:
+                        return result
+                except:
+                    pass
 
-
-        result = self.wiki_query(question)
-        return result
+            else:
+                try:
+                    result = self.jps_interface.analyse_questions(question)
+                    print('----- the result by jps ----')
+                    if result is None:
+                        pass
+                    else:
+                        return result
+                except:
+                    pass
+        return 'Nothing'
+        # result = self.wiki_query(question)
+        # return result
         # # for topic in topics:
             # if topic == 'wiki':
             #     try:
@@ -62,6 +94,7 @@ class CoordinateAgent():
             #         # TODO: add JPS results to it
             #         pass
 
+    @lru_cache(maxsize=64)
     def wiki_query(self, question):
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
@@ -93,8 +126,9 @@ class CoordinateAgent():
         return result[0]
 
 
+
+
 # ca = CoordinateAgent()
-# ca.run('melting points of alkaline earth metals')
 # ca.run('what reactions produce NO2 + O2')
 # ca.run('find all the fatty acids with molecular weight more than 100')
 # ca.run('the kindling point of C2HBrClF3')
