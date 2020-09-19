@@ -1,10 +1,13 @@
 import json
+import re
 import urllib.parse
 import urllib.request
 from pprint import pprint
 
-from locations import JPS_SPARQL_TEMPLATE_PATH
-from search_interface import SearchInterface
+from .locations import JPS_SPARQL_TEMPLATE_PATH
+from .search_interface import SearchInterface
+
+from functools import lru_cache
 
 
 class JPS_query_constructor:
@@ -99,7 +102,7 @@ class JPS_query_constructor:
             rst = self.query_by_reaction_only(result['reactants'], result['products'])
         elif intent == 'select_mechanism_by_reaction':
             rst = self.query_mechanism_by_reaction(result['reactants'], result['products'])
-        return rst
+        return rst.replace('[=]', '->').replace('=]', '->')
 
     def query_mechanism_by_reaction(self, reactants, products):
         q = self.construct_query_reaction_by_species(reactants, products)
@@ -107,14 +110,14 @@ class JPS_query_constructor:
 ?Phase ontokin:containedIn ?MechanismIRI .
 ?MechanismIRI rdfs:label ?MechanismName .''')
         rst = self.fire_query(q).decode('utf-8')
-
+        rst = self.add_comma(rst)
         return rst
 
     def query_by_reaction_only(self, reactants, products):
         q = self.construct_query_reaction_by_species(reactants, products) % ('', '')
         print(q)
         rst = self.fire_query(q).decode('utf-8')
-        print(rst)
+        rst = self.add_comma(rst)
         return rst
 
         # TODO: construct the query by only reactants and products
@@ -139,11 +142,11 @@ class JPS_query_constructor:
         elif 'isReversible' in attribute:
             propertyName = 'isReversible'
             sub_properties = []
-            new_labels = ' ?%s '% propertyName
+            new_labels = ' ?%s ' % propertyName
         elif 'hasProduct' in attribute:
             propertyName = 'hasProduct'
             sub_properties = sub_properties_products
-            new_labels = ' ?%s '% propertyName
+            new_labels = ' ?%s ' % propertyName
 
         sub_query = ''
         for num, p in enumerate(sub_properties, start=1):
@@ -159,9 +162,21 @@ class JPS_query_constructor:
         q = self.construct_query_reaction_by_species(reactants, products) % (
             new_labels, '\n{\n ?reaction %s ?%s . \n %s  }' % (attribute, propertyName, sub_query))
         print(q)
+
         rst = self.fire_query(q).decode('utf-8')
+        rst = self.add_comma(rst)
         return rst
 
+    def add_comma(self, result):
+        print('result before', result)
+        result = result.replace('\r', '').replace('\n', '')
+
+        result = result.replace('}{', '},{')
+        result = re.sub(r'''}[ ]+{''', '},{', result)
+        print('result after', result)
+        return result
+
+    @lru_cache(maxsize=64)
     def fire_query(self, query):
         url = "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy"
         values = {'queryString': query}
