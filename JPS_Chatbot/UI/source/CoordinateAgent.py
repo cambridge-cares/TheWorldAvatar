@@ -39,8 +39,8 @@ class CoordinateAgent():
         # extract_nlu_model()
         self.stopwords = ['all', 'the']
         # self.stopwords.append('all')
-        self.interpreter = Interpreter.load('models/nlu')
-
+        print(os.path.abspath('models/nlu'))
+        self.interpreter = Interpreter.load('models/nlu') # load the wiki nlu models
         self.jps_interface = Chatbot()
 
     def run(self, question):

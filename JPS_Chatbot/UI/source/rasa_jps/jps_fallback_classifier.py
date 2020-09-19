@@ -11,8 +11,8 @@ import sys
 import warnings
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-from locations import JPS_SPARQL_TEMPLATE_PATH, RASA_JPS_MODELS_DIR
-from search_interface import SearchInterface
+from .locations import JPS_SPARQL_TEMPLATE_PATH, RASA_JPS_MODELS_DIR
+from .search_interface import SearchInterface
 
 class JPSQuestionClassifier:
 
@@ -23,13 +23,14 @@ class JPSQuestionClassifier:
         self.serach_interface = SearchInterface()
         warnings.filterwarnings("ignore")
 
-        self.nlu_model_directory = RASA_JPS_MODELS_DIR        
+        self.nlu_model_directory = os.path.join(RASA_JPS_MODELS_DIR, 'nlu')
         # Extract the trained model to a temporary directory where we are guaranteed to have write access
-        temp_dir_path = tempfile.TemporaryDirectory().name
-        self.extract_nlu_model(temp_dir_path)
-        # Load the trained model from the temporary directory
-        model_path = os.path.join(temp_dir_path,"nlu")
-        self.interpreter = Interpreter.load(model_path)
+        # temp_dir_path = tempfile.TemporaryDirectory().name
+        # self.extract_nlu_model(temp_dir_path)
+        # # Load the trained model from the temporary directory
+        # model_path = os.path.join(temp_dir_path, "nlu")
+        print('loading jps nlu model from', self.nlu_model_directory)
+        self.interpreter = Interpreter.load(self.nlu_model_directory)
 
         print('model loaded')
 

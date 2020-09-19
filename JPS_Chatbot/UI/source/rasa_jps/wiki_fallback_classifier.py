@@ -11,8 +11,8 @@ import sys
 import warnings
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-from locations import RASA_DEFAULT_MODELS_DIR, SPARQL_TEMPLATE_PATH
-from wiki_search_interface import WiKiSearchInterface
+from .locations import RASA_DEFAULT_MODELS_DIR, SPARQL_TEMPLATE_PATH
+from .wiki_search_interface import WiKiSearchInterface
 
 
 class WikiQuestionTypeClassifier:
