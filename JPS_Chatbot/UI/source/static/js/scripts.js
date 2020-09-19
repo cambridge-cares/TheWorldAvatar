@@ -82,7 +82,7 @@
 
     address = 'http://127.0.0.1:5000/'
     cmcl_address = 'https://kg.cmclinnovations.com/'
-    address = cmcl_address
+    // address = cmcl_address
 
     $('#google_result_box').hide()
     $.get(address + "query?question=" + msg, function( data ) {
@@ -96,18 +96,59 @@ function process_json_result(result){
 
   // result = result.replace(/=\]/g, '=>').replace(/[}][\n ]+[{]/g, '},{')
   console.log('The request has returned a response ', result)
-  if (result == 'Nothing'){
+  result = JSON.parse(result)
+  console.log('the result parsed', result, typeof(result) )
+
+
+  if (result === 'Nothing'){
+    console.log('Received nothing')
+
+
      address = 'http://127.0.0.1:5000/'
     cmcl_address = 'https://kg.cmclinnovations.com/'
-    address = cmcl_address
+    // address = cmcl_address
     query_wolfram_alpha(address, msg);
     query_google(address, msg);
+    return null
+  }
+
+  // result = JSON.parse(result)
+
+
+  console.log('If it is nothing, you should not see this line')
+
+
+  if (result){
+      console.log('the result parsed', result, typeof(result) )
+    if (typeof(result)!== 'object' && (result!== 'Nothing')){
+      obj = '{"results": ' + result + '}'
+      console.log(obj)
+      r = JSON.parse(obj)
+      console.log('the array',  r["results"])
+        keys = []
+        table = []
+         console.log('this is a result from JPS', r)
+        r["results"].forEach(function (item, index) {
+         let row_object = {}
+
+
+           for (let key in item) {
+                 console.log(key, item[key]);
+           counter = index + 1
+           console.log(item, index);
+           row_object['result_id'] = counter.toString()
+           row_object[key] = item[key]
+           }
+            table.push(row_object)
+
+        });
+          console.log('------------- jps table ---------------')
+          console.log(table)
+    return table
   }
 
 
-  result = JSON.parse(result)
-  if (result){
-     if ('results' in result){
+    if ('results' in result && !('Nothing' in result)){
     bindings = result.results.bindings;
     if (bindings.length == 0){
         // make a request to google or wolfram alpha
@@ -169,6 +210,8 @@ function process_json_result(result){
 	  row_obj['result_value'] = row
       table.push(row_obj)
   })
+  console.log('------------- table ---------------')
+  console.log(table)
   return table
   }
   }
@@ -177,7 +220,7 @@ function process_json_result(result){
     // call wolfram_alpha or google
     address = 'http://127.0.0.1:5000/'
     cmcl_address = 'https://kg.cmclinnovations.com/'
-    address = cmcl_address
+    // address = cmcl_address
 
     query_wolfram_alpha(address, msg);
     query_google(address, msg);
@@ -272,7 +315,9 @@ function drawTable(result_array) {
 }
 
 function displayResults(myData, source) {
-  myData = process_json_result(myData)
+     myData = process_json_result(myData)
+
+
   // EXTRACT VALUE FOR HTML HEADER.
   // ('Book ID', 'Book Name', 'Category' and 'Price')
   var col = [];
