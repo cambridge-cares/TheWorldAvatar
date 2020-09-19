@@ -193,6 +193,6 @@
             "class": "rasa.nlu.selectors.response_selector.ResponseSelector"
         }
     ],
-    "trained_at": "20200824-005135",
+    "trained_at": "20200916-053416",
     "rasa_version": "1.10.8"
 }
