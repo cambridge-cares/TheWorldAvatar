@@ -6,6 +6,7 @@ from pprint import pprint
 
 from .locations import JPS_SPARQL_TEMPLATE_PATH
 from .search_interface import SearchInterface
+from .OntoCompChem_Queries import ROTATIONAL_CONSTANT_QUERY, VIBRATION_FREQUENCY_QUERY, ROTATIONAL_SYMMETRY_NUMBER, GAUSSIAN_FILE
 
 from functools import lru_cache
 
@@ -18,8 +19,41 @@ class JPS_query_constructor:
         self.serach_interface = SearchInterface()
 
     @staticmethod
+    def process_species_for_ontocompchem(species):
+        # to convert H2O2 or h2o2 to H 2 O 2
+        # to convert H2O2 or h2o2 to H 2 O 2
+        temp = ''
+        number_regex = r'[0-9]+'
+        alphabet_regex = r'[a-zA-Z]'
+        print('-----------------------')
+        print('species', species)
+        if type(species) == str:
+
+            numbers = re.findall(number_regex, species)
+            for number in list(set(numbers)):
+                new_number = ' ' + number + ' '
+                species = species.replace(number, new_number)
+
+            return species.strip()
+            # return result
+        else:
+            return None
+
+    @staticmethod
     def extract_info(intents):
+        ontocompchem_simple_intents = ['symmetry_number', 'rotational_constants', 'vibration_frequency']
+
         intent = intents['intent']['name']
+        if intent in ontocompchem_simple_intents:
+            result = {'intent': intent}
+            for e in intents['entities']:
+                entity_type = e['entity']
+                value = e['value']
+                if entity_type == 'species':
+                    result['species'] = value
+
+            return result
+
         if intent == 'query_reaction_property':
             result = {'intent': intent}
             result['reactants'] = []
@@ -88,6 +122,7 @@ class JPS_query_constructor:
             return result
 
     def construct_query(self, intents):
+        ontocompchem_simple_intents = ['symmetry_number', 'rotational_constants', 'vibration_frequency']
         print('=================== intents ================')
         pprint(intents)
         result = JPS_query_constructor.extract_info(intents)
@@ -104,7 +139,59 @@ class JPS_query_constructor:
             rst = self.query_mechanism_by_reaction(result['reactants'], result['products'])
             if rst is None:
                 return None
+        elif intent in ontocompchem_simple_intents:
+            rst = self.query_quantum_of_moleculars(result['intent'], result['species'])
+            if rst is None:
+                return None
+
         return rst.replace('[=]', '->').replace('=]', '->')
+
+    def query_quantum_of_moleculars(self, intent, species):
+        # ROTATIONAL_CONSTANT_QUERY
+        # VIBRATION_FREQUENCY_QUERY
+        # ROTATIONAL_SYMMETRY_NUMBER
+        species = JPS_query_constructor.process_species_for_ontocompchem(species)
+        if intent == 'rotational_constants':
+            q = ROTATIONAL_CONSTANT_QUERY % species
+            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+        elif intent == 'symmetry_number':
+            q = ROTATIONAL_SYMMETRY_NUMBER % species
+            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+        elif intent == 'vibration_frequency':
+            q = VIBRATION_FREQUENCY_QUERY % species
+            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+        else:
+            return None
+        if rst is None:
+            return None
+        else:
+            rst = self.process_ontocompchem_results(rst)
+            print('result from ontocompchem', rst)
+            return rst
+
+    def process_ontocompchem_results(self, rst):
+        rst_lines = rst.split('\r\n')
+        print(rst_lines)
+
+        if len(rst_lines) <= 1:
+            return None
+        else:
+            result = []
+            heads = rst_lines[0].split(',')
+            data_list = rst_lines[1:]
+            print('------ data list --------', data_list)
+            for data in data_list:
+                temp = {}
+                cols = data.split(',')
+                for c, h in zip(cols, heads):
+                    temp[h] = c
+                if data == '':
+                    pass
+                else:
+                    result.append(temp)
+            print('------- processed ontocompchem data ---------')
+            print(result)
+            return json.dumps(result)
 
     def query_mechanism_by_reaction(self, reactants, products):
         print('query_mechanism_by_reaction')
@@ -169,6 +256,7 @@ class JPS_query_constructor:
 
         q = self.construct_query_reaction_by_species(reactants, products) % (
             new_labels, '\n{\n ?reaction %s ?%s . \n %s  }' % (attribute, propertyName, sub_query))
+        q = q.replace('DISTINCT', '') + ' LIMIT 1'
         print(q)
 
         rst = self.fire_query(q).decode('utf-8')
@@ -186,10 +274,23 @@ class JPS_query_constructor:
 
     @lru_cache(maxsize=64)
     def fire_query(self, query):
+        print('----------- firing the query to JPS -------------')
         print(query)
         # x = input()
         url = "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy"
         values = {'queryString': query}
+        data = urllib.parse.urlencode(values).encode('utf-8')
+        print(type(data))
+        req = urllib.request.Request(url, data)
+        response = urllib.request.urlopen(req).read()
+        return response
+
+    def fire_query_ontochemcomp(self, query):
+        print('----------- firing the query to JPS ontochemcomp -------------')
+        print(query)
+        # x = input()
+        url = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
+        values = {'query': query}
         data = urllib.parse.urlencode(values).encode('utf-8')
         print(type(data))
         req = urllib.request.Request(url, data)

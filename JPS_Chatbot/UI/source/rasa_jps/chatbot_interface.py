@@ -72,12 +72,15 @@ class Chatbot:
         #     if len(json.loads(answer)['results']['bindings']) == 0:
         #         raise Exception()
         # except:
+        # RASA_JPS_MODELS_DIR
         result = self.jps_classifier.interpret(question)
         answer = self.jps_query_constructor.construct_query(result)
         print('===================== processed classification ===================')
         pprint(answer)
+
         if type(answer) == tuple:
             answer = answer[0]
+
         print('=========== the answer by jps ===========')
         print(json.loads(answer))
         print(len(json.loads(answer)))

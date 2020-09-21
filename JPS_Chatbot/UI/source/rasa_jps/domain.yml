@@ -2,6 +2,10 @@ intents:
   - select_mechanism_by_reaction
   - select_reaction_by_species
   - query_reaction_property
+  - symmetry_number
+  - rotational_constants
+  - vibration_frequency
+  - guassian_file
 entities:
   - to
   - reaction

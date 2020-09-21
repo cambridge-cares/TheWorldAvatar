@@ -24,6 +24,7 @@ class JPSQuestionClassifier:
         warnings.filterwarnings("ignore")
 
         self.nlu_model_directory = os.path.join(RASA_JPS_MODELS_DIR, 'nlu')
+
         # Extract the trained model to a temporary directory where we are guaranteed to have write access
         # temp_dir_path = tempfile.TemporaryDirectory().name
         # self.extract_nlu_model(temp_dir_path)

@@ -1,46 +1,5 @@
-import json
-import re
-import urllib.parse
-import urllib.request
-
-
-
-# ontocompchem queries
-def fire_query(query):
-    print('----------- firing the query to JPS ontochemcomp -------------')
-    print(query)
-    # x = input()
-    url = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
-    values = {'query': query}
-    data = urllib.parse.urlencode(values).encode('utf-8')
-    print(type(data))
-    req = urllib.request.Request(url, data)
-    print('-------------')
-    print(req)
-    response = urllib.request.urlopen(req).read()
-    return response
-
-# To get the rotational constants of a molecular
-query = '''
-PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
-PREFIX gc: <http://purl.org/gc/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
-SELECT DISTINCT  ?p  ?type
-WHERE  { 
-?up_node ?p ?node .
-?up_node rdf:type ?type .
-?node rdf:type <http://purl.org/gc/MoleculeProperty> .
-?node gc:hasName ?name .
-} LIMIT 4
-'''
-# ?g_calculation ontocompchem:hasUniqueSpecies ?species .
-# ?g_calculation gc:isCalculationOn ?
-
-# TODO: run through the ontocompchem questions ... from the simple ones
-# what is the rotational constants of H2O2
-query_get_rotational_constants_by_molecule = ''' 
+# template has one slot: species
+ROTATIONAL_CONSTANT_QUERY = ''' 
 PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -53,7 +12,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^H 2 O 2 $")
+FILTER regex(?name, "^%s $")
 # ============ to match molecule =========================
 ?g_calculation gc:isCalculationOn ?rotational_constants .
 ?rotational_constants ontocompchem:hasRotationalConstants ?rotational_constants_value . 
@@ -64,8 +23,7 @@ BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short
 } 
 '''
 
-# TO get the frequency of a molecule
-query_get_vibriation_frequency = '''
+VIBRATION_FREQUENCY_QUERY = '''
 PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -77,7 +35,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^H 2 O 2 $")
+FILTER regex(?name, "^%s $")
 
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn  ?VibrationalAnalysis .
@@ -90,7 +48,8 @@ BIND(REPLACE(STR(?unit),"http://purl.org/gc/","") AS ?unit_short) .
 }
 }   
 '''
-query_get_rotational_symmetry = '''
+
+ROTATIONAL_SYMMETRY_NUMBER = '''
 PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -102,7 +61,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^H 2 O 2 $")
+FILTER regex(?name, "^%s $")
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn  ?RotationalSymmetry .
 ?RotationalSymmetry rdf:type ontocompchem:RotationalSymmetry .
@@ -110,48 +69,7 @@ FILTER regex(?name, "^H 2 O 2 $")
 }   
 '''
 
-
-def process_species_for_ontocompchem(species):
-    # to convert H2O2 or h2o2 to H 2 O 2
-    temp = ''
-    number_regex = r'[0-9]+'
-    alphabet_regex = r'[a-zA-Z]'
-    print('-----------------------')
-    print('species', species)
-    if type(species) == str:
-
-        numbers = re.findall(number_regex,species)
-        for number in list(set(numbers)):
-            new_number = ' ' + number + ' '
-            species = species.replace(number, new_number)
-
-        return species
-        # return result
-    else:
-        return None
-
-test_query_h2o2 ='''
-PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
-PREFIX gc: <http://purl.org/gc/>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
-SELECT DISTINCT  ?name   ?symmetry_number
-WHERE  {
-?g_calculation rdf:type ontocompchem:G09 .
-?g_calculation ontocompchem:hasInitialization ?initialization .
-?initialization gc:hasMoleculeProperty ?molecule_property .
-?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^C 8 H 14 $")
-# ============ to match molecule =========================
-?g_calculation  gc:isCalculationOn  ?RotationalSymmetry .
-?RotationalSymmetry rdf:type ontocompchem:RotationalSymmetry .
-?RotationalSymmetry ontocompchem:hasRotationalSymmetryNumber ?symmetry_number .
-}
-'''
-
-
-log_file_query  ='''
+GAUSSIAN_FILE = '''
 PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -163,23 +81,9 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^C 8 H 14 $")
+FILTER regex(?name, "^%s $")
 # ============ to match molecule =========================
 ?g_calculation  ontocompchem:hasEnvironment   ?Environment .
 ?Environment    gc:hasOutputFile  ?File . 
 }
 '''
-
-
-
-
-
-
-r = fire_query(log_file_query)
-print(r.decode('utf-8'))
-
-#
-# process_species_for_ontocompchem('h2o2')
-# process_species_for_ontocompchem('H2O2')
-# process_species_for_ontocompchem('Ch4')
-# process_species_for_ontocompchem('C8H14')

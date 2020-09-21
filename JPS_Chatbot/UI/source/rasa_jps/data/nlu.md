@@ -13,7 +13,8 @@
  - show [mechanism](class) with [O2](species) add_sign [N](species) [equation_seperator](to) [O](species) add_sign [NO](species) 
  - which [mechanism](class) having the reaction: [O2](species) add_sign [N](species) [equation_seperator](to) [O](species)
  - what [mechanism](class) with [O2](species) [equation_seperator](to) [O](species) add_sign [NO](species) 
-  
+ - what [mechanism](class) contains [CH4](species) add_sign [OH](species)
+ 
 ## intent:select_reaction_by_species
  - what reaction contains [H](species) add_sign [OH](species)
  - what reaction has [H](species) add_sign [HCO](species)
@@ -26,11 +27,40 @@
  - what are the [reactions](class) containing [oxygen](species)
  - show me all [reactions](class) that has [H2](species) and [N2](species)
  - which [reaction](class) has [Hydroperoxy radical](species) as [reactant](indicator)
+ - what [reaction](class) has [CH4](species) as [reactant](indicator)
  - show me the [reactions](class) with [disulfur decafluoride](species) as [product](indicator)
  - show all [reactions](class) with [oxygen](species) as [reactant](indicator) and [hydrogen](species) as a [product](indicator)
  - [reactions](class) with [oxygen](species) and [c6h12](species) as [reactant](indicator) and [hydrogen](species) as a [product](indicator)
  - [reactions](class) have [c6h6](species) and [c6h12](species) as [reactants](indicator) and [hydrogen](species) as a [product](indicator)
  
+## intent: symmetry_number
+ - what is the [symmetry number](attribute) of [H2O2](species)
+ - show the [rotational symmetry number](attribute) of [C3H3](species)
+ - what is the [symmetry number](attribute) of [Ar1](species)
+ - show data about the [symmetry number](attribute) of [Ar1](species)
+ - show the [rotational symmetry number](attribute) of [C5H3C2](species)
+
+## intent: rotational_constants
+ - what is the [rotational constants](attribute) of [H2O2](species)
+ - what is the [rotational_constant](attribute) of [H2O2](species)
+ - show the [rotational constants](attribute) of [C3H3](species)
+ - what is the [rotational_constants](attribute) of [Ar1](species)
+ - show the [rotational constant](attribute) of [C3H3](species)
+ 
+ 
+## intent: vibration_frequency
+ - what is the [vibration_frequency](attribute) of [H2O2](species)
+ - what is the [vibration_frequency](attribute) of [H2O2](species)
+ - show the [vibration_frequency](attribute) of [C3H3](species)
+ - give me the [frequency](attribute) of [Ar1](species)
+ - show the [frequency](attribute) of [C3H3](species)
+ - what is the [frequency](attribute) of [C5H3C2](species)
+ - show data about the [frequency](attribute) of [C5H3C2](species)
+
+## intent: guassian_file
+ - show me the [guassian file](attribute) of [C8H3O2](species)
+ - give me the [guassian log file](attribute) of [C3H3](species)
+ - what is the [log file](attribute) of [H2O2](species)
  
 ## lookup:species
 data/lookup_tables/species.txt
