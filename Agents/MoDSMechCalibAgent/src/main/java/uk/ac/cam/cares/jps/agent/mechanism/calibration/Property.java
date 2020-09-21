@@ -57,6 +57,7 @@ public enum Property {
 	public static final String JOB_REQUEST_PATH = "/job/request";
     public static final String JOB_STATISTICS_PATH = "/job/statistics";
     public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
+    public static final String JOB_REQUEST_EVAL_PATH = "/job/eval/request";
 	
 	private String propertyName;
 	private int value;
