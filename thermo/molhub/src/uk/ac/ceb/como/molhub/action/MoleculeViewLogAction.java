@@ -64,8 +64,12 @@ public class MoleculeViewLogAction extends ActionSupport {
 	
 	private String uuidFile = ServletActionContext.getRequest().getParameter("uuidFileName");
 
+	/** The Gaussian file name. */	
+//	private String gaussianFileName = folderManager.getLogFileName(getUuid(), getUuidFile());
+	
 	/** The Gaussian file name. */
-	private String gaussianFileName = folderManager.getLogFileName(getUuid(), getUuidFile());
+	private String gaussianFileName = folderManager.getGaussianFileName(getUuid(),getUuidFile(),dataFolderPath);
+	
 	/** The JSON file name*/
 	private String gaussianJsonFileName = folderManager.getGaussianJsonFileName(getUuidFile());
 	

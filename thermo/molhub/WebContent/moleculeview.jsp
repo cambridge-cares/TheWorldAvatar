@@ -60,7 +60,7 @@ var Info = {
 		j2sPath: "<%=request.getContextPath()%>/jsmol/j2s",
 		jarFile: "JmolAppletSigned.jar",
 		isSigned: false,
-		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>",		
+		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="gaussianFileName"/>",		
 		addSelectionOptions: false,
 		serverURL: "<%=request.getContextPath()%>/jsmol/php/jsmol.php",
 		readyFunction: null,
@@ -426,7 +426,7 @@ text-align: left;
 
 <ul>
   <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(LOG file)</a></li>
-  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value=" gaussianJsonFileName"/>">Gaussian(JSON file)</a></li>
+  <!--<li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value=" gaussianJsonFileName"/>">Gaussian(JSON file)</a></li>-->
   <li><a href="http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
   <s:if test="%{nasaFileName!=null}">
   <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>

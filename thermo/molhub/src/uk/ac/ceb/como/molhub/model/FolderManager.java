@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
 
 /**
@@ -175,36 +176,6 @@ public class FolderManager {
         return fileName;
 	
 	}
-	
-/**
- * @param uuid unique identifier that we use to create folder, the name of uploaded Log file
- * @param uuidFile unique identifier for generated Log file. 
- * @return the Log file name
- */
-public String getLogFileName(String uuid,  String uuidFile) {
-	
-
-		
-		String logFileName = "";
-		
-		if(uuidFile.contains(".log")) {
-		
-		logFileName = uuid +".log";
-		}
-		
-		if(uuidFile.contains(".g09")) {
-			
-			logFileName = uuid +".g09";
-			}
-		
-		if(uuidFile.contains("g.16")) {
-			
-			logFileName = uuid + ".g16";
-		}
-
-		
-        return logFileName;
-}
 
 /**
  * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -228,6 +199,31 @@ public String getGaussianJsonFileName(String uuidFile) {
 		
         return file.getName()  ;
 }
+
+	
+	/**
+	 * 
+	 * @param uuid the unique identifier that is used to create unique folder inside Tomcat server 
+	 * @param uuidFile the uuid file 
+	 * @param dataFolderPath data folder path
+	 * @return file Gaussian file name that is uploaded 
+	 */
+	public String getGaussianFileName(String uuid, String uuidFile, String dataFolderPath) {
+		
+		String fileName = "";
+		
+		
+		File[] fileList = new FileUtility().getFileList(dataFolderPath + "/" + uuid +"/",".log", ".g09", ".g16");
+		
+
+		for(File f: fileList) {
+			
+			fileName = f.getName();
+		}
+		
+		return fileName;
+
+}
 	
 
 	/**
@@ -244,6 +240,10 @@ public String getGaussianJsonFileName(String uuidFile) {
 		if(format.endsWith("q_nasa.json")) {
 
 		folderName =dataFolderPath + uuid.toString() + "/" + uuidFile.replaceAll(".owl", "") + format;
+		
+		}else {
+			
+		folderName =dataFolderPath + uuid.toString() + "/" + uuid.toString() + "_nasa.json";
 		
 		}
 		

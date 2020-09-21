@@ -215,7 +215,7 @@ Session result: <s:property value="session"/>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[1]"/></div>
                 <div class="property-value" align="left">
-            <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/></s:a> 
+            <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/> </s:a> 
                 </div>
             </div>
             <p/>
