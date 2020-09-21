@@ -6,7 +6,14 @@ from pprint import pprint
 
 from .locations import JPS_SPARQL_TEMPLATE_PATH
 from .search_interface import SearchInterface
-from .OntoCompChem_Queries import ROTATIONAL_CONSTANT_QUERY, VIBRATION_FREQUENCY_QUERY, ROTATIONAL_SYMMETRY_NUMBER, GAUSSIAN_FILE
+from .OntoCompChem_Queries import ontocompchem_simple_intents, \
+    ROTATIONAL_CONSTANT_QUERY, VIBRATION_FREQUENCY_QUERY, \
+    ROTATIONAL_SYMMETRY_NUMBER, GAUSSIAN_FILE, SPIN_MULTIPLICITY, \
+    FORMAL_CHARGE, ELECTRONIC_ENERGY, GEOMETRY_TYPE
+
+from .OntoOntokin_Queries import  LENNARD_JONES_WELL_DEPTH, \
+    POLARIZABILITY, DIPOLE_MOMENT, RELAXATION_COLLISION,\
+    ontokin_simple_intents
 
 from functools import lru_cache
 
@@ -41,7 +48,6 @@ class JPS_query_constructor:
 
     @staticmethod
     def extract_info(intents):
-        ontocompchem_simple_intents = ['symmetry_number', 'rotational_constants', 'vibration_frequency']
 
         intent = intents['intent']['name']
         if intent in ontocompchem_simple_intents:
@@ -122,7 +128,7 @@ class JPS_query_constructor:
             return result
 
     def construct_query(self, intents):
-        ontocompchem_simple_intents = ['symmetry_number', 'rotational_constants', 'vibration_frequency']
+
         print('=================== intents ================')
         pprint(intents)
         result = JPS_query_constructor.extract_info(intents)
@@ -143,13 +149,48 @@ class JPS_query_constructor:
             rst = self.query_quantum_of_moleculars(result['intent'], result['species'])
             if rst is None:
                 return None
+        elif intent in ontokin_simple_intents:
+            rst = self.query_thermo_of_moleculars(result['intent'], result['species'])
+            if rst is None:
+                return None
+
 
         return rst.replace('[=]', '->').replace('=]', '->')
+
+    def query_thermo_of_moleculars(self, intent, species):
+
+        if intent == 'lennard_jones_well':
+            q = LENNARD_JONES_WELL_DEPTH % species
+            rst = self.fire_query(q).decode('utf-8')
+            return rst
+        elif intent == 'polarizability':
+            q = POLARIZABILITY % species
+            rst = self.fire_query(q).decode('utf-8')
+
+        elif intent == 'dipole_moment':
+            q = DIPOLE_MOMENT % species
+            rst = self.fire_query(q).decode('utf-8')
+
+        elif intent == 'rotational_relaxation_collision':
+            q = RELAXATION_COLLISION % species
+            rst = self.fire_query(q).decode('utf-8')
+
+        else:
+            return None
+
+        if rst is None:
+            return None
+        else:
+            rst = json.loads(rst)
+            rst = json.dumps(rst)
+            print('result from ontokin', rst)
+            return rst
 
     def query_quantum_of_moleculars(self, intent, species):
         # ROTATIONAL_CONSTANT_QUERY
         # VIBRATION_FREQUENCY_QUERY
         # ROTATIONAL_SYMMETRY_NUMBER
+        original_species = species
         species = JPS_query_constructor.process_species_for_ontocompchem(species)
         if intent == 'rotational_constants':
             q = ROTATIONAL_CONSTANT_QUERY % species
@@ -160,6 +201,23 @@ class JPS_query_constructor:
         elif intent == 'vibration_frequency':
             q = VIBRATION_FREQUENCY_QUERY % species
             rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+        elif intent == 'guassian_file':
+            q = GAUSSIAN_FILE % species
+            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+        elif intent == 'spin_multiplicity':
+            q = SPIN_MULTIPLICITY % species
+            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+        elif intent == 'formal_charge':
+            q = FORMAL_CHARGE % species
+            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+        elif intent == 'electronic_energy':
+            q = ELECTRONIC_ENERGY % species
+            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+        elif intent == 'geometry_type':
+            q = GEOMETRY_TYPE % species
+            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+
+
         else:
             return None
         if rst is None:
@@ -170,6 +228,7 @@ class JPS_query_constructor:
             return rst
 
     def process_ontocompchem_results(self, rst):
+
         rst_lines = rst.split('\r\n')
         print(rst_lines)
 

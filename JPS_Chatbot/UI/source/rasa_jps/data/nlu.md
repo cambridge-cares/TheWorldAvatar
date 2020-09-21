@@ -62,6 +62,53 @@
  - give me the [guassian log file](attribute) of [C3H3](species)
  - what is the [log file](attribute) of [H2O2](species)
  
+## intent: spin_multiplicity
+ - show me the [spin multiplicity](attribute) of [C8H3O2](species)
+ - give me the [spin multiplicity](attribute) of [C3H3](species)
+ - what is the [spin multiplicity](attribute) of [H2O2](species)
+
+## intent: formal_charge
+ - show me the [formal charge](attribute) of [C8H3O2](species)
+ - give me the [formal charge](attribute) of [C3H3](species)
+ - what is the [formal charge](attribute) of [H2O2](species)
+
+## intent: electronic_energy
+ - what is the [electronic energy](attribute) of [C8H14](species)
+ - show me the [scf energy](attribute) of [C8H3O2](species)
+ - give me the [electronic energy](attribute) of [C3H3](species)
+ - what is the [energy](attribute) of [H2O2](species)
+ 
+## intent: geometry_type
+ - what is the [geometry type](attribute) of [C8H14](species)
+ - show me the [type of gemoetry](attribute) of [C8H3O2](species)
+ - give me the [electronic energy](attribute) of [C3H3](species)
+ - what is the [energy](attribute) of [H2O2](species)
+ - what is [H2O2](species)'s [type of geometry](attribute)
+ - [H2O2](species)'s [geometry type](attribute)
+ 
+## intent: lennard_jones_well
+ - [plot](command) the [lennard jones well depth](attribute) of [H2O2](species)
+ - show the [lennard jones well depth](attribute) of [H2O2](species)
+ - what is the [lennard jones well depth](attribute) of [H2O2](species)
+
+## intent: polarizability 
+ - what is the [polarizability](attribute) of [C8H14](species)
+ - show me the [polarizability](attribute) of [C8H3O2](species)
+ - give me the [polarizability](attribute) of [C3H3](species)
+ - what is the [polarizability](attribute) of [H2O2](species)
+ 
+## intent: dipole_moment 
+ - what is the [dipole moment](attribute) of [C8H14](species)
+ - show me the [dipole moment](attribute) of [C8H3O2](species)
+ - give me the [dipole moment](attribute) of [C3H3](species)
+ - what is the [dipole moment](attribute) of [H2O2](species)
+
+## intent: rotational_relaxation_collision 
+ - what is the [rotational relaxation collision number](attribute) of [C8H14](species)
+ - show me the [rotational relaxation collision number](attribute) of [C8H3O2](species)
+ - give me the [relaxation collision](attribute) of [C3H3](species)
+ - what is the [relaxation collision number](attribute) of [H2O2](species)
+
 ## lookup:species
 data/lookup_tables/species.txt
 

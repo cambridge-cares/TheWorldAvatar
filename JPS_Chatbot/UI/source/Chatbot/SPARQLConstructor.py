@@ -178,17 +178,16 @@ class SPARQLConstructor:
         ''',
 
             'batch_restriction_query_numerical_and_attribute': '''
-            
-            
-        SELECT ?oLabel ?v  ?unitLabel
+             
+        SELECT ?oLabel ?v ?v2 ?unitLabel
         WHERE {
-        ?o wdt:P31 wd:%s . # class    
-        ?o wdt:%s ?x . # attribute_2  
-        ?o p:%s/psv:%s ?value . # attribute_1 x 2 
-        ?value wikibase:quantityAmount ?v .
-        ?value wikibase:quantityUnit ?unit .
+        ?o wdt:P31 wd:%s . # class
+        ?o wdt:%s ?v2 . # attribute_2
+        ?o wdt:%s ?v .   # attribute_1
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
-        FILTER(?x %s %s ).  } # comparison numerical_value  
+        FILTER(?v2 %s %s ).  } # comparison numerical_value
+         
+        
         '''}
 
     # TODO: generalize the fill_sparql_query
@@ -210,7 +209,8 @@ class SPARQLConstructor:
             index_order = [1, 0, 1, 0, 0, 1]
         elif intent == 'batch_restriction_query_numerical_and_attribute':
             order = ['attribute_1', 'attribute_2', 'class', 'comparison', 'numerical_value']  # first attribute is the
-            index_order = [2, 1, 0, 0, 3, 4]
+            index_order = [2, 1, 0, 3, 4] #         ['class', 'a2', 'a1', 'comparison', 'number']
+
             # attribute_1
 
         elif intent == 'batch_restriction_query_numerical':

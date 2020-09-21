@@ -107,6 +107,9 @@ FILTER regex(?name, "^H 2 O 2 $")
 ?g_calculation  gc:isCalculationOn  ?RotationalSymmetry .
 ?RotationalSymmetry rdf:type ontocompchem:RotationalSymmetry .
 ?RotationalSymmetry ontocompchem:hasRotationalSymmetryNumber ?symmetry_number .
+
+
+
 }   
 '''
 
@@ -163,20 +166,203 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^C 8 H 14 $")
+FILTER regex(?name, "^C 3 H 18 $")
 # ============ to match molecule =========================
 ?g_calculation  ontocompchem:hasEnvironment   ?Environment .
-?Environment    gc:hasOutputFile  ?File . 
+?Environment    gc:hasOutputFile  ?File .
 }
 '''
 
 
+multiplicity_query = '''
+PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+SELECT DISTINCT  ?name    ?SpinMultiplicity
+WHERE  {
+?g_calculation rdf:type ontocompchem:G09 .
+?g_calculation ontocompchem:hasInitialization ?initialization .
+?initialization gc:hasMoleculeProperty ?molecule_property .
+?molecule_property gc:hasName ?name .
+FILTER regex(?name, "^C 8 H 14 $")
+# ============ to match molecule =========================
+?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
+?GeometryOptimization    gc:hasMolecule    ?Molecule .
+?Molecule  ontocompchem:hasSpinMultiplicity ?SpinMultiplicity .
+}
+'''
+
+formal_charge  = '''
+PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+SELECT DISTINCT  ?name    ?FormalCharge_value ?unit_short
+WHERE  {
+?g_calculation rdf:type ontocompchem:G09 .
+?g_calculation ontocompchem:hasInitialization ?initialization .
+?initialization gc:hasMoleculeProperty ?molecule_property .
+?molecule_property gc:hasName ?name .
+FILTER regex(?name, "%s $")
+# ============ to match molecule =========================
+?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
+?GeometryOptimization    gc:hasMolecule    ?Molecule .
+?Molecule gc:hasFormalCharge  ?FormalCharge .
+?FormalCharge gc:hasValue ?FormalCharge_value . 
+
+OPTIONAL {
+?FormalCharge gc:hasUnit ?unit .
+BIND(REPLACE(STR(?unit),"http://purl.org/gc/","") AS ?unit_short) .
+}
+}
+'''
+
+electronic_energy = '''
+
+PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+SELECT DISTINCT  ?name    ?Electronic_energy ?unit_short
+WHERE  {
+?g_calculation rdf:type ontocompchem:G09 .
+?g_calculation ontocompchem:hasInitialization ?initialization .
+?initialization gc:hasMoleculeProperty ?molecule_property .
+?molecule_property gc:hasName ?name .
+FILTER regex(?name, "C 2 H 2 O 2 $")
+# ============ to match molecule =========================
+?g_calculation  gc:isCalculationOn    ?ScfEnergy .
+?ScfEnergy    gc:hasElectronicEnergy  ?x .
+?x            gc:hasValue             ?Electronic_energy .
+
+OPTIONAL {
+?x gc:hasUnit ?unit .
+BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short) .
+} # http://data.nasa.gov/qudt/owl/unit#Hartree
+}
+
+'''
+
+geometry_type_query = '''
+
+PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+SELECT DISTINCT  ?name   ?GeometryTypeValue 
+WHERE  {
+?g_calculation rdf:type ontocompchem:G09 .
+?g_calculation ontocompchem:hasInitialization ?initialization .
+?initialization gc:hasMoleculeProperty ?molecule_property .
+?molecule_property gc:hasName ?name .
+FILTER regex(?name, "H 2 O 2 $")
+# ============ to match molecule =========================
+?g_calculation  gc:isCalculationOn    ?GeometryType .
+?GeometryType   ontocompchem:hasGeometryType ?GeometryTypeValue .  
+
+OPTIONAL {
+?x gc:hasUnit ?unit .
+BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short) .
+} # http://data.nasa.gov/qudt/owl/unit#Hartree
+}
+
+'''
 
 
+# r = fire_query(electronic_energy)
+# print(r.decode('utf-8'))
 
 
-r = fire_query(log_file_query)
-print(r.decode('utf-8'))
+def fire_query_ontokin(query):
+    print('----------- firing the query to JPS -------------')
+    print(query)
+    url = "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy"
+    values = {'queryString': query}
+    data = urllib.parse.urlencode(values).encode('utf-8')
+    req = urllib.request.Request(url, data)
+    response = urllib.request.urlopen(req).read()
+    return response
+
+def fire_query_free(url, query, key):
+    print(query)
+    print(url)
+    values = {key: query}
+    data = urllib.parse.urlencode(values).encode('utf-8')
+    req = urllib.request.Request(url, data)
+    response = urllib.request.urlopen(req).read()
+    return response
+
+hasLennardJonesDiameter = '''
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?LennardJonesDiameter ?DiameterUnits ?LennardJonesWellDepth ?WellDepthUnits
+{
+  ?Species rdfs:label ?label .
+  FILTER regex(?label, "^H2O2$")
+  ?Species ontokin:hasTransportModel ?TransportModel . 
+  ?TransportModel rdf:type ontokin:TransportModel .
+  ?TransportModel ontokin:hasLennardJonesDiameter  ?LennardJonesDiameter . 
+  ?TransportModel ontokin:hasLennardJonesDiameterUnits ?DiameterUnits .
+  ?TransportModel ontokin:hasLennardJonesWellDepth ?LennardJonesWellDepth . 
+  ?TransportModel ontokin:hasLennardJonesWellDepthUnits ?WellDepthUnits .
+}  
+'''
+
+hasPolarizability = '''
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?Polarizability ?Unit 
+{
+  ?Species rdfs:label ?label .
+  FILTER regex(?label, "^H2O2$")
+  ?Species ontokin:hasTransportModel ?TransportModel . 
+  ?TransportModel rdf:type ontokin:TransportModel .
+  ?TransportModel ontokin:hasPolarizability  ?Polarizability . 
+  ?TransportModel ontokin:hasPolarizabilityUnits ?Unit .
+}  
+'''
+
+hasDipoleMoment = '''
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?DipoleMoment ?Unit 
+{
+  ?Species rdfs:label ?label .
+  FILTER regex(?label, "^H2O2$")
+  ?Species ontokin:hasTransportModel ?TransportModel . 
+  ?TransportModel rdf:type ontokin:TransportModel .
+  ?TransportModel ontokin:hasDipoleMoment  ?DipoleMoment . 
+  ?TransportModel ontokin:hasDipoleMomentUnits ?Unit .
+}  
+'''
+
+relaxation_collision = '''
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?RotationalRelaxationCollisionNumber
+{
+  ?Species rdfs:label ?label .
+  FILTER regex(?label, "^H2O2$")
+  ?Species ontokin:hasTransportModel ?TransportModel . 
+  ?TransportModel rdf:type ontokin:TransportModel .
+  ?TransportModel ontokin:hasRotationalRelaxationCollisionNumber  ?RotationalRelaxationCollisionNumber . 
+}  
+'''
+
+ontokin_url = 'http://www.theworldavatar.com/rdf4j-server/repositories/ontokin'
+ontospecies_url = 'http://www.theworldavatar.com/rdf4j-server/repositories/ontospecieskb'
+ontocompchem_url = 'http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem'
+
+
+# r = fire_query_free(ontokin_url, hasLennardJonesDiameter, 'query')
+# r = fire_query_ontokin(has_transport_query)
+r = fire_query_ontokin(relaxation_collision)
+print('result from', r)
 
 #
 # process_species_for_ontocompchem('h2o2')

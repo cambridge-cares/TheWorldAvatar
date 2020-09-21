@@ -128,6 +128,18 @@ function process_json_result(result){
         keys = []
         table = []
          console.log('this is a result from JPS', r)
+         // get the variable names
+         first_row = r["results"][0]
+         head_object = {'result_id': 'index'}
+         for (let head in first_row){
+            head_object[head] = head
+         }
+         table.push(head_object)
+
+
+
+
+
         r["results"].forEach(function (item, index) {
          let row_object = {}
 
@@ -357,6 +369,10 @@ function displayResults(myData, source) {
 
         var data = myData[i][col[j]];
 
+
+
+
+
         if (data.includes('.svg') || data.includes('.png')){
 //            var myImage = $('<img/>');
 //            myImage.attr('src', data);
@@ -366,8 +382,15 @@ function displayResults(myData, source) {
 
         }
         else{
-                div_inner.appendChild(document.createTextNode(data));
 
+                    if (data.includes('.g09') || data.includes('.xml')){
+                    div_inner.innerHTML = '<a href="'+ data +'">'+ data +'</a>'
+                // <a href="url">link text</a>
+        }else{
+
+
+                div_inner.appendChild(document.createTextNode(data));
+}
         }
 
         // Set its contents:
