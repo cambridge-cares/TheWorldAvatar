@@ -1,2 +1,3 @@
-ECHO OFF
+@ECHO OFF
 ECHO Hello World
+exit

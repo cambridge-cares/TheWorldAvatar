@@ -18,7 +18,7 @@ public class CommandHelper {
     private static Logger logger = LoggerFactory.getLogger(CommandHelper.class);
 
 
-    //Since the command line commands are dependant on the OS, its imp to identify the OS.
+    //Since the command line commands are dependent on the OS, its imp to identify the OS.
     private static String OS = System.getProperty("os.name").toLowerCase();
 
     public static boolean isWindows() {
@@ -106,7 +106,7 @@ public class CommandHelper {
 		try {
 
 			if (isWindows()) {
-				pr = Runtime.getRuntime().exec("start  " + command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
+				pr = Runtime.getRuntime().exec("cmd /c start " + command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 			} else if (isMac()) {
 				pr = Runtime.getRuntime().exec("open " + command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 			}
