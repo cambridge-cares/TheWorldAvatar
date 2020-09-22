@@ -226,6 +226,8 @@ public String getGaussianJsonFileName(String uuidFile) {
 }
 	
 
+
+
 	/**
 	 * @param uuid unique identifier (UUID) that we use to create folder, name uploaded Log file.
 	 * @param uuidFile unique identifier for generated OWL file.
@@ -241,11 +243,7 @@ public String getGaussianJsonFileName(String uuidFile) {
 
 		folderName =dataFolderPath + uuid.toString() + "/" + uuidFile.replaceAll(".owl", "") + format;
 		
-		}else {
-			
-		folderName =dataFolderPath + uuid.toString() + "/" + uuid.toString() + "_nasa.json";
-		
-		}
+		} 
 		
 		File file = new File(folderName);
 		

@@ -205,9 +205,16 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					/**
 					 * Runs python code that parses uploaded Gaussian file and generates JSON and OWL files.
 					 */	
-				  
-				new ExecutorManager().runParser(pythonParserPath+ " -f "+ dataFolderPath + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + uuidFolderName + "/" );
+/**
+ * Commented line below works on local machine (localhost) but does not work on Claudius. 	Uncomment it before run molhub code on local machine (localhost)			  
+ */
+//				new ExecutorManager().runParser(pythonParserPath+ " -f "+ dataFolderPath + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + uuidFolderName + "/" );
 					
+/**
+ * Line below works on Claudius. Comment it before run the code on local machine (localhost).
+ */
+new ExecutorManager().runParser("C:\\ProgramData\\Anaconda3\\envs\\gaussian_parser\\Scripts\\ccparse.exe"+ " -f "+ "C:\\TOMCAT\\webapps\\ROOT\\data\\ontocompchem\\" + uuidFolderName + "\\" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + "C:\\TOMCAT\\webapps\\ROOT\\kb\\ontocompchem\\" + uuidFolderName + "\\" );
+				
 				}else {
 					
 					/**
