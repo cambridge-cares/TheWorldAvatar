@@ -59,18 +59,19 @@ function configDevelop() {
     config.registerUrl = "http://localhost:";
     config.ppFolder = path.join(config.root, "kb/powerplants")
     //"http://www.thewordavatar.com:82/change";
+    config.logDir = "C:/jps/temp/logs/"
 }
 
 function configDeploy() {
      config.root = path.normalize("C:/TOMCAT/webapps/ROOT");
     //config.root = path.normalize("C:/Users/LONG01/TOMCAT/webapps/ROOT");
-	//config.root2 = path.normalize("C:/TOMCAT/webapps/ROOT/kb/sgp/semakauisland");
+    //config.root2 = path.normalize("C:/TOMCAT/webapps/ROOT/kb/sgp/semakauisland");
     config.port = 82;//port for deploy
     config.registerUrl = "http://10.25.188.104";
     config.changeUrl = "http://www.theworldavatar.com:82";
     config.ppFolder = path.join(config.root , "kb/powerplants");
-	//config.ppFolder = path.normalize("C:/TOMCAT/webapps/ROOT/kb/powerplants");
-
+    //config.ppFolder = path.normalize("C:/TOMCAT/webapps/ROOT/kb/powerplants");
+    config.logDir = "C:/jps/temp/logs/"
 }
 
 module.exports = config;

@@ -2,16 +2,18 @@
  * app main
  * @type {*}
  */
+var config = require("./config.js");
+var path = require('path');
+
 var log4js = require('log4js'); // log4js is a Java-based logging utility or framwork
 log4js.configure({
-  appenders: { defaultLogger: { type: 'file', filename: 'C:/jps/temp/logs/js-server.log' } },
+  appenders: { defaultLogger: { type: 'file', filename: path.join(config.logDir, 'js-server.log') } },
   categories: { default: { appenders: ['defaultLogger'], level: 'error' } }
 });
 var logger = log4js.getLogger('defaultLogger'); // 'defaultLogger' is a loggerCategory
 logger.level = 'debug';
 
 var express = require('express');
-var path = require('path');
 var httplogger = require('morgan');
 var request =require("request");
 var bodyParser = require('body-parser');
