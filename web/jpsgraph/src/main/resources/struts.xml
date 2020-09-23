@@ -4,7 +4,6 @@
 "http://struts.apache.org/dtds/struts-2.0.dtd">
  
 <struts>
-
  	
 	 <constant name="struts.devMode" value="true"/>   
 	
