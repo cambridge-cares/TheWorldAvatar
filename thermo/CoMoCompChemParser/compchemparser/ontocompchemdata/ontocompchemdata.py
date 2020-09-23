@@ -488,6 +488,16 @@ class OntoCompChemData:
          if "Atom types" in dict_data:
              empirical_formula = dict_data["Empirical formula"]
              for akey in dict_data["Atom types"]:
+                 
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(empirical_formula)+ "_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.GeometryOptimization))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasMolecule,URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd))))
+
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.Molecule))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
+
+
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasAtom, URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,gc_namespace.Atom))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,OWL.Thing))
