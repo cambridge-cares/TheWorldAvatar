@@ -18,11 +18,12 @@ config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
 config.localRDF4j = "http://127.0.0.1:8080/rdf4j-server/repositories/PowerPlant"
 
-config.comoRDF4j = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant"
-
 configDevelop();
 
 // configDeploy();
+
+//configDeployCMCL();
+
 config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
 config.ppNode = path.join(config.root , "kb/powerplants/WorldPowerPlants.owl");
@@ -49,7 +50,15 @@ config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")
 
 
 
+function configDeployCMCL() {
+    config.root = "NOT SET"
 
+    config.logDir = "/home/user/logs"
+    config.port = 3001
+    config.ppFolder = path.join(config.root, "kb/powerplants")
+    config.registerUrl = "http://localhost:";
+    config.RDF4j = "https://kg.cmclinnovations.com/rdf4j-server/repositories/UKPowerPlant"
+}
 
 function configDevelop() {
     // config.root = path.join(__dirname ,  "testFiles") ; // own folder for testing
@@ -60,6 +69,7 @@ function configDevelop() {
     config.ppFolder = path.join(config.root, "kb/powerplants")
     //"http://www.thewordavatar.com:82/change";
     config.logDir = "C:/jps/temp/logs/"
+    config.RDF4j = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant"
 }
 
 function configDeploy() {
@@ -72,6 +82,7 @@ function configDeploy() {
     config.ppFolder = path.join(config.root , "kb/powerplants");
     //config.ppFolder = path.normalize("C:/TOMCAT/webapps/ROOT/kb/powerplants");
     config.logDir = "C:/jps/temp/logs/"
+    config.RDF4j = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant"
 }
 
 module.exports = config;

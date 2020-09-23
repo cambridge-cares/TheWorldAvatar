@@ -44,7 +44,7 @@ WHERE
 
 
 function getEnglandPPcoordinates(callback) {
-    aQueryer.queryPromise(queryStr, config.comoRDF4j) // the config.localRDF4j is the address of the endpoint
+    aQueryer.queryPromise(queryStr, config.RDF4j) // the config.localRDF4j is the address of the endpoint
         .then((result) => {
             let coordList = [];
             for (line of result) {
