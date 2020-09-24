@@ -9,13 +9,12 @@ from rasa_jps.chatbot_interface import Chatbot
 from functools import lru_cache
 sys.path.append('/source')
 
-
 from pprint import pprint
 from rasa.nlu.model import Interpreter
 import os
 import tarfile
 import wolframalpha
-
+from location import WIKI_MODELS_DIR
 
 # 0. get the topic model result, choose which direction it goes
 # 1. get the InterpretationParse
@@ -39,8 +38,9 @@ class CoordinateAgent():
         # extract_nlu_model()
         self.stopwords = ['all', 'the']
         # self.stopwords.append('all')
-        print(os.path.abspath('models/nlu'))
-        self.interpreter = Interpreter.load('models/nlu') # load the wiki nlu models
+
+        self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
+        self.interpreter = Interpreter.load(self.nlu_model_directory) # load the wiki nlu models
         self.jps_interface = Chatbot()
 
     def run(self, question):
