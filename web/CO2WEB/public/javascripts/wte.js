@@ -1,10 +1,17 @@
 scenario = "testFW";
-prefix = "http://localhost:8080";
+/* prefix to be changed according to local or testing 
+*/
+prefix = "http://www.jparksimulator.com";
 markers = []
 var infowindow;
 var listOfIRIs = [];
+/* Common IRIS to be changed once IRI is sent over for multiple systems
+*/
 transportIRI = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001"; 
 wastenetwork = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+/** selects Foodcourt queries
+ * 
+ */
 FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -41,6 +48,9 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 
 
 + "}";
+/** selects offsite waste treatment facility coordinates
+ * 
+ */
 WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -63,6 +73,8 @@ WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.o
     + "?vy  j2:numericalValue ?V_y ."//longitude
     + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
     + "}";
+/** selects onsite coordinates
+ *  */    
 OnWQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -86,7 +98,9 @@ OnWQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.
     + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
     + "}";
 
-//
+/** Selects transport related costs
+ * 
+ */
 transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -176,8 +190,22 @@ var wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/
 
     + "}";
 
+/** Display ? element for further detail
+ * 
+ * @param {*} elemId 
+ */
+const toggleDisplay = elemId => {
+    let x = document.getElementById(elemId);
+    if (x.style.display !== 'block') {
+        x.style.display = 'block';
+    } else {
+        x.style.display = 'none';
+    }
+};
 
-
+$("#readme-button").click(function() {
+    toggleDisplay("readme-text");
+});
 /** boolean that would signal start of simulation
  * 
  */
@@ -218,6 +246,7 @@ $(document).ready(function () {
         completeUpdate(function(){
             var interval = setInterval(function(){
                 if (Date.now() - started > 180000) {
+                    //If it takes more than three minutes to start loading, check if there is something wrong with the server
                     alert("Update issue. Check if it's working? ");
                     clearInterval(interval);
                 } else {
@@ -270,7 +299,8 @@ async function completeUpdate(callback){
 function runWTESimulation(){
     var noOfCluster = document.getElementById("noOfCluster").value;
     if (noOfCluster == ''){
-        scenario = "9"; //auto set scenario to standard to differentiate from base
+        document.getElementById("noOfCluster").value = 40; //gives results within 5 minutes
+        noOfCluster = "40"; 
     }
     var para = {"wastenetwork":wastenetwork, "n_cluster": noOfCluster};
     var agenturl = prefix + '/JPS_WTE/startsimulationCoordinationWTE';  
@@ -289,14 +319,12 @@ function runWTESimulation(){
     request.done(function() {
         document.getElementById("loader").style.display = "block"; 
         delayedCallback(function(){
-            queryForEconomicComp();
             var QurStr =  "?vWP     j1:isDeliveredTo  ?Site_of_delivery ."
                 +"}";
             FCQuery = FCQuery.replace("}", QurStr );
-            queryForOnsiteWT();
-            document.getElementById("loader").style.display = "none";
+            queryForEconomicComp(1);
+        }, 5);
         });
-    });
 }
 /** sleep function for javascript
  * 
@@ -306,21 +334,24 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 /**async function that would provide five minutes to complete simulation and then run callback function
- * @param {Function} callback
+ * @param {Function} callback function calledback
+ * @param {Integer} min Number of minutes
  */
-async function delayedCallback(callback) 
+async function delayedCallback(callback, min) 
     {
     var dt = Date();
     console.log("Wait for simulation to finish: "+dt);
-    await sleep(300*1000);//five minutes?
+    await sleep(min*60*1000);//five minutes?
     dt = Date();
     console.log("Check callback "+dt);
     callback();
   }
 /** read output of economic costs in cumulative for landcost
- * 
+ *  Added: if result is empty, wait five minutes and call again. 
+ *  @param {Integer} noOfCallback keep a counter of how many times this is called back.
  */
-function queryForEconomicComp(){
+function queryForEconomicComp(noOfCallback){
+    
     var wasteurl = createUrlForSparqlQuery(scenario, wastenetwork,wasteSystemOutputQuery);
     $.ajax({
         url: wasteurl,
@@ -328,15 +359,27 @@ function queryForEconomicComp(){
         success: function (data) {
             var obj0 = JSON.parse(data);
             obj0 = obj0['results']['bindings'][0];
-            console.log(obj0);
+            if (typeof obj0 == "undefined" && noOfCallback <= 5 ){
+                console.log("Results not ready yet. Need to wait for server to complete update");
+                console.log("No of callbacks so far: "+noOfCallback);
+                noOfCallback += 1;
+                delayedCallback(function(){
+                    queryForEconomicComp(noOfCallback);//recursive query again to check if results are empty
+                }, 3);
+            }else if (noOfCallback > 5){//17 minutes, no response from server? Cancelled. 
+                alert( "Five calls to server have been made yet no valid response. Check if server has error. ")
+            }else{
+                queryForOnsiteWT();//call other functions
             dumpEconomic(obj0);
+                document.getElementById("loader").style.display = "none";
+            }
         },
         error: function () {
             console.log("Failed query for compositeQuery")
         }
     });
 }
-/**  insert economic output data (I think I'm supposed to put it here?)
+/**  insert economic output data in the form of a table
  * @param data key value pairs of costs
  */
 function dumpEconomic(data){

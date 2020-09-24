@@ -479,8 +479,8 @@ var chart = new Chart(ctx, {
        labels: jsList,
         datasets: [{
             label: 'Additional species in OntoCompChem',
-            backgroundColor: 'rgb(255, 99, 132)',
-            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgb(0, 47, 255)',
+            borderColor: 'rgb(0, 47, 255)',
             data: jsOntoCompChemList
         },
         {
