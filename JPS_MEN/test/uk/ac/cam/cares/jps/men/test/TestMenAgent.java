@@ -101,6 +101,9 @@ public class TestMenAgent extends TestCase {
 		assertEquals(2685.6338, ans6, 1.);
 		assertEquals(1552885.9635, ans7, 1.);
 	}
+	/** validate Input for MENAgent
+	 * 
+	 */
 	public void testValidInputs() {
 		JSONObject jo = new JSONObject();
 		jo.put("transportationmodes", getTransportationFile());

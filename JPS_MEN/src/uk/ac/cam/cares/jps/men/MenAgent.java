@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 
 
@@ -111,6 +112,11 @@ public class MenAgent extends JPSHttpServlet {
 		cpirilist.clear();
 		logger.info("MENAgent exit");
 	}
+	/** validate input for args in input from Table Agent
+	 * 
+	 * @param args JSONObject
+	 * @return
+	 */
 	public boolean validateInput(JSONObject args) {
         boolean transport_opt,chemical_opt,bool_opt,impf_opt, comp_opt; 
         transport_opt= chemical_opt =bool_opt= impf_opt = comp_opt= true; //set default value to true
@@ -139,8 +145,7 @@ public class MenAgent extends JPSHttpServlet {
         }
         if (args.has("internationalmarketlowestpriceapplied")) {
         	//There isn't a method to check if a value is boolean. Only if it's true or false
-        	Object checkBool = args.get("internationalmarketlowestpriceapplied");
-        	bool_opt = "true".equals(checkBool) || "false".equals(checkBool);
+        	bool_opt = InputValidator.checkBoolean(args.get("internationalmarketlowestpriceapplied"));
         }
        //these are the compulsory data; thus they're in the true category
         	boolean carbBool=  doubleValidator.isValid(args.get("carbontax").toString());
@@ -155,10 +160,8 @@ public class MenAgent extends JPSHttpServlet {
 			e.printStackTrace();
 		}
     	 if (transport_opt &&bool_opt&&impf_opt&& comp_opt== true) {
-    		 System.out.println("All outputs valid");
     		 return  true;
      	}else {
-     		System.out.println("Invalid value input: Please try again ");
      		return false;
      	}
     	
