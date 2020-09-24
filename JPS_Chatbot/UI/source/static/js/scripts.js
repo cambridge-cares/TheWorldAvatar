@@ -94,7 +94,7 @@
 
     address = 'http://127.0.0.1:5000/'
     cmcl_address = 'https://kg.cmclinnovations.com/'
-    // address = cmcl_address
+    address = cmcl_address
 
     $('#google_result_box').hide()
     $.get(address + "query?question=" + msg, function( data ) {
@@ -119,7 +119,7 @@ function process_json_result(result){
 
      address = 'http://127.0.0.1:5000/'
     cmcl_address = 'https://kg.cmclinnovations.com/'
-    // address = cmcl_address
+    address = cmcl_address
     query_wolfram_alpha(address, msg);
     query_google(address, msg);
     return null
