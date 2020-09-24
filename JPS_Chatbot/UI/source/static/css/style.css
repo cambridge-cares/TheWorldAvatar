@@ -1393,3 +1393,16 @@ form .row:first-child .floating-label-form-group {
   width: calc(100% / 3 - (3px + 2em));
   overflow-wrap: break-word;
 }
+
+.sample-question {
+vertical-align: middle;
+display: table-cell;
+height:30px; width:330px;
+border-style:solid;
+border-color:#D3D3D3;
+border-width: thin;
+}
+.sample-question:hover {
+border-color:#FFA500;
+cursor: pointer;
+}
