@@ -245,7 +245,7 @@ function process_json_result(result){
     // call wolfram_alpha or google
     address = 'http://127.0.0.1:5000/'
     cmcl_address = 'https://kg.cmclinnovations.com/'
-    // address = cmcl_address
+    address = cmcl_address
 
     query_wolfram_alpha(address, msg);
     query_google(address, msg);
