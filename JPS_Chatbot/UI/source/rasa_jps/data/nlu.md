@@ -19,6 +19,7 @@
  - what reaction contains [H](species) add_sign [OH](species)
  - what reaction has [H](species) add_sign [HCO](species)
  - what reactions [produces](indicator) [NO2](species)
+ - what is the [product](indicator) of [H2](species) add_sign [OH](species)
  - what reactions [produces](indicator) [hydrocodone polistirex](species)
  - reactions [producing](indicator) [hooc-ch2-ch2-cooh](species)
  - which [reaction](class) has [C6H6](species)
@@ -58,8 +59,8 @@
  - show data about the [frequency](attribute) of [C5H3C2](species)
 
 ## intent: guassian_file
- - show me the [guassian file](attribute) of [C8H3O2](species)
- - give me the [guassian log file](attribute) of [C3H3](species)
+ - show me the [gaussian file](attribute) of [C8H3O2](species)
+ - give me the [gaussian log file](attribute) of [C3H3](species)
  - what is the [log file](attribute) of [H2O2](species)
  
 ## intent: spin_multiplicity

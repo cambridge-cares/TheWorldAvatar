@@ -39,6 +39,18 @@
     });
 
     // Closes responsive menu when a scroll trigger link is clicked
+
+    $('.sample-question').click(function(){
+           // ask_question()
+           let q =  $(this).text().replace('   ',' ');
+           document.getElementById('input-field').value = q;
+           $('html,body').scrollTop(0);
+
+           ask_question()
+    });
+
+
+
     $('.js-scroll-trigger').click(function() {
       $('.navbar-collapse').collapse('hide');
     });
@@ -87,10 +99,11 @@
     $('#google_result_box').hide()
     $.get(address + "query?question=" + msg, function( data ) {
       displayResults(data, 'jps')
-
     });
 
 }
+
+
 
 function process_json_result(result){
 

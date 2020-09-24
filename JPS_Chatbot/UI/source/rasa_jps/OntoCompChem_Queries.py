@@ -183,10 +183,7 @@ BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short
 
 '''
 
-POLARIZABILITY = '''
-'''
 
-RELAXATION_COLLISION = ''''''
 
 ontocompchem_simple_intents = ['symmetry_number',
                                'rotational_constants',

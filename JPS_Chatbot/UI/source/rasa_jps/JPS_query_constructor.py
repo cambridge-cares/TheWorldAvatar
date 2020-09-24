@@ -41,7 +41,7 @@ class JPS_query_constructor:
                 new_number = ' ' + number + ' '
                 species = species.replace(number, new_number)
 
-            return species.strip()
+            return species.strip().upper()
             # return result
         else:
             return None
@@ -51,6 +51,16 @@ class JPS_query_constructor:
 
         intent = intents['intent']['name']
         if intent in ontocompchem_simple_intents:
+            result = {'intent': intent}
+            for e in intents['entities']:
+                entity_type = e['entity']
+                value = e['value']
+                if entity_type == 'species':
+                    result['species'] = value
+
+            return result
+
+        if intent in ontokin_simple_intents:
             result = {'intent': intent}
             for e in intents['entities']:
                 entity_type = e['entity']
@@ -104,6 +114,7 @@ class JPS_query_constructor:
                     temp.append(value.upper())
             if (not result['reactants']) and (not result['products']):
                 result['products'] = temp
+            print('-------------- result processed -------------', result)
             return result
         elif intent == 'select_mechanism_by_reaction':
             result = {'intent': intent}
@@ -133,6 +144,12 @@ class JPS_query_constructor:
         pprint(intents)
         result = JPS_query_constructor.extract_info(intents)
         intent = result['intent']
+        print('----- from construct query -------')
+        print(intent)
+        print(intent in ontokin_simple_intents)
+
+        print('----------------------------------')
+
         if intent == 'query_reaction_property':
             try:
                 rst = self.query_reaction_property(result['reactants'], result['products'], result['attribute'])
@@ -140,6 +157,7 @@ class JPS_query_constructor:
                 rst = self.query_reaction_property(result['reactants'], result['products'], result['indicator'])
         elif intent == 'select_reaction_by_species':
             # TODO: seperate reactants and products
+            print('select_reaction_by_species')
             rst = self.query_by_reaction_only(result['reactants'], result['products'])
         elif intent == 'select_mechanism_by_reaction':
             rst = self.query_mechanism_by_reaction(result['reactants'], result['products'])
@@ -158,7 +176,7 @@ class JPS_query_constructor:
         return rst.replace('[=]', '->').replace('=]', '->')
 
     def query_thermo_of_moleculars(self, intent, species):
-
+        species = species.upper()
         if intent == 'lennard_jones_well':
             q = LENNARD_JONES_WELL_DEPTH % species
             rst = self.fire_query(q).decode('utf-8')
