@@ -2,21 +2,31 @@
  * app main
  * @type {*}
  */
+ 
+var cmdLineArgs = process.argv.slice(2);
+
+// Set configuration name from command line if it was supplied, or default to CoMoDevelop
+var config_name = "CoMoDevelop";
+if (cmdLineArgs.length>0){
+    config_name = cmdLineArgs[0];
+}
+
+var config = require("./config.js")(config_name);
+var path = require('path');
+
 var log4js = require('log4js'); // log4js is a Java-based logging utility or framwork
 log4js.configure({
-  appenders: { defaultLogger: { type: 'file', filename: 'C:/jps/temp/logs/js-server.log' } },
+  appenders: { defaultLogger: { type: 'file', filename: path.join(config.logDir, 'js-server.log') } },
   categories: { default: { appenders: ['defaultLogger'], level: 'error' } }
 });
 var logger = log4js.getLogger('defaultLogger'); // 'defaultLogger' is a loggerCategory
 logger.level = 'debug';
 
 var express = require('express');
-var path = require('path');
 var httplogger = require('morgan');
 var request =require("request");
 var bodyParser = require('body-parser');
 var util = require('util');
-var config = require("./config.js");
 var UKontoTwinMap = require('./routes/ontoTwinUK');
 // var UKontoTwinMapAttr = require('./routes/powerPlantAttr');
 
