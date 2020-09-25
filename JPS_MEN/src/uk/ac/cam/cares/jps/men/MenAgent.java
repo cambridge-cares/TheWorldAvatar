@@ -63,8 +63,7 @@ public class MenAgent extends JPSHttpServlet {
 					+ "SELECT ?iri "
 					+ "WHERE {?entity  a  cp:Eco-industrialPark  ." 
 					+ "?entity   j2:hasSubsystem ?iri ."
-					+ "}"
-					+ "ORDER BY ?product DESC(?added)";
+					+ "}";
 	
 			ResultSet rs_plant = MenDataProvider.sparql(ecoindustrialpark, chemicalplantInfo); 
 			
@@ -72,7 +71,7 @@ public class MenAgent extends JPSHttpServlet {
 				QuerySolution qs_p = rs_plant.nextSolution();
 				Resource cpiri = qs_p.getResource("iri");
 				String irilist = cpiri.toString();
-				
+				System.out.println(irilist);
 				irilist = irilist.replace(" ", "");
 				irilist = irilist.replace("\n", "");
 				irilist = irilist.replace("\r", "");
@@ -159,7 +158,7 @@ public class MenAgent extends JPSHttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	 if (transport_opt &&bool_opt&&impf_opt&& comp_opt== true) {
+    	 if (transport_opt &&chemical_opt&&bool_opt&&impf_opt&& comp_opt== true) {
     		 return  true;
      	}else {
      		return false;
