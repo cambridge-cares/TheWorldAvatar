@@ -63,6 +63,11 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.ModelFactory;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import au.com.bytecode.opencsv.CSVWriter;
 
 
 /**
@@ -421,9 +426,56 @@ public class gPROMSAgent extends JPSAgent {
 		if (!Files.exists(archive) || Files.readAllBytes(archive).length <= 0) {
 			return false;
 		}
-		return true;
+		
+		ArrayList<String> result = new ArrayList<>(); 
+		try (BufferedReader br = new BufferedReader(new FileReader(archive.toString()))) {
+	    while (br.ready()) {
+	        result.add(br.readLine());
+	    }
+	    br.close();
+		}
+	    //System.out.println(result.size());
+	    //System.out.println(result.get(16038));
+	    //System.out.println(result.get(0));
+	    // Integer r is the line number of the required variable minus 1
+	    int r=16038;
+	    int vars=Integer.parseInt(result.get(0)); 
+	    int n =result.size()/(vars+1);
+	    //The required variable and the time index is stored into a float array
+	    float table[][]=new float[n][2];
+	    System.out.println(n);
+	    for (int i=1; i<n;i++) {
+	    	table[i][0]=Float.parseFloat(result.get((vars+1)*i));
+	    	table[i][1]=Float.parseFloat(result.get(r+(vars+1)*i)); 
+	    	System.out.println(table[i][0]);
+			}
+	    exportDataToExcel(jobFolder.toString()+"/matlab.csv", table);
+	    return true;
+		}
+		
+	public static void exportDataToExcel(String fileName, float[][] data) throws FileNotFoundException, IOException{
+    File file = new File(fileName);
+    if (!file.isFile())
+        file.createNewFile();
 
-	}
+    CSVWriter csvWriter = new CSVWriter(new FileWriter(file));
+
+    int rowCount = data.length;
+
+    for (int i = 0; i < rowCount; i++)
+    {
+        int columnCount = data[i].length;
+        String[] values = new String[columnCount];
+        for (int j = 0; j < columnCount; j++)
+        {
+            values[j] = data[i][j] + "";
+        }
+        csvWriter.writeNext(values);
+    }
+
+    csvWriter.flush();
+    csvWriter.close();
+}
 	/**
 	 * Sets up a quantum job by creating the job folder and the following files</br>
 	 * under this folder:</br>
