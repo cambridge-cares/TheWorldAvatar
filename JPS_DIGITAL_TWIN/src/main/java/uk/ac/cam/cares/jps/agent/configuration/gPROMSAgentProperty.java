@@ -58,6 +58,9 @@ public class gPROMSAgentProperty {
 
 	@Value("${agent.periodic.action.interval}")
 	private int agentPeriodicActionInterval;
+	
+	@Value("${executable.file.name}")
+	private String executableFile;
 
 	/**
 	 * Location of python scripts (should contain 'agkin', 'simulation_templates', and 'venv' directories).
@@ -138,7 +141,13 @@ public class gPROMSAgentProperty {
 	public int getAgentPeriodicActionInterval() {
 		return agentPeriodicActionInterval;
 	}
+	public String getExecutableFile() {
+		return executableFile;
+	}
 
+	public void setExecutableFile(String executableFile) {
+		this.executableFile = executableFile;
+	}
 	/**
 	 * Returns the Location of python scripts.
 	 *
