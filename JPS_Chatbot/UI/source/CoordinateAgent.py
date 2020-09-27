@@ -48,12 +48,17 @@ class CoordinateAgent():
         # TODO: put the LDA model here
         # ===================== initialize the things for wiki
         self.interpreter_parser = InterpretationParser()
+        print('Loading interpreter')
         self.interpreter_parser.interpreter = self.interpreter
+        print('Loading interpreter')
         self.search_engine = SearchEngine()
+        print('Loading search engine')
         self.sparql_constructor = SPARQLConstructor()
+        print('Loading SPARQL constructor')
         self.sparql_query = SPARQLQuery()
+        print('Loading SPARQLQuery')
         self.lda_classifier = LDAClassifier()
-
+        print('Loading LDA classifier')
         # TODO: Make the list complete ...
         topics = self.lda_classifier.classify(question)
         print('============== topics ==============')
