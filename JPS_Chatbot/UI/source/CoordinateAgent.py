@@ -1,5 +1,6 @@
-import sys
-
+import sys,os
+sys.path.append('/source')
+sys.path.insert(0, os.path.realpath(os.path.dirname(__file__)))
 from Chatbot.Interpretation_parser import InterpretationParser
 from Chatbot.SearchEngine import SearchEngine
 from Chatbot.SPARQLConstructor import SPARQLConstructor
@@ -7,7 +8,6 @@ from Chatbot.SPARQLQuery import SPARQLQuery
 from Chatbot.LDA_classifier import LDAClassifier
 from rasa_jps.chatbot_interface import Chatbot
 from functools import lru_cache
-sys.path.append('/source')
 
 from pprint import pprint
 from rasa.nlu.model import Interpreter

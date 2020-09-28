@@ -1,5 +1,5 @@
 from pprint import pprint
-import json
+import json, os
 import gensim
 import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
@@ -7,6 +7,7 @@ from gensim.models import CoherenceModel
 from nltk.stem import PorterStemmer
 import spacy
 import logging
+from .location import LDA_DIR
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.ERROR)
 
@@ -28,7 +29,7 @@ class LDAClassifier:
         stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
         self.stop_words = stopwords.words('english')
         self.stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
-        self.lda_model = gensim.models.ldamodel.LdaModel.load('Chatbot/LDA_MODEL')
+        self.lda_model = gensim.models.ldamodel.LdaModel.load(os.path.join(LDA_DIR, 'LDA_MODEL'))
         self.nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
         self.stemmer = PorterStemmer()
 

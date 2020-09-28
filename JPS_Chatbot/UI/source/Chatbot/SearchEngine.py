@@ -1,9 +1,9 @@
-import json, re
+import json, re, os
 from pprint import pprint
 
 from fuzzywuzzy import fuzz
 from nltk.tokenize import word_tokenize
-
+from .location import WIKI_DICT_DIR
 
 def remove_duplicated(uris):
     temp = []
@@ -46,7 +46,10 @@ def filter_components(term_type, term):
 
 class SearchEngine:
     def __init__(self):
-        self.file_path = './search_engine/wiki_dictionary_new'
+        self.file_path = os.path.join(WIKI_DICT_DIR, 'wiki_dictionary_new')
+        print('file path', self.file_path)
+
+
         with open(self.file_path) as f:
             self.wiki_dictionary = json.loads(f.read())
         self.top_k = 3
