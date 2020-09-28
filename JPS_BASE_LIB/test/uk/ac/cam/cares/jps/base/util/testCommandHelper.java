@@ -21,9 +21,10 @@ class testCommandHelper {
 	
 	@BeforeEach
 	public void init() throws URISyntaxException {
+		
 		commandHelper = new CommandHelper();
-		// path to test resources in target/test-classes/
-		resourcesFolderPath = Paths.get(this.getClass().getResource("/").toURI()).toFile().getPath();
+		
+		resourcesFolderPath = Paths.get(this.getClass().getResource("/").toURI()).toFile().getPath(); // path to test resources in target/test-classes/
 		targetFolder = resourcesFolderPath; // use the test resources folder as the working directory
 	}
 	
@@ -157,7 +158,7 @@ class testCommandHelper {
         assertEquals(JPSRuntimeException.class, ex.getCause().getClass(),"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
-	// Test getCommandProcess(String targetFolder, String [] command), a private member of CommandHelper 
+	// Test getCommandProcess(String targetFolder, String [] command)
 	@Test
 	public void testGetCommandProcessOverload() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -221,7 +222,7 @@ class testCommandHelper {
         assertEquals(JPSRuntimeException.class, ex.getCause().getClass(),"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
-	// Test getAsyncCommandProcess(String targetFolder, String command), a private member of CommandHelper 
+	// Test getAsyncCommandProcess(String targetFolder, String command) 
 	@Test
 	public void testGetAsyncCommandProcess() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -250,14 +251,13 @@ class testCommandHelper {
         
         Throwable ex = null;
         
-        // Method.Invoke will throw a InvocationTargetException. The cause of this will be a JPSRuntimeException thrown by getCommandProcess.
+        // Method.Invoke will throw a InvocationTargetException. The cause of this will be a JPSRuntimeException thrown by getAsyncCommandProcess.
         ex = assertThrows(InvocationTargetException.class, () -> getAsyncCommandProcess.invoke(commandHelper, nonexistentFolder, "CommandHelperTest.bat"));
-        
         assertEquals(JPSRuntimeException.class, ex.getCause().getClass(),"Unknown exception thrown, expected JPS runtime exception");
 	}
 		
 	@Test
-	public void testGetCommandResultString() throws IOException, URISyntaxException {
+	public void testGetCommandResultString() throws IOException {
 		
 		String expected = "Hello World!";
 		Process pr = null;
@@ -270,11 +270,12 @@ class testCommandHelper {
 	        pr = Runtime.getRuntime().exec("cmd /c echo Hello World!", null, target); 
 		}
 		
+		// assert result string is returned
 		if (pr != null) {
 			String result = CommandHelper.getCommandResultString(pr);
 			assertEquals(expected, result);
 		}else {
-			fail("The command was not executed correctly. Process = null.");
+			fail("The command was not executed correctly.");
 		}
 	}
 }
