@@ -2,31 +2,123 @@ package uk.ac.cam.cares.jps.base.util.test;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import org.cts.CRSFactory;
+import org.cts.crs.CRSException;
+import org.cts.crs.CoordinateReferenceSystem;
 
 public class CRSTransformerTest {
 
-	@Test
-	public void testTransformHK() {
-		  
-		// HK grid to WGS84
-		// Pass CRS name as string
-		double[] expected = {114.03058, 22.19656};
-		double[] result = CRSTransformer.transform("EPSG:2326", "EPSG:4326", new double[] {821182.43, 806448.76});
+	CRSTransformer crsTransformer;
+	
+	@Before
+	public void init() {
 		
-		assertArrayEquals(expected, result, 0.00001);
+		crsTransformer = new CRSTransformer();
 	}
-
+	
 	@Test
-	public void testTransformSphMercator() {
+	public void testGetFactory() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	
+		// access private member
+		assertNotNull(crsTransformer.getClass().getDeclaredMethod("getFactory"));
+	    Method getFactory = crsTransformer.getClass().getDeclaredMethod("getFactory");
+	    getFactory.setAccessible(true);
+		
+	    CRSFactory crsFactory = null;
+	    try {
+	    	crsFactory = (CRSFactory) getFactory.invoke(crsTransformer);
+	    } finally {
+	    	assertNotNull(crsFactory);
+	    }
+	}
+	
+	@Test
+	public void testTransform() {
 		  
-		// Spherical Mercator to WGS84
-		// Pass CRS name as variable
+		// Test spherical Mercator to WGS84
 		double[] result = CRSTransformer.transform(CRSTransformer.EPSG_3857, CRSTransformer.EPSG_4326, new double[] {11563323.926, 143305.896, 11560879.832, 140107.739});
 		double[] expected = {103.87510617, 1.28723046, 103.85315050, 1.25850802};
 		
 		assertArrayEquals(expected, result, 0.00000001);
 	}
+	
+	@Test(expected = JPSRuntimeException.class)
+	public void testTransformException() {
+		  
+		CRSTransformer.transform("badSource", "badTarget", new double[] {11563323.926, 143305.896, 11560879.832, 140107.739});
+	}
+	
+	// Test transformInternal, a private method called by transform 
+	@Test
+	public void testTransformInternal() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		// access private member
+		assertNotNull(crsTransformer.getClass().getDeclaredMethod("transformInternal", String.class, String.class, double[].class));
+	    Method transformInternal = crsTransformer.getClass().getDeclaredMethod("transformInternal", String.class, String.class, double[].class);
+	    transformInternal.setAccessible(true);
+		
+	    double[] expected = {103.87510617, 1.28723046};
+	    double[] sourcePoints = {11563323.926, 143305.896};
+	    
+	    double[] result = (double[]) transformInternal.invoke(crsTransformer, "EPSG:3857", "EPSG:4326", sourcePoints);
+	    
+	    assertArrayEquals(expected, result, 0.00000001);
+	}
+	
+	@Test
+	public void testTransformInternalException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
+		
+		// access private member
+		assertNotNull(crsTransformer.getClass().getDeclaredMethod("transformInternal", String.class, String.class, double[].class));
+	    Method transformInternal = crsTransformer.getClass().getDeclaredMethod("transformInternal", String.class, String.class, double[].class);
+	    transformInternal.setAccessible(true);
+	    
+	    try {
+	    	transformInternal.invoke(crsTransformer, "badSource", "badTarget", new double[] {1.0, 1.0});
+	    	fail("CRSException did not occur");
+	    } catch (InvocationTargetException ex) {
+	    	assertEquals(CRSException.class, ex.getCause().getClass());
+	    } 
+	}
+	
+	@Test
+	public void testgetCRS() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		
+		// access private member
+		assertNotNull(crsTransformer.getClass().getDeclaredMethod("getCRS", String.class));
+	    Method getCRS = crsTransformer.getClass().getDeclaredMethod("getCRS", String.class);
+	    getCRS.setAccessible(true);
+	    
+	    CoordinateReferenceSystem crs = null;
+	    try {
+	    	crs = (CoordinateReferenceSystem) getCRS.invoke(crsTransformer, "EPSG:4326");
+	    } finally {
+	    	assertNotNull(crs);
+	    }
+	}
+	
+	@Test
+	public void testgetCRSException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
+		
+		// access private member
+		assertNotNull(crsTransformer.getClass().getDeclaredMethod("getCRS", String.class));
+	    Method getCRS = crsTransformer.getClass().getDeclaredMethod("getCRS", String.class);
+	    getCRS.setAccessible(true);
+	    
+	    try {
+	    	getCRS.invoke(crsTransformer, "badSource");
+	    } catch (InvocationTargetException ex){
+	    	assertEquals(CRSException.class, ex.getCause().getClass());
+	    }
+	}
+	
+	// getCoordinateOperations not tested separately
 }
