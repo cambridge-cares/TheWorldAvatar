@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class FileUtilTest {
@@ -36,6 +37,13 @@ public class FileUtilTest {
 		String result = FileUtil.readFileLocally(path);
 		
 		assertEquals("This is a test file.\r\nTest input.", result);
+	}
+	
+	@Test(expected = JPSRuntimeException.class)
+	public void testReadFileLocallyException() {
+		
+		String path = "nonexistent/path";
+		String result = FileUtil.readFileLocally(path);
 	}
 	
 	@Test
@@ -55,9 +63,8 @@ public class FileUtilTest {
 		// check contents
 		String result = new String(Files.readAllBytes(Paths.get(filePath)));
 		assertEquals(content, result);
-		
 	}
-
+	
 	@Test
 	public void testInputStreamToString() throws IOException {
 		
