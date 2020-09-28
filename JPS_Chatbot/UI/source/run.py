@@ -1,5 +1,7 @@
 import json
-import sys
+import sys, os
+sys.path.insert(0, os.path.realpath(os.path.dirname(__file__)))
+
 from pprint import pprint
 
 from flask import Flask, request
