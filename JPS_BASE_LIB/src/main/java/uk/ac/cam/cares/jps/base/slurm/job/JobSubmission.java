@@ -506,13 +506,23 @@ public class JobSubmission{
 	private void updateRunningJobSet(File[] jobFolders, Set<String> jobsRunning) throws IOException{
 		for(File jobFolder: jobFolders){
 			if(!(new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()))).exists()){
-				logger.info("SlurmJobAPI: job status file is not found, so the job folder "+ jobFolder.getName()+" is being deleted.");
-				System.out.println("SlurmJobAPI: job status file is not found, so the job folder "+ jobFolder.getName()+" is being deleted.");
-				Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
+				logger.info("SlurmJobAPI: job status file is not found, so the job folder with ID "+ jobFolder.getName()+" is being moved to the failed job folder.");
+				System.out.println("SlurmJobAPI: job status file is not found, so the job folder with ID "+ jobFolder.getName()+" is being moved to the failed job folder.");
+				try{
+					Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
+				}catch(Exception e){
+					logger.info("SlurmJobAPI: failed to move the job folder with ID "+jobFolder.getName()+" to the failed job folder.");
+					System.out.println("SlurmJobAPI: failed to move the job folder with ID "+jobFolder.getName()+" to the failed job folder.");
+				}
 				continue;
 			}
-			if(Utils.isJobRunning(jobFolder)){
-				jobsRunning.add(jobFolder.getName());
+			try {
+				if (Utils.isJobRunning(jobFolder)) {
+					jobsRunning.add(jobFolder.getName());
+				}
+			} catch (Exception e) {
+				logger.info("SlurmJobAPI: failed to check the status of the job with ID "+jobFolder.getName()+ " while checking if it was running.");
+				System.out.println("SlurmJobAPI: failed to check the status of the job with ID "+jobFolder.getName()+ " while checking if it was running.");
 			}
 		}
 	}
@@ -587,19 +597,22 @@ public class JobSubmission{
 			// If all files set through properties are not available in a job folder, it
 			// deletes the folder.
 			if(!(countNumberOfFilesInJobFolder>=4 && countNumberOfFilesSetInProperties==countNumberOfFilesInJobFolder)){
-				logger.info("SlurmJobAPI: all mandatory files are not found, so the job folder "+ jobFolder.getName()+" is deleted.");
-				System.out.println("SlurmJobAPI-log: all mandatory files are not found, so the job folder "+ jobFolder.getName()+" is deleted.");
+				logger.info("SlurmJobAPI: all mandatory files are not found, so the job folder with ID "+ jobFolder.getName()+" is deleted.");
+				System.out.println("SlurmJobAPI: all mandatory files are not found, so the job folder with ID "+ jobFolder.getName()+" is deleted.");
 				Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
 				return false;
 			}
 		}catch(Exception e){
 			logger.info("SlurmJobAPI: all mandatory files are not found and an attempt to move the job folder with ID "
 					+jobFolder.getName()+" to the failed job folder is not successful.");
+			System.out.println("SlurmJobAPI: all mandatory files are not found and an attempt to move the job folder with ID "
+					+jobFolder.getName()+" to the failed job folder is not successful.");
 		}
 		try{
 			startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
 		}catch(Exception e){
 			logger.info("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.");
+			System.out.println("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.");
 			return false;
 		}
 		return true;
@@ -758,8 +771,14 @@ public class JobSubmission{
 	 */
 	private boolean updateRunningJobsStatus(File jobFolder)
 			throws JSchException, SftpException, IOException, InterruptedException {
+		boolean status = false;
+		try{
 			File statusFile = Utils.getStatusFile(jobFolder);
-			return updateRunningJobsStatus(jobFolder.getName(), statusFile);
+			status = updateRunningJobsStatus(jobFolder.getName(), statusFile);
+		}catch(Exception e){
+			logger.info("SlurmJobAPI: failed to update the status of the job with ID "+jobFolder.getName()+" while checking if it was still running.");
+		}
+		return status;
 	}
 	
 	/**
