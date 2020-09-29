@@ -427,7 +427,7 @@ public class JobSubmission{
 	 */
 	public void monitorJobs() throws SlurmJobException{
 		if(!hostAvailabilityCheck(getHpcAddress(), 22)){
-			System.out.println("The HPC server with address " + getHpcAddress() + " is not available.");
+			System.out.println("The agent cannot connect to the HPC server with address " + getHpcAddress());
 			session = null;
 			return;
 		}
@@ -508,7 +508,7 @@ public class JobSubmission{
 			if(!(new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()))).exists()){
 				logger.info("SlurmJobAPI: job status file is not found, so the job folder "+ jobFolder.getName()+" is being deleted.");
 				System.out.println("SlurmJobAPI: job status file is not found, so the job folder "+ jobFolder.getName()+" is being deleted.");
-				FileUtils.deleteDirectory(jobFolder);
+				Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
 				continue;
 			}
 			if(Utils.isJobRunning(jobFolder)){
@@ -583,17 +583,25 @@ public class JobSubmission{
 				countNumberOfFilesInJobFolder++;
 			}
 		}
-		// If all files set through properties are not available in a job folder, it
-		// deletes the folder.
-		if(!(countNumberOfFilesInJobFolder>=4 && countNumberOfFilesSetInProperties==countNumberOfFilesInJobFolder)){
-			System.out.println("countNumberOfFilesInJobFolder:"+countNumberOfFilesInJobFolder);
-			System.out.println("countNumberOfFilesSetInProperties:"+countNumberOfFilesSetInProperties);
-			logger.info("SlurmJobAPI: all mandatory files are not found, so the job folder "+ jobFolder.getName()+" is deleted.");
-			System.out.println("SlurmJobAPI: all mandatory files are not found, so the job folder "+ jobFolder.getName()+" is deleted.");
-			FileUtils.deleteDirectory(jobFolder);
+		try{
+			// If all files set through properties are not available in a job folder, it
+			// deletes the folder.
+			if(!(countNumberOfFilesInJobFolder>=4 && countNumberOfFilesSetInProperties==countNumberOfFilesInJobFolder)){
+				logger.info("SlurmJobAPI: all mandatory files are not found, so the job folder "+ jobFolder.getName()+" is deleted.");
+				System.out.println("SlurmJobAPI-log: all mandatory files are not found, so the job folder "+ jobFolder.getName()+" is deleted.");
+				Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
+				return false;
+			}
+		}catch(Exception e){
+			logger.info("SlurmJobAPI: all mandatory files are not found and an attempt to move the job folder with ID "
+					+jobFolder.getName()+" to the failed job folder is not successful.");
+		}
+		try{
+			startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
+		}catch(Exception e){
+			logger.info("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.");
 			return false;
 		}
-		startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
 		return true;
 	}
 	
