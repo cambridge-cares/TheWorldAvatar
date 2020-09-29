@@ -3,15 +3,7 @@
  * @type {*}
  */
  
-var cmdLineArgs = process.argv.slice(2);
-
-// Set configuration name from command line if it was supplied, or default to CoMoDevelop
-var config_name = "CoMoDevelop";
-if (cmdLineArgs.length>0){
-    config_name = cmdLineArgs[0];
-}
-
-var config = require("./config.js")(config_name);
+var config = require("./config.js");
 var path = require('path');
 
 var log4js = require('log4js'); // log4js is a Java-based logging utility or framwork
@@ -102,11 +94,11 @@ socket.on('join', function (uriSubscribeList) {
         let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
         socket.join(diskLoc+affix);
-		let rooms = Object.keys(io.sockets.adapter.rooms)
-		//console.log(rooms)
-		     // console.log(socket.id, "joined", diskLoc+affix);
+        let rooms = Object.keys(io.sockets.adapter.rooms)
+        //console.log(rooms)
+             // console.log(socket.id, "joined", diskLoc+affix);
 
-		
+
 
         //TODO:check client legnth first, if 0 ,first join, ask to register for data
 
@@ -139,9 +131,9 @@ socket.on('join', function (uriSubscribeList) {
         //May be do some authorization
         let sl = JSON.parse(uriSubscribeList);
         sl.forEach(function (uri) {
-			        let diskLoc = uri.replace("http://www.theworldavatar.com", config.root)
+                    let diskLoc = uri.replace("http://www.theworldavatar.com", config.root)
             .replace("http://www.jparksimulator.com", config.root);
-			diskLoc = path.normalize(diskLoc)
+            diskLoc = path.normalize(diskLoc)
             socket.leave(diskLoc+"_data");
             socket.leave(diskLoc+"_nodata");
             logger.debug(socket.id, "left", diskLoc);
