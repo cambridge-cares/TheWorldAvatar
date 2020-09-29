@@ -5,7 +5,7 @@
 	<artifactId>JPS_DIGITALTWIN</artifactId>
 	<version>1.0.0</version>
 	
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
       <build>
         <finalName>JPS_DIGITALTWIN</finalName>
@@ -20,6 +20,17 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            		<plugin>
+			<artifactId>maven-war-plugin</artifactId>
+			<version>3.2.1</version>
+			<configuration>
+				
+
+				<warName>${project.artifactId}##${project.version}</warName>
+				<outputDirectory>${tomcatPath}/webapps</outputDirectory>
+			</configuration>
+		</plugin>
+            
         </plugins>
     </build>
   <properties>
