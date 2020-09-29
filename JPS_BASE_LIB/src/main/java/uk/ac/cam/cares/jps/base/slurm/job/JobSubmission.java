@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -457,9 +458,19 @@ public class JobSubmission{
 							}
 						} else if(Utils.isJobNotStarted(jobFolder) && !jobsRunning.contains(jobFolder.getName())){
 							if(jobsRunning.size()<slurmJobProperty.getMaxNumberOfHPCJobs()){
-								runNotStartedJob(jobFolder);
-								jobsRunning.add(jobFolder.getName());
+								try{
+									boolean flag = runNotStartedJob(jobFolder);
+									if(flag){
+										jobsRunning.add(jobFolder.getName());
+									}else{
+										System.out.println("In flag else break.");
+										break;
+									}
+								}catch(Exception e){
+									logger.info(e.getMessage());
+								}
 							}else{
+								System.out.println("In max job else break.");
 								break;
 							}
 						}
@@ -494,6 +505,12 @@ public class JobSubmission{
 	 */
 	private void updateRunningJobSet(File[] jobFolders, Set<String> jobsRunning) throws IOException{
 		for(File jobFolder: jobFolders){
+			if(!(new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()))).exists()){
+				logger.info("SlurmJobAPI: job status file is not found, so the job folder "+ jobFolder.getName()+" is being deleted.");
+				System.out.println("SlurmJobAPI: job status file is not found, so the job folder "+ jobFolder.getName()+" is being deleted.");
+				FileUtils.deleteDirectory(jobFolder);
+				continue;
+			}
 			if(Utils.isJobRunning(jobFolder)){
 				jobsRunning.add(jobFolder.getName());
 			}
@@ -510,8 +527,74 @@ public class JobSubmission{
 	 * @throws UnknownHostException
 	 * @throws InterruptedException
 	 */
-	private void runNotStartedJob(File jobFolder)  throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+	private boolean runNotStartedJob(File jobFolder)  throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+		// A counter variable to count the number of mandatory files.  
+		int countNumberOfFilesSetInProperties = 0;
+		// Checks if the script file (including name and extension) for the current Slurm job is provided.
+		if(slurmJobProperty.getSlurmScriptFileName()==null && slurmJobProperty.getSlurmScriptFileName().isEmpty()){
+			throw new IOException("SlurmJobAPI: Slurm script file name and extension are not provided.");			
+		}else{
+			countNumberOfFilesSetInProperties++;
+		}
+		// Checks if the input file name for the current Slurm job is provided. 
+		if(slurmJobProperty.getInputFileName()==null && slurmJobProperty.getInputFileName().isEmpty()){
+			throw new IOException("SlurmJobAPI: input file name is not provided.");
+		}else{
+			countNumberOfFilesSetInProperties++;
+		}
+		// Checks if input file extension for the current Slurm job is provided.
+		if(slurmJobProperty.getInputFileExtension()==null && slurmJobProperty.getInputFileExtension().isEmpty()){
+			throw new IOException("SlurmJobAPI: input file extension is not provided.");
+		}
+		// Checks if the JSON input file name for the current Slurm job is provided.
+		if(slurmJobProperty.getJsonInputFileName()==null && slurmJobProperty.getJsonInputFileName().isEmpty()){
+			throw new IOException("SlurmJobAPI: JSON input file name is not provided.");
+		}else{
+			countNumberOfFilesSetInProperties++;
+		}
+		// Checks if the JSON input file extension for the current Slurm job is provided.
+		if(slurmJobProperty.getJsonFileExtension()==null && slurmJobProperty.getJsonFileExtension().isEmpty()){
+			throw new IOException("SlurmJobAPI: JSON file extension is not provided.");
+		}
+		// Checks if the executable file (including name and extension) for the current Slurm job is provided.
+		if(slurmJobProperty.getExecutableFile()!=null && !slurmJobProperty.getExecutableFile().isEmpty()){
+			countNumberOfFilesSetInProperties++;
+		}
+		int countNumberOfFilesInJobFolder = 0;
+		// Checks the availability of the following four mandatory files in the current job folder:
+		// 1. Slurm script file (e.g., Slurm.sh)
+		// 2. Input file (e.g., input.zip or input.com)
+		// 3. JSON input file (e.g., input.json)
+		// 4. Status file (e.g., status.txt)
+		for(File file:jobFolder.listFiles()){
+			if(file.getName().equalsIgnoreCase(slurmJobProperty.getSlurmScriptFileName())){
+				countNumberOfFilesInJobFolder++;
+			}
+			if(file.getName().endsWith(slurmJobProperty.getInputFileExtension())){
+				countNumberOfFilesInJobFolder++;
+			}
+			if(file.getName().equalsIgnoreCase(slurmJobProperty.getJsonInputFileName().concat(slurmJobProperty.getJsonFileExtension()))){
+				countNumberOfFilesInJobFolder++;
+			}
+			if(file.getName().equalsIgnoreCase(Status.STATUS_FILE.getName())){
+				countNumberOfFilesInJobFolder++;
+			}
+			if(slurmJobProperty.getExecutableFile()!=null && file.getName().equalsIgnoreCase(slurmJobProperty.getExecutableFile())){
+				countNumberOfFilesInJobFolder++;
+			}
+		}
+		// If all files set through properties are not available in a job folder, it
+		// deletes the folder.
+		if(!(countNumberOfFilesInJobFolder>=4 && countNumberOfFilesSetInProperties==countNumberOfFilesInJobFolder)){
+			System.out.println("countNumberOfFilesInJobFolder:"+countNumberOfFilesInJobFolder);
+			System.out.println("countNumberOfFilesSetInProperties:"+countNumberOfFilesSetInProperties);
+			logger.info("SlurmJobAPI: all mandatory files are not found, so the job folder "+ jobFolder.getName()+" is deleted.");
+			System.out.println("SlurmJobAPI: all mandatory files are not found, so the job folder "+ jobFolder.getName()+" is deleted.");
+			FileUtils.deleteDirectory(jobFolder);
+			return false;
+		}
 		startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
+		return true;
 	}
 	
 	/**
