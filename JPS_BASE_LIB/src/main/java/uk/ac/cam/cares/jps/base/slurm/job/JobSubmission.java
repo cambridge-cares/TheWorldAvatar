@@ -541,29 +541,29 @@ public class JobSubmission{
 		// A counter variable to count the number of mandatory files.  
 		int countNumberOfFilesSetInProperties = 0;
 		// Checks if the script file (including name and extension) for the current Slurm job is provided.
-		if(slurmJobProperty.getSlurmScriptFileName()==null && slurmJobProperty.getSlurmScriptFileName().isEmpty()){
+		if(slurmJobProperty.getSlurmScriptFileName()==null || slurmJobProperty.getSlurmScriptFileName().isEmpty()){
 			throw new IOException("SlurmJobAPI: Slurm script file name and extension are not provided.");			
 		}else{
 			countNumberOfFilesSetInProperties++;
 		}
 		// Checks if the input file name for the current Slurm job is provided. 
-		if(slurmJobProperty.getInputFileName()==null && slurmJobProperty.getInputFileName().isEmpty()){
+		if(slurmJobProperty.getInputFileName()==null || slurmJobProperty.getInputFileName().isEmpty()){
 			throw new IOException("SlurmJobAPI: input file name is not provided.");
 		}else{
 			countNumberOfFilesSetInProperties++;
 		}
 		// Checks if input file extension for the current Slurm job is provided.
-		if(slurmJobProperty.getInputFileExtension()==null && slurmJobProperty.getInputFileExtension().isEmpty()){
+		if(slurmJobProperty.getInputFileExtension()==null || slurmJobProperty.getInputFileExtension().isEmpty()){
 			throw new IOException("SlurmJobAPI: input file extension is not provided.");
 		}
 		// Checks if the JSON input file name for the current Slurm job is provided.
-		if(slurmJobProperty.getJsonInputFileName()==null && slurmJobProperty.getJsonInputFileName().isEmpty()){
+		if(slurmJobProperty.getJsonInputFileName()==null || slurmJobProperty.getJsonInputFileName().isEmpty()){
 			throw new IOException("SlurmJobAPI: JSON input file name is not provided.");
 		}else{
 			countNumberOfFilesSetInProperties++;
 		}
 		// Checks if the JSON input file extension for the current Slurm job is provided.
-		if(slurmJobProperty.getJsonFileExtension()==null && slurmJobProperty.getJsonFileExtension().isEmpty()){
+		if(slurmJobProperty.getJsonFileExtension()==null || slurmJobProperty.getJsonFileExtension().isEmpty()){
 			throw new IOException("SlurmJobAPI: JSON file extension is not provided.");
 		}
 		// Checks if the executable file (including name and extension) for the current Slurm job is provided.
