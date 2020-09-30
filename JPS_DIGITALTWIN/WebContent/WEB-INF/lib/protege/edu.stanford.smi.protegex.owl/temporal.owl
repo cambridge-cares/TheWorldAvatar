@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/temporal.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Granularity">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Entity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="ValidInstant">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ValidTime"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Proposition">
+    <rdfs:subClassOf rdf:resource="#Entity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#ValidTime">
+    <rdfs:subClassOf rdf:resource="#Entity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ExtendedProposition">
+    <rdfs:subClassOf rdf:resource="#Proposition"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Duration">
+    <rdfs:subClassOf rdf:resource="#Entity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ValidPeriod">
+    <rdfs:subClassOf rdf:resource="#ValidTime"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="hasValidTime">
+    <rdfs:domain rdf:resource="#ExtendedProposition"/>
+    <rdfs:range rdf:resource="#ValidTime"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="hasCount">
+    <rdfs:domain rdf:resource="#Duration"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:ID="hasFinishTime">
+    <rdfs:domain rdf:resource="#ValidPeriod"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasGranularity">
+    <rdfs:range rdf:resource="#Granularity"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#ValidTime"/>
+          <owl:Class rdf:about="#Duration"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasTime">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:domain rdf:resource="#ValidInstant"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="hasStartTime">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    <rdfs:domain rdf:resource="#ValidPeriod"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+  <swrl:Builtin rdf:ID="notEquals"/>
+  <swrl:Builtin rdf:ID="notIntersects"/>
+  <swrl:Builtin rdf:ID="notStarts"/>
+  <swrl:Builtin rdf:ID="overlappedBy"/>
+  <swrl:Builtin rdf:ID="contains"/>
+  <swrl:Builtin rdf:ID="equals"/>
+  <swrl:Builtin rdf:ID="intersects"/>
+  <swrl:Builtin rdf:ID="finishedBy"/>
+  <swrl:Builtin rdf:ID="notDurationLessThanOrEqualTo"/>
+  <swrl:Builtin rdf:ID="notStartedBy"/>
+  <swrl:Builtin rdf:ID="notFinishedBy"/>
+  <swrl:Builtin rdf:ID="starts"/>
+  <swrl:Builtin rdf:ID="notContains"/>
+  <Granularity rdf:ID="Hours"/>
+  <Granularity rdf:ID="Seconds"/>
+  <Granularity rdf:ID="Months"/>
+  <swrl:Builtin rdf:ID="notOverlaps"/>
+  <swrl:Builtin rdf:ID="durationLessThanOrEqualTo"/>
+  <swrl:Builtin rdf:ID="duration">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="notFinishes"/>
+  <swrl:Builtin rdf:ID="metBy"/>
+  <swrl:Builtin rdf:ID="notDurationEqualTo"/>
+  <swrl:Builtin rdf:ID="before">
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:minArgs>
+  </swrl:Builtin>
+  <Granularity rdf:ID="Milliseconds"/>
+  <swrl:Builtin rdf:ID="startedBy"/>
+  <Granularity rdf:ID="Days"/>
+  <swrl:Builtin rdf:ID="notMeets"/>
+  <swrl:Builtin rdf:ID="durationGreaterThanOrEqualTo"/>
+  <swrl:Builtin rdf:ID="notDuring"/>
+  <swrl:Builtin rdf:ID="notOverlappedBy"/>
+  <swrl:Builtin rdf:ID="during"/>
+  <Granularity rdf:ID="Years"/>
+  <swrl:Builtin rdf:ID="notDurationLessThan"/>
+  <swrl:Builtin rdf:ID="notBefore"/>
+  <swrl:Builtin rdf:ID="meets"/>
+  <swrl:Builtin rdf:ID="notDurationGreaterThan"/>
+  <swrl:Builtin rdf:ID="notDurationGreaterThanOrEqualTo"/>
+  <swrl:Builtin rdf:ID="add"/>
+  <swrl:Builtin rdf:ID="finishes"/>
+  <swrl:Builtin rdf:ID="notAfter"/>
+  <swrl:Builtin rdf:ID="durationEqualTo"/>
+  <swrl:Builtin rdf:ID="overlaps"/>
+  <swrl:Builtin rdf:ID="durationGreaterThan"/>
+  <swrl:Builtin rdf:ID="durationLessThan"/>
+  <Granularity rdf:ID="Minutes"/>
+  <swrl:Builtin rdf:ID="after"/>
+  <swrl:Builtin rdf:ID="notMetBy"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.7, Build 620)  http://protege.stanford.edu -->

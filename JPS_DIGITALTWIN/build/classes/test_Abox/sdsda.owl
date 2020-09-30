@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:maths="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:phys_dim="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#"
+     xmlns:binary_tree="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#"
+     xmlns:derived_dimensions="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl"/>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;derived_dimensions&apos; introduces a number of physical dimensions and their mathematical definitions. 
+The following classes, relations, and individuals from other ontology modules are used within &apos;derived_dimensions&apos;:
+
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#BinaryOperator&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasLeftChild&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasRightChild&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isLeftChildOf&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isRightChildOf&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#rightChildNodeValue&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#isDefinedBy&quot;/&gt;
+
+&lt;maths:BinaryOperator rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide&quot;/&gt;
+&lt;maths:BinaryOperator rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#power&quot;/&gt;
+&lt;maths:BinaryOperator rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times&quot;/&gt;
+&lt;maths:Leaf rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#AMOUNT_OF_SUBSTANCE&quot;/&gt;
+&lt;maths:Leaf rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#ELECTRIC_CURRENT&quot;&gt;
+&lt;maths:Leaf rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#LENGTH&quot;/&gt;
+&lt;maths:Leaf rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#MASS&quot;/&gt;
+&lt;maths:Leaf rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#TIME&quot;&gt;</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasLeftChild -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasLeftChild"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasRightChild -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasRightChild"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isLeftChildOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isLeftChildOf"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isRightChildOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#isRightChildOf"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#isDefinedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#isDefinedBy"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#rightChildNodeValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#rightChildNodeValue"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ElectricityAndMagnetism -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ElectricityAndMagnetism">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class ElectricityAndMagnetism subsumes DerivedDimensions that are connected with the phenomena of electricity or magnetism.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Mechanics">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class Mechanics subsumes DerivedDimensions that are of relevance for the field of mechanics.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#PeriodicPhenomena">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class PeriodicPhenomena subsumes DerivedDimensions with a periodic character, such as frequency or period.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#SpaceAndTime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class SpaceAndTime subsumes DerivedDimensions that can be derived from the base dimensions length and time.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The class Thermodynamics subsumes DerivedDimensions that are of relevance in the area of heat transfer and thermodynamics.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

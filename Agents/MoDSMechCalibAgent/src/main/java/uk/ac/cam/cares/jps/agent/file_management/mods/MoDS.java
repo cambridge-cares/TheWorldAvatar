@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.agent.file_management.mods.models.ModelS;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.ParameterS;
 
 @XmlRootElement(name = "mods")
-@XmlType(propOrder = { "algorithmS", "modelS", "caseS", "fileS", "functionS", "parameterS" })
+@XmlType(propOrder = { "global", "algorithmS", "modelS", "caseS", "fileS", "functionS", "parameterS" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MoDS {
 	@JsonProperty("xmlns")
@@ -56,6 +56,18 @@ public class MoDS {
 		this.xsiSchemaLocation = xsiSchemaLocation;
 	}
 	
+	@JsonProperty("global")
+	@XmlElement(name = "global")
+	private Global global;
+	
+	public Global getGlobal() {
+		return global;
+	}
+
+	public void setGlobal(Global global) {
+		this.global = global;
+	}
+
 	@JsonProperty("algorithms")
 	@XmlElement(name = "algorithms")
 	private AlgorithmS algorithmS;

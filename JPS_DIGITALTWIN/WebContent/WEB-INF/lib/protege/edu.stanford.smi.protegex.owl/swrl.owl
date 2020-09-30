@@ -1,0 +1,346 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE rdf:RDF [
+         <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns'>
+         <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema'>
+	 <!ENTITY owl 'http://www.w3.org/2002/07/owl'>
+	 <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema'>
+         <!ENTITY ruleml 'http://www.w3.org/2003/11/swrl'>
+         <!ENTITY swrl 'http://www.w3.org/2003/11/swrl'>
+]>
+
+<rdf:RDF
+  xmlns:rdf ="&rdf;#"
+  xmlns:rdfs="&rdfs;#"
+  xmlns:owl ="&owl;#"
+  xmlns:ruleml="&ruleml;#"
+  xmlns:swrl="&swrl;#"
+  xml:base  ="&swrl;"
+>
+
+<owl:Ontology rdf:about="">
+  <rdfs:comment>OWL definition of the RDF Concrete Syntax for the Semantic Web Rule Language</rdfs:comment>
+  <owl:versionInfo>$Id: swrl.owl,v 1.15 2004/11/09 11:58:28 mdean Exp $</owl:versionInfo>
+</owl:Ontology>
+
+<owl:Class rdf:ID="Imp">
+  <rdfs:comment>implication (rule)</rdfs:comment>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#head"/>
+      <owl:allValuesFrom rdf:resource="#AtomList"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#head"/>
+      <owl:maxCardinality>1</owl:maxCardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#body"/>
+      <owl:allValuesFrom rdf:resource="#AtomList"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#body"/>
+      <owl:maxCardinality>1</owl:maxCardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<owl:ObjectProperty rdf:ID="head">
+  <rdfs:comment>rule head (consequent):  List of Atom</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:ID="body">
+  <rdfs:comment>rule body (antecedent):  List of Atom</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:Class rdf:ID="Variable">
+  <rdfs:comment>indicate that a URI is being used as a variable</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:ID="Atom">
+  <rdfs:comment>common superclass</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:ID="AtomList">
+  <rdfs:subClassOf rdf:resource="&rdf;#List"/>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="&rdf;#first"/>
+      <owl:allValuesFrom rdf:resource="#Atom"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="&rdf;#first"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="&rdf;#rest"/>
+      <owl:allValuesFrom rdf:resource="#AtomList"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="&rdf;#rest"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<swrl:AtomList rdf:about="&rdf;#nil"/>
+
+<owl:ObjectProperty rdf:ID="argument1"/>
+
+<rdf:Property rdf:ID="argument2">
+  <rdfs:comment>can be a Literal or Resource</rdfs:comment>
+</rdf:Property>
+
+<owl:Class rdf:ID="ClassAtom">
+  <rdfs:subClassOf rdf:resource="#Atom"/>
+  <rdfs:comment>consists of a classPredicate and argument1</rdfs:comment>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#classPredicate"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Class"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#classPredicate"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<owl:ObjectProperty rdf:ID="classPredicate"/>
+
+<owl:Class rdf:ID="IndividualPropertyAtom">
+  <rdfs:subClassOf rdf:resource="#Atom"/>
+  <rdfs:comment>consists of a propertyPredicate (owl:ObjectProperty), argument1 (owl:Thing), and argument2 (owl:Thing)</rdfs:comment>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#propertyPredicate"/>
+      <owl:allValuesFrom rdf:resource="&owl;#ObjectProperty"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#propertyPredicate"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument2"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument2"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<owl:ObjectProperty rdf:ID="propertyPredicate"/>
+
+<owl:Class rdf:ID="DatavaluedPropertyAtom">
+  <rdfs:subClassOf rdf:resource="#Atom"/>
+  <rdfs:comment>consists of a propertyPredicate (owl:DatatypeProperty), argument1 (owl:Thing), and argument2 (rdfs:Literal)</rdfs:comment>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#propertyPredicate"/>
+      <owl:allValuesFrom rdf:resource="&owl;#DatatypeProperty"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#propertyPredicate"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument2"/>
+      <owl:allValuesFrom rdf:resource="&rdfs;#Literal"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument2"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<owl:Class rdf:ID="SameIndividualAtom">
+  <rdfs:subClassOf rdf:resource="#Atom"/>
+  <rdfs:comment>consists of argument1 (owl:Thing) and argument2 (owl:Thing)</rdfs:comment>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument2"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument2"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<owl:Class rdf:ID="DifferentIndividualsAtom">
+  <rdfs:subClassOf rdf:resource="#Atom"/>
+  <rdfs:comment>consists of argument1 (owl:Thing) and argument2 (owl:Thing)</rdfs:comment>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument2"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument2"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<owl:Class rdf:ID="BuiltinAtom">
+  <rdfs:subClassOf rdf:resource="#Atom"/>
+  <rdfs:comment>consists of a builtin and a List of arguments</rdfs:comment>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#builtin"/>
+      <owl:allValuesFrom rdf:resource="#Builtin"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#builtin"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#arguments"/>
+      <owl:allValuesFrom rdf:resource="&rdf;#List"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#arguments"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<owl:Class rdf:ID="Builtin"/>
+
+<!-- enumerate Builtins -->
+
+<owl:ObjectProperty rdf:ID="builtin"/>
+
+<owl:ObjectProperty rdf:ID="arguments"/>
+
+<owl:Class rdf:ID="DataRangeAtom">
+  <rdfs:subClassOf rdf:resource="#Atom"/>
+  <rdfs:comment>consists of a dataRange and argument1</rdfs:comment>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#dataRange"/>
+      <owl:allValuesFrom rdf:resource="&owl;#DataRange"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#dataRange"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:allValuesFrom rdf:resource="&owl;#Thing"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#argument1"/>
+      <owl:cardinality>1</owl:cardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</owl:Class>
+
+<owl:ObjectProperty rdf:ID="dataRange"/>
+
+</rdf:RDF>

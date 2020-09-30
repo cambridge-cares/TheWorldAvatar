@@ -1,0 +1,1213 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdfb="http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:abox="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:tbox="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#"
+    xmlns="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrli.owl#"
+  xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrli.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl"/>
+    <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl"/>
+    <owl:imports rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#Variable"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#BuiltinAtom"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#ClassAtom"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#Builtin"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#DifferentIndividualsAtom"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#AtomList"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#DatavaluedPropertyAtom"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#DataRangeAtom"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#SameIndividualAtom"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#Atom"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#IndividualPropertyAtom"/>
+  <owl:Class rdf:about="http://www.w3.org/2003/11/swrl#Imp"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#builtin"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#arguments"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#argument1"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#body"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#head"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#classPredicate"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#propertyPredicate"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#dataRange"/>
+  <owl:ObjectProperty rdf:about="http://www.w3.org/2003/11/swrl#argument2"/>
+  <swrl:Variable rdf:ID="m"/>
+  <swrl:Variable rdf:ID="l"/>
+  <swrl:Variable rdf:ID="i2"/>
+  <swrl:Variable rdf:ID="c"/>
+  <swrl:Variable rdf:ID="x"/>
+  <swrl:Variable rdf:ID="a"/>
+  <swrl:Variable rdf:ID="b"/>
+  <swrl:Imp rdf:ID="Rule-2">
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#setValue"/>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:rest>
+                  <rdf:List>
+                    <rdf:rest>
+                      <rdf:List>
+                        <rdf:first>
+                          <swrl:Variable rdf:ID="s"/>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                      </rdf:List>
+                    </rdf:rest>
+                    <rdf:first>
+                      <swrl:Variable rdf:ID="p"/>
+                    </rdf:first>
+                  </rdf:List>
+                </rdf:rest>
+                <rdf:first>
+                  <swrl:Variable rdf:ID="o"/>
+                </rdf:first>
+              </rdf:List>
+            </swrl:arguments>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+      </swrl:AtomList>
+    </swrl:head>
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isSymmetricProperty"/>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:resource="#p"/>
+              </rdf:List>
+            </swrl:arguments>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:rest>
+                          <rdf:List>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                <rdf:first rdf:resource="#o"/>
+                              </rdf:List>
+                            </rdf:rest>
+                            <rdf:first rdf:resource="#p"/>
+                          </rdf:List>
+                        </rdf:rest>
+                        <rdf:first rdf:resource="#s"/>
+                      </rdf:List>
+                    </swrl:arguments>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+              </swrl:AtomList>
+            </rdf:rest>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first rdf:resource="#s"/>
+                  </rdf:List>
+                </swrl:arguments>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
+      </swrl:AtomList>
+    </swrl:body>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?P @has rdf:type owl:SymmetricProperty. ?S ?P ?O} =&gt; {?O ?P ?S}.</rdfs:comment>
+  </swrl:Imp>
+  <swrl:Variable rdf:ID="d"/>
+  <swrl:Imp rdf:ID="Rule-1">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?P @has owl:inverseOf ?Q. ?S ?P ?O} =&gt; {?O ?Q ?S}.</rdfs:comment>
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#setValue"/>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#o"/>
+                <rdf:rest>
+                  <rdf:List>
+                    <rdf:first>
+                      <swrl:Variable rdf:ID="q"/>
+                    </rdf:first>
+                    <rdf:rest>
+                      <rdf:List>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        <rdf:first rdf:resource="#s"/>
+                      </rdf:List>
+                    </rdf:rest>
+                  </rdf:List>
+                </rdf:rest>
+              </rdf:List>
+            </swrl:arguments>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </swrl:AtomList>
+    </swrl:head>
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#p"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+              </rdf:List>
+            </swrl:arguments>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isInverseFunctionalProperty"/>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:rest>
+                          <rdf:List>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#o"/>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              </rdf:List>
+                            </rdf:rest>
+                            <rdf:first rdf:resource="#p"/>
+                          </rdf:List>
+                        </rdf:rest>
+                        <rdf:first rdf:resource="#s"/>
+                      </rdf:List>
+                    </swrl:arguments>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+                <rdf:rest>
+                  <swrl:AtomList>
+                    <rdf:rest>
+                      <swrl:AtomList>
+                        <rdf:first>
+                          <swrl:BuiltinAtom>
+                            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isInverseOfAxiom"/>
+                            <swrl:arguments>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#a"/>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              </rdf:List>
+                            </swrl:arguments>
+                          </swrl:BuiltinAtom>
+                        </rdf:first>
+                        <rdf:rest>
+                          <swrl:AtomList>
+                            <rdf:rest>
+                              <swrl:AtomList>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                <rdf:first>
+                                  <swrl:BuiltinAtom>
+                                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasSecondProperty"/>
+                                    <swrl:arguments>
+                                      <rdf:List>
+                                        <rdf:first rdf:resource="#a"/>
+                                        <rdf:rest>
+                                          <rdf:List>
+                                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                            <rdf:first rdf:resource="#q"/>
+                                          </rdf:List>
+                                        </rdf:rest>
+                                      </rdf:List>
+                                    </swrl:arguments>
+                                  </swrl:BuiltinAtom>
+                                </rdf:first>
+                              </swrl:AtomList>
+                            </rdf:rest>
+                            <rdf:first>
+                              <swrl:BuiltinAtom>
+                                <swrl:arguments>
+                                  <rdf:List>
+                                    <rdf:first rdf:resource="#a"/>
+                                    <rdf:rest>
+                                      <rdf:List>
+                                        <rdf:first rdf:resource="#p"/>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                      </rdf:List>
+                                    </rdf:rest>
+                                  </rdf:List>
+                                </swrl:arguments>
+                                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasFirstyProperty"/>
+                              </swrl:BuiltinAtom>
+                            </rdf:first>
+                          </swrl:AtomList>
+                        </rdf:rest>
+                      </swrl:AtomList>
+                    </rdf:rest>
+                    <rdf:first>
+                      <swrl:BuiltinAtom>
+                        <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasAxiom"/>
+                        <swrl:arguments>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#p"/>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                <rdf:first rdf:resource="#a"/>
+                              </rdf:List>
+                            </rdf:rest>
+                          </rdf:List>
+                        </swrl:arguments>
+                      </swrl:BuiltinAtom>
+                    </rdf:first>
+                  </swrl:AtomList>
+                </rdf:rest>
+              </swrl:AtomList>
+            </rdf:rest>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first rdf:resource="#s"/>
+                  </rdf:List>
+                </swrl:arguments>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
+      </swrl:AtomList>
+    </swrl:body>
+  </swrl:Imp>
+  <swrl:Imp rdf:ID="Rule-6">
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#s"/>
+                        <rdf:rest>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#p"/>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#x"/>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              </rdf:List>
+                            </rdf:rest>
+                          </rdf:List>
+                        </rdf:rest>
+                      </rdf:List>
+                    </swrl:arguments>
+                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+                <rdf:rest>
+                  <swrl:AtomList>
+                    <rdf:rest>
+                      <swrl:AtomList>
+                        <rdf:first>
+                          <swrl:BuiltinAtom>
+                            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                            <swrl:arguments>
+                              <rdf:List>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                <rdf:first rdf:resource="#x"/>
+                              </rdf:List>
+                            </swrl:arguments>
+                          </swrl:BuiltinAtom>
+                        </rdf:first>
+                        <rdf:rest>
+                          <swrl:AtomList>
+                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            <rdf:first>
+                              <swrl:BuiltinAtom>
+                                <swrl:arguments>
+                                  <rdf:List>
+                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    <rdf:first>
+                                      <swrl:Variable rdf:ID="y"/>
+                                    </rdf:first>
+                                  </rdf:List>
+                                </swrl:arguments>
+                                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                              </swrl:BuiltinAtom>
+                            </rdf:first>
+                          </swrl:AtomList>
+                        </rdf:rest>
+                      </swrl:AtomList>
+                    </rdf:rest>
+                    <rdf:first>
+                      <swrl:BuiltinAtom>
+                        <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
+                        <swrl:arguments>
+                          <rdf:List>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:rest>
+                                  <rdf:List>
+                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    <rdf:first rdf:resource="#y"/>
+                                  </rdf:List>
+                                </rdf:rest>
+                                <rdf:first rdf:resource="#p"/>
+                              </rdf:List>
+                            </rdf:rest>
+                            <rdf:first rdf:resource="#s"/>
+                          </rdf:List>
+                        </swrl:arguments>
+                      </swrl:BuiltinAtom>
+                    </rdf:first>
+                  </swrl:AtomList>
+                </rdf:rest>
+              </swrl:AtomList>
+            </rdf:rest>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first rdf:resource="#s"/>
+                  </rdf:List>
+                </swrl:arguments>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#p"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+              </rdf:List>
+            </swrl:arguments>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isFunctionalProperty"/>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+      </swrl:AtomList>
+    </swrl:body>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?P @has rdf:type owl:FunctionalProperty. ?S ?P ?X. ?S ?P ?Y} =&gt; {?X owl:sameAs ?Y}.</rdfs:comment>
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <rdf:first>
+          <swrl:SameIndividualAtom>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:argument2 rdf:resource="#y"/>
+          </swrl:SameIndividualAtom>
+        </rdf:first>
+      </swrl:AtomList>
+    </swrl:head>
+  </swrl:Imp>
+  <swrl:Variable rdf:ID="p1"/>
+  <swrl:Imp rdf:ID="Rule-5">
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:resource="#p"/>
+              </rdf:List>
+            </swrl:arguments>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isInverseFunctionalProperty"/>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#y"/>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                      </rdf:List>
+                    </swrl:arguments>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+                <rdf:rest>
+                  <swrl:AtomList>
+                    <rdf:first>
+                      <swrl:BuiltinAtom>
+                        <swrl:arguments>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#x"/>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#p"/>
+                                <rdf:rest>
+                                  <rdf:List>
+                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    <rdf:first rdf:resource="#o"/>
+                                  </rdf:List>
+                                </rdf:rest>
+                              </rdf:List>
+                            </rdf:rest>
+                          </rdf:List>
+                        </swrl:arguments>
+                        <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
+                      </swrl:BuiltinAtom>
+                    </rdf:first>
+                    <rdf:rest>
+                      <swrl:AtomList>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        <rdf:first>
+                          <swrl:BuiltinAtom>
+                            <swrl:arguments>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#y"/>
+                                <rdf:rest>
+                                  <rdf:List>
+                                    <rdf:rest>
+                                      <rdf:List>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                        <rdf:first rdf:resource="#o"/>
+                                      </rdf:List>
+                                    </rdf:rest>
+                                    <rdf:first rdf:resource="#p"/>
+                                  </rdf:List>
+                                </rdf:rest>
+                              </rdf:List>
+                            </swrl:arguments>
+                            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
+                          </swrl:BuiltinAtom>
+                        </rdf:first>
+                      </swrl:AtomList>
+                    </rdf:rest>
+                  </swrl:AtomList>
+                </rdf:rest>
+              </swrl:AtomList>
+            </rdf:rest>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first rdf:resource="#x"/>
+                  </rdf:List>
+                </swrl:arguments>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
+      </swrl:AtomList>
+    </swrl:body>
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:SameIndividualAtom>
+            <swrl:argument2 rdf:resource="#y"/>
+            <swrl:argument1 rdf:resource="#x"/>
+          </swrl:SameIndividualAtom>
+        </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </swrl:AtomList>
+    </swrl:head>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?P @has rdf:type owl:InverseFunctionalProperty. ?X ?P ?O. ?Y ?P ?O} =&gt; {?X owl:sameAs ?Y}.</rdfs:comment>
+  </swrl:Imp>
+  <swrl:Imp rdf:ID="Rule-3">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?P @has rdf:type owl:TransitiveProperty. ?X ?P ?O. ?S ?P ?X} =&gt; {?S ?P ?O}.</rdfs:comment>
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:rest>
+                  <swrl:AtomList>
+                    <rdf:first>
+                      <swrl:BuiltinAtom>
+                        <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
+                        <swrl:arguments>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#x"/>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#p"/>
+                                <rdf:rest>
+                                  <rdf:List>
+                                    <rdf:first rdf:resource="#o"/>
+                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                  </rdf:List>
+                                </rdf:rest>
+                              </rdf:List>
+                            </rdf:rest>
+                          </rdf:List>
+                        </swrl:arguments>
+                      </swrl:BuiltinAtom>
+                    </rdf:first>
+                    <rdf:rest>
+                      <swrl:AtomList>
+                        <rdf:first>
+                          <swrl:BuiltinAtom>
+                            <swrl:arguments>
+                              <rdf:List>
+                                <rdf:rest>
+                                  <rdf:List>
+                                    <rdf:first rdf:resource="#p"/>
+                                    <rdf:rest>
+                                      <rdf:List>
+                                        <rdf:first rdf:resource="#x"/>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                      </rdf:List>
+                                    </rdf:rest>
+                                  </rdf:List>
+                                </rdf:rest>
+                                <rdf:first rdf:resource="#s"/>
+                              </rdf:List>
+                            </swrl:arguments>
+                            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasValue"/>
+                          </swrl:BuiltinAtom>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                      </swrl:AtomList>
+                    </rdf:rest>
+                  </swrl:AtomList>
+                </rdf:rest>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        <rdf:first rdf:resource="#s"/>
+                      </rdf:List>
+                    </swrl:arguments>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+              </swrl:AtomList>
+            </rdf:rest>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:first rdf:resource="#x"/>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                  </rdf:List>
+                </swrl:arguments>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+          </swrl:AtomList>
+        </rdf:rest>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isTransitiveProperty"/>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#p"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+              </rdf:List>
+            </swrl:arguments>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+      </swrl:AtomList>
+    </swrl:body>
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#setValue"/>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#s"/>
+                <rdf:rest>
+                  <rdf:List>
+                    <rdf:first rdf:resource="#p"/>
+                    <rdf:rest>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#o"/>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                      </rdf:List>
+                    </rdf:rest>
+                  </rdf:List>
+                </rdf:rest>
+              </rdf:List>
+            </swrl:arguments>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </swrl:AtomList>
+    </swrl:head>
+  </swrl:Imp>
+  <swrl:Variable rdf:ID="da"/>
+  <swrl:Variable rdf:ID="i"/>
+  <swrl:Imp rdf:ID="Rule-8">
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <rdf:first>
+          <swrl:DifferentIndividualsAtom>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:argument2 rdf:resource="#y"/>
+          </swrl:DifferentIndividualsAtom>
+        </rdf:first>
+      </swrl:AtomList>
+    </swrl:head>
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isDifferentIndividualsAxiom"/>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#a"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+              </rdf:List>
+            </swrl:arguments>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:first rdf:resource="#a"/>
+                    <rdf:rest>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#x"/>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                      </rdf:List>
+                    </rdf:rest>
+                  </rdf:List>
+                </swrl:arguments>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasIndividual"/>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasIndividual"/>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:rest>
+                          <rdf:List>
+                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            <rdf:first rdf:resource="#y"/>
+                          </rdf:List>
+                        </rdf:rest>
+                        <rdf:first rdf:resource="#a"/>
+                      </rdf:List>
+                    </swrl:arguments>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+                <rdf:rest>
+                  <swrl:AtomList>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first>
+                      <swrl:BuiltinAtom>
+                        <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#notEqualTo"/>
+                        <swrl:arguments>
+                          <rdf:List>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                <rdf:first rdf:resource="#y"/>
+                              </rdf:List>
+                            </rdf:rest>
+                            <rdf:first rdf:resource="#x"/>
+                          </rdf:List>
+                        </swrl:arguments>
+                      </swrl:BuiltinAtom>
+                    </rdf:first>
+                  </swrl:AtomList>
+                </rdf:rest>
+              </swrl:AtomList>
+            </rdf:rest>
+          </swrl:AtomList>
+        </rdf:rest>
+      </swrl:AtomList>
+    </swrl:body>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?X log:notEqualTo ?Y. ?A owl:distinctMembers ?L. ?L :item ?X, ?Y} =&gt; {?X owl:differentFrom ?Y}.</rdfs:comment>
+  </swrl:Imp>
+  <swrl:Imp rdf:ID="Rule-7">
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#l"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+              </rdf:List>
+            </swrl:arguments>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl#isList"/>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                    <rdf:first rdf:resource="#m"/>
+                  </rdf:List>
+                </swrl:arguments>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.4/rdfb.owl#isList"/>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:rest>
+                  <swrl:AtomList>
+                    <rdf:rest>
+                      <swrl:AtomList>
+                        <rdf:rest>
+                          <swrl:AtomList>
+                            <rdf:first>
+                              <swrl:BuiltinAtom>
+                                <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#rest"/>
+                                <swrl:arguments>
+                                  <rdf:List>
+                                    <rdf:first rdf:resource="#d"/>
+                                    <rdf:rest>
+                                      <rdf:List>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                        <rdf:first rdf:resource="#m"/>
+                                      </rdf:List>
+                                    </rdf:rest>
+                                  </rdf:List>
+                                </swrl:arguments>
+                              </swrl:BuiltinAtom>
+                            </rdf:first>
+                            <rdf:rest>
+                              <swrl:AtomList>
+                                <rdf:rest>
+                                  <swrl:AtomList>
+                                    <rdf:first>
+                                      <swrl:SameIndividualAtom>
+                                        <swrl:argument2 rdf:resource="#d"/>
+                                        <swrl:argument1 rdf:resource="#b"/>
+                                      </swrl:SameIndividualAtom>
+                                    </rdf:first>
+                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                  </swrl:AtomList>
+                                </rdf:rest>
+                                <rdf:first>
+                                  <swrl:SameIndividualAtom>
+                                    <swrl:argument1 rdf:resource="#a"/>
+                                    <swrl:argument2 rdf:resource="#c"/>
+                                  </swrl:SameIndividualAtom>
+                                </rdf:first>
+                              </swrl:AtomList>
+                            </rdf:rest>
+                          </swrl:AtomList>
+                        </rdf:rest>
+                        <rdf:first>
+                          <swrl:BuiltinAtom>
+                            <swrl:arguments>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#c"/>
+                                <rdf:rest>
+                                  <rdf:List>
+                                    <rdf:first rdf:resource="#m"/>
+                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                  </rdf:List>
+                                </rdf:rest>
+                              </rdf:List>
+                            </swrl:arguments>
+                            <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#first"/>
+                          </swrl:BuiltinAtom>
+                        </rdf:first>
+                      </swrl:AtomList>
+                    </rdf:rest>
+                    <rdf:first>
+                      <swrl:BuiltinAtom>
+                        <swrl:arguments>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#m"/>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                <rdf:first rdf:resource="#b"/>
+                              </rdf:List>
+                            </rdf:rest>
+                          </rdf:List>
+                        </swrl:arguments>
+                        <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#rest"/>
+                      </swrl:BuiltinAtom>
+                    </rdf:first>
+                  </swrl:AtomList>
+                </rdf:rest>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#a"/>
+                        <rdf:rest>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#l"/>
+                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                          </rdf:List>
+                        </rdf:rest>
+                      </rdf:List>
+                    </swrl:arguments>
+                    <swrl:builtin rdf:resource="http://www.w3.org/2003/11/swrlb#first"/>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+              </swrl:AtomList>
+            </rdf:rest>
+          </swrl:AtomList>
+        </rdf:rest>
+      </swrl:AtomList>
+    </swrl:body>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?L rdf:first ?A; rdf:rest ?B. ?M rdf:first ?C; rdf:rest ?D. ?A owl:sameAs ?C. ?B owl:sameAs ?D} =&gt; {?L owl:sameAs ?M}.		</rdfs:comment>
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:SameIndividualAtom>
+            <swrl:argument1 rdf:resource="#l"/>
+            <swrl:argument2 rdf:resource="#m"/>
+          </swrl:SameIndividualAtom>
+        </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </swrl:AtomList>
+    </swrl:head>
+  </swrl:Imp>
+  <swrl:Imp rdf:ID="Rule-9">
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        <rdf:first>
+          <swrl:DifferentIndividualsAtom>
+            <swrl:argument1 rdf:resource="#x"/>
+            <swrl:argument2 rdf:resource="#y"/>
+          </swrl:DifferentIndividualsAtom>
+        </rdf:first>
+      </swrl:AtomList>
+    </swrl:head>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?A @has owl:disjointWith ?B. ?X a ?A. ?Y a ?B } =&gt; {?X owl:differentFrom ?Y}.</rdfs:comment>
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isDisjointWithAxiom"/>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                <rdf:first rdf:resource="#da"/>
+              </rdf:List>
+            </swrl:arguments>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasDescription"/>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:rest>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#a"/>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                      </rdf:List>
+                    </rdf:rest>
+                    <rdf:first rdf:resource="#da"/>
+                  </rdf:List>
+                </swrl:arguments>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:rest>
+                  <swrl:AtomList>
+                    <rdf:rest>
+                      <swrl:AtomList>
+                        <rdf:rest>
+                          <swrl:AtomList>
+                            <rdf:first>
+                              <swrl:BuiltinAtom>
+                                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                                <swrl:arguments>
+                                  <rdf:List>
+                                    <rdf:first rdf:resource="#y"/>
+                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                  </rdf:List>
+                                </swrl:arguments>
+                              </swrl:BuiltinAtom>
+                            </rdf:first>
+                            <rdf:rest>
+                              <swrl:AtomList>
+                                <rdf:rest>
+                                  <swrl:AtomList>
+                                    <rdf:first>
+                                      <swrl:BuiltinAtom>
+                                        <swrl:arguments>
+                                          <rdf:List>
+                                            <rdf:rest>
+                                              <rdf:List>
+                                                <rdf:first rdf:resource="#a"/>
+                                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                              </rdf:List>
+                                            </rdf:rest>
+                                            <rdf:first rdf:resource="#x"/>
+                                          </rdf:List>
+                                        </swrl:arguments>
+                                        <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasClass"/>
+                                      </swrl:BuiltinAtom>
+                                    </rdf:first>
+                                    <rdf:rest>
+                                      <swrl:AtomList>
+                                        <rdf:first>
+                                          <swrl:BuiltinAtom>
+                                            <swrl:arguments>
+                                              <rdf:List>
+                                                <rdf:rest>
+                                                  <rdf:List>
+                                                    <rdf:first rdf:resource="#b"/>
+                                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                                  </rdf:List>
+                                                </rdf:rest>
+                                                <rdf:first rdf:resource="#y"/>
+                                              </rdf:List>
+                                            </swrl:arguments>
+                                            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#hasClass"/>
+                                          </swrl:BuiltinAtom>
+                                        </rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                      </swrl:AtomList>
+                                    </rdf:rest>
+                                  </swrl:AtomList>
+                                </rdf:rest>
+                                <rdf:first>
+                                  <swrl:BuiltinAtom>
+                                    <swrl:arguments>
+                                      <rdf:List>
+                                        <rdf:first rdf:resource="#x"/>
+                                        <rdf:rest>
+                                          <rdf:List>
+                                            <rdf:first rdf:resource="#y"/>
+                                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                          </rdf:List>
+                                        </rdf:rest>
+                                      </rdf:List>
+                                    </swrl:arguments>
+                                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#notEqualTo"/>
+                                  </swrl:BuiltinAtom>
+                                </rdf:first>
+                              </swrl:AtomList>
+                            </rdf:rest>
+                          </swrl:AtomList>
+                        </rdf:rest>
+                        <rdf:first>
+                          <swrl:BuiltinAtom>
+                            <swrl:arguments>
+                              <rdf:List>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                <rdf:first rdf:resource="#x"/>
+                              </rdf:List>
+                            </swrl:arguments>
+                            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+                          </swrl:BuiltinAtom>
+                        </rdf:first>
+                      </swrl:AtomList>
+                    </rdf:rest>
+                    <rdf:first>
+                      <swrl:BuiltinAtom>
+                        <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#notEqualTo"/>
+                        <swrl:arguments>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#a"/>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#b"/>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              </rdf:List>
+                            </rdf:rest>
+                          </rdf:List>
+                        </swrl:arguments>
+                      </swrl:BuiltinAtom>
+                    </rdf:first>
+                  </swrl:AtomList>
+                </rdf:rest>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasDescription"/>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#da"/>
+                        <rdf:rest>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#b"/>
+                            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                          </rdf:List>
+                        </rdf:rest>
+                      </rdf:List>
+                    </swrl:arguments>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+              </swrl:AtomList>
+            </rdf:rest>
+          </swrl:AtomList>
+        </rdf:rest>
+      </swrl:AtomList>
+    </swrl:body>
+  </swrl:Imp>
+  <swrl:Imp rdf:ID="Rule-4">
+    <swrl:body>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#x"/>
+                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+              </rdf:List>
+            </swrl:arguments>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#isIndividual"/>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest>
+          <swrl:AtomList>
+            <rdf:first>
+              <swrl:BuiltinAtom>
+                <swrl:arguments>
+                  <rdf:List>
+                    <rdf:rest>
+                      <rdf:List>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        <rdf:first rdf:resource="#a"/>
+                      </rdf:List>
+                    </rdf:rest>
+                    <rdf:first rdf:resource="#x"/>
+                  </rdf:List>
+                </swrl:arguments>
+                <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasAxiom"/>
+              </swrl:BuiltinAtom>
+            </rdf:first>
+            <rdf:rest>
+              <swrl:AtomList>
+                <rdf:rest>
+                  <swrl:AtomList>
+                    <rdf:first>
+                      <swrl:BuiltinAtom>
+                        <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#onProperty"/>
+                        <swrl:arguments>
+                          <rdf:List>
+                            <rdf:first rdf:resource="#a"/>
+                            <rdf:rest>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#p"/>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                              </rdf:List>
+                            </rdf:rest>
+                          </rdf:List>
+                        </swrl:arguments>
+                      </swrl:BuiltinAtom>
+                    </rdf:first>
+                    <rdf:rest>
+                      <swrl:AtomList>
+                        <rdf:first>
+                          <swrl:BuiltinAtom>
+                            <swrl:arguments>
+                              <rdf:List>
+                                <rdf:first rdf:resource="#a"/>
+                                <rdf:rest>
+                                  <rdf:List>
+                                    <rdf:first rdf:resource="#y"/>
+                                    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                  </rdf:List>
+                                </rdf:rest>
+                              </rdf:List>
+                            </swrl:arguments>
+                            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#hasValue"/>
+                          </swrl:BuiltinAtom>
+                        </rdf:first>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                      </swrl:AtomList>
+                    </rdf:rest>
+                  </swrl:AtomList>
+                </rdf:rest>
+                <rdf:first>
+                  <swrl:BuiltinAtom>
+                    <swrl:arguments>
+                      <rdf:List>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                        <rdf:first rdf:resource="#a"/>
+                      </rdf:List>
+                    </swrl:arguments>
+                    <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/tbox.owl#isHasValueRestriction"/>
+                  </swrl:BuiltinAtom>
+                </rdf:first>
+              </swrl:AtomList>
+            </rdf:rest>
+          </swrl:AtomList>
+        </rdf:rest>
+      </swrl:AtomList>
+    </swrl:body>
+    <swrl:head>
+      <swrl:AtomList>
+        <rdf:first>
+          <swrl:BuiltinAtom>
+            <swrl:arguments>
+              <rdf:List>
+                <rdf:first rdf:resource="#x"/>
+                <rdf:rest>
+                  <rdf:List>
+                    <rdf:first rdf:resource="#p"/>
+                    <rdf:rest>
+                      <rdf:List>
+                        <rdf:first rdf:resource="#y"/>
+                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                      </rdf:List>
+                    </rdf:rest>
+                  </rdf:List>
+                </rdf:rest>
+              </rdf:List>
+            </swrl:arguments>
+            <swrl:builtin rdf:resource="http://swrl.stanford.edu/ontologies/built-ins/3.3/abox.owl#setValue"/>
+          </swrl:BuiltinAtom>
+        </rdf:first>
+        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+      </swrl:AtomList>
+    </swrl:head>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{?R @has owl:onProperty ?P; owl:hasValue ?Y. ?X a ?R} =&gt; {?X ?P ?Y}.</rdfs:comment>
+  </swrl:Imp>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3.1, Build 430)  http://protege.stanford.edu -->

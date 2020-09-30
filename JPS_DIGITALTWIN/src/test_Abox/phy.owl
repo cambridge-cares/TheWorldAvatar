@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     ontologyIRI="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl">
+    <Prefix name="" IRI="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xml" IRI="http://www.w3.org/XML/1998/namespace"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="xsp" IRI="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Prefix name="swrl" IRI="http://www.w3.org/2003/11/swrl#"/>
+    <Prefix name="maths" IRI="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"/>
+    <Prefix name="swrlb" IRI="http://www.w3.org/2003/11/swrlb#"/>
+    <Prefix name="terms" IRI="http://purl.org/dc/terms/"/>
+    <Prefix name="system" IRI="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+    <Prefix name="protege" IRI="http://protege.stanford.edu/plugins/owl/protege#"/>
+    <Prefix name="binary_tree" IRI="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#"/>
+    <Import>http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl</Import>
+    <Import>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</Import>
+    <Annotation>
+        <AnnotationProperty abbreviatedIRI="terms:license"/>
+        <Literal>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </Literal>
+    </Annotation>
+    <Annotation>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <Literal>The ontology module &apos;physical_dimension&apos; defines a set of fundamental dimensions and introduces a method to derive further physical dimensions from these base dimensions.
+The following classes and relations of other ontology modules are used within &apos;physical_dimension&apos;:
+
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Operand&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalDimension&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue&quot;/&gt;  
+    </Literal>
+    </Annotation>
+    <Annotation>
+        <AnnotationProperty abbreviatedIRI="owl:versionInfo"/>
+        <Literal>2.0</Literal>
+    </Annotation>
+    <Declaration>
+        <Class IRI="#BaseDimension"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#DerivedDimension"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#SupplementaryDimension"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#isDefinedBy"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#amount_of_money"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#identity_dimension"/>
+    </Declaration>
+    <EquivalentClasses>
+        <Class abbreviatedIRI="system:PhysicalDimension"/>
+        <ObjectUnionOf>
+            <Class IRI="#BaseDimension"/>
+            <Class IRI="#DerivedDimension"/>
+            <Class IRI="#SupplementaryDimension"/>
+        </ObjectUnionOf>
+    </EquivalentClasses>
+    <SubClassOf>
+        <Class IRI="#BaseDimension"/>
+        <Class abbreviatedIRI="maths:Operand"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#BaseDimension"/>
+        <Class abbreviatedIRI="system:PhysicalDimension"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#DerivedDimension"/>
+        <Class abbreviatedIRI="system:PhysicalDimension"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#DerivedDimension"/>
+        <ObjectAllValuesFrom>
+            <ObjectProperty IRI="#isDefinedBy"/>
+            <Class abbreviatedIRI="maths:Node"/>
+        </ObjectAllValuesFrom>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#DerivedDimension"/>
+        <ObjectMaxCardinality cardinality="1">
+            <ObjectProperty IRI="#isDefinedBy"/>
+        </ObjectMaxCardinality>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#SupplementaryDimension"/>
+        <Class abbreviatedIRI="maths:Operand"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#SupplementaryDimension"/>
+        <Class abbreviatedIRI="system:PhysicalDimension"/>
+    </SubClassOf>
+    <DisjointClasses>
+        <Class IRI="#BaseDimension"/>
+        <Class IRI="#DerivedDimension"/>
+    </DisjointClasses>
+    <DisjointClasses>
+        <Class IRI="#BaseDimension"/>
+        <Class IRI="#SupplementaryDimension"/>
+    </DisjointClasses>
+    <DisjointClasses>
+        <Class IRI="#DerivedDimension"/>
+        <Class IRI="#SupplementaryDimension"/>
+    </DisjointClasses>
+    <ClassAssertion>
+        <Class IRI="#SupplementaryDimension"/>
+        <NamedIndividual IRI="#amount_of_money"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#SupplementaryDimension"/>
+        <NamedIndividual IRI="#identity_dimension"/>
+    </ClassAssertion>
+    <DifferentIndividuals>
+        <NamedIndividual IRI="#amount_of_money"/>
+        <NamedIndividual IRI="#identity_dimension"/>
+    </DifferentIndividuals>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#isDefinedBy"/>
+        <Class IRI="#DerivedDimension"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#isDefinedBy"/>
+        <Class abbreviatedIRI="maths:Node"/>
+    </ObjectPropertyRange>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#BaseDimension</IRI>
+        <Literal>Most PhysicalDimensions can be mathematically derived from a small set of dimensions that we call BaseDimensions. Such a set of base dimensions is chosen by convention. In OntoCAPE, we adopt the base dimensions of the SI system of units (BIPM, 2006), which are length, time, thermodynamic temperature, mass, amount of substance, electric current, and luminous intensity.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#DerivedDimension</IRI>
+        <Literal>A DerivedDimension is a PhysicalDimension that can be defined as a product of powers of the BaseDimensions. For example, the DerivedDimension ‘velocity’ can be defined as the ratio of the BaseDimensions ‘length’ and ‘time’.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#SupplementaryDimension</IRI>
+        <Literal>This class subsumes fundamental dimensions that do not form part of the SI system of units and therefore not classified under the BaseDimension class.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#amount_of_money</IRI>
+        <Literal>An amount of money in an arbitrary currency.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#identity_dimension</IRI>
+        <Literal>According to Gruber &amp; Olsen (1994) the identity_dimension is defined as the identity element for multiplication over PhysicalDimensions. That means that the product of the identity_dimension and any other PhysicalDimension is that other PhysicalDimension.</Literal>
+    </AnnotationAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

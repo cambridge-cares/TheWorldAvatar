@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns="http://swrl.stanford.edu/ontologies/built-ins/3.3/query.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.3/query.owl">
+  <owl:Ontology rdf:about=""/>
+  <swrl:Builtin rdf:ID="select">
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:minArgs>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="selectDistinct"/>
+  <swrl:Builtin rdf:ID="sum">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="avg">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="orderByDescending"/>
+  <swrl:Builtin rdf:ID="max">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="columnNames">
+    <swrlb:minArgs rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:minArgs>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="min">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="count">
+    <swrlb:args rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+    >1</swrlb:args>
+  </swrl:Builtin>
+  <swrl:Builtin rdf:ID="orderBy"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.3, Build 385)  http://protege.stanford.edu -->

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlm.owl#"
+  xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.4/swrlm.owl">
+  <owl:Ontology rdf:about=""/>
+  <swrl:Builtin rdf:ID="sqrt"/>
+  <swrl:Builtin rdf:ID="eval"/>
+  <swrl:Builtin rdf:ID="log"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4, Build 102)  http://protege.stanford.edu -->
