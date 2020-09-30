@@ -11,7 +11,7 @@
         
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-        <dependent-module archiveName="jps-base-1.3.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jps-base/jps-base">
+        <dependent-module archiveName="jps-base-lib-1.3.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jps-base/jps-base">
             <dependency-type>uses</dependency-type>
         </dependent-module>
                         

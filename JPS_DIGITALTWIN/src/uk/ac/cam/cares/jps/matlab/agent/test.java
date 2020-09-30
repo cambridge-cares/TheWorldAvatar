@@ -72,12 +72,12 @@ public class test extends JPSHttpServlet {
 	 //this should ONLY be called by scenarioAgent
 	   	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 			JSONObject jo = AgentCaller.readJsonParameter(request);
-			String baseUrl= QueryBroker.getLocalDataPath();
+			//String baseUrl= QueryBroker.getLocalDataPath();
 			//check name of scenario: 
-			String sourceUrl = JPSContext.getScenarioUrl(requestParams);
-			String sourceName = BucketHelper.getScenarioName(sourceUrl);
+			//String sourceUrl = JPSContext.getScenarioUrl(requestParams);
+			//String sourceName = BucketHelper.getScenarioName(sourceUrl);
 			//logger.info("Scenario Url" + sourceUrl);
-			jo.put("baseUrl", baseUrl);
+			//jo.put("baseUrl", baseUrl);
 			Runtime rs = Runtime.getRuntime();
 		    try {
 				try {
