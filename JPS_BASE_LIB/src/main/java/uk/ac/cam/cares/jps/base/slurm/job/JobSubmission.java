@@ -463,14 +463,12 @@ public class JobSubmission{
 									if(flag){
 										jobsRunning.add(jobFolder.getName());
 									}else{
-										System.out.println("In flag else break.");
 										break;
 									}
 								}catch(Exception e){
 									logger.info(e.getMessage());
 								}
 							}else{
-								System.out.println("In max job else break.");
 								break;
 							}
 						}
@@ -596,7 +594,9 @@ public class JobSubmission{
 		try{
 			// If all files set through properties are not available in a job folder, it
 			// deletes the folder.
-			if(!(countNumberOfFilesInJobFolder>=4 && countNumberOfFilesSetInProperties==countNumberOfFilesInJobFolder)){
+			System.out.println("countNumberOfFilesInJobFolder:"+countNumberOfFilesInJobFolder);
+			System.out.println("countNumberOfFilesSetInProperties:"+countNumberOfFilesSetInProperties);
+			if(!(countNumberOfFilesSetInProperties>=3 && countNumberOfFilesSetInProperties+1==countNumberOfFilesInJobFolder)){
 				logger.info("SlurmJobAPI: all mandatory files are not found, so the job folder with ID "+ jobFolder.getName()+" is deleted.");
 				System.out.println("SlurmJobAPI: all mandatory files are not found, so the job folder with ID "+ jobFolder.getName()+" is deleted.");
 				Utils.moveToFailedJobsFolder(jobFolder, slurmJobProperty);
