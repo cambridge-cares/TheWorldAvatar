@@ -310,11 +310,11 @@ public class KnowledgeBaseClient {
 	 * @return
 	 */
 	public boolean isConnectionUpdateUrlValid(String connectionUrl){
-		if (!connectionUrl.startsWith(JenaDriver.DRIVER_PREFIX
+		if (!(isConnectionQueryUrlValid(connectionUrl) || connectionUrl.startsWith(JenaDriver.DRIVER_PREFIX
 						.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
 						.concat(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT)
 						.concat("=")
-						.concat(HTTP_PROTOCOL_PREFIX))) {
+						.concat(HTTP_PROTOCOL_PREFIX)))) {
 			return false;
 		}
 		return isConnectionUrlValid(connectionUrl);
