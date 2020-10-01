@@ -11,7 +11,7 @@
 #! will lead to a default of (1/16)*total memory per task.
 #! Setting a larger amount per task increases the number of cores.
 #SBATCH --output slurm.%u.%j.%N.stdout.txt   # (%u,%j,%N)=(user, job allocation #, node)
-#SBATCH --time=00:00:20                      #Wallclock time use.
+#SBATCH --time=00:10:20                      #Wallclock time use.
 #ln -s /home/adev01/gPROMSAgent_5154434330700/SRT_10.25.188.122_446653966157500/liblapack.so.3
 echo "Starting of slurm"
 #! Number of nodes and tasks per node allocated by SLURM (do not change):

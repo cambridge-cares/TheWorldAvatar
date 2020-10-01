@@ -3,10 +3,10 @@
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cmclinnovations</groupId>
-	<artifactId>gPROMSAgent</artifactId>
+	<artifactId>ElChemoAgent</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>gPROMSAgent</name>
+	<name>ElChemoAgent</name>
 	<url>http://www.springframework.org/spring-ws</url>
 
 	<properties>
@@ -230,6 +230,12 @@
     	<artifactId>opencsv</artifactId>
     	<version>2.4</version>
 		</dependency>
+	<!-- https://mvnrepository.com/artifact/kephale/matlabcontrol -->
+		 <dependency>
+		  <groupId>kephale</groupId>
+		  <artifactId>matlabcontrol</artifactId>
+		  <version>4.1.0</version>
+		  </dependency>
 
 
 
