@@ -4,11 +4,27 @@
     * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-freelancer/blob/master/LICENSE)
     */
 
+// TODO: separate the visualization for JPS/ wolfram + google ...
+
+let local_address = 'http://127.0.0.1:5000/'
+let cmcl_address = 'https://kg.cmclinnovations.com/'
+let address = cmcl_address
+
 	$(window).on('load', function(){
+
+	    let hostname = location.hostname;
+	    console.log('host name is', hostname)
+
+	    if (hostname.includes('127.0.0.1')){
+	        address = local_address
+	    }else{
+	        address = cmcl_address
+	    }
+	    console.log('address is set to be', address)
 	    google.charts.load('current', {'packages':['table']});
 	    $('#google_result_box').hide()
-
-
+	    $('#wolfram_result_box').hide()
+	    $('#progress-container').hide()
 	});
 
     (function($) {
@@ -81,6 +97,8 @@
 
   function ask_question() {
 
+    $('#progress-container').show()
+
     document.getElementById('search-icon').style.display = 'none';
     document.getElementById('search-spinner').style.display = 'block';
 
@@ -92,11 +110,15 @@
 
    // to test the code locally, the address need to be changed to  http://127.0.0.1:5000/
 
-    address = 'http://127.0.0.1:5000/'
-    cmcl_address = 'https://kg.cmclinnovations.com/'
-    address = cmcl_address
 
+    $('#search-results').hide()
     $('#google_result_box').hide()
+    $('#wolfram_result_box').hide()
+
+
+    query_wolfram_alpha(address, msg);
+    query_google(address, msg);
+
     $.get(address + "query?question=" + msg, function( data ) {
       displayResults(data, 'jps')
     });
@@ -117,15 +139,13 @@ function process_json_result(result){
     console.log('Received nothing')
 
 
-     address = 'http://127.0.0.1:5000/'
-    cmcl_address = 'https://kg.cmclinnovations.com/'
-    address = cmcl_address
+
     query_wolfram_alpha(address, msg);
     query_google(address, msg);
     return null
   }
 
-  // result = JSON.parse(result)
+
 
 
   console.log('If it is nothing, you should not see this line')
@@ -148,10 +168,6 @@ function process_json_result(result){
             head_object[head] = head
          }
          table.push(head_object)
-
-
-
-
 
         r["results"].forEach(function (item, index) {
          let row_object = {}
@@ -243,38 +259,42 @@ function process_json_result(result){
 
   else{
     // call wolfram_alpha or google
-    address = 'http://127.0.0.1:5000/'
-    cmcl_address = 'https://kg.cmclinnovations.com/'
-    address = cmcl_address
-
-    query_wolfram_alpha(address, msg);
-    query_google(address, msg);
-
+    console.log('No valid result returned')
   }
 }
 // if the query to the JPS fails, the system queries both wolfram_alpha and google at the same time
 function query_wolfram_alpha(address, msg){
     $.get(address + "query_wolfram?question=" + msg, function( data ) {
-      displayResults(data, 'wolfram')
+      visualize_wolfram_result(data, 'wolfram')
     });
 }
 
 function query_google(address, msg){
     // the result returned by google will be in the form of html divisions, the visualization will be different
         $.get(address + "query_google?question=" + msg, function( data ) {
-            $('#google_result_box').show()
-
-
-        visualize_google_result(data, 'google')
+         visualize_google_result(data, 'google')
     });
 }
 
 
+
 function visualize_google_result(result){
+    $('#google_result_box').show()
+    if (result.trim() === ''){
+        $("#google-results" ).html('<div class="div-row">Google failed to provide a direct answer</div>')
 
-    $("#google-results" ).html(result)
-
+    }else{
+        div = '<div class="div-row">' + result + '</div>'
+        $("#google-results" ).html(div)
+    }
 }
+
+function visualize_wolfram_result(result){
+    $('#wolfram_result_box').show()
+    div = '<div class="div-row">' + result.replace('"', '') + '</div>'
+    $("#wolfram-results" ).html(div)
+}
+
 
 // TODO: query wolfram alpha and google no matter what
 // TODO: Make the page Marie Curie
@@ -363,7 +383,7 @@ function displayResults(myData, source) {
     h.innerHTML = 'Results (from wolfram alpha)'
   }
   else{
-    var t = document.createTextNode("Results");     // Create a text node
+    var t = document.createTextNode("Results (from The World Avatar)");     // Create a text node
   h.appendChild(t);
   }
 
@@ -421,5 +441,7 @@ function displayResults(myData, source) {
   document.getElementById("search-results").style.display = "block";
   document.getElementById('search-icon').style.display = '';
 
+// TODO: install javascript plugin in Pycharm ...
+// No, this feature is for Pro ...
 
 };

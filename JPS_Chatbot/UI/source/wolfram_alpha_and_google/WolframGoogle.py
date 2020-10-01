@@ -23,8 +23,6 @@ from urllib.parse import urlparse
 # To conclude, the direct scraping work fine.
 
 
-
-
 class WolframGoogle:
     def __init__(self):
         # ================= setup wolfram alpha ==============
@@ -89,20 +87,24 @@ class WolframGoogle:
     def get_result_from_wolfram(self, question):
         print('----- question received --------', question)
         question = question.replace('add_sign', ' + ')
-        self.object_template = {"head": {"vars": ["v"]}, "results": {"bindings": []}}
         res = self.wolframalpha_client.query(question)
-        bindings = []
+        bindings = ''
         counter = 0
-        for pod in res.pods:
-            counter = counter + 1
-            for sub in pod.subpods:
-                text = sub.plaintext
-                if counter <= 2:
-                    bindings.append({'v': {'value': text}})
+        try:
+            for pod in res.pods:
+                counter = counter + 1
+                for sub in pod.subpods:
+                    text = sub.plaintext
+                    if counter <= 2:
+                        bindings = bindings + '<br/>' + text
+        except KeyError:
+            print('Wolfram alpha failed to provide an answer')
+            return 'Wolfram alpha failed to provide an answer'
+        except AttributeError:
+            print('Wolfram alpha failed to provide an answer')
+            return 'Wolfram alpha failed to provide an answer'
 
-        self.object_template['results']['bindings'] = bindings
-        return self.object_template
-
+        return bindings.replace('"', '')
 
 #    def get_result_from_google(self):
 
