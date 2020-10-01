@@ -162,7 +162,7 @@ public class KnowledgeBaseClient {
 		if(connectionUrl.isEmpty()){
 			return null;
 		}
-		if(isConnectionUrlValid(connectionUrl)){
+		if(isConnectionQueryUrlValid(connectionUrl)){
 			return executeQuery(this.query);
 		}
 		return null;
@@ -190,6 +190,43 @@ public class KnowledgeBaseClient {
 			throw new SQLException(e.getMessage());
 		}
 		return results;
+	}
+	
+	/**
+	 * Executes the update operation that is provided through the constructors or setter<p>
+	 * method.
+	 * 
+	 * @return
+	 */
+	public void executeUpdate() throws SQLException{
+		String connectionUrl = getConnectionUrl();
+		if(connectionUrl.isEmpty()){
+			return;
+		}
+		if(isConnectionUpdateUrlValid(connectionUrl)){
+			executeUpdate(this.query);
+		}
+	}
+	
+	/**
+	 * Executes the update operation supplied by the calling method and returns results.
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public void executeUpdate(String query) throws SQLException {
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			RemoteEndpointDriver.register();
+			System.out.println(getConnectionUrl());
+			conn = DriverManager.getConnection(getConnectionUrl());
+			stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+			System.out.println(query);
+			stmt.executeUpdate(query);
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
+		}
 	}
 	
 	/**
@@ -249,11 +286,10 @@ public class KnowledgeBaseClient {
 	 * constructors or setter methods.
 	 * 
 	 * @param connectionUrl provided URL that is to be used for establishing<p>
-	 * a connection with the remote repository to perform query or update<p>
-	 * operations.
+	 * a connection with the remote repository to perform a query operation<p>
 	 * @return
 	 */
-	public boolean isConnectionUrlValid(String connectionUrl){
+	public boolean isConnectionQueryUrlValid(String connectionUrl){
 		if (!connectionUrl.startsWith(JenaDriver.DRIVER_PREFIX
 				.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
 				.concat(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT)
@@ -261,6 +297,30 @@ public class KnowledgeBaseClient {
 				.concat(HTTP_PROTOCOL_PREFIX))) {
 			return false;
 		}
+		return isConnectionUrlValid(connectionUrl);
+	}
+	
+	/**
+	 * Checks the validity of the URL generated for connecting to a remote<p>
+	 * repository based on user provided inputs via one of the parameterised<p>
+	 * constructors or setter methods.
+	 *  
+	 * @param connectionUrl provided URL that is to be used for establishing<p>
+	 * a connection with the remote repository to perform an update operation<p>
+	 * @return
+	 */
+	public boolean isConnectionUpdateUrlValid(String connectionUrl){
+		if (!connectionUrl.startsWith(JenaDriver.DRIVER_PREFIX
+						.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
+						.concat(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT)
+						.concat("=")
+						.concat(HTTP_PROTOCOL_PREFIX))) {
+			return false;
+		}
+		return isConnectionUrlValid(connectionUrl);
+	}
+	
+	public boolean isConnectionUrlValid(String connectionUrl){
 		String[] tokens = connectionUrl.split(HTTP_PROTOCOL_PREFIX);
 		for(String token: tokens){
 			if(token.isEmpty()){
