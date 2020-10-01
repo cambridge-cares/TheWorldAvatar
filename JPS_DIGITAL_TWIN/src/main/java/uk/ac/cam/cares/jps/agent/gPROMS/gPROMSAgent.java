@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +31,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileWriter; 
 
 import javax.servlet.ServletException;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -51,6 +54,7 @@ import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentProperty;
 //import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgentException;
 import uk.ac.cam.cares.jps.agent.utils.ZipUtility;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
@@ -59,6 +63,7 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.matlab.agent.*;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.*;
@@ -228,6 +233,7 @@ public class gPROMSAgent extends JPSAgent {
 			System.out.println("Unknown request");
 			throw new JPSRuntimeException(UNKNOWN_REQUEST);
 		}
+		
 	}
 
 	/**
@@ -450,6 +456,10 @@ public class gPROMSAgent extends JPSAgent {
 	    	System.out.println(table[i][0]);
 			}
 	    exportDataToExcel(jobFolder.toString()+"/matlab.csv", table);
+	    System.out.println("StartingMatlab");
+	    JSONObject jo = new JSONObject();
+		String resultStart = AgentCaller.executeGetWithURLAndJSON("http://localhost:8080/ElChemoAgent/test", jo.toString());
+        System.out.println("resultStart");
 	    return true;
 		}
 		
