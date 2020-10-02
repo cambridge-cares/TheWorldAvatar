@@ -25,8 +25,8 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
  */
 public class KnowledgeBaseClientTest {
 
-	String queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-	String updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+	String queryEndpoint = anyString();
+	String updateEndpoint = anyString();
 
 	/**
 	 * Verifies if the KnowledgeBaseClient constructor that is designed to<p>
@@ -40,6 +40,22 @@ public class KnowledgeBaseClientTest {
 		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
+	}
+	
+	/**
+	 * Verifies if the KnowledgeBaseClient constructor that is designed to<p>
+	 * set both the query and update endpoints (URLs) assigns the values to<p>
+	 * the corresponding member variables. 
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void queryAndUpdateEndpointsSetupTest() throws SQLException{
+		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertNotNull(kbClient.getQueryEndpoint());
+		assertNotNull(kbClient.getUpdateEndpoint());
+		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
+		assertEquals(updateEndpoint, kbClient.getUpdateEndpoint());
 	}
 	
 //	@Test
