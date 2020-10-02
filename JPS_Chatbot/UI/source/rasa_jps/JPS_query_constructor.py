@@ -17,6 +17,12 @@ from .OntoOntokin_Queries import  LENNARD_JONES_WELL_DEPTH, \
 
 from functools import lru_cache
 
+try:
+    from __main__ import socketio
+
+    print('Importing socketIO from main in interpretation')
+except ImportError:
+    from run import socketio
 
 class JPS_query_constructor:
 
@@ -47,9 +53,23 @@ class JPS_query_constructor:
             return None
 
     @staticmethod
+    def extract_entity_pairs(entities):
+        rst = '<br/>'
+        for e in entities:
+            key = e['entity']
+            value = e['value']
+            pair = value + ' - ' + key + '<br/>'
+            rst = rst + pair
+        print('The entities extracted', rst)
+        return rst
+
+    @staticmethod
     def extract_info(intents):
 
         intent = intents['intent']['name']
+        entity_pairs = JPS_query_constructor.extract_entity_pairs(intents['entities'])
+        socketio.emit('coordinate_agent', 'Looking up entities in JPS KG<br/> -----------------' + str(entity_pairs) + '-----------------')
+
         if intent in ontocompchem_simple_intents:
             result = {'intent': intent}
             for e in intents['entities']:
@@ -139,7 +159,7 @@ class JPS_query_constructor:
             return result
 
     def construct_query(self, intents):
-
+        socketio.emit('coordinate_agent', 'Constructing SPARQL queries')
         print('=================== intents ================')
         pprint(intents)
         result = JPS_query_constructor.extract_info(intents)
@@ -351,6 +371,10 @@ class JPS_query_constructor:
 
     @lru_cache(maxsize=64)
     def fire_query(self, query):
+
+        print('Importing socketIO from run_socket in interpretation')
+        socketio.emit('coordinate_agent', 'Querying the Ontokin ontology in the JPS Knowledge Graph')
+
         print('----------- firing the query to JPS -------------')
         print(query)
         # x = input()
@@ -365,6 +389,8 @@ class JPS_query_constructor:
     def fire_query_ontochemcomp(self, query):
         print('----------- firing the query to JPS ontochemcomp -------------')
         print(query)
+        socketio.emit('coordinate_agent', 'Querying the OntoCompChem ontology in the JPS Knowledge Graph')
+
         # x = input()
         url = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
         values = {'query': query}

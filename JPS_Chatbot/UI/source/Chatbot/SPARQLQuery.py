@@ -44,6 +44,14 @@ class SPARQLQuery:
         self.query_step = 2
 
     def start_queries(self, queries):
+        try:
+            from __main__ import socketio
+            print('Importing socketIO from main in interpretation')
+        except ImportError:
+            from run import socketio
+            print('Importing socketIO from run_socket in interpretation')
+        socketio.emit('coordinate_agent', 'Querying the Wikidata Knowledge Graph')
+
         self.iteration_round = 1
         valid_results = []
         r = None

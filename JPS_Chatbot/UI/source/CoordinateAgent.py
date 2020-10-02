@@ -1,4 +1,13 @@
+import json
 import sys,os
+
+try:
+    from __main__ import socketio
+    print('Importing socketIO from main')
+except ImportError:
+    from run import socketio
+    print('Importing socketIO from run_socket')
+
 sys.path.append('/source')
 sys.path.insert(0, os.path.realpath(os.path.dirname(__file__)))
 from Chatbot.Interpretation_parser import InterpretationParser
@@ -15,6 +24,15 @@ import os
 import tarfile
 import wolframalpha
 from location import WIKI_MODELS_DIR
+
+from flask import session
+from flask_socketio import emit
+
+
+from flask import session
+from flask_socketio import emit, join_room, leave_room
+
+
 
 # 0. get the topic model result, choose which direction it goes
 # 1. get the InterpretationParse
@@ -42,29 +60,35 @@ class CoordinateAgent():
         self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
         self.interpreter = Interpreter.load(self.nlu_model_directory) # load the wiki nlu models
         self.jps_interface = Chatbot()
+        self.socket = socketio
+
+
+    # TODO: separate the function of topic identifying
+    # TODO: separate the SPARQL query
+    # TODO: show progress
+    # def identify_topics(self, question):
+
+
 
     def run(self, question):
 
         # TODO: put the LDA model here
         # ===================== initialize the things for wiki
         self.interpreter_parser = InterpretationParser()
-        print('Loading interpreter')
         self.interpreter_parser.interpreter = self.interpreter
         print('Loading interpreter')
         self.search_engine = SearchEngine()
-        print('Loading search engine')
         self.sparql_constructor = SPARQLConstructor()
-        print('Loading SPARQL constructor')
         self.sparql_query = SPARQLQuery()
-        print('Loading SPARQLQuery')
+
         self.lda_classifier = LDAClassifier()
-        print('Loading LDA classifier')
-        # TODO: Make the list complete ...
         topics = self.lda_classifier.classify(question)
         print('============== topics ==============')
         print(topics)
-        print('====================================')
-        # return None
+        if topics == 'ERROR002':
+            self.socket.emit('coordinate_agent', 'This question seems to be outside the chemistry domain')
+        else:
+            self.socket.emit('coordinate_agent', 'The topics identified are: ' + json.dumps(topics))
 
         for topic in topics:
             if topic == 'wiki':

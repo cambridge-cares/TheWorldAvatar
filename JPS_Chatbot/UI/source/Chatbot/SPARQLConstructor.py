@@ -2,6 +2,14 @@ import json
 from pprint import pprint
 import itertools
 
+try:
+    from __main__ import socketio
+
+    print('Importing socketIO from main in interpretation')
+except ImportError:
+    from run import socketio
+
+    print('Importing socketIO from run_socket in interpretation')
 
 def generate_combinations(results):
     # TODO: to generate a list of combinations with a score ...
@@ -41,6 +49,7 @@ def retrieve_uris_from_entities(entities, order):
     # get the object by label, the remove the object
     print('---------- entities -----------')
     pprint(entities)
+
     print('\n')
     temp_list = entities
     results = []
@@ -77,7 +86,6 @@ def fill_sparql_query_for_one_intent(intent, template, order, entities, index_or
     # this function takes the template, entities, the order, returns a list of sparql queries
     if intent == 'batch_restriction_query_numerical_and_attribute':
         entities = rename_keys(entities)
-
     r = retrieve_uris_from_entities(entities, order=order)
 
 
@@ -125,7 +133,7 @@ def fill_sparql_query_for_one_intent(intent, template, order, entities, index_or
             return None
     return list_of_sparqls
 
-
+# This class constructs SPARQL query for wikidata
 class SPARQLConstructor:
     def __init__(self):
         self.templates = {
@@ -192,6 +200,9 @@ class SPARQLConstructor:
 
     # TODO: generalize the fill_sparql_query
     def fill_sparql_query(self, intent_and_entities_with_uris):
+
+        # socketio.emit('coordinate_agent', 'Constructing SPARQL query ')
+
         #     {'entities': [{'attribute': ['http://www.wikidata.org/entity/P8224',
         #                                  'http://www.wikidata.org/entity/P274',
         #                                  'http://www.wikidata.org/entity/P2067']},

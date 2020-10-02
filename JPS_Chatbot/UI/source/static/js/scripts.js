@@ -92,11 +92,60 @@ let address = cmcl_address
 
   })(jQuery);
 
+    var socket = io();
+
+    socket.on('connect', function() {
+        socket.emit('message', {data: 'I\'m connected!'});
+    });
+
+    socket.on('coordinate_agent', function(msg) {
+        console.log('from coordinate agent', msg)
+        update_log(msg)
+    });
+
+
+  var progress_counter = 1
+
+  function update_log(msg){
+     // TODO: update the log info
+     if (msg.includes('Querying') && msg.includes('JPS Knowledge Graph')){
+        $('#query_progress').append('<div>' + msg + '</div>')
+        console.log('updating the progress bar item ')
+        $('#query_progress').append('<div id="query_progress_bar">' + '#' + '</div>')
+
+        setInterval(function(){
+
+            progress_counter = progress_counter + 1;
+            bar = '#'
+            for (var i = 1; i < progress_counter; i++)
+            {
+
+                if (progress_counter < 20){
+                    bar = bar + '#'
+                }else{
+                    progress_counter = 1
+                }
+            }
+            console.log('progress bar', progress_counter)
+            console.log('bar', bar)
+            $('#query_progress_bar').html(bar)
+
+         },2000);
+
+
+     }
+     else{
+        $('#query_progress').append('<div>' + msg + '</div>')
+        console.log('updating the progress', msg)
+     }
+  }
+
 
 
 
   function ask_question() {
 
+    $('#query_progress').empty()
     $('#progress-container').show()
 
     document.getElementById('search-icon').style.display = 'none';
@@ -137,7 +186,8 @@ function process_json_result(result){
 
   if (result === 'Nothing'){
     console.log('Received nothing')
-
+    update_log('JPS failed to provide an answer')
+    $('#query_progress_bar').html('')
 
 
     query_wolfram_alpha(address, msg);
@@ -282,7 +332,7 @@ function visualize_google_result(result){
     $('#google_result_box').show()
     if (result.trim() === ''){
         $("#google-results" ).html('<div class="div-row">Google failed to provide a direct answer</div>')
-
+        $('#query_progress').append('<div>Google failed to provide a director answer</div>')
     }else{
         div = '<div class="div-row">' + result + '</div>'
         $("#google-results" ).html(div)
@@ -291,9 +341,14 @@ function visualize_google_result(result){
 
 function visualize_wolfram_result(result){
     $('#wolfram_result_box').show()
-    div = '<div class="div-row">' + result.replace('"', '') + '</div>'
-    $("#wolfram-results" ).html(div)
-}
+        if (result.trim() === ''){
+        $("#wolfram-results" ).html('<div class="div-row">Google failed to provide a direct answer</div>')
+        $('#query_progress').append('<div>Wolfram alpha failed to provide a director answer</div>')
+    }else{
+        div = '<div class="div-row">' + result + '</div>'
+        $("#wolfram-results" ).html(div)
+    }
+   }
 
 
 // TODO: query wolfram alpha and google no matter what
@@ -362,6 +417,8 @@ function drawTable(result_array) {
 function displayResults(myData, source) {
      myData = process_json_result(myData)
 
+  $('#query_progress_bar').html('')
+  update_log('Obtained result from the JPS KG')
 
   // EXTRACT VALUE FOR HTML HEADER.
   // ('Book ID', 'Book Name', 'Category' and 'Price')

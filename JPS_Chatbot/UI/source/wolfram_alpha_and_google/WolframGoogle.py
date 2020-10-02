@@ -90,12 +90,24 @@ class WolframGoogle:
         res = self.wolframalpha_client.query(question)
         bindings = ''
         counter = 0
+        print('------------ wolfram alpha result -----------')
         try:
             for pod in res.pods:
                 counter = counter + 1
                 for sub in pod.subpods:
-                    text = sub.plaintext
-                    if counter <= 2:
+                    print('------------ sub ------------')
+                    print(sub)
+                    try:
+                        text = sub.plaintext
+                        if text is None:
+                            try:
+                                text = sub.img
+                            except:
+                                print('The attempt to get image failed')
+                    except:
+                        print('the attempt to get text failed')
+
+                    if counter <= 2 and (text is not None):
                         bindings = bindings + '<br/>' + text
         except KeyError:
             print('Wolfram alpha failed to provide an answer')
@@ -103,7 +115,9 @@ class WolframGoogle:
         except AttributeError:
             print('Wolfram alpha failed to provide an answer')
             return 'Wolfram alpha failed to provide an answer'
-
+        except TypeError:
+            print('Wolfram alpha failed to provide an answer')
+            return 'Wolfram alpha failed to provide an answer'
         return bindings.replace('"', '')
 
 #    def get_result_from_google(self):
