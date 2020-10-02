@@ -109,6 +109,22 @@ public class KnowledgeBaseClientTest {
 		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint), kbClient.getConnectionUrl());
 	}
 	
+	/**
+	 * Checks if the connection URL established for the query and update<p> 
+	 * endpoints (URLs) is the expected one. 
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void connectionURLForQueryAndUpdateEndpointsTest() throws SQLException{
+		queryEndpoint = "http://localhost:8080/test";
+		updateEndpoint = "http://localhost:8080/test";
+		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertNotNull(kbClient.getConnectionUrl());
+		System.out.println("kbClient.getConnectionUrl():"+kbClient.getConnectionUrl());
+		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint), kbClient.getConnectionUrl());
+	}
+	
 //	@Test
 //	public void performMechanismCountQueryTest() throws SQLException{
 //		KnowledgeBaseClient kbClient = mock(KnowledgeBaseClient.class);
