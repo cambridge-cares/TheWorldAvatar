@@ -54,8 +54,26 @@ public class KnowledgeBaseClientTest {
 		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
-		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
-		assertEquals(updateEndpoint, kbClient.getUpdateEndpoint());
+		assertEquals(updateEndpoint, kbClient.getQueryEndpoint());
+		assertEquals(queryEndpoint, kbClient.getUpdateEndpoint());
+	}
+	
+	/**
+	 * Checks if the KnowledgeBaseClient constructor that is designed to<p>
+	 * set the query and update endpoints (URLs) and query assigns the values<p>
+	 * to the corresponding member variables. 
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void endpointsAndQuerySetupTest() throws SQLException{
+		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismCountCountQuery());
+		assertNotNull(kbClient.getQueryEndpoint());
+		assertNotNull(kbClient.getUpdateEndpoint());
+		assertNotNull(kbClient.getQuery());
+		assertEquals(updateEndpoint, kbClient.getQueryEndpoint());
+		assertEquals(queryEndpoint, kbClient.getUpdateEndpoint());
+		assertEquals(formMechanismCountCountQuery(), kbClient.getQuery());
 	}
 	
 //	@Test
