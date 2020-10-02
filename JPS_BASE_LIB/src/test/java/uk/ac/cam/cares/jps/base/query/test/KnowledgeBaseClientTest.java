@@ -71,9 +71,27 @@ public class KnowledgeBaseClientTest {
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
-		assertEquals(updateEndpoint, kbClient.getQueryEndpoint());
-		assertEquals(queryEndpoint, kbClient.getUpdateEndpoint());
+		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
+		assertEquals(updateEndpoint, kbClient.getUpdateEndpoint());
 		assertEquals(formMechanismCountCountQuery(), kbClient.getQuery());
+		queryEndpoint = "/test/Query/Endpoint";
+		updateEndpoint = "/test/Update/Endpoint";
+		kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismIRIsQuery());
+		assertNotNull(kbClient.getQueryEndpoint());
+		assertNotNull(kbClient.getUpdateEndpoint());
+		assertNotNull(kbClient.getQuery());
+		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
+		assertEquals(updateEndpoint, kbClient.getUpdateEndpoint());
+		assertEquals(formMechanismIRIsQuery(), kbClient.getQuery());
+		queryEndpoint = "/extended/Test/QueryEndpoint";
+		updateEndpoint = "/extended/Test/UpdateEndpoint";
+		kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formInsertQuery());
+		assertNotNull(kbClient.getQueryEndpoint());
+		assertNotNull(kbClient.getUpdateEndpoint());
+		assertNotNull(kbClient.getQuery());
+		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
+		assertEquals(updateEndpoint, kbClient.getUpdateEndpoint());
+		assertEquals(formInsertQuery(), kbClient.getQuery());
 	}
 	
 //	@Test
