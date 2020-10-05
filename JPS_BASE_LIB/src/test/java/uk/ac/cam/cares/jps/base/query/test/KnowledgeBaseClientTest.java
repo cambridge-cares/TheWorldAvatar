@@ -116,13 +116,34 @@ public class KnowledgeBaseClientTest {
 	 * @throws SQLException
 	 */
 	@Test
-	public void connectionURLForQueryAndUpdateEndpointsTest() throws SQLException{
+	public void connectionURLForQueryAndInsertEndpointsTest() throws SQLException{
 		queryEndpoint = "http://localhost:8080/test";
 		updateEndpoint = "http://localhost:8080/test";
 		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
 		System.out.println("kbClient.getConnectionUrl():"+kbClient.getConnectionUrl());
 		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint), kbClient.getConnectionUrl());
+	}
+	
+	/**
+	 * Checks if the connection URL established for the query endpoint and<p> 
+	 * update endpoint for deletion is the expected one. 
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void connectionURLForQueryAndDeleteEndpointsTest() throws SQLException {
+		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertNotNull(kbClient.getConnectionUrl());
+		System.out.println(
+				"Testing if the URL to connect to an endpoint for performing a delete query is set as expected.");
+		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint),
+				kbClient.getConnectionUrl());
+		System.out.println("Expected connection URL      :"
+				+ "jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint)
+				+ "\n matched with the actual one :" + kbClient.getConnectionUrl());
 	}
 	
 //	@Test
@@ -151,9 +172,11 @@ public class KnowledgeBaseClientTest {
 //	@Test
 //	public void updateQuery() throws SQLException{
 //		KnowledgeBaseClient kbClient = new KnowledgeBaseClient();
+//		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+//		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 //		kbClient.setQueryEndpoint(queryEndpoint);
 //		kbClient.setUpdateEndpoint(updateEndpoint);
-//		kbClient.setQuery(formInsertQuery());
+//		kbClient.setQuery(formDeleteQuery());
 //		System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
 //		
 //	}
@@ -193,7 +216,7 @@ public class KnowledgeBaseClientTest {
 	private static String formInsertQuery(){
 		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
-			query = query.concat("INSERT DATA { <http://www.theworldavatar.com/kb/ontokin/POLIMI_H2CO_1412.owl#ArrheniusCoefficient_182161099217501> ontokin:hasTemperatureExponent \"-0.6\" }");
+			query = query.concat("INSERT DATA { <http://www.theworldavatar.com/kb/ontokin/POLIMI_H2CO_1412.owl#ArrheniusCoefficient_182161099217501> ontokin:hasTemperatureExponent \"-0.7\" }");
 			return query;
 	}
 	
@@ -211,7 +234,7 @@ public class KnowledgeBaseClientTest {
 	private static String formDeleteQuery(){
 		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
-			query = query.concat("INSERT DATA { <http://www.theworldavatar.com/kb/ontokin/POLIMI_H2CO_1412.owl#ArrheniusCoefficient_182161099217501> ontokin:hasTemperatureExponent \"-0.6\" }");
+			query = query.concat("DELETE DATA { <http://www.theworldavatar.com/kb/ontokin/POLIMI_H2CO_1412.owl#ArrheniusCoefficient_182161099217501> ontokin:hasTemperatureExponent \"-0.7\" }");
 			return query;
 	}
 }
