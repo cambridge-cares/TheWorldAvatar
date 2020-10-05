@@ -365,6 +365,8 @@ class CcGaussianParser():
                 # get rot consts
                 rc = line[1].replace(':','').split()
                 rc = list(dict.fromkeys(rc))
+                #line below is added based on recommendation Angiras Menon  (am2145@cam.ac.uk) because some Log files have invalid rotational constants values.
+                rc = [x for x in rc if x[0] !=  '*']
                 data[ROT_CONST] = [float(x) for x in rc if float(x) != 0]
 
                 data[ROT_CONST_NR] = len(data[ROT_CONST])
