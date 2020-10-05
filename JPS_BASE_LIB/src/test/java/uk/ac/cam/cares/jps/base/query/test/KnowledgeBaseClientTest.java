@@ -25,8 +25,8 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
  */
 public class KnowledgeBaseClientTest {
 
-	String queryEndpoint = anyString();
-	String updateEndpoint = anyString();
+	String queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+	String updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 
 	/**
 	 * Verifies if the KnowledgeBaseClient constructor that is designed to<p>
@@ -67,13 +67,13 @@ public class KnowledgeBaseClientTest {
 	 */
 	@Test
 	public void endpointsAndQuerySetupTest() throws SQLException{
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismCountCountQuery());
+		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismCountQuery());
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
 		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
 		assertEquals(updateEndpoint, kbClient.getUpdateEndpoint());
-		assertEquals(formMechanismCountCountQuery(), kbClient.getQuery());
+		assertEquals(formMechanismCountQuery(), kbClient.getQuery());
 		queryEndpoint = "/test/Query/Endpoint";
 		updateEndpoint = "/test/Update/Endpoint";
 		kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismIRIsQuery());
@@ -154,18 +154,28 @@ public class KnowledgeBaseClientTest {
 				+ "\n matched with the actual one :" + kbClient.getConnectionUrl());
 	}
 	
-//	@Test
-//	public void performMechanismCountQueryTest() throws SQLException{
-//		KnowledgeBaseClient kbClient = mock(KnowledgeBaseClient.class);
-//		JSONArray jsonArray = new JSONArray();
-//		JSONObject jsonObject = new JSONObject();
-//		jsonObject.put("count", "1");
-//		jsonArray.put(jsonObject);
-//		kbClient.setQueryEndpoint(anyString());
-//		when(kbClient.setQuery(formMechanismCountCountQuery())).thenReturn(jsonArray.toString());
-//		kbClient.setQueryEndpoint(queryEndpoint);
-//		kbClient.setQuery(formMechanismCountCountQuery());
-//	}
+	/**
+	 * Tests if the HTTP request to run a SPARQL query returns the expected<p>
+	 * result. It also verifies if the mock service created for this test<p>
+	 * executes the correct method.
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void performMechanismCountQueryTest() throws SQLException{
+		KnowledgeBaseClient kbClient = mock(KnowledgeBaseClient.class);
+		JSONArray jsonArray = new JSONArray();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("count", "1");
+		jsonArray.put(jsonObject);
+		kbClient.setQueryEndpoint(queryEndpoint);
+		when(kbClient.execute(formMechanismCountQuery())).thenReturn(jsonArray.toString());
+		String result = kbClient.execute(formMechanismCountQuery());
+		System.out.println("Expected query result      :" + jsonArray.toString()
+				+ "\n matched with the actual one :" + result);
+		assertEquals(jsonArray.toString(), result);
+		verify(kbClient).execute(formMechanismCountQuery());
+	}
 //
 //	@Test
 //	public void performQueryTest2() throws SQLException{
@@ -194,7 +204,7 @@ public class KnowledgeBaseClientTest {
 	 * 
 	 * @return
 	 */
-	private static String formMechanismCountCountQuery(){
+	private static String formMechanismCountQuery(){
 		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
 			query = query.concat("SELECT (COUNT(?x) AS ?count)\n");
