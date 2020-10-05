@@ -127,7 +127,8 @@ public class EndpointEvaluation {
 		for(String endpoint:performanceMetrices.keySet()){
 			int queryCount = 0;
 			for(String query:performanceMetrices.get(endpoint).keySet()){
-				System.out.println(endpoint+", Query ["+ ++queryCount +"] "+ query.substring(query.length()/2-10, query.length()/2+10) +", "+performanceMetrices.get(endpoint).get(query));
+				System.out.println(endpoint+", Query ["+ ++queryCount +"] "+ query);
+				System.out.println("Time:"+performanceMetrices.get(endpoint).get(query));
 			}
 		}
 	}
