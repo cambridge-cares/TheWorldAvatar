@@ -125,7 +125,8 @@ public class RegionToCity extends HttpServlet {
 
 	public String lookUpCityName(String cityName) throws Exception {
 		cityName = cityNameFilter(cityName);
-		String path = "http://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=place&QueryString=%s&MaxHits=1";
+		String path = "https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=place&QueryString=%s&MaxHits=1";
+		//String path1 = "https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=place&amp;QueryString=Singapore&amp;MaxHits=1";
 		cityName = cityName.replace(" ", "_");
 		path = String.format(path, cityName);		
 		
