@@ -117,7 +117,7 @@ public class KnowledgeBaseClient {
 	 * 
 	 * @return
 	 */
-	protected String getConnectionUrl() {
+	public String getConnectionUrl() {
 		StringBuilder sb = new StringBuilder();
 		boolean queryFlag = false;
 		sb.append(JenaDriver.DRIVER_PREFIX);
@@ -160,16 +160,35 @@ public class KnowledgeBaseClient {
 	public JSONArray executeQuery() throws SQLException{
 		String connectionUrl = getConnectionUrl();
 		if(connectionUrl.isEmpty()){
-			return null;
+			throw new SQLException("KnowledgeBaseClient: the URL to connect to the endpoint is empty");
 		}
 		if(isConnectionQueryUrlValid(connectionUrl)){
 			return executeQuery(this.query);
+		}else{
+			throw new SQLException("KnowledgeBaseClient: the URL to connect to the endpoint is not valid");
 		}
-		return null;
 	}
 	
 	/**
-	 * Executes the query supplied by the calling method and returns results.
+	 * Executes the provided by the calling method and returns the result<p>
+	 * as a string.
+	 * 
+	 * @param query
+	 * @return
+	 * @throws SQLException
+	 */
+	public String execute(String query) throws SQLException{
+		JSONArray result = executeQuery(query);
+		if(result==null){
+			throw new SQLException();
+		}else{
+			return result.toString();
+		}
+	}
+	
+	/**
+	 * Executes the query supplied by the calling method and returns results<p>
+	 * as a JSONArray.
 	 * 
 	 * @param query
 	 * @return
@@ -198,13 +217,15 @@ public class KnowledgeBaseClient {
 	 * 
 	 * @return
 	 */
-	public void executeUpdate() throws SQLException{
+	public int executeUpdate() throws SQLException{
 		String connectionUrl = getConnectionUrl();
 		if(connectionUrl.isEmpty()){
-			return;
+			throw new SQLException("KnowledgeBaseClient: connection URL for the update operation is empty.");
 		}
 		if(isConnectionUpdateUrlValid(connectionUrl)){
-			executeUpdate(this.query);
+			return executeUpdate(this.query);
+		}else{
+			throw new SQLException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
 		}
 	}
 	
@@ -214,7 +235,7 @@ public class KnowledgeBaseClient {
 	 * @param query
 	 * @return
 	 */
-	public void executeUpdate(String query) throws SQLException {
+	public int executeUpdate(String query) throws SQLException {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
@@ -223,7 +244,7 @@ public class KnowledgeBaseClient {
 			conn = DriverManager.getConnection(getConnectionUrl());
 			stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 			System.out.println(query);
-			stmt.executeUpdate(query);
+			return stmt.executeUpdate(query);
 		} catch (SQLException e) {
 			throw new SQLException(e.getMessage());
 		}
@@ -570,9 +591,11 @@ public class KnowledgeBaseClient {
 	 * Sets the URL of the query EndPoint if provided. 
 	 * 
 	 * @param queryEndpoint
+	 * @return
 	 */
-	public void setQueryEndpoint(String queryEndpoint) {
+	public String setQueryEndpoint(String queryEndpoint) {
 		this.queryEndpoint = queryEndpoint;
+		return this.queryEndpoint;
 	}
 	
 	/**
@@ -588,9 +611,11 @@ public class KnowledgeBaseClient {
 	 * Set the URL of the update EndPoint if provided.
 	 * 
 	 * @param updateEndpoint
+	 * @return
 	 */
-	public void setUpdateEndpoint(String updateEndpoint) {
+	public String setUpdateEndpoint(String updateEndpoint) {
 		this.updateEndpoint = updateEndpoint;
+		return this.updateEndpoint;
 	}
 
 	/**
@@ -606,9 +631,11 @@ public class KnowledgeBaseClient {
 	 * Sets a query if provided.
 	 * 
 	 * @param query
+	 * @return
 	 */
-	public void setQuery(String query) {
+	public String setQuery(String query) {
 		this.query = query;
+		return this.query;
 	}
 
 }
