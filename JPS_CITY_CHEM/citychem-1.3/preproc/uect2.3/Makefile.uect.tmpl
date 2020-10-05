@@ -1,0 +1,81 @@
+# MAKEFILE
+# debugging: gdb uect.exe, then 'run' and 'bt'
+
+#F90 = gfortran
+F90 =  @{F90}
+#flags for debugging (use for the test examples)
+#pendantic flags
+#F90FLAGS =  -g -u -C -cpp -pedantic -ffpe-trap=invalid,underflow,zero -ftrapv -fbounds-check -finit-real=nan -fbacktrace -fimplicit-none -finit-integer=n -ffree-form
+
+F90FLAGS = @{F90FLAGS}
+
+#netCDF
+#NCPATH   =  /usr/local/netcdf4
+#INCLUDES =  -I$(NCPATH)/include
+#LIBS     =  -L$(NCPATH)/lib -lnetcdf -lnetcdff 
+
+INCLUDES =  @{NCINC}
+LIBS     =  @{NCLIB}
+
+#subdirs
+SRC    = ./src/
+
+RUNDIR = ./bin/
+TARGET = $(RUNDIR)uect.exe
+SRC_OBJ =		$(SRC)module_uect_io.o       \
+                        $(SRC)module_uect_exe.o      \
+                        $(SRC)module_uect_time.o     \
+			$(SRC)module_uect_emis.o     \
+			$(SRC)module_writenc.o       \
+			$(SRC)module_readnc.o        \
+ 			$(SRC)get_user_input.o       \
+			$(SRC)get_calendar_day.o     \
+			$(SRC)Points_Module.o        \
+			$(SRC)Qsort_Module.o         \
+			$(SRC)Order_By_XY.o          \
+			$(SRC)Closest_Pair.o         \
+			$(SRC)Interpol_Module.o      \
+			$(SRC)filter_points.o        \
+			$(SRC)filter_lines.o         \
+			$(SRC)filter_areas.o         \
+			$(SRC)emission_points.o      \
+			$(SRC)emission_lines.o       \
+			$(SRC)emission_areas.o       \
+			$(SRC)check_hour_emission.o  \
+			$(SRC)output_citychem_pse.o  \
+			$(SRC)output_citychem_lse.o  \
+			$(SRC)output_citychem_ase.o  \
+			$(SRC)output_tapm_pse.o      \
+			$(SRC)output_tapm_lse.o      \
+			$(SRC)output_tapm_ase.o      \
+			$(SRC)allocate_emis_arrs.o   \
+			$(SRC)read_csv_file.o        \
+			$(SRC)calc_heatdegree_days.o \
+			$(SRC)calc_gammatisop_days.o \
+			$(SRC)calc_bvocemis_activ.o  \
+			$(SRC)stopit.o               \
+                        $(SRC)prog_uect.o
+
+$(TARGET) : $(SRC_OBJ)
+	$(F90) $(FFLAGS) $(SRC_OBJ) $(LIBS) -o $@
+
+.SUFFIXES: .for .o
+
+.for.o:
+	$(F90) $(F90FLAGS) $(INCLUDES) -c $< -o $@
+
+.SUFFIXES: .F90 .o
+
+.F90.o:
+	$(F90) -c $(F90FLAGS) $(INCLUDES) $*.F90
+
+# Explicit rules and targets
+
+clean:
+	rm -f $(TARGET) core a.out
+
+cleanall:
+	rm -f $(TARGET) core a.out
+	rm -f *.o *.mod
+	rm -f $(SRC)*.o $(SRC)*.for~
+

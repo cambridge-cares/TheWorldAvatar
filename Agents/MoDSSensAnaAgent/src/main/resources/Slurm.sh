@@ -8,14 +8,19 @@
 #SBATCH -A COMO-SL2-CPU
 #SBATCH --mem=64000
 #SBATCH --time=96:00:00
-#SBATCH --ntasks=16
+#SBATCH --nodes=3
+#SBATCH --ntasks-per-node=16
 #SBATCH --output slurm.%u.%j.%N.stdout.txt   # (%u,%j,%N)=(user, job allocation #, node)  
 #SBATCH --error slurm.%u.%j.%N.errout.txt    #
 #SBATCH --mail-type=END,FAIL                 # notifications for job done & fail
 
+# Read parameters about MoDS executable path and cantera conda environment from input.json
+MODS_MPI=$(cat input.json|jq -r .json.mods.executable.path)
+CANTERA_ENV=$(cat input.json|jq -r .json.cantera.environment)
+
 # Load the environment seen by the application
 eval "$(conda shell.bash hook)"
-conda activate pycantera                     #REQUIRED - loads the cantera environment
+conda activate $CANTERA_ENV                     #REQUIRED - loads the cantera environment
 
 #! Number of nodes and tasks per node allocated by SLURM (do not change):
 numnodes=$SLURM_JOB_NUM_NODES
@@ -39,7 +44,6 @@ rm -rf $SLURM_JOB_NAME/
 chmod +x *.sh
 
 # Execute the simulation
-MODS_MPI=/home/jb2197/Codes_kinetics/mods-backend/outputs/Release/bin/MoDS_mpi
 CMD="mpirun -ppn $mpi_tasks_per_node -np $np \"$MODS_MPI\""
 echo -e "\nExecuting command:\n$CMD\n==================\n"
 eval $CMD
@@ -48,7 +52,7 @@ echo
 echo 'Slurm job diagnostics:'
 sacct --job $SLURM_JOBID --format "JobName,Submit,Elapsed,AveCPU,CPUTime,UserCPU,TotalCPU,NodeList,NTasks,AveDiskRead,AveDiskWrite"
 
-# Pack all output files to output.zip (3 steps)
+# Pack all output files together with slurm output files to output.zip (4 steps)
 cd $MODSDIR
 rm -rf All/ Initial/ Working_dir/			 # 1 - remove the input files
 for FOLDER in *; do							 # 2 - remove subfolders in the output folder
@@ -62,7 +66,8 @@ for FOLDER in *; do							 # 2 - remove subfolders in the output folder
 		cd ..
 	fi
 done
-zip -r output.zip */						 # 3 - zip output files to output.zip
+cp $SLURM_SUBMIT_DIR/slurm* .				 # 3 - copy slurm output files to job folder
+zip -r output.zip */ slurm*					 # 4 - zip output files to output.zip
 
 cp -pr $SCRATCH_DIRECTORY/* $SLURM_SUBMIT_DIR
 cd $SLURM_SUBMIT_DIR

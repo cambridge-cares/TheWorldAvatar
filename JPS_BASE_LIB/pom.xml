@@ -2,13 +2,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.cam.cares.jps</groupId>
-	<artifactId>jps-base</artifactId>
+	<artifactId>jps-base-lib</artifactId>
 	<version>1.3.0</version>
 	
 	<packaging>jar</packaging>
 
       <build>
-        <finalName>jps-base</finalName>
+        <finalName>jps-base-lib</finalName>
         <plugins>
 		    <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

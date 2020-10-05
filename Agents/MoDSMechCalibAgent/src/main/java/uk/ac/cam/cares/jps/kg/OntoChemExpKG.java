@@ -3,31 +3,26 @@ package uk.ac.cam.cares.jps.kg;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-
 import org.apache.log4j.Logger;
-import org.eclipse.rdf4j.RDF4JException;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.query.TupleQueryResult;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
 
-public class OntoChemExpKG extends RepositoryManager {
+public class OntoChemExpKG {
 	Logger logger = Logger.getLogger(OntoChemExpKG.class);
-	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
+	private MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
 	
-	
-	public static void main(String[] args) throws ServletException, MoDSMechCalibAgentException {
-		OntoChemExpKG ontoChemExpKG = new OntoChemExpKG();
-		ontoChemExpKG.formatExperimentDataTable("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
+	public OntoChemExpKG(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
+		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
 	}
 	
+	/**
+	 * DataTable class that records the queried experimental data. 
+	 * 
+	 * @author jb2197
+	 *
+	 */
 	public final class DataTable {
 	    private final List<String> header;
 	    private final List<List<String>> data;
@@ -46,8 +41,14 @@ public class OntoChemExpKG extends RepositoryManager {
 	    }
 	}
 	
+	/**
+	 * Form a data table given an IRI of experiment that measures laminar flame speed. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public DataTable formatFlameSpeedExpDataTable(String experimentIRI) throws MoDSMechCalibAgentException {
-		// TODO
 		List<String> columnTitles = new ArrayList<String>();
 		List<List<String>> experimentData = new ArrayList<List<String>>();
 		
@@ -63,6 +64,13 @@ public class OntoChemExpKG extends RepositoryManager {
 		return new DataTable(columnTitles, experimentData);
 	}
 	
+	/**
+	 * Form a data table given an IRI of experiment that measures ignition delay times. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public DataTable formatExperimentDataTable(String experimentIRI) throws MoDSMechCalibAgentException {
 		List<String> columnTitles = new ArrayList<String>();
 		List<List<String>> experimentData = new ArrayList<List<String>>();
@@ -97,50 +105,82 @@ public class OntoChemExpKG extends RepositoryManager {
 		return new DataTable(columnTitles, experimentData);
 	}
 	
-	
-	
+	/**
+	 * Query the concentration of a chemical mixture. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public List<List<String>> queryConcentration(String experimentIRI) throws MoDSMechCalibAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
-		String queryString = formConcentrationQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formConcentrationQuery(experimentIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsMechCalibAgentProperty.getRdf4jServerURL(), 
+				modsMechCalibAgentProperty.getRdf4jRepositoryOntoChemExp(), queryString);
 		return testResults;
 	}
 	
+	/**
+	 * Query the equivalence ratio of a fuel-oxidiser mixture. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public List<List<String>> queryEquivalenceRatio(String experimentIRI) throws MoDSMechCalibAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
-		String queryString = formEquivalenceRatioQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formEquivalenceRatioQuery(experimentIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsMechCalibAgentProperty.getRdf4jServerURL(), 
+				modsMechCalibAgentProperty.getRdf4jRepositoryOntoChemExp(), queryString);
 		return testResults;
 	}
 	
+	/**
+	 * Query the ignition delay times experimental data. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public List<List<String>> queryExperimentData(String experimentIRI) throws MoDSMechCalibAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
-		String queryString = formExperimentDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formExperimentDataQuery(experimentIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsMechCalibAgentProperty.getRdf4jServerURL(), 
+				modsMechCalibAgentProperty.getRdf4jRepositoryOntoChemExp(), queryString);
 		return testResults;
 	}
 	
+	/**
+	 * Query the laminar flame speed experimental data. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public List<List<String>> queryFlameSpeedExpData(String experimentIRI) throws MoDSMechCalibAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
-		String queryString = formFlameSpeedExpDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formFlameSpeedExpDataQuery(experimentIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsMechCalibAgentProperty.getRdf4jServerURL(), 
+				modsMechCalibAgentProperty.getRdf4jRepositoryOntoChemExp(), queryString);
 		return testResults;
 	}
 	
-	private String formConcentrationQuery(String prefixBindingOntoChemExp, String experimentIRI) {
-		String queryString = prefixBindingOntoChemExp;
+	/**
+	 * Form the query string of chemical mixture concentration. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 */
+	private String formConcentrationQuery(String experimentIRI) {
+		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
 		queryString = queryString.concat("SELECT ?molecule ?composition \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasCommonProperties ?commonProperties . \n");
@@ -154,8 +194,14 @@ public class OntoChemExpKG extends RepositoryManager {
 		return queryString;
 	}
 	
-	private String formEquivalenceRatioQuery(String prefixBindingOntoChemExp, String experimentIRI) {
-		String queryString = prefixBindingOntoChemExp;
+	/**
+	 * Form the query string of equivalence ratio of fuel-oxidiser mixture. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 */
+	private String formEquivalenceRatioQuery(String experimentIRI) {
+		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
 		queryString = queryString.concat("SELECT ?Phi \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasCommonProperties ?commonProperties . \n");
@@ -168,9 +214,15 @@ public class OntoChemExpKG extends RepositoryManager {
 		return queryString;
 	}
 	
-	private String formExperimentDataQuery(String prefixBindingOntoChemExp, String experimentIRI) {
-		String queryString = prefixBindingOntoChemExp;
-		queryString = queryString.concat(RDF);
+	/**
+	 * Form the query string of ignition delay times experimental data. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 */
+	private String formExperimentDataQuery(String experimentIRI) {
+		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
+		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
 		queryString = queryString.concat("SELECT ?Temperature ?UnitTemp ?Pressure ?UnitPres ?IgnitionDelay ?UnitIgni \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasDataGroup ?dataGroup . \n");
@@ -207,9 +259,15 @@ public class OntoChemExpKG extends RepositoryManager {
 		return queryString;
 	}
 	
-	private String formFlameSpeedExpDataQuery(String prefixBindingOntoChemExp, String experimentIRI) {
-		String queryString = prefixBindingOntoChemExp;
-		queryString = queryString.concat(RDF);
+	/**
+	 * Form the query string of laminar flame speed experimental data. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 */
+	private String formFlameSpeedExpDataQuery(String experimentIRI) {
+		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
+		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
 		queryString = queryString.concat("SELECT ?Fuel ?Oxidizer ?Phi ?Temperature ?UnitTemp ?Pressure ?UnitPres ?LaminarFlameSpeed ?UnitLFS ?LFSErrors \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasCommonProperties ?commonProperties . \n");

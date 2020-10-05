@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.men.MenAgent;
 //import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 
 
@@ -99,5 +100,20 @@ public class TestMenAgent extends TestCase {
 		assertEquals(53.7127, ans5, 1.);
 		assertEquals(2685.6338, ans6, 1.);
 		assertEquals(1552885.9635, ans7, 1.);
+	}
+	/** validate Input for MENAgent
+	 * 
+	 */
+	public void testValidInputs() {
+		JSONObject jo = new JSONObject();
+		jo.put("transportationmodes", getTransportationFile());
+		//jo.put("chemicalplants", getChemicalPlants());
+		jo.put("ecoindustrialpark", "http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIsland.owl");
+		jo.put("carbontax", "HOLO");
+		jo.put("interestfactor", getInterestFactor());
+		jo.put("annualcostfactor", getAnnualCostFactor());
+		jo.put("internationalmarketpricefactor", getInternationalMarketPriceFactor());
+		jo.put("internationalmarketlowestpriceapplied", getInternationalMarketLowestPrice());
+		assertTrue(new MenAgent().validateInput(jo));
 	}
 }

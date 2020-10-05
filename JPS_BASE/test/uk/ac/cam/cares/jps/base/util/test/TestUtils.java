@@ -8,6 +8,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
@@ -54,5 +55,16 @@ public class TestUtils extends TestCase {
 		assertEquals("building", rows.get(0)[0]);
 		String actual = MatrixConverter.fromArraytoCsv(rows);
 		assertEquals(CSV, actual);
+	}
+	/** test ValidateInput boolean for InputValidator class
+	 * 
+	 */
+	public void testBoolean() {
+		boolean trueBool = InputValidator.checkBoolean("true");
+		assertTrue(trueBool);
+		boolean falseBool = InputValidator.checkBoolean("False");
+		assertTrue(falseBool);
+		boolean fakeBool = InputValidator.checkBoolean("fake");
+		assertFalse(fakeBool);
 	}
 }
