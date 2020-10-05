@@ -104,9 +104,13 @@ public class KnowledgeBaseClientTest {
 	public void connectionURLForQueryEndpointTest() throws SQLException{
 		queryEndpoint = "http://localhost:8080/test";
 		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint);
+		System.out.println(
+				"\nTesting if the URL to connect to an endpoint for performing a query operation is set as expected.");
 		assertNotNull(kbClient.getConnectionUrl());
-		System.out.println("kbClient.getConnectionUrl():"+kbClient.getConnectionUrl());
 		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint), kbClient.getConnectionUrl());
+		System.out.println("Expected connection URL      :"
+				+ "jdbc:jena:remote:query=".concat(queryEndpoint)
+				+ "\n matched with the actual one :" + kbClient.getConnectionUrl());
 	}
 	
 	/**
@@ -121,8 +125,12 @@ public class KnowledgeBaseClientTest {
 		updateEndpoint = "http://localhost:8080/test";
 		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
-		System.out.println("kbClient.getConnectionUrl():"+kbClient.getConnectionUrl());
+		System.out.println(
+				"\nTesting if the URL to connect to an endpoint for performing an insert operation is set as expected.");
 		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint), kbClient.getConnectionUrl());
+		System.out.println("Expected connection URL      :"
+				+ "jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint)
+				+ "\n matched with the actual one :" + kbClient.getConnectionUrl());
 	}
 	
 	/**
@@ -138,7 +146,7 @@ public class KnowledgeBaseClientTest {
 		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
 		System.out.println(
-				"Testing if the URL to connect to an endpoint for performing a delete query is set as expected.");
+				"\nTesting if the URL to connect to an endpoint for performing a delete query is set as expected.");
 		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint),
 				kbClient.getConnectionUrl());
 		System.out.println("Expected connection URL      :"
