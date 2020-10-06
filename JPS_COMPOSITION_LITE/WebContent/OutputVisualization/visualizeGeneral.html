@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="text"></div>
+<script>
+
+    document.getElementById("text").innerText = getParameter();
+
+    function getParameter() {
+        var url_string = window.location.href;
+        var url = new URL(url_string.replace(/#/g, '@'));
+        var value = url.searchParams.get("value");
+        return value.replace(/@/g,'#')
+    }
+
+
+</script>
+</body>
+</html>

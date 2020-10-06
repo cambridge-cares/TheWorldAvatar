@@ -1,0 +1,48 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#Operation_4d4c1f45-fe09-4abb-a332-7ccb36c1cfe9">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#MessageContent_4ef88451-509a-4954-9ed0-2431b86199b3">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#MessagePart_93d2e5d7-967f-4f68-903d-ecc1c6d09858">
+                <msm:hasMandatoryPart>
+                  <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#MessagePart_77b2dbfa-f7d4-47fb-ae1e-067ab0de570a">
+                    <msm:hasMandatoryPart>
+                      <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#MessagePart_6a2b2a21-1a66-4483-8585-6c8ff2a69f72">
+                        <msm:hasName>numericalValue</msm:hasName>
+                        <msm:isArray>false</msm:isArray>
+                        <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue</msm:hasType>
+                      </msm:MessagePart>
+                    </msm:hasMandatoryPart>
+                    <msm:hasName>hasValue</msm:hasName>
+                    <msm:isArray>false</msm:isArray>
+                    <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue</msm:hasType>
+                  </msm:MessagePart>
+                </msm:hasMandatoryPart>
+                <msm:hasName>hasEmission</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#MessageContent_6e430bfe-dade-48fc-801d-f235c383da77">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__SurrogateModel.owl#MessagePart_b3c083bc-baf8-4b76-97b7-33df95e70ded">
+                <msm:hasName>plant</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_CO2EMISSIONS/SurrogateModel</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
+  </msm:Service>
+</rdf:RDF>

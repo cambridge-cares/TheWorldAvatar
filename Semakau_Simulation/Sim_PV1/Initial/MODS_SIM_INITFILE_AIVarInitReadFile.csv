@@ -1,0 +1,7 @@
+Variable name,Initial_read_value
+PVfarm1_GenMW_6_1, 0.15
+PVfarm2_GenMW_8_1, 0.05
+PVfarm3_GenMW_10_1, 0.2
+PVfarm1_BusNomVolt_6, 0.75
+PVfarm2_BusNomVolt_8, 0.75
+PVfarm3_BusNomVolt_10, 0.75

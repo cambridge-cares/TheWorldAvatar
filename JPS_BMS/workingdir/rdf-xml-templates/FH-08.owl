@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+  xmlns:ns1="http://www.theworldavatar.com/LabItem.owl#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:ns3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:geometry="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:BuildingsLayer="http://www.jparksimulator.com/BuildingsLayer.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#FH-08">
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#FH-08_Coordinates">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/BMS/FH-08.owl#x_FH-08"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/BMS/FH-08.owl#y_FH-08"/>
+      </owl:NamedIndividual>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <BuildingsLayer:isEquipmentOf rdf:resource="http://www.theworldavatar.com/BMS/FH-08.owl#ElectrochemicalAnalysisArea"/>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#StatusOfFH-08">
+        <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/BMS/FH-08.owl#FH-08_Stat_sensor1"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/LabItem.owl#EquipmentState"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasDirectSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#FH-08_Stat_sensor1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/FH-08_Stat_sensor1.owl</Eco-industrialPark:hasIRI>
+      </owl:NamedIndividual>
+    </system:hasDirectSubsystem>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#SashOpeningOfFH-08">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/LabItem.owl#SashOpening"/>
+        <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/BMS/FH-08.owl#FH-08_SashOp_sensor1"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <geometry:has_length>
+      <geometry:EdgeLength rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#WidthOfFH-08">
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/FH-08.owl#V_WidthOfFH-08"/>
+      </geometry:EdgeLength>
+    </geometry:has_length>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/LabItem.owl#NormalFumeHood"/>
+    <system:hasDirectSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#FH-08_SashOp_sensor1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/FH-08_SashOp_sensor1.owl</Eco-industrialPark:hasIRI>
+      </owl:NamedIndividual>
+    </system:hasDirectSubsystem>
+  </owl:NamedIndividual>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/LabItem.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    <owl:imports rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#y_FH-08">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <system:hasValue>
+      <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#ValueOf_y_FH-08">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </coordinate_system:CoordinateValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#V_WidthOfFH-08">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">2400.0</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#mm"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#ValueOf_x_FH-08">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/FH-08.owl#x_FH-08">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/FH-08.owl#ValueOf_x_FH-08"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </owl:NamedIndividual>
+</rdf:RDF>

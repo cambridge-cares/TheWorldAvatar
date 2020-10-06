@@ -1,0 +1,37 @@
+<html>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<div>
+		<button onclick="clickAction('http://www.theworldavatar.com/BMS/OLA_RT_sensor3.owl')">
+		POP
+		</button>
+	
+	</div>
+
+	
+	
+	
+	
+	
+	
+	<script>
+	
+					var sampleQuery = 'PREFIX dc: <http://purl.org/dc/elements/1.1/>\n INSERT DATA {<http://example/book3> dc:title	\"A new book\" ;\n  dc:creator \"A.N.Other\" .}'
+					var uri = "http://www.theworldavatar.com/BMS/BCA_RDP_sensor1(test).owl"
+	
+	               function clickAction(muri) {
+                        $.ajax({
+                            url: "http://www.theworldavatar.com/Service_Node_BiodieselPlant3/SPARQLEndPoint",
+                            method:"POST",
+                            uri: uri,
+							update: sampleQuery,
+                            contentType: "application/json; charset=utf-8",
+                            success:function (attrPairs) {
+								console.log(attrPairs)
+                            }
+                        });
+                    }
+	</script>
+	
+	
+</html>

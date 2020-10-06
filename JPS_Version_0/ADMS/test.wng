@@ -1,0 +1,5 @@
+ ** ADMS 5.2 Warning file **
+ test.wng
+ 
+ WARNING: The met file contains an unrecognised variable name: STATION DCNN. The values given for this variable will be ignored
+ WARNING: Hour number       1. There is insufficient information to estimate the heat flux - It is impossible to continue the calculation for this hour

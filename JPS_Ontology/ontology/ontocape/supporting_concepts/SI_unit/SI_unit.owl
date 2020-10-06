@@ -1,0 +1,838 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:maths="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:phys_dim="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl"/>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;SI_unit&apos; intorduces the base units of the SI system and introduces a method to derive further units from these.
+The following classes, relations, and individuals from other ontology modules are used within &apos;SI_unit&apos;:
+
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Operand&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#BaseDimension&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#UnitOfMeasure&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasLeftChild&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension&quot;/&gt;
+
+&lt;phys_dim:BaseDimension       rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_substance&quot;/&gt;
+&lt;phys_dim:BaseDimension       rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#electric_current&quot;/&gt;
+&lt;phys_dim:BaseDimension       rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#luminous_intensity&quot;/&gt;
+&lt;phys_dim:BaseDimension       rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length&quot;/&gt;
+&lt;phys_dim:BaseDimension       rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#mass&quot;/&gt;
+&lt;phys_dim:BaseDimension       rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#thermodynamic_temperature&quot;/&gt;
+&lt;phys_dim:BaseDimension       rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#time&quot;/&gt;
+    </rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    </owl:Ontology>
+        
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#isDefinedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#isDefinedBy">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalDimension"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation isDefinedBy links an SI_DerivedUnit to a Node, which represents the right hand side of a definition equation for the SI_DerivedUnit.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PrefixedDerivedUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PrefixedDerivedUnit">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#isDefinedBy"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasLeftChild"/>
+                                <owl:someValuesFrom>
+                                    <owl:Class>
+                                        <owl:intersectionOf rdf:parseType="Collection">
+                                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+                                            <owl:Restriction>
+                                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#hasNodeValue"/>
+                                                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+                                            </owl:Restriction>
+                                        </owl:intersectionOf>
+                                    </owl:Class>
+                                </owl:someValuesFrom>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PrefixedDerivedUnit is an SI_Unit with an SI_Prefix. Examples are kJ (kilo-joule), hPa (hecto-pascal), or mm (milli-meter).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#K"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#cd"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kg"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mol"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#s"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Unit"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Operand"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The seven base units of the SI system are: ampere, candela, kelvin, kilogram, meter, mole, and second (BIPM, 2006).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Unit"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#isDefinedBy"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#isDefinedBy"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&quot;Derived units are units which may be expressed in terms of base units by means of the mathematical symbols of multiplication and division. Certain derived units have been given special names and symbols, and these special names and symbols may themselves be used in combination with those for base and other derived units to express the units of other quantities&quot; (BIPM, 2006).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#atto"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#centi"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deca"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deci"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#exa"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#femto"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#giga"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#hecto"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kilo"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mega"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#micro"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#milli"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#nano"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#peta"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#pico"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#tera"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yocto"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yotta"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zepto"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zetta"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Operand"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An SI prefix can be used to prefix any SI unit to produce a multiple or submultiple of the original unit (BIPM, 2006). 
+So far (as of 2006), the following 20 prefixes have been approved by the General Conference on Weights and Measures: 
+yotta, zetta, exa, peta, tera, giga, mega, kilo, hecto, deca, deci, centi, milli, micro, nano, pico, femto, atto, zepto, yocto.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Unit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Unit">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#UnitOfMeasure"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An SI_Unit is Unit that complies with the SI system of units (cf. BIPM, 2006).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#UnitOfMeasure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#UnitOfMeasure"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#electric_current"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ampere
+The ampere is that constant current which, if maintained in two straight parallel conductors of infinite length, of negligible circular cross-section, and placed 1 meter apart in vacuum, would produce between these conductors a force equal to 2e-7 newton per meter of length (http://www.bipm.fr/en/si/si_brochure/chapter2/2-1/2-1-1/ampere.html).</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#AMPERE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#AMPERE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ATTO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ATTO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#atto"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#CANDELA -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#CANDELA">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#cd"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#CENTI- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#CENTI-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#centi"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#DECA- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#DECA-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deca"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#DECI- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#DECI-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deci"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#EXA- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#EXA-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#exa"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#FEMTO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#FEMTO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#femto"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#GIGA- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#GIGA-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#giga"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#HECTO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#HECTO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#hecto"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#K -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#K">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#thermodynamic_temperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">kelvin
+The kelvin is the fraction 1/273.16 of the thermodynamic temperature of the triple point of water (http://www.bipm.fr/en/si/si_brochure/chapter2/2-1/2-1-1/kelvin.html).</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KELVIN -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KELVIN">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#K"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kilo"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILOGRAM -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILOGRAM">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kg"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MEGA- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MEGA-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mega"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#METER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#METER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MICRO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MICRO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#micro"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MILLI- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MILLI-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#milli"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MOLE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MOLE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mol"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#NANO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#NANO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#nano"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PETA- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PETA-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#peta"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PICO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PICO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#pico"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SECOND -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SECOND">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#s"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#TERA- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#TERA-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#tera"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#YOCTO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#YOCTO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yocto"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#YOTTA- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#YOTTA-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yotta"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ZEPTO- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ZEPTO-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zepto"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ZETTA- -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ZETTA-">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zetta"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#atto -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#atto">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–18 
+symbol:  a</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#cd -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#cd">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#luminous_intensity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">candela
+The candela is the luminous intensity, in a given direction, of a source that emits monochromatic radiation of frequency 540e12 hertz an that has a radiant intensitiy in that direction of 1/683 watt per steradian (http://www.bipm.fr/en/si/si_brochure/chapter2/2-1/2-1-1/candela.html).</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#centi -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#centi">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–2 
+symbol:  c</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deca -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deca">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e1 
+symbol:  da</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deci -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deci">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor:   1e–1 
+symbol:  d</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#exa -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#exa">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e18 
+symbol: E</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#femto -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#femto">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–15 
+symbol:  f</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#giga -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#giga">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e9 
+symbol: G</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#hecto -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#hecto">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e2 
+symbol:  h</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kg -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kg">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#mass"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">kilogram
+The kilogram is the unit of mass; it is equal to the mass of the international prototype of the kilogram (http://www.bipm.fr/en/si/si_brochure/chapter2/2-1/2-1-1/kilogram.html).</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kilo -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kilo">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e3 
+symbol:  k</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">meter
+The meter is the length of the path travelled by light in a vacuum during a time interval of 1/299,792,458 of a second (http://www.bipm.fr/en/si/si_brochure/chapter2/2-1/2-1-1/metre.html).</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mega -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mega">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e6 
+symbol: M</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#micro -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#micro">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–6 
+symbol:  µ</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#milli -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#milli">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–3 
+symbol:  m</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mol -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mol">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_substance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">mole
+The mole is the amount of substance of a system which contains as many elementary entities as there are atoms in 0.012 kilogram of carbon 12.
+When the mole is used, the elementary entities must be specified and may be atoms, molecules, ions, electrons, other particles, or specified groups of such particles.
+(http://www.bipm.fr/en/si/si_brochure/chapter2/2-1/2-1-1/mole.html)</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#nano -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#nano">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–9 
+symbol:  n</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#peta -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#peta">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e15 
+symbol: P</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#pico -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#pico">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–12 
+symbol:  p</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#s -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#s">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_BaseUnit"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#time"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">second
+The second is the duration of 9,192,631,770 periods of the radiation corresponing to the transition between the two hyperfine levels of the ground state of the caesium-133 atom (http://www.bipm.fr/en/si/si_brochure/chapter2/2-1/2-1-1/second.html).</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#tera -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#tera">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e12 
+symbol: T</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yocto -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yocto">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–24 
+symbol:  y</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yotta -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yotta">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e24
+symbol: Y</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zepto -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zepto">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e–21 
+symbol:  z</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zetta -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zetta">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_Prefix"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">factor: 1e21 
+symbol: Z</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#K"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#cd"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kg"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mol"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#s"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#AMPERE"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ATTO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#CANDELA"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#CENTI-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#DECA-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#DECI-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#EXA-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#FEMTO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#GIGA-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#HECTO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KELVIN"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILOGRAM"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MEGA-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#METER"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MICRO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MILLI-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MOLE"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#NANO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PETA-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PICO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SECOND"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#TERA-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#YOCTO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#YOTTA-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ZEPTO-"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#ZETTA-"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#atto"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#centi"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deca"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#deci"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#exa"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#femto"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#giga"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#hecto"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#kilo"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#mega"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#micro"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#milli"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#nano"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#peta"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#pico"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#tera"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yocto"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#yotta"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zepto"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#zetta"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

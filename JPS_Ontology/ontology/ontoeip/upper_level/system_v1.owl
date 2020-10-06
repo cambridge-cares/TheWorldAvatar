@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#hasPredictedValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#hasPredictedValue">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Value"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#isOwnedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#isOwnedBy">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#owns"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#owns -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#owns">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#index -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#index">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/multiset.owl#multiplicity"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/multiset.owl#multiplicity -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/multiset.owl#multiplicity"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#hasIRI -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#hasIRI">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#InformationModel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The attribute hasIRI identifies an Information model with the corresponding Internationalized Resource Identifier (IRI).</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#hasName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#hasName">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#isAlsoRepresentedAs -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#isAlsoRepresentedAs">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#Node"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment>The attribute isAlsoRepresentedAs captures the multiple identities of an entity. For example, a pump pressurize fluids in a chemical process system, it isAlsoRepresentedAs a load point in a power grid that draws power.</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#InformationModel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#InformationModel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Model"/>
+        <rdfs:comment>An InformationModel is a representation of concepts and the relationships, constraints, rules, and operations to specify data semantics for a chosen domain of discourse. (wikipedia:  https://en.wikipedia.org/wiki/Information_model)</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:comment>An organization (or organisation) is an entity comprising multiple people, such as an institution or an association, that has a collective goal and is linked to an external environment (wikipedia).</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

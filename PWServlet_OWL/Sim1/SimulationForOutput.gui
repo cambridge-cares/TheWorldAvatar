@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<simulation model="706e7120-6b13-4316-8ef6-72a8ad15c438" name="Sim1" UUID="e1bb59a7-c775-4b27-81e4-e9481e386c9c">
+    <runState>CREATED</runState>
+    <passiveInputVars></passiveInputVars>
+    <outputVarsScalings/>
+    <casegroups>
+        <casegroup name="CaseGroup1" parent_singlesim="e1bb59a7-c775-4b27-81e4-e9481e386c9c">
+            <CaseSubGroups_PI/>
+            <CaseSubGroups_O>
+                <CaseSubGroup_O variable="Bus93_ExxonMobil_Chemical_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus93_ExxonMobil_Chemical_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus93_ExxonMobil_Chemical_LineMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus93_ExxonMobil_Chemical_LineMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus94_ExxonMobil_Refinery_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus94_ExxonMobil_Refinery_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus94_ExxonMobil_Refinery_LineMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus94_ExxonMobil_Refinery_LineMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus95_Petrofac_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus95_Petrofac_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus95_Petrofac_LineMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus95_Petrofac_LineMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+            </CaseSubGroups_O>
+            <cases>
+                <case name="CaseGroup1_Case1"/>
+            </cases>
+            <passiveInputVars></passiveInputVars>
+            <chosenOutputVars>Bus93_ExxonMobil_Chemical_PWBUSANGLE Bus93_ExxonMobil_Chemical_PWBUSKVVOLT Bus93_ExxonMobil_Chemical_LineMW Bus93_ExxonMobil_Chemical_LineMVR Bus94_ExxonMobil_Refinery_PWBUSANGLE Bus94_ExxonMobil_Refinery_PWBUSKVVOLT Bus94_ExxonMobil_Refinery_LineMW Bus94_ExxonMobil_Refinery_LineMVR Bus95_Petrofac_PWBUSANGLE Bus95_Petrofac_PWBUSKVVOLT Bus95_Petrofac_LineMW Bus95_Petrofac_LineMVR</chosenOutputVars>
+        </casegroup>
+    </casegroups>
+    <activeInputVars>ExxonMobil_Chemical_LoadMW_93 ExxonMobil_Refinery_LoadMW_94 Petrofac_LoadMW_95 ExxonMobil_Chemical_LoadMVR_93 ExxonMobil_Refinery_LoadMVR_94 Petrofac_LoadMVR_95</activeInputVars>
+    <activeInputInitReads>87.16 132.38 3.67 43.0 65.0 1.8</activeInputInitReads>
+    <activeInputBoundsVect>
+        <activeInputBounds lower="78.444" upper="95.87599999999999"/>
+        <activeInputBounds lower="119.142" upper="145.618"/>
+        <activeInputBounds lower="3.303" upper="4.037"/>
+        <activeInputBounds lower="38.7" upper="47.3"/>
+        <activeInputBounds lower="58.5" upper="71.5"/>
+        <activeInputBounds lower="1.62" upper="1.98"/>
+    </activeInputBoundsVect>
+    <activeInputScalingsVect>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+    </activeInputScalingsVect>
+    <passiveInputBoundsVect/>
+    <passiveInputScalingsVect/>
+    <algorithmManager name="algorithm_manager" parent_singlesim="e1bb59a7-c775-4b27-81e4-e9481e386c9c">
+        <algorithm_list>
+            <algorithm xsi:type="initialAlgorithm" name="Initial" parent_manager="algorithm_manager" algorithm_type="INITIAL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <details_values/>
+                <chosenActiveInputVars></chosenActiveInputVars>
+                <chosenPreviousAlgs xsi:nil="true"/>
+                <allPreviousAlgs/>
+                <warning_message>Case group CaseGroup1 was added!</warning_message>
+                <chosenCaseGroupOutVarPairs>
+                    <Entries>
+                        <Key caseGroup="CaseGroup1">
+                            <outVars>Bus93_ExxonMobil_Chemical_PWBUSANGLE Bus93_ExxonMobil_Chemical_PWBUSKVVOLT Bus93_ExxonMobil_Chemical_LineMW Bus93_ExxonMobil_Chemical_LineMVR Bus94_ExxonMobil_Refinery_PWBUSANGLE Bus94_ExxonMobil_Refinery_PWBUSKVVOLT Bus94_ExxonMobil_Refinery_LineMW Bus94_ExxonMobil_Refinery_LineMVR Bus95_Petrofac_PWBUSANGLE Bus95_Petrofac_PWBUSKVVOLT Bus95_Petrofac_LineMW Bus95_Petrofac_LineMVR</outVars>
+                        </Key>
+                    </Entries>
+                </chosenCaseGroupOutVarPairs>
+                <isVisiable>false</isVisiable>
+            </algorithm>
+            <algorithm xsi:type="sobolAlgorithm" name="Sobol_Alg_1" parent_manager="algorithm_manager" algorithm_type="SOBOL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <details_values>
+                    <entry>
+                        <key>model_name</key>
+                        <value xsi:type="choiceDetail" detail_name="model_name" explanation="Specify which model to run - either the 'exe' (the user-specified model) or a surrogate model created in a previous algorithm" isVisibleToUser="true">
+                            <possible_value>exe</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>objective_function</key>
+                        <value xsi:type="choiceDetail" detail_name="objective_function" explanation="Objective function by which model is compared to experiment" isVisibleToUser="true">
+                            <possible_value>SumOfSquares</possible_value>
+                            <possible_value>NormalisedSumOfSquares</possible_value>
+                            <possible_value>Euclidean</possible_value>
+                            <possible_value>NormalisedEuclidean</possible_value>
+                            <possible_value>OneNorm</possible_value>
+                            <possible_value>TargetNormalisedOneNorm</possible_value>
+                            <possible_value>Minimise</possible_value>
+                            <possible_value>Maximise</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_by_case</key>
+                        <value xsi:type="choiceDetail" detail_name="output_by_case" explanation="Whether MoDS output splits output information across files by case" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_values</key>
+                        <value xsi:type="choiceDetail" detail_name="output_values" explanation="Whether parameter values will be output to file, else is stored internally only" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>1</default_value_index>
+                            <user_choice_index>1</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>n_points</key>
+                        <value xsi:type="integerDetail" detail_name="n_points" explanation="Number of Sobol points to be generated" isVisibleToUser="true">
+                            <default_value xsi:nil="true"/>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">2400</user_choice>
+                            <max>2147483647</max>
+                            <min>1</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>seed</key>
+                        <value xsi:type="integerDetail" detail_name="seed" explanation="Index of the initial Sobol sequence point" isVisibleToUser="true">
+                            <default_value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">500000</default_value>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">6745654</user_choice>
+                            <max>2147483647</max>
+                            <min>0</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_interval</key>
+                        <value xsi:type="integerDetail" detail_name="output_interval" explanation="The number of points to evaluate before outputting the parameter values to file. Only affects when the values are output, not the values themselves." isVisibleToUser="true">
+                            <default_value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">100</default_value>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">100</user_choice>
+                            <max>2147483647</max>
+                            <min>1</min>
+                        </value>
+                    </entry>
+                </details_values>
+                <chosenActiveInputVars>ExxonMobil_Chemical_LoadMW_93 ExxonMobil_Refinery_LoadMW_94 Petrofac_LoadMW_95 ExxonMobil_Chemical_LoadMVR_93 ExxonMobil_Refinery_LoadMVR_94 Petrofac_LoadMVR_95</chosenActiveInputVars>
+                <chosenPreviousAlgs/>
+                <allPreviousAlgs xsi:nil="true"/>
+                <warning_message></warning_message>
+                <chosenCaseGroupOutVarPairs>
+                    <Entries>
+                        <Key caseGroup="CaseGroup1">
+                            <outVars>Bus93_ExxonMobil_Chemical_PWBUSANGLE Bus93_ExxonMobil_Chemical_PWBUSKVVOLT Bus93_ExxonMobil_Chemical_LineMW Bus93_ExxonMobil_Chemical_LineMVR Bus94_ExxonMobil_Refinery_PWBUSANGLE Bus94_ExxonMobil_Refinery_PWBUSKVVOLT Bus94_ExxonMobil_Refinery_LineMW Bus94_ExxonMobil_Refinery_LineMVR Bus95_Petrofac_PWBUSANGLE Bus95_Petrofac_PWBUSKVVOLT Bus95_Petrofac_LineMW Bus95_Petrofac_LineMVR</outVars>
+                        </Key>
+                    </Entries>
+                </chosenCaseGroupOutVarPairs>
+                <isVisiable>true</isVisiable>
+            </algorithm>
+            <algorithm xsi:type="hdmrAlgorithm" name="HDMR_Alg_1" parent_manager="algorithm_manager" algorithm_type="HDMR" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <details_values>
+                    <entry>
+                        <key>output_by_case</key>
+                        <value xsi:type="choiceDetail" detail_name="output_by_case" explanation="Whether MoDS output splits output information across files by case" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_values</key>
+                        <value xsi:type="choiceDetail" detail_name="output_values" explanation="Whether parameter values will be output to file, else is stored internally only" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>1</default_value_index>
+                            <user_choice_index>1</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>surrogate_type</key>
+                        <value xsi:type="stringDetail" detail_name="surrogate_type" explanation="Name of the type of surrogate model to be generated" isVisibleToUser="false">
+                            <default_value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">HDMR</default_value>
+                            <user_choice xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">HDMR</user_choice>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>fit_to_coded_responses</key>
+                        <value xsi:type="choiceDetail" detail_name="fit_to_coded_responses" explanation="Do you want the models to be fitted to the coded or uncoded response values" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>global</key>
+                        <value xsi:type="choiceDetail" detail_name="global" explanation="Should this fit be across passive inputs too?" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>order</key>
+                        <value xsi:type="integerDetail" detail_name="order" explanation="Maximum polynomial order of the model functions" isVisibleToUser="true">
+                            <default_value xsi:nil="true"/>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">10</user_choice>
+                            <max>20</max>
+                            <min>0</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>HDMRorder</key>
+                        <value xsi:type="integerDetail" detail_name="HDMRorder" explanation="Maximum degree of inter-parameter interactions to be included in the model" isVisibleToUser="true">
+                            <default_value xsi:nil="true"/>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">2</user_choice>
+                            <max>2</max>
+                            <min>0</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>r_squared_tol</key>
+                        <value xsi:type="doubleDetail" detail_name="r_squared_tol" explanation="Controls the termination conditions due to the quality of the fit" isVisibleToUser="true">
+                            <default_value xsi:type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">0.99999</default_value>
+                            <user_choice xsi:type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">0.99999</user_choice>
+                            <max>1.7976931348623157E308</max>
+                            <min>0.0</min>
+                        </value>
+                    </entry>
+                </details_values>
+                <chosenActiveInputVars>ExxonMobil_Chemical_LoadMW_93 ExxonMobil_Refinery_LoadMW_94 Petrofac_LoadMW_95 ExxonMobil_Chemical_LoadMVR_93 ExxonMobil_Refinery_LoadMVR_94 Petrofac_LoadMVR_95</chosenActiveInputVars>
+                <chosenPreviousAlgs>
+                    <m_chosenPreviousAlgs>Sobol_Alg_1</m_chosenPreviousAlgs>
+                </chosenPreviousAlgs>
+                <allPreviousAlgs>
+                    <m_allPreviousAlgs>Initial</m_allPreviousAlgs>
+                    <m_allPreviousAlgs>Sobol_Alg_1</m_allPreviousAlgs>
+                </allPreviousAlgs>
+                <warning_message></warning_message>
+                <chosenCaseGroupOutVarPairs>
+                    <Entries>
+                        <Key caseGroup="CaseGroup1">
+                            <outVars>Bus93_ExxonMobil_Chemical_PWBUSANGLE Bus93_ExxonMobil_Chemical_PWBUSKVVOLT Bus93_ExxonMobil_Chemical_LineMW Bus93_ExxonMobil_Chemical_LineMVR Bus94_ExxonMobil_Refinery_PWBUSANGLE Bus94_ExxonMobil_Refinery_PWBUSKVVOLT Bus94_ExxonMobil_Refinery_LineMW Bus94_ExxonMobil_Refinery_LineMVR Bus95_Petrofac_PWBUSANGLE Bus95_Petrofac_PWBUSKVVOLT Bus95_Petrofac_LineMW Bus95_Petrofac_LineMVR</outVars>
+                        </Key>
+                    </Entries>
+                </chosenCaseGroupOutVarPairs>
+                <isVisiable>true</isVisiable>
+            </algorithm>
+            <algorithm xsi:type="polynomialAlgorithm" name="Polynomial_Alg_1" parent_manager="algorithm_manager" algorithm_type="POLYNOMIAL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <details_values>
+                    <entry>
+                        <key>output_by_case</key>
+                        <value xsi:type="choiceDetail" detail_name="output_by_case" explanation="Whether MoDS output splits output information across files by case" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_values</key>
+                        <value xsi:type="choiceDetail" detail_name="output_values" explanation="Whether parameter values will be output to file, else is stored internally only" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>1</default_value_index>
+                            <user_choice_index>1</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>surrogate_type</key>
+                        <value xsi:type="stringDetail" detail_name="surrogate_type" explanation="Name of the type of surrogate model to be generated" isVisibleToUser="false">
+                            <default_value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">Polynomial</default_value>
+                            <user_choice xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">Polynomial</user_choice>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>fit_to_coded_responses</key>
+                        <value xsi:type="choiceDetail" detail_name="fit_to_coded_responses" explanation="Do you want the models to be fitted to the coded or uncoded response values" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>global</key>
+                        <value xsi:type="choiceDetail" detail_name="global" explanation="Should this fit be across passive inputs too?" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>order</key>
+                        <value xsi:type="integerDetail" detail_name="order" explanation="Polynomial order of the model functions" isVisibleToUser="true">
+                            <default_value xsi:nil="true"/>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">1</user_choice>
+                            <max>2147483647</max>
+                            <min>0</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>kriging</key>
+                        <value xsi:type="choiceDetail" detail_name="kriging" explanation="Apply Kriging interpolation?" isVisibleToUser="true">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>correlation_length</key>
+                        <value xsi:type="doubleDetail" detail_name="correlation_length" explanation="If Kriging is applied, set the correlation length" isVisibleToUser="true">
+                            <default_value xsi:type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">0.2</default_value>
+                            <user_choice xsi:type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">0.2</user_choice>
+                            <max>1.7976931348623157E308</max>
+                            <min>0.0</min>
+                        </value>
+                    </entry>
+                </details_values>
+                <chosenActiveInputVars>ExxonMobil_Chemical_LoadMW_93 ExxonMobil_Refinery_LoadMW_94 Petrofac_LoadMW_95 ExxonMobil_Chemical_LoadMVR_93 ExxonMobil_Refinery_LoadMVR_94 Petrofac_LoadMVR_95</chosenActiveInputVars>
+                <chosenPreviousAlgs>
+                    <m_chosenPreviousAlgs>Sobol_Alg_1</m_chosenPreviousAlgs>
+                </chosenPreviousAlgs>
+                <allPreviousAlgs>
+                    <m_allPreviousAlgs>Initial</m_allPreviousAlgs>
+                    <m_allPreviousAlgs>Sobol_Alg_1</m_allPreviousAlgs>
+                    <m_allPreviousAlgs>HDMR_Alg_1</m_allPreviousAlgs>
+                </allPreviousAlgs>
+                <warning_message></warning_message>
+                <chosenCaseGroupOutVarPairs>
+                    <Entries>
+                        <Key caseGroup="CaseGroup1">
+                            <outVars>Bus93_ExxonMobil_Chemical_PWBUSANGLE Bus93_ExxonMobil_Chemical_PWBUSKVVOLT Bus93_ExxonMobil_Chemical_LineMW Bus93_ExxonMobil_Chemical_LineMVR Bus94_ExxonMobil_Refinery_PWBUSANGLE Bus94_ExxonMobil_Refinery_PWBUSKVVOLT Bus94_ExxonMobil_Refinery_LineMW Bus94_ExxonMobil_Refinery_LineMVR Bus95_Petrofac_PWBUSANGLE Bus95_Petrofac_PWBUSKVVOLT Bus95_Petrofac_LineMW Bus95_Petrofac_LineMVR</outVars>
+                        </Key>
+                    </Entries>
+                </chosenCaseGroupOutVarPairs>
+                <isVisiable>true</isVisiable>
+            </algorithm>
+            <algorithm xsi:type="polynomialAlgorithm" name="Polynomial_Alg_2" parent_manager="algorithm_manager" algorithm_type="POLYNOMIAL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <details_values>
+                    <entry>
+                        <key>output_by_case</key>
+                        <value xsi:type="choiceDetail" detail_name="output_by_case" explanation="Whether MoDS output splits output information across files by case" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_values</key>
+                        <value xsi:type="choiceDetail" detail_name="output_values" explanation="Whether parameter values will be output to file, else is stored internally only" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>1</default_value_index>
+                            <user_choice_index>1</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>surrogate_type</key>
+                        <value xsi:type="stringDetail" detail_name="surrogate_type" explanation="Name of the type of surrogate model to be generated" isVisibleToUser="false">
+                            <default_value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">Polynomial</default_value>
+                            <user_choice xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">Polynomial</user_choice>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>fit_to_coded_responses</key>
+                        <value xsi:type="choiceDetail" detail_name="fit_to_coded_responses" explanation="Do you want the models to be fitted to the coded or uncoded response values" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>global</key>
+                        <value xsi:type="choiceDetail" detail_name="global" explanation="Should this fit be across passive inputs too?" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>order</key>
+                        <value xsi:type="integerDetail" detail_name="order" explanation="Polynomial order of the model functions" isVisibleToUser="true">
+                            <default_value xsi:nil="true"/>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">2</user_choice>
+                            <max>2147483647</max>
+                            <min>0</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>kriging</key>
+                        <value xsi:type="choiceDetail" detail_name="kriging" explanation="Apply Kriging interpolation?" isVisibleToUser="true">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>correlation_length</key>
+                        <value xsi:type="doubleDetail" detail_name="correlation_length" explanation="If Kriging is applied, set the correlation length" isVisibleToUser="true">
+                            <default_value xsi:type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">0.2</default_value>
+                            <user_choice xsi:type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">0.2</user_choice>
+                            <max>1.7976931348623157E308</max>
+                            <min>0.0</min>
+                        </value>
+                    </entry>
+                </details_values>
+                <chosenActiveInputVars>ExxonMobil_Chemical_LoadMW_93 ExxonMobil_Refinery_LoadMW_94 Petrofac_LoadMW_95 ExxonMobil_Chemical_LoadMVR_93 ExxonMobil_Refinery_LoadMVR_94 Petrofac_LoadMVR_95</chosenActiveInputVars>
+                <chosenPreviousAlgs>
+                    <m_chosenPreviousAlgs>Sobol_Alg_1</m_chosenPreviousAlgs>
+                </chosenPreviousAlgs>
+                <allPreviousAlgs>
+                    <m_allPreviousAlgs>Initial</m_allPreviousAlgs>
+                    <m_allPreviousAlgs>Sobol_Alg_1</m_allPreviousAlgs>
+                    <m_allPreviousAlgs>HDMR_Alg_1</m_allPreviousAlgs>
+                    <m_allPreviousAlgs>Polynomial_Alg_1</m_allPreviousAlgs>
+                </allPreviousAlgs>
+                <warning_message></warning_message>
+                <chosenCaseGroupOutVarPairs>
+                    <Entries>
+                        <Key caseGroup="CaseGroup1">
+                            <outVars>Bus93_ExxonMobil_Chemical_PWBUSANGLE Bus93_ExxonMobil_Chemical_PWBUSKVVOLT Bus93_ExxonMobil_Chemical_LineMW Bus93_ExxonMobil_Chemical_LineMVR Bus94_ExxonMobil_Refinery_PWBUSANGLE Bus94_ExxonMobil_Refinery_PWBUSKVVOLT Bus94_ExxonMobil_Refinery_LineMW Bus94_ExxonMobil_Refinery_LineMVR Bus95_Petrofac_PWBUSANGLE Bus95_Petrofac_PWBUSKVVOLT Bus95_Petrofac_LineMW Bus95_Petrofac_LineMVR</outVars>
+                        </Key>
+                    </Entries>
+                </chosenCaseGroupOutVarPairs>
+                <isVisiable>true</isVisiable>
+            </algorithm>
+        </algorithm_list>
+    </algorithmManager>
+    <remoteExecutor xsi:type="selfMPIExecutor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <connections>
+            <connection xsi:type="selfConnection" machineOrIP="localhost" OS="WINDOWS" absoluteWorkingDir="{Sim Directory}"/>
+        </connections>
+        <numProc>1</numProc>
+    </remoteExecutor>
+</simulation>

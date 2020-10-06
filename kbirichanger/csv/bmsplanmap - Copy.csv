@@ -1,0 +1,95 @@
+sensor ontology
+http://www.theworldavatar.com/SensorOntology.owl,http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl
+Building subontology
+http://www.theworldavatar.com/BuildingItem.owl,http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl
+http://www.theworldavatar.com/BuildingDuctbehavior.owl,http://www.theworldavatar.com/ontology/ontobuilding/BuildingDuctbehavior.owl
+http://www.theworldavatar.com/LabItem.owl,http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl
+vav iri
+http://www.theworldavatar.com/BMS/VAV-,http://www.theworldavatar.com/kb/sgp/bms/VAV-
+http://www.theworldavatar.com/VAV-,http://www.theworldavatar.com/kb/sgp/bms/VAV-
+room and roomsensor iri
+http://www.theworldavatar.com/BMS/AFMRR,http://www.theworldavatar.com/kb/sgp/bms/AFMRR
+http://www.theworldavatar.com/AFMRR,http://www.theworldavatar.com/kb/sgp/bms/AFMRR
+http://www.theworldavatar.com/BMS/BCA,http://www.theworldavatar.com/kb/sgp/bms/BCA
+http://www.theworldavatar.com/BCA,http://www.theworldavatar.com/kb/sgp/bms/BCA
+http://www.theworldavatar.com/BMS/CRR,http://www.theworldavatar.com/kb/sgp/bms/CRR
+http://www.theworldavatar.com/CRR,http://www.theworldavatar.com/kb/sgp/bms/CRR
+http://www.theworldavatar.com/BMS/CR,http://www.theworldavatar.com/kb/sgp/bms/CR
+http://www.theworldavatar.com/CR,http://www.theworldavatar.com/kb/sgp/bms/CR
+http://www.theworldavatar.com/BMS/DLA,http://www.theworldavatar.com/kb/sgp/bms/DLA
+http://www.theworldavatar.com/DLA,http://www.theworldavatar.com/kb/sgp/bms/DLA
+http://www.theworldavatar.com/BMS/EAA,http://www.theworldavatar.com/kb/sgp/bms/EAA
+http://www.theworldavatar.com/EAA,http://www.theworldavatar.com/kb/sgp/bms/EAA
+http://www.theworldavatar.com/BMS/FR,http://www.theworldavatar.com/kb/sgp/bms/FR
+http://www.theworldavatar.com/FR,http://www.theworldavatar.com/kb/sgp/bms/FR
+http://www.theworldavatar.com/BMS/GM-,http://www.theworldavatar.com/kb/sgp/bms/GM-
+http://www.theworldavatar.com/GM-,http://www.theworldavatar.com/kb/sgp/bms/GM-
+http://www.theworldavatar.com/BMS/ODR,http://www.theworldavatar.com/kb/sgp/bms/ODR
+http://www.theworldavatar.com/ODR,http://www.theworldavatar.com/kb/sgp/bms/ODR
+http://www.theworldavatar.com/BMS/OLA,http://www.theworldavatar.com/kb/sgp/bms/OLA
+http://www.theworldavatar.com/OLA,http://www.theworldavatar.com/kb/sgp/bms/OLA
+http://www.theworldavatar.com/BMS/PPR,http://www.theworldavatar.com/kb/sgp/bms/PPR
+http://www.theworldavatar.com/PPR,http://www.theworldavatar.com/kb/sgp/bms/PPR
+http://www.theworldavatar.com/BMS/PR,http://www.theworldavatar.com/kb/sgp/bms/PR
+http://www.theworldavatar.com/PR,http://www.theworldavatar.com/kb/sgp/bms/PR
+http://www.theworldavatar.com/BMS/RMR,http://www.theworldavatar.com/kb/sgp/bms/RMR
+http://www.theworldavatar.com/RMR,http://www.theworldavatar.com/kb/sgp/bms/RMR
+http://www.theworldavatar.com/BMS/TGAR,http://www.theworldavatar.com/kb/sgp/bms/TGAR
+http://www.theworldavatar.com/TGAR,http://www.theworldavatar.com/kb/sgp/bms/TGAR
+hvav iri
+http://www.theworldavatar.com/BMS/HVAV-,http://www.theworldavatar.com/kb/sgp/bms/HVAV-
+http://www.theworldavatar.com/HVAV-,http://www.theworldavatar.com/kb/sgp/bms/HVAV-
+bcx iri
+http://www.theworldavatar.com/BMS/BCX-,http://www.theworldavatar.com/kb/sgp/bms/BCX-
+http://www.theworldavatar.com/BCX-,http://www.theworldavatar.com/kb/sgp/bms/BCX-
+Top Node iri
+http://www.theworldavatar.com/BMS/CARES_Lab.owl,http://www.theworldavatar.com/kb/sgp/bms/CARES_Lab.owl
+http://www.theworldavatar.com/CARES_Lab.owl,http://www.theworldavatar.com/kb/sgp/bms/CARES_Lab.owl
+cav,cavsensor iri
+http://www.theworldavatar.com/BMS/CAV-,http://www.theworldavatar.com/kb/sgp/bms/CAV-
+http://www.theworldavatar.com/CAV-,http://www.theworldavatar.com/kb/sgp/bms/CAV-
+DDC iri
+http://www.theworldavatar.com/BMS/DDC_,http://www.theworldavatar.com/kb/sgp/bms/DDC_
+http://www.theworldavatar.com/DDC_,http://www.theworldavatar.com/kb/sgp/bms/DDC_
+EAF and EAF sensor
+http://www.theworldavatar.com/BMS/EAF-,http://www.theworldavatar.com/kb/sgp/bms/EAF-
+http://www.theworldavatar.com/EAF-,http://www.theworldavatar.com/kb/sgp/bms/EAF-
+ERS and ERS sensor
+http://www.theworldavatar.com/BMS/ERS-,http://www.theworldavatar.com/kb/sgp/bms/ERS-
+http://www.theworldavatar.com/ERS-,http://www.theworldavatar.com/kb/sgp/bms/ERS-
+Fan sensor
+http://www.theworldavatar.com/BMS/Fan-,http://www.theworldavatar.com/kb/sgp/bms/Fan-
+http://www.theworldavatar.com/Fan-,http://www.theworldavatar.com/kb/sgp/bms/Fan-
+F sensor
+http://www.theworldavatar.com/BMS/F-C7-,http://www.theworldavatar.com/kb/sgp/bms/F-C7-
+http://www.theworldavatar.com/F-C7-,http://www.theworldavatar.com/kb/sgp/bms/F-C7-
+FCU and FCU sensor
+http://www.theworldavatar.com/BMS/FCU-,http://www.theworldavatar.com/kb/sgp/bms/FCU-
+http://www.theworldavatar.com/FCU-,http://www.theworldavatar.com/kb/sgp/bms/FCU-
+WFH and WFH sensor
+http://www.theworldavatar.com/BMS/WFH-,http://www.theworldavatar.com/kb/sgp/bms/WFH-
+http://www.theworldavatar.com/WFH-,http://www.theworldavatar.com/kb/sgp/bms/WFH-
+FH and FH sensor
+http://www.theworldavatar.com/BMS/FH-,http://www.theworldavatar.com/kb/sgp/bms/FH-
+http://www.theworldavatar.com/FH-,http://www.theworldavatar.com/kb/sgp/bms/FH-
+CH and CH sensor
+http://www.theworldavatar.com/BMS/CH-,http://www.theworldavatar.com/kb/sgp/bms/CH-
+http://www.theworldavatar.com/CH-,http://www.theworldavatar.com/kb/sgp/bms/CH-
+HF and HF sensor
+http://www.theworldavatar.com/BMS/HF-,http://www.theworldavatar.com/kb/sgp/bms/HF-
+http://www.theworldavatar.com/HF,http://www.theworldavatar.com/kb/sgp/bms/HF-
+MAU and MAU sensor
+http://www.theworldavatar.com/BMS/MAU-,http://www.theworldavatar.com/kb/sgp/bms/MAU-
+http://www.theworldavatar.com/MAU-,http://www.theworldavatar.com/kb/sgp/bms/MAU-
+PM-PNL
+http://www.theworldavatar.com/BMS/PM-PNL-,http://www.theworldavatar.com/kb/sgp/bms/PM-PNL-
+http://www.theworldavatar.com/PM-PNL-,http://www.theworldavatar.com/kb/sgp/bms/PM-PNL-
+RAHU and RAHU sensor
+http://www.theworldavatar.com/BMS/RAHU-,http://www.theworldavatar.com/kb/sgp/bms/RAHU-
+http://www.theworldavatar.com/RAHU-,http://www.theworldavatar.com/kb/sgp/bms/RAHU-
+VA-C7 sensor
+http://www.theworldavatar.com/BMS/VA-C7,http://www.theworldavatar.com/kb/sgp/bms/VA-C7
+http://www.theworldavatar.com/VA-C7,http://www.theworldavatar.com/kb/sgp/bms/VA-C7
+
+
+

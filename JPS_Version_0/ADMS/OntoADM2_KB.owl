@@ -1,0 +1,872 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:network_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+    xmlns:p1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#"
+    xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:untitled-ontology-14="http://www.semanticweb.org/mjk_2/ontologies/2016/11/untitled-ontology-14#"
+    xmlns:p10="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#"
+    xmlns:p11="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#"
+    xmlns="http://www.theworldavatar.com/OntoADM2.owl#"
+    xmlns:core_ontology="http://www.theworldavatar.com/OntoCAPE/core_ontology/core_ontology.owl#"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:p7="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:p8="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/software_system/process_modeling_software.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:p3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#"
+    xmlns:p6="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#"
+    xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+    xmlns:p5="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/reaction_type.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:plant="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
+    xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+    xmlns:p2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#"
+    xmlns:j.0="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
+    xmlns:system1="http://www.theworldavatar.com/OntoADM/OntoADM.owlOntoCAPE/OntoCAPE/upper_level/system.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:p9="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+    xmlns:p4="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/atoms.owl#"
+    xmlns:mathematical_relation="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+  xml:base="http://www.theworldavatar.com/OntoADM2.owl#">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/atoms.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/software_system/process_modeling_software.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/core_ontology/core_ontology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/reaction_type.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl"/>
+  </owl:Ontology>
+  <rdfs:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#Height"/>
+  <rdfs:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+  <rdfs:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+  <rdfs:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/software_system/software_system.owl#SoftwareSystem"/>
+  <rdfs:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+  <owl:Class rdf:ID="OWLClass_6ca73fc1_37ab_4a88_ab9d_38e435f6158c">
+    <rdfs:label xml:lang="en">Day</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_d6877f60_07af_4f16_8003_e060271169a3">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#Height"/>
+    <rdfs:label xml:lang="en">SourceHeight</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_60994ede_5564_4471_a596_98e25652d635">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">Setup</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_de42d823_7a61_4f43_a82c_25b5de3ded4d">
+    <rdfs:label xml:lang="en">CloudCover</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_d5104a14_8080_4308_8586_36a557bede11">
+    <rdfs:label xml:lang="en">Sources</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_b1cb0dc8_f709_4ea9_968a_891e7406cf90"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_69eb30c6_a1dd_400c_985d_6fbb9452ca29">
+    <rdfs:label xml:lang="en">MolecularMass</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_640a9f0d_85bb_4c19_8e9e_0f56f5ea68eb">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_99b974dd_711a_4231_a8eb_881ba7b2b973"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">Export</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_013567ca_2428_43c8_9b70_7916ba4f4029">
+    <rdfs:label xml:lang="en">WeatherStation</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_f71f2979_46b2_4d64_b255_c3de390907d6">
+    <rdfs:label xml:lang="en">BuildingSettings</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_4af7a9ba_13b1_4255_91a7_2429bf51b5c1">
+    <rdfs:label xml:lang="en">DataEntryInteractive</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_8af6c737_bb19_4d33_9018_9000776d1d8a"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_fdf8f1fa_b616_4a9a_9e29_5b47200b55de">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">SourceFilterByType</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_4f499d2c_9b0b_4e8f_af6e_40d0f0064bf6">
+    <rdfs:label xml:lang="en">PlotsInSurfer</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_0e450821_4a84_4a26_bd69_a4b5587b1e3e"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_59f56b75_3afa_437c_813a_41f0dc47cbcc">
+    <rdfs:label xml:lang="en">SourceTorRHOorAmbient</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_d5104a14_8080_4308_8586_36a557bede11"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_87a09222_c17c_47a7_b34d_59530f45cd45">
+    <rdfs:label xml:lang="en">WindVelocity</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_82cc4c7f_62d8_41e9_9237_e7f582e603f1"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_660de5c8_4ed2_400e_9060_87ab5d73a2f1">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">DepositionVelocityKnown</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_8af6c737_bb19_4d33_9018_9000776d1d8a">
+    <rdfs:label xml:lang="en">Background</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_fc10cc68_4b0e_4975_8a35_caf3f3a78915">
+    <rdfs:label xml:lang="en">SourceMassflux</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_f1b891e7_1eaf_4970_9354_ebcfa0a5b924"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7">
+    <rdfs:label xml:lang="en">Isotopes</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_cd4e56e4_8e57_4d07_8b61_286f5d81dd22"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_8c2efd99_dc14_47fe_bbba_56a65c7f8dbf">
+    <rdfs:label xml:lang="en">Precipitation</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_51a35c2e_a719_48b4_9e3d_101eafd9acba">
+    <rdfs:label xml:lang="en">FileFormats</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_99b974dd_711a_4231_a8eb_881ba7b2b973"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_88fe3470_1aa6_407c_b97d_2ed15f4b29a5">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_704e27c3_0522_48e1_8196_3a4521e5776c"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">AdditionalModelOptions</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_84158039_7104_4842_a2d1_3f13450e1521">
+    <rdfs:label xml:lang="en">TerminalVelocityKnown</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_e178a759_8b9a_4a0e_9f26_261b3bdd3e48">
+    <rdfs:label xml:lang="en">SourceEmissions</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b1cb0dc8_f709_4ea9_968a_891e7406cf90"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_704e27c3_0522_48e1_8196_3a4521e5776c">
+    <rdfs:label xml:lang="en">ADMS_5</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/software_system/software_system.owl#SoftwareSystem"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_842ed0b2_f99f_42a3_8f6e_e2c26f4fb977">
+    <rdfs:label xml:lang="en">LinePlots</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_0e450821_4a84_4a26_bd69_a4b5587b1e3e"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="SourceNumberOfPollutant">
+    <rdfs:subClassOf rdf:resource="#OWLClass_d5104a14_8080_4308_8586_36a557bede11"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_23d78546_afa1_45e9_a4d7_90d662c5d6a2">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">MeteorologicalCondition</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_91a20072_52f5_4863_914c_eb54ad261d6e">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_0e450821_4a84_4a26_bd69_a4b5587b1e3e"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">ModelRunReports</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="WetDeposition">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_64bcc99c_3bf5_472e_bc04_105cdaacc138"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_f9992ca5_a681_4476_aee2_d53820e39de5">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">DepositionVelocityKnown</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_0e26c432_8b88_4d1b_bbe0_4ada718ed16c">
+    <rdfs:label xml:lang="en">WashoutCoefficientB</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_aad7fabd_9748_4bc1_aa0d_670670513d76">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+    <rdfs:label xml:lang="en">Efflux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_3e498fa4_5942_47bb_984d_45294ba7b701">
+    <rdfs:label xml:lang="en">HeatReleaseRate</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_e114c97b_f468_4067_8a28_6f92e2fbfae2">
+    <rdfs:label xml:lang="en">DataEntryFromFile</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_2c0fc5ff_0d98_4449_9a09_02e2121c1be1"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_9a4f9a73_df07_4168_807f_43dd9d37e7cd">
+    <rdfs:label xml:lang="en">ComprehensiveOutputFile</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_3031b0dd_9d1f_4c85_961a_f44701bc1366"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_476750fd_3b77_4cb7_a29b_54c56a1b4715">
+    <rdfs:label xml:lang="en">PoolOfPollutants</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_ee65ac31_8290_4363_b6b2_f28ba6c5aa2b">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <rdfs:label xml:lang="en">XStraightCoordinate</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_d205f8a1_442d_4538_8ff6_f69120c6cdc1">
+    <rdfs:label xml:lang="en">GroupOutput</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_3031b0dd_9d1f_4c85_961a_f44701bc1366"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_30235331_6caf_4363_89fa_d064cf30d280">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarQuantity"/>
+    <rdfs:label xml:lang="en">Angle</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_82a2e26b_73b1_42cb_bb15_521e0cae0391">
+    <rdfs:label xml:lang="en">FilesToImport</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_39f2f324_dd7d_4c61_a791_85a9dce6a567">
+    <rdfs:subClassOf rdf:resource="#OWLClass_30235331_6caf_4363_89fa_d064cf30d280"/>
+    <rdfs:label xml:lang="en">SourceAngle2</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_8692eb50_0460_470f_9cdd_39e2b5710655">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b1cb0dc8_f709_4ea9_968a_891e7406cf90"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">TimeVaryingEmissions</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_198cbad4_d312_47d8_84eb_163e56516508">
+    <rdfs:label xml:lang="en">SiteLatitude</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_94ad78e1_1cb5_4135_afc0_1fa465da6b15"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_8a28761f_d892_4371_9466_d94affad1044">
+    <rdfs:label xml:lang="en">GriddedOutput</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_b650b554_b0f1_42ed_aa8f_08bb6aa8ca95"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215">
+    <rdfs:label xml:lang="en">Import</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_99b974dd_711a_4231_a8eb_881ba7b2b973"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_a2ead43d_74fa_4d0c_be35_c515e190ba82">
+    <rdfs:label xml:lang="en">NumericalDataViewing</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_0e450821_4a84_4a26_bd69_a4b5587b1e3e"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_92989f9c_0118_40db_9ccf_ea6cbfc20113">
+    <rdfs:label xml:lang="en">PTT_File</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_51a35c2e_a719_48b4_9e3d_101eafd9acba"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_b4c6e388_0960_49ea_980e_f3107bcd04d3">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_2c0fc5ff_0d98_4449_9a09_02e2121c1be1"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">DataEntryInteractive</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_07e93e0c_a14f_43de_b8ec_87c23c229bfe">
+    <rdfs:label xml:lang="en">SourceGeometry</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b1cb0dc8_f709_4ea9_968a_891e7406cf90"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_21e9a528_89da_444f_a0b7_fe3109c54108">
+    <rdfs:label xml:lang="en">SourceMomentumflux</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_abb81979_248d_4d8f_b7f7_cd871abdf953"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_f0a3d33c_437e_4fd4_b782_578219eaa38a">
+    <rdfs:label xml:lang="en">SurfaceRoughness</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_94ad78e1_1cb5_4135_afc0_1fa465da6b15"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_174e08cc_c0c2_43cb_9a65_f8f71e9ed489">
+    <rdfs:subClassOf rdf:resource="#OWLClass_82a2e26b_73b1_42cb_bb15_521e0cae0391"/>
+    <rdfs:label xml:lang="en">PollutantsFile</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_46618a72_e872_4b38_acbc_8704c7748aa1">
+    <rdfs:subClassOf rdf:resource="#OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7"/>
+    <rdfs:label xml:lang="en">IsotopeName</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_015da9d1_428e_4158_a3ea_d15f8f8f1d61">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLClass_5d2ad177_d2a9_4277_99ee_03bd01874dd6"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">SourceVolumeflux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_9f1e26d0_b4fd_43c6_96b0_a9be4f1a4b5b">
+    <rdfs:label xml:lang="en">MapperProjectFile</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_60994ede_5564_4471_a596_98e25652d635"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_996e32e1_b704_47c6_8223_995e5d83b298">
+    <rdfs:label xml:lang="en">ADMS_5_OutputFiles</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_0e450821_4a84_4a26_bd69_a4b5587b1e3e"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_4bd02525_c476_43a2_ad72_7eb3a21cda80">
+    <rdfs:label xml:lang="en">AirQualityObjectives</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_3031b0dd_9d1f_4c85_961a_f44701bc1366"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_594909c7_8d3b_4730_8320_a8c7bb148c82">
+    <rdfs:subClassOf rdf:resource="#OWLClass_d5104a14_8080_4308_8586_36a557bede11"/>
+    <rdfs:label xml:lang="en">SourceType</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_4a3f1992_905f_4b73_b7ec_2784c2ebcfa5">
+    <rdfs:label xml:lang="en">SourceSettings</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_34c6bb8d_762f_4e51_b229_41f3ac774ede">
+    <rdfs:label xml:lang="en">SourceVelocity</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_82cc4c7f_62d8_41e9_9237_e7f582e603f1"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_4fb0406b_1c43_4a66_9269_5bdf54d72e23">
+    <rdfs:subClassOf rdf:resource="#OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215"/>
+    <rdfs:label xml:lang="en">PollutantSettings</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_3c63cdc6_4f7f_429e_b54b_7cccdc6aa6ed">
+    <rdfs:label xml:lang="en">BuildingsFile</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_82a2e26b_73b1_42cb_bb15_521e0cae0391"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_2c0fc5ff_0d98_4449_9a09_02e2121c1be1"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">MetData</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_766d6a2d_184b_4b24_b735_f272c82d1250">
+    <rdfs:subClassOf rdf:resource="#OWLClass_82a2e26b_73b1_42cb_bb15_521e0cae0391"/>
+    <rdfs:label xml:lang="en">GroupsFile</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_d225c716_4aff_4d0f_bdc3_c07d5610237e">
+    <rdfs:label xml:lang="en">SourceAngle1</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_30235331_6caf_4363_89fa_d064cf30d280"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_5ff483d9_43c4_4973_a2f4_be5526ddab87">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b650b554_b0f1_42ed_aa8f_08bb6aa8ca95"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">SpecifiedPointsOutput</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_7927af47_9fc4_4d57_9597_ca2a448733f8">
+    <rdfs:subClassOf rdf:resource="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+    <rdfs:label xml:lang="en">Hour</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_a39df49d_facb_4727_9b04_11a2321489c8">
+    <rdfs:subClassOf rdf:resource="#OWLClass_60994ede_5564_4471_a596_98e25652d635"/>
+    <rdfs:label xml:lang="en">Project</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_87220c31_fd53_408d_a55e_9c5e3f964c0d">
+    <rdfs:label xml:lang="en">Site</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_60994ede_5564_4471_a596_98e25652d635"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_5aab8151_0d85_4231_9c87_8a83bc06721f">
+    <rdfs:label xml:lang="en">ImportTemplates</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_51a35c2e_a719_48b4_9e3d_101eafd9acba"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_1244e4a2_3f01_4d4b_b518_255ab91e251b">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <rdfs:label xml:lang="en">YStraightCoordinate</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_b1cb0dc8_f709_4ea9_968a_891e7406cf90">
+    <rdfs:label xml:lang="en">Source</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_6bf9a863_ffe8_4b38_8392_e9d4db3f7491">
+    <rdfs:subClassOf rdf:resource="#OWLClass_8af6c737_bb19_4d33_9018_9000776d1d8a"/>
+    <rdfs:label xml:lang="en">DataEntryFromFile</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_237f6459_92ce_46ef_b100_7c2982bd68c5">
+    <rdfs:label xml:lang="en">Interpolation</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_2c0fc5ff_0d98_4449_9a09_02e2121c1be1"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_c87c3c65_abd0_4e67_b0d9_951231b7d490">
+    <rdfs:label xml:lang="en">WashoutCoefficientA</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_c0b0e5ff_8f3b_4a61_8382_2a3aa631d7d6">
+    <rdfs:subClassOf rdf:resource="#OWLClass_e178a759_8b9a_4a0e_9f26_261b3bdd3e48"/>
+    <rdfs:label xml:lang="en">PolEmissionRate</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_2b2c5aec_35ee_4d3d_8730_72e936158065">
+    <rdfs:label xml:lang="en">PollutantType</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_3e488fd0_9520_4166_9443_023fddc9950a">
+    <rdfs:label xml:lang="en">GroupSettings</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_82cc4c7f_62d8_41e9_9237_e7f582e603f1">
+    <rdfs:label xml:lang="en">Velocity</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_5d2ad177_d2a9_4277_99ee_03bd01874dd6">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+    <rdfs:label xml:lang="en">VolumeFlux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_089a5c7b_59f9_48ed_997a_3d20716e5ea7">
+    <rdfs:label xml:lang="en">PollutantName</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_19f18b36_d6f1_436f_a370_770912891c6f">
+    <rdfs:label xml:lang="en">SourceActualOrNTP</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_d5104a14_8080_4308_8586_36a557bede11"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_8756df2c_4fda_46b0_b827_67095c7611c5">
+    <rdfs:label xml:lang="en">SourcesFile</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_82a2e26b_73b1_42cb_bb15_521e0cae0391"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_b7d766b0_5305_4975_a981_11ef0cafbc9f">
+    <rdfs:label xml:lang="en">WashoutCoefficientKnown</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_33ef429a_6a94_492e_abdc_e1d5ce86cd2e">
+    <rdfs:label xml:lang="en">WashoutCoefficient</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_bfab2eac_ac26_4a60_b8b5_57e2779dc0d6">
+    <rdfs:subClassOf rdf:resource="#OWLClass_60994ede_5564_4471_a596_98e25652d635"/>
+    <rdfs:label xml:lang="en">ModelOptions</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_0e450821_4a84_4a26_bd69_a4b5587b1e3e">
+    <rdfs:subClassOf rdf:resource="#OWLClass_704e27c3_0522_48e1_8196_3a4521e5776c"/>
+    <rdfs:label xml:lang="en">ModelOutput</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="TotalDeposition">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_64bcc99c_3bf5_472e_bc04_105cdaacc138"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_ef65562f_8963_4a9b_bc27_2e908917f1c4">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">TerminalVelocityKnown</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_ce56634a_728a_4b17_b569_1aa35afd5f15">
+    <rdfs:subClassOf rdf:resource="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+    <rdfs:label xml:lang="en">WindDirection</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_af06def5_8250_4246_a10f_3d2056c80eb2">
+    <rdfs:label xml:lang="en">WashoutCoefficientKnown</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_4d8dcb3c_ec11_4534_b380_65a0377d4c2e">
+    <rdfs:subClassOf rdf:resource="#OWLClass_b1cb0dc8_f709_4ea9_968a_891e7406cf90"/>
+    <rdfs:label xml:lang="en">Groups</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="DryDeposition">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_64bcc99c_3bf5_472e_bc04_105cdaacc138"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_5e72fb05_b42e_40d3_998b_0bb020b42e56">
+    <rdfs:subClassOf rdf:resource="#OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7"/>
+    <rdfs:label xml:lang="en">WashoutCoefficient</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_71c1505c_b3cb_4820_92b9_19f7ecb47e2f">
+    <rdfs:subClassOf rdf:resource="#OWLClass_51a35c2e_a719_48b4_9e3d_101eafd9acba"/>
+    <rdfs:label xml:lang="en">GPT_File</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131">
+    <rdfs:label xml:lang="en">ModelInput</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_704e27c3_0522_48e1_8196_3a4521e5776c"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_b650b554_b0f1_42ed_aa8f_08bb6aa8ca95">
+    <rdfs:label xml:lang="en">Grids</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_49acc317_580a_4549_aa12_c58f5e166070">
+    <rdfs:label xml:lang="en">PolConvFactor</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_43741102_2d9d_4cd8_963f_d559d025829a">
+    <rdfs:label xml:lang="en">GroupContents</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_d5104a14_8080_4308_8586_36a557bede11"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_26dfe170_5080_4a09_8cbe_4fb223579f8f">
+    <rdfs:subClassOf rdf:resource="#OWLClass_704e27c3_0522_48e1_8196_3a4521e5776c"/>
+    <rdfs:label xml:lang="en">Utilities</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_94ad78e1_1cb5_4135_afc0_1fa465da6b15">
+    <rdfs:label xml:lang="en">SiteData</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_2c0fc5ff_0d98_4449_9a09_02e2121c1be1"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_f1b891e7_1eaf_4970_9354_ebcfa0a5b924">
+    <rdfs:label xml:lang="en">MassFlux</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_5b7ef763_5645_4bd7_ab6d_054085838397">
+    <rdfs:subClassOf rdf:resource="#OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7"/>
+    <rdfs:label xml:lang="en">PollutantType</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_37055a8c_3900_4e3d_8fb2_7b838eb895ce">
+    <rdfs:subClassOf rdf:resource="#OWLClass_51a35c2e_a719_48b4_9e3d_101eafd9acba"/>
+    <rdfs:label xml:lang="en">EIT_File</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_62b17f39_b359_4529_9070_a1228c97f1a4">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_3031b0dd_9d1f_4c85_961a_f44701bc1366"/>
+    </rdfs:subClassOf>
+    <rdfs:label xml:lang="en">SourceOutput</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_2cfa1ce2_42ab_417b_9b82_6e5991691faf">
+    <rdfs:label xml:lang="en">Year</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_688b0a83_c598_46aa_9436_628bdc74665c">
+    <rdfs:subClassOf rdf:resource="#OWLClass_b1cb0dc8_f709_4ea9_968a_891e7406cf90"/>
+    <rdfs:label xml:lang="en">SourceData</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_99b974dd_711a_4231_a8eb_881ba7b2b973">
+    <rdfs:label xml:lang="en">ImportAndExport</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_704e27c3_0522_48e1_8196_3a4521e5776c"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_6f677951_1313_4dfe_a9b3_5eca5e058bef">
+    <rdfs:label xml:lang="en">GroupName</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_d5104a14_8080_4308_8586_36a557bede11"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_e13d0a3f_d038_43c4_822a_df8a17c594af">
+    <rdfs:label xml:lang="en">SPT_File</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_51a35c2e_a719_48b4_9e3d_101eafd9acba"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_a564dea3_8469_47d1_9f13_05658b241023">
+    <rdfs:subClassOf rdf:resource="#OWLClass_51a35c2e_a719_48b4_9e3d_101eafd9acba"/>
+    <rdfs:label xml:lang="en">VGT_File</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_abb81979_248d_4d8f_b7f7_cd871abdf953">
+    <rdfs:label xml:lang="en">MomentumFlux</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_ffaa4e94_cb3b_4dbf_b324_2f88753b41ee">
+    <rdfs:subClassOf rdf:resource="#OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215"/>
+    <rdfs:label xml:lang="en">CheckImport</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_fa9eb9fa_4158_4fdf_991c_91e56984d03d">
+    <rdfs:label xml:lang="en">AdditionalInputFile</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_60994ede_5564_4471_a596_98e25652d635"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_b758778f_c302_4a3c_9309_201402d75126">
+    <rdfs:label xml:lang="en">Pollutants</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLClass_cd4e56e4_8e57_4d07_8b61_286f5d81dd22"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_bdeb6c2f_2f49_4f50_9a07_0fe31a4b31cd">
+    <rdfs:label xml:lang="en">SourceSelection</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_fb893ffc_8c3c_4be3_a564_7d52c794e215"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_a916a67d_1606_498a_b66a_fe240aedc663">
+    <rdfs:subClassOf rdf:resource="#OWLClass_aad7fabd_9748_4bc1_aa0d_670670513d76"/>
+    <rdfs:label xml:lang="en">SourceEfflux</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_1fbe69ef_e21b_450b_9228_7ae4cbc70144">
+    <rdfs:subClassOf rdf:resource="#OWLClass_51a35c2e_a719_48b4_9e3d_101eafd9acba"/>
+    <rdfs:label xml:lang="en">BPT_File</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_088a2ce0_de26_41c0_9a70_b153d1dc4570">
+    <rdfs:subClassOf rdf:resource="#OWLClass_0e450821_4a84_4a26_bd69_a4b5587b1e3e"/>
+    <rdfs:label xml:lang="en">AERMOD_Files</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_cd4e56e4_8e57_4d07_8b61_286f5d81dd22">
+    <rdfs:subClassOf rdf:resource="#OWLClass_60994ede_5564_4471_a596_98e25652d635"/>
+    <rdfs:label xml:lang="en">Palette</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_ab517f66_1bad_46f9_aa75_9531058d61d8">
+    <rdfs:label xml:lang="en">SpecificHeatCapacity</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_21013baf_0f10_4449_9a03_bdca0e9894ad">
+    <rdfs:subClassOf rdf:resource="#OWLClass_69eb30c6_a1dd_400c_985d_6fbb9452ca29"/>
+    <rdfs:label xml:lang="en">SourceMolecularMass</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_3031b0dd_9d1f_4c85_961a_f44701bc1366">
+    <rdfs:subClassOf rdf:resource="#OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131"/>
+    <rdfs:label xml:lang="en">Output</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_654fd4a5_9f5e_4aaf_bb8b_522002385830">
+    <rdfs:subClassOf rdf:resource="#OWLClass_454a56a5_14e4_4c8f_bece_9e68716e7718"/>
+    <rdfs:label xml:lang="en">MetDataFile</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_94b46729_73b0_473b_a10e_b3d0ab7e0ee3">
+    <rdfs:subClassOf rdf:resource="#OWLClass_60994ede_5564_4471_a596_98e25652d635"/>
+    <rdfs:label xml:lang="en">RadioactivityOptions</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_af4cba19_a1ba_4c43_bf6c_4d9e9cf7f4cb">
+    <rdfs:subClassOf rdf:resource="#OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7"/>
+    <rdfs:label xml:lang="en">WashoutCoefficientB</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_64bcc99c_3bf5_472e_bc04_105cdaacc138">
+    <rdfs:label xml:lang="en">PollutantOutput</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWLClass_3031b0dd_9d1f_4c85_961a_f44701bc1366"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass_2c0fc5ff_0d98_4449_9a09_02e2121c1be1">
+    <rdfs:subClassOf rdf:resource="#OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131"/>
+    <rdfs:label xml:lang="en">Meteorology</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLClass_639f4051_a809_4075_89ce_3bf3687b321f">
+    <rdfs:subClassOf rdf:resource="#OWLClass_bcfe4721_5593_4216_97ad_d34e2e4743a7"/>
+    <rdfs:label xml:lang="en">WashoutCoefficientA</rdfs:label>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_3eebec68_2bb3_4c75_b89d_10f04b71d5ff">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    <rdfs:label xml:lang="en">hasVelocity</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_015c8e6d_a058_46e6_be13_a0aec585fe88">
+    <rdfs:label xml:lang="en">hasVolumeFlux</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_d1aec846_d206_4431_93e6_d4b0ce1db42f">
+    <rdfs:label xml:lang="en">hasAngle</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasPlace_timestamp">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_4602e397_0995_4f79_91cb_923f6a67334f">
+    <rdfs:label xml:lang="en">hasMolecularMass</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_5750f2fc_f5dd_4c0a_8c75_57b412c9689c">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    <rdfs:label xml:lang="en">hasMeteorologicalCondition</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_f938edc5_2ba9_4473_a84a_1a418129c061">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:label xml:lang="en">hasMomentumFlux</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_7be12dc1_f1a2_44f3_8a25_b7fdd7aee164">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:label xml:lang="en">hasMassFlux</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_880a585f_827e_4c51_8d85_f96f92185344">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    <rdfs:label xml:lang="en">hasPolConvFactor</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_e9a6ec7d_6ff6_49da_820b_921abd0550ec">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    <rdfs:label xml:lang="en">hasPrecipitation</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_64e0eaba_9b7e_4523_8904_48c3f009bf8e">
+    <rdfs:label xml:lang="en">hasCloudCover</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_0148291d_3464_4ecc_8fb2_0b4792c064e1">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    <rdfs:label xml:lang="en">hasSurfaceProperty</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_fcd96593_7cf5_4fb6_a7bb_6055fe4e46c5">
+    <rdfs:label xml:lang="en">hasSpecificHeatCapacity</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_c1778fb1_f2b4_43d7_b1e4_b16d4fda411d">
+    <rdfs:label xml:lang="en">hasWindDirection</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_f04b419e_50b7_4d6d_9e51_f9be8c844870">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:label xml:lang="en">hasPollutant</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_2f95fe5a_72ce_4b64_8e96_b243e29b576a">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:label xml:lang="en">hasEfflux</rdfs:label>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_c6aec89e_ea00_4c4e_8631_b4e32f367576">
+    <rdfs:label xml:lang="en">hasHeatReleaseRate</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="OWLObjectProperty_55bb6e82_808f_4961_82a9_7ca8ea49aea1">
+    <rdfs:label xml:lang="en">hasWindVelocity</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="#OWLObjectProperty_3eebec68_2bb3_4c75_b89d_10f04b71d5ff"/>
+  </owl:ObjectProperty>
+  <rdf:Property rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#thermodynamicBehavior"/>
+  <rdf:Property rdf:about="http://www.theworldavatar.com/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#hasRelationOriginator"/>
+  <rdf:Property rdf:about="http://www.theworldavatar.com/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#hasN-aryRelation"/>
+  <rdf:Property rdf:about="http://www.theworldavatar.com/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#hasRelationTarget"/>
+  <owl:DatatypeProperty rdf:ID="OWLDataProperty_2f43fdbf_eb8a_44fb_8673_16c854a1aab2">
+    <rdfs:label xml:lang="en">hasName</rdfs:label>
+  </owl:DatatypeProperty>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#MVA"/>
+  <p2:PrefixedDerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#µg/m3"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#CHF"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#RUB"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#N_per_m"/>
+  <owl:NamedIndividual rdf:ID="CloudCover_SG">
+    <rdf:type rdf:resource="#OWLClass_de42d823_7a61_4f43_a82c_25b5de3ded4d"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="CloudCover_SG_Value">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >88.0</system:numericalValue>
+        <system:isObservedAgainstBackdrop>
+          <owl:NamedIndividual rdf:ID="Time_SG_Value">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >15 Nov 2017 16:24:53 GMT</system:numericalValue>
+          </owl:NamedIndividual>
+        </system:isObservedAgainstBackdrop>
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:ID="cl">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#UnitOfMeasure"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="Temperature_SG">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="Temperature_SG_Value">
+        <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#C"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >27</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#l/m"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#psi"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/hour"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#ohm_per_km"/>
+  <owl:NamedIndividual rdf:ID="WindSpeed_SG">
+    <rdf:type rdf:resource="#OWLClass_87a09222_c17c_47a7_b34d_59530f45cd45"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="WindSpeed_SG_Value">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >0.0</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#m/s"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Hz"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#CMH"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#ton/year"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#CNY"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#rad"/>
+  <owl:NamedIndividual rdf:ID="ADMS_SG_APL_Input">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >C:\TOMCAT\webapps\ROOT\ADMSTEST\test.apl</system:numericalValue>
+    <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+    <rdf:type rdf:resource="#OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:ID="ADMS_SG_MET_Input">
+    <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >C:\TOMCAT\webapps\ROOT\ADMSTEST\test.met</system:numericalValue>
+    <rdf:type rdf:resource="#OWLClass_f7aaa00d_f4bd_4553_9c62_9bf8062c2131"/>
+  </owl:NamedIndividual>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa.s"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kWh"/>
+  <owl:NamedIndividual rdf:ID="ADMS_SG_GST_Output">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >C:\TOMCAT\webapps\ROOT\ADMSTEST\test.gst</system:numericalValue>
+    <rdf:type rdf:resource="#OWLClass_0e450821_4a84_4a26_bd69_a4b5587b1e3e"/>
+    <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+  </owl:NamedIndividual>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#USD/kmol"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#CAD"/>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#V"/>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoADM2.owlOntoCAPE/OntoCAPE/material/substance/chemical_species.owl#Ozone"/>
+  <owl:NamedIndividual rdf:ID="WindDirection_SG">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:ID="WindDirection_SG_Value">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure>
+          <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#degree">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+          </owl:NamedIndividual>
+        </system:hasUnitOfMeasure>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >1.11111</system:numericalValue>
+        <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="#OWLClass_ce56634a_728a_4b17_b569_1aa35afd5f15"/>
+  </owl:NamedIndividual>
+  <p2:SI_DerivedUnit rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kJ/kg"/>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#mm"/>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

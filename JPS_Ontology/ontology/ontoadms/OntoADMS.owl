@@ -1,0 +1,1354 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/OntoADMS.owl#"
+     xml:base="http://www.theworldavatar.com/OntoADMS.owl"
+     xmlns:p1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#"
+     xmlns:p2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#"
+     xmlns:p3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#"
+     xmlns:p4="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/atoms.owl#"
+     xmlns:p5="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/reaction_type.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:p6="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#"
+     xmlns:p7="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
+     xmlns:p8="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/software_system/process_modeling_software.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:system1="http://www.theworldavatar.com/OntoADM/OntoADM.owlOntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:core_ontology="http://www.theworldavatar.com/OntoCAPE/core_ontology/core_ontology.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:network_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:untitled-ontology-14="http://www.semanticweb.org/mjk_2/ontologies/2016/11/untitled-ontology-14#"
+     xmlns:mathematical_relation="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+     xmlns:j.0="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
+     xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+     xmlns:plant="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/OntoADMS.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/reaction_type.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/software_system/process_modeling_software.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/core_ontology/core_ontology.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasAngle -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasAngle">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasBackgroundCondition -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasBackgroundCondition">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasCloudCover -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasCloudCover">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasEfflux -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasEfflux">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasHeatReleaseRate -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasHeatReleaseRate">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasMassFlux -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasMassFlux">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasMeteorologicalCondition -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasMeteorologicalCondition">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasMomentumFlux -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasMomentumFlux">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasPlace_timestamp -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasPlace_timestamp">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasPolConvFactor -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasPolConvFactor">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasPollutant -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasPollutant">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasPrecipitation -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasPrecipitation">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasSpecificHeatCapacity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasSpecificHeatCapacity">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasSurfaceProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasSurfaceProperty">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasVelocity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasVelocity">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasVolumeFlux -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasVolumeFlux">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasWindDirection -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasWindDirection">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasWindVelocity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasWindVelocity">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#hasVelocity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#hasName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/OntoADMS.owl#hasName"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ADMS_5 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ADMS_5">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/software_system/software_system.owl#SoftwareSystem"/>
+        <rdfs:label xml:lang="en">ADMS_5</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ADMS_5_OutputFiles -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ADMS_5_OutputFiles">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelOutput"/>
+        <rdfs:label xml:lang="en">ADMS_5_OutputFiles</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#AERMOD_Files -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#AERMOD_Files">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelOutput"/>
+        <rdfs:label xml:lang="en">AERMOD_Files</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#AdditionalInputFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#AdditionalInputFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Setup"/>
+        <rdfs:label xml:lang="en">AdditionalInputFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#AdditionalModelOptions -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#AdditionalModelOptions">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ADMS_5"/>
+        <rdfs:label xml:lang="en">AdditionalModelOptions</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#AirQualityObjectives -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#AirQualityObjectives">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Output"/>
+        <rdfs:label xml:lang="en">AirQualityObjectives</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#BPT_File -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#BPT_File">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FileFormats"/>
+        <rdfs:label xml:lang="en">BPT_File</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Background -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Background">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelInput"/>
+        <rdfs:label xml:lang="en">Background</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#BuildingSettings -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#BuildingSettings">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Import"/>
+        <rdfs:label xml:lang="en">BuildingSettings</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#BuildingsFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#BuildingsFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FilesToImport"/>
+        <rdfs:label xml:lang="en">BuildingsFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#CheckImport -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#CheckImport">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Import"/>
+        <rdfs:label xml:lang="en">CheckImport</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#CloudCover -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#CloudCover">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">CloudCover</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ComprehensiveOutputFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ComprehensiveOutputFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Output"/>
+        <rdfs:label xml:lang="en">ComprehensiveOutputFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#DataEntryFromFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#DataEntryFromFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Background"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Meteorology"/>
+        <rdfs:label xml:lang="en">DataEntryFromFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#DataEntryInteractive -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#DataEntryInteractive">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Background"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Meteorology"/>
+        <rdfs:label xml:lang="en">DataEntryInteractive</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Day -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Day">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">Day</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#DepositionVelocityKnown -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#DepositionVelocityKnown">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Isotopes"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">DepositionVelocityKnown</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#DryDeposition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#DryDeposition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#PollutantOutput"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#EIT_File -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#EIT_File">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FileFormats"/>
+        <rdfs:label xml:lang="en">EIT_File</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Efflux -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Efflux">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+        <rdfs:label xml:lang="en">Efflux</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Export -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Export">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ImportAndExport"/>
+        <rdfs:label xml:lang="en">Export</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#FileFormats -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#FileFormats">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ImportAndExport"/>
+        <rdfs:label xml:lang="en">FileFormats</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#FilesToImport -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#FilesToImport">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Import"/>
+        <rdfs:label xml:lang="en">FilesToImport</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#GPT_File -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#GPT_File">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FileFormats"/>
+        <rdfs:label xml:lang="en">GPT_File</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#GriddedOutput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#GriddedOutput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Grids"/>
+        <rdfs:label xml:lang="en">GriddedOutput</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Grids -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Grids">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelInput"/>
+        <rdfs:label xml:lang="en">Grids</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#GroupContents -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#GroupContents">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Sources"/>
+        <rdfs:label xml:lang="en">GroupContents</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#GroupName -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#GroupName">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Sources"/>
+        <rdfs:label xml:lang="en">GroupName</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#GroupOutput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#GroupOutput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Output"/>
+        <rdfs:label xml:lang="en">GroupOutput</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#GroupSettings -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#GroupSettings">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Import"/>
+        <rdfs:label xml:lang="en">GroupSettings</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Groups -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Groups">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Source"/>
+        <rdfs:label xml:lang="en">Groups</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#GroupsFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#GroupsFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FilesToImport"/>
+        <rdfs:label xml:lang="en">GroupsFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Hour -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Hour">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">Hour</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Import -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Import">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ImportAndExport"/>
+        <rdfs:label xml:lang="en">Import</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ImportAndExport -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ImportAndExport">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ADMS_5"/>
+        <rdfs:label xml:lang="en">ImportAndExport</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ImportTemplates -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ImportTemplates">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FileFormats"/>
+        <rdfs:label xml:lang="en">ImportTemplates</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Interpolation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Interpolation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Meteorology"/>
+        <rdfs:label xml:lang="en">Interpolation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#IsotopeName -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#IsotopeName">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Isotopes"/>
+        <rdfs:label xml:lang="en">IsotopeName</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Isotopes -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Isotopes">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pallete"/>
+        <rdfs:label xml:lang="en">Isotopes</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#LinePlots -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#LinePlots">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelOutput"/>
+        <rdfs:label xml:lang="en">LinePlots</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#MapperProjectFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#MapperProjectFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Setup"/>
+        <rdfs:label xml:lang="en">MapperProjectFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#MassFlux -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#MassFlux">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+        <rdfs:label xml:lang="en">MassFlux</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#MetData -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#MetData">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Meteorology"/>
+        <rdfs:label xml:lang="en">MetData</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#MeteorologicalCondition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#MeteorologicalCondition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">MeteorologicalCondition</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Meteorology -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Meteorology">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelInput"/>
+        <rdfs:label xml:lang="en">Meteorology</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ModelInput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ModelInput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ADMS_5"/>
+        <rdfs:label xml:lang="en">ModelInput</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ModelOptions -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ModelOptions">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Setup"/>
+        <rdfs:label xml:lang="en">ModelOptions</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ModelOutput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ModelOutput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ADMS_5"/>
+        <rdfs:label xml:lang="en">ModelOutput</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#ModelRunReports -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#ModelRunReports">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelOutput"/>
+        <rdfs:label xml:lang="en">ModelRunReports</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#MomentumFlux -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#MomentumFlux">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+        <rdfs:label xml:lang="en">MomentumFlux</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#NumericalDataViewing -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#NumericalDataViewing">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelOutput"/>
+        <rdfs:label xml:lang="en">NumericalDataViewing</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_1244e4a2_3f01_4d4b_b518_255ab91e251b -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_1244e4a2_3f01_4d4b_b518_255ab91e251b">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <rdfs:label xml:lang="en">YStraightCoordinate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_21013baf_0f10_4449_9a03_bdca0e9894ad -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_21013baf_0f10_4449_9a03_bdca0e9894ad">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_69eb30c6_a1dd_400c_985d_6fbb9452ca29"/>
+        <rdfs:label xml:lang="en">SourceMolecularMass</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_30235331_6caf_4363_89fa_d064cf30d280 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_30235331_6caf_4363_89fa_d064cf30d280">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:label xml:lang="en">Angle</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_39f2f324_dd7d_4c61_a791_85a9dce6a567 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_39f2f324_dd7d_4c61_a791_85a9dce6a567">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_30235331_6caf_4363_89fa_d064cf30d280"/>
+        <rdfs:label xml:lang="en">SourceAngle2</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_3e498fa4_5942_47bb_984d_45294ba7b701 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_3e498fa4_5942_47bb_984d_45294ba7b701">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+        <rdfs:label xml:lang="en">HeatReleaseRate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_69eb30c6_a1dd_400c_985d_6fbb9452ca29 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_69eb30c6_a1dd_400c_985d_6fbb9452ca29">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:label xml:lang="en">MolecularMass</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_ab517f66_1bad_46f9_aa75_9531058d61d8 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_ab517f66_1bad_46f9_aa75_9531058d61d8">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+        <rdfs:label xml:lang="en">SpecificHeatCapacity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_d225c716_4aff_4d0f_bdc3_c07d5610237e -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_d225c716_4aff_4d0f_bdc3_c07d5610237e">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_30235331_6caf_4363_89fa_d064cf30d280"/>
+        <rdfs:label xml:lang="en">SourceAngle1</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_d6877f60_07af_4f16_8003_e060271169a3 -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_d6877f60_07af_4f16_8003_e060271169a3">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#Height"/>
+        <rdfs:label xml:lang="en">SourceHeight</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#OWLClass_ee65ac31_8290_4363_b6b2_f28ba6c5aa2b -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#OWLClass_ee65ac31_8290_4363_b6b2_f28ba6c5aa2b">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <rdfs:label xml:lang="en">XStraightCoordinate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Output -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Output">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelInput"/>
+        <rdfs:label xml:lang="en">Output</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PTT_File -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PTT_File">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FileFormats"/>
+        <rdfs:label xml:lang="en">PTT_File</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Pallete -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Pallete">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Setup"/>
+        <rdfs:label xml:lang="en">Palette</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PlotsInSurfer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PlotsInSurfer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelOutput"/>
+        <rdfs:label xml:lang="en">PlotsInSurfer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PolConvFactor -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PolConvFactor">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">PolConvFactor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PolEmissionRate -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PolEmissionRate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#SourceEmissions"/>
+        <rdfs:label xml:lang="en">PolEmissionRate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PollutantName -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PollutantName">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">PollutantName</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PollutantOutput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PollutantOutput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Output"/>
+        <rdfs:label xml:lang="en">PollutantOutput</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PollutantSettings -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PollutantSettings">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Import"/>
+        <rdfs:label xml:lang="en">PollutantSettings</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PollutantType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PollutantType">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Isotopes"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">PollutantType</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Pollutants -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Pollutants">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pallete"/>
+        <rdfs:label xml:lang="en">Pollutants</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PollutantsFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PollutantsFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FilesToImport"/>
+        <rdfs:label xml:lang="en">PollutantsFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#PoolOfPollutants -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#PoolOfPollutants">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">PoolOfPollutants</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Precipitation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Precipitation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">Precipitation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Project -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Project">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Setup"/>
+        <rdfs:label xml:lang="en">Project</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#RadioactivityOptions -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#RadioactivityOptions">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Setup"/>
+        <rdfs:label xml:lang="en">RadioactivityOptions</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SPT_File -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SPT_File">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FileFormats"/>
+        <rdfs:label xml:lang="en">SPT_File</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Setup -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Setup">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelInput"/>
+        <rdfs:label xml:lang="en">Setup</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Site -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Site">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Setup"/>
+        <rdfs:label xml:lang="en">Site</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SiteData -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SiteData">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Meteorology"/>
+        <rdfs:label xml:lang="en">SiteData</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SiteLatitude -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SiteLatitude">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#SiteData"/>
+        <rdfs:label xml:lang="en">SiteLatitude</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Source -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Source">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ModelInput"/>
+        <rdfs:label xml:lang="en">Source</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceActualOrNTP -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceActualOrNTP">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Sources"/>
+        <rdfs:label xml:lang="en">SourceActualOrNTP</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceData -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceData">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Source"/>
+        <rdfs:label xml:lang="en">SourceData</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceEfflux -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceEfflux">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Efflux"/>
+        <rdfs:label xml:lang="en">SourceEfflux</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceEmissions -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceEmissions">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Source"/>
+        <rdfs:label xml:lang="en">SourceEmissions</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceFilterByType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceFilterByType">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Import"/>
+        <rdfs:label xml:lang="en">SourceFilterByType</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceGeometry -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceGeometry">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Source"/>
+        <rdfs:label xml:lang="en">SourceGeometry</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceMassFlux -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceMassFlux">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MassFlux"/>
+        <rdfs:label xml:lang="en">SourceMassFlux</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceMomentumFlux -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceMomentumFlux">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MomentumFlux"/>
+        <rdfs:label xml:lang="en">SourceMomentumFlux</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceNumberOfPollutant -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceNumberOfPollutant">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Sources"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceOutput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceOutput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Output"/>
+        <rdfs:label xml:lang="en">SourceOutput</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceSelection -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceSelection">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Import"/>
+        <rdfs:label xml:lang="en">SourceSelection</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceSettings -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceSettings">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Import"/>
+        <rdfs:label xml:lang="en">SourceSettings</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceTorRHorAmbient -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceTorRHorAmbient">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Sources"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceType">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Sources"/>
+        <rdfs:label xml:lang="en">SourceType</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceVelocity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceVelocity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Velocity"/>
+        <rdfs:label xml:lang="en">SourceVelocity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourceVolumeFlux -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourceVolumeFlux">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#VolumeFlux"/>
+        <rdfs:label xml:lang="en">SourceVolumeFlux</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Sources -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Sources">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Source"/>
+        <rdfs:label xml:lang="en">Sources</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SourcesFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SourcesFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FilesToImport"/>
+        <rdfs:label xml:lang="en">SourcesFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SpecifiedPointsOutput -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SpecifiedPointsOutput">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Grids"/>
+        <rdfs:label xml:lang="en">SpecifiedPointsOutput</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#SurfaceRoughness -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#SurfaceRoughness">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#SiteData"/>
+        <rdfs:label xml:lang="en">SurfaceRoughness</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#TerminalVelocityKnown -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#TerminalVelocityKnown">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Isotopes"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">TerminalVelocityKnown</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#TimeVaryingEmissions -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#TimeVaryingEmissions">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Source"/>
+        <rdfs:label xml:lang="en">TimeVaryingEmissions</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#TotalDeposition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#TotalDeposition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#PollutantOutput"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Utilities -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Utilities">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#ADMS_5"/>
+        <rdfs:label xml:lang="en">Utilities</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#VGT_File -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#VGT_File">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#FileFormats"/>
+        <rdfs:label xml:lang="en">VGT_File</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Velocity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Velocity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+        <rdfs:label xml:lang="en">Velocity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#VolumeFlux -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#VolumeFlux">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/tensor_quantity.owl#VectorQuantity"/>
+        <rdfs:label xml:lang="en">VolumeFlux</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#WashoutCoefficient -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#WashoutCoefficient">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Isotopes"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">WashoutCoefficient</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#WashoutCoefficientA -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#WashoutCoefficientA">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Isotopes"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#WashoutCoefficientB -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#WashoutCoefficientB">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Isotopes"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">WashoutCoefficientB</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#WashoutCoefficientKnown -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#WashoutCoefficientKnown">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Isotopes"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Pollutants"/>
+        <rdfs:label xml:lang="en">WashoutCoefficientKnown</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#WeatherStation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#WeatherStation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">WeatherStation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#WetDeposition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#WetDeposition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#PollutantOutput"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#WindDirection -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#WindDirection">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">WindDirection</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#WindVelocity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#WindVelocity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#Velocity"/>
+        <rdfs:label xml:lang="en">WindVelocity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#Year -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#Year">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">Year</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#metDataFile -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/OntoADMS.owl#metDataFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/OntoADMS.owl#MetData"/>
+        <rdfs:label xml:lang="en">MetDataFile</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#cl -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoADMS.owl#cl">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#UnitOfMeasure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoADMS.owl#oktas -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoADMS.owl#oktas">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#degree -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#mm -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#mm"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

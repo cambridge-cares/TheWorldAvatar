@@ -1,0 +1,5 @@
+setlocal
+cd /d %~dp0
+python updateTxtFiles.py %1
+python simulation.py
+python updateOWLfilesFromOutputs.py

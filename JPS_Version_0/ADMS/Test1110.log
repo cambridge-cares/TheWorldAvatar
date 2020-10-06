@@ -1,0 +1,31 @@
+ ____________________________________________________________________________
+ ____________________________________________________________________________
+ ______________________________ ADMS 5.2 (5.2) ______________________________
+ _________________ Atmospheric Dispersion Modelling System __________________
+ ____________________________________________________________________________
+ ___ Copyright (C) 2016 Cambridge Environmental Research Consultants Ltd. ___
+ ____________________________________________________________________________
+ _______________ This run was made at 14:01 on the 17/11/2017 _______________
+ ____________________________________________________________________________
+  **************************************************************************
+  *                                ADMS 5.2                                *
+  *                            Version 5.2.0.0                             *
+  *                           Build number 2675                            *
+  *                             November 2016                              *
+  *                                                                        *
+  *                Atmospheric Dispersion Modelling System                 *
+  *                                                                        *
+  *                                                                        *
+  *         User Name:      Mr Martin Kleinelanghorst                      *
+  *                                                                        *
+  *         Company Name:   Cambridge Centre for Advanced Research and Educ*
+  *                                                                        *
+  *         Licence Number: A01-1630-R-AD520-SG                            *
+  *                                                                        *
+  **************************************************************************
+ INFO   : Your annual licence expires on 15/04/2018
+ 
+ SETUP MESSAGES:
+ 
+ INFO   : SHORT TERM CALCULATIONS:
+ WARNING: The met file contains an unrecognised variable name: STATION DCNN. The values given for this variable will be ignored

@@ -1,0 +1,20 @@
+{
+  "templates": {
+    "systemName" : "OSMBuildings",
+    "copyright"  : "© 3D <a href=\"https://osmbuildings.org/copyright/\">OSM Buildings</a>",
+    "theme"      : "united",
+    "linenums"   : "true",
+    "syntaxTheme": "dark"
+  },
+  "source": {
+    "include": ["src"],
+    "exclude": ["src/glx/prefix.js", "src/glx/suffix.js"]
+  },
+  "opts": {
+    "recurse": true,
+    "examples": "examples",
+    "readme": "README.md",
+    "template": "./node_modules/ink-docstrap/template",
+    "tutorials": "tutorials"
+  }
+}

@@ -1,0 +1,13 @@
+ 
+ SUMMARY OF DEPOSITION DATA:
+ 
+ 
+ Input data:
+ 
+Pollutant           ,Particle species    ,Pollutant type      ,Dep. vel.(m/s)      ,Terminal vel.(m/s)  ,Nature of gas       ,Surface res.(s/m)   ,Particle diam.(m)   ,Part. dens.(kg/m^3) ,Mass fraction       ,Washout coeff.      ,Wash. coeff. A(/s)  ,Wash. coeff. B(/s)  ,
+CO2                 ,--                  ,Gas                 ,          0.0000E+00,-----               ,-----               ,-----               ,-----               ,-----               ,-----               ,          0.0000E+00,-----               ,-----               ,
+ 
+ Output data:
+ 
+Met line/hour       ,Pollutant           ,Particle species    ,Pollutant type      ,Dep. vel.(m/s)      ,Terminal vel.(m/s)  ,Total dep.vel.(m/s) ,Washout coeff.      ,
+    1               ,CO2                 ,--                  ,Gas                 ,-----               ,-----               ,-----               ,          0.0000E+00,

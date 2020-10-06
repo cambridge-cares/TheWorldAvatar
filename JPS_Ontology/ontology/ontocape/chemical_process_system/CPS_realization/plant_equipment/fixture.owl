@@ -1,0 +1,266 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:plant="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl"/>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;fixture&apos; provides specializations of fixtures that are applicable to chemical process systems.
+The following classes and relations from other ontology modules are used within &apos;fixture&apos;:
+
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Fixture&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Multiplicity&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasNumberOfPlantItems&quot;/&gt;
+    </rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasHeatedLength -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasHeatedLength">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tube"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasHeatedLength refers to the length of a tube at which a heat transfer is achieved.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasHoleDiameter -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasHoleDiameter">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tray"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasHoleDiameter refers the diameter of a hole in a tray.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasNumberOfTubes -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasNumberOfTubes">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasNumberOfPlantItems"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasTEMAShellType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasTEMAShellType">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Shell"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TEMAShellType"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasTrayArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasTrayArea">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tray"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasTrayArea refers to the operational area of a tray.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasWeirHeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasWeirHeight">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tray"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasWeirHeight refers to the weir height of all trays in a tray column.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Jacket -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Jacket">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Fixture"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Shell"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Stirrer"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tray"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tube"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Jacket is a shell-like fixture which surrounds a vessel to provide a space which usually contains fluids for heating or cooling.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Shell -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Shell">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Fixture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasTEMAShellType"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Stirrer"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tray"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tube"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Shell is a Fixture as the shell part of a shell-tube unit in a Shell-TubeApparatus.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Stirrer -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Stirrer">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Fixture"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tray"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tube"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Stirrer is a fixture which is installed in a Vessel to improve the mixing of the fluid in the vessel through its rotation</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TEMAShellType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TEMAShellType">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tray -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tray">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Fixture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasHoleDiameter"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasTrayArea"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasWeirHeight"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tube"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Tray is a fixture which is installed in a TrayColumn to provide a stage for holding up fluids.  
+A further classification of trays is beyond the current scope of OntoCAPE.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tube -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#Tube">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Fixture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasHeatedLength"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasHeatedLength"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasHeatedLength"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Tube is a Fixture as part of a TubeBundle.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Fixture"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasNumberOfTubes"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Multiplicity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasNumberOfTubes"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Multiplicity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasNumberOfTubes"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A TubeBundle is a Fixture as part of a unit in a ShellTubeApparatus.</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

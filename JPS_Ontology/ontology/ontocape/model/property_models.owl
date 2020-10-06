@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:process_model="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontolog module 'property_models' represents  mathematical correlations for the compuation of certain PhysicalQuantities, such as vapor pressure correlations or activity coefficient models.    
+The following classes and relations from other ontology modules are used within 'property_models':
+ 
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ActivityCoefficient"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Density"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DiffusionCoefficient"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DynamicViscosity"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#FugacityCoefficient"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarEnthalpy"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarVolume"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseEquilibriumRatio"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificEnthalpy"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveThermodynamicStateVariable"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SurfaceTension"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#PropertyModel"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/&gt;
+</rdfs:comment>
+<terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+  </owl:Ontology>
+  
+  <owl:Class rdf:ID="MassTransferCoefficientModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a phase interface mass transfer coefficient.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="PhaseInterfaceTransportPropertyModel"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="HeatTransferCoefficientModel"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="IntensiveThermodynamicStateModel">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveThermodynamicStateVariable"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ThermoModel"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="SurfaceTensionModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="IntraPhaseTransportPropertyModel"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for an IntensiveThermodynamicStateVariable.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntraPhaseTransportPropertyModel">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SurfaceTensionModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a TransportPhenomenaProperty</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="HomogeneousReactionRateCoefficientModel">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="AdsorptionRateCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="HeterogeneousReactionRateCoefficientModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ChemicalKineticsPropertyModel"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a chemical reaction rate coefficient</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="SpecificGibbsFreeEnergyModel">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of the SpecificGibbsFreeEnergy.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="SpecificEnthalpyModel">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="PartialMolarVolumeModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="AdsorptionEquilibriumConstantModel"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of the SpecificEnthalpy.</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ActivityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="VapourPressureModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificEnthalpy"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="FugacityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ReactionEquilibriumConstantModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="DensityModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="HeatCapacityModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatTransferCoefficientModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a heat transfer coefficient.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseInterfaceTransportPropertyModel"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#MassTransferCoefficientModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of Density.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Density"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseInterfaceTransportPropertyModel">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ChemicalKineticsPropertyModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a phase interface transport coefficient.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#PropertyModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of the PartialMolarVolume.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarVolume"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="ViscosityModel">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ThermalConductivityModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="MassDiffusionCoefficientModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntraPhaseTransportPropertyModel"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DynamicViscosity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the DynamicViscosity.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a reaction equilibrium constant.</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for an adsorption equilibrium constant.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of the heat capacity.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of the vapor pressure.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionRateCoefficientModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a surface reaction rate coefficient.</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeterogeneousReactionRateCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HomogeneousReactionRateCoefficientModel"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ChemicalKineticsPropertyModel"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermalConductivityModel">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ViscosityModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#MassDiffusionCoefficientModel"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the ThermalConductivity.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntraPhaseTransportPropertyModel"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ChemicalKineticsPropertyModel">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseInterfaceTransportPropertyModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#PropertyModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a chemical kinetics coefficient.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of FugacityCoefficient.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#FugacityCoefficient"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SurfaceTensionModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for computation of the SurfaceTension.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntraPhaseTransportPropertyModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SurfaceTension"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#MassDiffusionCoefficientModel">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for an intra-phase mass DiffusionCoefficient.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ViscosityModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermalConductivityModel"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntraPhaseTransportPropertyModel"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DiffusionCoefficient"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for an ActivityCoefficient.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ActivityCoefficient"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarEnthalpy"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of the PartialMolarEnthalpy.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeterogeneousReactionRateCoefficientModel">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ChemicalKineticsPropertyModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for an adsorption equilibrium constant.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionRateCoefficientModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HomogeneousReactionRateCoefficientModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#PropertyModel"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for a PhaseSystemProperty not relevant to rates.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ChemicalKineticsPropertyModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseInterfaceTransportPropertyModel"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PhaseEquilibriumRatioModel">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#HeatCapacityModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#VapourPressureModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarVolumeModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#DensityModel"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#IntensiveThermodynamicStateModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ReactionEquilibriumConstantModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ActivityCoefficientModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#PartialMolarEnthalpyModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#FugacityCoefficientModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PropertyModel that provides a correlation for the computation of a PhaseEquilibriumRatio.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariable"/>
+              <owl:Restriction>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseEquilibriumRatio"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#correspondsToQuantity"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#AdsorptionEquilibriumConstantModel"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#SpecificEnthalpyModel"/>
+  </owl:Class>
+  <ActivityCoefficientModel rdf:ID="NRTL"/>
+  <ActivityCoefficientModel rdf:ID="UNIFAC"/>
+  <VapourPressureModel rdf:ID="Antoine"/>
+  <ActivityCoefficientModel rdf:ID="WILSON"/>
+</rdf:RDF>

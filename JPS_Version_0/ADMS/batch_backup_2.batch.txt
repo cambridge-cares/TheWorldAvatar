@@ -1,0 +1,7 @@
+backupBat
+REM Created by the Batch File Creator 2017-Jan-12
+cd C:\TOMCAT\webapps\ROOT\ADMSTEST
+java -jar ADMS.jar
+python "cobbling.pyw" "weather_data.csv" "test.met" "test.APL"
+"C:\Program Files (x86)\CERC\ADMS 5\ADMSModel.exe" /e2 /ADMS "test.APL"
+python GSTReader.py

@@ -1,0 +1,38 @@
+# VERSION "$Id: Makeinclude.OSX_x86 1 2017-06-10 18:05:20Z coats $"
+#
+# Created 1/2008 by Debra Baker.
+# This file has been tested on a Mac with Darwin Kernel Version
+# 9.1.0, Intel processors, and OSX 10.5 (Leopard) compiled with
+# gfortran and gcc. If you use a Mac PPC, fink has a version of
+# ioapi at sourceforge.net. If you use netCDF v. 3.6.2 or higher,
+# when you configure it DO NOT USE 
+#
+#          --enable-shared
+#
+# because it excludes fortran symbols from libnetcdf.a.
+
+AR   = ar
+CC   = gcc
+FC   = gfortran
+M4   = m4
+CPP  = cpp
+LINK = gcc
+
+## Module-include-directory command
+MODI = -I
+
+MFLAGS    = -march=i386
+
+OMPFLAGS  = 
+OMPLIBS   = 
+PVMLIBS   = 
+COPTFLAGS = -O2 -g -fno-common ${MFLAGS}
+FOPTFLAGS = -O2 -g ${MFLAGS}
+FPPFLAGS  = -DF90=1
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = -DF90=1 -DAUTO_ARRAYS=1 -DMACH=1
+PARFLAGS  = 
+ARCHLIB   = 
+
+M4DEFFILE = 
+PVMLIBS   = 

@@ -1,0 +1,1669 @@
+{
+  "dataset": {
+    "id": "qald-8-test-multilingual"
+  },
+  "questions": [
+    {
+      "id": "1",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the alma mater of the chancellor of Germany Angela Merkel?",
+          "keywords": "Angela Merkel"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Almamater WHERE { dbr:Angela_Merkel dbo:almaMater ?Almamater }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Leipzig_University"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "answertype": "number",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "How large is the area of UK?",
+          "keywords": "area,  UK"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?area WHERE { dbr:United_Kingdom dbo:areaTotal ?area }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "2.42495e+11"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Who is the author of the interpretation of dreams?",
+          "keywords": "Dreams"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Author WHERE { dbr:The_Interpretation_of_Dreams dbo:author ?Author }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Sigmund_Freud"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the birth name of Adele?",
+          "keywords": "Adele"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?bn WHERE { dbr:Adele dbo:birthName ?bn }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Adele Laurie Blue Adkins"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "answertype": "resource",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What are the top selling luxury vehicle brands in Germany?",
+          "keywords": "top selling,  luxury vehicle brands"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dbc: <http://dbpedia.org/resource/Category:> SELECT ?company WHERE { ?company dct:subject dbc:Car_manufacturers_of_Germany ; dbo:equity ?equity ; dbo:netIncome ?netIncome ; dbo:production ?production ; dbo:revenue ?revenue } ORDER BY DESC(?equity)"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/BMW"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Audi"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "answertype": "number",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "How many awards has Bertrand Russell?",
+          "keywords": "Bertrand Russell"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT (COUNT(?Awards) AS ?Counter) WHERE { dbr:Bertrand_Russell dbp:awards ?Awards }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "5"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Who is Dan Jurafsky?",
+          "keywords": "Dan Jurafsky"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Dan WHERE {  VALUES ?Dan {dbr:Daniel_Jurafsky } }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Daniel_Jurafsky"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "answertype": "number",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "When will start the final match of the football world cup 2018?",
+          "keywords": "football world cup 2018"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Date WHERE { dbr:2018_FIFA_World_Cup dbp:date ?Date } OFFSET 24 LIMIT 1"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "2018-07-15"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "answertype": "number",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "how much is the elevation of Düsseldorf Airport ?",
+          "keywords": "Düsseldorf Airport"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?ele WHERE { dbr:Düsseldorf_Airport dbo:elevation ?ele } LIMIT 1"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "44.8"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "answertype": "number",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "how much is the total population of  european union?",
+          "keywords": "european union"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?europop WHERE { dbr:European_Union dbo:populationTotal ?europop }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "510056011"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "answertype": "number",
+      "aggregation": true,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "when was the founding date of french fifth republic?",
+          "keywords": "french fifth republic"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?ff WHERE { dbr:French_Fifth_Republic dbo:foundingDate ?ff }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "1958-10-04"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Who are the founders of  BlaBlaCar?",
+          "keywords": "blablacar"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?founder WHERE { dbr:BlaBlaCar dbp:founders ?founder }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Frédéric Mazzella  Nicolas Brusson  Francis Nappez"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "how many foreigners speak German?",
+          "keywords": "German language"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Ger_lang WHERE { dbr:German_language dbp:speakers ?Ger_lang } OFFSET 1 LIMIT 1"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "as a foreign language: 75–100 million"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Where is the birthplace of Goethe?",
+          "keywords": "Goethe"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Goethe WHERE { dbr:Johann_Wolfgang_von_Goethe dbo:birthPlace ?Goethe }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Holy_Roman_Empire"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Frankfurt"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Frankfurt-am-Main"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "answertype": "string",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Where is the origin of Carolina reaper?",
+          "keywords": "Carolina reaper, origin"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?uri WHERE { dbr:Carolina_Reaper dbo:origin ?uri }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Fort_Mill,_South_Carolina"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "answertype": "number",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "How much is the population of Mexico City ?",
+          "keywords": "mexico city"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?Mexico_City WHERE { dbr:Mexico_City dbo:populationTotal ?Mexico_City }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "8918653"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the nick name of Baghdad?",
+          "keywords": "Baghdad"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT ?nm WHERE { dbr:Baghdad foaf:nick ?nm }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "'The City of Peace'"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Who is the novelist of the work a song of ice and fire?",
+          "keywords": "a song of ice and fire"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?Novelist WHERE { dbr:A_Song_of_Ice_and_Fire dbp:author ?Novelist }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/George_R._R._Martin"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "answertype": "number",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the percentage of area water in Brazil?",
+          "keywords": "Brazil"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?percentage WHERE { dbr:Brazil dbo:percentageOfAreaWater ?percentage }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "0.65"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "22",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "How much is the population of Iraq?",
+          "keywords": "Iraq, population"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?pIraq WHERE { dbr:Iraq dbo:populationTotal ?pIraq }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "37056169"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "24",
+      "answertype": "number",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the population of Cairo?",
+          "keywords": "population,  Cairo"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?pop WHERE { dbr:Cairo dbo:populationTotal ?pop }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "10230350"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "25",
+      "answertype": "number",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "How much is the population density rank of Germany?",
+          "keywords": "Germany"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?rank WHERE { dbr:Germany dbp:populationDensityRank ?rank }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "58"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the relation between Resource Description Framework and Web Ontology Language?",
+          "keywords": "Web Ontology Language"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?rdf_owl WHERE { dbr:Web_Ontology_Language dbo:abstract ?rdf_owl } LIMIT 1"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "The Web Ontology Language (OWL) is a family of knowledge representation languages for authoring ontologies. Ontologies are a formal way to describe taxonomies and classification networks, essentially defining the structure of knowledge for various domains: the nouns representing classes of objects and the verbs representing relations between the objects. Ontologies resemble class hierarchies in object-oriented programming but there are several critical differences. Class hierarchies are meant to represent structures used in source code that evolve fairly slowly (typically monthly revisions) whereas ontologies are meant to represent information on the Internet and are expected to be evolving almost constantly. Similarly, ontologies are typically far more flexible as they are meant to represent information on the Internet coming from all sorts of heterogeneous data sources. Class hierarchies on the other hand are meant to be fairly static and rely on far less diverse and more structured sources of data such as corporate databases. The OWL languages are characterized by formal semantics. They are built upon a W3C XML standard for objects called the Resource Description Framework (RDF). OWL and RDF have attracted significant academic, medical and commercial interest. In October 2007, a new W3C working group was started to extend OWL with several new features as proposed in the OWL 1.1 member submission. W3C announced the new version of OWL on 27 October 2009. This new version, called OWL 2, soon found its way into semantic editors such as Protégé and semantic reasoners such as Pellet, RacerPro, FaCT++ and HermiT. The OWL family contains many species, serializations, syntaxes and specifications with similar names. OWL and OWL2 are used to refer to the 2004 and 2009 specifications, respectively. Full species names will be used, including specification version (for example, OWL2 EL). When referring more generally, OWL Family will be used."
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "27",
+      "answertype": "number",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "How large is the total area of North Rhine-Westphalia?",
+          "keywords": "Nord Rhine Westphalia, total area"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?tarea WHERE { dbr:North_Rhine-Westphalia dbo:areaTotal ?tarea }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "c"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "c": {
+                  "type": "literal",
+                  "value": "3.40841e+10"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "28",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the original title of the interpretation of dreams?",
+          "keywords": "Dreams"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT ?title WHERE { dbr:The_Interpretation_of_Dreams foaf:name ?title }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "The Interpretation of Dreams"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Die Traumdeutung"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "30",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Who are the writers of the Wall album of Pink Floyd?",
+          "keywords": "the wall"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?writers WHERE { dbr:The_Wall dbp:writer ?writers }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Gilmour,"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Gilmour"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Waters, Ezrin"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Waters,"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Waters"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "31",
+      "answertype": "date",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "When was the death  of  Shakespeare?",
+          "keywords": "Shakespeare"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?x WHERE { dbr:William_Shakespeare dbo:deathDate ?x } LIMIT 1"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "date"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "date": {
+                  "type": "literal",
+                  "value": "1616-04-23"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "32",
+      "answertype": "string",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "With how many countries Iran has borders?",
+          "keywords": "Iran,  borders"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?border WHERE { dbr:Geography_of_Iran dbp:borders ?border } LIMIT 8"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Pakistan"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Turkey"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Afghanistan"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Land_borders"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Turkmenistan"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Iraq"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Armenia"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Azerbaijan"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "34",
+      "answertype": "resource",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the smallest city by area in Germany?",
+          "keywords": "smallest,  city,  Germany"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX skos: <http://www.w3.org/2004/02/skos/core#> PREFIX dbc: <http://dbpedia.org/resource/Category:> PREFIX dct: <http://purl.org/dc/terms/> SELECT ?city WHERE { ?m skos:broader dbc:Cities_in_Germany . ?city dct:subject ?m ; dbo:areaTotal ?area } ORDER BY ?area LIMIT 1"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Eckernförde"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "35",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Which beer brewing comapnies are located in North-Rhine Westphalia?",
+          "keywords": "brewing companies,  North rhine Westphalia"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dbc: <http://dbpedia.org/resource/Category:> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT ?company WHERE { ?company dct:subject dbc:Companies_based_in_North_Rhine-Westphalia ; rdf:type dbo:Brewery }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Veltins"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Krombacher_Brauerei"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Warsteiner"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Diebels"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "36",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the largest city in america?",
+          "keywords": "largest,  city,  america"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?lcity WHERE { dbr:United_States dbo:largestCity ?lcity }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/New_York_City"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "37",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Who is the current federal minister of finance in Germany?",
+          "keywords": "federal minister of finance,  germany"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> SELECT ?leader WHERE { <http://dbpedia.org/resource/Federal_Ministry_of_Finance_(Germany)> dbo:leader ?leader }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "http://dbpedia.org/resource/Wolfgang_Schäuble"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "38",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the highest mountain in the Bavarian Alps?",
+          "keywords": "highest,  mountain,  Bavarian Alps"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?m  WHERE { dbr:Bavarian_Alps dbp:highest ?m} "
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Zugspitze"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "40",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Who is 8th president of US?",
+          "keywords": "8th President,  USA"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?name WHERE { dbr:8th_President_of_the_United_States dbo:wikiPageRedirects ?link . ?link dbp:name ?name }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Martin Van Buren"
+                }
+              },
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Van Buren"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "41",
+      "answertype": "resource",
+      "aggregation": true,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Where is the most deep point in the ocean?",
+          "keywords": "deepest point,  ocean"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?point WHERE { dbr:Extreme_points_of_Earth dct:subject ?x . ?point dct:subject ?x ; rdfs:comment ?comment FILTER ( lang(?comment) = \"en\" ) } OFFSET 13 LIMIT 1"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Challenger_Deep"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "42",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "In which state Penn State University is located?",
+          "keywords": "Penn State University"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?s WHERE { dbr:Pennsylvania_State_University dbo:state ?s }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Pennsylvania"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "43",
+      "answertype": "string",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "Which species does an elephant belong?",
+          "keywords": "species,  elephant"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbr: <http://dbpedia.org/resource/> PREFIX dbp: <http://dbpedia.org/property/> SELECT ?species WHERE { dbr:Elephant dbp:species ?species }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "string"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "string": {
+                  "type": "literal",
+                  "value": "Proboscidea"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "44",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": false,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is Donald Trump's main business?",
+          "keywords": "Donald Trump's,  business"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?owner WHERE { ?owner dbo:owner dbr:Donald_Trump }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Trump_Hotel_Las_Vegas"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Trump_World_Tower"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/The_Trump_Building"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/The_Trump_Organization"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "45",
+      "answertype": "resource",
+      "aggregation": true,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What is the last work of Dan Brown?",
+          "keywords": "last work,  Dan Brown"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbp: <http://dbpedia.org/property/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?book ?date WHERE { ?book dbo:author dbr:Dan_Brown . ?book dbp:releaseDate|dbo:publicationDate ?date } ORDER BY DESC(?date)"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Deception_Point"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/The_Lost_Symbol"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Inferno_(Brown_novel)"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/The_Da_Vinci_Code"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Digital_Fortress"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "46",
+      "answertype": "resource",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "What other books have been written by the author of The Fault in Our Stars?",
+          "keywords": "books,  author,  The Fault in Our Stars"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> SELECT ?books WHERE { ?books dbo:author <http://dbpedia.org/resource/John_Green_(author)> }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "uri"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Will_Grayson,_Will_Grayson"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/An_Abundance_of_Katherines"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Looking_for_Alaska"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/The_Fault_in_Our_Stars"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Let_It_Snow:_Three_Holiday_Romances"
+                }
+              },
+              {
+                "uri": {
+                  "type": "uri",
+                  "value": "http://dbpedia.org/resource/Paper_Towns"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "47",
+      "answertype": "date",
+      "aggregation": false,
+      "onlydbo": true,
+      "hybrid": false,
+      "question": [
+        {
+          "language": "en",
+          "string": "When was the last episode of the TV series Friends aired?",
+          "keywords": "last episode,  Friends Tv show"
+        }
+      ],
+      "query": {
+        "sparql": "PREFIX dbo: <http://dbpedia.org/ontology/> PREFIX dbr: <http://dbpedia.org/resource/> SELECT ?date WHERE { dbr:Friends dbo:completionDate ?date }"
+      },
+      "answers": [
+        {
+          "head": {
+            "vars": [
+              "date"
+            ]
+          },
+          "results": {
+            "bindings": [
+              {
+                "date": {
+                  "type": "literal",
+                  "value": "2004-05-06"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:p1="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/apparatus/machine.owl#" xmlns:plant="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#" xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:swrl="http://www.w3.org/2003/11/swrl#" xmlns:swrlb="http://www.w3.org/2003/11/swrlb#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#" xml:base="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl">
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'machine' provides specializations of machines applicable to a chemical process system.
+The following classes and relations from other ontology modules are used within 'machine':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Machine"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/&gt;
+    </rdfs:comment>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/apparatus/machine.owl#hasPumpHead -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/apparatus/machine.owl#hasPumpHead">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasOutletPressure -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasOutletPressure">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasPressureDrop -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasPressureDrop">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasPumpHead -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasPumpHead">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasPumpHead refers the pump head a pump is design for.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Compressor -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Compressor">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Pump -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Pump">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasPumpHead"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasOutletPressure"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Valve -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Valve">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Machine"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasPressureDrop"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#hasOutletPressure"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#QuantitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Thing">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Pump is a Machine which is used to compress or move fluid materials. 
+A further classification of pumps is beyond the current scope of OntoCAPE.</rdfs:comment>
+    </rdf:Description>
+</rdf:RDF><!-- Generated by the OWL API (version 3.4.2) http://owlapi.sourceforge.net -->

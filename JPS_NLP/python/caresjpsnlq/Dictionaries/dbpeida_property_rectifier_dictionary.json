@@ -1,0 +1,7 @@
+{
+"http://dbpedia.org/property/gdp": "http://dbpedia.org/property/gdpPpp",
+"http://dbpedia.org/ontology/gdp": "http://dbpedia.org/property/gdpPpp",
+"http://dbpedia.org/property/populationTotal": "http://dbpedia.org/ontology/populationTotal",
+"http://dbpedia.org/ontology/gdpPpp": "http://dbpedia.org/property/gdpPpp",
+"http://dbpedia.org/property/areaTotal": "http://dbpedia.org/ontology/areaTotal"
+}

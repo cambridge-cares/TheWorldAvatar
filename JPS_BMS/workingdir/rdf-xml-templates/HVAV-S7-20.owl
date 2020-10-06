@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:ns3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:ns1="http://www.theworldavatar.com/BuildingItem.owl#"
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:technical_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
+  xmlns:ns4="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
+>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/BuildingItem.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/BuildingDuctbehavior.owl"/>
+  </owl:Ontology>
+  <ns1:WaterCoil rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#HVAV-S/7-20">
+    <system:hasProperty>
+      <system:Property rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#HVAV-S/7-20_HotWaterFeedback">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#V_HVAV-S/7-20_HotWaterFeedback"/>
+        <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#HVAV-S/7-20_HWFeedback_sensor1"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </system:Property>
+    </system:hasProperty>
+    <technical_system:realizes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#Heating1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+      </owl:NamedIndividual>
+    </technical_system:realizes>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#HVAV-S/7-20_Coordinates">
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#x_HVAV-S/7-20"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#y_HVAV-S/7-20"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+      </owl:NamedIndividual>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <system:hasDirectSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#HVAV-S/7-20_HWFeedback_sensor1">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/HVAV-S7-20_HWFeedback_sensor1.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+      </owl:NamedIndividual>
+    </system:hasDirectSubsystem>
+    <system:hasProperty>
+      <system:Property rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#HVAV-S/7-20_HotWaterControl">
+        <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#HVAV-S/7-20_HWControl_sensor1"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#V_HVAV-S/7-20_HotWaterControl"/>
+      </system:Property>
+    </system:hasProperty>
+    <system:hasDirectSubsystem>
+      <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#HVAV-S/7-20_HWControl_sensor1">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/HVAV-S7-20_HWControl_sensor1.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns3:Q-Sensor>
+    </system:hasDirectSubsystem>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns1:WaterCoil>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#V_HVAV-S/7-20_HotWaterControl">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#ValueOf_y_HVAV-S/7-20">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#x_HVAV-S/7-20">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#ValueOf_x_HVAV-S/7-20">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#V_HVAV-S/7-20_HotWaterFeedback">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#y_HVAV-S/7-20">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/HVAV-S7-20.owl#ValueOf_y_HVAV-S/7-20"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+  </owl:NamedIndividual>
+</rdf:RDF>
