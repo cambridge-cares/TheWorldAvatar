@@ -1,0 +1,27 @@
+# VERSION "$Id: Makeinclude.AIX_ 1 2017-06-10 18:05:20Z coats $"
+#
+#  AIX with Feldman underscore-style name mangling
+
+AR   = ar
+CC   = xlc_r -DFLDMN=1
+FC   = xlf_r
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+MFLAGS    = -qextname -qarch=auto -qtune=auto
+
+OMPFLAGS  = 
+OMPLIBS   = -lxlsmp
+COPTFLAGS = -O3 -DAUTO_ARRAYS=1 -DF90=1 -DFLDMN=1
+FOPTFLAGS = -O3 -qnosave -qfixed -qsmp=noauto -bstatic -bmaxdata:0x70000000 ${MFLAGS}
+FPPFLAGS  = -WF,-DAUTO_ARRAYS=1,-DF90=1,-D_AIX,-DFLDMN=1 ${MFLAGS}
+FSFLAGS   = -qsave
+ARCHFLAGS = 
+PARFLAGS  =
+ARCHLIB   = 
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

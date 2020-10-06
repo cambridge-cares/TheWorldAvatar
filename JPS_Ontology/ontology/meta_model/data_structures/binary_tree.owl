@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:fc="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;binary_tree&apos; defines a design pattern for the implementation of binary trees.
+The following classes and relations from other ontology modules are used within &apos;array&apos;:
+ 
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation&quot;/&gt;
+    
+    </rdfs:comment>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasAncestor -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasAncestor">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasDescendent"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ancestors of a Node are the Nodes that are traversed when moving up the tree (i.e., the Node’s parent, grandparent, etc.).</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasChild -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasChild">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasDescendent"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasChild points to the children of a Node; it subsumes the relations hasLeftChild and hasRightChild.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasDescendent -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasDescendent">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The descendents of a Node are the Nodes that are traversed when moving down the tree (i.e., the Node’s children, grandchildren, etc.).</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasLeftChild -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasLeftChild">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasChild"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#isLeftChildOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasLeftChild links a parent Node to its left child Node.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasAncestor"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasParent denotes the parent of a Node.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasRightChild -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasRightChild">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasChild"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#isRightChildOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasRightChild links a parent Node to its right child Node.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#isLeftChildOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#isLeftChildOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#isRightChildOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#isRightChildOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation isRightChildOf points from the right child Node to its parent Node.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#InternalNode -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#InternalNode">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasChild"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasChild"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Leaf"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#RootNode"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An InternalNode is a Node that has one parent and at least one child.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Leaf -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Leaf">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasChild"/>
+                        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:cardinality>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#RootNode"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Leaf is a Node without any children.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#InternalNode"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Leaf"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#RootNode"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasLeftChild"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasRightChild"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasLeftChild"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasRightChild"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Node is the basic element of a binary tree. It can be linked to up to two child Nodes.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#RootNode -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#RootNode">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasParent"/>
+                        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:cardinality>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#hasChild"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A RootNode is the root element of a binary tree. All other Nodes are descendents of the RootNode.</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

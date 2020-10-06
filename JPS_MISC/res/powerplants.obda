@@ -1,0 +1,172 @@
+[PrefixDeclaration]
+:					http://www.theworldavatar.com/kb/powerplants/
+owl:				http://www.w3.org/2002/07/owl#
+rdf:				http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:				http://www.w3.org/XML/1998/namespace
+xsd:				http://www.w3.org/2001/XMLSchema#
+rdfs:				http://www.w3.org/2000/01/rdf-schema#
+terms:				http://purl.org/dc/terms/
+dbpediaresource: 	http://dbpedia.org/resource/
+powerplant:			http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#
+system:				http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#
+system_v1:			http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#
+coord:				http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#
+technical_system:	http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#
+system_realization:	http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#
+system_performance: http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#
+spacetime:			http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#
+spacetimeext:		http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#
+derived_SI_units:	http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#
+org:				http://www.theworldavatar.com/kb/organizations/
+
+[MappingDeclaration] @collection [[
+
+mappingId	urn:MapOrganization
+target		org:organization_{id} a system_v1:Organization ; system_v1:hasName {owner} . 
+source		SELECT id, owner FROM powerplants
+
+mappingId	urn:MapCoordinateXValue
+target		:powerplant_{id}_xv a coord:CoordinateValue ; system:numericalValue {x} .
+source		SELECT id, x FROM powerplants
+
+mappingId	urn:MapCoordinateX
+target		:powerplant_{id}_x a spacetime:StraightCoordinate ; system:hasValue :powerplant_{id}_xv .
+source		SELECT id FROM powerplants
+
+mappingId	urn:MapCoordinateYValue
+target		:powerplant_{id}_yv a coord:CoordinateValue ; system:numericalValue {y} .
+source		SELECT id, y FROM powerplants
+
+mappingId	urn:MapCoordinateY
+target		:powerplant_{id}_y a spacetime:StraightCoordinate ; system:hasValue :powerplant_{id}_yv .
+source		SELECT id FROM powerplants
+
+mappingId 	urn:MapCoordinates
+target		:powerplant_{id}_CoordSyst a spacetimeext:ProjectedCoordinateSystem ; spacetimeext:hasProjectedCoordinate_x :powerplant_{id}_x ; spacetimeext:hasProjectedCoordinate_y :powerplant_{id}_y .
+source		SELECT id FROM powerplants
+
+mappingId	urn:MapPowerplant
+target		:powerplant_{id} a powerplant:PowerPlant ; system_v1:isOwnedBy org:organization_{id} ; spacetimeext:hasGISCoordinateSystem :powerplant_{id}_CoordSyst .
+source		SELECT id, owner FROM powerplants
+
+mappingId	urn:MapDesignCapacityValue
+target		:designcapacity_{id}_v a system:ScalarValue ; system:numericalValue {capacity} ; system:hasUnitOfMeasure derived_SI_units:MW .
+source		SELECT id, capacity FROM powerplants
+
+mappingId 	urn:MapDesignCapacity
+target		:designcapacity_{id} a system_realization:DesignCapacity ; system:hasValue :designcapacity_{id}_v .
+source 		SELECT id FROM powerplants
+
+mappingId	urn:MapPowerplantCapacity
+target		:powerplant_{id} system_realization:designCapacity :designcapacity_{id} .
+source		SELECT id, capacity FROM powerplants
+
+mappingId	urn:MapYearValue
+target		:year_{id}_v a system:ScalarValue ; system:numericalValue {year} .
+source		SELECT id, year FROM powerplants
+
+mappingId	urn:Year
+target		:year_{id} a powerplant:YearOfBuilt ; system:hasValue :year_{id}_v .
+source		SELECT id FROM powerplants
+
+mappingId	urn:MapPowerplantYear
+target		:powerplant_{id} powerplant:hasYearOfBuilt :year_{id} .
+source		SELECT id FROM powerplants
+
+mappingId	urn:MapPowerplantAddress
+target		:powerplant_{id} system:hasAddress dbpediaresource:{country} .
+source		SELECT id, country FROM powerplants
+
+mappingId	urn:MapPowerGenerationPrimaryFuelAnthracite
+target		:powergen_{id} powerplant:consumesPrimaryFuel powerplant:Anthracite .
+source		SELECT id FROM powerplants WHERE fuel='anthracite'
+
+mappingId	urn:MapPowerGenerationPrimaryFuelBituminous
+target		:powergen_{id} powerplant:consumesPrimaryFuel powerplant:Bituminous .
+source		SELECT id FROM powerplants WHERE fuel='bituminous'
+
+mappingId	urn:MapPowerGenerationPrimaryFuelCoal
+target		:powergen_{id} powerplant:consumesPrimaryFuel powerplant:Coal .
+source		SELECT id FROM powerplants WHERE fuel='coal'
+
+mappingId	urn:MapPowerGenerationPrimaryFuelCoalBiomass
+target		:powergen_{id} powerplant:consumesPrimaryFuel powerplant:CoalBiomass .
+source		SELECT id FROM powerplants WHERE fuel='coal_biomass'
+
+mappingId	urn:MapPowerGenerationPrimaryFuelLignite
+target		:powergen_{id} powerplant:consumesPrimaryFuel powerplant:Lignite .
+source		SELECT id FROM powerplants WHERE fuel='lignite'
+
+mappingId	urn:MapPowerGenerationPrimaryFuelNaturalGas
+target		:powergen_{id} powerplant:consumesPrimaryFuel powerplant:NaturalGas .
+source		SELECT id FROM powerplants WHERE fuel='natural_gas'
+
+mappingId	urn:MapPowerGenerationPrimaryFuelOil
+target		:powergen_{id} powerplant:consumesPrimaryFuel powerplant:Oil .
+source		SELECT id FROM powerplants WHERE fuel='oil'
+
+mappingId	urn:MapPowerGenerationPrimaryFuelSubbituminous
+target		:powergen_{id} powerplant:consumesPrimaryFuel powerplant:Subbituminous .
+source		SELECT id FROM powerplants WHERE fuel='subbituminous'
+
+mappingId	urn:MapAnnualGeneration
+target		:powergen_{id} powerplant:hasAnnualGeneration :powergen_{id}_anngen .
+source		SELECT id FROM powerplants
+
+mappingId	urn:MapPowerGenerationAnnualGenerationValue
+target		:powergen_{id}_anngen_v a system:ScalarValue ; system:numericalValue {anngen} ; system:hasUnitOfMeasure derived_SI_units:MWh .
+source		SELECT id, anngen FROM powerplants
+
+mappingId	urn:MapPowerGenerationAnnualGeneration
+target		:powergen_{id}_anngen system:hasValue :powergen_{id}_anngen_v .
+source		SELECT id FROM powerplants
+
+mappingId	urn:MapPowerGenerationTechnologyCCGT
+target		:powergen_{id} powerplant:usesGenerationTechnology powerplant:CombinedCycleGasTurbine .
+source		SELECT id, technology FROM powerplants WHERE technology='CCGT'
+
+mappingId	urn:MapPowerGenerationTechnologyCogeneration
+target		:powergen_{id} powerplant:usesGenerationTechnology powerplant:Cogeneration .
+source		SELECT id, technology FROM powerplants WHERE technology='cogeneration'
+
+mappingId	urn:MapPowerGenerationTechnologyGasEngine
+target		:powergen_{id} powerplant:usesGenerationTechnology powerplant:GasEngine .
+source		SELECT id, technology FROM powerplants WHERE technology='engine'
+
+mappingId	urn:MapPowerGenerationTechnologyOpenCycleGasTurbine
+target		:powergen_{id} powerplant:usesGenerationTechnology powerplant:OpenCycleGasTurbine .
+source		SELECT id, technology FROM powerplants WHERE technology='OCGT'
+
+mappingId	urn:MapPowerGenerationTechnologyOpenCycleSubCriticalThermal
+target		:powergen_{id} powerplant:usesGenerationTechnology powerplant:SubCriticalThermal .
+source		SELECT id, technology FROM powerplants WHERE technology='subcritical'
+
+mappingId	urn:MapPowerGenerationTechnologyOpenCycleSuperCriticalThermal
+target		:powergen_{id} powerplant:usesGenerationTechnology powerplant:SuperCriticalThermal .
+source		SELECT id, technology FROM powerplants WHERE technology='supercritical'
+
+mappingId	urn:MapPowerGenerationTechnologyOpenCycleUltraSuperCriticalThermal
+target		:powergen_{id} powerplant:usesGenerationTechnology powerplant:UltraSuperCriticalThermal .
+source		SELECT id, technology FROM powerplants WHERE technology='ultrasupercritical'
+
+mappingId	urn:MapPowerGeneration
+target		:powergen_{id} a powerplant:PowerGeneration ; powerplant:hasAnnualGeneration :powergen_{id}_anngen .
+source		SELECT id FROM powerplants
+
+mappingId	urn:MapEmissionValue
+target		:emission_{id}_v a system:ScalarValue ; system:numericalValue {emission} ; system:hasUnitOfMeasure derived_SI_units:ton_per_hr .
+source		SELECT id, emission FROM powerplants
+
+mappingId 	urn:MapEmission
+target		:emission_{id} a system_performance:CO2_emission ; system:hasValue :emission_{id}_v .
+source 		SELECT id FROM powerplants
+
+mappingId	urn:MapPowerGenerationEmission
+target		:powergen_{id} system_performance:hasEmission :emission_{id} .
+source		SELECT id FROM powerplants
+
+mappingId	urn:MapPowerplantPowerGeneration
+target		:powerplant_{id} technical_system:realizes :powergen_{id} .
+source		SELECT id FROM powerplants
+
+]]

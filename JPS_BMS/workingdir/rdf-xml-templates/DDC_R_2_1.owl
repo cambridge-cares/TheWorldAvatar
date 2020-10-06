@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:ns2="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:ns1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#"
+  xmlns:ns3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_R_2_1.owl#DDC_R_2_1">
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#DDC_R_2_1_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/DDC_R_2_1.owl#x_DDC_R_2_1"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/DDC_R_2_1.owl#y_DDC_R_2_1"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </space_and_time_extended:GISCoordinateSystem>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#St-006_Pressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_R_2_1.owl#V_St-006_Pressure_SP"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#St-006_Temperature_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_R_2_1.owl#V_St-006_Temperature_SP"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#St-004_Temperature_SP">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#SetPoints"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_R_2_1.owl#V_St-004_Temperature_SP"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+  </rdf:Description>
+  <ns1:ProcessControlSystem rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#DDC_R_2_1">
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_R_2_1.owl#St-004_Temperature_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_St-004_Temperature_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_R_2_1.owl#St-006_Pressure_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_St-006_Pressure_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <system:hasProperty>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_R_2_1.owl#St-006_Temperature_SP">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_St-006_Temperature_SP"/>
+      </rdf:Description>
+    </system:hasProperty>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_R_2_1.owl#DDC_R_2_1_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#x_DDC_R_2_1"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#y_DDC_R_2_1"/>
+      </rdf:Description>
+    </space_and_time_extended:hasGISCoordinateSystem>
+  </ns1:ProcessControlSystem>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#x_DDC_R_2_1">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_R_2_1.owl#V_x_DDC_R_2_1"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_y_DDC_R_2_1">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </owl:NamedIndividual>
+  <ns3:StraightCoordinate rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#y_DDC_R_2_1">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/DDC_R_2_1.owl#V_y_DDC_R_2_1"/>
+  </ns3:StraightCoordinate>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_St-006_Temperature_SP">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">18</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_St-004_Temperature_SP">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">12</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_x_DDC_R_2_1">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_St-006_Pressure_SP">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">299</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+  </owl:NamedIndividual>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_R_2_1.owl#y_DDC_R_2_1">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_y_DDC_R_2_1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/DDC_R_2_1.owl#x_DDC_R_2_1">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/DDC_R_2_1.owl#V_x_DDC_R_2_1"/>
+  </rdf:Description>
+</rdf:RDF>

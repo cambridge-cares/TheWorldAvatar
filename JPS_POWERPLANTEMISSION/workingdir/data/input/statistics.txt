@@ -1,0 +1,27 @@
+coal capacity range
+
+coal overall: 2-6600MW    (1513443MW in total)
+
+subcritical overall:      2-5230MW    (1312156MW in total)       supercritical overall:      300-6600MW (117660MW in total)              ultra-supercritical overall: 600-4200MW (37615MW in total)
+
+subcritical anthracite:    110-5230MW (24645MW)              supercritical anthracite:  1200-1200MW (1200MW)
+
+subcritical bituminous:    2-5230MW (595958MW)              supcritical bituminous:    460 - 4400MW (52877MW)
+
+subcritical subbituminous:   2-4025MW (189338MW)            supercritical subbituminous:   443-1487MW (5550MW)
+
+subcritical lignite:        74.25-4440MW (108683MW)               supercritical lignite:   300-1866MW (7168MW)
+
+subcritical coal_biomass:       151-1428MW (5361MW)           supercritical coal_biomass:   ----
+
+subcritical coal:         10.5-5230MW (388170MW)                 supercritical coal:   378-6600MW (50865MW)
+
+
+natural gas capacity range
+
+natural gas overall: 2-5040
+
+
+oil capacity range:
+
+oil overall: 8-5523

@@ -1,0 +1,64 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Operation_d4c48b03-e4e4-4d92-a41c-b3ec3a9d1af2">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessageContent_9fea306b-ba0c-4245-9e86-131fd2ddaec6">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_2ec033ae-2fb8-42bf-8831-98fa821de5e9">
+                <msm:hasName>plants</msm:hasName>
+                <msm:isArray>true</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessageContent_b8b36e82-bcd8-460e-a23c-ebb311c33937">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_b09870f7-457e-41da-92e5-9e9419b2d7ba">
+                <msm:hasName>electricalnetwork</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://localhost:8080/JPS_POWSYS/NuclearAgent/processresult</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Operation_a86a5600-ccb3-4bad-ba07-0aba836ad1ac">
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessageContent_5cdeff83-b5f3-4014-8d98-903cb9cddf20">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_bcb4d376-fb3f-4690-8ef8-234b318ab168">
+                <msm:hasName>plants</msm:hasName>
+                <msm:isArray>true</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_fa078ec6-fa17-40dc-8e3b-4db17394f92e">
+                <msm:hasName>electricalnetwork</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_3209b6a9-5cd4-490e-b971-3972304cbf0c">
+                <msm:hasName>landlot</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://localhost:8080/JPS_POWSYS/NuclearAgent/startsimulation</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
+  </msm:Service>
+</rdf:RDF>

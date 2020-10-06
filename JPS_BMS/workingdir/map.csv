@@ -1,0 +1,22 @@
+name,"				nameRegex,						idRegex,						filenameTemplate,			IRITemplate,						isSIUnit,	abbrPair,	isBooleanValue",type
+MAUMode,<Mode>,[a-zA-Z][0-9]*-[0-9],MAU-Fan-%s_Mode_sensor1.owl,V_ModeOfMAU-Fan-%s,0,0,0,3
+MAUStatus,<Status>,[a-zA-Z][0-9]*-[0-9],MAU-Fan-%s_RunStat_sensor1.owl,V_RunStatusOfMAU-Fan-%s,0,0,0,3
+VSD_Speed,<VSD_Speed>,[a-zA-Z][0-9]*-[0-9],MAU-Fan-%s_VSDF_sensor1.owl,V_VSDFeedbackOfMAU-Fan-%s,0,0,0,3
+Supply_Temp,<Supply_Temp>,[a-zA-Z][0-9]*-[0-9],MAU-%s_D12T_sensor1.owl,V_SupplyTemperatureD12OfMAU-%s,0,0,0,3
+Filter_Alarm,<Filter_Alarm>,[a-zA-Z][0-9]*-[0-9],MAU-F-%s_FIL_sensor1.owl,V_FilterAlarmStatOfMAU-F-%s,0,0,0,3
+Pre_Cool_Coil_CHW_Out_Temp,<Pre_Cool_Coil_CHW_Out_Temp>,[a-zA-Z][0-9]*-[0-9],MAU-%s_P13T_sensor1.owl,V_PreCoolTemperatureCHWOutP13OfMAU-%s,0,0,0,3
+Offcoil_Temp,<Offcoil_Temp>,[a-zA-Z][0-9]*-[0-9],MAU-%s_D10T_sensor1.owl,V_OffCoilTemperatureD10OfMAU-%s,0,0,0,3
+3_Way_Valve_Command,<_3_Way_Valve_Command>,[a-zA-Z][0-9]*-[0-9],MAU-VA-%s_2_3WVLVC_sensor1.owl,V_ValveControlOfMAU-VA-%s_2,0,0,0,3
+3_Way_Valve_Feedback,<_3_Way_Valve_Feedback>,[a-zA-Z][0-9]*-[0-9],MAU-VA-%s_2_3WVLVF_sensor1.owl,V_ValveFeedbackOfMAU-VA-%s_2,0,0,0,3
+2_Way_Valve_Command,<_2_Way_Valve_Command>,[a-zA-Z][0-9]*-[0-9],MAU-VA-%s_1_2WVLVC_sensor1.owl,V_ValveControlOfMAU-VA-%s_1,0,0,0,3
+2_Way_Valve_Feedback,<_2_Way_Valve_Feedback>,[a-zA-Z][0-9]*-[0-9],MAU-VA-%s_1_2WVLVF_sensor1.owl,V_ValveFeedbackOfMAU-VA-%s_1,0,0,0,3
+CHW_Pressure_Supply,<CHW_Pressure_Supply>,[a-zA-Z][0-9]*-[0-9],MAU-%s_CHWSP_sensor1.owl,V_CHWSPressureP1OfMAU-%s,0,0,0,3
+CHW_Pressure_Return,<CHW_Pressure_Return>,[a-zA-Z][0-9]*-[0-9],MAU-%s_CHWRP_sensor1.owl,V_CHWRPressureP8OfMAU-%s,0,0,0,3
+RoomHumidity,		<Room_Humidity>,				roomItem,						%s_RH_sensor1.owl,			V_%s_RelativeHumidity,				1,			1,			0,				0
+RoomTemp_Sensor1,	<Room_Humidity_Sensor_1>,		roomItem,						%s_RH_sensor1.owl,			V_%s_RelativeHumidity,				1,			1,			0,				0
+RoomTemp_Sensor2,	<Room_Humidity_Sensor_2>,		roomItem,						%s_RH_sensor2.owl,			V_%s_RelativeHumidity,				1,			1,			0,				0
+HeaterAirflow,		<Heater_Airflow>,				VAV_[a-zA-z][0-9]_[0-9]*,		H%s_HAFStat_sensor1.owl,	V_H%s_HeaterAirflowStatus,			1,			0,			1,				1
+Cmd,				<.*Hot_Wtr_valve_Cmd>,			VAV_[a-zA-z][0-9]_[0-9]*,		H%s_HWControl_sensor1.owl,	V_H%s_HotWaterControl,		0,			0,			0,				1
+Hot_status,			<.*Hot_Wtr_valve_status>,		VAV_[a-zA-z][0-9]_[0-9]*,		H%s_HWFeedback_sensor1.owl,	V_H%s_HotWaterFeedback,		0,			0,			0,				1
+DamperActuator,	.*[a-zA-z]AV.*[0-9]_DamperActuator,[a-zA-z]AV_[a-zA-z][0-9]_[0-9]*,	%s_DS_sensor1.owl,			V_DamperStateOf%s,					1,			0,			0,				1
+DamperActuator,	.*[a-zA-z]AV.*A_DamperActuator,		[a-zA-z]AV_[a-zA-z][0-9]_[0-9]*A,	%s_DS_sensor1.owl,			V_DamperStateOf%s,					1,			0,			0,				1

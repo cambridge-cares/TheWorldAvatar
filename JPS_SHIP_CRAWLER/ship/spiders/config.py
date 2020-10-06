@@ -1,0 +1,1 @@
+station_list_url = 'http://www.aishub.net/stations?Station%5BSID%5D=&Station%5Bstatus%5D=0&Station%5Buptime%5D=&Station%5BCOUNTRY%5D=singapore&Station%5BLOCATION%5D=&Station%5BCOUNT%5D=&Station%5BDISTINCT%5D=';

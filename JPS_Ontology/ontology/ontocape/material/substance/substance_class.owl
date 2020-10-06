@@ -1,0 +1,811 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#" xmlns:chemical_species="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#" xmlns:molecular_structure="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:substance="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The module 'substance_class' is concerned with the classification of pure substances.
+    The follwoing classes, relations, and individuals from other ontology modules are used within 'substance_class':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#Ion"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#MolecularGroup"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Mixture"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularEntity"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMolecularStructure"/&gt;
+&lt;owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#structuralFormula"/&gt;
+
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#_1-Butanol"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Acetic__acid"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Ethanol"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Ethyl__acetate"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__bromide"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__chloride"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__fluoride"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__iodide"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Methyl__alcohol"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitric__acid"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Phosphoric__acid"/&gt;
+&lt;substance:ChemicalSpecies rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Sulfuric__acid"/&gt;
+</rdfs:comment>
+<terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+  </owl:Ontology>
+  <owl:Class rdf:ID="InorganicCarbonCompound">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ChemicalSpecies that contains carbon but is considered inorganic for historical rasons</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="InorganicCompound"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Alkadiene">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Olefin"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Polyene"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Cycloalkene"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Alkene"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Acyclic branched or unbranched hydrocarbons having two carbon-carbon double bonds. </rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Polyamine">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="PrimaryAmine"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:minCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The polyamines are organic compounds having two or more primary amino groups - such as putrescine, cadaverine, spermidine, and spermine - that are growth factors in both eucaryotic and procaryotic cells. [Wikipedia]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="TertiaryAmine">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#PrimaryAmine"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="SecondaryAmine"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">n tertiary amines all three hydrogen atoms in ammonia are replaced by organic substituents.
+Formula:
+   R'
+    |
+R-N-R'' </rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Amine"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <AmineGroup rdf:ID="TertiaryAmineGroup">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">R-N-R'
+    |
+   R''</rdfs:comment>
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">:N·</substance:structuralFormula>
+          </AmineGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Nitrile">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A nitrile is any organic compound which has a nitrile (-C≡N) functional group. 
+Formula: R-C≡N</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="NitrileGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·C≡N</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The nitrile group is a functional (end) group with a carbon atom and a nitrogen atom triple-bonded together. It is sometimes referred to as a cyanide group or cyano group.</rdfs:comment>
+          </FunctionalGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="AmineGroup">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <AmineGroup rdf:ID="PrimaryAmineGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·NH2</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">R-N-H
+    |
+   H</rdfs:comment>
+          </AmineGroup>
+          <AmineGroup rdf:ID="SecondaryAmineGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">:NH</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">R-N-R'
+    |
+   H</rdfs:comment>
+          </AmineGroup>
+          <AmineGroup rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#TertiaryAmineGroup"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ArylGroup"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="CarbonylGroup"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A functional group that contains nitrogen as the key atom. Structurally amines resemble ammonia, wherein one or more hydrogen atoms are replaced by organic substituents such as alkyl and aryl groups. An important exception to this rule are amides, where a carbonyl group (C=O) is linked to the nitrogen atom.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="FunctionalGroup"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="PeroxyAcid">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Hydroperoxide"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A peroxy acid (often spelt as one word ie. peroxyacid) is an acid in which an acidic -OH group has been replaced by an -OOH group. They are formed chiefly by elements in groups 14, 15 and 16 of the periodic table, but boron and certain transition elements are also known to form peroxy acids. Sulfur and phosphorus form the largest range of peroxy acids, including some condensed form such as peroxydiphosphoric acid, H4P2O8 and peroxydisulfuric acid, H2S2O8. [Wikipedia, 2006]
+
+
+</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Olefin">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="AlkenylGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·(HC=CH)·</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The alkenyl group is a functional group consisting of two double-bonded carbon molecules.</rdfs:comment>
+          </FunctionalGroup>
+        </owl:hasValue>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Acyclic and cyclic hydrocarbons having one or more carbon–carbon double bonds, apart from the formal ones in aromatic compounds. The class olefins subsumes alkenes and cycloalkenes and the corresponding polyenes. [IUPAC Compendium of Chemical Terminology, 2nd Edition, 1997]</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Alkyne"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Alkane"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="Amide">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An amide is an organic compound that contains a carbonyl group (C=O) linked to a nitrogen atom (N).
+It  has the structure
+   O
+    ||
+R-C-N-R'
+     |
+    R''
+where either or both R' and R'' may be hydrogen. </rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+        <owl:hasValue>
+          <CarbonylGroup rdf:ID="AmideGroup">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An amide group is an organic functional group characterized by a carbonyl group (C=O) linked to a nitrogen atom (N)</rdfs:comment>
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·(C=O)-N:</substance:structuralFormula>
+          </CarbonylGroup>
+        </owl:hasValue>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="CarbonylCompound"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="CarboxylicAcid">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carboxylic acids are oxoacids characterized by the presence of a carboxyl group 
+ (·COOH).
+Formula:
+   O
+    ||
+R-C-OH
+The simplest series of carboxylic acids are the alkanoic acids, where R is a hydrogen or an alkyl group.
+Compounds may also have two or more carboxylic acid groups per molecule.
+</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Oxoacid"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <CarbonylGroup rdf:ID="CarboxylGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·(C=O)-OH</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> O
+  ||
+·C-OH</rdfs:comment>
+          </CarbonylGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#FunctionalGroup">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">"Organic compounds are thought of as consisting of a relatively unreactive backbone, for example a chain of  hybridized carbon atoms, and one or several functional groups. The functional group is an atom, or a group of atoms that has similar chemical properties whenever it occurs in different compounds. It defines the characteristic physical and chemical properties of families of organic compounds." [IUPAC Compendium of Chemical Terminology, Electronic version, http://goldbook.iupac.org/F02555.html.]</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#MolecularGroup"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Ester">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Compounds formally derived from an oxoacid [...] and an alcohol, phenol, heteroarenol, or enol by linking with formal loss of water from an acidic hydroxy group of the former and a hydroxy group of the latter. [IUPAC Compendium of Chemical Terminology, Electronic version, http://goldbook.iupac.org/E02219.html. ]
+Formula: R-O-R'
+Formal formation reaction: R-OH + OH-R' → R-O-R' + H2O</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Alkoxide">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="HydroxylGroup">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The term hydroxyl group is used to describe the functional group -OH when it is a substituent in an organic compound. Organic molecules containing a hydroxyl group are known as alcohols (the simplest of which have the formula CnH2n+1-OH). [Wikipedia, 2006]</rdfs:comment>
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·OH</substance:structuralFormula>
+          </FunctionalGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An alkoxide is the conjugate base of an alcohol, and therefore has an organic group bonded to a negatively charged oxygen atom. They can be written as RO-, where R is any organic substituent. Alkoxides are both strong bases and good nucleophiles (unless R is very bulky, creating steric hinderence). Alkoxides, though generally not stable in protic solvents such as water, are found as intermediaries in various reactions, including the Williamson ether synthesis reaction for forming ethers.
+
+</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylCompound">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An organic compound that contains a carbonyl group (C=O).  
+The follwing types of compounds are carbonyl compounds:
+  - Aldehydes
+  - Ketones
+  - Carboxylic acids
+  - Carboxylate esters  
+  - Amides 
+  - Enones
+  - Acyl chlorides 
+  - Anhydrides</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Peroxide">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="PeroxideGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·O-O·</substance:structuralFormula>
+          </FunctionalGroup>
+        </owl:hasValue>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In organic chemistry, peroxide is a molecule with the general sturture R-O-O-R' </rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Aldehyde">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylCompound"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <CarbonylGroup rdf:ID="AldehydeGroup">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An aldehyde group is a functional group consisting of a carbon atom which is bonded to a hydrogen atom and double-bonded to an oxygen atom. 
+The aldehyde group is may also be called formyl grop or methanoyl group.</rdfs:comment>
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·(C=O)-H</substance:structuralFormula>
+          </CarbonylGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An aldehyde is an organic compound containing a terminal carbonyl group. This functional group, which consists of a carbon atom which is bonded to a hydrogen atom and double-bonded to an oxygen atom, is called the aldehyde group.
+Formula:
+   O
+  ||
+R-C-H</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#InorganicCompound">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularEntity"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkane">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An alkane is an acyclic saturated hydrocarbon. In other words, an alkane is a (possibly branched) chain of carbon linked together by single bonds. 
+Formula: CnH2n+2</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Olefin"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkyne"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="AlkylGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·(CnH2n+1)</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An alkyl group consists of single-bonded carbon and hydrogen atoms arranged in a chain. The alkyls form a homologous series with the general formula CnH2n+1. Examples include methyl (CH3·) and butyl (C4H9·).</rdfs:comment>
+          </FunctionalGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="CarboxylateEster">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carboxylate esters are organic compounds in which an organic group replaces the hydrogen atom of a carboxyl group.
+Formula:
+   O
+    ||
+R-C-O-R'</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <CarbonylGroup rdf:ID="CarboxylateEsterGroup">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A (carboxylate) ester group consists of a carbon atom that is and two oxygen atoms; the oxygen atoms are double bonded to an oxygen atom and single bonded to another oxygen atom:
+ O
+  ||
+·C-O·</rdfs:comment>
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·(C=O)-O·</substance:structuralFormula>
+          </CarbonylGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Ester"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylCompound"/>
+  </owl:Class>
+  <owl:Class rdf:ID="EnolateIon">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">When the hydroxyl group (−OH) in an enol loses a hydrogen ion (H+), a negative enolate ion is formed. Enolates can exist in quantitative amounts in strictly Brønsted acid free conditions, since they are generally very basic. [Wikipedia, 2006]</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#Ion"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OxoCarboxylicAcid">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarboxylicAcid"/>
+    <rdfs:subClassOf>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+            <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarboxylGroup"/>
+          </owl:Restriction>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+                <owl:hasValue>
+                  <CarbonylGroup rdf:ID="KetoneGroup">
+                    <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·(C=O)·</substance:structuralFormula>
+                    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ketone group is characterized by a carbonyl  group (C=O) linked to two other carbon atoms.</rdfs:comment>
+                  </CarbonylGroup>
+                </owl:hasValue>
+              </owl:Restriction>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#AldehydeGroup"/>
+              </owl:Restriction>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Compounds having a carboxy group (·COOH) as well as an aldehyde (·COH) or ketone (·CO·) group in the same molecule.
+Formula:
+   O     O
+    ||      ||
+R-C-R'-C-OH
+(where R may be an H atom)
+</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Polyene">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Cycloalkene"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkene"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkadiene"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Olefin"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polyenes are poly-unsaturated organic compounds that contain one or more sequences of alternating double and single carbon-carbon bonds. </rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#SecondaryAmine">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Secondary amines arise when two of the three hydrogen atoms in ammonia are replaced by organic substituents.
+   R'
+    |
+R-N-H</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Amine"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#SecondaryAmineGroup"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#PrimaryAmine"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#TertiaryAmine"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Halogen">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#InorganicCompound"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The halogens are a chemical series. They are the elements in Group 17 (old-style: VII or VIIA) of the periodic table: fluorine (F), chlorine (Cl), bromine (Br), iodine (I), astatine (At) and the as yet undiscovered ununseptium (Uus) [...]. These elements are diatomic molecules in their natural form. [Wikipedia, 2006]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Alcohol">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#HydroxylGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An alcohol is any organic compound in which a hydroxyl group (-OH)  is attached to a saturated carbon atom.
+Formula: R-OH</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#PrimaryAmine">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#TertiaryAmine"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#SecondaryAmine"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Amine"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#PrimaryAmineGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Primary amines arise when one of the three hydrogen atoms in ammonia is replaced by an organic substituent.
+Formula: R-NH2</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Enol">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkene"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#HydroxylGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Enol (or, more officially, but less commonly: alkenol) is an alkene with hydroxyl group on one of the carbon atoms of the double bond.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Ketone">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#KetoneGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylCompound"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ketone is a chemical compound that contains a ketone group  (C=O) which is linked to two other carbon atoms. 
+Formula: R-(C=O)-R' 
+</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkyne">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alkynes are hydrocarbons that have at least one triple bond between two carbon atoms. The alkynes are traditionally known as acetylenes, although the name acetylene is also used to refer specifically to the simplest member of the series, known officially as ethyne.
+Formula: R-C≡C-R'</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Olefin"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkane"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="AlkynylGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·C≡C·</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The alkynyl group is a functional group consisting of two triple-bonded carbon molecules.</rdfs:comment>
+          </FunctionalGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="BrentCrude">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="CrudeOil"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="WTI"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brent Crude is one of the major classifications of oil consisting of Brent Crude, Brent Sweet Light Crude, Oseberg and Forties. Brent Crude is sourced from the North Sea. Brent blend is a light crude oil, though not as light as West Texas Intermediate (WTI). It contains approximately 0.37% of sulfur, classifying it as sweet crude, yet again not as sweet as WTI. [Wikipedia, 2007]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Metal">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#InorganicCompound"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A metal is an element that readily loses electrons to form positive ions (cations) and has metallic bonds between metal atoms. Metals form ionic bonds with non-metals. They are sometimes described as a lattice of positive ions surrounded by a cloud of delocalized electrons. The metals are one of the three groups of elements as distinguished by their ionization and bonding properties, along with the metalloids and nonmetals. On the periodic table, a diagonal line drawn from boron (B) to polonium (Po) separates the metals from the nonmetals. Most elements on this line are metalloids, sometimes called semi-metals; elements to the lower left are metals; elements to the upper right are nonmetals. [Wikipedia, 2007]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Cycloalkene">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Polyene"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkadiene"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkene"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A cycloalkene is an cyclic hydrocarbon contianing one carbon–carbon double bonds but having no aromatic character</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Olefin"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Imine">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="ImineGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">:C=(NH)·</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An imine is a functional group containing a carbon-nitrogen double bond. The following structures can be distinguished.
+
+Primary ketimine group:
+   N-H
+    ||
+R-C-R'
+
+Secondary ketimine group:
+   N-R''
+    ||
+R-C-R'
+
+Primary aldimine group
+   N-H
+    ||
+R-C-H'
+
+Secondary aldimine group
+   N-R'
+    ||
+R-C-H
+
+</rdfs:comment>
+          </FunctionalGroup>
+        </owl:hasValue>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An imine is a chemical compound containing a carbon-nitrogen double bond.
+Formula:
+   N-R'
+    ||
+R-C-R''  (where R' and R'' might be H atoms)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkene">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Acyclic branched or unbranched hydrocarbons having one carbon–carbon double bond and the general formula CnH2n.  Acyclic branched or unbranched hydrocarbons having more than one double bond are alkadienes, alkatrienes, etc.
+[IUPAC Compendium of Chemical Terminology, 1997]
+Formula: R-C=C-R'</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Cycloalkene"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alkadiene"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Polyene"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Olefin"/>
+  </owl:Class>
+  <owl:Class rdf:ID="HydrogenHalide">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <HydrogenHalide rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__fluoride"/>
+          <HydrogenHalide rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__chloride"/>
+          <HydrogenHalide rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__bromide"/>
+          <HydrogenHalide rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Hydrogen__iodide"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Halide"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hydrogen halides (or hydrohalic acids) are acids resulting from the chemical reaction of hydrogen with one of the halogen elements (fluorine, chlorine, bromine, iodine), which are found in group VII of the periodic table. (Astatine is not included in the list because it is very rare, unstable and not found as the acid in substantial quantities.)
+Thus, the hydrogen halides are:
+  - hydrogen fluoride 
+  - hydrogen chloride 
+  - hydrogen bromide 
+  - hydrogen iodide 
+They are acids because of their ability to release hydronium ions (H3O+) in water solution. [Wikipedia, 2006]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Alloy">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An alloy is a homogeneous mixture of two or more ChemicalSpecies, at least one of which is a Metal, and where the resulting material has metallic properties. The resulting metallic substance usually has different properties (sometimes substantially different) from those of its components. [adopted from Wikipedia, 2007]</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CrudeOil"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class>
+            <owl:intersectionOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies"/>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#hasMolecularStructure"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Metal"/>
+              </owl:Restriction>
+            </owl:intersectionOf>
+          </owl:Class>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/>
+        <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:minCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Mixture"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Oxoacid">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An oxoacid is an acid has an -OH group from which the hydrogen (H) can dissociate as an H+ ion. More precisely, an oxocid
+1. contains oxygen; 
+2. contains at least one other element; 
+3. has at least one hydrogen atom bound to oxygen; and 
+4.  produces a conjugate base by loss of positive hydrogen ion(s)
+Formula: R-(OH)n, n&gt;1
+</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#FunctionalGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#containsDirectly"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#MolecularEntity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An OrganicCompound is any member of a large class of chemical compounds whose molecules contain carbon; for historical reasons, a few types of compounds such as carbonates, carbon oxides and cyanides, as well as elemental carbon are considered inorganic. [Wikipedia, 2007]</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#InorganicCompound"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Ether">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="EtherGroup">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A functional group with an oxygen atom 
+Formula: R-O-R' (where R, R' ≠ H).</rdfs:comment>
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·O·</substance:structuralFormula>
+          </FunctionalGroup>
+        </owl:hasValue>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ether is the general name for a class of chemical compounds which contain an ether group.
+Formula: R-O-R' (where R, R' ≠ H).
+
+</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylGroup">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A carbonyl group is a functional group composed of a carbon atom double-bonded to an oxygen atom (C=O). It characterizes the following types of compounds (where CO denotes carbonyl group):
+  - Aldehyde  RCHO 
+  - Ketone  RCOR' 
+  - Carboxylic acid  RCOOH 
+  - Carboxyate ester  RCOOR'  
+  - Amide  RCONR'R" 
+  - Enone  RCOC(R')=CR"R"' 
+  - Acyl chloride  RCOCl 
+  - Anhydride  (RCO)2O</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#AmineGroup"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#ArylGroup"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#FunctionalGroup"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Cyanate">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon hydrates with a Cyanate end group.
+Formula: R-O-C≡N</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+        <owl:hasValue>
+          <FunctionalGroup rdf:ID="CyanateGroup">
+            <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·O-C≡N</substance:structuralFormula>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The cyanate functional (end) group consists of one oxygen atom, one carbon atom, and one nitrogen atom.</rdfs:comment>
+          </FunctionalGroup>
+        </owl:hasValue>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#ArylGroup">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#AmineGroup"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CarbonylGroup"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#FunctionalGroup"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In the context of organic molecules, aryl refers to any functional group or substituent derived from a simple aromatic ring. There are more specific terms, such as phenyl, to describe unsubstituted aryl groups and subsets of aryl groups (as well as arbitrarily substituted groups: see IUPAC nomenclature), but "aryl" is used for the sake of abbreviation or generalization. [Wikipedia, 2006]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CrudeOil">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Mixture"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CrudeOil is a naturally occurring liquid found in formations in the Earth consisting of a complex mixture of hydrocarbons (mostly alkanes) of various lengths. The approximate length range is C5H12 to C18H38. Any shorter hydrocarbons are considered natural gas or natural gas liquids, while long-chain hydrocarbons are more viscous, and the longest chains are paraffin wax. In its naturally occurring form, it may contain other nonmetallic elements such as sulfur, oxygen, and nitrogen. [Wikipedia, 2007]</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Alloy"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Haloalkane">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A haloalkane, also known as alkyl halogenide, halogenalkane or halogenoalkane, and alkyl halide is a chemical compound derived from an alkane by substituting one or more hydrogen atoms with halogen atoms. Substitution with fluorine, chlorine, bromine and iodine results in fluoroalkanes, chloroalkanes, bromoalkanes and iodoalkanes, respectively. [Wikipedia, 2006]</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Amine"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Carbonyl">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In organic chemistry, a carbonyl group is a functional group composed of a carbon atom double-bonded to an oxygen atom. The term carbonyl can also refer to carbon monoxide as a ligand in an inorganic or organometallic complex (e.g. nickel carbonyl); in this situation, carbon is triple-bonded to oxygen. The remainder of this article concerns itself with the organic chemistry definition of carbonyl.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Cyanohydrin">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#HydroxylGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#NitrileGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A cyanohydrin (or hydroxynitrile) is an organic compound that contains both a 
+nitrile (-C≡N) group and a hydroxyl (-OH) group. Most commonly, the nitrile and hydroxyl group are attached to the same carbon atom 
+Formula: 
+R-C≡N
+ |
+OH</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Amine">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Compounds formally derived from ammonia by replacing one, two or three hydrogen atoms by hydrocarbyl groups, and having the general structures R-NH2 (primary amines), R2-NH (secondary amines), R3-N (tertiary amines). [IUPAC Compendium of Chemical Terminology, 2nd Edition, 1997]
+
+</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#AmineGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#AmineGroup"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#OrganicCompound"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Halide">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A halide is a binary compound, of which one part is a halogen atom and the other part is an element or radical that is less electronegative than the halogen, to make a fluoride, chloride, bromide, iodide, or astatide compound. </rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#InorganicCompound"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#WTI">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#CrudeOil"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">West Texas Intermediate (WTI), also known as Texas Sweet Light, is a type of crude oil used as a benchmark in oil pricing and the underlying commodity of New York Mercantile Exchange's oil futures contracts. This is usually the type referenced in Western news reports about oil prices, alongside North Sea Brent Crude. WTI is a light crude, lighter than Brent Crude. It contains about 0.24% sulfur, rating it a sweet crude, again sweeter than Brent. [Wikipedia, 2007]</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#BrentCrude"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Hydroperoxide">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A peroxide that has the skeleton ROOH, in which R is any organyl group. 
+ </rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance_class.owl#Peroxide"/>
+  </owl:Class>
+  <owl:DatatypeProperty rdf:ID="formula"/>
+  <CarboxylateEster rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Ethyl__acetate"/>
+  <Alcohol rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Methyl__alcohol"/>
+  <Oxoacid rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Sulfuric__acid"/>
+  <ArylGroup rdf:ID="XylylGroup">
+    <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·(CH3)2C6H3</substance:structuralFormula>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The xylyl group, (CH3)2C6H3, is derived from xylene (dimethylbenzene).
+</rdfs:comment>
+  </ArylGroup>
+  <ArylGroup rdf:ID="PhenylGroup">
+    <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·C6H5</substance:structuralFormula>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The phenyl group, C6H5, is derived from benzene. The six carbon atoms are arranged in a cyclic manner.</rdfs:comment>
+  </ArylGroup>
+  <CarboxylicAcid rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Acetic__acid"/>
+  <Oxoacid rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitric__acid"/>
+  <ArylGroup rdf:ID="TolylGroup">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The tolyl group, CH3C6H4, is derived from toluene (methylbenzene). </rdfs:comment>
+    <substance:structuralFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">·CH3C6H4</substance:structuralFormula>
+  </ArylGroup>
+  <Oxoacid rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Phosphoric__acid"/>
+  <Alcohol rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Ethanol"/>
+  <Alcohol rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#_1-Butanol"/>
+</rdf:RDF>

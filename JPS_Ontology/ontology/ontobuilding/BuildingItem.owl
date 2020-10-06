@@ -1,0 +1,249 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:BuildingsLayer="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AHU -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#AHU">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Coil"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Fan"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Filter"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EAF -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#EAF">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Fan"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Filter"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ERS -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#ERS">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Damper"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Fan"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#FCU -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#FCU">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Coil"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Fan"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MAU -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#MAU">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Coil"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Fan"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Filter"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Coil -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Coil">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment>Equipment that performs heat transfer to air when mounted inside an air handling unit or ductwork. It is heated or cooled by electrical means or by circulating liquid or steam within it</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Damper -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Damper">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment>A plate or gate placed in a duct to control air flow by increasing friction in the duct</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Duct -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Duct">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment"/>
+        <rdfs:comment>a tube or passageway in a building or machine for air</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#ElectricalCoil -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#ElectricalCoil">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Coil"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type of coil for heat exchange using the electricity as the energy source</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Fan -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Fan">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment>an apparatus with rotating blades that creates a current of air for cooling or ventilation</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Filter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Filter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment>A porous layered equipment to separate the unwanted material from the flow of the air in the duct.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Lamp -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Lamp">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment>A device for giving light inside a building</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Pipe -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Pipe">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#Equipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The passage way in the HVAC system for the utility stream.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Plenum -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Plenum">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A plenum is an air-distribution box attached directly to the supply outlet of the HVAC equipment where the air from different source are mixed.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#PowerMeter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#PowerMeter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Equipment for measuring the electricity usage inside a building</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Tee -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Tee">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connectors between pipes to separate or combine some streams</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Valve -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Valve">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingsLayer.owl#BuildingPieceEquipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that regulates, directs or controls the flow of a fluid (gases, liquids, fluidized solids, or slurries) by opening, closing, or partially obstructing various passageways.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#WaterCoil -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#WaterCoil">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/BuildingItem.owl#Coil"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type of coil that involve utility stream other than the main stream to do the heat exchange.</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

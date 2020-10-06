@@ -1,0 +1,836 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#" xmlns:behavior="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#" xmlns:laws="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#" xmlns:process_model="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/model/laws.owl">
+    <owl:Ontology rdf:about="">
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontolog module 'laws' provides a collection of laws that are frequently used in process modeling.
+The following classes, relations, and individuals from other ontology modules are used within 'laws':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#Accumulation"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#Law"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MolecularTransportPhenomenon"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ParticlePhenomenon"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#PhysicalEquilibriumPhenomenon"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/&gt;
+
+&lt;behavior:Accumulation rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#energy_accumulation"/&gt;
+&lt;behavior:Accumulation rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mass_accumulation"/&gt;
+&lt;behavior:Accumulation rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#momentum_accumulation"/&gt;
+&lt;behavior:AdsorptionPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#equilibrium_adsorption"/&gt;
+&lt;behavior:AdsorptionPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_adsorption"/&gt;
+&lt;behavior:ChemicalReactionPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#chemical_reaction_equilibrium"/&gt;
+&lt;behavior:InterfaceMolecularTransportPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#interface_heat_conduction"/&gt;
+&lt;behavior:InterfaceMolecularTransportPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#interface_mass_diffusion"/&gt;
+&lt;behavior:InterfaceMolecularTransportPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#phase_interface_viscous_momentum_transport"/&gt;
+&lt;behavior:MaterialAmountConnectionPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#convective_material_flow"/&gt;
+&lt;behavior:MaterialAmountConnectionPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#heat_radiation"/&gt;
+&lt;behavior:MolecularTransportPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#heat_conduction"/&gt;
+&lt;behavior:MolecularTransportPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mass_diffusion"/&gt;
+&lt;behavior:MolecularTransportPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#viscous_momentum_transport"/&gt;
+&lt;behavior:ParticlePhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#agglomeration"/&gt;
+&lt;behavior:ParticlePhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#breakage"/&gt;
+&lt;behavior:ParticlePhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#growth"/&gt;
+&lt;behavior:ParticlePhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#nucleation"/&gt;
+&lt;behavior:ParticlePhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#particle_population_accumulation"/&gt;
+&lt;behavior:PhysicalEquilibriumPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mechanical_equilibrium"/&gt;
+&lt;behavior:PhysicalEquilibriumPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#phase_equilibrium"/&gt;
+&lt;behavior:PhysicalEquilibriumPhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#thermal_equilibrium"/&gt;
+&lt;behavior:SurfacePhenomenon rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#surface_mass_diffusion"/&gt;</rdfs:comment>
+        <terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.</terms:license>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/license"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#Accumulation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#Accumulation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MolecularTransportPhenomenon -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MolecularTransportPhenomenon">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A law that is associated with a phenomenon of inter- or intra-phase transport.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ParticlePhenomenon -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ParticlePhenomenon"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#PhysicalEquilibriumPhenomenon -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#PhysicalEquilibriumPhenomenon"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#AccumulationLaw -->
+
+    <owl:Class rdf:about="#AccumulationLaw">
+        <rdfs:subClassOf rdf:resource="#GeneralizedFluxLaw"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#AdsorptionEquilibriumConstraint -->
+
+    <owl:Class rdf:about="#AdsorptionEquilibriumConstraint">
+        <rdfs:subClassOf rdf:resource="#EquilibriumConstraint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#equilibrium_adsorption"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#ChemicalReactionEquilibriumConstraint"/>
+        <owl:disjointWith rdf:resource="#MechanicalEquilibriumConstraint"/>
+        <owl:disjointWith rdf:resource="#PhaseEquilibriumConstraint"/>
+        <owl:disjointWith rdf:resource="#ThermalEquilibriumConstraint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of equilibrium_adsorption.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#AdsorptionKineticsLaw -->
+
+    <owl:Class rdf:about="#AdsorptionKineticsLaw">
+        <rdfs:subClassOf rdf:resource="#SourceLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_adsorption"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#ReactionKineticsLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of non-equilibrium_adsorption.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#AgglomerationLaw -->
+
+    <owl:Class rdf:about="#AgglomerationLaw">
+        <rdfs:subClassOf rdf:resource="#ParticleKineticsLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#agglomeration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#BreakageLaw"/>
+        <owl:disjointWith rdf:resource="#GrowthLaw"/>
+        <owl:disjointWith rdf:resource="#NucleationLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of agglomeration (of particles).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#BalanceLaw -->
+
+    <owl:Class rdf:about="#BalanceLaw">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#Law"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#Accumulation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#Accumulation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#ConstitutiveLaw"/>
+        <owl:disjointWith rdf:resource="#EquilibriumConstraint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with an Accumulation phenomenon.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#BreakageLaw -->
+
+    <owl:Class rdf:about="#BreakageLaw">
+        <rdfs:subClassOf rdf:resource="#ParticleKineticsLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#breakage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#GrowthLaw"/>
+        <owl:disjointWith rdf:resource="#NucleationLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of breakage (of particles).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ChemicalKineticsLaw -->
+
+    <owl:Class rdf:about="#ChemicalKineticsLaw">
+        <rdfs:subClassOf rdf:resource="#ConstitutiveLaw"/>
+        <owl:disjointWith rdf:resource="#ParticleKineticsLaw"/>
+        <owl:disjointWith rdf:resource="#TransportLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with some kinetic phenomenon, such as non-equilibrium reaction or adsorption.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ChemicalReactionEquilibriumConstraint -->
+
+    <owl:Class rdf:about="#ChemicalReactionEquilibriumConstraint">
+        <rdfs:subClassOf rdf:resource="#EquilibriumConstraint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#chemical_reaction_equilibrium"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#MechanicalEquilibriumConstraint"/>
+        <owl:disjointWith rdf:resource="#PhaseEquilibriumConstraint"/>
+        <owl:disjointWith rdf:resource="#ThermalEquilibriumConstraint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of chemical_reaction_equilibrium.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ConstitutiveLaw -->
+
+    <owl:Class rdf:about="#ConstitutiveLaw">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#Law"/>
+        <owl:disjointWith rdf:resource="#EquilibriumConstraint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with some non-equilibrium phenomenon.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#Constraint -->
+
+    <owl:Class rdf:about="#Constraint">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#Law"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ConvectiveMaterialFlowLaw -->
+
+    <owl:Class rdf:about="#ConvectiveMaterialFlowLaw">
+        <rdfs:subClassOf rdf:resource="#TransportLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#convective_material_flow"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#HeatRadiationLaw"/>
+        <owl:disjointWith rdf:resource="#InterfaceHeatConductionLaw"/>
+        <owl:disjointWith rdf:resource="#InterfaceMassDiffusionLaw"/>
+        <owl:disjointWith rdf:resource="#InterfaceViscousMomentumTransportLaw"/>
+        <owl:disjointWith rdf:resource="#SurfaceMassDiffusionLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of convective_material_flow.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#EnergyBalanceLaw -->
+
+    <owl:Class rdf:about="#EnergyBalanceLaw">
+        <rdfs:subClassOf rdf:resource="#BalanceLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#energy_accumulation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#MassBalanceLaw"/>
+        <owl:disjointWith rdf:resource="#MomentumBalanceLaw"/>
+        <owl:disjointWith rdf:resource="#PopulationBalanceLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of energy_accumulation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#EquilibriumConstraint -->
+
+    <owl:Class rdf:about="#EquilibriumConstraint">
+        <rdfs:subClassOf rdf:resource="#Constraint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#PhysicalEquilibriumPhenomenon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#PhysicalEquilibriumPhenomenon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ExchangeLaw -->
+
+    <owl:Class rdf:about="#ExchangeLaw">
+        <rdfs:subClassOf rdf:resource="#GeneralizedFluxLaw"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#GeneralizedFluxLaw -->
+
+    <owl:Class rdf:about="#GeneralizedFluxLaw">
+        <rdfs:subClassOf rdf:resource="#ConstitutiveLaw"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#GrowthLaw -->
+
+    <owl:Class rdf:about="#GrowthLaw">
+        <rdfs:subClassOf rdf:resource="#ParticleKineticsLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#growth"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#NucleationLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of growth (of particles).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#HeatRadiationLaw -->
+
+    <owl:Class rdf:about="#HeatRadiationLaw">
+        <rdfs:subClassOf rdf:resource="#ExchangeLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#heat_radiation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#InterfaceHeatConductionLaw"/>
+        <owl:disjointWith rdf:resource="#InterfaceMassDiffusionLaw"/>
+        <owl:disjointWith rdf:resource="#InterfaceViscousMomentumTransportLaw"/>
+        <owl:disjointWith rdf:resource="#SurfaceMassDiffusionLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of heat_radiation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#InterfaceHeatConductionLaw -->
+
+    <owl:Class rdf:about="#InterfaceHeatConductionLaw">
+        <rdfs:subClassOf rdf:resource="#ExchangeLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#interface_heat_conduction"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#InterfaceMassDiffusionLaw"/>
+        <owl:disjointWith rdf:resource="#InterfaceViscousMomentumTransportLaw"/>
+        <owl:disjointWith rdf:resource="#SurfaceMassDiffusionLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of interface_heat_conduction.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#InterfaceMassDiffusionLaw -->
+
+    <owl:Class rdf:about="#InterfaceMassDiffusionLaw">
+        <rdfs:subClassOf rdf:resource="#ExchangeLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#interface_mass_diffusion"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#InterfaceViscousMomentumTransportLaw"/>
+        <owl:disjointWith rdf:resource="#SurfaceMassDiffusionLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of interface_mass_diffusion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#InterfaceViscousMomentumTransportLaw -->
+
+    <owl:Class rdf:about="#InterfaceViscousMomentumTransportLaw">
+        <rdfs:subClassOf rdf:resource="#ExchangeLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#phase_interface_viscous_momentum_transport"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#SurfaceMassDiffusionLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of interface_.viscous_momentum_transport.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#IntraphaseHeatConductionLaw -->
+
+    <owl:Class rdf:about="#IntraphaseHeatConductionLaw">
+        <rdfs:subClassOf rdf:resource="#TransportLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#heat_conduction"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#IntraphaseMassDiffusionLaw"/>
+        <owl:disjointWith rdf:resource="#IntraphaseViscousMomentumTransportLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of heat_conduction.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#IntraphaseMassDiffusionLaw -->
+
+    <owl:Class rdf:about="#IntraphaseMassDiffusionLaw">
+        <rdfs:subClassOf rdf:resource="#TransportLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mass_diffusion"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#IntraphaseViscousMomentumTransportLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of mass_diffusion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#IntraphaseViscousMomentumTransportLaw -->
+
+    <owl:Class rdf:about="#IntraphaseViscousMomentumTransportLaw">
+        <rdfs:subClassOf rdf:resource="#TransportLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#viscous_momentum_transport"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of viscous_momentum_transport.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#MassBalanceLaw -->
+
+    <owl:Class rdf:about="#MassBalanceLaw">
+        <rdfs:subClassOf rdf:resource="#BalanceLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mass_accumulation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#MomentumBalanceLaw"/>
+        <owl:disjointWith rdf:resource="#PopulationBalanceLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of mass_accumulation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#MechanicalEquilibriumConstraint -->
+
+    <owl:Class rdf:about="#MechanicalEquilibriumConstraint">
+        <rdfs:subClassOf rdf:resource="#EquilibriumConstraint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mechanical_equilibrium"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#PhaseEquilibriumConstraint"/>
+        <owl:disjointWith rdf:resource="#ThermalEquilibriumConstraint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A law that is associated with the phenomenon of mechanical_equilibrium.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#MomentumBalanceLaw -->
+
+    <owl:Class rdf:about="#MomentumBalanceLaw">
+        <rdfs:subClassOf rdf:resource="#BalanceLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#momentum_accumulation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#PopulationBalanceLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of momentum_accumulation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#NucleationLaw -->
+
+    <owl:Class rdf:about="#NucleationLaw">
+        <rdfs:subClassOf rdf:resource="#ParticleKineticsLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#nucleation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A law that is associated with the phenomenon of nucelation (of particles).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ParticleKineticsLaw -->
+
+    <owl:Class rdf:about="#ParticleKineticsLaw">
+        <rdfs:subClassOf rdf:resource="#AccumulationLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ParticlePhenomenon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ParticlePhenomenon"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#TransportLaw"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with a ParticlePhenomenon.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#PhaseEquilibriumConstraint -->
+
+    <owl:Class rdf:about="#PhaseEquilibriumConstraint">
+        <rdfs:subClassOf rdf:resource="#EquilibriumConstraint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#phase_equilibrium"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="#ThermalEquilibriumConstraint"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A law that is associated with the phenomenon of phase_equilibrium.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#PhenomenologicalCoefficientLaw -->
+
+    <owl:Class rdf:about="#PhenomenologicalCoefficientLaw">
+        <rdfs:subClassOf rdf:resource="#ConstitutiveLaw"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#PopulationBalanceLaw -->
+
+    <owl:Class rdf:about="#PopulationBalanceLaw">
+        <rdfs:subClassOf rdf:resource="#BalanceLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#particle_population_accumulation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of particle_population_accumulation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ReactionKineticsLaw -->
+
+    <owl:Class rdf:about="#ReactionKineticsLaw">
+        <rdfs:subClassOf rdf:resource="#SourceLaw"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_chemical_reaction"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_surface_reaction"/>
+                    </owl:Restriction>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ReactionKineticsLaw is associated with some phenomenon of chemical reaction kinetics.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#SourceLaw -->
+
+    <owl:Class rdf:about="#SourceLaw">
+        <rdfs:subClassOf rdf:resource="#GeneralizedFluxLaw"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#SurfaceMassDiffusionLaw -->
+
+    <owl:Class rdf:about="#SurfaceMassDiffusionLaw">
+        <rdfs:subClassOf rdf:resource="#ExchangeLaw"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#surface_mass_diffusion"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Law that is associated with the phenomenon of surface_mass_diffusion.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ThermalEquilibriumConstraint -->
+
+    <owl:Class rdf:about="#ThermalEquilibriumConstraint">
+        <rdfs:subClassOf rdf:resource="#EquilibriumConstraint"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#isAssociatedWith"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#thermal_equilibrium"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A law that is associated with the phenomenon of thermal_equilibrium.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#ThermodynamicStateFunctionLaw -->
+
+    <owl:Class rdf:about="#ThermodynamicStateFunctionLaw">
+        <rdfs:subClassOf rdf:resource="#ConstitutiveLaw"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/laws.owl#TransportLaw -->
+
+    <owl:Class rdf:about="#TransportLaw">
+        <rdfs:subClassOf rdf:resource="#GeneralizedFluxLaw"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#Law -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/process_model.owl#Law"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#agglomeration -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#agglomeration"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#breakage -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#breakage"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#chemical_reaction_equilibrium -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#chemical_reaction_equilibrium"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#convective_material_flow -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#convective_material_flow"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#energy_accumulation -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#energy_accumulation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#equilibrium_adsorption -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#equilibrium_adsorption"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#growth -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#growth"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#heat_conduction -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#heat_conduction"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#heat_radiation -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#heat_radiation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#interface_heat_conduction -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#interface_heat_conduction"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#interface_mass_diffusion -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#interface_mass_diffusion"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mass_accumulation -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mass_accumulation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mass_diffusion -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mass_diffusion"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mechanical_equilibrium -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#mechanical_equilibrium"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#momentum_accumulation -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#momentum_accumulation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_adsorption -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_adsorption"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_chemical_reaction -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_chemical_reaction"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_surface_reaction -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#non-equilibrium_surface_reaction"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#nucleation -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#nucleation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#particle_population_accumulation -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#particle_population_accumulation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#phase_equilibrium -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#phase_equilibrium"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#phase_interface_viscous_momentum_transport -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#phase_interface_viscous_momentum_transport"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#surface_mass_diffusion -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#surface_mass_diffusion"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#thermal_equilibrium -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#thermal_equilibrium"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#viscous_momentum_transport -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#viscous_momentum_transport"/>
+</rdf:RDF><!-- Generated by the OWL API (version 2.2.1.842) http://owlapi.sourceforge.net -->

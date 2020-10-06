@@ -1,0 +1,132 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Operation_020f69a3-2e51-414e-bb81-050d5707a676">
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessageContent_8ea2a4d6-61dc-42b7-a76f-e583cd169b04">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_ef097f18-ee92-478c-b773-13e5f4b0c05e">
+                <msm:hasName>copyonread</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.w3.org/2001/XMLSchema#boolean</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_SCENARIO/option</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Operation_79acbd25-06c4-4bda-82b6-f6ce7588b138">
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessageContent_748cd7b5-a8dc-4674-b89c-bdc11f677e6d">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_fe98b890-78c9-47e9-a275-e8a00a642958">
+                <msm:hasName>scenarioresource</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_SCENARIO/delete</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Operation_2e212c53-78e8-4f72-b378-d489d97f3c22">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessageContent_a55a9716-71db-4ac8-94a8-eaf21817e184">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_257fc042-ba8f-40ee-9b2b-53db87e6a0d6">
+                <msm:hasName>hasOutput</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.w3.org/2001/XMLSchema#string</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessageContent_4e64c869-e857-48ce-8c5c-3b67be66312a">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_a324ac6d-943c-4119-87ab-5ddd032fcd0b">
+                <msm:hasName>sparqlquery</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#SparqlQuery</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_d174604b-56b7-47c9-abbf-c79bb770e789">
+                <msm:hasName>scenarioresource</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_SCENARIO/query</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Operation_ed6eecfa-c0f8-481c-8486-5e985af03bfd">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessageContent_9deb6486-7f17-44cf-938c-3f78e8e942f2">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_d1bbdc81-5dce-4a19-910b-57710cd7dd19">
+                <msm:hasName>hasOutput</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.w3.org/2001/XMLSchema#string</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessageContent_6d1edf9a-d08a-4335-b34f-fd0df5844128">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_16619957-7de2-4eb7-ab9c-f5e581ba2a88">
+                <msm:hasName>scenarioresource</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_SCENARIO/read</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Operation_917a0349-0f4f-4912-bdf9-486c0776a343">
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessageContent_2c7790a8-1c33-4596-8b93-5a17ce86f827">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_dc3afe84-0ef0-4c74-b6ce-e04594a6250f">
+                <msm:hasName>scenarioagentoperation</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_SCENARIO/call</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Operation_257a04db-81d9-4322-b591-e35b59377377">
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessageContent_a51e9d1c-8ac2-4b6f-ab06-e0c8d21a3a7c">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#MessagePart_9b494be0-9dbd-40ba-b0c9-f83fc725f29d">
+                <msm:hasName>scenarioagent</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_SCENARIO/mock</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
+  </msm:Service>
+</rdf:RDF>

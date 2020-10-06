@@ -288,13 +288,15 @@ public class JParkSim {
 
 // dynamic map layer for the emission
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/emission/MapServer");
+            "http://10.25.188.100:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
                 
               //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer dispersionLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6080/arcgis/rest/services/gasdispersion/MapServer");
+                        "http://10.25.188.100:6080/arcgis/rest/services/gasdispersion/MapServer");
                             layers.add(dispersionLayer);
+                            
+                            ArcGISDynamicMapServiceLayer f = new ArcGISDynamicMapServiceLayer("");
     
                 
     // map centered on Jurong Island
@@ -423,12 +425,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     
     //add dynamic map layer for the opex bar chart
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/opex/MapServer");
+            "http://10.25.188.100:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
                 
               //add dynamic map layer for the dispersion bar chart
                 ArcGISDynamicMapServiceLayer dispersionanimationLayer = new ArcGISDynamicMapServiceLayer(
-                        " 	http://localhost:6080/arcgis/rest/services/dispersion/MapServer");
+                        " 	http://10.25.188.100:6080/arcgis/rest/services/dispersion/MapServer");
                             layers.add(dispersionanimationLayer);
                             
                             dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
@@ -470,7 +472,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
           
               //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
+                        "http://10.25.188.100:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
                             
                             final GraphicsLayer graphicsLayer2 = new GraphicsLayer();
@@ -488,7 +490,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
                               }
                             });
 
-                            layers.add(graphicsLayer2);
+                            //layers.add(graphicsLayer2);
                             
                             
                             
@@ -1402,14 +1404,17 @@ change.setLocation(890, 45);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		/*for (ArcGISFeatureLayer layer : completeLayerList) {
+    		for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
-    		}*/
-    		heatercoolerlayer.requery();
+    		}
+    		/*heatercoolerlayer.requery();
     		heatercoolerlayer.refresh();
     		PlantReactorlayer.requery();
     		PlantReactorlayer.refresh();
+    		MaterialLinelayer.requery();*/
+    		
+    		
     	}
     	    });
     PrAPPWButton.setEnabled(true);
@@ -1890,7 +1895,7 @@ change.setLocation(890, 45);
     contentPane.add(PlantOptButton);
     contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
-    contentPane.add(timeSlider, BorderLayout.SOUTH);
+    //contentPane.add(timeSlider, BorderLayout.SOUTH);
     
   
   //adding the graph here
@@ -1976,10 +1981,10 @@ change.setLocation(890, 45);
 //make graphic for query
   private void addSimpleFillGraphics(GraphicsLayer graphicsLayer2) {
       Polygon polygon = new Polygon();
-      polygon.startPath(11541441.437, 140113.992);
-      polygon.lineTo(11541462.075, 140137.064);
-      polygon.lineTo(11541472.552, 140126.798);
-      polygon.lineTo(11541453.185, 140104.255);
+      polygon.startPath(11541462.271, 140093.15);
+      polygon.lineTo(11541482.67, 140116.169);
+      polygon.lineTo(11541493.862, 140105.612);
+      polygon.lineTo(11541474.098, 140083.07);
       polygon.closePathWithLine();
 
       SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 200, 0),

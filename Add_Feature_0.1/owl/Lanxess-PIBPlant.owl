@@ -1,0 +1,3201 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#"
+     xml:base="http://www.jparksimulator.com/Lanxess-PIBPlant.owl"
+     xmlns:p1="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#"
+     xmlns:p2="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#"
+     xmlns:p3="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#"
+     xmlns:p4="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#"
+     xmlns:p5="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:behavior="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
+     xmlns:phase_system="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
+     xmlns:topology="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
+     xmlns:substance="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:chemical_process_system="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#"
+     xmlns:j.1="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#"
+     xmlns:j.0="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
+     xmlns:j.2="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:material="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:geometry="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#"
+     xmlns:technical_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl">
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene">
+        <substance:hasMolecularStructure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfIsobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride">
+        <substance:hasMolecularStructure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfMethylChloride"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeightOfIsobutylene -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeightOfIsobutylene">
+        <system:hasValue rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOfIsobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeightOfMethylChloride -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeightOfMethylChloride"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOfIsobutylene -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOfIsobutylene"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOfMethylChloride -->
+
+    <owl:NamedIndividual rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ValueOfMolecularWeightOfMethylChloride"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#AllylCyanide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#AllylCyanide">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ChemicalSpecies"/>
+        <substance:hasMolecularStructure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfAllylCyanide"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfAllylCyanide"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-601"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-1"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-605"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-12"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-606"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-14"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-602"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-3"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-603"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-7"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-601"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-602"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-602"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-603 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-603">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-603"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-603"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-604 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-604">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-604"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-604"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-605 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-605">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-605"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-605"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-606 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-606">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-606"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-606"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfM-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfM-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfM-601"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfM-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfM-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfM-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfM-602"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfM-602"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfP-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfP-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfP-601"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfP-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfR-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfR-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfR-601"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfR-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfV-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfV-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <j.2:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfV-601"/>
+        <j.2:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfV-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ChemicalSpecies"/>
+        <substance:hasMolecularStructure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfDiisooctylPthalate"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfDiisooctylPthalate"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-601"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-602"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-603 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-603">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-603"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-604 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-604">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-604"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Heating_6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-605 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-605">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-605"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-606 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-606">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfE-606"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Cooling_6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMassFlowrate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MassTransferCoefficient"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MassTransferCoefficient"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-602"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-603 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-603">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MassTransferCoefficient"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-603"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-604 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-604">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MassTransferCoefficient"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-604"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-605 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-605">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MassTransferCoefficient"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-605"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-606 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-606">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MassTransferCoefficient"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-606"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfV-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfV-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MassTransferCoefficient"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfV-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Heating_6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Heating_6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfE-604"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-10"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#IsobutyleneSegment -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#IsobutyleneSegment">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ChemicalSpecies"/>
+        <substance:hasMolecularStructure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfIsobutyleneSegment"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfIsobutyleneSegment"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#L_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#L_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhaseInMultiphaseSystem"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-11"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Lanxess-PIBPlant -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Lanxess-PIBPlant">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#CompositeSystem"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-601"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-602"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-603"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-604"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-605"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#E-606"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#M-601"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#M-602"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#P-601"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#R-601"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-602"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-603 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-603">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-603"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-604 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-604">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-604"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-605 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-605">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-605"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-606 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfE-606">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-606"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfM-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfM-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfM-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfM-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfM-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfM-602"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfP-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfP-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfP-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfR-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfR-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfR-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfV-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LatitudeOfV-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfV-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-602"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-603 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-603">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-603"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-604 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-604">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-604"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-605 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-605">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-605"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-606 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfE-606">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-606"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfM-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfM-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfM-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfM-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfM-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfM-602"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfP-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfP-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfP-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfR-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfR-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfR-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfV-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#LongitudeOfV-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfV-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#M-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#M-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Apparatus"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfM-601"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixing_6-4_6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#M-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#M-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Apparatus"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfM-602"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixing_6-4_6-2_6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-1"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-1"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-10"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-10"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-11"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-11"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-12"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-12"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-13"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-13"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-14"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-14"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-15"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-15"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-2"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-2"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-3"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-3"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-4"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-4"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-5"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-5"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-6"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-6"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-7"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-7"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-8"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-8"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MaterialAmountOf6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-9"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#F_6-9"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-10"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-11"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-12"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-13"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-14"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-15"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-6"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-7"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-8"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Material_6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:intrinsicCharacteristics rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-9"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixing_6-4_6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixing_6-4_6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Mixing"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-13"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-4"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixing_6-4_6-2_6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixing_6-4_6-2_6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Mixing"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-2"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-5"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-6"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Polyisobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Polyisobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Polyisobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Polyisobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Mixture_6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Mixture"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#Isobutylene"/>
+        <system:containsDirectly rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MethylChloride"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#DiisooctylPthalate"/>
+        <system:containsDirectly rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Polyisobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfAllylCyanide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfAllylCyanide">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularEntity"/>
+        <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C4H5N-1</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfDiisooctylPthalate -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfDiisooctylPthalate">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularEntity"/>
+        <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C24H38O4-D1</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfIsobutylene -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfIsobutylene">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularEntity"/>
+        <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C4H8-5</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfIsobutyleneSegment -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfIsobutyleneSegment">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularEntity"/>
+        <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C4H8-R-2</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfMethylChloride -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfMethylChloride">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularEntity"/>
+        <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CH3CL</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfPolyisobutylene -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfPolyisobutylene">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularEntity"/>
+        <substance:molecularFormula rdf:datatype="http://www.w3.org/2001/XMLSchema#string">xx</substance:molecularFormula>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfAllylCyanide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfAllylCyanide">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeight"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfAllylCyanide"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfDiisooctylPthalate -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfDiisooctylPthalate">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeight"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfDiisooctylPthalate"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfIsobutyleneSegment -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfIsobutyleneSegment">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeight"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfIsobutyleneSegment"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfPolyisobutylene -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfPolyisobutylene">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#MolecularWeight"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfPolyisobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#P-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#P-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Pump"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfP-601"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Pumping_6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-1"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-10"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MultiphaseSystem"/>
+        <system:isComposedOfSubsystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#L_6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-12"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-13"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-14"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-15"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-2"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-3"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-4"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-5"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-6"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-7"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-8"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Phase_6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-9"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Polyisobutylene -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Polyisobutylene">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/substance/substance.owl#ChemicalSpecies"/>
+        <substance:hasMolecularStructure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularStructureOfPolyisobutylene"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#MolecularWeightOfPolyisobutylene"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#PressureOf6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Pumping_6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Pumping_6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#PressureChangeOfLiquid"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-9"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Purifying_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Purifying_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Flashing"/>
+        <behavior:hasHeatDuty rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#HeatDutyOfV-601"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-11"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-12"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#R-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#R-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#StirredTank"/>
+        <geometry:has_volume rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#VolumeOfR-601"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfR-601"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Reacting_6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Reacting_6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Reacting_6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Reaction"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-8"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#TemperatureOf6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#TrayColumn"/>
+        <j.2:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#CoordinateSystemOfV-601"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#Purifying_6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.67</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">248.5773</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">248.5773</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">28.28787</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">28.28787</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">220.2894</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">220.2894</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.08507123589</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">217.515</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.67</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">217.515</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">30.95244</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">248.5527</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">248.5527</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">248.5773</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">134.5254</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">13806.6</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">13806.6</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1435.165</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1435.165</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">12371.43</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">12371.43</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">32.67</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">12202.5915</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">134.5254</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">12202.5915</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1569.693</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">13806.6</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">13806.6</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfF_6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kg/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">13806.6</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-17.737</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-1526.79</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-603 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-603">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-674.603</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-604 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-604">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1469.99</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-605 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-605">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-222.311</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-606 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfE-606">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-641.755</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfV-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfHeatDutyOfV-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">192.798</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141047.576579898</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141041.485958793</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-603 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-603">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141051.517412734</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-604 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-604">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141068.807968149</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-605 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-605">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141067.590922802</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-606 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfE-606">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141074.165896897</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfM-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfM-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141047.089650113</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfM-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfM-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141045.182771373</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfP-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfP-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141065.333796584</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfR-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfR-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141061.514170041</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfV-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLatitudeOfV-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">141071.681113508</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402488992882E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402472222991E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-603 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-603">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402369166578E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-604 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-604">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402259986047E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-605 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-605">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402373876126E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-606 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfE-606">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402092773737E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfM-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfM-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402459870549E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfM-602 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfM-602">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402411517097E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfP-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfP-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402279407597E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfR-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfR-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402303916055E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfV-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfLongitudeOfV-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15402228525027E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfAllylCyanide -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfAllylCyanide">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#kg/kmol"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">64</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfDiisooctylPthalate -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfDiisooctylPthalate">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#kg/kmol"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">384</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfIsobutyleneSegment -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfIsobutyleneSegment">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#kg/kmol"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">56.1</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfPolyisobutylene -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfMolecularWeightOfPolyisobutylene">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#kg/kmol"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">xx</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.01325</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfPressureOf6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.00517</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">30</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-89.866</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">95.031</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">118.815</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-23.591</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">118.815</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">30</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">30</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">30</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-24.124</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-7.082</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-23.613</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-9.884</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-90</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfTemperatureOf6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-90</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfVolumeOfR-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfVolumeOfR-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#m3"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">23</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#VolumeOfR-601 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#VolumeOfR-601">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#Volume"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#ValueOfVolumeOfR-601"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#m3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#m3"/>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#molarF_6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#V_molarF_6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-1">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-10">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-11 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-11">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-11"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-12 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-12">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-12"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-13 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-13">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-13"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-14 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-14">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-14"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-15 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-15">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#CoreProduct"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-15"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-2">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-3">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-4">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-5">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-5"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-6 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-6">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-6"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-7">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-7"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-8 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-8">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-8"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-9 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#6-9">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#GeneralizedAmountOf6-9"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/Lanxess-PIBPlant.owl#kg/kmol -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/Lanxess-PIBPlant.owl#kg/kmol"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

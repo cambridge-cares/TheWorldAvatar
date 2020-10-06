@@ -1,0 +1,374 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#"
+     xml:base="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl"
+     xmlns:process="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#"
+     xmlns:apparatus="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#"
+     xmlns:space_and_time_extended="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:topology="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
+     xmlns:network_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:coordinate_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:plant="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#"
+     xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
+     xmlns:economic_performance="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/OntoCAPE.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#enters -->
+
+    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#enters"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#leaves -->
+
+    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#leaves"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#DirectCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#DirectCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#DirectManufacturingCosts"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_money"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_DirectCost_T-300000"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#EquipmentCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#EquipmentCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#EquipmentCosts"/>
+        <economic_performance:isCostOfPlantItem rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_EquipmentCost_T-300000"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#LaborCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#LaborCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#OperatingLaborCosts"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_money"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_LaborCost_T-300000"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#MtnceCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#MtnceCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Maintenance&amp;RepairCosts"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_money"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_MtnceCost_T-300000"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#NumberOfTrays_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#NumberOfTrays_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20202020</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_BtmIn -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_BtmIn">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_3"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_BtmOut -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_BtmOut">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_4"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_TopIn -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_TopIn">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_TopOut -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_TopOut">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_BtmIn -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_BtmIn">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <network_system:enters rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Sprtn"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_BtmOut -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_BtmOut">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <network_system:leaves rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Sprtn"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_TopIn -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_TopIn">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <network_system:enters rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Sprtn"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_TopOut -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_TopOut">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream"/>
+        <network_system:leaves rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Sprtn"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Sprtn -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Sprtn">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_BtmIn"/>
+        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_TopIn"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_BtmOut"/>
+        <network_system:hasOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ProcessStream_TopOut"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#TrayColumn"/>
+        <economic_performance:hasDirectCost rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#DirectCost_T-300000"/>
+        <economic_performance:hasEquipmentCost rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#EquipmentCost_T-300000"/>
+        <economic_performance:hasLaborCost rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#LaborCost_T-300000"/>
+        <economic_performance:hasMaintenanceCost rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#MtnceCost_T-300000"/>
+        <economic_performance:hasUtilityCost rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#UtilityCost_T-300000"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_1"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_2"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_3"/>
+        <plant:hasConnector rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_4"/>
+        <plant:hasTrayNumberingConvention rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#top-down"/>
+        <apparatus:hasNumberOfTrays rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#NumberOfTrays_T-300000"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_CoordinateSystem"/>
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Sprtn"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_CoordinateSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_CoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#x_T-300000"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#y_T-300000"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
+        <plant:isConnectorOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_TopIn"/>
+        <process:is_at_numbered_tray rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</process:is_at_numbered_tray>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
+        <plant:isConnectorOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_TopOut"/>
+        <process:is_at_numbered_tray rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</process:is_at_numbered_tray>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_3">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
+        <plant:isConnectorOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_BtmIn"/>
+        <process:is_at_numbered_tray rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20202020</process:is_at_numbered_tray>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000_N_4">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle"/>
+        <plant:isConnectorOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#T-300000"/>
+        <system:isDirectlyConnectedTo rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#Pipe_BtmOut"/>
+        <process:is_at_numbered_tray rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20202020</process:is_at_numbered_tray>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#UtilityCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#UtilityCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#UtilityCosts"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_money"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_UtilityCost_T-300000"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_DirectCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_DirectCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_EquipmentCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_EquipmentCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">149400.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_LaborCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_LaborCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/year"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_MtnceCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_MtnceCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/year"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_UtilityCost_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_UtilityCost_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/year"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_x_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_x_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3.1415926</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_y_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_y_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.71828</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#x_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#x_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_x_T-300000"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#y_T-300000 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#y_T-300000">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/T-300000.owl#ValueOf_y_T-300000"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

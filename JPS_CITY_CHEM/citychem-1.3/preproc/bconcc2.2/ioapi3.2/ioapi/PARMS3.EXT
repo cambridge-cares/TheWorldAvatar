@@ -1,0 +1,169 @@
+
+!.........................................................................
+! Version "$Id: PARMS3.EXT 1 2017-06-10 18:05:20Z coats $"
+!   EDSS/Models-3 I/O API.
+!   Copyright (C) 1992-2002 MCNC, (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
+!   (C) 2003-2011 Baron Advanced Meteorological Systems, LLC., and
+!   (C) 2015- UNC Institute for the Environment.
+!
+!   Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
+!   See file "LGPL.txt" for conditions of use.
+!....................................................................
+!  INCLUDE FILE  PARMS3.EXT
+!
+!  DO NOT EDIT !!
+!
+!       The EDSS/Models-3 I/O API depends in an essential manner
+!       upon the contents of this INCLUDE file.  ANY CHANGES are
+!       likely to result in very obscure, difficult-to-diagnose
+!       bugs caused by an inconsistency between standard "libioapi.a"
+!       object-libraries and whatever code is compiled with the
+!       resulting modified INCLUDE-file.
+!
+!       By making any changes to this INCLUDE file, the user
+!       explicitly agrees that in the case any assistance is 
+!       required of MCNC or of the I/O API author, Carlie J. Coats, Jr.
+!       as a result of such changes, THE USER AND/OR HIS PROJECT OR
+!       CONTRACT AGREES TO REIMBURSE MCNC AND/OR THE I/O API AUTHOR,
+!       CARLIE J. COATS, JR., AT A RATE TRIPLE THE NORMAL CONTRACT
+!       RATE FOR THE SERVICES REQUIRED.
+!
+!  CONTAINS:
+!       Fortran dimensioning parameters, standard file-type, grid-type, etc.
+!       token values for Models-3 I/O System API
+!
+!  DEPENDENT UPON:
+!       M3INT, M3REAL, M3DBLE, M3INT8 consistent with NETCDF.EXT
+!       Consistent with C include file "parms3.h"
+!
+!  REVISION HISTORY:
+!       prototype 3/1992 by Carlie J. Coats, Jr., MCNC Environmental
+!       Programs
+!
+!       Modified 12/1992 by CJC:  new map projection type STEGRD3.
+!
+!       Modified  6/1994 by CJC:  I/O API Revisions.
+!
+!       Modified 12/1996 by CJC:  support for new file types
+!       Modified  2/2002 by CJC:  updated dates, license; compatibility
+!       with both free and fixed Fortran 9x source forms
+!
+!       Modified 10/2003 by CJC for I/O AI version 3:  support for
+!       native-binary BINFILE3 file type
+!
+!       Modified 03/2010 by CJC for I/O AI version 3.1:  Fortran-90
+!       PARAMETER form
+!
+!       Modified 02/2015 by CJC for I/O AI version 3.2:  M3INT8 support
+!
+!       Modified 02/2015 by CJC:  SINUGRD3 map projection for MIMS
+!       Spatial Allocator
+!
+!       Modified 02/2015 by CJC:  M3INT2 (== netCDF nf_short == nf_int2)
+!....................................................................
+
+!...........   Dimensioning parameters:
+            
+        INTEGER, PARAMETER :: MXDLEN3 =   80   !  description line length
+        INTEGER, PARAMETER :: NAMLEN3 =   16   !  name length (logical names, etc.)
+        INTEGER, PARAMETER :: MXFILE3 =   64   !  max number of open files
+        INTEGER, PARAMETER :: MXVARS3 = 2048   !  max number of variables per file
+        INTEGER, PARAMETER :: MXDESC3 =   60   !  max number of description lines
+        INTEGER, PARAMETER :: MXLAYS3 =  100   !  max # of layers per file
+        INTEGER, PARAMETER :: MXATTS3 =   20   !  max # ATDSC3.EXT attributes per variable
+            
+!...........   Token-values ("magic numbers"):
+            
+        !!......  File types:
+
+        INTEGER, PARAMETER :: KFEVNT3 =  -3   !  file type value "KF cloud event"
+        INTEGER, PARAMETER :: DGRAPH3 =  -2   !  file type value "directed graph"
+        INTEGER, PARAMETER :: CUSTOM3 =  -1   !  file type value "user-structured custom"
+        INTEGER, PARAMETER :: DCTNRY3 =   0   !  file type value "dictionary"
+        INTEGER, PARAMETER :: GRDDED3 =   1   !  file type value "gridded"
+        INTEGER, PARAMETER :: BNDARY3 =   2   !  file type value "boundary-condition"
+        INTEGER, PARAMETER :: IDDATA3 =   3   !  file type value "ID-referenced data"
+        INTEGER, PARAMETER :: PROFIL3 =   4   !  file type value "rawind vertical profiles"
+        INTEGER, PARAMETER :: GRNEST3 =   5   !  file type value "nested-grid"
+        INTEGER, PARAMETER :: SMATRX3 =   6   !  file type value "sparse matrix"
+        INTEGER, PARAMETER :: TSRIES3 =   7   !  file type value "time series"
+        INTEGER, PARAMETER :: PTRFLY3 =   8   !  file type value "pointer-flyer"
+        INTEGER, PARAMETER :: MPIGRD3 =   9   !  file type value "MPI-distributed grid"
+            
+        !!......  Data types (must match netCDF types):
+
+        INTEGER, PARAMETER :: M3BYTE  =   1    !  variable type value "Byte" = nf_byte
+        INTEGER, PARAMETER :: M3CHAR  =   2    !  variable type value "CHARACTER-string" = nf_char
+        INTEGER, PARAMETER :: M3INT2  =   3    !  variable type value "INTEGER*2" = nf_int2
+        INTEGER, PARAMETER :: M3INT   =   4    !  variable type value "INTEGER" = nf_int
+        INTEGER, PARAMETER :: M3REAL  =   5    !  variable type value "REAL" = nf_float
+        INTEGER, PARAMETER :: M3DBLE  =   6    !  variable type value "DOUBLE PRECISION" = nf_double
+        INTEGER, PARAMETER :: M3INT8  =  10    !  variable type value "INTEGER*8" = nf_int64
+
+        INTEGER, PARAMETER :: NM3TYPES = 4
+        INTEGER, PARAMETER :: M3TYPES( NM3TYPES ) =                             &
+     &        (/ M3INT, M3REAL, M3DBLE, M3INT8 /)
+            
+        !!......  File storage modes:
+
+        INTEGER, PARAMETER :: BUFFIL3 =  -1   !  "buffered-file" value for CDFID
+        INTEGER, PARAMETER :: VIRFIL3 =  -2   !  "virtual-file"  value for CDFID
+        INTEGER, PARAMETER :: LSTFIL3 =  -3   !  "file-list"     value for CDFID
+        INTEGER, PARAMETER :: BINFIL3 =  -4   !  "native-binary" value for CDFID
+            
+        !!......  File-opening modes:
+
+        INTEGER, PARAMETER :: FSREAD3 =   1   !  OPEN3() flag:  "old read-only" file
+        INTEGER, PARAMETER :: FSRDWR3 =   2   !  "old read-write" file
+        INTEGER, PARAMETER :: FSNEW3  =   3    !  "new (read-write)" file
+        INTEGER, PARAMETER :: FSUNKN3 =   4   !  "unknown (read_write)" file
+        INTEGER, PARAMETER :: FSCREA3 =   5   !  "unknown (write):  truncate if exists" file
+            
+        !!......  Map projection types:
+
+        INTEGER, PARAMETER :: LATGRD3 =   1   !  grid type value:  lat-lon coords
+        INTEGER, PARAMETER :: LAMGRD3 =   2   !  grid type value:  Lambert conformal conic (e.g., RADM)
+        INTEGER, PARAMETER :: MERGRD3 =   3   !  grid type value:  (general) Mercator
+        INTEGER, PARAMETER :: STEGRD3 =   4   !  grid type value:  (tangent) stereographic
+        INTEGER, PARAMETER :: UTMGRD3 =   5   !  grid type value:  UTM (special case Merc.)
+        INTEGER, PARAMETER :: POLGRD3 =   6   !  grid type value:  polar stereographic
+        INTEGER, PARAMETER :: EQMGRD3 =   7   !  grid type value: equatorial Mercator
+        INTEGER, PARAMETER :: TRMGRD3 =   8   !  grid type value: transverse Mercator
+        INTEGER, PARAMETER :: ALBGRD3 =   9   !  grid type value: Albers conic Equal Area
+        INTEGER, PARAMETER :: LEQGRD3 =  10   !  grid type value: Lambert Azimuthal Equal Area
+        INTEGER, PARAMETER :: SINUGRD3=  11   !  grid type value: Sinusoidal Equal Area
+            
+        !!......  Vertical-coordinate types:
+
+        INTEGER, PARAMETER :: GISLAY3 =  -1   ! "vert" coord type -1:  (arc) GIS layers
+        INTEGER, PARAMETER :: VGSGPH3 =   1   !  vert  coord type  1:  hydrostatic sigma-P
+        INTEGER, PARAMETER :: VGSGPN3 =   2   !  vert  coord type  2:  non-h sigma-P
+        INTEGER, PARAMETER :: VGSIGZ3 =   3   !  vert  coord type  3:  sigma-Z
+        INTEGER, PARAMETER :: VGPRES3 =   4   !  vert  coord type  4:  pressure (mb)
+        INTEGER, PARAMETER :: VGZVAL3 =   5   !  vert  coord type  5:  Z (m) (above sea lvl)
+        INTEGER, PARAMETER :: VGHVAL3 =   6   !  vert  coord type  6:  H (m) (above ground)
+        INTEGER, PARAMETER :: VGWRFEM =   7   !  vert  coord type  7:  WRF mass-core sigma
+        INTEGER, PARAMETER :: VGWRFNM =   8   !  vert  coord type  8:  WRF NMM
+            
+        !!......  Other tokens:
+
+        INTEGER, PARAMETER :: ALLAYS3 =  -1             !  Flag value: read all layers        
+        REAL   , PARAMETER :: BADVAL3 =  -9.999E36      !  real flag value: "bad" or "missing"
+        REAL   , PARAMETER :: AMISS3  =  -9.000E36      !  BADVAL3 < AMISS3 on all machines
+        INTEGER, PARAMETER :: OKFLAG3 =  5461           !  int flag value: "good" date values
+        INTEGER, PARAMETER :: IMISS3  = -9999           !  int flag value: "bad" or "missing" 
+
+        INTEGER, PARAMETER :: XSTAT0 = 0    !  Normal, successful completion
+        INTEGER, PARAMETER :: XSTAT1 = 1    !  File I/O error
+        INTEGER, PARAMETER :: XSTAT2 = 2    !  Execution error
+        INTEGER, PARAMETER :: XSTAT3 = 3    !  Special  error
+
+        INTEGER, PARAMETER :: LITTLE_ENDIAN = 1234
+        INTEGER, PARAMETER :: BIG_ENDIAN    = 4321
+        INTEGER, PARAMETER :: PDP_ENDIAN    = 3412
+
+        CHARACTER*16, PARAMETER :: ALLVAR3 = 'ALL'                      !  Flag value: read all variables
+        CHARACTER*16, PARAMETER :: CMISS3  =  '????????????????'        !  char flag value:  "missing"
+
+!................   end   PARMS3.EXT   ....................................
+

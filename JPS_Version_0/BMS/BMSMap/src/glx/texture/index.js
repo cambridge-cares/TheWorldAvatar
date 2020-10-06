@@ -1,0 +1,2 @@
+
+GLX.texture = {};

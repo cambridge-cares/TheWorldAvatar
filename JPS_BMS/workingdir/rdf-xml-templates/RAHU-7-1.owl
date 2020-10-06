@@ -1,0 +1,1420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:phase_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+  xmlns:BuildingsLayer="http://www.jparksimulator.com/BuildingsLayer.owl#"
+  xmlns:ns3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:material="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#"
+  xmlns:ns1="http://www.theworldavatar.com/BuildingItem.owl#"
+  xmlns:ns4="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#"
+  xmlns:BuildingDuctbehavior="http://www.theworldavatar.com/BuildingDuctbehavior.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:behavior="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#"
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:technical_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#"
+  xmlns:ns5="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:topology="http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <ns1:Duct rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-019">
+    <topology:isConnectedTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B">
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VSDControlOfRAHU-Fan-7-1_B"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_TripAlarm_sensor1"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_Coordinates"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Fan"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_RunStat_sensor1"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_Mode_sensor1"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Blowing2"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#TripAlarmStatOfRAHU-Fan-7-1_B"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_VSDF_sensor1"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RunStatusOfRAHU-Fan-7-1_B"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_VSDC_sensor1"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VSDFeedbackOfRAHU-Fan-7-1_B"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ModeOfRAHU-Fan-7-1_B"/>
+      </owl:NamedIndividual>
+    </topology:isConnectedTo>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:hasInput>
+      <BuildingDuctbehavior:StreamLine rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-019">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-019"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingDuctbehavior:StreamLine>
+    </topology:hasInput>
+    <topology:isConnectedTo>
+      <ns1:Tee rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_3">
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_3_Coordinates"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Splitting1"/>
+      </ns1:Tee>
+    </topology:isConnectedTo>
+  </ns1:Duct>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RoomTemperatureOfRAHU-7-1">
+    <SensorOntology:isObservedBy>
+      <ns3:T-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_RT_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-7-1_RT_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns3:T-Sensor>
+    </SensorOntology:isObservedBy>
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#RoomTemperature"/>
+  </owl:NamedIndividual>
+  <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#OffCoilTemperatureD17OfRAHU-7-1">
+    <SensorOntology:isObservedBy>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_D17T_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-7-1_D17T_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#T-Sensor"/>
+      </owl:NamedIndividual>
+    </SensorOntology:isObservedBy>
+    <owl:sameAs>
+      <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-017">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-017"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Temperature>
+    </owl:sameAs>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </phase_system:Temperature>
+  <ns1:Duct rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-023">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:hasInput>
+      <BuildingDuctbehavior:StreamLine rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-023">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-023"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingDuctbehavior:StreamLine>
+    </topology:hasInput>
+    <topology:isConnectedTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2">
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#HighTempOfRAHU-HE-7-1_2"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#NoFlowOfRAHU-HE-7-1_2"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StatusOfRAHU-HE-7-1_2"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#ElectricalCoil"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_HighTemp_sensor1"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_Control_sensor1"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_RunStat_sensor1"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_NoFlow_sensor1"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_Coordinates"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ControlOfRAHU-HE-7-1_2"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Heating1"/>
+      </owl:NamedIndividual>
+    </topology:isConnectedTo>
+  </ns1:Duct>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/BuildingItem.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/BuildingDuctbehavior.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1">
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_1">
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Cooling1"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#WaterCoil"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_1_Coordinates"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B"/>
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#AHU"/>
+    <system:hasSubsystem>
+      <ns1:Valve rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#FlowControl1"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValveControlOfRAHU-VA-7-1"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1_2WVLVC_sensor1"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValveFeedbackOfRAHU-VA-7-1"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1_Coordinates"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1_2WVLVF_sensor1"/>
+      </ns1:Valve>
+    </system:hasSubsystem>
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_3"/>
+    <system:hasDirectSubsystem>
+      <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_RH_sensor1">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-7-1_RH_sensor1.owl"/>
+      </ns3:Q-Sensor>
+    </system:hasDirectSubsystem>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_Coordinates">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-7-1"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-7-1"/>
+      </space_and_time_extended:GISCoordinateSystem>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <system:hasDirectSubsystem>
+      <ns3:T-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_D13T_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-7-1_D13T_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns3:T-Sensor>
+    </system:hasDirectSubsystem>
+    <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_RT_sensor1"/>
+    <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_D17T_sensor1"/>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_1">
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Mixing1"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_1_Coordinates"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Tee"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-F-7-1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Filter"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#FilterAlarmStatOfRAHU-F-7-1"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#filtration1"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-F-7-1_Coordinates"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-F-7-1_FIL_sensor1"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A">
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ModeOfRAHU-Fan-7-1_A"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_RunStat_sensor1"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_Coordinates"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_VSDC_sensor1"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VSDFeedbackOfRAHU-Fan-7-1_A"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_VSDF_sensor1"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#TripAlarmStatOfRAHU-Fan-7-1_A"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RunStatusOfRAHU-Fan-7-1_A"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Fan"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VSDControlOfRAHU-Fan-7-1_A"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_TripAlarm_sensor1"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Blowing1"/>
+        <system:hasDirectSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_Mode_sensor1"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Tee"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Mixing2"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_2_Coordinates"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-015">
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-F-7-1"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_1"/>
+    <topology:hasInput>
+      <BuildingDuctbehavior:StreamLine rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-015">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-015"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingDuctbehavior:StreamLine>
+    </topology:hasInput>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Duct"/>
+  </owl:NamedIndividual>
+  <ns2:Pipe rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Pipe-018">
+    <topology:hasInput>
+      <BuildingDuctbehavior:UtilityStream rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#CHW-018">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_CHW-018"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingDuctbehavior:UtilityStream>
+    </topology:hasInput>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns2:Pipe>
+  <ns2:Pipe rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Pipe-017">
+    <topology:hasInput>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#CHW-017">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_CHW-017"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingDuctbehavior.owl#UtilityStream"/>
+      </owl:NamedIndividual>
+    </topology:hasInput>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_1"/>
+  </ns2:Pipe>
+  <ns2:Pipe rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Pipe-019">
+    <topology:hasInput>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#CHW-019">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_CHW-019"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingDuctbehavior.owl#UtilityStream"/>
+      </owl:NamedIndividual>
+    </topology:hasInput>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns2:Pipe>
+  <ns1:Duct rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-020">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:hasInput>
+      <BuildingDuctbehavior:StreamLine rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-020">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-020"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingDuctbehavior:StreamLine>
+    </topology:hasInput>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_2"/>
+  </ns1:Duct>
+  <ns1:Duct rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-017">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:hasInput>
+      <BuildingDuctbehavior:StreamLine rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-017">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-017"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingDuctbehavior:StreamLine>
+    </topology:hasInput>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_3"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_1"/>
+  </ns1:Duct>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-018">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Duct"/>
+    <topology:hasInput>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-018">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-018"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingDuctbehavior.owl#StreamLine"/>
+      </owl:NamedIndividual>
+    </topology:hasInput>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_3"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-021">
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_2"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Duct"/>
+    <topology:hasInput>
+      <BuildingDuctbehavior:StreamLine rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-021">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-021"/>
+      </BuildingDuctbehavior:StreamLine>
+    </topology:hasInput>
+  </owl:NamedIndividual>
+  <ns1:Duct rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-022">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_2"/>
+    <topology:hasInput>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-022">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingDuctbehavior.owl#StreamLine"/>
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-022"/>
+      </owl:NamedIndividual>
+    </topology:hasInput>
+  </ns1:Duct>
+  <ns1:Duct rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-013">
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_1"/>
+    <topology:hasInput>
+      <BuildingDuctbehavior:StreamLine rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-013">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-013"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingDuctbehavior:StreamLine>
+    </topology:hasInput>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns1:Duct>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-016">
+    <topology:hasInput>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-016">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-016"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingDuctbehavior.owl#StreamLine"/>
+      </owl:NamedIndividual>
+    </topology:hasInput>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-F-7-1"/>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_1"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Duct"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Duct-014">
+    <topology:hasInput>
+      <BuildingDuctbehavior:StreamLine rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#St-014">
+        <BuildingDuctbehavior:refersToGeneralizedAmount rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-014"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingDuctbehavior:StreamLine>
+    </topology:hasInput>
+    <topology:isConnectedTo rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_1"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/BuildingItem.owl#Duct"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RoomHumidityOfRAHU-7-1">
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#RelativeHumidity"/>
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_RH_sensor1"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#SupplyTemperatureD13OfRAHU-7-1">
+    <owl:sameAs>
+      <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-013">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-013"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Temperature>
+    </owl:sameAs>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-7-1_D13T_sensor1"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-014">
+    <phase_system:has_pressure>
+      <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-014">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-014"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Pressure>
+    </phase_system:has_pressure>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+    <phase_system:has_temperature>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-014">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-014"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+      </owl:NamedIndividual>
+    </phase_system:has_temperature>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-F-7-1">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Blowing1">
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-020"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#PressureChangeOfGas"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-018"/>
+  </owl:NamedIndividual>
+  <behavior:ContinuousMaterialAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-022">
+    <behavior:refersToMaterial>
+      <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-022">
+        <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-022"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </material:Material>
+    </behavior:refersToMaterial>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-022">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-022"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:ContinuousMaterialAmount>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-015">
+    <phase_system:has_temperature>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-015">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-015"/>
+      </owl:NamedIndividual>
+    </phase_system:has_temperature>
+    <phase_system:has_pressure>
+      <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-015">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-015"/>
+      </phase_system:Pressure>
+    </phase_system:has_pressure>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+  </owl:NamedIndividual>
+  <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_HighTemp_sensor1">
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-HE-7-1_2_HighTemp_sensor1.owl"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns3:Q-Sensor>
+  <behavior:ContinuousMaterialAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-021">
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-021">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-021"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <behavior:refersToMaterial>
+      <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-021">
+        <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-021"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </material:Material>
+    </behavior:refersToMaterial>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:ContinuousMaterialAmount>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-019">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+    <system:hasSubsystem>
+      <behavior:ContinuousMaterialAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-019">
+        <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-019"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-019"/>
+      </behavior:ContinuousMaterialAmount>
+    </system:hasSubsystem>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfCHW-018">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#psi"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-HE-7-1_1">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-017">
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-017">
+        <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-017"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-017"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-HE-7-1_2">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-016">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-016">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+      </system:ScalarValue>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VSDFeedbackOfRAHU-Fan-7-1_A">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <SensorOntology:isObservedBy>
+      <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_VSDF_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_A_VSDF_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns3:Q-Sensor>
+    </SensorOntology:isObservedBy>
+  </BuildingsLayer:HVACSystemParameter>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-Fan-7-1_A">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <system:hasValue>
+      <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-Fan-7-1_A">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </coordinate_system:CoordinateValue>
+    </system:hasValue>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </owl:NamedIndividual>
+  <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_RunStat_sensor1">
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_B_RunStat_sensor1.owl"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns3:Q-Sensor>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-014">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <behavior:ContinuousMaterialAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-016">
+    <behavior:refersToMaterial>
+      <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-016">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-016"/>
+      </material:Material>
+    </behavior:refersToMaterial>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-016">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-016"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+  </behavior:ContinuousMaterialAmount>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-Tjoint-7-1_3">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <system:hasValue>
+      <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-Tjoint-7-1_3">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </coordinate_system:CoordinateValue>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VSDFeedbackOfRAHU-Fan-7-1_B">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <SensorOntology:isObservedBy>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_VSDF_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_B_VSDF_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+      </owl:NamedIndividual>
+    </SensorOntology:isObservedBy>
+  </BuildingsLayer:HVACSystemParameter>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#NoFlowOfRAHU-HE-7-1_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <SensorOntology:isObservedBy>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_NoFlow_sensor1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-HE-7-1_2_NoFlow_sensor1.owl"/>
+      </owl:NamedIndividual>
+    </SensorOntology:isObservedBy>
+  </BuildingsLayer:HVACSystemParameter>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-019">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VSDControlOfRAHU-Fan-7-1_A">
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#HVACSystemParameter"/>
+    <SensorOntology:isObservedBy>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_VSDC_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_A_VSDC_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+      </owl:NamedIndividual>
+    </SensorOntology:isObservedBy>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_CHW-018">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+    <phase_system:has_temperature>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfCHW-018">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfCHW-018"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+      </owl:NamedIndividual>
+    </phase_system:has_temperature>
+    <phase_system:has_pressure>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfCHW-018">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfCHW-018"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+      </owl:NamedIndividual>
+    </phase_system:has_pressure>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-VA-7-1">
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <system:hasValue>
+      <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-VA-7-1">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+      </coordinate_system:CoordinateValue>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <behavior:GeneralizedAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-021">
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-021"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:GeneralizedAmount>
+  <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-F-7-1">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-F-7-1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </ns5:StraightCoordinate>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-019">
+    <material:thermodynamicBehavior>
+      <phase_system:SinglePhase rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-019">
+        <phase_system:has_temperature rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-019"/>
+        <phase_system:has_pressure rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-019"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:SinglePhase>
+    </material:thermodynamicBehavior>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+  </owl:NamedIndividual>
+  <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_Mode_sensor1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_A_Mode_sensor1.owl"/>
+  </ns3:Q-Sensor>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-Fan-7-1_B">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <behavior:ConvectiveTransportRate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-013">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-013">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:ConvectiveTransportRate>
+  <behavior:ConvectiveTransportRate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-014">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-014"/>
+  </behavior:ConvectiveTransportRate>
+  <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-018">
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-018">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+      </system:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </phase_system:Pressure>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-019">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-023">
+    <phase_system:has_temperature>
+      <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-023">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-023"/>
+      </phase_system:Temperature>
+    </phase_system:has_temperature>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+    <phase_system:has_pressure>
+      <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-023">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-023"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Pressure>
+    </phase_system:has_pressure>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_CHW-017">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#l/m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-Fan-7-1_A">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_2_Coordinates">
+    <space_and_time_extended:hasProjectedCoordinate_x>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-Tjoint-7-1_2">
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-Tjoint-7-1_2"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+      </owl:NamedIndividual>
+    </space_and_time_extended:hasProjectedCoordinate_x>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <space_and_time_extended:hasProjectedCoordinate_y>
+      <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-Tjoint-7-1_2">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-Tjoint-7-1_2"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+      </ns5:StraightCoordinate>
+    </space_and_time_extended:hasProjectedCoordinate_y>
+  </space_and_time_extended:GISCoordinateSystem>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-018">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-7-1">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-7-1">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-020">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+    <phase_system:has_pressure>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-020">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-020"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+      </owl:NamedIndividual>
+    </phase_system:has_pressure>
+    <phase_system:has_temperature>
+      <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-020">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-020"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Temperature>
+    </phase_system:has_temperature>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-022">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+    <phase_system:has_temperature>
+      <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-022">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-022"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Temperature>
+    </phase_system:has_temperature>
+    <phase_system:has_pressure>
+      <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-022">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-022"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Pressure>
+    </phase_system:has_pressure>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-013">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-F-7-1">
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-F-7-1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns5:StraightCoordinate>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfCHW-017">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfCHW-017">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#psi"/>
+      </system:ScalarValue>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-HE-7-1_1">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-HE-7-1_1"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </ns5:StraightCoordinate>
+  <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-Tjoint-7-1_2">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </coordinate_system:CoordinateValue>
+  <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_TripAlarm_sensor1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_A_TripAlarm_sensor1.owl"/>
+  </ns3:Q-Sensor>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TripAlarmStatOfRAHU-Fan-7-1_A">
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_TripAlarm_sensor1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </BuildingsLayer:HVACSystemParameter>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-020">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-015">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+  </owl:NamedIndividual>
+  <ns4:TemperatureChange rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Heating1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-022"/>
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-023"/>
+  </ns4:TemperatureChange>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-016">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-019">
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-019">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </system:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </phase_system:Temperature>
+  <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-Fan-7-1_A">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-Fan-7-1_A"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns5:StraightCoordinate>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-Tjoint-7-1_3">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-018">
+    <phase_system:has_pressure rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-018"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+    <phase_system:has_temperature>
+      <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-018">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-018"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Temperature>
+    </phase_system:has_temperature>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_CHW-017">
+    <phase_system:has_pressure rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfCHW-017"/>
+    <phase_system:has_temperature>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfCHW-017">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfCHW-017"/>
+      </owl:NamedIndividual>
+    </phase_system:has_temperature>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+  </owl:NamedIndividual>
+  <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-Tjoint-7-1_1">
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-Tjoint-7-1_1">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </coordinate_system:CoordinateValue>
+    </system:hasValue>
+  </ns5:StraightCoordinate>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-Tjoint-7-1_1">
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-Tjoint-7-1_1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-014">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-022">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-018">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-018">
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-018"/>
+        <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-018"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-HE-7-1_2">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <system:hasValue>
+      <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-HE-7-1_2">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </coordinate_system:CoordinateValue>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-F-7-1_Coordinates">
+    <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-F-7-1"/>
+    <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-F-7-1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </space_and_time_extended:GISCoordinateSystem>
+  <behavior:ContinuousMaterialAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_CHW-019">
+    <behavior:refersToMaterial>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_CHW-019">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_CHW-019"/>
+      </owl:NamedIndividual>
+    </behavior:refersToMaterial>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_CHW-019">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_CHW-019"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+  </behavior:ContinuousMaterialAmount>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Cooling1">
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#CHW-018"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-016"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-017"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#CHW-017"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-021">
+    <phase_system:has_temperature>
+      <phase_system:Temperature rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-021">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-021"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Temperature>
+    </phase_system:has_temperature>
+    <phase_system:has_pressure>
+      <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-021">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-021"/>
+      </phase_system:Pressure>
+    </phase_system:has_pressure>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+  </owl:NamedIndividual>
+  <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_3_Coordinates">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <space_and_time_extended:hasProjectedCoordinate_x>
+      <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-Tjoint-7-1_3">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-Tjoint-7-1_3"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns5:StraightCoordinate>
+    </space_and_time_extended:hasProjectedCoordinate_x>
+    <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-Tjoint-7-1_3"/>
+  </space_and_time_extended:GISCoordinateSystem>
+  <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-015">
+    <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-015"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </material:Material>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-015">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-015">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-015"/>
+        <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-015"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Tjoint-7-1_1_Coordinates">
+    <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-Tjoint-7-1_1"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+    <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-Tjoint-7-1_1"/>
+  </owl:NamedIndividual>
+  <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-Fan-7-1_B">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-Fan-7-1_B">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </ns5:StraightCoordinate>
+  <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-016">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-016"/>
+  </phase_system:Pressure>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-013">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_Mode_sensor1">
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_B_Mode_sensor1.owl"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns3:Q-Sensor>
+  <behavior:ContinuousMaterialAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_CHW-018">
+    <behavior:refersToMaterial>
+      <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_CHW-018">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_CHW-018"/>
+      </material:Material>
+    </behavior:refersToMaterial>
+    <system:hasProperty>
+      <behavior:ConvectiveTransportRate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_CHW-018">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_CHW-018"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </behavior:ConvectiveTransportRate>
+    </system:hasProperty>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:ContinuousMaterialAmount>
+  <ns4:Mixing rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Mixing1">
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-014"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-013"/>
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-015"/>
+  </ns4:Mixing>
+  <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfCHW-019">
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfCHW-019">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#psi"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </system:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </phase_system:Pressure>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-017">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+    <phase_system:has_temperature rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-017"/>
+    <phase_system:has_pressure>
+      <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-017">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-017"/>
+      </phase_system:Pressure>
+    </phase_system:has_pressure>
+  </owl:NamedIndividual>
+  <ns4:Separation rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#filtration1">
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-016"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-015"/>
+  </ns4:Separation>
+  <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-020">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-020"/>
+  </material:Material>
+  <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-HE-7-1_1">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </coordinate_system:CoordinateValue>
+  <phase_system:SinglePhase rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-013">
+    <phase_system:has_temperature rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-013"/>
+    <phase_system:has_pressure>
+      <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-013">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-013"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </phase_system:Pressure>
+    </phase_system:has_pressure>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </phase_system:SinglePhase>
+  <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-VA-7-1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <system:hasValue>
+      <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-VA-7-1">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+      </coordinate_system:CoordinateValue>
+    </system:hasValue>
+  </ns5:StraightCoordinate>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValveFeedbackOfRAHU-VA-7-1">
+    <SensorOntology:isObservedBy>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1_2WVLVF_sensor1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-VA-7-1_2WVLVF_sensor1.owl"/>
+      </owl:NamedIndividual>
+    </SensorOntology:isObservedBy>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </BuildingsLayer:HVACSystemParameter>
+  <behavior:ConvectiveTransportRate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-018">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-018"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:ConvectiveTransportRate>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#FilterAlarmStatOfRAHU-F-7-1">
+    <SensorOntology:isObservedBy>
+      <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-F-7-1_FIL_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-F-7-1_FIL_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns3:Q-Sensor>
+    </SensorOntology:isObservedBy>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </BuildingsLayer:HVACSystemParameter>
+  <ns4:Mixing rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Mixing2">
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-021"/>
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-022"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-020"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns4:Mixing>
+  <phase_system:Pressure rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-019">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-019"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </phase_system:Pressure>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-013">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-013">
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-013"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-013"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-022">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_RunStat_sensor1">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-HE-7-1_2_RunStat_sensor1.owl"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-Tjoint-7-1_2">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TripAlarmStatOfRAHU-Fan-7-1_B">
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#HVACSystemParameter"/>
+    <SensorOntology:isObservedBy>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_TripAlarm_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_B_TripAlarm_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+      </owl:NamedIndividual>
+    </SensorOntology:isObservedBy>
+  </owl:NamedIndividual>
+  <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_Coordinates">
+    <space_and_time_extended:hasProjectedCoordinate_y>
+      <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-HE-7-1_2">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-HE-7-1_2"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+      </ns5:StraightCoordinate>
+    </space_and_time_extended:hasProjectedCoordinate_y>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-HE-7-1_2"/>
+  </space_and_time_extended:GISCoordinateSystem>
+  <behavior:ConvectiveTransportRate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-015">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-015">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </behavior:ConvectiveTransportRate>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-019">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-019"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+  </owl:NamedIndividual>
+  <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_Coordinates">
+    <space_and_time_extended:hasProjectedCoordinate_y>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-Fan-7-1_B">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-Fan-7-1_B"/>
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+      </owl:NamedIndividual>
+    </space_and_time_extended:hasProjectedCoordinate_y>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-Fan-7-1_B"/>
+  </space_and_time_extended:GISCoordinateSystem>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-018">
+    <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-018"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-020">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-7-1">
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_y_RAHU-7-1">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </ns5:StraightCoordinate>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_Coordinates">
+    <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-Fan-7-1_A"/>
+    <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-Fan-7-1_A"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_CHW-019">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_CHW-019"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-020">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-020">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfCHW-017">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <ns4:UnitOperation rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#FlowControl1">
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#CHW-018"/>
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#CHW-019"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns4:UnitOperation>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ValveControlOfRAHU-VA-7-1">
+    <SensorOntology:isObservedBy>
+      <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1_2WVLVC_sensor1">
+        <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-VA-7-1_2WVLVC_sensor1.owl"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns3:Q-Sensor>
+    </SensorOntology:isObservedBy>
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#HVACSystemParameter"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RunStatusOfRAHU-Fan-7-1_B">
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#HVACSystemParameter"/>
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_RunStat_sensor1"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-014">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+    <system:hasSubsystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-014">
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-014"/>
+        <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-014"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+      </owl:NamedIndividual>
+    </system:hasSubsystem>
+  </owl:NamedIndividual>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ModeOfRAHU-Fan-7-1_A">
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_Mode_sensor1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </BuildingsLayer:HVACSystemParameter>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-021">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfCHW-019">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#HighTempOfRAHU-HE-7-1_2">
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#HVACSystemParameter"/>
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_HighTemp_sensor1"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-023">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-023">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+  </owl:NamedIndividual>
+  <behavior:GeneralizedAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-016">
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-016"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:GeneralizedAmount>
+  <behavior:ContinuousMaterialAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-020">
+    <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-020"/>
+    <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-020"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:ContinuousMaterialAmount>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-013">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+    <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-013"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-014">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-023">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+    <system:hasSubsystem>
+      <behavior:ContinuousMaterialAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-023">
+        <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-023"/>
+        <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-023"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </behavior:ContinuousMaterialAmount>
+    </system:hasSubsystem>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Blowing2">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#PressureChangeOfGas"/>
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-021"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-019"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-017">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+  </system:ScalarValue>
+  <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-023">
+    <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-023"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </material:Material>
+  <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_CHW-017">
+    <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_CHW-017"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </material:Material>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfCHW-018">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+  </system:ScalarValue>
+  <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-017">
+    <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-017"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </material:Material>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_CHW-017">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_CHW-017"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_CHW-019">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#l/m"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_VSDC_sensor1">
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_B_VSDC_sensor1.owl"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_1_Coordinates">
+    <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-HE-7-1_1"/>
+    <space_and_time_extended:hasProjectedCoordinate_x>
+      <ns5:StraightCoordinate rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-HE-7-1_1">
+        <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#ValueOf_x_RAHU-HE-7-1_1"/>
+        <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns5:StraightCoordinate>
+    </space_and_time_extended:hasProjectedCoordinate_x>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+  </owl:NamedIndividual>
+  <behavior:GeneralizedAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-022">
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-022"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:GeneralizedAmount>
+  <material:Material rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Material_St-014">
+    <material:thermodynamicBehavior rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-014"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </material:Material>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-023">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_CHW-017">
+    <behavior:refersToMaterial rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#Material_CHW-017"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+    <system:hasProperty rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_CHW-017"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-022">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-016">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_RunStat_sensor1">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-Fan-7-1_A_RunStat_sensor1.owl"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfCHW-019">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfCHW-019"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-021">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RunStatusOfRAHU-Fan-7-1_A">
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_A_RunStat_sensor1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </BuildingsLayer:HVACSystemParameter>
+  <behavior:GeneralizedAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_CHW-017">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_CHW-017"/>
+  </behavior:GeneralizedAmount>
+  <behavior:GeneralizedAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_CHW-018">
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_CHW-018"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:GeneralizedAmount>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ModeOfRAHU-Fan-7-1_B">
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_Mode_sensor1"/>
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#HVACSystemParameter"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VolumetricF_St-017">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_St-017">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_VolumetricF_CHW-018">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#l/m"/>
+  </owl:NamedIndividual>
+  <ns3:Q-Sensor rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_Control_sensor1">
+    <Eco-industrialPark:hasIRI rdf:resource="http://www.theworldavatar.com/BMS/RAHU-HE-7-1_2_Control_sensor1.owl"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns3:Q-Sensor>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#ControlOfRAHU-HE-7-1_2">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_Control_sensor1"/>
+  </BuildingsLayer:HVACSystemParameter>
+  <BuildingsLayer:HVACSystemParameter rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StatusOfRAHU-HE-7-1_2">
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-HE-7-1_2_RunStat_sensor1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </BuildingsLayer:HVACSystemParameter>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#Splitting1">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Splitting"/>
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-018"/>
+    <topology:hasOutput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-019"/>
+    <topology:hasInput rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#St-017"/>
+  </owl:NamedIndividual>
+  <phase_system:SinglePhase rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_St-016">
+    <phase_system:has_pressure rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfSt-016"/>
+    <phase_system:has_temperature rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfSt-016"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </phase_system:SinglePhase>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-023">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#VSDControlOfRAHU-Fan-7-1_B">
+    <SensorOntology:isObservedBy rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-Fan-7-1_B_VSDC_sensor1"/>
+    <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#HVACSystemParameter"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#RAHU-VA-7-1_Coordinates">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+    <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#x_RAHU-VA-7-1"/>
+    <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#y_RAHU-VA-7-1"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-018">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <phase_system:SinglePhase rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#StreamPhase_CHW-019">
+    <phase_system:has_temperature rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#TemperatureOfCHW-019"/>
+    <phase_system:has_pressure rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#PressureOfCHW-019"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </phase_system:SinglePhase>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_TemperatureOfSt-015">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <behavior:GeneralizedAmount rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#GeneralizedAmount_St-020">
+    <system:hasSubsystem rdf:resource="http://www.theworldavatar.com/RAHU-7-1.owl#MaterialAmount_St-020"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </behavior:GeneralizedAmount>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-021">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/RAHU-7-1.owl#V_PressureOfSt-017">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+</rdf:RDF>

@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mods xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd">
+<algorithms>
+<algorithm name="Sobol_Alg_1">
+<details>
+<detail name="algorithm_type">Sobol</detail>
+<detail name="model_name">exe</detail>
+<detail name="objective_function">SumOfSquares</detail>
+<detail name="output_by_case">false</detail>
+<detail name="output_values">true</detail>
+<detail name="n_points">2400</detail>
+<detail name="seed">6745654</detail>
+<detail name="output_interval">100</detail>
+<detail name="optimisable_param_subtypes">subtype_ExxonMobil_Chemical_LoadMW_93 subtype_ExxonMobil_Refinery_LoadMW_94 subtype_Petrofac_LoadMW_95 subtype_ExxonMobil_Chemical_LoadMVR_93 subtype_ExxonMobil_Refinery_LoadMVR_94 subtype_Petrofac_LoadMVR_95</detail>
+<detail name="response_param_subtypes">subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSANGLE subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSKVVOLT subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMW subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMVR subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSANGLE subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSKVVOLT subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMW subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMVR subtype_CaseGroup1_Bus95_Petrofac_PWBUSANGLE subtype_CaseGroup1_Bus95_Petrofac_PWBUSKVVOLT subtype_CaseGroup1_Bus95_Petrofac_LineMW subtype_CaseGroup1_Bus95_Petrofac_LineMVR</detail>
+</details>
+</algorithm>
+<algorithm name="HDMR_Alg_1">
+<details>
+<detail name="algorithm_type">Surrogate</detail>
+<detail name="output_by_case">false</detail>
+<detail name="output_values">true</detail>
+<detail name="surrogate_type">HDMR</detail>
+<detail name="fit_to_coded_responses">false</detail>
+<detail name="global">false</detail>
+<detail name="order">10</detail>
+<detail name="HDMRorder">2</detail>
+<detail name="r_squared_tol">0.99999</detail>
+<detail name="optimisable_param_subtypes">subtype_ExxonMobil_Chemical_LoadMW_93 subtype_ExxonMobil_Refinery_LoadMW_94 subtype_Petrofac_LoadMW_95 subtype_ExxonMobil_Chemical_LoadMVR_93 subtype_ExxonMobil_Refinery_LoadMVR_94 subtype_Petrofac_LoadMVR_95</detail>
+<detail name="response_param_subtypes">subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSANGLE subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSKVVOLT subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMW subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMVR subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSANGLE subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSKVVOLT subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMW subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMVR subtype_CaseGroup1_Bus95_Petrofac_PWBUSANGLE subtype_CaseGroup1_Bus95_Petrofac_PWBUSKVVOLT subtype_CaseGroup1_Bus95_Petrofac_LineMW subtype_CaseGroup1_Bus95_Petrofac_LineMVR</detail>
+<detail name="previous_algorithms">Sobol_Alg_1</detail>
+</details>
+</algorithm>
+<algorithm name="Polynomial_Alg_1">
+<details>
+<detail name="algorithm_type">Surrogate</detail>
+<detail name="output_by_case">false</detail>
+<detail name="output_values">true</detail>
+<detail name="surrogate_type">Polynomial</detail>
+<detail name="fit_to_coded_responses">false</detail>
+<detail name="global">false</detail>
+<detail name="order">1</detail>
+<detail name="kriging">false</detail>
+<detail name="correlation_length">0.2</detail>
+<detail name="optimisable_param_subtypes">subtype_ExxonMobil_Chemical_LoadMW_93 subtype_ExxonMobil_Refinery_LoadMW_94 subtype_Petrofac_LoadMW_95 subtype_ExxonMobil_Chemical_LoadMVR_93 subtype_ExxonMobil_Refinery_LoadMVR_94 subtype_Petrofac_LoadMVR_95</detail>
+<detail name="response_param_subtypes">subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSANGLE subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSKVVOLT subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMW subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMVR subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSANGLE subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSKVVOLT subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMW subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMVR subtype_CaseGroup1_Bus95_Petrofac_PWBUSANGLE subtype_CaseGroup1_Bus95_Petrofac_PWBUSKVVOLT subtype_CaseGroup1_Bus95_Petrofac_LineMW subtype_CaseGroup1_Bus95_Petrofac_LineMVR</detail>
+<detail name="previous_algorithms">Sobol_Alg_1</detail>
+</details>
+</algorithm>
+<algorithm name="Polynomial_Alg_2">
+<details>
+<detail name="algorithm_type">Surrogate</detail>
+<detail name="output_by_case">false</detail>
+<detail name="output_values">true</detail>
+<detail name="surrogate_type">Polynomial</detail>
+<detail name="fit_to_coded_responses">false</detail>
+<detail name="global">false</detail>
+<detail name="order">2</detail>
+<detail name="kriging">false</detail>
+<detail name="correlation_length">0.2</detail>
+<detail name="optimisable_param_subtypes">subtype_ExxonMobil_Chemical_LoadMW_93 subtype_ExxonMobil_Refinery_LoadMW_94 subtype_Petrofac_LoadMW_95 subtype_ExxonMobil_Chemical_LoadMVR_93 subtype_ExxonMobil_Refinery_LoadMVR_94 subtype_Petrofac_LoadMVR_95</detail>
+<detail name="response_param_subtypes">subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSANGLE subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSKVVOLT subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMW subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMVR subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSANGLE subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSKVVOLT subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMW subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMVR subtype_CaseGroup1_Bus95_Petrofac_PWBUSANGLE subtype_CaseGroup1_Bus95_Petrofac_PWBUSKVVOLT subtype_CaseGroup1_Bus95_Petrofac_LineMW subtype_CaseGroup1_Bus95_Petrofac_LineMVR</detail>
+<detail name="previous_algorithms">Sobol_Alg_1</detail>
+</details>
+</algorithm>
+</algorithms>
+<cases>
+<case name="CaseGroup1_Case1">
+<details>
+<detail name="executable_name">cmd.exe</detail>
+<detail name="working_directory"/>
+<detail name="args">/c ..\..\..\CheckOutput.bat </detail>
+</details>
+</case>
+</cases>
+<files>
+<file file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="file_type">DSV</detail>
+<detail name="delimiter">,</detail>
+</details>
+</file>
+<file file_name="MODS_SIM_INITFILE_Sim1_AIVarInitReadFile.csv">
+<details>
+<detail name="file_type">DSV</detail>
+<detail name="delimiter">,</detail>
+</details>
+</file>
+<file file_name="IN.csv">
+<details>
+<detail name="file_type">DSV</detail>
+<detail name="delimiter">,</detail>
+</details>
+</file>
+<file file_name="OUT.csv">
+<details>
+<detail name="file_type">DSV</detail>
+<detail name="delimiter">,</detail>
+</details>
+</file>
+</files>
+<parameters>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSANGLE_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSANGLE_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus93_ExxonMobil Chemical_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSKVVOLT_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus93_ExxonMobil_Chemical_PWBUSKVVOLT_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus93_ExxonMobil Chemical_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMW_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus93_ExxonMobil_Chemical_LineMW_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus93_ExxonMobil Chemical_LineMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMVR_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus93_ExxonMobil_Chemical_LineMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus93_ExxonMobil_Chemical_LineMVR_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus93_ExxonMobil Chemical_LineMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSANGLE_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSANGLE_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus94_ExxonMobil Refinery_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSKVVOLT_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus94_ExxonMobil_Refinery_PWBUSKVVOLT_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus94_ExxonMobil Refinery_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMW_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus94_ExxonMobil_Refinery_LineMW_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus94_ExxonMobil Refinery_LineMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMVR_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus94_ExxonMobil_Refinery_LineMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus94_ExxonMobil_Refinery_LineMVR_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus94_ExxonMobil Refinery_LineMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus95_Petrofac_PWBUSANGLE_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus95_Petrofac_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus95_Petrofac_PWBUSANGLE_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus95_Petrofac_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus95_Petrofac_PWBUSKVVOLT_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus95_Petrofac_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus95_Petrofac_PWBUSKVVOLT_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus95_Petrofac_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus95_Petrofac_LineMW_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus95_Petrofac_LineMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus95_Petrofac_LineMW_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus95_Petrofac_LineMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" detail_sep="," n_params_per_case="1" name="subtype_CaseGroup1_Bus95_Petrofac_LineMVR_" preserve_white_space="true" subtype="subtype_CaseGroup1_Bus95_Petrofac_LineMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">CaseGroup1_Bus95_Petrofac_LineMVR_Out</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus95_Petrofac_LineMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter detail_sep="," n_params_per_case="1" name="subtype_ExxonMobil_Chemical_LoadMW_93" preserve_white_space="true" subtype="subtype_ExxonMobil_Chemical_LoadMW_93" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_Sim1_AIVarInitReadFile.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">0</detail>
+<detail name="names">ExxonMobil_Chemical_LoadMW_93</detail>
+<detail name="lb_abs">78.444</detail>
+<detail name="ub_abs">95.87599999999999</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">ExxonMobil Chemical_LoadMW_93</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter detail_sep="," n_params_per_case="1" name="subtype_ExxonMobil_Refinery_LoadMW_94" preserve_white_space="true" subtype="subtype_ExxonMobil_Refinery_LoadMW_94" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_Sim1_AIVarInitReadFile.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">1</detail>
+<detail name="names">ExxonMobil_Refinery_LoadMW_94</detail>
+<detail name="lb_abs">119.142</detail>
+<detail name="ub_abs">145.618</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">ExxonMobil Refinery_LoadMW_94</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter detail_sep="," n_params_per_case="1" name="subtype_Petrofac_LoadMW_95" preserve_white_space="true" subtype="subtype_Petrofac_LoadMW_95" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_Sim1_AIVarInitReadFile.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">2</detail>
+<detail name="names">Petrofac_LoadMW_95</detail>
+<detail name="lb_abs">3.303</detail>
+<detail name="ub_abs">4.037</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">Petrofac_LoadMW_95</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter detail_sep="," n_params_per_case="1" name="subtype_ExxonMobil_Chemical_LoadMVR_93" preserve_white_space="true" subtype="subtype_ExxonMobil_Chemical_LoadMVR_93" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_Sim1_AIVarInitReadFile.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">3</detail>
+<detail name="names">ExxonMobil_Chemical_LoadMVR_93</detail>
+<detail name="lb_abs">38.7</detail>
+<detail name="ub_abs">47.3</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">ExxonMobil Chemical_LoadMVR_93</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter detail_sep="," n_params_per_case="1" name="subtype_ExxonMobil_Refinery_LoadMVR_94" preserve_white_space="true" subtype="subtype_ExxonMobil_Refinery_LoadMVR_94" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_Sim1_AIVarInitReadFile.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">4</detail>
+<detail name="names">ExxonMobil_Refinery_LoadMVR_94</detail>
+<detail name="lb_abs">58.5</detail>
+<detail name="ub_abs">71.5</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">ExxonMobil Refinery_LoadMVR_94</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter detail_sep="," n_params_per_case="1" name="subtype_Petrofac_LoadMVR_95" preserve_white_space="true" subtype="subtype_Petrofac_LoadMVR_95" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read file_name="MODS_SIM_INITFILE_Sim1_AIVarInitReadFile.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">5</detail>
+<detail name="names">Petrofac_LoadMVR_95</detail>
+<detail name="lb_abs">1.62</detail>
+<detail name="ub_abs">1.98</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">Petrofac_LoadMVR_95</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+</parameters>
+</mods>
