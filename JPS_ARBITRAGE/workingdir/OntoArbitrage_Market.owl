@@ -1,0 +1,855 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#"
+     xml:base="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:emo="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#date -->
+
+    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#date"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#aggregatedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#aggregatedBy">
+        <owl:inverseOf rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#aggregates"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#aggregates -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#aggregates"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#fromArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#fromArea"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasArea"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasBilateralContract -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasBilateralContract"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasBuyer -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasBuyer">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasEndPeriod -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasEndPeriod">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasMarketType -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasMarketType"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasOffer -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasOffer"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasOperator -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasOperator"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPeriod -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPeriod">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPower -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPower">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPrice -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPrice">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasSeller -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasSeller">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasSession -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasSession">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasStartPeriod -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasStartPeriod">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#isOperatedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#isOperatedBy">
+        <owl:inverseOf rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#operates"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#operates -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#operates"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placedByPlayer -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placedByPlayer">
+        <owl:inverseOf rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placesBid"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placedInPeriod -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placedInPeriod"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placedInSinglePeriod -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placedInSinglePeriod">
+        <rdfs:subPropertyOf rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placedInPeriod"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placesBid -->
+
+    <owl:ObjectProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placesBid">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#cfpTime -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#cfpTime">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#data -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#data"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#date -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#date">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#endDate -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#endDate">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#id -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#id">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxNumberOfFractions -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxNumberOfFractions"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxNumberOfSessions -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxNumberOfSessions"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxPrice -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxPrice">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#minPrice -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#minPrice">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#name -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#name">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#number -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#number">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#numberOfPeriods -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#numberOfPeriods"/>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#startDate -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#startDate">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#transactionType -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#transactionType">
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:oneOf>
+                    <rdf:Description>
+                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                        <rdf:first>buy</rdf:first>
+                        <rdf:rest>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                <rdf:first>sell</rdf:first>
+                                <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                            </rdf:Description>
+                        </rdf:rest>
+                    </rdf:Description>
+                </owl:oneOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#unit -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#unit">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#value -->
+
+    <owl:DatatypeProperty rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#value">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Aggregator -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Aggregator">
+        <rdfs:subClassOf rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Player"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#aggregates"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Player"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an abstract electricity market Aggregator. An aggregator is a special type of Player which is aggregates small players in other for them to be able to participate in the wholesale electricity markets.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Area -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Area">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxPrice"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#minPrice"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#name"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an electricity market Area, such as Portugal or Spain areas in the Iberian market MIBEL.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Bid -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Bid">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasOffer"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Offer"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placedByPlayer"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Player"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#id"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedLong"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#transactionType"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange>
+                    <rdfs:Datatype>
+                        <owl:oneOf>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                <rdf:first>buy</rdf:first>
+                                <rdf:rest>
+                                    <rdf:Description>
+                                        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#List"/>
+                                        <rdf:first>sell</rdf:first>
+                                        <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+                                    </rdf:Description>
+                                </rdf:rest>
+                            </rdf:Description>
+                        </owl:oneOf>
+                    </rdfs:Datatype>
+                </owl:onDataRange>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an electricity market&apos;s abstract Bid.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#BilateralContract -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#BilateralContract">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasBuyer"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Player"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasEndPeriod"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Period"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPower"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Power"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPrice"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Price"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasSeller"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Player"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasStartPeriod"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Period"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an electricity market&apos;s abstract Bilateral Contract.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#FuturesMarket -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#FuturesMarket">
+        <rdfs:subClassOf rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Market"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Market -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Market">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasArea"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Area"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasMarketType"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#MarketType"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasOperator"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Operator"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#data"/>
+                <owl:someValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#cfpTime"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedInt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#endDate"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#name"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#startDate"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an abstract electricity Market, i.e. it may assume instances as MIBEL, EPEX or Nord Pool.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#MarketOperator -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#MarketOperator">
+        <rdfs:subClassOf rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Operator"/>
+        <owl:disjointWith rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#SystemOperator"/>
+        <rdfs:comment xml:lang="en">This class represents an abstract Market Operator.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#MarketType -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#MarketType">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasSession"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Session"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#isOperatedBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Operator"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#id"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedLong"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxNumberOfSessions"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedInt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#name"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an abstract Market Type. E.g.: day-ahead, intraday, etc.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Offer -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Offer">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPower"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Power"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPrice"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Price"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#id"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedLong"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#number"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedInt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an abstract Offer. An Offer here is seen as a bid&apos;s fraction, i.e. a bid may be defined by one or more fractions.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Operator -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Operator">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#name"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an abstract electricity markets&apos; Operator.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Period -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Period">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#id"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedLong"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#number"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedInt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an abstract electricity market Period. A period usually represents an hour, but it can be less depending on the market and market type to consider.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Player -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Player">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#fromArea"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Area"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#placesBid"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Bid"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#name"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class defines an electricity market abstract Player. A player may be a buyer, a seller, consumer, producer, retailler, aggregator, prosumer, amoung others.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Power -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Power">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#unit"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#value"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an abstract Power, defining it value and unit.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Price -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Price">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#unit"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#value"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an abstract Price, defining it value and unit.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Session -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Session">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#hasPeriod"/>
+                <owl:someValuesFrom rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Period"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#date"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#id"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedLong"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#maxNumberOfFractions"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedInt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#number"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedInt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#numberOfPeriods"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onDataRange rdf:resource="http://www.w3.org/2001/XMLSchema#unsignedInt"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">This class represents an electricity market abstract Session. Each Market Type is composed of one or more market sessions.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#SystemOperator -->
+
+    <owl:Class rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#SystemOperator">
+        <rdfs:subClassOf rdf:resource="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Operator"/>
+        <rdfs:comment xml:lang="en">This class represents an abstract System Operator.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Area"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Bid"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#BilateralContract"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Market"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#MarketType"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Offer"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Operator"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Period"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Player"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Power"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Price"/>
+            <rdf:Description rdf:about="http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl#Session"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+

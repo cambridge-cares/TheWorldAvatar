@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+  xmlns:BuildingsLayer="http://www.jparksimulator.com/BuildingsLayer.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <BuildingsLayer:Building rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#CARES_Laboratory">
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#DryLabArea"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#RM-Room"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#BiologicalContainmentArea"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#OpticalDiagnosticRoom"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#AFMRaman-Room"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#ElectrochemicalAnalysisArea"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#Gas_Manifold-2"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#PowderProcessingRoom"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#TGA-Room"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#CR-Room"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#PilotRoom"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#Gas_Manifold-1"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#CleanRoom"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#FaradayRoom"/>
+    <BuildingsLayer:hasRooms rdf:resource="http://www.theworldavatar.com/CARES_Lab.owl#OpenLabArea"/>
+  </BuildingsLayer:Building>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/CARES_Lab.owl#CARES_Laboratory">
+    <BuildingsLayer:hasRooms>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#RM-Room">
+        <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#Room"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/RMR.owl</Eco-industrialPark:hasIRI>
+      </owl:NamedIndividual>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <BuildingsLayer:Room rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#CleanRoom">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/CR.owl</Eco-industrialPark:hasIRI>
+      </BuildingsLayer:Room>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#OpticalDiagnosticRoom">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/ODR.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#Room"/>
+      </owl:NamedIndividual>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#AFMRaman-Room">
+        <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#Room"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/AFMRR.owl</Eco-industrialPark:hasIRI>
+      </owl:NamedIndividual>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#PilotRoom">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/PR.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#Room"/>
+      </owl:NamedIndividual>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#OpenLabArea">
+        <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#Room"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/OLA.owl</Eco-industrialPark:hasIRI>
+      </owl:NamedIndividual>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#CR-Room">
+        <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#Room"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/CRR.owl</Eco-industrialPark:hasIRI>
+      </owl:NamedIndividual>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <BuildingsLayer:Room rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#FaradayRoom">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/FR.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingsLayer:Room>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <BuildingsLayer:Room rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#ElectrochemicalAnalysisArea">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/EAA.owl</Eco-industrialPark:hasIRI>
+      </BuildingsLayer:Room>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#Gas_Manifold-2">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/GM-2.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#Room"/>
+      </owl:NamedIndividual>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <BuildingsLayer:Room rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#BiologicalContainmentArea">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/BCA.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingsLayer:Room>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <BuildingsLayer:Room rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#Gas_Manifold-1">
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/GM-1.owl</Eco-industrialPark:hasIRI>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </BuildingsLayer:Room>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <BuildingsLayer:Room rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#TGA-Room">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/TGAR.owl</Eco-industrialPark:hasIRI>
+      </BuildingsLayer:Room>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#DryLabArea">
+        <rdf:type rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl#Room"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/DLA.owl</Eco-industrialPark:hasIRI>
+      </owl:NamedIndividual>
+    </BuildingsLayer:hasRooms>
+    <BuildingsLayer:hasRooms>
+      <BuildingsLayer:Room rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl#PowderProcessingRoom">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <Eco-industrialPark:hasIRI rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/BMS/PPR.owl</Eco-industrialPark:hasIRI>
+      </BuildingsLayer:Room>
+    </BuildingsLayer:hasRooms>
+  </rdf:Description>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/CARES_Lab.owl">
+    <owl:imports rdf:resource="http://www.jparksimulator.com/BuildingsLayer.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+  </owl:Ontology>
+</rdf:RDF>

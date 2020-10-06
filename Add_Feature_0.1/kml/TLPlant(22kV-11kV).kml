@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?><kml xmlns="http://www.opengis.net/kml/2.2">
+<Placemark>
+<MultiGeometry>
+<Name>Biodiesel Plant</Name>
+<description>&lt;?xml version="1.0" standalone="yes"?&gt;
+&lt;DocumentElement&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.08671491&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.021074&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.03719&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;T-600003 reboiler&lt;/Target&gt;
+    &lt;Name&gt;PHT-5&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.003&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.006&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.08760938&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.02107&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.03719&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;T-600003 condenser&lt;/Target&gt;
+    &lt;Name&gt;PHT-6&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.003&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.005&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.161420092&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.021074&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.03719&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P1&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;T-602003 reboiler&lt;/Target&gt;
+    &lt;Name&gt;PHT-8&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.003&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.006&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Distance&gt;0.149927855&lt;/Distance&gt;
+    &lt;Dst_unit&gt;km&lt;/Dst_unit&gt;
+    &lt;Rst_R&gt;0.02107&lt;/Rst_R&gt;
+    &lt;Rst_X&gt;0.03719&lt;/Rst_X&gt;
+    &lt;Rst_unit&gt;ohm/km&lt;/Rst_unit&gt;
+    &lt;Group_part&gt;P2&lt;/Group_part&gt;
+    &lt;Source&gt;HT-Substn1&lt;/Source&gt;
+    &lt;Target&gt;T-602003 condenser&lt;/Target&gt;
+    &lt;Name&gt;PHT-7&lt;/Name&gt;
+    &lt;Ln_loss_P&gt;0.003&lt;/Ln_loss_P&gt;
+    &lt;Ln_loss_Q&gt;0.005&lt;/Ln_loss_Q&gt;
+    &lt;loss_P_uni&gt;MW&lt;/loss_P_uni&gt;
+    &lt;loss_Q_uni&gt;Mvar&lt;/loss_Q_uni&gt;
+  &lt;/test&gt;
+&lt;/DocumentElement&gt;</description>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678049718701,1.25930993273281,100
+103.678133693021,1.25939404667243,100
+103.678574617323,1.25895323776385,100
+103.678548871229,1.25892730423067,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678049718701,1.25930993273281,100
+103.678011959319,1.25927091837114,100
+103.678407696065,1.25887456430416,100
+103.678504669394,1.25897151422536,100
+103.678529651649,1.2589464317145,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678935990057,1.25854351933263,100
+103.679008863103,1.25861291331136,100
+103.678541822438,1.25907865314284,100
+103.67849787313,1.25902996187849,100
+103.678133693021,1.25939404667248,100
+103.678056591566,1.25931681702494,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.678909190986,1.2585701582655,100
+103.67892335782,1.2585842798139,100
+103.678518708084,1.25898586161671,100
+103.678407696065,1.25887456430416,100
+103.678011959319,1.25927091837114,100
+103.678039272705,1.25929913955107,100
+</coordinates>
+</LineString>
+
+</MultiGeometry>
+</Placemark>
+</kml>

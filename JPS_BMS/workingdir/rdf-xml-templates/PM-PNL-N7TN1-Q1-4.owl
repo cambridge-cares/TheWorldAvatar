@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:ns3="http://www.theworldavatar.com/BuildingItem.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#"
+  xmlns:ns1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <ns3:PowerMeter rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#PM-PNL-N7TN1-Q1-4">
+    <SensorOntology:observes>
+      <ns2:ActualVoltage rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Voltage_Van_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Van_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns2:ActualVoltage>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#PowerFactor_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_PowerFactor_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/SensorOntology.owl#MeasuredObjectProperties"/>
+      </owl:NamedIndividual>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Current_Ia_PM-PNL-N7TN1-Q1-4">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#Current"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Current_Ia_PM-PNL-N7TN1-Q1-4"/>
+      </owl:NamedIndividual>
+    </SensorOntology:observes>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <SensorOntology:observes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Voltage_Vbc_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vbc_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#ActualVoltage"/>
+      </owl:NamedIndividual>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <SensorOntology:Frequency rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Frequency_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Frequency_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:Frequency>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Voltage_Vcn_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vcn_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#ActualVoltage"/>
+      </owl:NamedIndividual>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Voltage_Vab_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vab_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#ActualVoltage"/>
+      </owl:NamedIndividual>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <ns2:ActualVoltage rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Voltage_Vbn_PM-PNL-N7TN1-Q1-4">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vbn_PM-PNL-N7TN1-Q1-4"/>
+      </ns2:ActualVoltage>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <ns2:ActualVoltage rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Voltage_Vca_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vca_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns2:ActualVoltage>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <ns2:Current rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Current_Ic_PM-PNL-N7TN1-Q1-4">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Current_Ic_PM-PNL-N7TN1-Q1-4"/>
+      </ns2:Current>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <SensorOntology:MeasuredObjectProperties rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Energy_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Energy_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:MeasuredObjectProperties>
+    </SensorOntology:observes>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <space_and_time_extended:GISCoordinateSystem rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#PM-PNL-N7TN1-Q1-4_Coordinates">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#y_PM-PNL-N7TN1-Q1-4"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#x_PM-PNL-N7TN1-Q1-4"/>
+      </space_and_time_extended:GISCoordinateSystem>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <SensorOntology:observes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Power_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Power_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#ActualActivePower"/>
+      </owl:NamedIndividual>
+    </SensorOntology:observes>
+    <SensorOntology:observes>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#Current_Ib_PM-PNL-N7TN1-Q1-4">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Current_Ib_PM-PNL-N7TN1-Q1-4"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#Current"/>
+      </owl:NamedIndividual>
+    </SensorOntology:observes>
+  </ns3:PowerMeter>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/BuildingItem.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Current_Ic_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vca_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#V"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vab_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#V"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Energy_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kWh"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_PowerFactor_PM-PNL-N7TN1-Q1-4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#pf"/>
+    </system:hasUnitOfMeasure>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Van_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#V"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vbn_PM-PNL-N7TN1-Q1-4">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#V"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Current_Ia_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#ValueOf_x_PM-PNL-N7TN1-Q1-4">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#x_PM-PNL-N7TN1-Q1-4">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#ValueOf_x_PM-PNL-N7TN1-Q1-4"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Current_Ib_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Power_PM-PNL-N7TN1-Q1-4">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kW"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#y_PM-PNL-N7TN1-Q1-4">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#ValueOf_y_PM-PNL-N7TN1-Q1-4">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vbc_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#V"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Voltage_Vcn_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#V"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/PM-PNL-N7TN1-Q1-4.owl#V_Frequency_PM-PNL-N7TN1-Q1-4">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Hz"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+</rdf:RDF>

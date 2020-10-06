@@ -1,0 +1,4 @@
+How to install this package on my local computer?
+
+1. Open the terminal in this folder
+2. run "python3 setup.py install"

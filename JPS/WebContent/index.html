@@ -1,135 +1,135 @@
-<!DOCTYPE html>
+
+
 <html>
+
+
+
+
 <head>
-    <title>CARES Lab BMS Layout</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-
-        .control {
-            position: absolute;
-            left: 0;
-            z-index: 1000;
-        }
-
-        .control.tilt {
-            top: 0;
-        }
-
-        .control.rotation {
-            top: 45px;
-        }
-
-        .control.zoom {
-            top: 90px;
-        }
-
-        .control.zoom button{
-            font-weight: normal;
-        }
-
-        .control button {
-            width: 30px;
-            height: 30px;
-            margin: 15px 0 0 15px;
-            border: 1px solid #999999;
-            background: #ffffff;
-            opacity: 0.6;
-            border-radius: 5px;
-            box-shadow: 0 0 5px #666666;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .control button:hover {
-            opacity: 1;
-            cursor: pointer;
-        }
-
-        #fieldsetCheckbox {
-            width: 250px;
-            position: relative;
-            left: 0px;
-            top: 15px;
-            z-index: 1;
-            margin-left: 25px;
-            display: inline-block;
-            background-color: rgba(0,0,0,0.4);
-            padding: 5px 5px;
-            color: white;
-        }
-
-        legend {
-            font-size: 1em;
-            color: white;
-            margin-bottom: .75em;
-        }
-
-        label {
-            font-weight: normal !important;
-        }
-
-        p#lat, p#lon, p#conc {
-            margin-bottom: 0.5em;
-        }
-
-        div#output {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/adms3dmap.css">
     <link rel="stylesheet" href="css/OSMBuildings.css">
-    <script src="scripts/OSMBuildings.js"></script>
+    <link rel="stylesheet" href="css/conmap.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <title>J-Park Simulator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="scripts/OSMBuildings.debug.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.4/proj4.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-contour.v1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+    <script src="scripts/svg2img.js"></script>
+    <script src="scripts/mContour.js"></script>
+	<script src="scripts/adms3Dmap.js"></script>
+	<script src="scripts/startWithComposition.js"></script>
+
 </head>
-
 <body>
-
 <div class="jumbotron text-center" id="topBanner">
 
 
-    <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
-        <img src="images/cam_lang_negativ1%20NEW_0.png">
+    <a id="cares-banner" href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+        <img id="care-banner-img" src="images/cam_lang_negativ1%20NEW_0.png">
     </a>
 
-    <h1 id="head1">CARES Lab BMS Layout</h1>
-    <p id="description">Real time data from CARES Lab BMS(Building Management System) which updates itself every 3 minutes.</p>
+    <span id="readme-button">?</span>
+
+    <span id="readme-text">
+        This agent considers the effect of surrounding buildings and weather data for simulation of atmospheric dispersion for an emission source (black building).
+        <br/><br/>The pollutants in the emission source are CO<sub>2</sub>, CO and unburned hydrocarbon.
+        The pollutants emission rate has been arbitrarily assigned as 446 g/s for CO, 1970 g/s for CO<sub>2</sub> and 803 g/s for unburned hydrocarbon.
+        <br/><br/> The effects of the closest 25 buildings from the emission source within the selected region and real-time weather data (sourced from <a href="https://www.accuweather.com/en/nl/the-hague/251687/weather-forecast/251687">https://www.accuweather.com/en/nl/the-hague/251687/weather-forecast/251687</a>) on atmospheric dispersion are simulated and visualised in the dispersion profile. 
+		The weather data is updated every time the agent is executed. 
+        <br/><br/>The user can modify the area of interest between Den Haag and Berlin by selecting from the dropdown list and executing the simulation to determine the corresponding dispersion profile.
+        <br/>The emission source in Den Haag was chosen as the Uniper Stadcentrale Den Haag plant, while the emission source in Berlin was chosen as the Heizkraftwerk Mitte plant.
+        <br/>The emission sources have emission heights of 83.6 m in the Den Haag scenario and 99.3 m in the Berlin scenario respectively.
+        <br/><br/>The user can also select the region to focus on for the dispersion profile computation by modifying the coordinates of interest (X lower, X upper, Y lower and Y upper values in coordinate reference system Amersfoort RD New (epsg:28992)). 
+        <br/>It is recommended that the selected region approximates a square with length of minimum 400 m.
+		<br/><br/>The selected region has to be inline with the wind direction in order for the dispersion profile to be displayed.
+		The dispersion profile can be viewed at a height of 0 m to 30 m by moving the slider on the left. 
+		<br/><br/>The user can also choose to view the different pollutants’ dispersion profiles by selecting the listed pollutants. 
+		The user should reload the agent before modifying the coordinates of interest. 
+		The recommended region for the Den Haag scenario is between 79173.323 and 80199.621 for X and between 454193.456 and 455030.337 for Y.</span>
 
 </div>
 
+<div id="inputFields">
+
+    <select id="reaction-select">
+        <option value="http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC.owl#ReactionMechanism_184144363244001">Reduced_PRF_ERC-mechanism</option>
+        <option value="http://www.theworldavatar.com/kb/ontokin/Toluene.owl#ReactionMechanism_187077735769001">Toluene-mechanism</option>
+		<option value="http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_updated.owl#ReactionMechanism_2428062465251143 ">Reduced_PRF_ERC_Updated-mechanism</option>   
+    </select>
+
+    <h1 id="head1"></h1>
+    <p id="description"></p>
+
+    <label for="location">Location: </label>
+    <select id="location" name="location">
+        <option value="Berlin">Berlin</option>
+        <option value="The Hague" selected>The Hague</option>
+    </select>
+
+
+    <label for="xlower">X lower:</label>
+    <input id="xlower" type="text" value='476584.89' />
+
+    <label for="xupper">X upper:</label>
+    <input id="xupper" type="text" value='478230.04'/>
+
+    <label for="ylower">Y lower:</label>
+    <input id="ylower" type="text" value='6812941.68'/>
+
+    <label for="yupper">Y upper:</label>
+    <input id="yupper" type="text" value='6814587.35'/>
+
+
+    <!--  select id="compose">
+        <option value="no">
+        	no
+        </option>
+        <option value="yes">
+            yes
+        </option>
+    </select -->
+    
+    
+    <!-- input type="checkbox" id="compose" value="compose"> use composition -->
+    
+    <input type="checkbox" id="mock" value="mock"> 
+
+    <button id="start">Start simulation</button>
+    <ul id="reaction-list">
+
+
+    </ul>
+</div>
 <div id="map">
-    <div id="fieldsetCheckbox">
-        <fieldset id="twoDimCheckbox">
-            <legend>Select Orientation</legend>
-            <div id="twoDim">
-                <input type="checkbox" id="2d" name="dimension" value="2d">
-                <label for="2d">2D</label>
-            </div>
-        </fieldset>
-        <div id="output">
-            <p id="lat">lat: <span id="latitude"></span></p>
-            <p id="lon">lon: <span id="longitude"></span></p>
-            <p id="conc0">concentration (0m): <span id="concentration0"></span></p>
-            <p id="conc10">concentration (10m): <span id="concentration10"></span></p>
-            <p id="conc20">concentration (20m): <span id="concentration20"></span></p>
-            <p id="conc30">concentration (30m): <span id="concentration30"></span></p>
-        </div>
-    </div>
+    <!--<div id="fieldsetCheckbox">-->
+        <!--<fieldset id="twoDimCheckbox">-->
+            <!--<legend>Select Orientation</legend>-->
+            <!--<div id="twoDim">-->
+                <!--<input type="checkbox" id="2d" name="dimension" value="2d">-->
+                <!--<label for="2d">2D</label>-->
+            <!--</div>-->
+        <!--</fieldset>-->
+        <!--<div id="output">-->
+            <!--<p id="lat">x: <span id="latitude"></span></p>-->
+            <!--<p id="lon">y: <span id="longitude"></span></p>-->
+            <!--<p id="conc0">concentration (0m) in &mu;g/m<sup>3</sup>: <br><span id="concentration0"></span></p>-->
+            <!--<p id="conc10">concentration (10m) in &mu;g/m<sup>3</sup>: <br><span id="concentration10"></span></p>-->
+            <!--<p id="conc20">concentration (20m) in &mu;g/m<sup>3</sup>: <br><span id="concentration20"></span></p>-->
+            <!--<p id="conc30">concentration (30m) in &mu;g/m<sup>3</sup>: <br><span id="concentration30"></span></p>-->
+        <!--</div>-->
+    <!--</div>-->
 </div>
 
 <div class="control tilt">
@@ -147,286 +147,20 @@
     <button class="inc">+</button>
 </div>
 
-<script>
+<div class="choice  container">
+    <div class="row">
+        <div id="sliderwrapper" class = "col-lg-1 offset-lg-2"></div>
+        <div id="optionwrapper" class = "col-lg-3"></div>
+        <div id="legendwrapper" class = "col-lg-3"></div>
 
-    //var loc = window.location.pathname;
-    //var dir = loc.substring(0, loc.lastIndexOf('/'));
-    //console.log(dir)
+    </div>
 
-    var osmb = new OSMBuildings({
-        baseURL: './OSMBuildings',
-        zoom: 19.4,
-        minZoom: 10,
-        maxZoom: 25,
-        rotation: 0.6,
-        tilt: 45.0,
-        // position: { latitude:1.304270, longitude:103.774396 },
-        // change to variable latitude and longitude
-        position: { latitude: 52.039479093801496, longitude: 4.357006480574263 }, // around den Haag
-        // position: { latitude:1.3042168, longitude:103.7745893 }, // around NUS
-        state: true, // stores map position/rotation in url
-        effects: [], // effects: ['shadows']
-        attribution: '© 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
-    }).appendTo('map');
+</div>
 
-    osmb.addMapTiles(
-        'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
-        {
-            attribution: '© Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="https://mapbox.com/">Mapbox</a>'
-        }
-    );
+<div id="svgwrapper">
+    <svg xmlns="http://www.w3.org/2000/svg"  id='contoursvg' width="1024" height="1024"></svg>
+</div>
+<canvas width="1024" height="1024" id="drawcanvas"></canvas>
 
-    // function fillPopup()
-    // {
-    //     var muri = "http://www.theworldavatar.com/BMS/06_buildings.owl";
-    //
-    //     $.ajax({
-    //         url: "http://www.theworldavatar.com:82/getAttrList",
-    //         method: "POST",
-    //         data: JSON.stringify({uri: muri}),
-    //         contentType: "application/json; charset=utf-8",
-    //         success: function (attrPairs) {}
-    //         });
-    // }
-
-    // console.log(fillPopup());
-
-    //osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
-
-    var fieldset = document.getElementById("fieldsetCheckbox");
-    var divMap = document.getElementById("map");
-    divMap.removeChild(divMap.childNodes[0]);
-    divMap.appendChild(fieldset);
-
-    // --- Rendering 3D building models --- //
-    // var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-
-    var list = [
-        "http://www.theworldavatar.com/107_buildings.owl#Building001",
-        "http://www.theworldavatar.com/107_buildings.owl#Building002",
-        "http://www.theworldavatar.com/107_buildings.owl#Building003",
-        "http://www.theworldavatar.com/107_buildings.owl#Building004",
-        "http://www.theworldavatar.com/107_buildings.owl#Building005",
-        "http://www.theworldavatar.com/107_buildings.owl#Building006",
-        "http://www.theworldavatar.com/107_buildings.owl#Building007",
-        "http://www.theworldavatar.com/107_buildings.owl#Building008",
-        "http://www.theworldavatar.com/107_buildings.owl#Building009",
-        "http://www.theworldavatar.com/107_buildings.owl#Building010",
-        "http://www.theworldavatar.com/107_buildings.owl#Building011",
-        "http://www.theworldavatar.com/107_buildings.owl#Building012",
-        "http://www.theworldavatar.com/107_buildings.owl#Building013",
-        "http://www.theworldavatar.com/107_buildings.owl#Building014",
-        "http://www.theworldavatar.com/107_buildings.owl#Building015",
-        "http://www.theworldavatar.com/107_buildings.owl#Building016",
-        "http://www.theworldavatar.com/107_buildings.owl#Building017",
-        "http://www.theworldavatar.com/107_buildings.owl#Building018",
-        "http://www.theworldavatar.com/107_buildings.owl#Building019",
-        "http://www.theworldavatar.com/107_buildings.owl#Building020",
-        "http://www.theworldavatar.com/107_buildings.owl#Building021",
-        "http://www.theworldavatar.com/107_buildings.owl#Building022",
-        "http://www.theworldavatar.com/107_buildings.owl#Building023",
-        "http://www.theworldavatar.com/107_buildings.owl#Building024",
-        "http://www.theworldavatar.com/107_buildings.owl#Building025",
-        "http://www.theworldavatar.com/107_buildings.owl#Building026",
-        "http://www.theworldavatar.com/107_buildings.owl#Building027",
-        "http://www.theworldavatar.com/107_buildings.owl#Building028",
-        "http://www.theworldavatar.com/107_buildings.owl#Building029",
-        "http://www.theworldavatar.com/107_buildings.owl#Building030",
-        "http://www.theworldavatar.com/107_buildings.owl#Building031",
-        "http://www.theworldavatar.com/107_buildings.owl#Building032",
-        "http://www.theworldavatar.com/107_buildings.owl#Building033"
-    ]
-	// change to variable url path
-    $.getJSON('http://localhost:8080' + '/JPS/ADMSHelper',
-        {
-            listOfIRIs: JSON.stringify(list)
-        },
-        function(data) {
-			      // console.log(data);
-            var geojson = data;
-            var arrayLength = geojson.length;
-
-            for (var i = 0; i < arrayLength; i++) {
-
-                try {
-                    osmb.addGeoJSON(geojson[i]);
-                }
-                catch(err) {
-                    console.log(err.name)
-                }
-                // finally {
-                //     console.log(i);
-                //     console.log(geojson[i]);
-                // }
-            }
-    });
-
-    //***************************************************************************
-
-    osmb.highlight('w420847275','#00ff00');
-
-
-    osmb.on('pointerdown', function(e) {
-        // related to the tilt timers
-        clearInterval(decreaseTiltTimer);
-        clearInterval(increaseTiltTimer);
-        
-        var output = document.getElementById("output");
-        
-        if (output.style.display !== "none") {
-
-	        var id = osmb.getTarget(e.detail.x, e.detail.y, function(id) {
-	
-	            var coordinates = osmb.unproject(e.detail.x, e.detail.y);
-	
-	            var longitude = coordinates["longitude"].toFixed(5);
-	            var latitude = coordinates["latitude"].toFixed(5);
-	
-	            document.getElementById("longitude").innerHTML = longitude;
-	            document.getElementById("latitude").innerHTML = latitude;
-	
-	            var coordinatesArray = []
-	
-	            if (!isNaN(latitude)) {
-	              coordinatesArray.push(latitude);
-	            }
-	
-	            if (!isNaN(longitude)) {
-	              coordinatesArray.push(longitude);
-	            }
-	
-	            if (coordinatesArray.length > 0) {
-					// todo: change to variable URL path
-	              $.getJSON('http://localhost:8080' + '/JPS/ADMSOutput',
-	                  {
-	                      coordinatesLonLat: JSON.stringify(coordinatesArray)
-	                  },
-	                  function(data) {
-	                      // console.log(data);
-	                      var concentrations = data;
-	
-	                      document.getElementById("concentration0").innerHTML = concentrations[2];
-	                      document.getElementById("concentration10").innerHTML = concentrations[3];
-	                      document.getElementById("concentration20").innerHTML = concentrations[4];
-	                      document.getElementById("concentration30").innerHTML = concentrations[5];
-	
-	                  });
-	            }
-	
-	            // if(id == 'w420847275')
-	            // {
-	            //     // alert('clicked')
-	            //     window.location.assign("http://www.theworldavatar.com/BMSIndoor")
-	            //
-	            // }
-	        });
-        }
-    });
-    //61.0089718,132.8325304
-
-    // osmb.addOBJ('002.obj', { latitude: 61.0089718, longitude: 132.8325304}, { id: "my_object_1"});
-
-    osmb.on('pointermove', function(e) {
-        osmb.getTarget(e.detail.x, e.detail.y, function(id) {
-            if (id) {
-                document.body.style.cursor = 'pointer';
-                osmb.highlight(id, '#ff0000');
-                //osmb.highlight('w420847275','#00ff00');
-
-            } else {
-                document.body.style.cursor = 'default';
-                osmb.highlight(null);
-                osmb.highlight('w420847275','#00ff00');
-            }
-        });
-    });
-
-    //***************************************************************************
-
-
-    var twoDimCheckbox = document.querySelector('input[value="2d"]');
-    var decreaseTiltTimer;
-    var increaseTiltTimer;
-
-    twoDimCheckbox.onchange = function() {
-        if(twoDimCheckbox.checked) {
-            clearInterval(increaseTiltTimer);
-
-            var tilt = osmb.getTilt();
-
-            function decreaseTilt() {
-                tilt--;
-                if (tilt != 0) {
-                    osmb.setTilt(tilt);
-                }
-            }
-
-            decreaseTiltTimer = setInterval(decreaseTilt, 15);
-            decreaseTiltTimer;
-
-            var output = document.getElementById("output");
-
-            output.style.display = "inline";
-
-        } else {
-            clearInterval(decreaseTiltTimer);
-
-            var tilt = osmb.getTilt();
-
-            function increaseTilt() {
-                tilt++;
-                if (tilt < 45) {
-                    osmb.setTilt(tilt);
-                }
-            }
-
-            increaseTiltTimer = setInterval(increaseTilt, 15);
-            increaseTiltTimer;
-
-            var output = document.getElementById("output");
-
-            if (output.style.display !== "none") {
-                output.style.display = "none";
-
-                document.getElementById("longitude").innerHTML = "";
-                document.getElementById("latitude").innerHTML = "";
-                document.getElementById("concentration0").innerHTML = "";
-                document.getElementById("concentration10").innerHTML = "";
-                document.getElementById("concentration20").innerHTML = "";
-                document.getElementById("concentration30").innerHTML = "";                
-            }
-        }
-    };
-
-    //***************************************************************************
-
-    var controlButtons = document.querySelectorAll('.control button');
-
-    for (var i = 0, il = controlButtons.length; i < il; i++) {
-        controlButtons[i].addEventListener('click', function(e) {
-            var button = this;
-            var parentClassList = button.parentNode.classList;
-            var direction = button.classList.contains('inc') ? 1 : -1;
-            var increment;
-            var property;
-
-            if (parentClassList.contains('tilt')) {
-                property = 'Tilt';
-                increment = direction*10;
-            }
-            if (parentClassList.contains('rotation')) {
-                property = 'Rotation';
-                increment = direction*10;
-            }
-            if (parentClassList.contains('zoom')) {
-                property = 'Zoom';
-                increment = direction*1;
-            }
-            if (property) {
-                osmb['set'+ property](osmb['get'+ property]()+increment);
-            }
-        });
-    }
-</script>
 </body>
 </html>

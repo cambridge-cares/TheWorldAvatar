@@ -1,0 +1,506 @@
+<rdf:RDF
+    xmlns="http://www.semanticweb.org/kevin/ontologies/2018/11/untitled-ontology-2073#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+    xmlns:j.0="http://www.theworldavatar.com/ontology/ontocape/material/substance/molecular_structure.owl#"
+    xmlns:j.1="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#"
+    xmlns:j.2="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:j.3="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#"
+    xmlns:j.4="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#"
+    xmlns:j.5="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:j.6="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
+    xmlns:j.7="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#"
+    xmlns:j.8="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
+    xmlns:j.9="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"
+    xmlns:j.10="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.11="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#">
+  <owl:Ontology rdf:about="http://www.semanticweb.org/kevin/ontologies/2018/11/untitled-ontology-2073">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/OntoCAPE.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl"/>
+  </owl:Ontology>
+  <j.10:Pipe rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Chimney-1">
+    <j.6:realizes>
+      <j.5:ReleaseEmission rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#EmissionReleaseOfChimney-1">
+        <j.8:hasOutput>
+          <j.5:NonReusableWasteProduct rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#WasteStreamOfChimney-1">
+            <j.2:refersToGeneralizedAmount>
+              <j.11:GeneralizedAmount rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#GeneralizedAmount_WasteStreamOfChimney-1">
+                <system:hasSubsystem>
+                  <j.11:ParticulateMaterialAmount rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ParticleMaterialAmount_WasteStreamOfChimney-1">
+                    <j.11:refersToMaterial>
+                      <j.4:Material rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Material2_WasteStreamOfChimney-1">
+                        <j.4:intrinsicCharacteristics>
+                          <j.7:MolecularEntity rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001">
+                            <system:contains>
+                              <j.0:MolecularGroup rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Partial-6OfParticulate-001">
+                                <system:hasProperty>
+                                  <j.1:MassFraction rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#MassFraction_Partial-6OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_MassFraction_Partial-6OfParticulate-001">
+                                        <system:numericalValue
+                                        >0.1169403688248755</system:numericalValue>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:MassFraction>
+                                </system:hasProperty>
+                                <j.1:has_density>
+                                  <j.1:Density rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Density_Partial-6OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Density_Partial-6OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                                        >1800</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:Density>
+                                </j.1:has_density>
+                                <j.3:has_length>
+                                  <j.3:Diameter rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Diameter_Partial-6OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Diameter_Partial-6OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+                                        >1.0000000000000002E-6</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.3:Diameter>
+                                </j.3:has_length>
+                              </j.0:MolecularGroup>
+                            </system:contains>
+                            <system:contains>
+                              <j.0:MolecularGroup rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Partial-5OfParticulate-001">
+                                <system:hasProperty>
+                                  <j.1:MassFraction rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#MassFraction_Partial-5OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_MassFraction_Partial-5OfParticulate-001">
+                                        <system:numericalValue
+                                        >0.5889083322116032</system:numericalValue>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:MassFraction>
+                                </system:hasProperty>
+                                <j.1:has_density>
+                                  <j.1:Density rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Density_Partial-5OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Density_Partial-5OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                                        >1800</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:Density>
+                                </j.1:has_density>
+                                <j.3:has_length>
+                                  <j.3:Diameter rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Diameter_Partial-5OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Diameter_Partial-5OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+                                        >3.59381366380463E-7</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.3:Diameter>
+                                </j.3:has_length>
+                              </j.0:MolecularGroup>
+                            </system:contains>
+                            <system:contains>
+                              <j.0:MolecularGroup rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Partial-4OfParticulate-001">
+                                <system:hasProperty>
+                                  <j.1:MassFraction rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#MassFraction_Partial-4OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_MassFraction_Partial-4OfParticulate-001">
+                                        <system:numericalValue
+                                        >0.23261879122358328</system:numericalValue>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:MassFraction>
+                                </system:hasProperty>
+                                <j.1:has_density>
+                                  <j.1:Density rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Density_Partial-4OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Density_Partial-4OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                                        >1800</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:Density>
+                                </j.1:has_density>
+                                <j.3:has_length>
+                                  <j.3:Diameter rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Diameter_Partial-4OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Diameter_Partial-4OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+                                        >1.29154966501488E-7</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.3:Diameter>
+                                </j.3:has_length>
+                              </j.0:MolecularGroup>
+                            </system:contains>
+                            <system:contains>
+                              <j.0:MolecularGroup rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Partial-3OfParticulate-001">
+                                <system:hasProperty>
+                                  <j.1:MassFraction rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#MassFraction_Partial-3OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_MassFraction_Partial-3OfParticulate-001">
+                                        <system:numericalValue
+                                        >0.05426369632521201</system:numericalValue>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:MassFraction>
+                                </system:hasProperty>
+                                <j.1:has_density>
+                                  <j.1:Density rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Density_Partial-3OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Density_Partial-3OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                                        >1800</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:Density>
+                                </j.1:has_density>
+                                <j.3:has_length>
+                                  <j.3:Diameter rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Diameter_Partial-3OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Diameter_Partial-3OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+                                        >4.64158883361278E-8</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.3:Diameter>
+                                </j.3:has_length>
+                              </j.0:MolecularGroup>
+                            </system:contains>
+                            <system:contains>
+                              <j.0:MolecularGroup rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Partial-2OfParticulate-001">
+                                <system:hasProperty>
+                                  <j.1:MassFraction rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#MassFraction_Partial-2OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_MassFraction_Partial-2OfParticulate-001">
+                                        <system:numericalValue
+                                        >0.004711266657692826</system:numericalValue>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:MassFraction>
+                                </system:hasProperty>
+                                <j.1:has_density>
+                                  <j.1:Density rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Density_Partial-2OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Density_Partial-2OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                                        >1800</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:Density>
+                                </j.1:has_density>
+                                <j.3:has_length>
+                                  <j.3:Diameter rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Diameter_Partial-2OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Diameter_Partial-2OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+                                        >1.6681005372000602E-8</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.3:Diameter>
+                                </j.3:has_length>
+                              </j.0:MolecularGroup>
+                            </system:contains>
+                            <system:contains>
+                              <j.0:MolecularGroup rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Partial-1OfParticulate-001">
+                                <system:hasProperty>
+                                  <j.1:MassFraction rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#MassFraction_Partial-1OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_MassFraction_Partial-1OfParticulate-001">
+                                        <system:numericalValue
+                                        >0.0018340288060304214</system:numericalValue>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:MassFraction>
+                                </system:hasProperty>
+                                <j.1:has_density>
+                                  <j.1:Density rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Density_Partial-1OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Density_Partial-1OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                                        >1800</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:Density>
+                                </j.1:has_density>
+                                <j.3:has_length>
+                                  <j.3:Diameter rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Diameter_Partial-1OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Diameter_Partial-1OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+                                        >5.9948425031894E-9</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.3:Diameter>
+                                </j.3:has_length>
+                              </j.0:MolecularGroup>
+                            </system:contains>
+                            <system:contains>
+                              <j.0:MolecularGroup rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Partial-0OfParticulate-001">
+                                <system:hasProperty>
+                                  <j.1:MassFraction rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#MassFraction_Partial-0OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_MassFraction_Partial-0OfParticulate-001">
+                                        <system:numericalValue
+                                        >7.235159510028268E-4</system:numericalValue>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:MassFraction>
+                                </system:hasProperty>
+                                <j.1:has_density>
+                                  <j.1:Density rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Density_Partial-0OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Density_Partial-0OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#int"
+                                        >1800</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.1:Density>
+                                </j.1:has_density>
+                                <j.3:has_length>
+                                  <j.3:Diameter rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Diameter_Partial-0OfParticulate-001">
+                                    <system:hasValue>
+                                      <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Diameter_Partial-0OfParticulate-001">
+                                        <system:numericalValue
+                                         rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+                                        >2.15443469003188E-9</system:numericalValue>
+                                        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                                      </system:ScalarValue>
+                                    </system:hasValue>
+                                  </j.3:Diameter>
+                                </j.3:has_length>
+                              </j.0:MolecularGroup>
+                            </system:contains>
+                            <system:hasProperty>
+                              <j.11:ConvectiveMassFlowrate rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Particulate-001_EmissionRate">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Particulate-001_EmissionRate">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >2.3772799999999998E-4</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.11:ConvectiveMassFlowrate>
+                            </system:hasProperty>
+                          </j.7:MolecularEntity>
+                        </j.4:intrinsicCharacteristics>
+                      </j.4:Material>
+                    </j.11:refersToMaterial>
+                  </j.11:ParticulateMaterialAmount>
+                </system:hasSubsystem>
+                <system:hasSubsystem>
+                  <j.11:MaterialAmount rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#MaterialAmount_WasteStreamOfChimney-1">
+                    <j.11:refersToMaterial>
+                      <j.4:Material rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Material_WasteStreamOfChimney-1">
+                        <j.4:thermodynamicBehavior>
+                          <j.1:SinglePhase rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#SinglePhase_WasteStreamOfChimney-1">
+                            <j.1:has_density>
+                              <j.1:Density rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Density_MaterialInWasteStream-001">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Density_MaterialInWasteStream-001">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >0.577544330505469</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_cubic_m"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.1:Density>
+                            </j.1:has_density>
+                            <system:hasProperty>
+                              <j.1:ThermodynamicStateProperty rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Cp_MaterialInWasteStream-001">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Cp_MaterialInWasteStream-001">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >1334.86958348868</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#J_per_kg.K"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.1:ThermodynamicStateProperty>
+                            </system:hasProperty>
+                            <j.1:has_pressure>
+                              <j.1:Pressure rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Pressure_MaterialInWasteStream-001">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Pressure_MaterialInWasteStream-001">
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >0.0</system:numericalValue>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.1:Pressure>
+                            </j.1:has_pressure>
+                            <j.1:has_temperature>
+                              <j.1:Temperature rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Temperature_MaterialInWasteStream-001">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Temperature_MaterialInWasteStream-001">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >616.12736479669</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.1:Temperature>
+                            </j.1:has_temperature>
+                          </j.1:SinglePhase>
+                        </j.4:thermodynamicBehavior>
+                        <j.4:intrinsicCharacteristics>
+                          <j.7:Mixture rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Mixture_WasteStreamOfChimney-1">
+                            <system:containsDirectly rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__dioxide"/>
+                            <system:hasProperty>
+                              <j.11:ConvectiveMassFlowrate rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Carbon__dioxide_EmissionRate">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_ChemSpecies_Carbon__dioxide_EmissionRate">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >1.48566682568053</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.11:ConvectiveMassFlowrate>
+                            </system:hasProperty>
+                            <system:containsDirectly rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Carbon__monoxide"/>
+                            <system:hasProperty>
+                              <j.11:ConvectiveMassFlowrate rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#PseudoComponent_Nitrogen__oxides_EmissionRate">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_PseudoComponent_Nitrogen__oxides_EmissionRate">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >0.0</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.11:ConvectiveMassFlowrate>
+                            </system:hasProperty>
+                            <system:containsDirectly rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#Nitrogen__dioxide"/>
+                            <system:hasProperty>
+                              <j.11:ConvectiveMassFlowrate rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Carbon__monoxide_EmissionRate">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_ChemSpecies_Carbon__monoxide_EmissionRate">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >0.43801859297671103</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.11:ConvectiveMassFlowrate>
+                            </system:hasProperty>
+                            <system:containsDirectly rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Unburned_Hydrocarbon"/>
+                            <system:hasProperty>
+                              <j.11:ConvectiveMassFlowrate rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#PseudoComponent_Unburned_Hydrocarbon_EmissionRate">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_PseudoComponent_Unburned_Hydrocarbon_EmissionRate">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >1.23609160023103</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.11:ConvectiveMassFlowrate>
+                            </system:hasProperty>
+                            <system:hasProperty>
+                              <j.11:ConvectiveMassFlowrate rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Nitrogen__dioxide_EmissionRate">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_ChemSpecies_Nitrogen__dioxide_EmissionRate">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >0.0</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.11:ConvectiveMassFlowrate>
+                            </system:hasProperty>
+                            <system:hasProperty>
+                              <j.7:MolecularWeight rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#ChemSpecies_Combined_MolecularMass">
+                                <system:hasValue>
+                                  <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_ChemSpecies_Combined_MolecularMass">
+                                    <system:numericalValue rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#double"
+                                    >28.638811393753</system:numericalValue>
+                                    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g"/>
+                                  </system:ScalarValue>
+                                </system:hasValue>
+                              </j.7:MolecularWeight>
+                            </system:hasProperty>
+                            <system:containsDirectly rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#Nitrogen__oxides"/>
+                          </j.7:Mixture>
+                        </j.4:intrinsicCharacteristics>
+                      </j.4:Material>
+                    </j.11:refersToMaterial>
+                    <system:hasProperty>
+                      <j.11:ConvectiveMassFlowrate rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#massF_WasteStream-001">
+                        <system:hasValue>
+                          <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_massF_WasteStream-001">
+                            <system:numericalValue rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#double"
+                            >0.0192143028723584</system:numericalValue>
+                            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_hr"/>
+                          </system:ScalarValue>
+                        </system:hasValue>
+                      </j.11:ConvectiveMassFlowrate>
+                    </system:hasProperty>
+                  </j.11:MaterialAmount>
+                </system:hasSubsystem>
+              </j.11:GeneralizedAmount>
+            </j.2:refersToGeneralizedAmount>
+          </j.5:NonReusableWasteProduct>
+        </j.8:hasOutput>
+      </j.5:ReleaseEmission>
+    </j.6:realizes>
+    <j.10:hasInsideDiameter>
+      <j.9:DimensionOfBow rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Diameter_Chimney-1">
+        <system:hasValue>
+          <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Diameter_Chimney-1">
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+            >2.0</system:numericalValue>
+          </system:ScalarValue>
+        </system:hasValue>
+      </j.9:DimensionOfBow>
+    </j.10:hasInsideDiameter>
+    <j.10:hasHeight>
+      <j.9:DimensionOfBow rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#Height_Chimney-1">
+        <system:hasValue>
+          <system:ScalarValue rdf:about="http://www.theworldavatar.com/kb/ships/Chimney-1.owl#V_Height_Chimney-1">
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
+            >20.0</system:numericalValue>
+          </system:ScalarValue>
+        </system:hasValue>
+      </j.9:DimensionOfBow>
+    </j.10:hasHeight>
+  </j.10:Pipe>
+</rdf:RDF>

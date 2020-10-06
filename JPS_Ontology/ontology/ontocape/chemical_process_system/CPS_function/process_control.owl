@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#" xmlns:network_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:process="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#" xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:swrl="http://www.w3.org/2003/11/swrl#" xmlns:swrlb="http://www.w3.org/2003/11/swrlb#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#" xml:base="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+   </terms:license>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'process_control' provides concepts based on control theory for process control architectures for a chemical process system.
+The following classes and relations from other ontology modules are used within 'process_control':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Connection"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStep"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasOutput"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasInput"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#enters"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#leaves"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isRelatedTo"/&gt;
+
+The following classes and relations from the Meta Model are refined within 'process_control':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#ValueSet"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#NonExhaustiveValueSet"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isOfType"/&gt;
+
+   </rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="FunctionBlockLinearType">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasLinearity"/>
+            </owl:onProperty>
+            <owl:hasValue>
+              <LinearityVT rdf:ID="linear">
+                <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linear refers to the behavior of the ControlledSystem.</rdfs:comment>
+              </LinearityVT>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Class rdf:ID="FunctionBlock"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlock">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FunctionBlock have a distinct transfer function, which can be used to characterize them.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ControlComponent"/>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasLinearity"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="LinearityVT"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasLinearity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#LinearityVT"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasLinearity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasResponseCharacteristics"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:ID="ResponseCharacteristicsVT"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ResponseCharacteristicsVT"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasResponseCharacteristics"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="ActuatorFunction">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ActuatorFunction transforms the output of the Controller into the input of the ControlledSystem.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlock"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ControlledSystem">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlock"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ControlledSystem describes the functionality of the system to be controlled.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="BranchingPoint">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BranchingPoint describes the splitting of a controlled system.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="ComparingElement">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ComparingElement indicates whether a action line influence as a feed back or directly.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="DirectedActionline">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">DirectedActionline is a specialization of Actionline and likewise the connecting element between ControlComponents. However, the usage of DirectedActionline implies the indication of a directed connection.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">0</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#leaves"/>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#enters"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Actionline"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#LinearityVT">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ResponseCharacteristicsVT"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ControlLoopArchitectureVT"/>
+    </owl:disjointWith>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linearity is an enumeration of its instances linear and Non-linear.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <LinearityVT rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#linear"/>
+          <LinearityVT rdf:ID="nonlinear">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nonlinear refers to the behavior of the ControlledSystem which cannot be described as a linear function of the state of that system.</rdfs:comment>
+          </LinearityVT>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#ValueSet"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlLoopArchitectureVT">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ControlLoopArchitectureValue type comprises the different types of control loop structures. ControlLoopType  is an enumeration of its instances OpenLoopControl, FeedForwardControl, StateFeedbackControl, OutputFeedbackControl and ComplexControlLoop.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#NonExhaustiveValueSet"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ResponseCharacteristicsVT"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#LinearityVT"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ControlLoop">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ControlSystem is a functional subsystem of ProcessControlSystem and deals with functional describtion of the control system</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlLoopArchitectureVT"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasControlLoopArchitecture"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasControlLoopArchitecture"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlLoopArchitectureVT"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasControlLoopArchitecture"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+        </owl:someValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="LinearControlLoop">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlockLinearType"/>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlLoop"/>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+            <owl:allValuesFrom>
+              <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlockLinearType"/>
+                  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+                </owl:unionOf>
+              </owl:Class>
+            </owl:allValuesFrom>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="ReversingElement">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ReversingElement describes the functionality of lead.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/>
+        <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</owl:maxCardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Connection"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf"/>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Control Components are connected by actionlines, which represents a specific type of information collection. Actionlines are treated analogous to topological arcs.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ResponseCharacteristicsVT">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#LinearityVT"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlLoopArchitectureVT"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#NonExhaustiveValueSet"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ResponseCharacteristics describe the several characteristics how a controlled system may react on a manipulation.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="SensorFunction">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlock"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The SensorFunction comprises the entire function of recording, relaying, and writing out ProcessQuantities within other ControlComponents.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ControlComponent comprises the different features required for describing control.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf"/>
+        <owl:allValuesFrom>
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlComponent"/>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+            </owl:unionOf>
+          </owl:Class>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasInput"/>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#DirectedActionline"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#DirectedActionline"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasOutput"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Actionline"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Controller">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Controller represents the different types of controller.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlock"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasResponseCharacteristics">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasResponseCharacteristics refers from the function block to its ResponseCharacteristicsValueType.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isOfType"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlock"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ResponseCharacteristicsVT"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasLinearity">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#FunctionBlock"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasLinearity refers from a FunctionBlock to its LinearityValueType.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isOfType"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#LinearityVT"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="refersToProcessStep">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isRelatedTo"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlledSystem"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStep"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#hasControlLoopArchitecture">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlLoop"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isOfType"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasControlLoopArchitecture refers from a equipment to the corresponding fixture.</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#ControlLoopArchitectureVT"/>
+  </owl:ObjectProperty>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <ResponseCharacteristicsVT rdf:ID="D-Element">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">D-Element is a derivative part of a controller which is applied for smoother control trajectories since it reduces the magnitude of the overshoot produced by the integral component.</rdfs:comment>
+      </ResponseCharacteristicsVT>
+      <ResponseCharacteristicsVT rdf:ID="PT1-Element">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PT1-Element deals with time-delay in controlled system to avoid instability.</rdfs:comment>
+      </ResponseCharacteristicsVT>
+      <ResponseCharacteristicsVT rdf:ID="PID-Element">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PID-Element combines all features provided by the P-, I- and D-Element of a controller.</rdfs:comment>
+      </ResponseCharacteristicsVT>
+      <ResponseCharacteristicsVT rdf:ID="P-Element">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">P-Element is a proportional part of a controller which responds to a change in the process variable proportional to the current measured error value.</rdfs:comment>
+      </ResponseCharacteristicsVT>
+      <ResponseCharacteristicsVT rdf:ID="I-Element">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">I-Element is a integrative part of a controller which force the signal to approach the setpoint quicker than a proportional controller alone and eliminate steady state error.</rdfs:comment>
+      </ResponseCharacteristicsVT>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <ControlLoopArchitectureVT rdf:ID="OpenLoopControl">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OpenLoopControl is a type of architecture which computes its input into a system using only the current state and its model of the system.</rdfs:comment>
+      </ControlLoopArchitectureVT>
+      <ControlLoopArchitectureVT rdf:ID="FeedForwardControl">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system which exhibits FeedForwardControl responds to a measured disturbance in a pre-defined way before the disturbance effects the control variable.</rdfs:comment>
+      </ControlLoopArchitectureVT>
+      <ControlLoopArchitectureVT rdf:ID="StateFeedbackControl">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">StateFeedbackControl is a method employed in feedback control.</rdfs:comment>
+      </ControlLoopArchitectureVT>
+      <ControlLoopArchitectureVT rdf:ID="OutputFeedbackControl">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OutputFeedbackControl is applied when the output of the system is fed back into the system as part of its input.</rdfs:comment>
+      </ControlLoopArchitectureVT>
+      <ControlLoopArchitectureVT rdf:ID="ComplexControlLoop">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ComplexControlLoop is not yet specifically defined control loop which may be composed of other control loop elements.</rdfs:comment>
+      </ControlLoopArchitectureVT>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <LinearityVT rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#linear"/>
+      <LinearityVT rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#nonlinear"/>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+</rdf:RDF><!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

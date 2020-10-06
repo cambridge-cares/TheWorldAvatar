@@ -1,0 +1,34 @@
+<html>
+<script>
+var createCORSRequest = function(method, url) {
+  var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr) {
+    // Most browsers.
+    xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined") {
+    // IE8 & IE9
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+  } else {
+    // CORS not supported.
+    xhr = null;
+  }
+  return xhr;
+};
+
+var url = 'http://www.ebi.ac.uk/efo/efo.owl';
+var method = 'GET';
+var xhr = createCORSRequest(method, url);
+
+xhr.onload = function(response) {
+  console.log('Good')
+  console.log(response)
+};
+
+xhr.onerror = function() {
+  console.log('Bad')
+};
+
+xhr.send();
+</script>
+</html>

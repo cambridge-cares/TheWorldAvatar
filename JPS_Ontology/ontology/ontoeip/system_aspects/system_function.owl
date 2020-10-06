@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#consumes -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#consumes">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#hasCapacity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#hasCapacity">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Capacity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#hasDemand -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#hasDemand">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Resource"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Demand"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#produces -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#produces">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#By-product -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#By-product">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Capacity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Capacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Core-product -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Core-product">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Demand -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Demand">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#EnergySource -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#EnergySource">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Resource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Fuel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Fuel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#EnergySource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Material -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Material">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Resource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Power -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Power">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Resource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Product">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment>Commodity is specifically used for an economic good or service.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Resource -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Resource">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Steam -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Steam">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Resource"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Water -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Water">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#Resource"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

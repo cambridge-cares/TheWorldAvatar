@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#CanopyHood -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#CanopyHood">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#LabItem"/>
+        <rdfs:comment>Exhaust canopy fume hood type for venting non-toxic materials such as non-toxic smoke, steam, heat, and odors</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#CanopySwitchStatus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#CanopySwitchStatus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#ItemStateProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#EquipmentState -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#EquipmentState">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#ItemStateProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#FlowRate -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#FlowRate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#FumeHood -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#FumeHood">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#LabItem"/>
+        <rdfs:comment>A fume hood (sometimes called a fume cupboard or fume closet) is a type of local ventilation device that is designed to limit exposure to hazardous or toxic fumes, vapors or dusts.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#ItemStateProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#ItemStateProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#LabItem -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#LabItem">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:comment>Equipments that exist in the Laboratory</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#NormalFumeHood -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#NormalFumeHood">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#FumeHood"/>
+        <rdfs:comment>the name with FH for small equipment</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#SashOpening -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#SashOpening">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#ItemStateProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#Walk-inFumeHood -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#Walk-inFumeHood">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobuilding/LabItem.owl#FumeHood"/>
+        <rdfs:comment>the name starts with WFH for the larger equipment</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

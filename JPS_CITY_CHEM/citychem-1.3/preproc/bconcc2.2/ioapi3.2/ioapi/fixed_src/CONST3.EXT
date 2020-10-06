@@ -1,0 +1,112 @@
+
+!....................................................................
+! Version "$Id: CONST3.EXT 1 2017-06-10 18:05:20Z coats $"
+!   EDSS/Models-3 I/O API.
+!   Copyright (C) 1992-2002 MCNC,
+!   (C) 1992-2002,2005-2013 Carlie J. Coats, Jr.,
+!   (C) 2003-2011 Baron Advanced Meteorological Systems, LLC.,
+!   (C) 2014 UNC Institute for the Environment.
+!
+!    Distributed under the GNU LESSER GENERAL PUBLIC LICENSE version 2.1
+!    See file "LGPL.txt" for conditions of use.
+!.........................................................................
+!  INCLUDE FILE  CONST3.EXT
+!
+!  CONTAINS:
+!       Physical and mathematical constants
+!
+!  REVISION HISTORY:
+!
+!       Adapted 6/1992 by Carlie J. Coats, Jr., MCNC Environmental Programs,
+!       from ROM's PI.EXT.
+!
+!       Revised 3/1/1993 John McHenry to include constants needed by
+!       LCM aqueous chemistry
+!
+!       Revised 9/1993 by John McHenry to include additional constants
+!       needed for FMEM clouds and aqueous chemistry
+!
+!       Modified  2/2002 by CJC for compatibility with both free and
+!       fixed Fortran 9x source forms
+!
+!       Modified 8/2009 by CJC:  avoid continuation to an empty line,
+!       to make Sun compiler happy.
+!
+!       Modified 3/2014 by CJC:  F90-style PARAMETER statements
+!....................................................................
+
+!.......   Mathematical Constants
+
+      REAL, PARAMETER ::  PI     = 3.14159265358979324  ! PI (single precision 3.14159...)
+      REAL, PARAMETER ::  TWOPI  = 6.28318530717958649  ! 2 * PI
+      REAL, PARAMETER ::  PI6    = PI /   6.0           ! degrees-to-radians:  PI/6
+      REAL, PARAMETER ::  PI180  = PI / 180.0           ! degrees-to-radians:  PI/180
+      REAL, PARAMETER ::  RPI180 = 180.0 / PI           ! radians-to-degrees:  180/PI
+      REAL, PARAMETER ::  AMISS  =  -9999.9             ! standard missing value -9999.9
+      REAL, PARAMETER :: EPSILON = 1.0E-10              ! "standard" small number
+
+
+!.......   Physical Constants
+
+      REAL, PARAMETER :: REARTH = 6367333.0         ! radius of the earth (meters)
+                                                    ! NOTE:  WMO REARTH=6371.229D3 m or 6367.470D3 m
+      REAL, PARAMETER :: DG2M   = REARTH * PI180    ! latitude degrees to meters
+      REAL, PARAMETER :: DG2MSQ = DG2M  * DG2M      ! DG2M ** 2
+      REAL, PARAMETER :: DG2KM  = 1.0E-3 * DG2M     ! latitude degrees to kilometers
+      REAL, PARAMETER :: D2KMSQ = DG2KM * DG2KM     ! DG2KM ** 2
+      REAL, PARAMETER :: SIDAY  = 86164.09          ! length of a sidereal day (seconds)
+      REAL, PARAMETER :: SIYEAR = 365.256363        ! length of a sidereal year (days)
+      REAL, PARAMETER :: TRYEAR =   365.242190      ! length of a tropical year (days)
+      REAL, PARAMETER :: EOMEGA = TWOPI / SIDAY     ! Earth's angular velocity (radians/sec)
+      REAL, PARAMETER :: GRAV   =     9.80665       ! mean gravitational acceleration (m/sec**2)
+      REAL, PARAMETER :: RDGAS  =  287.0406         ! dry-air gas constant (J/g-deg.K)
+      REAL, PARAMETER :: RCHGAS =     0.082057      ! gas constant in chemical units (L-atm/mole-K)
+      REAL, PARAMETER :: RWVP   =     0.4615        ! gas constant for water vapor (J/g-deg.K)
+      REAL, PARAMETER :: HWVP   = 2500.0            ! latent heat of vaporization of water at 0 C (J/g)
+      REAL, PARAMETER :: EWVP0  =    40.0           ! ref saturation vapor press of water at temp TWVP0
+      REAL, PARAMETER :: TWVP0  =  302.0            ! base temp. for vapor pressure calculations (deg.K)
+      REAL, PARAMETER :: CTOK   =   273.15          ! conversion constant from deg.C to deg.K
+      REAL, PARAMETER :: SI2PPM =    0.0245         ! conversion constant from mu-g/m**3 to PPM
+      REAL, PARAMETER :: PPM2SI =     1.0 / SI2PPM  ! conversion constant from PPM to mu-g/m**3
+      REAL, PARAMETER :: VP0    =     0.6112        ! vapor press of water at 0 C (cb)
+      REAL, PARAMETER :: LV     =  HWVP * 1.0E+3    ! latent heat of vaporization of water at 0 C (J/kg)
+      REAL, PARAMETER :: LF     =    3.34E+5        ! latent heat of fusion of water at 0 C (J/kg)
+      REAL, PARAMETER :: CP     = 1004.6            ! specific heat of air at const press (J/kg-deg K)
+      REAL, PARAMETER :: RDCP   =  RDGAS * CP       ! RDGAS * CP
+      REAL, PARAMETER :: DALR   =  GRAV / CP        ! dry adiabatic lapse rate (deg K/m)
+      REAL, PARAMETER :: GOVRD  =  GRAV / RDGAS     ! ratio of grav const to dry gas const GRAV/RDGAS
+      REAL, PARAMETER :: RDOVG  = RDGAS / GRAV      ! RDGAS/GRAV
+      REAL, PARAMETER :: ROVCP  =  RDGAS / CP       ! ratio of dry gas const to specific heat const
+      REAL, PARAMETER :: LVOCP  =  LV / CP          ! ratio of latent heat of vap to specific heat const
+      REAL, PARAMETER :: AVO    =     6.02257E23    ! Avogadro's Constant (number per mole)
+      REAL, PARAMETER :: BOLTZ  =   1.38E-16        ! Boltzmann's Constant (erg/K)
+      REAL, PARAMETER :: STDATMCB = 101.325         ! standard atmosphere in centibars
+      REAL, PARAMETER :: STDATMMB = 0.1 * STDATMCB  ! standard atmosphere in millibars
+
+
+!.......   Molecular Weight and Bulk Density Constants
+
+      REAL, PARAMETER :: MWAIR    =   28.9644       ! mean molecular weight for air
+      REAL, PARAMETER :: MWWAT    =   18.0153       ! mean molecular weight for water
+      REAL, PARAMETER :: MWH2O2   =   34.0          ! mean molecular weight for H2O2
+      REAL, PARAMETER :: MWNACL   =   58.44277      ! mean molecular weight for NaCl
+      REAL, PARAMETER :: MWCL     =   35.453        ! mean atomic    weight for Cl
+      REAL, PARAMETER :: MWNH3    =   17.03061      ! mean molecular weight for NH3
+      REAL, PARAMETER :: MWNH4    =   18.03858      ! mean ionic     weight for NH4
+      REAL, PARAMETER :: MWNO3    =   62.0049       ! mean ionic     weight for NO3
+      REAL, PARAMETER :: MWHNO3   =   63.01287      ! mean molecular weight for HNO3
+      REAL, PARAMETER :: MWORG    =   16.0          ! mean molecular weight for lumped organics
+      REAL, PARAMETER :: MWSO2    =   64.0          ! mean molecular weight for SO2
+      REAL, PARAMETER :: MWSO4    =   96.0576       ! mean ionic     weight for SO4
+      REAL, PARAMETER :: MWH2SO4  =   98.07354      ! mean molecular weight for H2SO4
+
+      REAL, PARAMETER :: MVOMA    =   MWWAT / MWAIR ! ratio of mol wt of water vapor to mol wt of air
+      REAL, PARAMETER :: SO4TOAIR =   MWSO4 / MWAIR ! mol wt so4 / mol wt air
+      REAL, PARAMETER :: NH3TOAIR =   MWNH3 / MWAIR ! mol wt nh3 / mol wt air
+      REAL, PARAMETER :: NH4TOSO4 =   MWNH4 / MWSO4 ! mol wt nh4 / mol wt so4
+
+      REAL, PARAMETER :: RHOSO4   =    1.8          !  bulk density of aerosol sulfate (g/cm^3)
+      REAL, PARAMETER :: RHONH4   =    1.8          !  bulk density of aerosol ammonium (g/cm^3)
+      REAL, PARAMETER :: RHOH2O   =    1.0          !  bulk density of aerosol water (g/cm^3)
+
+!................   end   CONST3.EXT   ....................................

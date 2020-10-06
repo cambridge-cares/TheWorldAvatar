@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:SensorOntology="http://www.theworldavatar.com/SensorOntology.owl#"
+  xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:ns1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+  xmlns:ns3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#"
+  xmlns:ns2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#VAV-S/7-06_DS_sensor1">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor"/>
+    <SensorOntology:sendsSignalTo rdf:resource="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#VAV-S/7-06"/>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#VAV-S/7-06_DS_sensor1_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#x_VAV-S/7-06_DS_sensor1"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#y_VAV-S/7-06_DS_sensor1"/>
+      </rdf:Description>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <SensorOntology:observes>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#DamperStateOfVAV-S/7-06">
+        <system:isPropertyOf rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#VAV-S/7-06"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#V_DamperStateOfVAV-S/7-06"/>
+      </rdf:Description>
+    </SensorOntology:observes>
+  </owl:NamedIndividual>
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/SensorOntology.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoEIP/Eco-industrialPark.owl"/>
+  </owl:Ontology>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#VAV-S/7-06_DS_sensor1">
+    <SensorOntology:observes>
+      <SensorOntology:VAVDamperState rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#DamperStateOfVAV-S/7-06">
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#V_DamperStateOfVAV-S/7-06"/>
+        <system:isPropertyOf rdf:resource="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#VAV-S/7-06"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </SensorOntology:VAVDamperState>
+    </SensorOntology:observes>
+    <SensorOntology:sendsSignalTo>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#VAV-S/7-06">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+      </owl:NamedIndividual>
+    </SensorOntology:sendsSignalTo>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#VAV-S/7-06_DS_sensor1_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#y_VAV-S/7-06_DS_sensor1"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#x_VAV-S/7-06_DS_sensor1"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+      </owl:NamedIndividual>
+    </space_and_time_extended:hasGISCoordinateSystem>
+  </rdf:Description>
+  <coordinate_system:CoordinateValue rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#V_x_VAV-S/7-06_DS_sensor1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </coordinate_system:CoordinateValue>
+  <ns2:StraightCoordinate rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#y_VAV-S/7-06_DS_sensor1">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#V_y_VAV-S/7-06_DS_sensor1"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns2:StraightCoordinate>
+  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#x_VAV-S/7-06_DS_sensor1">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#V_x_VAV-S/7-06_DS_sensor1"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </owl:NamedIndividual>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#x_VAV-S/7-06_DS_sensor1">
+    <system:hasValue rdf:resource="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#V_x_VAV-S/7-06_DS_sensor1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/VAV-S7-06_DS_sensor1.owl#y_VAV-S/7-06_DS_sensor1">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#V_y_VAV-S/7-06_DS_sensor1">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#CoordinateValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </rdf:Description>
+  <system:ScalarValue rdf:about="http://www.theworldavatar.com/BMS/VAV-S7-06_DS_sensor1.owl#V_DamperStateOfVAV-S/7-06">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+</rdf:RDF>

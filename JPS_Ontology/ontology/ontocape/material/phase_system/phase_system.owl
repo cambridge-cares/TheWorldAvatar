@@ -1,0 +1,1255 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#" xmlns:der_dim="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#" xmlns:network_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#" xmlns:phase_system="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#" xmlns:physical_dimension="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#" xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:reaction_mechanism="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#" xmlns:substance="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" xmlns:swrl="http://www.w3.org/2003/11/swrl#" xmlns:swrlb="http://www.w3.org/2003/11/swrlb#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:tensor_quantity="http://www.theworldavatar.com/ontology/ontocape/upper_level/tensor_quantity.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#" xml:base="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The module 'phase_system' models the thermodynamic behavior of materials.
+The 'phase_system' module uses the following classes, relations, and individuals from other ontology modules:
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Connection"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExtensibleValueSet"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalComponent"/&gt; 
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/&gt;    
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyRelatedTo"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isExclusivelySubsystemOf"/&gt;
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/&gt;
+
+&lt;der_dim:Mechanics           rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#pressure"/&gt;
+&lt;phys_dim:BaseDimension      rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#thermodynamic_temperature"/&gt;
+&lt;phys_dim:DerivedDimension   rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_fraction"/&gt;
+&lt;phys_dim:DerivedDimension   rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_fraction"/&gt;
+&lt;phys_dim:DerivedDimension   rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume_fraction"/&gt;</rdfs:comment>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasReaction -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasReaction">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyRelatedTo"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterface"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasReaction links a PhaseReaction to the SinglePhase or PhaseInterface where it takes place.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasStateOfAggregation -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasStateOfAggregation">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasStateOfAggregation indicates the StateOfAggregation of a SinglePhase.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Auxiliary relation, introduced as workaround for a qualified cardinality restriction (QCR).</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_density -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_density">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_physical_context -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_physical_context">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhysicalContext"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Auxiliary relation, introduced as workaround for a qualified cardinality restriction (QCR).</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_pressure -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_pressure">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Pressure"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_specific_enthalpy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_specific_enthalpy">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificEnthalpy"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_temperature -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_temperature">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyRelatedTo"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalComponent"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation representsOccurenceOf establishes the relationship between a PhaseComponent and the corresponding ChemicalComponent.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyRelatedTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyRelatedTo"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isExclusivelySubsystemOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isExclusivelySubsystemOf"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#catalyst_required -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#catalyst_required">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is_catalyst_required</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#stoichiometric_value -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#stoichiometric_value">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has_stoichiometric_value</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Activity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Activity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ActivityCoefficient"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Fugacity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#FugacityCoefficient"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarQuantity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The activity of some PhaseComponent is the ratio of the PhaseComponent’s Fugacity to the Fugacity in its standard state.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ActivityCoefficient -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ActivityCoefficient">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Fugacity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#FugacityCoefficient"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarQuantity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ActivityCoefficient of a PhaseComponent is the ratio of its Fugacity in the actual PhaseSystem, divided by its Fugacity in an ideal mixture.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhysicalContext"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Composition represents the composition of a SinglePhase by assembling the concentrations of the different PhaseComponents that constitute a single phase.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Density -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Density">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Pressure"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificEnthalpy"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificGibbsFreeEnergy"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificVolume"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The mass of a PhaseSystem divided by its volume. It is the reciprocal of SpecificVolume.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DiffusionCoefficient -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DiffusionCoefficient">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DynamicViscosity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Proportionality constant, relating the flux of amount of some PhaseComponent to its concentration gradient.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DynamicViscosity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#DynamicViscosity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">For a laminar flow of a fluid, the ratio of the shear stress to the VelocityGradient perpendicular to the plane of shear (McNaught &amp; Wilkinson, 1997).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Fugacity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Fugacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#FugacityCoefficient"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarQuantity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The fugacity of a PhaseComponent.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#FugacityCoefficient -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#FugacityCoefficient">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarQuantity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ratio of Fugacity to the partial pressure of a PhaseComponent.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An IntensiveProperty is a PhysicalQuantity, the Value of which does not depend on the system size or the amount of material in the system.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveThermodynamicStateVariable -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveThermodynamicStateVariable">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An IntensiveThermodynamicStateVariable is an IntensiveProperty that characterizes the (macroscopic) thermodynamic state of a PhaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Mass-BasedPhaseRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Mass-BasedPhaseRatio">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseRatio"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MolarPhaseRatio"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumetricPhaseRatio"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ratio of the mass of a SinglePhaseInMultiphaseSystem divided by the mass of the MultiphaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MassFraction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MassFraction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentFraction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_fraction"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MoleFraction"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumeFraction"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The mass of a PhaseComponent divided by the total mass of all PhaseComponents of a PhaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MolarPhaseRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MolarPhaseRatio">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseRatio"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumetricPhaseRatio"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ratio of the of the (molar) amount of substance of a SinglePhaseInMultiphaseSystem divided by the the (molar) amount of substance of the MultiphaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Molarity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Molarity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-BasedConcentration"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialDensity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-VolumePercentage"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Molarity (aka amount concentration) is the molar amount of a PhaseComponent divided by the volume of the SinglePhase.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MoleFraction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MoleFraction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentFraction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#molar_fraction"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumeFraction"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The number of moles of a PhaseComponent divided by the total number of moles of all PhaseComponents in the PhaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MultiphaseSystem -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MultiphaseSystem">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterface"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A MultiphaseSystem is a PhaseSystem that consists of two or more SinglePhases.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialDensity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialDensity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-BasedConcentration"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-VolumePercentage"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass of a PhaseComponent divided by the volume of the PhaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarEnthalpy -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarEnthalpy">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarQuantity"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarVolume"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The partial derivative of the SpecificEnthalpy with respect to the number of moles of one PhaseComponent.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarQuantity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarQuantity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PartialMolarQuantity is the partial derivative of the considered molar quantity with respect to the number of moles of one PhaseComponent. The  temperature, pressure, and the number of moles of all other PhaseComponents are held constant in the partial molar derivate. The class subsumes all kinds of Partialmolar quantities, such as PartialMolarEnthalpy or PartialMolarVolume.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarVolume -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarVolume">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PartialMolarQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The partial derivative of the SpecificVolume with respect to the number of moles of one PhaseComponent.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isExclusivelySubsystemOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isExclusivelySubsystemOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PhaseComponent represents the occurrence of a ChemicalComponent in a PhaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PhaseComponentConcentration subsumes the different concentration measures for a certain PhaseComponent within a PhaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentFraction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentFraction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-BasedConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In general, the ratio of two PhysicalQuantities of the same kind, the numerator quantity applying to one particular PhaseComponent of a SinlgePhase, and the denominator to the sum of quantities of all PhaseComponents of that SinglePhase. 
+Concretely, a PhaseComponentFraction subsumes the following concentration measures: MassFraction, VolumeFraction, and MoleFraction.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveProperty"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterfaceProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseReactionProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An IntensiveProperty that characterizes a PhaseComponent.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseEquilibriumRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseEquilibriumRatio">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PhaseEquilibriumRatio of a PhaseComponent in a MultiphaseSystem is a PhaseComponentProperty that denotes the ratio of the MoleFraction of this PhaseComponent in one specific SinglePhase to that in another specific SinglePhase; both SinglePhases are part of the MultiphaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterface -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterface">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Connection"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isExclusivelySubsystemOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MultiphaseSystem"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The interface between two SinglePhases.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterfaceProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterfaceProperty">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveProperty"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterface"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseReactionProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An IntensiveProperty is an IntensiveProperty that characterizes the interface between two SinglePhases.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseRatio">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Mass-BasedPhaseRatio"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MolarPhaseRatio"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumetricPhaseRatio"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhaseInMultiphaseSystemProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PhaseRatio characterizes the proportion of a SinglePhase in a MultiphaseSystem on a mass, molar, or volume basis.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseReactionProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseReactionProperty">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveProperty"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PhaseReactionProperty is an IntensiveProperty that is a property of the occurence of a ChemicalReaction in a PhaseSystem or at a PhaseInterface.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MultiphaseSystem"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+                </owl:unionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_physical_context"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhysicalContext"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_physical_context"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhysicalContext"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_physical_context"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PhaseSystem represents the macroscopic thermodynamic behavior of Material in some PhysicalContext.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#IntensiveProperty"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PhaseSystemProperty is an IntensiveProperty that characterizes a PhaseSystem. It can be described or calculated without reference to the shape, size, or amount of a particular occurrence of a material. In the case of calculation, this is consistent with the usage of general-purpose physical property packages, where such information is not required as the input for the calculation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhysicalContext -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhysicalContext">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PhysicalContext of a PhaseSystem is a set of IntensiveThermodynamicStateProperties with known values which are sufficient for determining other Properties of interest of the PhaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Pressure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Pressure">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#pressure"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificEnthalpy"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificGibbsFreeEnergy"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificVolume"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The (total absolute) pressure of a PhaseSystem</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ReactionEquilibriumConstant -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ReactionEquilibriumConstant">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseReactionProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">According to the IUPAC  Compendium (McNaught &amp; Wilkinson, 1997), the EquilibriumConstant is a PhysicalQuantity characterizing a chemical equilibrium of a PhaseReaction. It is defined by an expression of type
+K = x_1^nu_1 * x_2^nu_2 * ...  x_i^nu_i , 
+where nu_i is the StoichiometricCoefficient of a reactant (negative) or product (positive) of the reaction, and x_i  stands for a PhysicalQuantity which can be the equilibrium value either of Pressure, Fugacity, Molarity, MolarFraction, molality, or Activity. Depending on the chosen quantity, one obtains one of the following types of EquilibriumConstant: pressure based, fugacity based, concentration based, amount fraction based, molality based, relative activity based, or standard equilibrium constant, respectively. These different types can be modeled as subclasses of the EquilibriumConstant.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasStateOfAggregation"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasStateOfAggregation"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasStateOfAggregation"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A SinglePhase is a finite volume of material within which the physical properties are uniformly constant, i.e., do not experience any abrupt change in passing from one point in the volume to another.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhaseInMultiphaseSystem -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhaseInMultiphaseSystem">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isExclusivelySubsystemOf"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MultiphaseSystem"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isExclusivelySubsystemOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#MultiphaseSystem"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A SinglePhase that is part of a MulitphaseSystem</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhaseInMultiphaseSystemProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhaseInMultiphaseSystemProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhaseInMultiphaseSystem"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Class used for grouping the Properties of a SinglePhaseInMultiphaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificEnthalpy -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificEnthalpy">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificGibbsFreeEnergy"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificVolume"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SpecificEnthalpy denotes enthalpy per unit mass,  i.e., the enthalpy of a PhaseSystem divided by its mass. It is defined by the equation
+h = u + p*v, 
+where u represents the specific internal energy, p the Pressure, and v the SpecificVolume of the PhaseSystem. 
+The SI unit for SpecificEnthalpy is joules per kilogram.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificGibbsFreeEnergy -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificGibbsFreeEnergy">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificVolume"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SpecificGibbsFreeEnergy denotes the Gibbs free energy per unit mass,  i.e., the Gibbs free energy of a PhaseSystem divided by its mass. It is defined by the equation
+g = u + p*v - T*s,
+where u represents the specific internal energy, p the Pressure, v the SpecificVolume, T the Temperature, and s the specific entropy of the PhaseSystem. 
+The SI unit for the SpecificGibbsFreeEnerty is joules per kilogram</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificVolume -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SpecificVolume">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The volume of a PhaseSystem divided by its mass. It is the reciprocal of Density.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExtensibleValueSet"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">StateOfAggregation describes the physical state of a SinglePhase; solid, liquid, and gaseous are predefined instances of StateOfAggregation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SurfaceTension -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SurfaceTension">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseInterfaceProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Work required to increase a surface area divided by that area. When two phases are studied it is often called interfacial tension (McNaught &amp; Wilkinson, 1997). The SI unit of SurfaceTension is newtons per meter, or joules per square metre).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Temperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#thermodynamic_temperature"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The temperature of a PhaseSystem</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TheThermalConductivity is the coefficient relating the heat flux to the temperature gradient.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ThermodynamicStateProperty is a PhaseSystemProperty that can serve as an IntensiveThermodynamicStateVariable (i.e., characterize the thermodynamic state of a PhaseSystem).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TransportPhenomenaProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystemProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A TransportPhenomenaProperty is a PhaseSystemProperty that subsumes DynamicViscosity, HeatConductivity, and Diffusion Coefficient.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TypeOfSolid -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TypeOfSolid">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateH"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateI"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateII"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PureSolid"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SolidSolution"/>
+                </owl:oneOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TypeOfSolid allows to further characterize the solid state of matter, according to the CAPE-OPEN Open Interface Specification “Thermodynamic and Physical properties” (Drewitz et al., 2006).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-BasedConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-BasedConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Volume-BasedConcentration denotes the concentration of a certain PhaseComponent in a PhaseSystem with respect to the colume of PhaseSystem</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-VolumePercentage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-VolumePercentage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Volume-BasedConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Volume of a PhaseComponent, divided by the total volume of the PhaseSystem. For ideal mixtures, this is the same as the VolumeFraction.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumeFraction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumeFraction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentFraction"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume_fraction"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The volume of a PhaseComponent divided by the sum of volumes of all PhaseComponents of thePhaseSystem prior to mixing. For ideal mixtures, this equals to the Volume-Volume percentage.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumetricPhaseRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#VolumetricPhaseRatio">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseRatio"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ratio of the volume of a SinglePhaseInMultiphaseSystem to the volume of the MultiphaseSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#catalyst_required"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalComponent -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalComponent"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Connection -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Connection"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExtensibleValueSet -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExtensibleValueSet"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateH -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateH">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TypeOfSolid"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateI -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateI">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TypeOfSolid"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateII -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#HydrateII">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TypeOfSolid"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PureSolid -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PureSolid">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TypeOfSolid"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SolidSolution -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SolidSolution">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#TypeOfSolid"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#gaseous -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#gaseous">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#liquid -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#liquid">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#solid -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#solid">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#gaseous"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#liquid"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#solid"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF><!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->

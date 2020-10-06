@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/operating_subsystem/operating_subsystem.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:process_control="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#" xmlns:process_control_system="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/operating_subsystem/operating_subsystem.owl">
+  
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/operating_subsystem/operating_subsystem.owl">
+  <terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+  </terms:license>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+  </owl:Ontology>
+  
+  <owl:Class rdf:ID="OperatingSubsystem">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Control"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasFunctionalAspect"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Control"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasFunctionalAspect"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasRealizationAspect"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem"/>
+        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#hasRealizationAspect"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  
+  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_control.owl#Control">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+         <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsFunctionOf"/>
+         <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/operating_subsystem/operating_subsystem.owl#OperatingSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </rdf:Description>
+  
+ <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ProcessControlSystem">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+         <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf"/>
+         <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/operating_subsystem/operating_subsystem.owl#OperatingSubsystem"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </rdf:Description>
+  
+
+</rdf:RDF>
