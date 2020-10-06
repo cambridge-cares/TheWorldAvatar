@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.ontomatch;
+package uk.ac.cam.cares.jps.ontomatch.properties;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

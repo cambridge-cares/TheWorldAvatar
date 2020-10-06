@@ -136,9 +136,8 @@ class Alignment(object):
 
     #replace ID with IRI to entity
     #TODO: check this funciton
-    def id2Entity(self, onto1, onto2):
+    def id2Entity(self, onto1, onto2, entityListName = "entities"):
         pairList = []
-        entityListName = "entities"
         for id1, id2, p in self.map:
             srcE = getattr(onto1, entityListName)[id1]
             tgtE = getattr(onto2, entityListName)[id2]
@@ -200,8 +199,8 @@ class Alignment(object):
                 g.add((o, A.entity1, Literal(triple[0])))
                 g.add((o, A.entity2, Literal(triple[1])))
             else:
-                g.add((o, A.entity1, Literal(onto1IRI+triple[0])))
-                g.add((o, A.entity2, Literal(onto2IRI+triple[1])))
+                g.add((o, A.entity1, Literal(onto1IRI+'#'+triple[0])))
+                g.add((o, A.entity2, Literal(onto2IRI+'#'+triple[1])))
             g.add((o, A.measure, Literal(triple[2], datatype=XSD.float)))
             g.add((o, A.relation, Literal('=')))
             g.add((aNode,A.map, o))
@@ -215,7 +214,7 @@ class Alignment(object):
             jo['entity2'] = triple[1]
             jo['measure'] = triple[2]
         jostr = json.dumps(jo)
-        print(jostr)
+        return jostr
 
 
 

@@ -24,6 +24,7 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.ontomatch.alignment.AlignmentIOHelper;
 
 /**
  * Agent that reads content from alignment kg(rdf format), for visualization purpose

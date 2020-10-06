@@ -37,7 +37,6 @@ public class TestAlignmentReader extends Mockito {
 		when(request.getMethod()).thenReturn("POST");
 		when(request.getReader()).thenReturn(reader);
 		JSONObject result = ar.processRequestParameters(jo, request);
-
 		assertTrue(result.has("alignmentlist"));
 	}
 

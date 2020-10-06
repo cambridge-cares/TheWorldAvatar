@@ -26,18 +26,17 @@ import uk.ac.cam.cares.jps.ontomatch.ElementMatcher.MATCHING_TYPE;
 
 public class TestElementMatcher extends Mockito{
 
-
-	@Ignore
+    
     @Test 
     public void testValueMatcher() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
         HttpServletResponse response = mock(HttpServletResponse.class);
 		String type = "VALUE";
 		String mt = "INDIVIDUAL";
-		String stubSavePath = "file:///D:/workwork/testFiles/alignments/aIValue.owl";
+		String stubSavePath = "file:///D:/workwork/ontoMatchFiles/PPDBVALUEINDI.owl";
 		//TODO: substitute with actual tmp file please
-		String stubTgt = "D:/workwork/testFiles/germany/Altbach_Coal_Power_Plant_Germany.owl";
-		String stubSrc = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
+		String stubTgt = "D:/workwork/ontoMatchFiles/jpspp.rdf";
+		String stubSrc = "D:/workwork/ontoMatchFiles/tmpdbp.owl";
         JSONObject jo  = new JSONObject();
         jo.put("alignmentFileAddress", stubSavePath);
         jo.put("targetOntoIRI", stubTgt);
@@ -54,20 +53,22 @@ public class TestElementMatcher extends Mockito{
 
         
         JSONObject result  = new ElementMatcher().processRequestParameters(jo, request);
+        if(result.has("error")) {
+        	System.out.println(result.getString("error"));
+        }
         assertTrue(result.has("success"));
 
     }
 
-	@Ignore	
     @Test
     public void testStringMatcher() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
         HttpServletResponse response = mock(HttpServletResponse.class);
-		String type = "STRING";
-		String mt = "TERM";
-		String stubSavePath = "file:///D:/workwork/testFiles/alignments/PPDBSTRING.owl";
-		String stubTgt = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
-		String stubSrc = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
+		String type = "I_STRING";
+		String mt = "INDIVIDUAL";
+		String stubSavePath = "file:///D:/workwork/ontoMatchFiles/PPDBSTRINGINDI.owl";
+		String stubTgt = "D:/workwork/ontoMatchFiles/jpspp.rdf";
+		String stubSrc = "D:/workwork/ontoMatchFiles/tmpdbp.owl";
         JSONObject jo  = new JSONObject();
         jo.put("alignmentFileAddress", stubSavePath);
         jo.put("targetOntoIRI", stubTgt);
@@ -82,18 +83,21 @@ public class TestElementMatcher extends Mockito{
         when(request.getReader()).thenReturn(reader);
 
         JSONObject result  = new ElementMatcher().processRequestParameters(jo, request);
+        if(result.has("error")) {
+        	System.out.println(result.getString("error"));
+        }
         assertTrue(result.has("success"));
     }
-	@Ignore
+	
     @Test
     public void testWordMatcher() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
         HttpServletResponse response = mock(HttpServletResponse.class);
-		String type = "WORD";
-		String mt = "TERM";
-		String stubSavePath = "file:///D:/workwork/testFiles/alignments/PPDBWORD.owl";
-		String stubTgt = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
-		String stubSrc = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
+		String type = "I_WORD";
+		String mt = "INDIVIDUAL";
+		String stubSavePath = "file:///D:/workwork/ontoMatchFiles/PPDBWORDINDI.owl";
+		String stubTgt = "D:/workwork/ontoMatchFiles/jpspp.rdf";
+		String stubSrc = "D:/workwork/ontoMatchFiles/tmpdbp.owl";
         JSONObject jo  = new JSONObject();
         jo.put("alignmentFileAddress", stubSavePath);
         jo.put("targetOntoIRI", stubTgt);
@@ -112,14 +116,14 @@ public class TestElementMatcher extends Mockito{
         assertTrue(result.has("success"));
     }
 
-        
+        @Ignore
 	    @Test
 	    public void testDomainMatcher() throws Exception {
 	        HttpServletRequest request = mock(HttpServletRequest.class);       
 	        HttpServletResponse response = mock(HttpServletResponse.class);
 			String type = "DOMAIN";
 			String mt = "TERM";
-			String stubSavePath = "file:///D:/workwork/testFiles/alignments/PPDBDOMAIN.owl";
+			String stubSavePath = "file:///D:/workwork/ontoMatchFiles/PPDBDOMAIN.owl";
 			String stubTgt = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
 			String stubSrc = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
 			String stubModelPath = "D:/workwork/ontoMatchData/simMatch/model/modellevel2/model30t5p5a.gensim";

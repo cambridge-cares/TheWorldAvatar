@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +44,9 @@ Output: IRI of new alignmnent
  *
  */
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
+import uk.ac.cam.cares.jps.ontomatch.alignment.AlignmentIOHelper;
+import uk.ac.cam.cares.jps.ontomatch.alignment.Measurement;
+import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 
 /***
  * 
@@ -154,37 +159,37 @@ public class MatchAggregator extends JPSAgent {
 	 * read alignment from KG and store
 	 * 
 	 * @param iriOfAlignmentFile
+	 * @throws ParseException 
 	 */
-	public void getAlignmentList(String iriOfAlignmentFile) {
-		String queryStr = "PREFIX alignment: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> "
-				+ "SELECT ?entity1 ?entity2 ?measure " + "WHERE {?cell alignment:entity1 ?entity1."
-				+ "?cell  alignment:entity2 ?entity2 ." + "?cell alignment:measure ?measure." + "}";
-		List<String[]> resultListfromquery = null;
-		try {
-			OntModel model = JenaHelper.createModel(iriOfAlignmentFile);
-			ResultSet resultSet = JenaHelper.query(model, queryStr);
-			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-			String[] keys = JenaResultSetFormatter.getKeys(result);
-			resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-
-		} catch (Exception e) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			String exceptionAsString = sw.toString();
-			//logger.error(exceptionAsString);
-		}
+	public void getAlignmentList(String iriOfAlignmentFile) throws ParseException {
+		List<String[]> resultListfromquery = AlignmentIOHelper.readAlignmentFileAsList(iriOfAlignmentFile);
+		resultListfromquery = sortAlignmentListByEntityName(resultListfromquery);
 		matchScoreLists.add(resultListfromquery);
 	}
 
+	public List<String[]> sortAlignmentListByEntityName(List<String[]> list) {
+		List<Measurement> sortList = new ArrayList<Measurement>();
+		for(String[] item:list) {
+			sortList.add(new Measurement(item));
+		}
+		sortList.sort((o1,o2) -> o1.getIdentity().compareTo(o2.getIdentity()));
+		//get original list
+		List<String[]> sorted = new ArrayList<String[]>();
+		for(Measurement item:sortList) {
+			sorted.add(item.getFields());
+		}
+		return sorted;
+	}
 	/***
 	 * weighted sum
 	 */
 	protected void weighting() {
+		//TODO:add sorting here
 		int matcherNum = matchScoreLists.size();
+		int elementNum = matchScoreLists.get(0).size();
 		for (int idxMatcher = 0; idxMatcher < matcherNum; idxMatcher++) {
 			List aScoreList = matchScoreLists.get(idxMatcher);
 			double myWeight = weights.get(idxMatcher);
-			int elementNum = matchScoreLists.get(0).size();
 			for (int idxElement = 0; idxElement < elementNum; idxElement++) {
 				String[] myscore = (String[]) aScoreList.get(idxElement);
 				if (idxElement >= finalScoreList.size()) {// index not exists, initiates

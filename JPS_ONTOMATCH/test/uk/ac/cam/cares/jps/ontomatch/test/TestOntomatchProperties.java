@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.ontomatch.test;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.ontomatch.OntomatchProperties;
+import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 
 public class TestOntomatchProperties extends TestCase{
 

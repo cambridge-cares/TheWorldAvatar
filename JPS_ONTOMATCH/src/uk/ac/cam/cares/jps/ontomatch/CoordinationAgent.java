@@ -3,15 +3,23 @@ package uk.ac.cam.cares.jps.ontomatch;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFactory;
@@ -41,11 +50,13 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.ontomatch.ElementMatcher.MATCHING_TYPE;
+import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 
 /**
  * Coordination agent that runs each component agent to run a process of
@@ -127,7 +138,7 @@ public class CoordinationAgent extends JPSAgent {
 				String nameWpath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.OM_KB_URL)+ "/" + name;
 				// logger.info(nameWpath);
 				try {
-					queryPotentialInstanceAndSave(targetClassIRIs, tIRI,true, nameWpath);
+					queryPotentialInstanceAndSave(targetClassIRIs,tIRI, tIRI,true, nameWpath);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -258,7 +269,83 @@ public class CoordinationAgent extends JPSAgent {
 		AgentCaller.executeGetWithJsonParameter("/JPS_ONTOMATCH/matchAggregator", requestParams.toString());
 	}
 
+/**
+ * combine tbox and abox for instance matching
+ * @param tboxIRI
+ * @param aboxIRI
+ * @param saveAddr
+ * @throws IOException 
+ */
+	public void addTBOX(String tboxIRI, String aboxIRI, String saveAddr) throws IOException {
+		Model model =  ModelFactory.createDefaultModel();
+        model.read(tboxIRI);
+		Model abox =  ModelFactory.createDefaultModel();
+		//TODO:here
+		abox.read(aboxIRI);
+		//write the result triple into a new file
+		/**write model to KG as file****/
+		model.add(abox);
+		File f = new File(saveAddr);
+		f.createNewFile();
+		Writer w = new OutputStreamWriter(new FileOutputStream(f, true), StandardCharsets.UTF_8);
+		model.write(w);	}
+	
+	
+	/***
+	 * query potential instances
+	 * @param targetClassIRIs
+	 * @param ep
+	 * @param tboxIRI
+	 * @param isRemote
+	 * @param saveIRI
+	 * @throws IOException
+	 */
+	public void queryPotentialInstanceAndSave(String[] targetClassIRIs,  String ep,String tboxIRI, Boolean isRemote, String saveIRI) throws IOException {
+		// use targetClassIRI to execute remote query to remoteEP
+		String resultBody;
+		String addr = ResourcePathConverter.convertToLocalPath(saveIRI);
+		Model model = ModelFactory.createDefaultModel();
+		
+		for (int i = 0; i <targetClassIRIs.length; i++) {
+			String sparql = "SELECT DISTINCT * WHERE {?s a <" + targetClassIRIs[i] + ">. " + " ?s ?p ?o. ?s <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Germany>." + "}";
+			/**query either remotely or locally*/
+			if (isRemote) {
+				JSONObject params = new JSONObject();
+				params.put("format", "json");
+				params.put("query", sparql);
+				resultBody = Http.execute(Http.get(ep, "application/json", sparql));
+			} else {
+				resultBody = KnowledgeBaseClient.query(ep, null, sparql);
+			}
+			InputStream targetStream = new ByteArrayInputStream(resultBody.getBytes());
+			ResultSet resultSet = ResultSetFactory.fromJSON(targetStream);
+			List<QuerySolution> rlist = ResultSetFormatter.toList(resultSet);
 
+			for (QuerySolution triple:rlist) {//TODO
+				String sIRI = triple.getResource("s").getURI();
+				Resource s = model.createResource(sIRI);
+				Property p = model.createProperty(triple.getResource("p").toString());
+				RDFNode o = triple.get("o");
+				String[]  stringTypes ={"http://www.w3.org/1999/02/22-rdf-syntax-ns#langString","http://www.w3.org/2001/XMLSchema#string"};
+				if(o.isLiteral()&&Arrays.asList(stringTypes).contains(o.asLiteral().getDatatype().getURI())){
+			//		String cleaned = o.asLiteral().getString().replaceAll("[^\\p{ASCII}]", "");
+				//    o = model.createTypedLiteral(cleaned);
+
+				}else if(o.isURIResource()) {
+				//	o = model.createResource(o.asResource().getURI().replaceAll("[^\\p{ASCII}]", ""));
+				}
+				s.addProperty(p, o);
+			}
+		}
+		Model tbox =  ModelFactory.createDefaultModel();
+		//TODO:here
+		tbox.read(tboxIRI);
+		//write the result triple into a new file
+		/**write model to KG as file****/
+		model.add(tbox);
+		Writer w = new OutputStreamWriter(new FileOutputStream(new File(addr), true), StandardCharsets.UTF_8);
+		model.write(w);
+	}
 
 	/***
 	 * Get potential Instances to match according to class, save as a tmp ontology
@@ -270,14 +357,14 @@ public class CoordinationAgent extends JPSAgent {
 	 * @param saveIRI
 	 * @throws IOException 
 	 */
-	public void queryPotentialInstanceAndSave(String targetClassIRI[], String ep, Boolean isRemote, String saveIRI) throws IOException {
-		String sparql = "SELECT DISTINCT * WHERE {?s a <" + targetClassIRI + ">. " + " ?s ?p ?o." + "}LIMIT 5";
+	public void queryPotentialInstanceAndSave2(String[] targetClassIRIs, String ep, Boolean isRemote, String saveIRI) throws IOException {
 		// use targetClassIRI to execute remote query to remoteEP
 		String resultBody;
 		String addr = ResourcePathConverter.convertToLocalPath(saveIRI);
 		Model model = ModelFactory.createDefaultModel();
 		
-		for (int i = 0; i <targetClassIRI.length; i++) {
+		for (int i = 0; i <targetClassIRIs.length; i++) {
+			String sparql = "SELECT DISTINCT * WHERE {?s a <" + targetClassIRIs[i] + ">. " + " ?s ?p ?o. ?s <http://dbpedia.org/ontology/country> <http://dbpedia.org/resource/Germany>." + "}LIMIT 50";
 			/**query either remotely or locally*/
 			if (isRemote) {
 				JSONObject params = new JSONObject();

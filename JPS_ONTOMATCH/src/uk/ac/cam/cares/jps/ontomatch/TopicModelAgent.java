@@ -23,6 +23,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
+import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 
 /***
  * 

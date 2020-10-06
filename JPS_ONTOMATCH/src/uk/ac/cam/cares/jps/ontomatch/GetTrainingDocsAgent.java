@@ -14,6 +14,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
+import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 
 /***
  * 

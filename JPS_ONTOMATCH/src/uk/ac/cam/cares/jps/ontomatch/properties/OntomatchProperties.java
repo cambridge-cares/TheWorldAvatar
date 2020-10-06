@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.ontomatch;
+package uk.ac.cam.cares.jps.ontomatch.properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

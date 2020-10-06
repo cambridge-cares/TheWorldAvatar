@@ -30,18 +30,26 @@ class Ontology():
         '''
 
         onto = get_ontology(self._addr).load()
-
         self.procesLEX(onto,no_stem)
         self.baseiri = onto.base_iri
+        self.importStack = [ o.base_iri for o in onto.imported_ontologies]
+        self.imports = []
+        self._loadImportsRecur()
         #self.classes = list( onto.classes())
         #self.properties =list( onto.properties())
 
 
 
-    def getImported(self, onto):
-        #todo
-        #query for all owl_imports
-        pass
+    def _loadImportsRecur(self):
+        while len(self.importStack)!=0:
+            toImport = self.importStack.pop()
+            self.imports.append(toImport)
+            importO = get_ontology(toImport).load()
+            importI = [ o.base_iri for o in importO.imported_ontologies]
+            for item in importI:
+                if item not in self.imports and item not in self.importStack:
+                    self.importStack.append(item)
+
 
 
     @staticmethod
@@ -94,7 +102,6 @@ class Ontology():
         for p in onto.object_properties():
             rangeList = p.range
             domainList = p.domain
-            print(p.range)
 
             '''
 
@@ -131,8 +138,6 @@ class Ontology():
 
     def entitiesAsTxt(self):
         all = []
-        print('bowdict:')
-        print(self.tokensDict.values())
         for tokens in self.tokensDict.values():
             all.extend(tokens)
         return ' '.join(all)
@@ -231,7 +236,7 @@ class Ontology():
             s = iri.split('/')
             return s[len(s)-1]
         else:
-            raise ValueError('can not find name from iri')
+            return iri
 
 
     def query4unit(self,g, siri):
@@ -401,6 +406,6 @@ if __name__ == '__main__':
         # Pickle the list using the highest protocol available.
         pickle.dump(ontoObject, fw, -1)
         print("success")
-    except Exception:
-        print(Exception)
+    except Exception as e:
+        print(str(e))
 

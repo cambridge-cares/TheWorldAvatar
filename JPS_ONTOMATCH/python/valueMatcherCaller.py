@@ -19,7 +19,7 @@ if __name__ == '__main__':
         mm = getattr(matcher, match_method)
         # matchSerial for T, matchIndividual for I
         a = mm()
-        a.id2Entity(srcOnto,tgtOnto)
+        a.id2Entity(srcOnto,tgtOnto,'individualList')
         a.render(srcUrl,tgtUrl,fileUrl)
         print("success")
     except Exception:

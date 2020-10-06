@@ -30,11 +30,12 @@ public class TestLexicalProcessor extends Mockito{
 	        HttpServletResponse response = mock(HttpServletResponse.class);
 
 
-	    	//String stubIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
-	    	String stubIRI = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
-	        //String stubAddress = "D:/workwork/ontoMatchFiles/targetOntology.pkl";
-	        String stubAddress = "D:/workwork/jpslatest/JParkSimulator-git/JPS_ONTOMATCH/tmp/PowerPlant.pkl";
-			JSONObject jo  = new JSONObject();
+//	    	String stubIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
+//	        String stubAddress = "D:/workwork/ontoMatchFiles/targetOntology.pkl";
+String stubIRI = "D:/workwork/ontoMatchFiles/jpsppcombine.rdf"; 
+String stubAddress = "D:/workwork/ontoMatchFiles/individualjps.pkl";
+
+	        JSONObject jo  = new JSONObject();
 	        jo.put("ontologyIRI", stubIRI);
 	        jo.put("saveAddress", stubAddress);
 
@@ -46,6 +47,9 @@ public class TestLexicalProcessor extends Mockito{
 
 	        
 	        JSONObject result  = new LexicalProcessor().processRequestParameters(jo, request);
+	      if(result.has("error")) {
+	        System.out.println(result.getString("error"));
+	      }
 	        assertTrue(result.has("success"));
 	    }
 	

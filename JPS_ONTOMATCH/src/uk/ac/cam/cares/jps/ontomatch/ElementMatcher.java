@@ -2,7 +2,9 @@ package uk.ac.cam.cares.jps.ontomatch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,6 +22,8 @@ import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
+import uk.ac.cam.cares.jps.ontomatch.ParamsValidateHelper.CUSTOMVALUETYPE;
+import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 
 /**
  * Agent that performs element level matching, four types can be chosen: string,
@@ -65,8 +69,8 @@ public class ElementMatcher extends JPSAgent {
 			sourceOnto = jo.getString("sourceOntoIRI");
 			type = MATCHERTYPE.valueOf(jo.getString("matcherType"));
 			matchingType = MATCHING_TYPE.valueOf(jo.getString("matchingType"));
-			logger.info("element matcher agent: matching type:" + matchingType + " matcherType:" + type + " savePath:"
-					+ savePath + " targetOntology:" + targetOnto + " sourceOnto:" + sourceOnto);
+			//logger.info("element matcher agent: matching type:" + matchingType + " matcherType:" + type + " savePath:"
+			//		+ savePath + " targetOntology:" + targetOnto + " sourceOnto:" + sourceOnto);
 			/** special case: domain matcher needs extra params **/
 			if (type == MATCHERTYPE.DOMAIN) {
 				modelPath = jo.getString("modelAddress");
@@ -189,7 +193,15 @@ public class ElementMatcher extends JPSAgent {
         if (requestParams.isEmpty()||!requestParams.has("alignmentFileAddress")||!requestParams.has("matchingType")||!requestParams.has("targetOntoIRI")||!requestParams.has("sourceOntoIRI")||!requestParams.has("matcherType")) {
             throw new BadRequestException();
         }
-        return true;
+		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
+	     paramTypes.put("alignmentFileAddress",CUSTOMVALUETYPE.PATH );
+	     paramTypes.put("matchingType", CUSTOMVALUETYPE.MATCHING_TYPE);
+	     paramTypes.put("targetOntoIRI", CUSTOMVALUETYPE.PATH);
+	     paramTypes.put("sourceOntoIRI", CUSTOMVALUETYPE.PATH);
+	     paramTypes.put("matcherType", CUSTOMVALUETYPE.MATCHERTYPE);
+
+	     return ParamsValidateHelper.validateALLParams(requestParams, paramTypes);
+        
     }	
 
 }

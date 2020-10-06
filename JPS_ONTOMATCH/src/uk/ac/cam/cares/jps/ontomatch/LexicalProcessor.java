@@ -2,7 +2,9 @@ package uk.ac.cam.cares.jps.ontomatch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,6 +24,8 @@ import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
+import uk.ac.cam.cares.jps.ontomatch.ParamsValidateHelper.CUSTOMVALUETYPE;
+import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 
 /***
  * Agent that lexically process an ontology and save it in an pkl file A
@@ -81,6 +85,10 @@ public class LexicalProcessor extends JPSAgent {
 		if (requestParams.isEmpty() || !requestParams.has("ontologyIRI") || !requestParams.has("saveAddress")) {
 			throw new BadRequestException();
 		}
-		return true;
+		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
+     paramTypes.put("ontologyIRI",CUSTOMVALUETYPE.PATH );
+     paramTypes.put("saveAddress", CUSTOMVALUETYPE.PATH);
+     return ParamsValidateHelper.validateALLParams(requestParams, paramTypes);
 	}
+	
 }
