@@ -50,8 +50,8 @@ import com.jcraft.jsch.SftpException;
 
 import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentProperty;
-//import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
-//import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgentException;
+import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
+import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgentException;
 import uk.ac.cam.cares.jps.agent.utils.ZipUtility;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -63,7 +63,8 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.matlab.agent.*;
+//import uk.ac.cam.cares.jps.agent.matlab;
+import uk.ac.cam.cares.jps.agent.matlab.*;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.*;
@@ -458,7 +459,7 @@ public class gPROMSAgent extends JPSAgent {
 	    exportDataToExcel(jobFolder.toString()+"/matlab.csv", table);
 	    System.out.println("StartingMatlab");
 	    JSONObject jo = new JSONObject();
-		String resultStart = AgentCaller.executeGetWithURLAndJSON("http://localhost:8080/ElChemoAgent/test", jo.toString());
+		String resultStart = AgentCaller.executeGetWithURLAndJSON("http://localhost:8080/ElChemoAgent/JPSMatlabAgent", jo.toString());
         System.out.println("resultStart");
 	    return true;
 		}
