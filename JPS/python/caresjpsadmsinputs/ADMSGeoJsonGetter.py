@@ -1,5 +1,4 @@
 from pyproj import Proj, transform
-from SPARQLWrapper import SPARQLWrapper, JSON
 import rdflib
 import json
 import sys
@@ -7,97 +6,79 @@ import sys
 owlCRS = Proj(init='epsg:28992')
 osmCRS = Proj(init='epsg:4326')
 
-# graph as first parameter
-def sparqlBuildingCoordinates(building):
-    
-    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/buildingsLite/sparql")
-    
+def sparqlBuildingCoordinates(graph, building):
     queryString = '''
 
-            PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-            PREFIX j1: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+            PREFIX j0: <file:/D:/citygmllearn/citygmlhandmade.owl#>
+            PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX j3: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
 
             SELECT ?polygon ?coordinates ?xval ?yval ?zval
             WHERE
             {{
                 {{
-                    <{0}> p3:id ?buildingID .
-                    <{0}> p3:boundedBy ?groundSurface .
-                     ?groundSurface a p3:GroundSurfaceType .
-                     ?groundSurface p3:lod2MultiSurface ?multiSurface .
-                      ?multiSurface p3:surfaceMember ?polygon .
-                       ?polygon p3:exterior ?linearRing .
-                        ?linearRing j2:contains ?points .
-                         ?points j1:hasGISCoordinateSystem ?coordinates .
-                          ?coordinates j1:hasProjectedCoordinate_x ?x .
-                           ?x j2:hasValue ?xv .
-                            ?xv j2:numericalValue ?xval .
-                          ?coordinates j1:hasProjectedCoordinate_y ?y .
-                           ?y j2:hasValue ?yv .
-                            ?yv j2:numericalValue ?yval.
-                          ?coordinates j1:hasProjectedCoordinate_z ?z .
-                           ?z j2:hasValue ?zv .
-                            ?zv j2:numericalValue ?zval
+                    <{0}> j0:id ?buildingID .
+                    <{0}> j0:boundedBy ?groundSurface .
+                     ?groundSurface a j0:GroundSurfaceType .
+                     ?groundSurface j0:lod2MultiSurface ?multiSurface .
+                      ?multiSurface j0:surfaceMember ?polygon .
+                       ?polygon j0:exterior ?linearRing .
+                        ?linearRing j3:contains ?points .
+                         ?points j2:hasGISCoordinateSystem ?coordinates .
+                          ?coordinates j2:hasProjectedCoordinate_x ?x .
+                           ?x j3:hasValue ?xv .
+                            ?xv j3:numericalValue ?xval .
+                          ?coordinates j2:hasProjectedCoordinate_y ?y .
+                           ?y j3:hasValue ?yv .
+                            ?yv j3:numericalValue ?yval.
+                          ?coordinates j2:hasProjectedCoordinate_z ?z .
+                           ?z j3:hasValue ?zv .
+                            ?zv j3:numericalValue ?zval
                 }}
                 UNION
                 {{
-                    <{0}> p3:consistsOfBuildingPart ?buildingPart .
-                     ?buildingPart p3:boundedBy ?groundSurface .
-                     ?groundSurface a p3:GroundSurfaceType .
-                     ?groundSurface p3:lod2MultiSurface ?multiSurfaceType .
-                      ?multiSurfaceType p3:surfaceMember ?polygon .
-                       ?polygon p3:exterior ?linearRing .
-                        ?linearRing j2:contains ?points .
-                         ?points j1:hasGISCoordinateSystem ?coordinates .
-                          ?coordinates j1:hasProjectedCoordinate_x ?x .
-                           ?x j2:hasValue ?xv .
-                            ?xv j2:numericalValue ?xval .
-                          ?coordinates j1:hasProjectedCoordinate_y ?y .
-                           ?y j2:hasValue ?yv .
-                            ?yv j2:numericalValue ?yval .
-                          ?coordinates j1:hasProjectedCoordinate_z ?z .
-                           ?z j2:hasValue ?zv .
-                            ?zv j2:numericalValue ?zval
+                    <{0}> j0:consistsOfBuildingPart ?buildingPart .
+                     ?buildingPart j0:boundedBy ?groundSurface .
+                     ?groundSurface a j0:GroundSurfaceType .
+                     ?groundSurface j0:lod2MultiSurface ?multiSurfaceType .
+                      ?multiSurfaceType j0:surfaceMember ?polygon .
+                       ?polygon j0:exterior ?linearRing .
+                        ?linearRing j3:contains ?points .
+                         ?points j2:hasGISCoordinateSystem ?coordinates .
+                          ?coordinates j2:hasProjectedCoordinate_x ?x .
+                           ?x j3:hasValue ?xv .
+                            ?xv j3:numericalValue ?xval .
+                          ?coordinates j2:hasProjectedCoordinate_y ?y .
+                           ?y j3:hasValue ?yv .
+                            ?yv j3:numericalValue ?yval .
+                          ?coordinates j2:hasProjectedCoordinate_z ?z .
+                           ?z j3:hasValue ?zv .
+                            ?zv j3:numericalValue ?zval
 
                 }}
             }}
             ORDER BY ?polygon ?points
     '''.format(building)
-    
-    sparql.setQuery(queryString)
-    sparql.setReturnFormat(JSON)
 
-#     return graph.query(queryString)
+    return graph.query(queryString)
 
-    return sparql.query().convert()
-
-# graph as first parameter
-def sparqlBuildingHeights(building):
-    
-    sparql = SPARQLWrapper("http://www.theworldavatar.com/damecoolquestion/buildingsLite/sparql")
-    
+def sparqlBuildingHeights(graph, building):
     queryString = """
-        PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-        PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+        PREFIX j0: <file:/D:/citygmllearn/citygmlhandmade.owl#>
+        PREFIX j3: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
 
         SELECT ?numericalValue
         WHERE
         {{
-            <{0}> p3:measuredHeight ?lengthType .
-            <{0}> a p3:BuildingType .
-            ?lengthType j2:hasValue ?scalarValue .
-            ?scalarValue j2:numericalValue ?numericalValue
+            <{0}> j0:measuredHeight ?lengthType .
+            <{0}> a j0:BuildingType .
+            ?lengthType j3:hasValue ?scalarValue .
+            ?scalarValue j3:numericalValue ?numericalValue
         }}
 
         """.format(building)
-        
-    sparql.setQuery(queryString)
-    sparql.setReturnFormat(JSON)
 
-#     return graph.query(queryString)
-
-    return sparql.query().convert()
+    return graph.query(queryString)
 
 def writeFile(buildingCoordinates):
     f = open("output.txt", "w")
@@ -123,7 +104,7 @@ def readFromJSONFile(fileName):
     return listBuildingsToTransfer
 
 def getBuildingHeights(buildingHeight):
-    return float(buildingHeight[0]['numericalValue']['value'])
+    return float(buildingHeight[0]['numericalValue'].toPython())
 
 def getBuildingCoordinates(buildingCoordinates):
     building = []
@@ -134,27 +115,27 @@ def getBuildingCoordinates(buildingCoordinates):
     # add first point to polygon
     # convert from citygml CRS to geojson CRS
     point = list(transform(owlCRS, osmCRS,
-                           float(firstEntry['xval']['value']),
-                           float(firstEntry['yval']['value'])
+                           float(firstEntry['xval'].toPython()),
+                           float(firstEntry['yval'].toPython())
                            ))
     polygon.append(point)
 
     # use prevPolygon to compare with current polygon in for-loop
-    prevPolygon = firstEntry['polygon']['value']
+    prevPolygon = firstEntry['polygon'].toPython()
 
     # todo: have to consider the scenario in which there is only one pair of coordinates
     for entry in buildingCoordinates[1:]:
 
-        if entry['polygon']['value'] != prevPolygon:
+        if entry['polygon'].toPython() != prevPolygon:
             building.append([polygon])
             polygon = []
 
         point = list(transform(owlCRS, osmCRS,
-                               float(entry['xval']['value']),
-                               float(entry['yval']['value'])
+                               float(entry['xval'].toPython()),
+                               float(entry['yval'].toPython())
                                ))
         polygon.append(point)
-        prevPolygon = entry['polygon']['value']
+        prevPolygon = entry['polygon'].toPython()
 
     building.append([polygon])
     return building
@@ -171,7 +152,7 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
                 'properties': {
                     'height': listBuildingHeights[idx],
                     'minHeight': 0,
-                    'color': 'red',
+                    'color': 'white',
                     'roofColor': 'red'
                 },
                 'geometry': {
@@ -188,9 +169,9 @@ def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
 
 def return_buildings():
     
-#     graph = rdflib.Graph()
+    graph = rdflib.Graph()
     # todo: switch to variable path
-#     graph.parse(r'C:\Users\WE\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\WENG\107_buildings.owl')
+    graph.parse(r'C:\Users\WE\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\WENG\107_buildings.owl')
 
     try:
         listOfIRIs = json.loads(sys.argv[1])
@@ -203,15 +184,11 @@ def return_buildings():
         listBuildingCoordinates = []
 
         for building in listOfIRIs:
-#             buildingHeight = sparqlBuildingHeights(graph, building).bindings
-            buildingHeight = sparqlBuildingHeights(building)["results"]["bindings"]
-            
+            buildingHeight = sparqlBuildingHeights(graph, building).bindings
             height = getBuildingHeights(buildingHeight)
             listBuildingHeights.append(height)
 
-#             buildingCoordinates = sparqlBuildingCoordinates(graph, building).bindings
-            buildingCoordinates = sparqlBuildingCoordinates(building)["results"]["bindings"]
-            
+            buildingCoordinates = sparqlBuildingCoordinates(graph, building).bindings
             coordinates = getBuildingCoordinates(buildingCoordinates)
             listBuildingCoordinates.append(coordinates)
 

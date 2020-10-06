@@ -10,8 +10,7 @@ osmCRS = Proj(init='epsg:4326')
 def getADMSOutput():
 
     # clicked coordinates is received and stored in python float variables
-    filePath = sys.argv[1]
-    coordinatesLatLon = json.loads(sys.argv[2])
+    coordinatesLatLon = json.loads(sys.argv[1])
 
     inputLat = float(coordinatesLatLon[0])
     inputLon = float(coordinatesLatLon[1])
@@ -19,8 +18,7 @@ def getADMSOutput():
 
     # iterate through ADMS output file to find grid point closest to clicked coordinates
     # todo: switch to variable path
-#     with open(r'C:\Users\WE\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\WENG\buildingontokinlevels.gst') as f:
-    with open(filePath) as f:
+    with open(r'C:\Users\WE\Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\WENG\buildingontokinlevels.gst') as f:
         reader = csv.reader(f, delimiter=',')
 
         # Skip header

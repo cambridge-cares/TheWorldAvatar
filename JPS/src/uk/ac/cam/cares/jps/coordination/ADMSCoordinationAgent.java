@@ -7,18 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import uk.ac.cam.cares.jps.adms.HttpGet;
+import uk.ac.cam.cares.jps.adms.HttpResponse;
+import uk.ac.cam.cares.jps.adms.HttpUriRequest;
 
 /**
  * Servlet implementation class ADMSCoordinationAgent
@@ -42,8 +33,8 @@ public class ADMSCoordinationAgent extends HttpServlet {
 		// TODO Auto-generated method stub
 		String iri = request.getParameter("IRI");
 		String powerPlantStartUrl = "http://www.theworldavatar.com/JPS/PowerPlant/PowerPlantStarter?IRI=" + iri;
-		HttpUriRequest request1 = new HttpGet(powerPlantStartUrl);
-		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request1);
+		HttpUriRequest request = new HttpGet(url);
+		HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
 		String responseString = EntityUtils.toString(httpResponse.getEntity());
 		System.out.println(responseString);
 
