@@ -1,0 +1,5 @@
+﻿Parameter ,Value
+delta,0.05
+tau,20
+D,0.1
+L,30

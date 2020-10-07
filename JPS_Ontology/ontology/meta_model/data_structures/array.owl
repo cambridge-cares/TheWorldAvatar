@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:mereology="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:fc="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;array&apos; defines a design pattern for the implementation of arrays.
+The following classes and relations from other ontology modules are used within &apos;array&apos;:
+   
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#CompositeObject&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#CoequalN-aryRelation&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#determinesPositionOf&quot;&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#involvesObject&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isInvolvedInN-aryRelation&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#relationAttribute&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOfCompositeObject&quot;/&gt;
+
+    </rdfs:comment>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#determinesPositionOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#determinesPositionOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#involvesObject"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#hasIndex"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Element"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1:1 relation between an Element and the Index that determines the position 
+    of the Element in an Array.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1:1 relation between an Element and the Index that determines the position of the Element in an Array.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#hasIndex -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#hasIndex">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isInvolvedInN-aryRelation"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Element"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1:1 relation between an Element and its Index.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isIndexOfArray -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isIndexOfArray">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#involvesObject"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isOrderedBy"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the relation between an Index and the associated Array</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isOrderedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isOrderedBy">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isInvolvedInN-aryRelation"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between an Array and the Index by which it is ordered</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#index -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#index">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#relationAttribute"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">indicates the numerical value of an Index</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#CompositeObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isOrderedBy"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Element"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isOrderedBy"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Element"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isOrderedBy"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Array is an ordered list that is composed of two or more Elements. The position of an Element within the Array is specified by the Index.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Element -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Element">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOfCompositeObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#hasIndex"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Element is part of an Array. Its position within the Array is determined by an Index.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Index">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#determinesPositionOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Element"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#CoequalN-aryRelation"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isIndexOfArray"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#determinesPositionOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Element"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isIndexOfArray"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#determinesPositionOf"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#isIndexOfArray"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#index"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Index represents the n-ray relation between an Array, one of its Elements, and the integer datatype value that denotes the position of the Element in the Array.</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

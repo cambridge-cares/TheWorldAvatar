@@ -29,7 +29,8 @@ public class CRSTransformer {
 	/**
 	 * used by google, geojson, gis systems
 	 */
-	public static final String EPSG_4326 = "EPSG:4326";		
+	public static final String EPSG_4326 = "EPSG:4326";
+	public static final String EPSG_3857 = "EPSG:3857";
 	/**
 	 * used by Berlin city gml data
 	 */
@@ -37,7 +38,15 @@ public class CRSTransformer {
 	/**
 	 * used by The Hague city gml data
 	 */
-	public static final String EPSG_28992 = "EPSG:28992";	
+	public static final String EPSG_28992 = "EPSG:28992";
+	/**
+	 * used by Singapore apl input file
+	 */
+	public static final String EPSG_3414 = "EPSG:3414";
+	/**
+	 * used by Hong Kong apl input file
+	 */
+	public static final String EPSG_2326 = "EPSG:2326";
 	
 	private static Logger logger;
 	private static CRSFactory cRSFactory;

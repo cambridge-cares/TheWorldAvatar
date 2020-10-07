@@ -6,12 +6,12 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.discovery.AgentRequest;
-import uk.ac.cam.cares.jps.base.discovery.AgentResponse;
-import uk.ac.cam.cares.jps.base.discovery.Parameter;
+import uk.ac.cam.cares.jps.men.MenAgent;
 //import uk.ac.cam.cares.jps.discovery.factory.DiscoveryFactory;
 
 
@@ -26,13 +26,15 @@ public class TestMenAgent extends TestCase {
 		
 		String baseDir = AgentLocator.getProperty("absdir.jps_men");
 		
-		return baseDir + "/testres/transportation/Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
+		//return baseDir + "/testres/transportation/Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
 		//return "http://www.jparksimulator.com/Jr_Transportation_simplified.owl";
+	return	"http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl";
 	}
 	
 	public String getChemicalPlants() {
 		
-		String baseDir = AgentLocator.getProperty("absdir.jps_men");
+//		String baseDir = AgentLocator.getProperty("absdir.jps_men");
+		String baseDir = AgentLocator.getProperty("absdir.jpsdata.workingdir.jps_men");
 		
 		List<String> result = new ArrayList<String>();
 		String result2 = null;
@@ -53,78 +55,65 @@ public class TestMenAgent extends TestCase {
 	
 	
 	private String getCarbonTax() {
-		return "50"; // location of the owl file that contains information for the transportation system
+		return "50.0"; // location of the owl file that contains information for the transportation system
 		
 	}
 	
 	private String getInterestFactor() {
-		return "1"; // location of the owl file that contains information for the transportation system
+		return "1.0"; // location of the owl file that contains information for the transportation system
 	}
-		private String getAnnualCostFactor() {
-			return "1."; // location of the owl file that contains information for the transportation system
-		}
-			private String getInternationalMarketPriceFactor() {
-				return "1.05"; // location of the owl file that contains information for the transportation system
-			}
-				private String getInternationalMarketLowestPrice() {
-					return "false"; // location of the owl file that contains information for the transportation system		
-					}
-
 	
+	private String getAnnualCostFactor() {
+		return "0.02"; // location of the owl file that contains information for the transportation system
+	}
 	
+	private String getInternationalMarketPriceFactor() {
+		return "1.05"; // location of the owl file that contains information for the transportation system
+	}
+	
+	private String getInternationalMarketLowestPrice() {
+		return "true"; // location of the owl file that contains information for the transportation system		
+	}
 	
 	public void testCallAgent() throws IOException, URISyntaxException {
-
-
-				
-		AgentRequest request = new AgentRequest();
-
 		
-		// EIP --> one parameter
-		Parameter param = new Parameter("transportationModes", getTransportationFile());
-		request.getInputParameters().add(param);
-
-		Parameter param2 = new Parameter("ChemicalPlants", getChemicalPlants());
-		request.getInputParameters().add(param2);
-
-		// additional Parameters --> five parameters
-		Parameter param3 = new Parameter("CarbonTax", getCarbonTax());
-		request.getInputParameters().add(param3);
-
-		Parameter param4 = new Parameter("InterestFactor", getInterestFactor());
-		request.getInputParameters().add(param4);
-
-		Parameter param5 = new Parameter("AnnualCostFactor", getAnnualCostFactor());
-		request.getInputParameters().add(param5);
-
-		Parameter param6 = new Parameter("InternationalMarketPriceFactor", getInternationalMarketPriceFactor());
-		request.getInputParameters().add(param6);
-
-		Parameter param7 = new Parameter("InternationalMarketLowestPriceApplied", getInternationalMarketLowestPrice());
-		request.getInputParameters().add(param7);
-		
-
-		// add output parameter with key = test
-
-		AgentResponse resp = AgentCaller.callAgent(getContextPathForJPSMen(), request);
-
-		// search for outputparameter with key = test
-		Double ans1 = Double.valueOf((String) resp.getOutputParameters().get(0).getValue());
-		Double ans2 = Double.valueOf((String) resp.getOutputParameters().get(1).getValue());
-		Double ans3 = Double.valueOf((String) resp.getOutputParameters().get(2).getValue());
-		Double ans4 = Double.valueOf((String) resp.getOutputParameters().get(3).getValue());
-		Double ans5 = Double.valueOf((String) resp.getOutputParameters().get(4).getValue());
-		Double ans6 = Double.valueOf((String) resp.getOutputParameters().get(5).getValue());
-		Double ans7 = Double.valueOf((String) resp.getOutputParameters().get(6).getValue());
+		JSONObject jo = new JSONObject();
+		jo.put("transportationmodes", getTransportationFile());
+		//jo.put("chemicalplants", getChemicalPlants());
+		jo.put("ecoindustrialpark", "http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIsland.owl");
+		jo.put("carbontax", getCarbonTax());
+		jo.put("interestfactor", getInterestFactor());
+		jo.put("annualcostfactor", getAnnualCostFactor());
+		jo.put("internationalmarketpricefactor", getInternationalMarketPriceFactor());
+		jo.put("internationalmarketlowestpriceapplied", getInternationalMarketLowestPrice());
+		System.out.println ("jsonoverall= "+jo.toString());
+		String resultAsString = AgentCaller.executeGetWithJsonParameter(getContextPathForJPSMen(), jo.toString());
 	
+		
+		JSONObject result = new JSONObject(resultAsString);
+		Double ans4 = Double.valueOf(result.getString("totaltransportationcost"));//totalTransportationCost
+		Double ans5 = Double.valueOf(result.getString("totalco2emission"));//totalCO2Emission
+		Double ans6 = Double.valueOf(result.getString("totalco2emissioncost"));//totalCO2EmissionCost
+		Double ans7 = Double.valueOf(result.getString("totalinstallationcost"));//totalInstallationCost
 
-		//assertEquals(6.636958433E9, ans1, 1000.);
-		//assertEquals(6.636902E9, ans2, 1000.);
-		assertEquals(3.743276E9, ans3, 1000.);
 		assertEquals(22539.661189, ans4, 1.);
 		assertEquals(53.7127, ans5, 1.);
 		assertEquals(2685.6338, ans6, 1.);
 		assertEquals(1552885.9635, ans7, 1.);
-
+	}
+	/** validate Input for MENAgent
+	 * 
+	 */
+	public void testValidInputs() {
+		JSONObject jo = new JSONObject();
+		jo.put("transportationmodes", getTransportationFile());
+		//jo.put("chemicalplants", getChemicalPlants());
+		jo.put("ecoindustrialpark", "http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIsland.owl");
+		jo.put("carbontax", "HOLO");
+		jo.put("interestfactor", getInterestFactor());
+		jo.put("annualcostfactor", getAnnualCostFactor());
+		jo.put("internationalmarketpricefactor", getInternationalMarketPriceFactor());
+		jo.put("internationalmarketlowestpriceapplied", getInternationalMarketLowestPrice());
+		assertTrue(new MenAgent().validateInput(jo));
 	}
 }

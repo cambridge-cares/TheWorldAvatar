@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.building.test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import com.google.gson.Gson;
 
@@ -15,38 +18,12 @@ import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 
 public class TestBuildingQueryAgent extends TestCase {
 	
-	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
-		return TestBuildingQueryPerformer.createQueryPerformerForTheHague();
-	}
 
-	public void testTheHagueAgentBuildingsFromRegion() {
-		
-		String response = AgentCaller.executeGet("/JPS/buildings/fromregion", "cityiri", BuildingQueryPerformer.THE_HAGUE_IRI, "buildinglimit", "25", 
-				"lowerx", "79000.", "lowery", "454000.", "upperx", "79800.", "uppery", "455200.");
-		System.out.println(response);
-		List<String> buildingIRIs = new Gson().fromJson(response, List.class);
-		assertEquals(25, buildingIRIs.size());
-	}
-	
-	public void testTheHagueAgentBuildingsSimpleShape() {
-		
-		String buildingIRIs = "[\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_83EFA0E4-FC06-46B3-8482-E38C8CF602BC\","
-				+ "\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_21FFA968-1D0D-46F1-9C6A-DEB511EDE8EC\","
-				+ "\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_E7EAC652-9675-4075-9B77-9119130FFC01\","
-				+ "\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_0DDFE8F6-C689-411B-A40B-7AB0B322DAA4\","
-				+ "\"" + TestBuildingQueryPerformer.BUILDING_IRI_THE_HAGUE_PREFIX + "10_buildings0.owl#BuildingGUID_75633FA6-1816-4681-AED1-28477B9E8306\"]";		
-		
-		String response = AgentCaller.executeGet("/JPS/buildings/simpleshape", "cityiri", BuildingQueryPerformer.THE_HAGUE_IRI, "buildingiris", buildingIRIs);
-		System.out.println(response);
-		SimpleBuildingData data = new Gson().fromJson(response, SimpleBuildingData.class);
-		assertEquals(5, data.BldIRI.size());
-		assertEquals(5, data.BldAngle.size());
-	}
 	
 	public void testTheHagueIntegrationWithPython() throws InterruptedException {
 		
 		String city = BuildingQueryPerformer.THE_HAGUE_IRI;
-		String plant = "http://www.theworldavatar.com/Plant-001.owl";
+		String plant = "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl";
 		int buildingLimit = 25;
 		
 		double plantx = 79831;
@@ -56,9 +33,9 @@ public class TestBuildingQueryAgent extends TestCase {
 		double upperx = plantx + 100;
 		double uppery = planty + 200;
 
-		startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		
-		// TODO-AE assert statement is missing here 
+		String targetFolder = startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		//long delta = System.currentTimeMillis() - GetLastModifiedTime(targetFolder, "test.apl");
+		//assertTrue(delta <= 1000*60);
 	}
 	
 	public void testBerlinIntegrationWithPython() throws InterruptedException {
@@ -86,11 +63,9 @@ public class TestBuildingQueryAgent extends TestCase {
 		double upperx = 699959.88;
 		double uppery = 533841.67;
 		startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		
-		// TODO-AE assert statement is missing here 
 	}
 	
-	private void startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
+	private String startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
 		
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");
@@ -110,16 +85,12 @@ public class TestBuildingQueryAgent extends TestCase {
 		
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
 		System.out.println(targetFolder);
-		String result = CommandHelper.executeCommands(targetFolder, args);
-	 
-		System.out.println("Python result: \n" + result);
-	}
+		return CommandHelper.executeCommands(targetFolder, args);
+	}	
 	
 	private String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		// TODO-AE URGENT URGENT activate the query for closest buildings from Region
-		//List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(cityIRI , buildingLimit, lowerx, lowery, upperx, uppery);
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
+		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		SimpleBuildingData result = new BuildingQueryPerformer().performQuerySimpleBuildingData(cityIRI, buildingIRIs);
 		String argument = new Gson().toJson(result);
 		return argument;
 	}
@@ -127,5 +98,35 @@ public class TestBuildingQueryAgent extends TestCase {
 	private String getCoordinatesForPython(double lowerx, double lowery, double upperx, double uppery) {
 		String template = "{'xmin':%f, 'xmax':%f, 'ymin':%f, 'ymax':%f}";
 		return String.format(template, lowerx, upperx, lowery, uppery);
+	}
+	
+	public long GetLastModifiedTime(String targetFolder, String fileName) {
+        File f = new File(targetFolder + "/" + fileName);
+        return f.lastModified();
+	}
+	
+	public void testGetBuildingsData() {
+		double xmin=11560879/*.832*/;
+		double ymin=140107/*.739*/;
+		double xmax=11563323/*.926*/;
+		double ymax=143305/*.896*/;
+		String city= "http://dbpedia.org/resource/Singapore";  
+		   JSONObject scope = new JSONObject();
+		   JSONObject low = new JSONObject();
+		   JSONObject up = new JSONObject();
+		   up.put("upperx", xmax);
+		   up.put("uppery", ymax);
+		   low.put("lowerx", xmin);
+		   low.put("lowery", ymin);
+		   scope.put("lowercorner", low);
+		   scope.put("uppercorner", up);
+
+    	JSONObject req= new JSONObject();
+    	req.put("region",scope);
+    	req.put("city",city);
+		
+		//String resultdata=execute("/JPS/BuildingsData", req.toString());
+		String resultdata = AgentCaller.executeGetWithJsonParameter("/JPS/BuildingsData",req.toString());
+		System.out.println(resultdata);
 	}
 }

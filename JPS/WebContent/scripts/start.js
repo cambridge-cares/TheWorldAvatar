@@ -136,8 +136,8 @@ $(function(){
     $('#start').click(function(){
     	//$('#start').attr("disabled", true);
     	
-    	const BERLIN_IRI = "http://dbpedia.org/page/Berlin";
-    	const THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
+    	const BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+    	const THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
         
         let xmax = parseInt($('#xupper').val());
         let xmin = parseInt($('#xlower').val());
@@ -150,26 +150,27 @@ $(function(){
         const uppery = ymax;
 
 //        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
-        [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
+//        [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
+        [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
+        var canvas = $('#drawcanvas'); canvas.width(1024*ratio).height(1024); // 28 Aug 18
+        var svg = $('contoursvg');svg.width(1024*ratio).height(1024); // 28 Aug 18
 
         const location = $("#location option:selected").text();
         
         let locationIRI;
         const coordinatesMin = getOSMPoint(lowerx, lowery);
-		let coordinatesMax;
+		const coordinatesMax = getOSMPoint(upperx, uppery);
         
         if (location === "The Hague") {
         	locationIRI = THE_HAGUE_IRI;
-			coordinatesMax = getOSMPoint(upperx-5000, uppery-5000);
         } else if (location === "Berlin") {
         	locationIRI = BERLIN_IRI;
-			coordinatesMax = getOSMPoint(upperx, uppery)
         }
 
         const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
         
         const getBuildingIRIs = (cityIRI, lowerx, lowery, upperx, uppery) => {
-        	return $.getJSON('/JPS/ADMSCoordinationAgentNew',
+        	return $.getJSON('/JPS/ADMSCoordinationAgentOld',
 	        	{
 	        		cityIRI,
 	        		lowerx,
@@ -216,9 +217,9 @@ $(function(){
                 longitude: 4.309961
             });
             $("#xlower").val("79480");
-            $("#xupper").val("85000");
+            $("#xupper").val("80000");
             $("#ylower").val("454670");
-            $("#yupper").val("460000");
+            $("#yupper").val("455190");
         }
         osmb.setZoom(10);
         osmb.setTilt(0);
@@ -226,23 +227,51 @@ $(function(){
     //***************************************************************************
 });
 
-// approximate to ratio 1:1 or 1:2
+//approximate to ratio 1:1 or 1:2^n // 28 Aug 18
 function appro2ratio(xmin, xmax, ymin, ymax){
-    x = xmax - xmin;
-    y = ymax - ymin;
-    ratio = x/y;
-    if(ratio >= 2){
-        ymax = ymin + x/2;
-    } else if( ratio <2 && ratio > 1){
-        ymax = ymin + x;
-    } else if (ratio <=1 && ratio > 1/2){
-        xmax =xmin + y;
-    }else {
-        xmax = xmin + y /2;
+ 
+    let copy = [xmax-xmin, ymax-ymin];
+    if( copy[0]- copy[1] >Number.EPSILON){
+        larger =0;
+        smaller = 1;
+    } else{
+        larger = 1;
+        smaller = 0;
     }
     
-    return [xmin, xmax, ymin, ymax];
+    let times = copy[larger]/copy[smaller];
+    let lgtime = Math.log2(times);
+    let t2 = Math.round(lgtime);
+   // console.log(lgtime +' '+t2)
+    if(t2 > lgtime){//we are expanding to larger ratio everything is peachy
+        times = Math.pow(2,t2)
+        copy[larger] = copy[smaller] * times;
+    } else{//we are truncating to smaller ratio, so to not desize, we add to smaller side
+        times = Math.pow(2,t2);
+        copy[smaller] = Math.round(copy[larger]/times)
+    }
+    //next is padding
+    
+    return [xmin, xmin+copy[0], ymin, ymin+copy[1], copy[0]/copy[1]];
 }
+
+// approximate to ratio 1:1 or 1:2
+//function appro2ratio(xmin, xmax, ymin, ymax){
+//    x = xmax - xmin;
+//    y = ymax - ymin;
+//    ratio = x/y;
+//    if(ratio >= 2){
+//        ymax = ymin + x/2;
+//    } else if( ratio <2 && ratio > 1){
+//        ymax = ymin + x;
+//    } else if (ratio <=1 && ratio > 1/2){
+//        xmax =xmin + y;
+//    }else {
+//        xmax = xmin + y /2;
+//    }
+//    
+//    return [xmin, xmax, ymin, ymax];
+//}
 
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;

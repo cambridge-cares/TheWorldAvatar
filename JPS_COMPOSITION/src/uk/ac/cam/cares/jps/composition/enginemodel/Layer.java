@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import uk.ac.cam.cares.jps.composition.servicemodel.*;
+import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
+import uk.ac.cam.cares.jps.composition.servicemodel.Resource;
+import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 @JsonIgnoreProperties(value = {"outputs","allInputs","allOutputs"})
 
 public class Layer {

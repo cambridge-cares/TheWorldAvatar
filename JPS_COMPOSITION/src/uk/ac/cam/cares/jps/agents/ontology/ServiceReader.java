@@ -87,6 +87,11 @@ public class ServiceReader {
         if (individual.hasProperty(MSM.hasHttpUrl.Property())) {
             service.setHttpUrl(individual.getProperty(MSM.hasHttpUrl.Property()).getString());
         }
+        
+        if (individual.hasProperty(MSM.isComposed.Property())) {
+        	 String array = individual.getProperty(MSM.isComposed.Property()).getString();
+             service.setComposed(Boolean.valueOf(array));
+        }
 
         return service;
     }
@@ -188,7 +193,7 @@ public class ServiceReader {
         result = new MessagePart(new URI(individual.getURI()));
         
         String type = individual.getProperty(MSM.hasType.Property()).getString();
-        result.setModelReference(new URI(type));
+        result.setType(new URI(type));
         
         String array = individual.getProperty(MSM.isArray.Property()).getString();
         result.setArray(Boolean.valueOf(array));
@@ -198,7 +203,7 @@ public class ServiceReader {
         
         Statement statement = individual.getProperty(MSM.hasObjectValue.Property());
         if (statement != null) {
-        	result.setValue(statement.getString());
+        	result.setValue(new URI(statement.getString()));
         }
        
         // TODO-AE URGENT datatypeValue should be not literal (see definition of MessagePart but an URI) --> Xiaochi
@@ -207,12 +212,12 @@ public class ServiceReader {
         	result.setDatatypeValue(statement.getString());
         }
         
-//        List<MessagePart> mps;
-//        mps = obtainParts(individual, MSM.hasMandatoryPart.Property());
-//        result.setMandatoryParts(mps);
-//
-//        mps = obtainParts(individual, MSM.hasOptionalPart.Property());
-//        result.setOptionalParts(mps);
+        List<MessagePart> mps;
+        mps = obtainParts(individual, MSM.hasMandatoryPart.Property());
+        result.setMandatoryParts(mps);
+
+        mps = obtainParts(individual, MSM.hasOptionalPart.Property());
+        result.setOptionalParts(mps);
 
         return result;
     }

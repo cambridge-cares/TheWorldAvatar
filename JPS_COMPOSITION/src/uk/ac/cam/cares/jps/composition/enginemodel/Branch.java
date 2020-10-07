@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class Branch { 
@@ -26,10 +25,10 @@ public class Branch {
 	}
 
 	public void removeRedundantSubtracks(Graph graph) {
-		int max = -1000;
+		double max = -1000;
 		for (int i = 0; i < this.subtracks.size(); i++) {
 			SubTrack subtrack = subtracks.get(i);
-			subtrack.CalculateScore();
+			subtrack.CalculateScore(graph.scoreMap);
 			if (subtrack.score > max) {
 				max = subtrack.score;
 				this.selectedSubtrack = subtrack;

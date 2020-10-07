@@ -21,9 +21,9 @@ def sparqlBuildingCoordinates(building, sparqlEndPoint):
     
     queryString = '''
 
-            PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-            PREFIX j1: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-            PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+            PREFIX p3: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
+            PREFIX j1: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+            PREFIX j2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
             SELECT ?polygon ?coordinates ?xval ?yval ?zval
             WHERE
@@ -80,16 +80,23 @@ def sparqlBuildingCoordinates(building, sparqlEndPoint):
 def sparqlBuildingHeights(building, sparqlEndPoint):
     
     queryString = """
-        PREFIX p3: <http://www.theworldavatar.com/CityGMLOntology.owl#>
-        PREFIX j2: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
+        PREFIX p3: <http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>
+        PREFIX j2: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 
-        SELECT ?numericalValue
+        SELECT ?height ?minHeight
         WHERE
         {{
             <{0}> p3:measuredHeight ?lengthType .
             <{0}> a p3:BuildingType .
             ?lengthType j2:hasValue ?scalarValue .
-            ?scalarValue j2:numericalValue ?numericalValue
+            ?scalarValue j2:numericalValue ?height .
+    
+            OPTIONAL {{
+                <{0}> p3:lowerHeight ?minHeightType .
+                <{0}> a p3:BuildingType .
+                ?minHeightType j2:hasValue ?scalarValueMinHeight .
+                ?scalarValueMinHeight j2:numericalValue ?minHeight .    
+            }}
         }}
 
         """.format(building)
@@ -120,7 +127,13 @@ def readFromJSONFile(fileName):
     return listBuildingsToTransfer
 
 def getBuildingHeights(buildingHeight):
-    return float(buildingHeight[0]['numericalValue']['value'])
+    heights = {}
+    if 'minHeight' in buildingHeight[0]:
+        heights['minHeight'] = float(buildingHeight[0]['minHeight']['value'])
+    else:
+        heights['minHeight'] = 0
+    heights['height'] = float(buildingHeight[0]['height']['value'])
+    return heights
 
 def getBuildingCoordinates(buildingCoordinates, owlCRS, osmCRS):
     building = []
@@ -157,34 +170,57 @@ def getBuildingCoordinates(buildingCoordinates, owlCRS, osmCRS):
     return building
 
 # stores each building's data in a Python dictionary in GeoJSON format
-def getGeoJSON(listBuildingCoordinates, listBuildingHeights):
+def getGeoJSON(listBuildingCoordinates, listBuildingHeights, cityiri):
     listBuildingsToTransfer = []
-
-    for idx, building in enumerate(listBuildingCoordinates):
-        python_data = {
-            'type': 'FeatureCollection',
-            'features': [{
-                'type': 'Feature',
-                'properties': {
-                    'height': listBuildingHeights[idx],
-                    'minHeight': 0,
-                    'color': 'red',
-                    'roofColor': 'red'
-                },
-                'geometry': {
-                    'type': 'MultiPolygon',
-                    'coordinates': building
-
-                }
-            }]
-        }
-
-        listBuildingsToTransfer.append(python_data)
+    if cityiri == "http://dbpedia.org/resource/Hong_Kong":
+        for idx, building in enumerate(listBuildingCoordinates):
+            python_data = {
+                'type': 'FeatureCollection',
+                'features': [{
+                    'type': 'Feature',
+                    'properties': {
+                        'height': float(listBuildingHeights[idx]['height']),
+                        #'minHeight': listBuildingHeights[idx]['minHeight'],
+                        'color': 'red',
+                        'roofColor': 'red'
+                    },
+                    'geometry': {
+                        'type': 'MultiPolygon',
+                        'coordinates': building
+    
+                    }
+                }]
+            }
+    
+            listBuildingsToTransfer.append(python_data)
+    else:
+        for idx, building in enumerate(listBuildingCoordinates):
+            python_data = {
+                'type': 'FeatureCollection',
+                'features': [{
+                    'type': 'Feature',
+                    'properties': {
+                        'height': listBuildingHeights[idx]['height'],
+                        'minHeight': listBuildingHeights[idx]['minHeight'],
+                        'color': 'red',
+                        'roofColor': 'red'
+                    },
+                    'geometry': {
+                        'type': 'MultiPolygon',
+                        'coordinates': building
+    
+                    }
+                }]
+            }
+    
+            listBuildingsToTransfer.append(python_data)
+        
 
     return listBuildingsToTransfer
 
 def return_buildings():
-    
+    with open('./gson_log.txt','w') as f:
+        f.write(str(sys.argv[1]))    
     listOfIRIs = sys.argv[1].strip().replace('"','').replace("'",'')[1:-1].split(',')
     cityiri = sys.argv[2]
     with open('./log.txt','w') as file:
@@ -194,12 +230,19 @@ def return_buildings():
     owlCRS = None
     osmCRS = Proj(init='epsg:4326')
     
-    if cityiri == "http://dbpedia.org/page/The_Hague":
+    if cityiri == "http://dbpedia.org/resource/The_Hague":
         owlCRS = Proj(init='epsg:28992')
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/thehaguebuildings/sparql"
-    elif cityiri == "http://dbpedia.org/page/Berlin":
+    elif cityiri == "http://dbpedia.org/resource/Berlin":
         owlCRS = Proj(init='epsg:25833')
         sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/berlinbuildings/sparql"
+    elif cityiri == "http://dbpedia.org/resource/Singapore":
+        owlCRS = Proj(init='epsg:4326')
+        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/mbs/sparql"
+    elif cityiri == "http://dbpedia.org/resource/Hong_Kong":
+        owlCRS = Proj(init='epsg:4326')
+        sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildingsrealdata/sparql"
+        #sparqlEndPoint = "http://www.theworldavatar.com/damecoolquestion/hongkongbuildings/sparql"
 
     if listOfIRIs == []:
         raise ValueError("EMPTY ARRAY")
@@ -221,7 +264,7 @@ def return_buildings():
         listBuildingCoordinates.append(coordinates)
 
 
-    listBuildingsToTransfer = getGeoJSON(listBuildingCoordinates, listBuildingHeights)
+    listBuildingsToTransfer = getGeoJSON(listBuildingCoordinates, listBuildingHeights, cityiri)
 
     return json.dumps(listBuildingsToTransfer)
 

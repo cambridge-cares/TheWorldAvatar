@@ -1,0 +1,322 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:fc="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl"/>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;loop&apos;  introduces a shorthand for representing structures that consist of repetitive, interlinked Objects
+The following classes and relations from other ontology modules are used within &apos;loop&apos;:
+   
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#CoequalN-aryRelation&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#involvesObject&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isInvolvedInN-aryRelation&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#relationAttribute&quot;/&gt;
+</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#finalStatement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#finalStatement">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#hasLoopStatement"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isFinalStatementOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the final statement in a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#hasLoopStatement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#hasLoopStatement">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#involvesObject"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementOfLoop"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">subsumes the different statements of a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#initialStatement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#initialStatement">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#hasLoopStatement"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isInitialStatementOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the initial statement in a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isFinalStatementOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isFinalStatementOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementOfLoop"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the final statement in a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isInitialStatementOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isInitialStatementOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementOfLoop"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the initial statement in a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementFor_iOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementFor_iOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementOfLoop"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_i"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the Objects that appear in each iteration of a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementFor_iPlus1Of -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementFor_iPlus1Of">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementOfLoop"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_iPlus1"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the objects that in the next iteration of a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementOfLoop -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementOfLoop">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#isInvolvedInN-aryRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">subsumes all the individuals that represent statements in a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#sameObject -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#sameObject">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#sameObject"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Identity relation between an Object involved in a in a statementFor_i and an Object that appears in an ininitalStatement, a finalStatement, or a statementFor_iPlus1.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_i -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_i">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#hasLoopStatement"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the objects that appear in each iteration of a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_iPlus1 -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_iPlus1">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#hasLoopStatement"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">denotes the objects that in the next iteration of a ForLoop</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#numberOfIterations -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#numberOfIterations">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#relationAttribute"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">indicates the number of iterations of a particular ForLoop</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#CoequalN-aryRelation"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_i"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#finalStatement"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#sameObject"/>
+                                <owl:someValuesFrom>
+                                    <owl:Class>
+                                        <owl:intersectionOf rdf:parseType="Collection">
+                                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                                            <owl:Restriction>
+                                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementFor_iOf"/>
+                                                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+                                            </owl:Restriction>
+                                        </owl:intersectionOf>
+                                    </owl:Class>
+                                </owl:someValuesFrom>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#initialStatement"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#sameObject"/>
+                                <owl:someValuesFrom>
+                                    <owl:Class>
+                                        <owl:intersectionOf rdf:parseType="Collection">
+                                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                                            <owl:Restriction>
+                                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementFor_iOf"/>
+                                                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+                                            </owl:Restriction>
+                                        </owl:intersectionOf>
+                                    </owl:Class>
+                                </owl:someValuesFrom>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_i"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_iPlus1"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#sameObject"/>
+                                <owl:someValuesFrom>
+                                    <owl:Class>
+                                        <owl:intersectionOf rdf:parseType="Collection">
+                                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                                            <owl:Restriction>
+                                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#isStatementFor_iOf"/>
+                                                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#ForLoop"/>
+                                            </owl:Restriction>
+                                        </owl:intersectionOf>
+                                    </owl:Class>
+                                </owl:someValuesFrom>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#statementFor_i"/>
+                <owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/loop.owl#numberOfIterations"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ForLoop is used to represent structures that consist of repetitive, interlinked objects.</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

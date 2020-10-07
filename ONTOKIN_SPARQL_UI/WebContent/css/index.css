@@ -1,0 +1,73 @@
+body {
+	margin: 0 0;
+}
+
+.row {
+	margin: 12px 0;
+}
+
+#query>label {
+	padding: 13.5em 0;
+	vertical-align: top;
+}
+
+label {
+	display: inline-block;
+	width: 10%;
+}
+
+#user-interface {
+	background: linear-gradient(#b3b3b3, #f7f7f7);
+	padding: 8px 8px;
+}
+
+.header>p {
+	font: bold 2rem arial;
+	margin: 0;
+	border-bottom: 1px solid rgba(79, 79, 79, 0.97);
+}
+
+#actions>p, #results>p {
+	display: inline-block;
+	width: 10%;
+}
+
+#num-results {
+	display: inline-block;
+	width: 90%;
+}
+
+table {
+	font-family: arial, sans-serif;
+	border-collapse: collapse;
+	table-layout: fixed;
+	width: 100%;
+	word-break: break-all;
+}
+
+td, th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
+
+.index {
+	width: 20px;
+}
+
+tr:nth-child(even) {
+	background-color: #dddddd;
+}
+
+.row-header {
+	font-weight: bold;
+	background-color: #dddddd;
+}
+
+.first-column {
+	width: 60px;
+}
+
+#table {
+	padding: 0px 8px;
+}

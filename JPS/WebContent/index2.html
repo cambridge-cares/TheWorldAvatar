@@ -1,0 +1,111 @@
+
+<html>
+
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/adms3dmap.css">
+    <link rel="stylesheet" href="css/OSMBuildings.css">
+    <link rel="stylesheet" href="css/conmap.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <title>J-Park Simulator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="scripts/OSMBuildings.debug.js"></script>
+
+
+    <script src="javascript/d3.v4.js"></script>
+    <script src="javascript/d3-contour.js"></script>
+    <script src="javascript/d3-legend.js"></script>
+    <script src="javascript/d3-scale-chromatic.js"></script>
+    <script src="javascript/proj4.js"></script>
+
+    <script src="scripts/svg2img.js"></script>
+    <script src="scripts/mContour.js"></script>
+	<script src="scripts/adms3Dmap2.js"></script>
+    <!--<script src="scripts/start.js"></script> -->
+    <script src="scripts/rdfProcessor.js"></script>
+    <script src="scripts/start3.js"></script>
+
+</head>
+<body>
+<div class="jumbotron text-center" id="topBanner">
+
+
+    <a id="cares-banner" href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+        <img id="care-banner-img" src="images/cam_lang_negativ1%20NEW_0.png">
+    </a>
+
+    <span id="readme-button">?</span>
+
+    <span id="readme-text">
+        This agent has considered the effect of surrounding buildings and weather data for simulation of atmospheric dispersion for an emission source (black building).
+        <br/><br/>The pollutants in the emission source are CO<sub>2</sub>, CO and unburned hydrocarbon.
+        The pollutants emission rate has been arbitrarily assigned as 446 g/s for CO, 1970 g/s for CO2 and 803 g/s for unburned hydrocarbon.
+        <br/><br/> The effects of the closest 25 buildings from the emission source and real-time weather data (sourced from http://www.accuweather.com/en/sg/singapore/300597/current-weather/300597) on atmospheric dispersion are simulated and visualised in the dispersion profile.
+        The weather data is updated every time the agent is executed.
+        <br/><br/>The user can modify the area of interest between Den Haag and Berlin by selecting from the dropdown list and executing the simulation to determine the corresponding dispersion profile.
+        <br/>The emission source in Den Haag was chosen as the Uniper Stadcentrale Den Haag plant while the emission source in Berlin was chosen as the Heizkraftwerk Mitte plant.
+        <br/>The emission sources have emission heights of 83.6 m in Den Haag scenario and 99.3 m in Berlin scenario respectively.
+        <br/><br/>The user can also select the region to focus on the dispersion profile computation by modifying the coordinates of interest (X lower, X upper, Y lower and Y upper values
+        in coordinate reference system Amersfoort RD New (epsg:28992)).
+        <br/>The dispersion profile can be viewed at a height of 0 m to 30 m by moving the slider on the left. The user can also choose to view the different pollutants’
+        dispersion profiles by selecting the listed pollutants.</span>
+
+</div>
+
+<div id="inputFields">
+
+    
+    <h1 id="head1"></h1>
+    <p id="description"></p>
+    <button id="start">Start simulation</button>
+    <ul id="reaction-list">
+
+
+    </ul>
+</div>
+<div id= "container" style = "display: inline">
+<div id="map" style = "width: 65%">
+</div>
+<iframe src= "http://www.theworldavatar.com/JPS/blockchain_visualization/" style = "width: 600px; position: absolute; right: 0px; top: 250px; height: 1300px">Blockchain updates</iframe>
+</div>
+<div class="control tilt">
+    <button class="dec">&#8601;</button>
+    <button class="inc">&#8599;</button>
+</div>
+
+<div class="control rotation">
+    <button class="inc">&#8630;</button>
+    <button class="dec">&#8631;</button>
+</div>
+
+<div class="control zoom">
+    <button class="dec">-</button>
+    <button class="inc">+</button>
+</div>
+
+<div class="choice  container">
+    <div class="row">
+        <div id="sliderwrapper" class = "col-lg-1 offset-lg-2"></div>
+        <div id="optionwrapper" class = "col-lg-3"></div>
+        <div id="legendwrapper" class = "col-lg-3"></div>
+
+    </div>
+
+</div>
+
+<div id="svgwrapper">
+    <svg xmlns="http://www.w3.org/2000/svg"  width="1024" height="1024"></svg>
+</div>
+<canvas width="1024" height="1024" id="drawcanvas"></canvas>
+
+</body>
+</html>

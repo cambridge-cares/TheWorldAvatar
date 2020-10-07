@@ -29,14 +29,17 @@ public class ConnectionBuilder {
 							int currentInputIndex = 0;
 							for (MessagePart currentInput : service.getAllInputs()) {
 								currentInputIndex++;
-								if (MatchingTool.compareURI(previousOutput.getModelReference(),
-										currentInput.getModelReference())) {
+								if (MatchingTool.compareURI(previousOutput.getType(),
+										currentInput.getType())) {
 									Edge newEdge = new Edge();
 									int[] fromOutputIdx = new int[3];
 									int[] toInputIdx = new int[3];
 									fromOutputIdx[0] = previousLayer.getIndex() - 1;// layer index of an agent in
 									fromOutputIdx[1] = previousServiceIndex - 1;
 									fromOutputIdx[2] = previousInputIndex - 1;
+																		
+									// TODO: Get the key from the 
+									
 									toInputIdx[0] = layer.getIndex() - 1;
 									toInputIdx[1] = currentServiceIndex - 1;
 									toInputIdx[2] = currentInputIndex - 1;
@@ -50,8 +53,8 @@ public class ConnectionBuilder {
 								}
 
 								for (MessagePart initInput : theGraph.initialInputs) {
-									if (MatchingTool.compareURI(initInput.getModelReference(),
-											currentInput.getModelReference())) {
+									if (MatchingTool.compareURI(initInput.getType(),
+											currentInput.getType())) {
 										Edge newEdge = new Edge();
 										int[] toInputIdx = new int[3];
 										toInputIdx[0] = layer.getIndex() - 1;

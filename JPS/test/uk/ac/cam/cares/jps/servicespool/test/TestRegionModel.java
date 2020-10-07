@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.servicespool.test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.StringWriter;
 
 import org.apache.jena.rdf.model.Model;
@@ -11,14 +9,14 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.vocabulary.RDF;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 
-class TestRegionModel {
+public class TestRegionModel {
 
 	@Test
-	void test() {
+	 public void test() {
 		Model regionModel = ModelFactory.createDefaultModel();
 		Property hasX = regionModel.createProperty("http://test.com/Property/hasX");
 		Property hasY = regionModel.createProperty("http://test.com/Property/hasY");

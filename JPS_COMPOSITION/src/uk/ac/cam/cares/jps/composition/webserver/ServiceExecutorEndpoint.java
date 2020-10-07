@@ -9,10 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONException;
-
+import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.executor.ExecutionLayer;
-import uk.ac.cam.cares.jps.composition.executor.Executor;
+import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
 import uk.ac.cam.cares.jps.composition.executor.ExecutorProcessor;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 import uk.ac.cam.cares.jps.composition.util.JSONReader;
@@ -35,13 +34,24 @@ public class ServiceExecutorEndpoint extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			ExecutorProcessor executorprocessor = new ExecutorProcessor(JSONReader.readJSONFromRequest(request));
-			ArrayList<ExecutionLayer> executionChain = executorprocessor.generateExecutionChain();
-			Executor executor = new Executor(executionChain);
+			
+			System.out.println("=================== Received ================");
+			String graphInString = JSONReader.readJSONFromRequest(request).toString();
+			System.out.println(graphInString);
+			System.out.println("=============================================");
+			Graph graph = FormatTranslator.convertGraphJSONTOJavaClass(graphInString);
+			
+			
+			ExecutorProcessor processor = new ExecutorProcessor(FormatTranslator.convertGraphJavaClassTOJSON(graph));
+			ArrayList<ExecutionLayer> executionChain = processor.generateExecutionChain();
+			ExecutorNew executor = new ExecutorNew(executionChain);
+			System.out.println("=================== Execution Chain ==================");
+			System.out.println(FormatTranslator.convertExectorToJSON(executor).toString());
+			System.out.println("======================================================");
+			
 			response.getWriter().write(FormatTranslator.convertExectorToJSON(executor).toString());
 
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

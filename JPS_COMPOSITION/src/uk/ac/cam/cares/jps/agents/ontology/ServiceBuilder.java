@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
@@ -13,6 +14,8 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 public class ServiceBuilder {
 	
 	private Service service = null;
+	private List<MessagePart> currentBranch = new ArrayList<>();
+	private MessagePart currentPart = null;
 	
 	public ServiceBuilder() {
 		service = new Service();
@@ -30,7 +33,7 @@ public class ServiceBuilder {
 		}
 	}
 	
-	private Operation getLastOperation() {
+	private Operation getCurrentOperation() {
 		int size = service.getOperations().size();
 		return service.getOperations().get(size-1);
 	}
@@ -70,36 +73,45 @@ public class ServiceBuilder {
 	
 	private void addMessagePart(String type, boolean array, String name, boolean mandatory, boolean input) {
 		
-		MessageContent content = getContent(input);
+		MessagePart parentPart = null;
 		List<MessagePart> parts = null;
-		if (mandatory) {
-			parts = content.getMandatoryParts();
-			if (parts == null) {
-				parts = new ArrayList<MessagePart>();
-				content.setMandatoryParts(parts);
-			}
+		
+		if (currentBranch.isEmpty()) {		
+			parentPart = getContent(input);
+		} else if (!mandatory) {
+			throw new JPSRuntimeException("nested parameters must be mandatory");
 		} else {
-			parts = content.getOptionalParts();
-			if (parts == null) {
-				parts = new ArrayList<MessagePart>();
-				content.setOptionalParts(parts);
-			}
+			parentPart = currentBranch.get(currentBranch.size() - 1);
 		}
 		
-		MessagePart newPart = new MessagePart();
-		newPart.setModelReference(uri(type));
-		newPart.setArray(array);
-		newPart.setName(name);
-		parts.add(newPart);
+		if (mandatory) {
+			parts = parentPart.getMandatoryParts();
+			if (parts == null) {
+				parts = new ArrayList<MessagePart>();
+				parentPart.setMandatoryParts(parts);
+			}
+		} else {
+			parts = parentPart.getOptionalParts();
+			if (parts == null) {
+				parts = new ArrayList<MessagePart>();
+				parentPart.setOptionalParts(parts);
+			}
+		}
+			
+		currentPart = new MessagePart();
+		currentPart.setType(uri(type));
+		currentPart.setArray(array);
+		currentPart.setName(name);
+		parts.add(currentPart);
 	}
-	
+		
 	private MessageContent getContent(boolean input) {
 		
 		List<MessageContent> list = null;
 		if (input) {
-			list = getLastOperation().getInputs();
+			list = getCurrentOperation().getInputs();
 		} else {
-			list = getLastOperation().getOutputs();
+			list = getCurrentOperation().getOutputs();
 		}
 		
 		MessageContent content = null;
@@ -113,7 +125,22 @@ public class ServiceBuilder {
 		return content;
 	}
 	
+	public ServiceBuilder down() {
+		currentBranch.add(currentPart);
+		return this;
+	}
+
+	public ServiceBuilder up() {
+		currentBranch.remove(currentBranch.size() - 1);
+		return this;
+	}
+	
 	public Service build() {
 		return service;
+	}
+	
+	public ServiceBuilder composed() {
+		service.setComposed(true);
+		return this;
 	}
 }

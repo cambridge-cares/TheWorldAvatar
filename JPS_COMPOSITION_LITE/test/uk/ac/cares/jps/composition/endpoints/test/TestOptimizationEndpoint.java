@@ -1,0 +1,28 @@
+package uk.ac.cares.jps.composition.endpoints.test;
+
+import org.apache.http.client.utils.URIBuilder;
+import org.junit.After;
+import org.junit.Test;
+
+import uk.ac.cares.jps.composition.utils.Request;
+
+public class TestOptimizationEndpoint {
+
+	@After
+	public void tearDown() throws Exception {
+	}
+
+	@Test
+	public void test() {
+
+		String compositionResultInString = "{\"input_mapping\":{\"http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service\":[\"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState\",\"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct\",\"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant\",\"http://dbpedia.org/ontology/city\",\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\"],\"http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant\"],\"http://www.theworldavatar.com/kb/agents/Service__FactorModel.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl\"],\"http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\"],\"http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service\":[\"http://dbpedia.org/ontology/city\"],\"http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\"],\"http://www.theworldavatar.com/kb/agents/Service__AccuWeather.owl#Service\":[\"http://dbpedia.org/ontology/city\"],\"http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant\"],\"http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#Service\":[\"http://dbpedia.org/ontology/city\"],\"http://www.theworldavatar.com/kb/agents/Service__BuildingQuery.owl#Service\":[\"http://dbpedia.org/ontology/city\",\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\"],\"http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant\",\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\"]},\"output_mapping\":{\"http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service\":[\"https://www.w3.org/ns/csvw#Table\"],\"http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct\"],\"http://www.theworldavatar.com/kb/agents/Service__FactorModel.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission\"],\"http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant\"],\"http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service\":[\"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState\"],\"http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#Service\":[\"http://dbpedia.org/ontology/city\"],\"http://www.theworldavatar.com/kb/agents/Service__AccuWeather.owl#Service\":[\"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState\"],\"http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct\"],\"http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#Service\":[\"https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState\"],\"http://www.theworldavatar.com/kb/agents/Service__BuildingQuery.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType\"],\"http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service\":[\"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType\",\"https://www.w3.org/ns/csvw#Table\"]},\"layers\":[[\"http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#Service\",\"http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#Service\"],[\"http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#Service\",\"http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service\",\"http://www.theworldavatar.com/kb/agents/Service__AccuWeather.owl#Service\",\"http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#Service\",\"http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#Service\",\"http://www.theworldavatar.com/kb/agents/Service__BuildingQuery.owl#Service\",\"http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service\"],[\"http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service\"]]}";
+
+		String myHost = "localhost";
+		int myPort = 8080;
+		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
+				.setPath("/JPS_COMPOSITION_LITE/OptimizationEndpoint").setParameter("query", compositionResultInString);
+		String result = Request.executeGet(builder);
+		System.out.println(result);
+	}
+
+}

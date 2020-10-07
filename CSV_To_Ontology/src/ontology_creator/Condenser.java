@@ -146,20 +146,20 @@ public class Condenser {
 	
 	public void createNewOutputStream(JenaOWLModel owlmodel, String streamNumber) {
 		addN_nozzle();
-		OWLNamedClass NozzleClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle");
-		OWLNamedClass ProcessStreamClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#ProcessStream");
-		OWLNamedClass PipeClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe");
+		OWLNamedClass NozzleClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle");
+		OWLNamedClass ProcessStreamClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#ProcessStream");
+		OWLNamedClass PipeClass = owlmodel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe");
 		
-		OWLIndividual ExchangerInstance = owlmodel.getOWLIndividual("http://www.jparksimulator.com/" + filename + "#" + getName());// new instance
-		OWLIndividual HeatingProcess = owlmodel.getOWLIndividual("http://www.jparksimulator.com/" + filename + "#Vaporizing_ProcessStream_" + getFeedStream());
+		OWLIndividual ExchangerInstance = owlmodel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + filename + "#" + getName());// new instance
+		OWLIndividual HeatingProcess = owlmodel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + filename + "#Vaporizing_ProcessStream_" + getFeedStream());
 		
-		OWLObjectProperty isDirectlyConnectedTo = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#isDirectlyConnectedTo");
-		OWLObjectProperty hasConnector = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#hasConnector");
-		OWLObjectProperty hasOutput = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#hasOutput");
+		OWLObjectProperty isDirectlyConnectedTo = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo");
+		OWLObjectProperty hasConnector = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasConnector");
+		OWLObjectProperty hasOutput = owlmodel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasOutput");
 		
-		RDFIndividual Nozzle = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/" + filename + "#" + getName() + "_N_" + getN_nozzle());
-		RDFIndividual ProcessStream = ProcessStreamClass.createRDFIndividual("http://www.jparksimulator.com/" + filename + "#ProcessStream_" + streamNumber);
-		RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/" + filename + "#Pipe_" + streamNumber);
+		RDFIndividual Nozzle = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + filename + "#" + getName() + "_N_" + getN_nozzle());
+		RDFIndividual ProcessStream = ProcessStreamClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + filename + "#ProcessStream_" + streamNumber);
+		RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + filename + "#Pipe_" + streamNumber);
 		
 		ExchangerInstance.addPropertyValue(hasConnector, Nozzle);
 		HeatingProcess.addPropertyValue(hasOutput, ProcessStream);
@@ -168,14 +168,14 @@ public class Condenser {
 	}
 	
 	public void inputHeatDuty(JenaOWLModel owlmodel) {
-		OWLIndividual HeatDuty = owlmodel.getOWLIndividual("http://www.jparksimulator.com/"	+ filename + "#ValueOfHeatDutyOf" + getName());
-		OWLDatatypeProperty numericalvalue = owlmodel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");
+		OWLIndividual HeatDuty = owlmodel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/"	+ filename + "#ValueOfHeatDutyOf" + getName());
+		OWLDatatypeProperty numericalvalue = owlmodel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		HeatDuty.setPropertyValue(numericalvalue, getDuty());
 	}
 	
 	public void createOWLFile() {
 		Tools.replaceString("Cooling_", "Condensing_", "OWL Templates/E-340001_Template.owl", filename);
-		Tools.replaceString("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange", "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#PhaseChange", filename);
+		Tools.replaceString("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#PhaseChange", filename);
 		Tools.replaceString("E-340001", getName(), filename);
 		
 		Tools.replaceString("_340008", "_" + getFeedStream(), filename);

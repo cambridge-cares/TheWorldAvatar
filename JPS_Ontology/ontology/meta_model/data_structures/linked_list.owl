@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:mereology="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:fc="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;linked_list&apos; defines a design pattern for the implementation of a linked list.
+The following classes and relations from other ontology modules are used within &apos;linked_list&apos;:
+   
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#CompositeObject&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOfCompositeObject&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf&quot;/&gt;
+</rdfs:comment>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+</terms:license>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#nextElement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#nextElement">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#previousElement"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">points from a ListElement to the next ListElement</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#previousElement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#previousElement">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">points from a ListElement to the previous ListElement</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#FirstElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#FirstElement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#nextElement"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#previousElement"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#InternalElement"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#LastElement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The first ListElement of a LinkedList.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#InternalElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#InternalElement">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#nextElement"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#previousElement"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#LastElement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ListElement that is neither the first nor the last element of a LinkedList.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#LastElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#LastElement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#previousElement"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#nextElement"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The last ListElement of a LinkedList.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#LinkedList -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#LinkedList">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#CompositeObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A LinkedList is formed by a sequence of ListElements, each pointing to the next as well as to the previous ListElement.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOfCompositeObject"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#LinkedList"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#nextElement"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#previousElement"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#ListElement"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#LinkedList"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#nextElement"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/linked_list.owl#previousElement"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ListElement is an element of a LinkedList; it may point to a next as well as to a previous ListElement.</rdfs:comment>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

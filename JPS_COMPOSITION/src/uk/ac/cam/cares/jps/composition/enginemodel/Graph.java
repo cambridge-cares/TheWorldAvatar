@@ -20,14 +20,26 @@ public class Graph {
 	public ArrayList<MessagePart> initialInputs;
 	public ArrayList<Edge> edges;
 	public Map<String, Integer> updatesMap;
+	public ArrayList<String> eliminationList;
+	public Map<String, Long[]> scoreMap;
+	
 
+	
 	public Graph() {
+		
+	}
+	
+	public Graph(URI uri) {
 		this.initialInputs = new ArrayList<MessagePart>();
 		this.inputPool = new ArrayList<MessagePart>();
 		this.layers = new ArrayList<Layer>();
 		this.servicePool = new ArrayList<Service>();
 		this.edges = new ArrayList<Edge>();
 		this.updatesMap = new HashMap<String, Integer>();
+		this.eliminationList = new ArrayList<String>();
+		this.scoreMap = new HashMap<String, Long[]>();
+		// This scoreMap uses IRI of agent as key, overall score of an agent 
+		// as the value...
 	}
 
 	public void addLayer(Layer newLayer) {
@@ -45,5 +57,8 @@ public class Graph {
 		}
 		return result;
 	}
+	
+
+	
 
 }

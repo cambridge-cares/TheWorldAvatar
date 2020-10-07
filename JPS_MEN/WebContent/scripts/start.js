@@ -1,8 +1,38 @@
 $(function(){
-     
+         const toggleDisplay = elemId => {
+        let x = document.getElementById(elemId);
+        if (x.style.display !== 'block') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    };
+
+    $("#readme-button").click(function() {
+        toggleDisplay("readme-text");
+    });
+
+    document.addEventListener("click", function(evt) {
+        var readmeButtonElement = document.getElementById('readme-button'),
+            readmeTextElement = document.getElementById('readme-text'),
+            targetElement = evt.target;  // clicked element
+
+        if (targetElement == readmeButtonElement || targetElement == readmeTextElement) {
+            return; //readme-button or readme-text is clicked. do nothing.
+        }
+
+        if(readmeTextElement.style.display === 'block') {
+            readmeTextElement.style.display = 'none';
+        }
+    });
     
     $('#start').click(function(){
     	
+			$("#buttonrun").append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>')
+
+		
+		
+		
         var carbontax = parseFloat($('#carbontax').val());
         var interestfactor = "1.0";
         var intmarketpricefactor = parseFloat($('#intmarketpricefactor').val());
@@ -10,16 +40,31 @@ $(function(){
       
        var timefactor = $('#timefactor').val().split(",");
       var list =[carbontax,interestfactor,intmarketpricefactor,intmarketlowestprice,timefactor];
-  
-        $.getJSON('/JPS_MEN/MENTableAgent',
-                {
-        			listOfInputs: JSON.stringify(list)
-                },
-                function(data) {
+      
+      
+      var query = {
+    		"CarbonTax": carbontax,
+    		//"InterestFactor":interestfactor,
+    		"InternationalMarketPriceFactor":intmarketpricefactor,
+    		"InternationalMarketLowestPriceApplied":intmarketlowestprice,
+    		"AnnualCostFactor":timefactor
+          }
+          
+  		query = JSON.stringify(query);        
+      
+      
+      console.log("data of input= "+JSON.stringify(list)); 
+        
+      
+      $.getJSON('/JPS_MEN/MENTableAgent',
+    		  {
+			  query
+    		  },
+               function(data) {
                     
                var result = data;
                console.log("data of result= "+JSON.stringify(result)); 
-               
+               $('#myProgressBar').remove()
                var n= $('#timefactor').val().replace("[","").replace("]","").split(","); 
                var totalyear=n.length;
                               
@@ -30,8 +75,8 @@ $(function(){
                           tablestring+="<TH>Transport Cost per year <br> (10^3 x $/yr)</TH>";
                           tablestring+="<TH> Material Purchase Cost per year <br> (10^9 x $/yr)</TH>";
                           tablestring+="<TH>Pipeline Installation Cost <br> (10^6 x $)</TH>";
-                          tablestring+="<TH>CO2 Emission per year <br> (t/yr)</TH>";
-                          tablestring+="<TH>CO2 Emission cost per year <br> (10^3 x $/yr)</TH>";
+                          tablestring+="<TH>CO<sub>2</sub> Emission per year <br> (ton/yr)</TH>";
+                          tablestring+="<TH>CO<sub>2</sub> Emission cost per year <br> (10^3 x $/yr)</TH>";
                           for(var c=0; c<totalyear; c++) {
                         	  tablestring+="<TH>Total Cost Related to Transportation in "+n[c]+" year <br> (10^6 x $)</TH>";
                       			}

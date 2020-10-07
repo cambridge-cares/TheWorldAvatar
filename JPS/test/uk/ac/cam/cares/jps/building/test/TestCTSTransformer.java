@@ -100,4 +100,32 @@ public class TestCTSTransformer extends TestCase implements SparqlConstants {
          
         assertTrue(checkEquals2D(result, targetPoint, tolerance));
 	}
+	
+	public void testCTSTransformationForBerlinPlant1() {
+		
+		String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
+        double[] sourcePoint = new double[]{392825, 5819122};
+        String targetCRS = CRSTransformer.EPSG_28992; // The Hague
+        double[] targetPoint = new double[] {699583.49, 532938.39};
+        double tolerance = 1;
+
+        double[] result = CRSTransformer.transform(sourceCRS, targetCRS, sourcePoint);
+          
+        assertTrue(checkEquals2D(result, targetPoint, tolerance));  
+	}
+	
+	public void testCTSTransformationForBerlinRegion() {
+		
+		String sourceCRS = CRSTransformer.EPSG_28992; // The Hague
+        double[] sourcePoint = new double[]{699983, 533338};
+        String targetCRS = CRSTransformer.EPSG_4326; // WGS 84
+        double[] targetPoint = new double[] {13.420712, 52.511667};
+        double tolerance = 0.0001;
+
+        double[] result = CRSTransformer.transform(sourceCRS, targetCRS, sourcePoint);
+          
+        System.out.println(result[0] + ", "  + result[1]);
+        
+        //assertTrue(checkEquals2D(result, targetPoint, tolerance));  
+	}
 }

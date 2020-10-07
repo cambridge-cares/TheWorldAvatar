@@ -1,0 +1,10 @@
+name,				nameRegex,						idRegex,						filenameTemplate,			IRITemplate,						isSIUnit,	abbrPair,	isBooleanValue,type
+CanopyHood,			<.*VAV.*CanopyHood.*>,		   [a-zA-z][0-9]_[0-9]*,			CH-%s_CSStat_sensor1.owl,	V_CSStatusOfCH-%s,					1,			0,			0,				2
+FumeHoodDoor,		.*W*FH-*[0-9]+_Door.*,			W*FH-*[0-9]*,					%s_SashOp_sensor1.owl,		V_SashOpeningOf%s,					1,			0,			0,				0
+FumeHoodStatus,		.*W*FH-*[0-9]+_status.*,		W*FH-*[0-9]*,					%s_Stat_sensor1.owl,		V_StatusOf%s,						1,			0,			0,				0
+RoomPressure,		<Room_Pressure>,				roomItem,						%s_RDP_sensor1.owl,			V_%s_DiffPressure,					1,			1,			0,				0
+VAVRoomHumidity,	.*VAV.*RoomHumidity,			VAV_[a-zA-z][0-9]_[0-9]*,		%s.owl,						V_%s_RelativeHumidity_SP,			1,			1,			0,				0
+HeaterControl,		<Heater_Control>,				VAV_[a-zA-z][0-9]_[0-9]*,		H%s_HC_sensor1.owl,			V_H%s_HeaterControl,				1,			0,			1,				1
+HeaterPower,		<Heater_Power>,					VAV_[a-zA-z][0-9]_[0-9]*,		H%s_Hstat_sensor1.owl,		V_H%s_HeaterStatus,					1,			0,			1,				1
+FlowSensor,			.*[a-zA-z]AV.*[0-9]_FlowSensor,	[a-zA-z]AV_[a-zA-z][0-9]_[0-9]*,	%s_AF_sensor1.owl,		V_AirFlowof%s,					1,			0,			0,				1
+FlowSensor,			.*[a-zA-z]AV.*A_FlowSensor,		[a-zA-z]AV_[a-zA-z][0-9]_[0-9]*A,	%s_AF_sensor1.owl,			V_AirFlowof%s,					1,			0,			0,				1

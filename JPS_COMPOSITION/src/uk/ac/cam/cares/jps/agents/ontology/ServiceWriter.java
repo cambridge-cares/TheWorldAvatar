@@ -13,6 +13,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.RDF;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessageContent;
 import uk.ac.cam.cares.jps.composition.servicemodel.MessagePart;
 import uk.ac.cam.cares.jps.composition.servicemodel.Operation;
@@ -29,7 +30,7 @@ public class ServiceWriter {
 		model.write(fos, "RDF/XML");
 	}
 	
-	public String generateSerializedModel(Service service, String serviceName) throws FileNotFoundException {
+	public String generateSerializedModel(Service service, String serviceName) { 
 		Model model = generateModel(service, serviceName);
 		StringWriter out = new StringWriter();
 		model.write(out, "RDF/XML");
@@ -53,7 +54,7 @@ public class ServiceWriter {
 		servicePath = JPSConstants.URI_KB_AGENTS + "/" + service.getClass().getSimpleName() + "_" + name + ".owl";
 		
 		try {
-			URI uri = new URI(this.servicePath + "/Service");
+			URI uri = new URI(this.servicePath + "#Service");
 			service.setUri(uri);
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -62,6 +63,7 @@ public class ServiceWriter {
 		// create the instance of service in ontology
 		Resource current = model.createResource(service.getUri().toASCIIString());
 		current.addProperty(RDF.type, MSM.Service.Node());
+		current.addProperty(MSM.isComposed.Property(), new Boolean(service.isComposed()).toString());
 
 		for (Operation op : service.getOperations()) {
 			op.setUri(getOrCreateUri(op, op.getUri()));
@@ -77,7 +79,9 @@ public class ServiceWriter {
 		operation.setUri(getOrCreateUri(operation, operation.getUri()));
 		Resource current = model.createResource(operation.getUri().toASCIIString());
 		current.addProperty(RDF.type, MSM.Operation.Node());
-		current.addProperty(MSM.hasHttpUrl.Property(), operation.getHttpUrl());
+		if (operation.getHttpUrl() != null) {
+			current.addProperty(MSM.hasHttpUrl.Property(), operation.getHttpUrl());
+		}
 		for (MessageContent input : operation.getInputs()) {
 			input.setUri(getOrCreateUri(input, input.getUri()));
 			current.addProperty(MSM.hasInput.Property(), model.createResource(input.getUri().toASCIIString()));
@@ -119,7 +123,7 @@ public class ServiceWriter {
 		messagePart.setUri(getOrCreateUri(messagePart, messagePart.getUri()));
 		Resource current = model.createResource(messagePart.getUri().toASCIIString());
 		current.addProperty(RDF.type, MSM.MessagePart.Node());
-		current.addProperty(MSM.hasType.Property(), messagePart.getModelReference().toASCIIString());
+		current.addProperty(MSM.hasType.Property(), messagePart.getType().toASCIIString());
 		current.addProperty(MSM.isArray.Property(), new Boolean(messagePart.isArray()).toString());
 		current.addProperty(MSM.hasName.Property(), messagePart.getName());
 		
@@ -130,20 +134,19 @@ public class ServiceWriter {
 		if (messagePart.getDatatypeValue() != null) {
 			current.addLiteral(MSM.hasDataValue.Property(), messagePart.getDatatypeValue());
 		}
-	}
-	
-	private URI getOrCreateUriOLD(Object resource, URI uri) {
-		if (uri == null) {
-			UUID uuid = UUID.randomUUID();
-			String name = servicePath + "/" + resource.getClass().getSimpleName() + "_" + uuid;
-			try {
-				return new URI(name);
-			} catch (URISyntaxException e) {
-				throw new RuntimeException(e.getMessage(), e);
+		
+		// write nested parameters
+		if (messagePart.getMandatoryParts() != null) {
+			for (MessagePart nestedPart : messagePart.getMandatoryParts()) {
+				nestedPart.setUri(getOrCreateUri(nestedPart, nestedPart.getUri()));
+				current.addProperty(MSM.hasMandatoryPart.Property(), model.createResource(nestedPart.getUri().toASCIIString()));
+				addMessagePart(model, nestedPart);
 			}
 		}
-
-		return uri;
+		
+		if (messagePart.getOptionalParts() != null) {
+			throw new JPSRuntimeException("nested parameters must be mandatory");
+		}
 	}
 	
 	private URI getOrCreateUri(Object resource, URI uri) {

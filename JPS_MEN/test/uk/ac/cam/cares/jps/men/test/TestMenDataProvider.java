@@ -32,8 +32,8 @@ public class TestMenDataProvider extends TestCase {
 	public static Map<String, String> NametoCode2 = new HashMap<>();
 	
 	private String getTransportationFile() {
-		return ".\\testres\\transportation\\Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
-		
+		//return ".\\testres\\transportation\\Jr_Transportation_simplified.owl"; // location of the owl file that contains information for the transportation system
+		return	"http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl";
 	}
 	
 	public List<String> getsourcedirectory() {
@@ -42,7 +42,8 @@ public class TestMenDataProvider extends TestCase {
 
 		for (File file : files) {
 			if (file.isFile() && !file.getName().equals("catalog-v001.xml")) {
-				plantkb.add(".\\testres\\chemicalplant\\" + file.getName());
+//				plantkb.add(".\\testres\\chemicalplant\\" + file.getName());
+				plantkb.add("./testres/chemicalplant/" + file.getName());
 			}
 		}
 		return plantkb;
@@ -377,6 +378,7 @@ public class TestMenDataProvider extends TestCase {
 		System.out.println("Annual Cost Factor =" + factor);
 		MenCalculationParameters parameters = new MenCalculationParameters(50., 1.3, factor, 1.05, true);
 		MenResult actual = converter.startCalculation(parameters,Transport_OKB,plantkb);
+		System.out.println("plantkb =" + plantkb);
 		assertEquals(8.079676E9, actual.objValue, 1000.);
 		assertEquals(6.2147356E9, actual.totalMaterialPurchaseCost, 1000.);
 		assertEquals(2.8730357E9, actual.totalMaterialPurchaseCostInternationalMarket, 1000.);

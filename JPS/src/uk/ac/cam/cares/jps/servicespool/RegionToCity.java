@@ -1,10 +1,8 @@
 package uk.ac.cam.cares.jps.servicespool;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -23,87 +21,69 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.riot.RDFFormat;
-import org.apache.jena.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
-import uk.ac.cam.cares.jps.semantic.QueryWarehouse;
-
-
 
 @WebServlet("/RegionToCity")
 public class RegionToCity extends HttpServlet {
- 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	public String requestUrlTemplate = "https://maps.googleapis.com/maps/api/geocode/json?latlng=%s&key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA";
 	public String requestUrl = "";
-	String myHost = "localhost";
-	int myPort = 8080;
-	
-    public RegionToCity() {
-        
-    }
- 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String value = request.getParameter("value").replace("$", "#").replace("@", "#");		
-		Model model = ModelFactory.createDefaultModel();
-		RDFDataMgr.read(model, new ByteArrayInputStream(value.getBytes("UTF-8")), Lang.RDFJSON);
- 		JSONObject output = QueryWarehouse.getRegionCoordinates(model);
-		System.out.println("====================== RegionToCity ===================");
-		System.out.println(output.toString());
-		System.out.println("=========================LatLng=======================");
-		String latlng = getCenterLatLon(output);
-		System.out.println(latlng);
-		System.out.println("========================End=========================");
+
+	public RegionToCity() {
+
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		/**
+		 * This agent takes
+		 */
+
+		JSONObject input = null;
+		JSONObject region = new JSONObject();
+		try {
+			input = new JSONObject(request.getParameter("query"));
+
+			region.put("srsname", input.getJSONObject("region").get("srsname"));
+			region.put("uppery", input.getJSONObject("region").getJSONObject("uppercorner").get("uppery"));
+			region.put("upperx", input.getJSONObject("region").getJSONObject("uppercorner").get("upperx"));
+			region.put("lowery", input.getJSONObject("region").getJSONObject("lowercorner").get("lowery"));
+			region.put("lowerx", input.getJSONObject("region").getJSONObject("lowercorner").get("lowerx"));
+
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		String latlng = getCenterLatLon(region);
 
 		try {
 			String res = getCityNameFromCoordinate(latlng);
 			String cityName = extractCityName(res);
 			String cityIRI = lookUpCityName(cityName);
-			String cityRDF = convertIRIToRDF(cityIRI);
-			response.getWriter().write(cityRDF);
+			JSONObject result = new JSONObject();
+			result.put("city", cityIRI);
+			response.getWriter().write(result.toString());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 	}
 
-	
- 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		doGet(request, response);
 	}
-	
+
 	public String getCityNameFromCoordinate(String latlng) throws Exception {
- 
 		requestUrl = String.format(requestUrlTemplate, latlng);
 		String result = sendGet(requestUrl);
-		System.out.println(requestUrl);
 		return result;
-	}
-	
-	public String convertIRIToRDF(String cityIRI) {
-		Model cityModel = ModelFactory.createDefaultModel();
-		Resource myCity = cityModel.createResource(cityIRI.replace("Rijswijk", "The_Hague"));
-		Resource city = cityModel.createResource("http://www.theworldavatar.com/OntoEIP/supporting_concepts/space_and_time_v1.owl#City");
-		myCity.addProperty(RDF.type,city);
-		StringWriter out = new StringWriter();		
-		RDFDataMgr.write(out, cityModel, RDFFormat.RDFJSON);
-		return out.toString();
 	}
 
 	public String extractCityName(String res) throws JSONException {
@@ -136,56 +116,53 @@ public class RegionToCity extends HttpServlet {
 
 	public String lookUpCityName(String cityName) throws Exception {
 		cityName = cityNameFilter(cityName);
-		String path = "http://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=place&QueryString=%s&MaxHits=1";
+		String path = "https://lookup.dbpedia.org/api/search/KeywordSearch?QueryClass=place&QueryString=%s&MaxHits=1&format=json";
 		cityName = cityName.replace(" ", "_");
-		path = String.format(path, cityName);		
-		
+		path = String.format(path, cityName);
+
 		String result = sendGet(path);
-		
+		String cityIRI = "NOT IN KNOWLEDGEBASE";
+
 		if (result != null) {
 			JSONObject result_JSON = new JSONObject(result);
-			if (result_JSON.getJSONArray("results").length() != 0) {
-				JSONObject r = (JSONObject) result_JSON.getJSONArray("results").get(0);
-				return r.getString("uri");
-			} else {
-				return "NOT IN KOWNLEDGEBASE";
+			JSONArray docs = result_JSON.getJSONArray("docs");
+			if (docs != null & docs.length() != 0) {
+				JSONObject r = (JSONObject) docs.get(0);
+				JSONArray resource = r.getJSONArray("resource");
+				if (result != null) {
+					cityIRI = resource.getString(0);
+				}
 			}
-		} else {
-			return "NOT IN KOWNLEDGEBASE";
 		}
-
+		
+		return cityIRI;
 	}
-	
+
 	public String getCenterLatLon(JSONObject region) {
 		String result = "";
 		try {
-			double xmin = Double.parseDouble(region.getString("xmin"));
-			double xmax = Double.parseDouble(region.getString("xmax"));
-			double ymin = Double.parseDouble(region.getString("ymin"));
-			double ymax = Double.parseDouble(region.getString("ymax"));
-			
-			double xcenter = (xmax + xmin)/2;
-			double ycenter = (ymax + ymin)/2;
-			
-			String ref = region.getString("ref");
-			if(ref.equalsIgnoreCase(CRSTransformer.EPSG_28992)) {
-				String sourceCRS = CRSTransformer.EPSG_28992;
- 				String targetCRS = CRSTransformer.EPSG_4326;
+			double xmin = Double.parseDouble(String.valueOf(region.get("lowerx")));
+			double xmax = Double.parseDouble(String.valueOf(region.get("upperx")));
+			double ymin = Double.parseDouble(String.valueOf(region.get("lowery")));
+			double ymax = Double.parseDouble(String.valueOf(region.get("uppery")));
 
- 				double[] oldPoint = new double[] {xcenter,ycenter};
- 				double[] newPoint = CRSTransformer.transform(sourceCRS, targetCRS, oldPoint);
- 				xcenter = newPoint[0];
- 				ycenter = newPoint[1];
-			}
-			
+			double xcenter = (xmax + xmin) / 2;
+			double ycenter = (ymax + ymin) / 2;
+
+			String ref = region.getString("srsname");
+			String targetCRS = CRSTransformer.EPSG_4326;
+
+			double[] oldPoint = new double[] { xcenter, ycenter };
+			double[] newPoint = CRSTransformer.transform(ref, targetCRS, oldPoint);
+			xcenter = newPoint[0];
+			ycenter = newPoint[1];
+
 			result = String.valueOf(ycenter) + "," + String.valueOf(xcenter);
 			return result;
 		} catch (NumberFormatException | JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 		return result;
 	}
 
@@ -196,9 +173,10 @@ public class RegionToCity extends HttpServlet {
 		if (cityName.endsWith("-shi")) {
 			cityName = cityName.replace("-shi", "");
 		}
-		System.out.println(cityName);
+		System.out.println("City Selected : " + cityName);
 		return URLEncoder.encode(cityName, "utf-8");
 	}
+
 	public String executeGet(URIBuilder builder) {
 		try {
 			URI uri = builder.build();
@@ -211,9 +189,9 @@ public class RegionToCity extends HttpServlet {
 			return EntityUtils.toString(httpResponse.getEntity());
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
-		} 
+		}
 	}
-	
+
 	public static String sendGet(String url) throws Exception {
 		URL obj = new URL(url);
 

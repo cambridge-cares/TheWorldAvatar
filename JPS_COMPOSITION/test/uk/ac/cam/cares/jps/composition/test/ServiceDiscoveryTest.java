@@ -17,21 +17,14 @@ public class ServiceDiscoveryTest {
 		ArrayList<MessagePart> inputs = new ArrayList<MessagePart>();
 
 		MessagePart messagePartPlant = new MessagePart(new URI("http://www.theworldvatar.com/wInParamCityXYZ123"));
-		messagePartPlant.setModelReference(new URI(
+		messagePartPlant.setType(new URI(
 				"http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Plant"));
 		inputs.add(messagePartPlant);
 
 		MessagePart messagePartCoor = new MessagePart(new URI("http://www.theworldvatar.com/wInParamCoorXYZ123"));
-		messagePartCoor.setModelReference(new URI(
+		messagePartCoor.setType(new URI(
 				"http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#Coordinate"));
 		inputs.add(messagePartCoor);
-
-		// ArrayList<Service> services =
-		// serviceDiscovery.getAllServiceCandidates(0,inputs);
-		// System.out.println(services);
-		// for (Service service : services) {
-		// System.out.println(service.getUri());
-		// }
-
+ 
 	}
 }

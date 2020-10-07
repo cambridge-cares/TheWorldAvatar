@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uk.ac.cam.cares.jps.composition.enginemodel.Branch;
 import uk.ac.cam.cares.jps.composition.enginemodel.Graph;
 import uk.ac.cam.cares.jps.composition.enginemodel.SubTrack;
-import uk.ac.cam.cares.jps.composition.executor.Executor;
+import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class FormatTranslator {
@@ -28,12 +28,12 @@ public class FormatTranslator {
 		return mapper.readValue(agentInJSONString, Service.class);
 	}
 
-	public static Executor convertJSONTOExecutor(String executorInJSONString)
+	public static ExecutorNew convertJSONTOExecutor(String executorInJSONString)
 			throws URISyntaxException, JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);
-		return mapper.readValue(executorInJSONString, Executor.class);
+		return mapper.readValue(executorInJSONString, ExecutorNew.class);
 	}
 
 	public static Graph convertGraphJSONTOJavaClass(String graphInJSONString)
@@ -75,10 +75,12 @@ public class FormatTranslator {
 		return new JSONObject(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(subTrackInJava));
 	}
 
-	public static JSONObject convertExectorToJSON(Executor obj) throws JsonProcessingException, JSONException {
+	public static JSONObject convertExectorToJSON(ExecutorNew obj) throws JsonProcessingException, JSONException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);
 		return new JSONObject(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj));
 	}
+	
+	 
 }

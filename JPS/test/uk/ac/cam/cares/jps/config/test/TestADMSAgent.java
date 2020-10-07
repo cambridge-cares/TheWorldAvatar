@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.config.test;
 
-import static org.junit.Assert.*;
-
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.Test;
 
@@ -20,7 +18,7 @@ public class TestADMSAgent {
 		
 		URIBuilder builderGenerateInput = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath(ADMSAgentPath)
-				.setParameter("value", testADMSInput);
+				.setParameter("query", testADMSInput);
 			
 	
 	

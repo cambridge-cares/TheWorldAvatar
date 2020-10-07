@@ -1,13 +1,11 @@
 package uk.ac.cam.cares.jps.servicespool.test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class TestBuildingJSON {
+public class TestBuildingJSON {
 	public String IRIs  = "[\r\n" + 
 			"    \"http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings1.owl#BuildingGUID_35ED6FD1-5876-4F03-996D-8C885FD11057\",\r\n" + 
 			"    \"http://www.theworldavatar.com/kb/nld/thehague/buildings/10_buildings1.owl#BuildingGUID_ABE4C2D7-C6E0-4B95-9A3C-E4457B796F3C\",\r\n" + 
@@ -37,7 +35,7 @@ class TestBuildingJSON {
 			"]";
 	
 	@Test
-	void test() {
+	public void test() {
 
 		
 		try {
@@ -46,8 +44,7 @@ class TestBuildingJSON {
 			result.put("BldIRI", irisInJSON);
 			System.out.println(result.toString());
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+ 			e.printStackTrace();
 		}
 	}
 

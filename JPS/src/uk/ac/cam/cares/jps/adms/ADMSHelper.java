@@ -18,6 +18,8 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /**
  * Servlet implementation class ADMSHelper
+ * Accepts a list of building iris and city iri
+ * Returns serialized list of GeoJSON objects, each representing a building
  */
 @WebServlet("/ADMSHelper")
 public class ADMSHelper extends HttpServlet {
@@ -41,8 +43,6 @@ public class ADMSHelper extends HttpServlet {
 		String cityiri = request.getParameter("cityiri");
 
 		Gson g = new Gson();
-		System.out.println(listOfIRIs);
-		System.out.println(cityiri);
 		String result;
 		try {
 			
@@ -54,11 +54,11 @@ public class ADMSHelper extends HttpServlet {
 			args.add(g.toJson(listOfIRIs));
 			args.add(cityiri);
 
-		
 			result = CommandHelper.executeCommands(targetFolder, args);
-			 
+
 			response.setContentType("application/json");
-			response.getWriter().write(result);
+			response.getWriter().write(result);				
+			
 		} catch (PythonException e) {
 			e.printStackTrace();
 		}	

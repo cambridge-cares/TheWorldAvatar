@@ -6,13 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.openimaj.math.geometry.shape.Polygon;
 
 import com.google.gson.Gson;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
@@ -21,8 +20,6 @@ import uk.ac.cam.cares.jps.building.SparqlConstants;
 
 public class TestBuildingQueryPerformer extends TestCase implements SparqlConstants {
 	
-	// IRI for old KB of THE Hague
-	//public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/Building/";
 	public static final String BUILDING_IRI_THE_HAGUE_PREFIX = "http://www.theworldavatar.com/kb/nld/thehague/buildings/";
 
 	// the following building from The Hague doesn't have any building parts and only contains one ground surface
@@ -32,20 +29,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	public static final String BUILDING_IRI_BERLIN_PLANT = "http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingDEB_LOD2_UUID_ccf8cd7c-b41b-4c1e-a60c-0a645c6c5c4b";
 	
 	public static BuildingQueryPerformer createQueryPerformerForTheHague() {
-	
-		// TODO-AE URGENT remove this as soon as we don't need the old KB for The Hague anymore
-		if (BUILDING_IRI_THE_HAGUE_PREFIX.equals("http://www.theworldavatar.com/Building/")) {
-			return new BuildingQueryPerformer("www.theworldavatar.com", 80, "/damecoolquestion/buildingsLite/query");
-		}
-		
 		return new BuildingQueryPerformer();
-	}
-	
-	public String performQueryOnLocalHost(String dataset, String query) {
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost("localhost").setPort(3030)
-				.setPath("/" + dataset + "/query")
-				.setParameter("query", query);
-		return createQueryPerformerForTheHague().executeGet(builder);
 	}
 	
 	public void testTheHagueTenBuildings() {
@@ -60,7 +44,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(10, map.get("building").size());
 		assertEquals(10, map.get("name").size());
 	}
@@ -81,7 +65,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(1, map.get("x").size());
 		assertEquals(1, map.get("y").size());
 	}
@@ -91,7 +75,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		String query = createQueryPerformerForTheHague().getQueryBdnHeight(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(1, map.get("h").size());
 		assertEquals("9.432", map.get("h").get(0));
 	}
@@ -101,7 +85,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts(BUILDING_IRI_THE_HAGUE_WITHOUT_PARTS);		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(5, map.get("x").size());
 		assertEquals(5, map.get("y").size());
 		assertEquals(5, map.get("z").size());
@@ -111,6 +95,24 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
 		assertEquals(1, polygons.size());
+		assertEquals(5, polygons.get(0).size());
+	}
+	
+	public void testBERLINOneBuildingOneGroundSurface() {
+		
+		String query = createQueryPerformerForTheHague().getQueryBdnVerticesWithAndWithoutBuildingParts("http://www.theworldavatar.com/kb/deu/berlin/buildings/3920_5819.owl#BuildingBLDG_0003000f0029558f");		
+		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.BERLIN_IRI, query);
+		
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
+		assertEquals(26, map.get("x").size());
+		assertEquals(26, map.get("y").size());
+		assertEquals(26, map.get("z").size());
+		assertEquals("392747.720106856", map.get("x").get(2));
+		assertEquals("5819071.11806408", map.get("y").get(2));
+		assertEquals("35.3300018310547", map.get("z").get(2));
+		
+		List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
+		assertEquals(4, polygons.size());
 		assertEquals(5, polygons.get(0).size());
 	}
 	
@@ -138,6 +140,9 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		assertEquals(83.607, data.BldHeight.get(0), 0.1);
 	}
 	
+	
+	//temporarily disabled to try the new selection method
+	
 	public void testselectClosestBuilding() {
 		
 		double centerx = 10;
@@ -147,8 +152,9 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		map.put("bdn", Arrays.asList("b1", "b2", "b3", "b4", "b5"));
 		map.put("x", Arrays.asList("9", "5", "9.5", "3", "15"));
 		map.put("y", Arrays.asList("11", "16", "10.5", "4", "1"));
+		map.put("h", Arrays.asList("40", "30", "20.5", "10.3", "10"));
 		
-		List<String> buildingIRIs = createQueryPerformerForTheHague().selectClosestBuilding(centerx, centery, 2, map);
+		List<String> buildingIRIs = createQueryPerformerForTheHague().selectClosestBuilding(centerx, centery, 2, map,20.0);
 		assertEquals(2, buildingIRIs.size());
 		assertEquals("b3", buildingIRIs.get(0));
 		assertEquals("b1", buildingIRIs.get(1));
@@ -165,6 +171,8 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryClosestBuildingsFromRegion( 
 				BuildingQueryPerformer.THE_HAGUE_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
+		
+		System.out.println(new Gson().toJson(buildingIRIs));
 				
 		assertEquals(25, buildingIRIs.size());
 	}
@@ -195,7 +203,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		assertEquals(10, map.get("bdn").size());
 	}
 	
@@ -210,7 +218,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		
 		String result = createQueryPerformerForTheHague().performQuery(BuildingQueryPerformer.THE_HAGUE_IRI, query);
 		
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		List<String> distinctGroundSurface = new ArrayList<String>();
 		for (Object current : map.get("groundsurface")) {
 			if (!distinctGroundSurface.contains(current)) {
@@ -252,7 +260,7 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 	
 	public void testSimpleBuildingDataWithoutExceptions() {
 		
-		List<String> buildingIRIs = createQueryPerformerForTheHague().performQueryBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 25, 79000., 454000., 79800., 455200.);
+		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryClosestBuildingsFromRegion(BuildingQueryPerformer.THE_HAGUE_IRI, 79831, 454766,  25, 79000., 454000., 79800., 455200.);
 		SimpleBuildingData result = createQueryPerformerForTheHague().performQuerySimpleBuildingData(BuildingQueryPerformer.THE_HAGUE_IRI, buildingIRIs);
 		
 		assertEquals(25, result.BldIRI.size());
@@ -288,59 +296,6 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 		assertEquals(99.29, data.BldHeight.get(0), 0.1);
 	}
 	
-	public void testBerlinPerformQueryBuildingsFromRegionAroundPlant() {
-		
-		// transform the points into the CRS of GUI, BuildingQueryPerformer will translate them back to Berlin CRS
-		String sourceCRS = CRSTransformer.EPSG_25833; // Berlin
-		//double[] sourcePoints = new double[]{390000., 5815000., 396000., 5826000.};
-		double[] sourcePoints = new double[]{370000., 5805000., 406000., 5926000.};
-		String targetCRS = CRSTransformer.EPSG_28992; // The Hague
-		double[] targetPoints = CRSTransformer.transform(sourceCRS, targetCRS, sourcePoints);
-		
-		List<String> buildingIRIs = new BuildingQueryPerformer().performQueryBuildingsFromRegion(BuildingQueryPerformer.BERLIN_IRI, 25, 
-				targetPoints[0], targetPoints[1], targetPoints[2], targetPoints[3]);
-		assertEquals(25, buildingIRIs.size());
-		
-		String[] expectedBuildingNames = new String[] {"BuildingBLDG_0003000a0041a96a",
-				"BuildingBLDG_0003000a0044ad95",  
-				"BuildingBLDG_0003000f00041375",  
-				"BuildingBLDG_0003000900350d71",  
-				"BuildingDEB_LOD2_UUID_fa5ba7fe-f85d-4a60-a4ba-52df87c6b968",  
-				"BuildingDEB_LOD2_UUID_de691875-c5db-476d-abf9-d4e98d9546b4",  
-				"BuildingBLDG_0003000f00445803",  
-				"BuildingBLDG_0003000000266736",  
-				"BuildingBLDG_00030009001b8b74",  
-				"BuildingBLDG_0003000f00041373",  
-				"BuildingBLDG_00030002003cd9b9",  
-				"BuildingBLDG_0003000900350d26",  
-				"BuildingBLDG_0003000900350cfa",  
-				"BuildingBLDG_0003000900350d1d",  
-				"BuildingBLDG_0003000e00006df3",  
-				"BuildingBLDG_0003000900350d02",  
-				"BuildingBLDG_0003000a0044acab",  
-				"BuildingBLDG_0003000900350d0f",  
-				"BuildingBLDG_0003000900350d6f",  
-				"BuildingDEB_LOD2_UUID_78a2c5f2-8d75-4b06-bdf7-8bdc60b3d751",  
-				"BuildingBLDG_0003000e00686a85",  
-				"BuildingDEB_LOD2_UUID_22426381-bfbb-48cf-9057-6e58de219076",  
-				"BuildingBLDG_0003000f00445810",  
-				"BuildingBLDG_0003000900350d00",  
-				"BuildingBLDG_00030009001b8ba2"	
-			};
-
-		for (String expectedName : expectedBuildingNames) {
-			boolean found = false;
-			for (String buildingIRI : buildingIRIs) {
-				String[] splits = buildingIRI.split("#");
-				if (expectedName.equals(splits[1])) {
-					found = true;
-					break;
-				}
-			}	
-			assertTrue("building not found, buildingName = " + expectedName, found);
-		}
-	}
-	
 	public void testBerlinPerformQueryCLosestBuildingsFromRegionAroundPlant() {
 
 		double plantx = 392825;
@@ -362,5 +317,20 @@ public class TestBuildingQueryPerformer extends TestCase implements SparqlConsta
 				BuildingQueryPerformer.BERLIN_IRI, plantx, planty, 25, lowerx, lowery, upperx, uppery);
 				
 		assertEquals(25, buildingIRIs.size());
+	}
+	
+	public void testgetqueryofclosestbuildingandresult() {
+		//int buildingLimit=25;
+		double lx= 1.270664E7;
+		double ly=2545539.0 ;
+		double ux=1.27082E7 ;
+		double uy=2547099.0 ;
+		
+		BuildingQueryPerformer v= new BuildingQueryPerformer();
+		String query = v.getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);
+		System.out.println("queryformat= " +query);
+		
+		String queryresult=v.performQuery("http://dbpedia.org/resource/Hong_Kong", query);
+		System.out.println("queryresult= " +queryresult);
 	}
 }

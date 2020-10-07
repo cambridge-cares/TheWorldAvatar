@@ -1,4 +1,4 @@
-let rdfModel = getParameter();
+let input = getParameter();
 
 
 $(function(){
@@ -67,11 +67,8 @@ $(function(){
     
     //***************************************************************************
     osmb.addMapTiles(
-        'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
-        {
-            attribution: '� Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> � � Map <a href="https://mapbox.com/">Mapbox</a>'
-        }
-    );
+            'https://api.mapbox.com/styles/v1/osmbuildings/cjt9gq35s09051fo7urho3m0f/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoib3NtYnVpbGRpbmdzIiwiYSI6IjNldU0tNDAifQ.c5EU_3V8b87xO24tuWil0w'
+        );
     //***************************************************************************
 
     
@@ -136,74 +133,68 @@ $(function(){
         return [latitude, longitude];
     };
 
-    $('#start').click(function(){
+  
+
+
+    // ============================== This block starts when the page is loaded ==============================
+
+    console.log("you should see me when you load the page")
+    console.log(input)// Check whether the input data is properly received
+    
+    input = JSON.parse(input);
+    let region = input['region'];
+
+    let city = "The Hague";
+    if(region['xmin'] >= 10){
+    	city = "Berlin"
+    }
+    else{
+    	city = "The Hague"
+    }
+    let buildingIRIs = input['building'];
+    console.log('region', region)
+    initadms3dmap(buildingIRIs, region, osmb, city)
+    
+//    const BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+//	const THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
+//    const lowerx = xmin;
+//    const lowery = ymin;
+//    const upperx = xmax;
+//    const uppery = ymax;
+//
+////    approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
+//    [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
+//
+//
+//    let location;
+//    let locationIRI = finalResult['City'].replace('resource','page');
+//    if(locationIRI === THE_HAGUE_IRI){
+//        location = 'The Hague';
+//    }else if (locationIRI === BERLIN_IRI){
+//        location = 'Berlin';
+//    }
+//
+//    let buildingIRIs = finalResult['BuildingList'];
+//
+//    const coordinatesMin = getOSMPoint(lowerx, lowery);
+//	let coordinatesMax;
+//
+//
+//
+//
+//
+//    if (location === "The Hague") {
+//    	locationIRI = THE_HAGUE_IRI;
+//		coordinatesMax = getOSMPoint(upperx, uppery);
+//    } else if (location === "Berlin") {
+//    	locationIRI = BERLIN_IRI;
+//		coordinatesMax = getOSMPoint(upperx, uppery)
+//    }
+//
+//
+//    const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
+//    initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
  
-
-
-    });
-    
-    
-    
-    getFinalResult(rdfModel,function (finalResult) {
-        /*  result['Region'] = newRegion;
-            result['City'] = City;
-            result['BuildingList'] = BuildingList;
-         */
-
-
-
-
-    let xmin = finalResult['Region']['xmin'];
-    let ymin = finalResult['Region']['ymin'];
-    let xmax = finalResult['Region']['xmax'];
-    let ymax = finalResult['Region']['ymax'];
-
-
-    const BERLIN_IRI = "http://dbpedia.org/page/Berlin";
-	const THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
-    const lowerx = xmin;
-    const lowery = ymin;
-    const upperx = xmax;
-    const uppery = ymax;
-
-//    approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
-    [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
-
-
-    let location;
-    let locationIRI = finalResult['City'].replace('resource','page');
-    if(locationIRI === THE_HAGUE_IRI){
-        location = 'The Hague';
-    }else if (locationIRI === BERLIN_IRI){
-        location = 'Berlin';
-    }
-
-    let buildingIRIs = finalResult['BuildingList'];
-
-    const coordinatesMin = getOSMPoint(lowerx, lowery);
-	let coordinatesMax;
-
-
-
-
-
-    if (location === "The Hague") {
-    	locationIRI = THE_HAGUE_IRI;
-		coordinatesMax = getOSMPoint(upperx, uppery);
-    } else if (location === "Berlin") {
-    	locationIRI = BERLIN_IRI;
-		coordinatesMax = getOSMPoint(upperx, uppery)
-    }
-
-
-    const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
-    initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI);
-
-    });
-    
-    
-    
-    
     
     //***************************************************************************
 
@@ -266,5 +257,9 @@ function getParameter() {
     console.log(url_string);
     var url = new URL(url_string.replace(/#/g, '@'));
     var value = url.searchParams.get("value").split("lat=")[0];
+    console.log("---------------- from get Parameter ----------------")
+    console.log(value)
+    console.log("----------------------------------------------------")
+    
     return value.replace(/@/g,'#')
 }

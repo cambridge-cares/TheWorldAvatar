@@ -30,18 +30,20 @@ const controlButtonsSetter = osmb => {
 };
 
 
-const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) => {
+const initadms3dmap  = (buildingList, range, osmb, location, coordinatesMid, cityiri) => {
 	
 	for(obj of listGeoJsonAddedToOSMB) {
 		obj.destroy();
 	}
 	
-	proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
-    proj4.defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
+	//proj4.defs("EPSG:28992","+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +towgs84=565.417,50.3319,465.552,-0.398957,0.343988,-1.8774,4.0725 +units=m +no_defs");
+	proj4.defs("EPSG:3857","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs");
+	proj4.defs('WGS84', "+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees");
     
-    const parsedLowLeft = proj4("EPSG:28992", "WGS84", [range[0], range[2]]);
-    const parsedTopRight = proj4("EPSG:28992", "WGS84", [range[1], range[3]]);
-    
+//    const parsedLowLeft = proj4("EPSG:28992", "WGS84", [range[0], range[2]]);
+//    const parsedTopRight = proj4("EPSG:28992", "WGS84", [range[1], range[3]]);
+	 const parsedLowLeft = proj4("EPSG:3857", "WGS84", [range[0], range[2]]);
+	    const parsedTopRight = proj4("EPSG:3857", "WGS84", [range[1], range[3]]);
 
     const position = {};
     // if(location === "The Hague"){
@@ -66,7 +68,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
     	data => {
     		const geojson = data;
     		try {
-    			// console.log(JSON.stringify(geojson, null, 4));
+//    			 console.log(JSON.stringify(geojson, null, 4));
     			listGeoJsonAddedToOSMB.push(osmb.addGeoJSON(geojson)); // edit
     		} catch (err) {
     			console.log(err.name);
@@ -77,13 +79,13 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
 
     $.getJSON('/JPS/ADMSHelper',
         {
-            listOfIRIs: JSON.stringify(list),
+            listOfIRIs: JSON.stringify(buildingList),
             cityiri
         },
         function(data) {
             var geojson = data;
             var arrayLength = geojson.length;
-            console.log(data);
+//            console.log(data);
             
             for (var i = 0; i < arrayLength; i++) {
 
@@ -97,14 +99,6 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
             }
         });
     
-//    $.getJSON('/JPS/buildings/simpleshape', 
-//    	{
-//    		cityiri,
-//    		buildingiris: JSON.stringify(list)
-//    	},
-//    	buildingData => {
-//    		console.log(buildingData);
-//    	})
     
     // --- Rendering 3D layer --- //
     let optionWrapperNode = document.getElementById("optionwrapper");
@@ -125,7 +119,7 @@ const initadms3dmap  = (list, range, osmb, location, coordinatesMid, cityiri) =>
                 },
                 geometry: {
                     type: 'Polygon',
-                    coordinates: [//TODO:　LINK THIS TO USER INPUT
+                    coordinates: [//TODO:ã€€LINK THIS TO USER INPUT
                         [
                             [parsedLowLeft[0],parsedTopRight[1]],
                             [parsedTopRight[0],parsedTopRight[1]],

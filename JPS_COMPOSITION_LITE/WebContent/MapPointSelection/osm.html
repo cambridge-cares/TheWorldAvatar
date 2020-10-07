@@ -1,0 +1,123 @@
+
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="http://www.theworldavatar.com/index.css">
+    <link href="https://cdn.osmbuildings.org/4.0.0/OSMBuildings.css" rel="stylesheet">
+    <script src="https://cdn.osmbuildings.org/4.0.0/OSMBuildings.js"></script>
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+         * element that contains the map. */
+        #input-field {
+            width: auto;
+        }
+
+        #frame{
+            height: 100%;
+            width: 20%;
+        }
+        .link_button {
+
+            background: none !important;
+            border: none;
+            padding: 0 !important;
+
+            /*optional*/
+            font-family: arial, sans-serif; /*input has OS specific font-family*/
+            color: #069;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .thumbcontainer {
+            position: relative;
+        }
+
+        .thumbimage {
+            opacity: 0.3;
+            transition: .9s ease;
+        }
+
+        .thumbmiddle {
+            transition: .5s ease;
+            opacity: 1;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -40%);
+            -ms-transform: translate(-50%, -40%);
+            text-align: center;
+            backface-visibility: hidden;
+
+        }
+
+        .thumbcontainer:hover .thumbimage {
+            opacity: 0.9;
+        }
+
+        .thumbcontainer:hover .thumbmiddle {
+            opacity: 0.3;
+        }
+
+        .thumbtext {
+            color: black;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: "Century Gothic";
+        }
+
+        #map {
+            display: inline-block;
+            height: 1200px;
+            padding: 10px;
+            width: 68%;
+            margin-left: 1%;
+        }
+
+        #result {
+            float: right;
+            display: inline-block;
+            border-style: dashed;
+            height: 1200px;
+            padding: 10px;
+            margin-right: 1%;
+            width: 28%;
+        }
+
+        #container {
+            height: 1200px;
+            width: 100%;
+        }
+
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 90%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+<div class="jumbotron text-center" id="topBanner">
+    <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+        <img src="http://www.theworldavatar.com/cam_lang_negativ1%20NEW_0.png">
+    </a>
+    <h1 id="head1">Graphic User Interface for inputting coordinates</h1>
+    <p id="description">A sample user interface that is semantically annotated</p>
+</div>
+<div id="container" style="display:inline-block">
+    <div id="map"></div>
+    <iframe id="frame">
+        <p>Visualized Result</p>
+    </iframe>
+</div>
+<script src="OSMGetCoordinate.js"/>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</html>

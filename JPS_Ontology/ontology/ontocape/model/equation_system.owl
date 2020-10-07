@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#" xmlns:mathematical_model="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:swrl="http://www.w3.org/2003/11/swrl#" xmlns:swrlb="http://www.w3.org/2003/11/swrlb#" xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#" xml:base="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl">
+    <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontolog module 'equation_system' provides concepts for the description of the model equations that constitute a mathematical model. 
+The following classes and relations from other ontology modules are used within 'equation_system':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet"/&gt;
+
+&lt;owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/&gt;
+    </rdfs:comment>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+  </owl:Ontology>
+  <owl:Class rdf:ID="NumericalStiffness">
+    <owl:disjointWith>
+      <owl:Class rdf:ID="DAE_Explicitness"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="VariablesType"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ModelRepresentationForm"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="Linearity"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="ODE_Explicitness"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="EquationSystemCharacteristics"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <NumericalStiffness rdf:ID="stiff">
+            <owl:differentFrom>
+              <NumericalStiffness rdf:ID="nonstiff">
+                <owl:differentFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#stiff"/>
+                <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Characterizes a nonstiff differential equation.</rdfs:comment>
+              </NumericalStiffness>
+            </owl:differentFrom>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Characterizes a stiff differential equation.</rdfs:comment>
+          </NumericalStiffness>
+          <NumericalStiffness rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#nonstiff"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In mathematics, a stiff equation is a differential equation for which certain numerical methods for solving the equation are numerically unstable, unless the step size is taken to be extremely small. It has proved difficult to formulate a precise definition of stiffness, but the main idea is that the equation includes some terms that can lead to rapid variation in the solution (Wikipedia, 2007).</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <Linearity rdf:ID="nonlinear">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Characterizes a nonlinear equation system</rdfs:comment>
+            <owl:differentFrom>
+              <Linearity rdf:ID="linear">
+                <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Characterizes a linear equation system</rdfs:comment>
+                <owl:differentFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#nonlinear"/>
+              </Linearity>
+            </owl:differentFrom>
+          </Linearity>
+          <Linearity rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#linear"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Characterizes the linearity of a (Differential)AlgebrailEquationSystem.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#EquationSystemCharacteristics"/>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DAE_Explicitness"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#VariablesType"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NumericalStiffness"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ModelRepresentationForm"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ODE_Explicitness"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#EquationSystemCharacteristics">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The EquationSystemCharacteristics characterize the model equations of a MathematicalModel.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="LinearAlgebraicSystem">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#linear"/>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasLinearity"/>
+            </owl:onProperty>
+          </owl:Restriction>
+          <owl:Class rdf:ID="AlgebraicEquationSystem"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A LinearAlgebraicSystem is an AlgebraicSystem which contains only linear equations.</rdfs:comment>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="NonlinearAlgebraicSystem"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:ID="DifferentialAlgebraicEquationSystem">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasLinearity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel">
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasModelRepresentationForm"/>
+            </owl:onProperty>
+            <owl:allValuesFrom>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ModelRepresentationForm"/>
+            </owl:allValuesFrom>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ModelRepresentationForm"/>
+            </owl:someValuesFrom>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasModelRepresentationForm"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasModelRepresentationForm"/>
+            </owl:onProperty>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:ID="hasVariablesType"/>
+            </owl:onProperty>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#VariablesType"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasVariablesType"/>
+            </owl:onProperty>
+            <owl:allValuesFrom>
+              <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#VariablesType"/>
+            </owl:allValuesFrom>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+          <owl:Restriction>
+            <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasVariablesType"/>
+            </owl:onProperty>
+          </owl:Restriction>
+        </rdfs:subClassOf>
+      </rdf:Description>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="PartialDifferentialAlgebraicSystem"/>
+          <owl:Class rdf:ID="OrdinaryDifferentialAlgebraicSystem"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasDAE_Explicitness"/>
+        </owl:onProperty>
+        <owl:someValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DAE_Explicitness"/>
+        </owl:someValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasDAE_Explicitness"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasLinearity"/>
+        </owl:onProperty>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A DifferentialAlgebraicEquationSystem (DAE system) is a MathematicalModel that comprises both algebraic and differential equations.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasLinearity"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="differentialIndex"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasDAE_Explicitness"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DAE_Explicitness"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#AlgebraicEquationSystem"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:ID="DifferentialEquationSystem"/>
+    </owl:disjointWith>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#PartialDifferentialAlgebraicSystem">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialAlgebraicSystem"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PartialDifferentialAlgebraicSystem comprises both partial differential equations and algebraic equations.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialEquationSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A DifferentialEquationSystem is a MathematicalModel that solely consists of differential equations.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="differentialOrder"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="OrdinaryDifferentialEquationSystem"/>
+          <owl:Class rdf:ID="PartialDifferentialEquationSystem"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#AlgebraicEquationSystem"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#VariablesType">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A VariablesType indicates whether the ModelVariables of a MathematicalModel are all continuous, all discrete, or partly continuous and partly discrete:
+-   A continuous_model denotes a MathematicalModel in which all the ModelVariables are continuous.
+-   A discrete_model denotes a MathematicalModel in which all the ModelVariables are discrete. An example of a mixed_model is an integer model.
+-   A mixed_model denotes a MathematicalModel in which some of the model variables are discrete while the others are continuous. An example of a mixed_model is a mixed integer model.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <VariablesType rdf:ID="discrete_model">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A discrete_model denotes a MathematicalModel in which all the ModelVariables are discrete. An example of a discrete_model is an integer model.</rdfs:comment>
+            <owl:differentFrom>
+              <VariablesType rdf:ID="mixed_model">
+                <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A  mixed_model denotes a MathematicalModel in which some of the ModelVariables are discrete while the others are continuous. An example of a mixed_model is a mixed integer model.</rdfs:comment>
+                <owl:differentFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#discrete_model"/>
+                <owl:differentFrom>
+                  <VariablesType rdf:ID="continuous_model">
+                    <owl:differentFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#mixed_model"/>
+                    <owl:differentFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#discrete_model"/>
+                    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A continuous_model denotes a MathematicalModel in which all the ModelVariables are continuous.</rdfs:comment>
+                  </VariablesType>
+                </owl:differentFrom>
+              </VariablesType>
+            </owl:differentFrom>
+            <owl:differentFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#continuous_model"/>
+          </VariablesType>
+          <VariablesType rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#mixed_model"/>
+          <VariablesType rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#continuous_model"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#EquationSystemCharacteristics"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DAE_Explicitness"/>
+    </owl:disjointWith>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ODE_Explicitness"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NumericalStiffness"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ModelRepresentationForm"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#PartialDifferentialEquationSystem">
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialEquationSystem"/>
+    </owl:disjointWith>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialEquationSystem"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PartialDifferentialEquationSystem (PDE system) is a DifferentialEquationSystem which consists of partial differential equations.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialAlgebraicSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An OrdinaryDifferentialAlgebraicSystem is a DifferentialAlgebraicSystem system which comprises ordinary differential equations as well as algebraic equations.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#PartialDifferentialAlgebraicSystem"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ModelRepresentationForm">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <ModelRepresentationForm rdf:ID="closed_form">
+            <owl:differentFrom>
+              <ModelRepresentationForm rdf:ID="open_form">
+                <owl:differentFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#closed_form"/>
+                <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An open-form model is solved by an external algorithm. One can freely choose the inputs and outputs of the open-form model.</rdfs:comment>
+              </ModelRepresentationForm>
+            </owl:differentFrom>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A closed-form model includes an underlying numerical algorithm that solves the model equations. The algorithm accepts only a fixed set of input variables, and consequently returns only a fixed set of output variables.</rdfs:comment>
+          </ModelRepresentationForm>
+          <ModelRepresentationForm rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#open_form"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A MathematicalModel may appear in two forms, as indicated by the ModelRepresentationForm: 
+- An open-form model is solved by an external algorithm. One can freely choose the inputs and outputs of the open-form model.
+- A closed-form model includes an underlying numerical algorithm that solves the model equations. The algorithm accepts only a fixed set of input variables, and consequently returns only a fixed set of output variables.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#EquationSystemCharacteristics"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DAE_Explicitness"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#VariablesType"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NumericalStiffness"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ODE_Explicitness"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DAE_Explicitness">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <DAE_Explicitness rdf:ID="fully_implicit">
+            <owl:differentFrom>
+              <DAE_Explicitness rdf:ID="semi-explicit">
+                <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A DifferentialAlgebraicEquationSystem is semi-explict if it has the form
+  f(x, u, t) = x'
+  g(x, u, t) = 0</rdfs:comment>
+                <owl:differentFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#fully_implicit"/>
+              </DAE_Explicitness>
+            </owl:differentFrom>
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A DifferentialAlgebraicEquationSystem is fully_implicit if it has the form
+  F(x, x', u, t) = 0</rdfs:comment>
+          </DAE_Explicitness>
+          <DAE_Explicitness rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#semi-explicit"/>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ModelRepresentationForm"/>
+    <owl:disjointWith>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ODE_Explicitness"/>
+    </owl:disjointWith>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NumericalStiffness"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#VariablesType"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Characterizes the explicitness of a DAE system</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#EquationSystemCharacteristics"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ODE_Explicitness">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#EquationSystemCharacteristics"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DAE_Explicitness"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#VariablesType"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ModelRepresentationForm"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NumericalStiffness"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Characterizes the explicitness of an OrdinaryDifferentialEquationSystem, which can be given in implicit_formulation or explicit_formulation.</rdfs:comment>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <ODE_Explicitness rdf:ID="explicit_formulation">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In an explicit_formulation, the OrdinaryDifferentialAlgebraicSystem is explicitly solved for the highest-order derivative y^(n), i.e., F(x, y, y', y'', ...  y^(n-1) ) = y^(n)</rdfs:comment>
+          </ODE_Explicitness>
+          <ODE_Explicitness rdf:ID="implicit_formulation">
+            <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In an implicit_formulation, the ordinary differential algebraic system is not solved for the highest-order derivative, i.e., F(x, y, y', y'', y''' ...) = 0</rdfs:comment>
+          </ODE_Explicitness>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialEquationSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An OrdinaryDifferentialEquationSystem (ODE system) is a DifferentialEquationSystem which solely consists of ordinary differential equations.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasNumericalStiffness"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ODE_Explicitness"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="hasODE_explicitness"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasODE_explicitness"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NumericalStiffness"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasNumericalStiffness"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasODE_explicitness"/>
+        </owl:onProperty>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ODE_Explicitness"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NumericalStiffness"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasNumericalStiffness"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#PartialDifferentialEquationSystem"/>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialEquationSystem"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NonlinearAlgebraicSystem">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A NonlinearAlgebraicSystem is an AlgebraicEquationSystem that is characterized as nonlinear.</rdfs:comment>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#LinearAlgebraicSystem"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty>
+              <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasLinearity"/>
+            </owl:onProperty>
+            <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#nonlinear"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#AlgebraicEquationSystem"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#AlgebraicEquationSystem">
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialEquationSystem"/>
+    <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasLinearity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasLinearity"/>
+        </owl:onProperty>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:cardinality>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasLinearity"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#LinearAlgebraicSystem"/>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NonlinearAlgebraicSystem"/>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An AlgebraicEquationSystem is a MathematicalModel which solely consists of algebraic equations.</rdfs:comment>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasDAE_Explicitness">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DAE_Explicitness"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates an EquationSystemCharacteristic of type DAE_explicitness.</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasNumericalStiffness">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates an EquationSystemCharacteristic of type NumericalStiffness</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialEquationSystem"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#NumericalStiffness"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasODE_explicitness">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates an EquationSystemCharacteristic of type ODE_Explicitness.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#OrdinaryDifferentialEquationSystem"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ODE_Explicitness"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasLinearity">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates an EquationSystemCharacteristic of type Linearity</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/>
+          <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#AlgebraicEquationSystem"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#Linearity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasVariablesType">
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#VariablesType"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates an EquationSystemCharacteristic of type VariablesType</rdfs:comment>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#hasModelRepresentationForm">
+    <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#ModelRepresentationForm"/>
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#MathematicalModel"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates an EquationSystemCharacteristic of type ModelRepresentationForm</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#differentialOrder">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialEquationSystem"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The attribute differentialOrder denotes the order of a differential equation, which is defined as the order of the highest derivative of a ModelVariable appearing in the differential equation</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#differentialIndex">
+    <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#DifferentialAlgebraicEquationSystem"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The attribute represents the differential index of a DAE system, as defined by Gear &amp; Petzold (1984).</rdfs:comment>
+  </owl:DatatypeProperty>
+  <owl:AllDifferent>
+    <owl:distinctMembers rdf:parseType="Collection">
+      <ODE_Explicitness rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#implicit_formulation"/>
+      <ODE_Explicitness rdf:about="http://www.theworldavatar.com/ontology/ontocape/model/equation_system.owl#explicit_formulation"/>
+    </owl:distinctMembers>
+  </owl:AllDifferent>
+</rdf:RDF><!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

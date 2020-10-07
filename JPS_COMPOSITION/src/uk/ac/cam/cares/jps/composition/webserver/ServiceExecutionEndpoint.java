@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.composition.executor.Executor;
+import uk.ac.cam.cares.jps.composition.executor.ExecutorNew;
+import uk.ac.cam.cares.jps.composition.performance.PerformanceMonitor;
 import uk.ac.cam.cares.jps.composition.util.FormatTranslator;
 
 /**
@@ -34,19 +35,32 @@ public class ServiceExecutionEndpoint extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			JSONObject executorInJSON = new JSONObject(request.getParameter("executionChain"));
-			Executor executor = FormatTranslator.convertJSONTOExecutor(executorInJSON.toString());
-			String value = request.getParameter("value");
-			String result = executor.execute(value);
+			ExecutorNew executor = FormatTranslator.convertJSONTOExecutor(executorInJSON.toString());
+			String value = request.getParameter("query");
+			System.out.println("================ Value ===============");
+			System.out.println(value);
+			System.out.println("======================================");
+			String result = executor.execute(new JSONObject(value));
 			if (result == null) {
 				response.getWriter().write("Error");
 			} else {
+				
+				PerformanceMonitor.start();
 				response.getWriter().write(result.replace("$", "#").replace("@", "#"));
+				
+//				JSONObject o = new JSONObject(result).getJSONObject("score");
+//				System.out.println("================ Hit City To Weather ===============");
+//				long time = o.getLong("time");
+//				int code = o.getInt("code");
+//				long timeStamp = o.getLong("time_stamp");
+//				String _result = o.getString("result");
+//				double coverage = PerformanceMonitor.checkCoverage(_result);
+//				PerformanceMonitor.updateAScoreMatrix(time, code, coverage, timeStamp, PerformanceMonitor.id_map.get("/JPS_COMPOSITION/CityToWeather"));
+//				PerformanceMonitor.Make_Payment();
 			}
 		} catch (JSONException | URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -57,4 +71,7 @@ public class ServiceExecutionEndpoint extends HttpServlet {
 		doGet(request, response);
 	}
 
+	
+ 
+	
 }

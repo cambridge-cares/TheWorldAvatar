@@ -214,21 +214,21 @@ public class PFReactor {
 		 * Add new nozzles & pipes to the owlModel
 		 * 
 		 */
-		OWLNamedClass NozzleClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Nozzle");
-		OWLNamedClass PipeClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe");
+		OWLNamedClass NozzleClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Nozzle");
+		OWLNamedClass PipeClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe");
 		
-		OWLObjectProperty hasConnector = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#hasConnector");
-		OWLObjectProperty isDirectlyConnectedTo = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#isDirectlyConnectedTo");
+		OWLObjectProperty hasConnector = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasConnector");
+		OWLObjectProperty isDirectlyConnectedTo = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyConnectedTo");
 		
-		RDFIndividual Reactor = owlModel.getRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + getName());
+		RDFIndividual Reactor = owlModel.getRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + getName());
 		
 		addNozzleCount();
-		RDFIndividual NewNozzle1 = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + getName() + "_N_" + getN_Nozzle());
+		RDFIndividual NewNozzle1 = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + getName() + "_N_" + getN_Nozzle());
 		addNozzleCount();
-		RDFIndividual NewNozzle2 = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + getName() + "_N_" + getN_Nozzle());
+		RDFIndividual NewNozzle2 = NozzleClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + getName() + "_N_" + getN_Nozzle());
 		
-		RDFIndividual UtilFeedPipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#Pipe_" + getUtilFeed());
-		RDFIndividual UtilProdPipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#Pipe_" + getUtilProd());
+		RDFIndividual UtilFeedPipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#Pipe_" + getUtilFeed());
+		RDFIndividual UtilProdPipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#Pipe_" + getUtilProd());
 		
 		Reactor.addPropertyValue(hasConnector, NewNozzle1);
 		Reactor.addPropertyValue(hasConnector, NewNozzle2);
@@ -236,15 +236,15 @@ public class PFReactor {
 		NewNozzle2.addPropertyValue(isDirectlyConnectedTo, UtilProdPipe);
 		
 		/* Create new utility streams */
-		RDFIndividual ReactionSet = owlModel.getRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#Reaction_" + getRxnSet());
+		RDFIndividual ReactionSet = owlModel.getRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#Reaction_" + getRxnSet());
 		
-		OWLNamedClass UtilityClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility");
+		OWLNamedClass UtilityClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Utility");
 		
-		OWLObjectProperty hasInput = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#hasInput");
-		OWLObjectProperty hasOutput = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#hasOutput");
+		OWLObjectProperty hasInput = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasInput");
+		OWLObjectProperty hasOutput = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasOutput");
 		
-		RDFIndividual UtilityFeed = UtilityClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#UtilityStream_" + getUtilFeed());
-		RDFIndividual UtilityProduct = UtilityClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#UtilityStream_" + getUtilProd());
+		RDFIndividual UtilityFeed = UtilityClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#UtilityStream_" + getUtilFeed());
+		RDFIndividual UtilityProduct = UtilityClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#UtilityStream_" + getUtilProd());
 		
 		ReactionSet.addPropertyValue(hasInput, UtilityFeed);
 		ReactionSet.addPropertyValue(hasOutput, UtilityProduct);
@@ -259,24 +259,24 @@ public class PFReactor {
 		 * Added Tube Bundle and its properties to the owlModel
 		 * 
 		 */
-		OWLNamedClass TubeBundleClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle");
-		OWLNamedClass ScalarValueClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue");
-		OWLNamedClass EdgeLengthClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#EdgeLength");
-		OWLNamedClass InsideDiameterClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#InsideDiameter");
+		OWLNamedClass TubeBundleClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#TubeBundle");
+		OWLNamedClass ScalarValueClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
+		OWLNamedClass EdgeLengthClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#EdgeLength");
+		OWLNamedClass InsideDiameterClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#InsideDiameter");
 		
-		OWLObjectProperty contains = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#contains");
-		OWLObjectProperty hasNumberOfTubes = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasNumberOfTubes");
-		OWLObjectProperty has_length = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#has_length");
-		OWLObjectProperty hasInsideDiameter = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#hasInsideDiameter");
-		OWLObjectProperty hasUnitOfMeasure = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasUnitOfMeasure");
-		OWLDatatypeProperty numericalValue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue");
+		OWLObjectProperty contains = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains");
+		OWLObjectProperty hasNumberOfTubes = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/fixture.owl#hasNumberOfTubes");
+		OWLObjectProperty has_length = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#has_length");
+		OWLObjectProperty hasInsideDiameter = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#hasInsideDiameter");
+		OWLObjectProperty hasUnitOfMeasure = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
+		OWLDatatypeProperty numericalValue = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		
-		RDFIndividual PFR = owlModel.getRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + getName());
-		RDFIndividual TubeBundle = TubeBundleClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#TubeBundle_" + getName());
-		RDFIndividual NumberOfTubes = ScalarValueClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#NumberOfTubes_" + getName());
-		RDFIndividual EdgeLength = EdgeLengthClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#EdgeLength_" + getName());
-		RDFIndividual InsideDiameter = InsideDiameterClass.createRDFIndividual("http://www.jparksimulator.com/" + getName()+ ".owl#InsideDiameter_" + getName());
-		RDFIndividual meter = owlModel.getRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m");
+		RDFIndividual PFR = owlModel.getRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + getName());
+		RDFIndividual TubeBundle = TubeBundleClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#TubeBundle_" + getName());
+		RDFIndividual NumberOfTubes = ScalarValueClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#NumberOfTubes_" + getName());
+		RDFIndividual EdgeLength = EdgeLengthClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#EdgeLength_" + getName());
+		RDFIndividual InsideDiameter = InsideDiameterClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName()+ ".owl#InsideDiameter_" + getName());
+		RDFIndividual meter = owlModel.getRDFIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
 		
 		PFR.addPropertyValue(contains, TubeBundle);
 		TubeBundle.addPropertyValue(hasNumberOfTubes, NumberOfTubes);
@@ -299,36 +299,36 @@ public class PFReactor {
 			 * added ReactionNetwork, ChemicalReaction, Reactants, and Products to the owlModel
 			 * 
 			 */
-			OWLNamedClass ChemicalReactionClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/reaction_mechanism.owl#ChemicalReaction");
-			OWLNamedClass ChemicalSpeciesClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#ChemicalSpecies");
+			OWLNamedClass ChemicalReactionClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction");
+			OWLNamedClass ChemicalSpeciesClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies");
 
-			OWLIndividual ReactionNetwork = owlModel.getOWLIndividual("http://www.jparksimulator.com/" + getName() + ".owl#ReactionNetwork_" + getRxnSet());
+			OWLIndividual ReactionNetwork = owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#ReactionNetwork_" + getRxnSet());
 
-			OWLObjectProperty hasDirectSubsystem = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasDirectSubsystem");
-			OWLObjectProperty hasReactant = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/reaction_mechanism.owl#hasReactant");
-			OWLObjectProperty hasProduct = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/reaction_mechanism.owl#hasProduct");
+			OWLObjectProperty hasDirectSubsystem = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDirectSubsystem");
+			OWLObjectProperty hasReactant = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant");
+			OWLObjectProperty hasProduct = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct");
 			
 			for (String rxnName : getChemRxns().keySet()) {
 				Reaction rxn = getChemRxns().get(rxnName);
-				RDFIndividual ChemicalReaction = ChemicalReactionClass.createRDFIndividual("http://www.jparksimulator.com/" + getName() + ".owl#" + "ChemicalReaction_" + rxnName);
+				RDFIndividual ChemicalReaction = ChemicalReactionClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + getName() + ".owl#" + "ChemicalReaction_" + rxnName);
 				ReactionNetwork.addPropertyValue(hasDirectSubsystem, ChemicalReaction);
 				
 				for (String reactant : rxn.getReactants()) {
-					RDFIndividual ChemicalSpecies = owlModel.getRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#" + reactant);
+					RDFIndividual ChemicalSpecies = owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" + reactant);
 					try {
 						ChemicalSpecies.getName();
 					} catch (NullPointerException e) {
-						ChemicalSpecies = ChemicalSpeciesClass.createRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#" + reactant);
+						ChemicalSpecies = ChemicalSpeciesClass.createRDFIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" + reactant);
 					}
 					ChemicalReaction.addPropertyValue(hasReactant, ChemicalSpecies);
 				}
 				
 				for (String product : rxn.getProducts()) {
-					RDFIndividual ChemicalSpecies = owlModel.getRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#" + product);
+					RDFIndividual ChemicalSpecies = owlModel.getOWLIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" + product);
 					try {
 						ChemicalSpecies.getName();
 					} catch (NullPointerException e) {
-						ChemicalSpecies = ChemicalSpeciesClass.createRDFIndividual("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/substance/substance.owl#" + product);
+						ChemicalSpecies = ChemicalSpeciesClass.createRDFIndividual("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#" + product);
 					}
 					ChemicalReaction.addPropertyValue(hasProduct, ChemicalSpecies);
 				}

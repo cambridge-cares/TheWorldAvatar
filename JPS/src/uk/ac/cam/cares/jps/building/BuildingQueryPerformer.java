@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,71 +20,48 @@ import org.openimaj.math.geometry.shape.Polygon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.util.MatrixToJsonConverter;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter.SimpleShape;
 
 public class BuildingQueryPerformer implements SparqlConstants {
 
 	// TODO-AE should be changed to "EPSG:4326"; // WGS 84 which is the standard of GeoJSON, GIS, Google
 	public static final String DEFAULT_CRS_NAME = CRSTransformer.EPSG_28992;
-	public static final String BERLIN_IRI = "http://dbpedia.org/page/Berlin";
-	public static final String THE_HAGUE_IRI = "http://dbpedia.org/page/The_Hague";
+	public static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+	public static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague"; // The IRIs have be changed to /resource instead of /page
+	public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
+	public static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
 	
 	private Logger logger = LoggerFactory.getLogger(BuildingQueryPerformer.class);
-	private String host;
-	private int port;
-	private String path;
-
-	
-	public BuildingQueryPerformer() {	
-	}
-	
-	public BuildingQueryPerformer(String host, int port, String path) {
-		this.host = host;
-		this.port = port;
-		this.path = path;
-	}
 	
 	public String performQuery(String cityIRI, String query) {
 		
-		logger.debug("city = " + cityIRI);
-		logger.debug("query = \n" + query);
-		
-		String myHost = host;
-		int myPort = port;
-		String myPath = path;
-		// TODO-AE hard coded hosts and paths and datasets but can be overwritten be parameter in constructor
-		if (myHost == null) {
-			myHost = "www.theworldavatar.com";
-			myPort = 80;
-			if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
-				myPath = "/damecoolquestion/berlinbuildings/query";
-			} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
-				// the old dataset for The Hague with different IRIs
-				//myPath = "/damecoolquestion/buildingsLite/query";
-				myPath = "/damecoolquestion/thehaguebuildings/query";
-			}
+		String urlKey = IKeys.URL_BUILDINGSQUERY_THEHAGUE;
+		if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
+			urlKey = IKeys.URL_BUILDINGSQUERY_BERLIN;
+		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
+			urlKey = IKeys.URL_BUILDINGSQUERY_SINGAPORE;
+		} else if (cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+			urlKey = IKeys.URL_BUILDINGSQUERY_HONGKONG;
 		}
 		
-		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
-				.setPath(myPath)
-				.setParameter("query", query);
-	
-		String result = executeGet(builder);
-		
-		logger.debug("query result = \n" + result);
-		
-		return result;
+		logger.info("urlKey: " + urlKey);
+		return AgentCaller.executeGetWithURLKey(urlKey, MediaType.TEXT_CSV, "query", query);
 	}
 	
 	// TODO-AE: move method to JPS BASE (AgentCaller)
 	public String executeGet(URIBuilder builder) {
 		try {
 			URI uri = builder.build();
-			logger.debug(uri.toString());
+			String message = uri.toString();
+			int min = Math.min(message.length(), 100);
+			logger.info(message.substring(0, min));
 			HttpGet request = new HttpGet(uri);
-			request.setHeader(HttpHeaders.ACCEPT, "text/csv");
+			request.setHeader(HttpHeaders.ACCEPT, MediaType.TEXT_CSV.type);
 			//request.setHeader(HttpHeaders.ACCEPT, "application/json");
 			//request.setHeader(HttpHeaders.ACCEPT, "application/sparql-results+json");
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
@@ -105,9 +81,9 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		// the following query will return for the hague: urn:ogc:def:crs:EPSG::28992
 		// therefore, we will not use the query at the moment
 		String query = 
-				"PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-				"PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
+				"PREFIX sys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
+				"PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
+				"PREFIX citygml:<http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#>\r\n" + 
 				"SELECT ?type\r\n" + 
 				"WHERE {\r\n" + 
 				"?srs citygml:srsname ?type\r\n" + 
@@ -117,37 +93,16 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			return CRSTransformer.EPSG_25833;
 		} else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
 			return CRSTransformer.EPSG_28992;
-		} 
-		
-		return DEFAULT_CRS_NAME;
-	}
-	
-	public List<String> performQueryBuildingsFromRegion(String cityIRI, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		
-		double lx = lowerx;
-		double ux = upperx;
-		double ly = lowery;
-		double uy = uppery;
-		
-		String targetCRSName = getCRSName(cityIRI);
-		if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
-			
-			double[] p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {lowerx, lowery});
-			lx = p[0];
-			ly = p[1];
-			p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {upperx, uppery});
-			ux = p[0];
-			uy = p[1];
+		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI) || cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+			return CRSTransformer.EPSG_4326; 
 		}
 		
-		String query = getQueryBuildingsFromRegion(buildingLimit, lx, ly, ux, uy);		
-		String result = performQuery(cityIRI, query);
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
-		return map.get("bdn");
+		return DEFAULT_CRS_NAME; //default crs that is used in building owl file
 	}
 	
 	public List<String> performQueryClosestBuildingsFromRegion(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		
+		//To-DO : later need to connect this to query for the height of plant
+		double plh = 20.0; 
 		double plx = plantx;
 		double ply = planty;
 		double lx = lowerx;
@@ -156,49 +111,134 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		double uy = uppery;
 		
 		String targetCRSName = getCRSName(cityIRI);
-		if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
-			
-			double[] p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {plantx, planty});
-			plx = p[0];
-			ply = p[1];
-			p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {lowerx, lowery});
-			lx = p[0];
-			ly = p[1];
-			p = CRSTransformer.transform(DEFAULT_CRS_NAME, targetCRSName, new double[] {upperx, uppery});
-			ux = p[0];
-			uy = p[1];
+		String sourceCRSName = null;
+		if (cityIRI.equalsIgnoreCase(BERLIN_IRI) || cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+			//sourceCRSName = DEFAULT_CRS_NAME; //TEMPORARILY CHANGED FOR COORDINATE CHANGE 23/4
+			sourceCRSName = CRSTransformer.EPSG_3857;
+		} else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI) || cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+			sourceCRSName = CRSTransformer.EPSG_3857; 
 		}
 		
-		String query = getQueryClosestBuildingsFromRegion(200, lx, ly, ux, uy);		
+		if (lowerx <= 180) {
+			sourceCRSName = CRSTransformer.EPSG_4326;
+			double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
+			plx = p[0];
+			ply = p[1];
+			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
+			lx = p[0];
+			ly = p[1];
+			p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
+			ux = p[0];
+			uy = p[1];
+			
+		} else {
+			//if (!DEFAULT_CRS_NAME.equals(targetCRSName)) {
+				
+				double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {plantx, planty});
+				plx = p[0];
+				ply = p[1];
+				p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {lowerx, lowery});
+				lx = p[0];
+				ly = p[1];
+				p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] {upperx, uppery});
+				ux = p[0];
+				uy = p[1];
+				
+//				if (targetCRSName.equals(CRSTransformer.EPSG_4326)) {
+//					double temp = ly;
+//					ly = uy;
+//					uy = temp;
+//				}
+			//}
+		}
+
+		String query = getQueryClosestBuildingsFromRegion(350, lx, ly, ux, uy); //350
+		//logger.info("BEFORE performQuery");
 		String result = performQuery(cityIRI, query);
-		Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(result);
+		//logger.info("AFTER performQuery");
+		//system.out.println("=============== query result ===============");
+		//system.out.println("With query:\n" + query);
+		//system.out.println(result);
+		//system.out.println("============================================");
+		Map<String, List<String>> map = MatrixConverter.fromCsv(result);
 		
-		return selectClosestBuilding(plx, ply, buildingLimit, map);
+		return selectClosestBuilding(plx, ply, buildingLimit, map, plh);
 	}
 	
-	public List<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map) {
+	
+	
+	public List<String> selectClosestBuilding(double centerx, double centery, int buildingLimit, Map<String, List<String>> map, double sourceheight) {
 		
 		List<String> result = new ArrayList<String>();
 		
 		class DistanceBuildingPair {
 			double distance;
 			String buildingIRI;
+			double height;
+
 		}
+		
+		
 		
 		int size = map.get("bdn").size();
 		DistanceBuildingPair[] pairs = new DistanceBuildingPair[size];
+		System.out.println("pairsize= "+size);
 		for (int i=0; i<size; i++) {
 	
 			double x = Double.valueOf(map.get("x").get(i));
 			double y = Double.valueOf(map.get("y").get(i));
+			
+			
 			Point2d diff = new Point2dImpl(x,y).minus(new Point2dImpl(centerx, centery));
 			double distance = PolygonUtil.length(diff);
 			
 			DistanceBuildingPair newPair = new DistanceBuildingPair();
 			newPair.distance = distance;
 			newPair.buildingIRI = map.get("bdn").get(i);
+			newPair.height=Double.valueOf(map.get("h").get(i));
 			pairs[i] = newPair;
+			
+			
+			//score = constant1*(1/distance+1) + height;
 		}
+		
+		
+
+		
+		Comparator<DistanceBuildingPair> comparator2 = new Comparator<DistanceBuildingPair>() {
+
+			@Override
+			public int compare(DistanceBuildingPair o1, DistanceBuildingPair o2) {
+				if (o1.height == o2.height) {
+					return 0;
+				}
+				if (o1.height > o2.height) {
+					return -1;
+				}
+				return 1;
+			}
+		};
+		
+
+		
+		Arrays.sort(pairs, comparator2);
+		
+		DistanceBuildingPair[] newpairs2 = new DistanceBuildingPair[size];
+
+		int sizepair=pairs.length;
+
+		double selectionnumber2=0.25*new Double(sizepair);
+		int selectionnumber=(int) selectionnumber2;
+		
+		if(selectionnumber<25) {
+			selectionnumber=sizepair;
+		}
+		for(int a=0;a<selectionnumber;a++) {
+			newpairs2[a]=pairs[a];
+			newpairs2[a].distance=pairs[a].distance;
+			newpairs2[a].buildingIRI=pairs[a].buildingIRI;
+		}
+			
 		
 		Comparator<DistanceBuildingPair> comparator = new Comparator<DistanceBuildingPair>() {
 
@@ -213,128 +253,49 @@ public class BuildingQueryPerformer implements SparqlConstants {
 				return 1;
 			}
 		};
+		Arrays.sort(pairs, comparator); //test
 		
-		Arrays.sort(pairs, comparator);
-		
-		int min = Math.min(size, buildingLimit);
-		for (int i=0; i<min; i++) {
-			result.add(pairs[i].buildingIRI);
+		int min = Math.min(size, buildingLimit);    //buildinglimit=25
+//		for (int i=0; i<min; i++) {
+//			result.add(pairs[i].buildingIRI);
+//		}
+		int i=0;
+		while (result.size()<min){
+			//if(newpairs2[i].height>sourceheight/3) {  //temporarily not considering the height of plant yet
+			result.add(newpairs2[i].buildingIRI);
+			System.out.println("the height of building picked= "+newpairs2[i].height);
+			//}
+			i++;
 		}
 		
+		//temporary changed for testing 27-5-19 indicating it's hongkong:
+		if(Math.round(centerx)>=113) {
+		System.out.println("need to be removed= "+result.get(0));
+			//result.set(0,"http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingBc1b4a35c-1e8d-4590-95b0-5ca01c09ae18"); //no 114 line elevation=4.2; height=10.5
+			//result.set(0,"http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingBb65410b2-1c68-4036-adbe-028efff01fdc"); //no 102 line elevation=36.5; height=9.8
+			//result.set(0,"http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingBfc718819-92ec-4ffd-89df-8f82620f9936"); //no 130 line elevation=53.3; height=10.1
+		}
 		return result;
-	}
-
-	// TODO-AE Shaocong said that this method actually is not needed, remove it
-	private String getQueryFilterBdnEnvelope(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		
-		String query =
-			"PREFIX sys: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>\r\n" + 
-			"PREFIX citygml: <http://www.theworldavatar.com/CityGMLOntology.owl#>\r\n" + 
-			"PREFIX space_and_time_extended: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
-			"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\r\n" + 
-			"SELECT distinct ?bdn\r\n" +
-			"WHERE{\r\n" + 
-			"?cityM a citygml:CityModelType.\r\n" + 
-			"?cityM citygml:boundedBy ?envelope.\r\n" + 
-			"?envelope a citygml:EnvelopeType.\r\n" +  // get all envelopes
-			"?envelope citygml:upperCornerPoint ?upoint.\r\n" + //# get bounds of envelope	
-			"?upoint space_and_time_extended:hasGISCoordinateSystem ?uco.\r\n" + 
-			"?uco space_and_time_extended:hasProjectedCoordinate_x ?uxe.\r\n" + 
-			"?uxe sys:hasValue ?uxv.\r\n" + 
-			"?uxv sys:numericalValue ?ux.\r\n" + 
-			"?uco space_and_time_extended:hasProjectedCoordinate_y ?uye.\r\n" + 
-			"?uye sys:hasValue ?uyv.\r\n" + 
-			"?uyv sys:numericalValue ?uy.\r\n" + 
-			"?envelope citygml:lowerCornerPoint ?lpoint.\r\n" + 
-			"?lpoint space_and_time_extended:hasGISCoordinateSystem ?lco.\r\n" + 
-			"?lco space_and_time_extended:hasProjectedCoordinate_x ?lxe.\r\n" + 
-			"?lxe sys:hasValue ?lxv.\r\n" + 
-			"?lxv sys:numericalValue ?lx.\r\n" + 
-			"?lco space_and_time_extended:hasProjectedCoordinate_y ?lye.\r\n" + 
-			"?lye sys:hasValue ?lyv.\r\n" + 
-			"?lyv sys:numericalValue ?ly.\r\n" + 
-			"?cityM citygml:cityObjectMember ?bdn.\r\n" + 	// #get bdn belongs to filterd envelope
-			"Filter(xsd:double(?lx) > \"%f\"^^xsd:double && xsd:double(?ly) > \"%f\"^^xsd:double && xsd:double(?ux) < \"%f\"^^xsd:double && xsd:double(?uy) < \"%f\"^^xsd:double) \r\n" + //#filter envelope within range		
-			"}\r\n" + 
-			"LIMIT %d";		//  #limit of building num	
-		
-		return format(query, lowerx, lowery, upperx, uppery, buildingLimit);
-	}
-
-	/**
-	 * refers to the Python method admsInputDataRetriever.filterbdns
-	 * 
-	 * @param buildingLimit
-	 * @param lowerx
-	 * @param lowery
-	 * @param upperx
-	 * @param uppery
-	 * @return
-	 */
-	private String getQueryBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
-		
-		// TODO-AE MID: the query return each building having any point of any groundsurface polygons in the given region
-		// Therefore, it doesn't seem to be very different to SPARQL query from getQueryBdnVerticesWithAndWithoutBuildingParts
-		// but then it doesn't make sense to query once again for each selected building
-		// Ask Kevin: I thought the original idea was to use the calculated weighted and stored center coordinates from the entire building as criterion?
-		// agreed with Kevin: we leave it as it is at the moment; but in the long run it should be changed
-		
-		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD + 
-			"SELECT  distinct ?bdn\r\n" + 
-			"WHERE {\r\n" + 
-			"{\r\n" +                                            				// case1:building has no parts
-			"?bdn a citygml:BuildingType.\r\n" + 
-			"?bdn citygml:boundedBy ?g.\r\n" +									// building boundBy surface
-			"?g a citygml:GroundSurfaceType.\r\n" + 							// surface is a ground 
-			"?g citygml:lod2MultiSurface ?ms.\r\n" + 							// ground has lod2multisurface ms
-			"?ms citygml:surfaceMember ?pol.\r\n" + 							// ms has member polygon
-			"?pol citygml:exterior ?lring.\r\n" + 								// polygon exterior is linear ring
-			"?lring sys:contains ?po.\r\n" + 									// linear ring consists of points
-			"?po space_and_time_extended:hasGISCoordinateSystem ?co.\r\n" + 	// point has coordinate system cs     
-			"?co space_and_time_extended:hasProjectedCoordinate_x ?xe.\r\n" + 	// extract cs to get x,y,z value 
-			"?xe sys:hasValue ?xv.\r\n" + 
-			"?xv sys:numericalValue ?x.\r\n" + 
-			"?co space_and_time_extended:hasProjectedCoordinate_y ?ye.\r\n" + 
-			"?ye sys:hasValue ?yv.\r\n" + 
-			"?yv sys:numericalValue ?y.\r\n" + 
-			"} UNION {\r\n" + 													// case 2: 
-			"?bdn a citygml:BuildingType.\r\n" + 								// bdns that consists of part 
-			"?bdn citygml:consistsOfBuildingPart ?part.\r\n" + 
-			"?part a citygml:BuildingPartType.\r\n" + 
-			"?part citygml:boundedBy ?g.\r\n" + 
-			"?g a citygml:GroundSurfaceType.\r\n" + 
-			"?g citygml:lod2MultiSurface ?ms.\r\n" + 
-			"?ms citygml:surfaceMember ?pol.\r\n" + 
-			"?pol citygml:exterior ?lring.\r\n" + 
-			"?lring sys:contains ?po.\r\n" + 
-			"?po space_and_time_extended:hasGISCoordinateSystem ?co.\r\n" + 
-			"?co space_and_time_extended:hasProjectedCoordinate_x ?xe.\r\n" + 
-			"?xe sys:hasValue ?xv.\r\n" + 
-			"?xv sys:numericalValue ?x.\r\n" + 
-			"?co space_and_time_extended:hasProjectedCoordinate_y ?ye.\r\n" + 
-			"?ye sys:hasValue ?yv.\r\n" + 
-			"?yv sys:numericalValue ?y.\r\n" + 
-			"}\r\n" + 		
-			"Filter(xsd:double(?x) > \"%f\"^^xsd:double && xsd:double(?y) > \"%f\"^^xsd:double && xsd:double(?x) < \"%f\"^^xsd:double && xsd:double(?y) < \"%f\"^^xsd:double) \r\n" + 	
-			"}\r\n" + 
-			"LIMIT %d";	
-
-		return format(query, lowerx, lowery, upperx, uppery, buildingLimit);
 	}
 	
 	public String getQueryClosestBuildingsFromRegion(int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
 		
-		// TODO-AE URGENT do we need distinct here. does it only effect buildings or also x and y
 		String query = PREFIX_ONTOCAPE_SYS + PREFIX_ONTOCAPE_SPACE_AND_TIME_EXTENDED + PREFIX_CITYGML + PREFIX_XSD +
-			"SELECT distinct ?bdn ?x ?y\n" + 
+			"SELECT distinct ?bdn ?x ?y ?h \n" + 
 			"WHERE {\n" + 
 			"?bdn a citygml:BuildingType .\n" + 
 			"?bdn space_and_time_extended:hasGISCoordinateSystem ?coordinates .\n" + 
 			CITYGML_HASCOORDINATES_XY +
+			"?bdn a citygml:BuildingType .\n" + 
+			"?bdn citygml:measuredHeight ?hgt .\n" +
+			"?hgt sys:hasValue ?vhgt .\n" + 
+			"?vhgt sys:numericalValue ?h .\n" + 
+			
 			"Filter(xsd:double(?x) > \"%f\"^^xsd:double && xsd:double(?y) > \"%f\"^^xsd:double && xsd:double(?x) < \"%f\"^^xsd:double && xsd:double(?y) < \"%f\"^^xsd:double) \n" + 	
 			"}\n" + 
 			"LIMIT %d";
 
+		//add the format for the height
 		return format(query, lowerx, lowery, upperx, uppery, buildingLimit);
 	}
 	
@@ -379,23 +340,31 @@ public class BuildingQueryPerformer implements SparqlConstants {
 	}
 	
 	public SimpleBuildingData performQuerySimpleBuildingData(String cityIRI, List<String> buildingIRIs) {
-		
+		//system.out.println("=========================== buildingIRIs ===========================");
+		//system.out.println(buildingIRIs);
+		//system.out.println("=============================================================");
 		SimpleBuildingData result = new SimpleBuildingData();
 		
 		for (String currentIRI : buildingIRIs) {
 					
 			String query = getQueryBdnVerticesWithAndWithoutBuildingParts(currentIRI);
 			String queryResult = performQuery(cityIRI, query);
-			Map<String, List<String>> map = MatrixToJsonConverter.fromCsv(queryResult);
+			Map<String, List<String>> map = MatrixConverter.fromCsv(queryResult);
 			
 			String sourceCRSName = getCRSName(cityIRI);
-			if (!DEFAULT_CRS_NAME.equals(sourceCRSName)) {
-				logger.info("transforming coordinate from " + sourceCRSName + " to " + DEFAULT_CRS_NAME + " ...");
-				map = transformCoordinates(sourceCRSName, DEFAULT_CRS_NAME, map);
+			logger.info("sourceCRSName: " + sourceCRSName);
+						
+			if (sourceCRSName.equalsIgnoreCase(CRSTransformer.EPSG_4326)) { //or other coordinates system of building that is in degree instead of m
+				logger.info("transforming coordinate from " + sourceCRSName + " to " + CRSTransformer.EPSG_3857 + " ...");
+				logger.info("map: " + map.toString());
+				map = transformCoordinates(sourceCRSName, CRSTransformer.EPSG_3857, map);
 			}
+
+			
+			
+			//add line 359 to 362 TO TEST NEW COORDINATE 23/04
 					
 			List<Polygon> polygons = SimpleShapeConverter.convertTo2DPolygons(map, "groundsurface", "x", "y");
-			// TODO-AE URGENT switch between only one algorithm and both algorithms
 			//SimpleShape shape = SimpleShapeConverter.simplifyShapes(polygons);
 			Object[] shapes = SimpleShapeConverter.simplifyShapesWithTwoAlgorithms(polygons);
 			SimpleShape shape = (SimpleShape) shapes[0]; // the result of the algorithm with convex hull;
@@ -415,17 +384,56 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			}		
 			result.BldName.add(name);
 			result.BldType.add(shape.shapeType);
-			result.BldX.add(shape.centerX);
-			result.BldY.add(shape.centerY);
+			//BIG CHANGE 23/04 another conversion!!!
+			double []centrePoint=null;
+			if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
+				//need to be converted for the building to match the adms coordinate system!!!!
+				 centrePoint = CRSTransformer.transform("EPSG:3857", 
+						"EPSG:3414", new double[] {shape.centerX, shape.centerY});
+				result.BldX.add(centrePoint[0]);
+				result.BldY.add(centrePoint[1]);
+			} else if (cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+				
+				//need to be converted for the building to match the adms coordinate system!!!!
+				 centrePoint = CRSTransformer.transform("EPSG:3857", 
+						"EPSG:2326", new double[] {shape.centerX, shape.centerY});
+				result.BldX.add(centrePoint[0]);
+				result.BldY.add(centrePoint[1]);
+			} 
+			
+			else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+				//no need to be converted as the building coordinate system and the adms coordinate system is matched!!!!
+				result.BldX.add(shape.centerX);
+				result.BldY.add(shape.centerY);
+			} 
+			
+			else if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
+				//no need to be converted as the building coordinate system and the adms coordinate system is matched!!!!
+				result.BldX.add(shape.centerX);
+				result.BldY.add(shape.centerY);
+			}
+
+//			logger.info("coordinate x: " + centrePoint[0]);
+//			logger.info("coordinate y: " + centrePoint[1]);
+			
+			
+			
 			result.BldLength.add(shape.length);
 			result.BldWidth.add(shape.width);
 			result.BldAngle.add(shape.angle);
 			
 			String queryHeigt = getQueryBdnHeight(currentIRI);
 			String queryHeightResult = performQuery(cityIRI, queryHeigt);
-			map = MatrixToJsonConverter.fromCsv(queryHeightResult);
+			map = MatrixConverter.fromCsv(queryHeightResult);
 			double height = Double.valueOf((String) map.get("h").get(0));
-			result.BldHeight.add(height);
+//			if(currentIRI.contentEquals("http://www.theworldavatar.com/kb/hkg/hongkong/buildings/HongkongDistrict02.owl#BuildingB70e2e09c-a5b6-4679-b0c9-85704b2a774d")){
+//				result.BldHeight.add(15.0);
+//				
+//			}
+			//else {
+				result.BldHeight.add(height);	
+			//}
+			
 		}
 		
 		return result;

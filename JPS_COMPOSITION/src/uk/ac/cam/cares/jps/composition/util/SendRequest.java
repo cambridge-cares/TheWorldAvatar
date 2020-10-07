@@ -22,6 +22,7 @@ public class SendRequest {
 			in.close();
 			return response.toString();
 		} catch (Exception e) {
+			System.out.println(e);
 			return null;
 		}
 

@@ -899,7 +899,7 @@ public class Plant {
 		} // end for loop
 		
 		for (Compressor c : compressors_Map.values()) {
-			c.createOWLFile();
+			c.createOWLFile(plantName);
 			unitOperations.add(c.getName());
 		}
 		
@@ -1193,75 +1193,75 @@ public class Plant {
 		
 		JenaOWLModel owlModel = Tools.callJena(newFileName);
 		
-		OWLIndividual Plant = owlModel.getOWLIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + plantName);
+		OWLIndividual Plant = owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + plantName);
 		
-		OWLObjectProperty hasSubsystem = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#hasSubsystem");
-		OWLDatatypeProperty hasIRI = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/Eco-industrialPark.owl#hasIRI");
+		OWLObjectProperty hasSubsystem = owlModel.getOWLObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
+		OWLDatatypeProperty hasIRI = owlModel.getOWLDatatypeProperty("http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#hasIRI");
 					
 		for (String unitName : unitOperations) {
 			if (unitName.startsWith("E-")) {
-				OWLNamedClass ShellTubeApparatusClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus");
+				OWLNamedClass ShellTubeApparatusClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#ShellTubeApparatus");
 				
-				RDFIndividual HeatExchanger = ShellTubeApparatusClass.createRDFIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + unitName);
+				RDFIndividual HeatExchanger = ShellTubeApparatusClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + unitName);
 				
 				Plant.addPropertyValue(hasSubsystem, HeatExchanger);
-				HeatExchanger.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + unitName + ".owl#" + unitName);
+				HeatExchanger.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + unitName + ".owl#" + unitName);
 			}
 			else if (unitName.startsWith("C-")) {
-				OWLNamedClass CompressorClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Compressor");
+				OWLNamedClass CompressorClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Compressor");
 				
-				RDFIndividual Compressor = CompressorClass.createRDFIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + unitName);
+				RDFIndividual Compressor = CompressorClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + unitName);
 				
 				Plant.addPropertyValue(hasSubsystem, Compressor);
-				Compressor.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + unitName + ".owl#" + unitName);
+				Compressor.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + unitName + ".owl#" + unitName);
 			}
 			else if (unitName.startsWith("P-")) {
-				OWLNamedClass PumpClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Pump");
+				OWLNamedClass PumpClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Pump");
 				
-				RDFIndividual Pump = PumpClass.createRDFIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + unitName);
+				RDFIndividual Pump = PumpClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + unitName);
 				
 				Plant.addPropertyValue(hasSubsystem, Pump);
-				Pump.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + unitName + ".owl#" + unitName);
+				Pump.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + unitName + ".owl#" + unitName);
 			}
 			else if (unitName.startsWith("R-") || unitName.startsWith("V-")) {
-				OWLNamedClass VesselClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#Vessel");
+				OWLNamedClass VesselClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#Vessel");
 				
-				RDFIndividual Vessel = VesselClass.createRDFIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + unitName);
+				RDFIndividual Vessel = VesselClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + unitName);
 				
 				Plant.addPropertyValue(hasSubsystem, Vessel);
-				Vessel.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + unitName + ".owl#" + unitName);
+				Vessel.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + unitName + ".owl#" + unitName);
 			}
 			else if (unitName.startsWith("T-")) {
-				OWLNamedClass TrayColumnClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#TrayColumn");
+				OWLNamedClass TrayColumnClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#TrayColumn");
 				
-				RDFIndividual TrayColumn = TrayColumnClass.createRDFIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + unitName);
+				RDFIndividual TrayColumn = TrayColumnClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + unitName);
 				
 				Plant.addPropertyValue(hasSubsystem, TrayColumn);
-				TrayColumn.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + unitName + ".owl#" + unitName);
+				TrayColumn.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + unitName + ".owl#" + unitName);
 			}
 			else if (unitName.startsWith("MIX-") || unitName.startsWith("TEE-")) {
-				OWLNamedClass ApparatusClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Apparatus");
+				OWLNamedClass ApparatusClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Apparatus");
 				
-				RDFIndividual Apparatus = ApparatusClass.createRDFIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + unitName);
+				RDFIndividual Apparatus = ApparatusClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + unitName);
 				
 				Plant.addPropertyValue(hasSubsystem, Apparatus);
-				Apparatus.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + unitName + ".owl#" + unitName);
+				Apparatus.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + unitName + ".owl#" + unitName);
 			}
 			else if (unitName.startsWith("VLV-")) {
-				OWLNamedClass ValveClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Valve");
+				OWLNamedClass ValveClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Valve");
 				
-				RDFIndividual Valve = ValveClass.createRDFIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + unitName);
+				RDFIndividual Valve = ValveClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + unitName);
 				
 				Plant.addPropertyValue(hasSubsystem, Valve);
-				Valve.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + unitName + ".owl#" + unitName);
+				Valve.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + unitName + ".owl#" + unitName);
 			}
 			else if (unitName.startsWith("Pipe_")) {
-				OWLNamedClass PipeClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_realization/plant.owl#Pipe");
+				OWLNamedClass PipeClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe");
 				
-				RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/" + plantName + ".owl#" + unitName);
+				RDFIndividual Pipe = PipeClass.createRDFIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + plantName + ".owl#" + unitName);
 				
 				Plant.addPropertyValue(hasSubsystem, Pipe);
-				Pipe.addPropertyValue(hasIRI, "http://www.jparksimulator.com/" + unitName + ".owl#" + unitName);
+				Pipe.addPropertyValue(hasIRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/" + unitName + ".owl#" + unitName);
 			}
 			else {}
 		} // End for loop
@@ -1311,11 +1311,11 @@ public class Plant {
 				if (!unit.startsWith("Pipe_") && Tools.containsString("ProcessStream_" + streamNumber, unit + ".owl")) {
 					JenaOWLModel owlModel = Tools.callJena(unit + ".owl");
 					
-					OWLIndividual ProcessStream = owlModel.getOWLIndividual("http://www.jparksimulator.com/" + unit + ".owl#" + "ProcessStream_" + streamNumber);
+					OWLIndividual ProcessStream = owlModel.getOWLIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/" + unit + ".owl#" + "ProcessStream_" + streamNumber);
 					
-					OWLNamedClass RawMaterialClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#RawMaterial");
-					OWLNamedClass EndProductClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#EndProduct");
-					OWLNamedClass WasteProductClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#WasteProduct");
+					OWLNamedClass RawMaterialClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#RawMaterial");
+					OWLNamedClass EndProductClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#EndProduct");
+					OWLNamedClass WasteProductClass = owlModel.getOWLNamedClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#WasteProduct");
 					
 					if (specialStreams.get(streamNumber).equalsIgnoreCase("feed")) {
 						ProcessStream.setRDFType(RawMaterialClass);

@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?><kml xmlns="http://www.opengis.net/kml/2.2">
+<Placemark>
+<MultiGeometry>
+<Name>Biodiesel Plant</Name>
+<description>&lt;?xml version="1.0" standalone="yes"?&gt;
+&lt;DocumentElement&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S9&lt;/Name&gt;
+    &lt;Material&gt;Toluene&lt;/Material&gt;
+    &lt;Mat_Ch&gt;C7H8&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;117.212&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;81.062&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;4&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S8&lt;/Name&gt;
+    &lt;Material&gt;Toluene&lt;/Material&gt;
+    &lt;Mat_Ch&gt;C7H8&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;117.212&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;80.9362&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;0.4&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S5&lt;/Name&gt;
+    &lt;Material&gt;Toluene&lt;/Material&gt;
+    &lt;Mat_Ch&gt;C7H8&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;117.212&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;264.406&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;4&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S7&lt;/Name&gt;
+    &lt;Material&gt;Toluene&lt;/Material&gt;
+    &lt;Mat_Ch&gt;C7H8&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;117.212&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;204.614&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;0.2&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S5&lt;/Name&gt;
+    &lt;Material&gt;Hydrochlorofluorocarbon&lt;/Material&gt;
+    &lt;Mat_Ch&gt;HCFC(R-22)&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;249.802&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;20.1701&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;9.1&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S8&lt;/Name&gt;
+    &lt;Material&gt;Hydrochlorofluorocarbon&lt;/Material&gt;
+    &lt;Mat_Ch&gt;HCFC (R-22)&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;249.802&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;36.0122&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;9.1&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S10&lt;/Name&gt;
+    &lt;Material&gt;Hydrochlorofluorocarbon&lt;/Material&gt;
+    &lt;Mat_Ch&gt;HCFC(R-22)&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;249.802&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;116.803&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;32&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S12&lt;/Name&gt;
+    &lt;Material&gt;Hydrochlorofluorocarbon&lt;/Material&gt;
+    &lt;Mat_Ch&gt;HCFC(R-22)&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;249.802&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;73.2623&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;32&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S8&lt;/Name&gt;
+    &lt;Material&gt;Toluene&lt;/Material&gt;
+    &lt;Mat_Ch&gt;C7H8&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;117.212&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;80.9362&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;0.4&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S2&lt;/Name&gt;
+    &lt;Material&gt;Toluene&lt;/Material&gt;
+    &lt;Mat_Ch&gt;C7H8&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;117.212&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;167.164&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;4&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S5&lt;/Name&gt;
+    &lt;Material&gt;Toluene&lt;/Material&gt;
+    &lt;Mat_Ch&gt;C7H8&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;117.212&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;174.122&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;4&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+  &lt;test&gt;
+    &lt;Id&gt;0&lt;/Id&gt;
+    &lt;Name&gt;S7&lt;/Name&gt;
+    &lt;Material&gt;Toluene&lt;/Material&gt;
+    &lt;Mat_Ch&gt;C7H8&lt;/Mat_Ch&gt;
+    &lt;Mat_qnt&gt;117.212&lt;/Mat_qnt&gt;
+    &lt;Mat_qt_uni&gt;kmol/hr&lt;/Mat_qt_uni&gt;
+    &lt;Mat_T&gt;115.015&lt;/Mat_T&gt;
+    &lt;T_unit&gt;C&lt;/T_unit&gt;
+    &lt;Mat_P&gt;0.2&lt;/Mat_P&gt;
+    &lt;P_unit&gt;bar&lt;/P_unit&gt;
+  &lt;/test&gt;
+&lt;/DocumentElement&gt;</description>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.674570867817,1.25919668435379,100
+103.674603348209,1.25915418308518,100
+103.674640946528,1.25918303070932,100
+103.67463675337,1.25918823256284,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.674634959027,1.25919004489417,100
+103.67461365463,1.25921706190883,100
+103.67464930659,1.25924527956025,100
+103.674640897743,1.25925490978647,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.674565163042,1.25920359648357,100
+103.674535599023,1.25924396630099,100
+103.67457095813,1.2592714303061,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.674635960075,1.25926178980666,100
+103.674600888714,1.25930372977354,100
+103.674572917484,1.25928023424095,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.667436059025,1.26715966795443,100
+103.667460404782,1.26712450418824,100
+103.667492855732,1.26714631236993,100
+103.667498575056,1.26713712673326,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.667428233624,1.26715916218179,100
+103.667397531303,1.26713981741706,100
+103.667425237631,1.26709465919508,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.667431170983,1.26708764893457,100
+103.667446332548,1.2670656341927,100
+103.667479566012,1.26708627373799,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.667490900824,1.26708872435083,100
+103.667517105338,1.26710592838978,100
+103.667505325506,1.26712566902333,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.674606009808,1.26495857730529,100
+103.674556931443,1.265019594567,100
+103.674601983368,1.26505427389953,100
+103.674617510366,1.26503401501351,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.674620131836,1.26503153571439,100
+103.674629954279,1.2650213560874,100
+103.674680616968,1.26506596722749,100
+103.674712498385,1.26502612811258,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.674718737854,1.26501962102241,100
+103.67475734299,1.26497340088885,100
+103.674713607236,1.2649401306745,100
+</coordinates>
+</LineString>
+
+<LineString>
+<tessellate>0</tessellate>
+<type>Line</type>
+<coordinates>
+103.674712781623,1.26492947307838,100
+103.674660246661,1.26488705110435,100
+103.67461085164,1.26495238962697,100
+</coordinates>
+</LineString>
+
+</MultiGeometry>
+</Placemark>
+</kml>

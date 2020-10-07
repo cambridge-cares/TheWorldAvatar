@@ -1,0 +1,301 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:fc="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl"/>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;mereology&apos; establishes aggregation and composition relations between objects.
+The following classes and relations from other ontology modules are used within &apos;mereology&apos;:
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation&quot;/&gt; 
+    </rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isDirectPartOf"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parthood relation that indicates the direct Parts of an Object, i.e., the Parts on the next level breakdown.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isPartOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parthood relation that refers from an Aggregate to its Parts.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parthood relation that indicates the direct parts of a CompositeObject. The parts of the CompositeObject are non-shareable, i.e. a part cannot be part of more than one CompositeObject. If the CompositeObject is destroyed, all its parts are destroyed, as well.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isDirectPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isDirectPartOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isPartOf"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parthood relation that links a Part to the Object on the next aggregation level.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isDirectPartOf"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parthood relation that links a part to a CompositeObject on the next aggregation level.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isPartOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parthood relation that refers from a Part to the Aggregate.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Aggregate -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Aggregate">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOnly"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Object that has one or more distinct parts.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#AggregateOnly -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#AggregateOnly">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Aggregate"/>
+                            <owl:Class>
+                                <owl:complementOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part"/>
+                            </owl:Class>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isDirectPartOf"/>
+                        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:cardinality>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Aggregate"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Object that has one or more distinct Parts and is not part of any Object itself.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#CompositeObject -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#CompositeObject">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Aggregate"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Object that is composed of one or more Objects. The parts of the CompositeObject are non-shareable, i.e. an Object that is part of a CompositeObject cannot be part of another CompositeObject.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#FirstLevelPart -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#FirstLevelPart">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isDirectPartOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#AggregateOnly"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#SecondLevelPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Part at the first level of decomposition.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isPartOf"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isPartOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Object that is part of another Object. A Part can be part of more than one Object.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOfCompositeObject -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOfCompositeObject">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#Object"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isExclusivelyPartOf"/>
+                <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Object that is part of a CompositeObject. The parts of the CompositeObject are non-shareable, i.e. an Object that is part of a CompositeObject cannot be part of another CompositeObject.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOnly -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#PartOnly">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part"/>
+                            <owl:Class>
+                                <owl:complementOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Aggregate"/>
+                            </owl:Class>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart"/>
+                        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">0</owl:cardinality>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#SecondLevelPart -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#SecondLevelPart">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isDirectPartOf"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#FirstLevelPart"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#Part"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
+

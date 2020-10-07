@@ -43,6 +43,18 @@ function visualizeComposition(dataObject) {
                     // and disallow drawing links from or to this text:
                     fromLinkable: true, toLinkable: true
                 },
+                new go.Binding("text", "name")),
+            $(go.TextBlock,
+                {
+                    column: 1,
+                    margin: new go.Margin(0, 2),
+                    stretch: go.GraphObject.Horizontal,
+                    font: "bold 14px sans-serif",
+                    wrap: go.TextBlock.None,
+                    overflow: go.TextBlock.OverflowEllipsis,
+                    // and disallow drawing links from or to this text:
+                    fromLinkable: true, toLinkable: true
+                },
                 new go.Binding("text", "name"))
         );
 
@@ -81,7 +93,11 @@ function visualizeComposition(dataObject) {
             $(go.Shape,
                 {fill: "#EEEEEE"}),
 
+
             $(go.Panel, "Vertical",
+            		
+  
+            		
                 $(go.Panel, "Auto",
                     {stretch: go.GraphObject.Horizontal},  // as wide as the whole node
                     $(go.Shape,
@@ -129,7 +145,22 @@ function visualizeComposition(dataObject) {
                         $(go.RowColumnDefinition, makeWidthBinding(1)),
                         new go.Binding("itemArray", "outputs")
                     )
-                )
+                ),                
+                $(go.Panel, "Auto",
+                        {stretch: go.GraphObject.Horizontal},  // as wide as the whole node
+                        $(go.Shape,
+                            {fill: "#1570A6", stroke: null}),
+                        $(go.TextBlock,
+                            {
+                                alignment: go.Spot.Center,
+                                margin: 3,
+                                stroke: "white",
+                                textAlign: "center",
+                                font: "bold 12pt sans-serif"
+                            },
+                            new go.Binding("text", "score"))
+                    )
+                
             )
         );  // end Node
 

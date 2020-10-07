@@ -1,0 +1,41 @@
+.legend {
+    position: absolute;
+    top: 200px;
+    left: 400px;
+    z-index:1;
+}
+.choice{
+    position: absolute;
+    top: 20px;
+    left: 50px;
+    z-index:1;
+}
+.readonlyinput{
+
+	background-color: transparent;
+	width: 50px;
+}
+body{
+    position: relative;
+}
+
+.choice{
+    width: 90%;
+}
+
+div.row {
+    margin-left: -15px;
+    width: 100%;
+}
+
+div#sliderwrapper {
+	width: 82px;
+}
+
+div#optionwrapper {
+    width: 245px;
+}
+
+div#legendwrapper {
+    width: 160px;
+}
