@@ -2,14 +2,14 @@ import json
 from pprint import pprint
 import itertools
 
-try:
-    from __main__ import socketio
-
-    print('Importing socketIO from main in interpretation')
-except ImportError:
-    from run import socketio
-
-    print('Importing socketIO from run_socket in interpretation')
+# try:
+#     from __main__ import socketio
+#
+#     print('Importing socketIO from main in interpretation')
+# except ImportError:
+#     from run import socketio
+#
+#     print('Importing socketIO from run_socket in interpretation')
 
 def generate_combinations(results):
     # TODO: to generate a list of combinations with a score ...

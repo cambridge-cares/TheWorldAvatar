@@ -17,11 +17,11 @@ import warnings
 
 class Chatbot:
 
-    def __init__(self):
+    def __init__(self, socketio):
         warnings.filterwarnings("ignore")
         # self.tc = TopicClassifier()
         self.jps_classifier = JPSQuestionClassifier()
-        self.jps_query_constructor = JPS_query_constructor()
+        self.jps_query_constructor = JPS_query_constructor(socketio)
 
         # self.wiki_classifier = WikiQuestionTypeClassifier()
 

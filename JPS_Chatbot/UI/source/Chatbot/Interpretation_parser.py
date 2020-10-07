@@ -6,18 +6,18 @@ import tempfile
 import tarfile
 import nltk
 
-try:
-    from __main__ import socketio
-
-    print('Importing socketIO from main in interpretation')
-except ImportError:
-    from run import socketio
-
-    print('Importing socketIO from run_socket in interpretation')
+# try:
+#     from __main__ import socketio
+#
+#     print('Importing socketIO from main in interpretation')
+# except ImportError:
+#     from run import socketio
+#
+#     print('Importing socketIO from run_socket in interpretation')
 
 class InterpretationParser:
 
-    def __init__(self):
+    def __init__(self, socketio):
         self.interpreter = None
         self.entity_intent_map = {'item_attribute_query': {'attribute': None, 'entity': None},
                                   'batch_restriction_query': {'attribute': None, 'class': None},
@@ -27,6 +27,7 @@ class InterpretationParser:
                                                                                       'class': None, 'comparison': None,
                                                                                       'numerical_value': None}
                                   }
+        self.socketio = socketio
 
     def parse_question_interpretation(self, question):
         result = self.interpreter.parse(question)
@@ -58,7 +59,8 @@ class InterpretationParser:
                 obj[entity_type] = term
         print('============ the interpretation results ==========')
         pprint(obj)
-        socketio.emit('coordinate_agent', 'The interpretation result from WIKI' + json.dumps(obj).replace('{','').replace('}', ''))
+        self.socketio.emit('coordinate_agent', 'The interpretation result from WIKI' + json.dumps(obj).replace('{','').replace('}', ''))
+        print('============ got here =============')
         return {'type': intent, 'entities': obj}
 
 # interpretation_parse = InterpretationParser()

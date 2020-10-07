@@ -1,8 +1,9 @@
-import sys
-sys.path.append('/UI')
+import sys, os
+# print('real path',os.path.realpath(os.path.dirname(__file__)))
+#
+# real_path = os.path.realpath(os.path.dirname(__file__))
+# UI_source_dir = os.path.join(real_path, 'UI\source')
 
-from UI.source.CoordinateAgent import CoordinateAgent
+from flask import Flask
+from UI.source.run import app
 
-ca = CoordinateAgent()
-result = ca.run('What is the heat capacity of CH4')
-print(result)

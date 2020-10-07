@@ -38,6 +38,7 @@ en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_
 fbmessenger==6.0.0
 Flask==1.1.2
 Flask-Cache==0.13.1
+Flask-SocketIO==4.3.1
 funcy==1.14
 future==0.17.1
 fuzzywuzzy==0.18.0

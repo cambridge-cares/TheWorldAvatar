@@ -111,6 +111,8 @@ let address = cmcl_address
      if (msg.includes('Querying') && msg.includes('JPS Knowledge Graph')){
         $('#query_progress').append('<div>' + msg + '</div>')
         console.log('updating the progress bar item ')
+        $('#query_progress_bar').empty()
+        $('#query_progress_bar').show()
         $('#query_progress').append('<div id="query_progress_bar">' + '#' + '</div>')
 
         setInterval(function(){
@@ -418,6 +420,7 @@ function displayResults(myData, source) {
      myData = process_json_result(myData)
 
   $('#query_progress_bar').html('')
+  $('#query_progress_bar').hide()
   update_log('Obtained result from the JPS KG')
 
   // EXTRACT VALUE FOR HTML HEADER.

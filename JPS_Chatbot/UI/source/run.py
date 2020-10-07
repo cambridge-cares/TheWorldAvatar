@@ -1,6 +1,8 @@
 import json
 import sys, os
-sys.path.insert(0, os.path.realpath(os.path.dirname(__file__)))
+
+# source_path = os.path.join(file_path, 'UI/source')
+# sys.path.insert(1, source_path)
 
 from pprint import pprint
 
@@ -8,7 +10,7 @@ from flask import Flask, request
 from flask import render_template
 from flask_socketio import SocketIO, send, emit
 
-
+sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 sys.path.append('/source')
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -52,11 +54,12 @@ def make_query_google():
 def hello_world():
     return render_template('index_dln22.html')
 
-
+print('----------- sys path ------------')
+print(sys.path)
 from CoordinateAgent import CoordinateAgent
 from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
 
-coordinate_agent = CoordinateAgent()
+coordinate_agent = CoordinateAgent(socketio)
 wolfram_and_google = WolframGoogle()
 
 

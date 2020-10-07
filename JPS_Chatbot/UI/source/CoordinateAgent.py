@@ -1,15 +1,7 @@
 import json
 import sys,os
 
-try:
-    from __main__ import socketio
-    print('Importing socketIO from main')
-except ImportError:
-    from run import socketio
-    print('Importing socketIO from run_socket')
 
-sys.path.append('/source')
-sys.path.insert(0, os.path.realpath(os.path.dirname(__file__)))
 from Chatbot.Interpretation_parser import InterpretationParser
 from Chatbot.SearchEngine import SearchEngine
 from Chatbot.SPARQLConstructor import SPARQLConstructor
@@ -22,15 +14,9 @@ from pprint import pprint
 from rasa.nlu.model import Interpreter
 import os
 import tarfile
-import wolframalpha
+
 from location import WIKI_MODELS_DIR
 
-from flask import session
-from flask_socketio import emit
-
-
-from flask import session
-from flask_socketio import emit, join_room, leave_room
 
 
 
@@ -50,8 +36,8 @@ def extract_nlu_model(extract_dir='../models/'):
     tf.extractall(path=extract_dir)
 
 
-class CoordinateAgent():
-    def __init__(self):
+class CoordinateAgent:
+    def __init__(self, socketio):
         # initialize interpreter
         # extract_nlu_model()
         self.stopwords = ['all', 'the']
@@ -59,7 +45,13 @@ class CoordinateAgent():
 
         self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
         self.interpreter = Interpreter.load(self.nlu_model_directory) # load the wiki nlu models
-        self.jps_interface = Chatbot()
+        self.jps_interface = Chatbot(socketio)
+        # try:
+        #     from __main__ import socketio
+        #     print('Importing socketIO from main')
+        # except ImportError:
+        #     from run import socketio
+        #     print('Importing socketIO from run_socket')
         self.socket = socketio
 
 
@@ -74,12 +66,12 @@ class CoordinateAgent():
 
         # TODO: put the LDA model here
         # ===================== initialize the things for wiki
-        self.interpreter_parser = InterpretationParser()
+        self.interpreter_parser = InterpretationParser(self.socket)
         self.interpreter_parser.interpreter = self.interpreter
         print('Loading interpreter')
         self.search_engine = SearchEngine()
         self.sparql_constructor = SPARQLConstructor()
-        self.sparql_query = SPARQLQuery()
+        self.sparql_query = SPARQLQuery(self.socket)
 
         self.lda_classifier = LDAClassifier()
         topics = self.lda_classifier.classify(question)

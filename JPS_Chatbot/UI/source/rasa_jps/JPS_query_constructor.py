@@ -17,19 +17,20 @@ from .OntoOntokin_Queries import  LENNARD_JONES_WELL_DEPTH, \
 
 from functools import lru_cache
 
-try:
-    from __main__ import socketio
-
-    print('Importing socketIO from main in interpretation')
-except ImportError:
-    from run import socketio
+# try:
+#     from __main__ import socketio
+#
+#     print('Importing socketIO from main in interpretation')
+# except ImportError:
+#     from run import socketio
 
 class JPS_query_constructor:
 
-    def __init__(self):
+    def __init__(self, socketio):
         with open(JPS_SPARQL_TEMPLATE_PATH) as f:
             self.template_dict = json.loads(f.read())
         self.serach_interface = SearchInterface()
+        self.socketio = socketio
 
     @staticmethod
     def process_species_for_ontocompchem(species):
@@ -63,12 +64,11 @@ class JPS_query_constructor:
         print('The entities extracted', rst)
         return rst
 
-    @staticmethod
-    def extract_info(intents):
+    def extract_info(self, intents):
 
         intent = intents['intent']['name']
         entity_pairs = JPS_query_constructor.extract_entity_pairs(intents['entities'])
-        socketio.emit('coordinate_agent', 'Looking up entities in JPS KG<br/> -----------------' + str(entity_pairs) + '-----------------')
+        self.socketio.emit('coordinate_agent', 'Looking up entities in JPS KG<br/> -----------------' + str(entity_pairs) + '-----------------')
 
         if intent in ontocompchem_simple_intents:
             result = {'intent': intent}
@@ -159,10 +159,10 @@ class JPS_query_constructor:
             return result
 
     def construct_query(self, intents):
-        socketio.emit('coordinate_agent', 'Constructing SPARQL queries')
+        self.socketio.emit('coordinate_agent', 'Constructing SPARQL queries')
         print('=================== intents ================')
         pprint(intents)
-        result = JPS_query_constructor.extract_info(intents)
+        result = self.extract_info(intents)
         intent = result['intent']
         print('----- from construct query -------')
         print(intent)
@@ -373,7 +373,7 @@ class JPS_query_constructor:
     def fire_query(self, query):
 
         print('Importing socketIO from run_socket in interpretation')
-        socketio.emit('coordinate_agent', 'Querying the Ontokin ontology in the JPS Knowledge Graph')
+        self.socketio.emit('coordinate_agent', 'Querying the Ontokin ontology in the JPS Knowledge Graph')
 
         print('----------- firing the query to JPS -------------')
         print(query)
@@ -389,7 +389,7 @@ class JPS_query_constructor:
     def fire_query_ontochemcomp(self, query):
         print('----------- firing the query to JPS ontochemcomp -------------')
         print(query)
-        socketio.emit('coordinate_agent', 'Querying the OntoCompChem ontology in the JPS Knowledge Graph')
+        self.socketio.emit('coordinate_agent', 'Querying the OntoCompChem ontology in the JPS Knowledge Graph')
 
         # x = input()
         url = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
