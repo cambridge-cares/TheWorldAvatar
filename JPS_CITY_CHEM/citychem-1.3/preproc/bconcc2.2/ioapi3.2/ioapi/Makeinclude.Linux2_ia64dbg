@@ -1,0 +1,27 @@
+# VERSION "$Id: Makeinclude.Linux2_ia64dbg 1 2017-06-10 18:05:20Z coats $"
+#
+#   For gcc/gfortran 4.0.x and 4.1.x:  OMPFLAGS, OMPLIBS empty
+
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = gfortran
+M4   = m4
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+MFLAGS    = 
+
+OMPFLAGS  = -fopenmp
+OMPLIBS   = -fopenmp
+COPTFLAGS = -g ${MFLAGS} -C -Wsurprising
+FOPTFLAGS = -g ${MFLAGS} -Wsurprising -fbounds-check
+FPPFLAGS  = -DF90=1
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1  -DGFORTRAN=1
+PARFLAGS  =
+ARCHLIB   =
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

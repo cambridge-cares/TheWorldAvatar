@@ -74,6 +74,7 @@
                     <warName>${project.artifactId}##${project.version}</warName>
                     <outputDirectory>${tomcatPath}/webapps</outputDirectory>
                     <failOnMissingWebXml>true</failOnMissingWebXml>
+                    <webXml>WebContent\WEB-INF\web.xml</webXml>
                     <webappDirectory>WebContent</webappDirectory>
                 </configuration>
             </plugin>
@@ -84,7 +85,7 @@
     <dependencies>
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
-            <artifactId>jps-base</artifactId>
+            <artifactId>jps-base-lib</artifactId>
             <version>1.3.0</version>
         </dependency>
 
