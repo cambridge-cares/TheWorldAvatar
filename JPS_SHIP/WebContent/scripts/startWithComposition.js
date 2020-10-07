@@ -66,9 +66,11 @@ $(function(){
 
     
     //***************************************************************************
-    //***************************************************************************
     osmb.addMapTiles(
-        'https://api.mapbox.com/styles/v1/osmbuildings/cjt9gq35s09051fo7urho3m0f/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoib3NtYnVpbGRpbmdzIiwiYSI6IjNldU0tNDAifQ.c5EU_3V8b87xO24tuWil0w'
+        'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
+        {
+            attribution: '� Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> � � Map <a href="https://mapbox.com/">Mapbox</a>'
+        }
     );
     
     // TBC: Building GeoJSON
@@ -294,14 +296,14 @@ $(function(){
                 longitude: 114.1491155592187,
                 latitude: 22.28911086466781
             });
-//          $("#xlower").val("12693826.33");
-//          $("#xupper").val("12720831.57");
-//          $("#ylower").val("2535141.08");
-//          $("#yupper").val("2562311.02");
-          $("#xlower").val("12706630.262");
-          $("#xupper").val("12708200.45");
-          $("#ylower").val("2545539.172");
-          $("#yupper").val("2546850.028");
+          $("#xlower").val("12693826.33");
+          $("#xupper").val("12720831.57");
+          $("#ylower").val("2535141.08");
+          $("#yupper").val("2562311.02"); 
+//          $("#xlower").val("12706630.262");
+//          $("#xupper").val("12708200.45");
+//          $("#ylower").val("2545539.172");
+//          $("#yupper").val("2546850.028");
           
             
             osmb.setZoom(14.5);
