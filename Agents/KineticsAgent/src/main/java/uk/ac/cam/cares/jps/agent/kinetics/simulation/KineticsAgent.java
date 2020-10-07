@@ -121,7 +121,7 @@ public class KineticsAgent extends JPSAgent {
 	}
 
 	/**
-	 * Starts the asynchronous scheduler to monitor quantum jobs.
+	 * Starts the asynchronous scheduler to monitor Slurm jobs.
 	 *
 	 * @throws KineticsAgentException
 	 */
@@ -361,7 +361,7 @@ public class KineticsAgent extends JPSAgent {
 	}
 
 	/**
-	 * Monitors the currently running quantum jobs to allow new jobs to start.</br>
+	 * Monitors the currently running Slurm jobs to allow new jobs to start.</br>
 	 * In doing so, it checks if the number of running jobs is less than the</br>
 	 * maximum number of jobs allowed to run at a time.
 	 *
@@ -431,7 +431,8 @@ public class KineticsAgent extends JPSAgent {
 			outputsDir.toString()
 		);
 
-        // Artificial delay to wait for the unzipping (not an indeal fudge)
+        // Artificial delay to wait for the unzipping (not an ideal fudge,
+		// hence, needs to be modified in the future)
         Thread.sleep(1000);
         System.out.println("Unzipped files!");
         
@@ -439,7 +440,8 @@ public class KineticsAgent extends JPSAgent {
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
 
-		// Build commands for Daniel's postproc script
+		// Build commands for running the Python script created for post-
+		// processing the outputs of the kinetics simulation. 
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.redirectErrorStream(true);
 		
@@ -528,7 +530,7 @@ public class KineticsAgent extends JPSAgent {
 	}
 
 	/**
-	 * Sets up a quantum job by creating the job folder and the following files</br>
+	 * Sets up a Slurm job by creating the job folder and the following files</br>
 	 * under this folder:</br>
 	 * - the input file.</br>
 	 * - the Slurm script file.</br. - the Status file.</br> - the JSON input file, which comes from the user
@@ -547,7 +549,7 @@ public class KineticsAgent extends JPSAgent {
 	}
 
 	/**
-	 * Sets up the quantum job for the current input.
+	 * Sets up the Slurm job for the current input.
 	 *
 	 * @param jsonInput
 	 * @return
@@ -566,7 +568,7 @@ public class KineticsAgent extends JPSAgent {
 	}
 
 	/**
-	 * Prepares input files, bundle them in a zip file and return the zip file to the calling method.
+	 * Prepares input files, bundles them in a zip file and returns the zip file to the calling method.
 	 *
 	 * @param jsonInput
 	 * @param jobFolderName
@@ -601,7 +603,8 @@ public class KineticsAgent extends JPSAgent {
 			throw new IOException("Could not create temporary directory with JSON file at: " + temporaryDirectory);
 		}
 		
-		// Build commands for Daniel's preproc script
+		// Build commands for running the Python script developed for
+		// producing input files for the current Slurm job
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.redirectErrorStream(true);
 
