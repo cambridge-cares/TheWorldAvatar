@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.slurm.job.configuration;
+package uk.ac.cam.cares.jps.agent.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -7,7 +7,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
 @ComponentScan
-public class SpringConfiguration {
+public class DispersionAgentConfiguration {
 
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
