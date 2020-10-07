@@ -15,7 +15,6 @@ import uk.ac.cam.cares.jps.thermo.manager.PropertiesManager;
  */
 
 public class ThermoCalculation {
-	
 
 	private Properties jpsThermoProperties = PropertiesManager.loadProperties(ThermoCalculation.class.getClassLoader().getResourceAsStream("jps_thermo.management.properties"));
 	
@@ -26,7 +25,6 @@ public class ThermoCalculation {
 	 * @param jsonInputFilePath The json file that contains results of sparql query over compchem repository (graph).
 	 * @param catalinaFolderPath The folder inside Apache Tomcat .
 	 * @throws IOException The IO exception.
-	 * 
 	 * 
 	 */	
 	

@@ -49,7 +49,6 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	public static Logger logger = Logger.getLogger(CompChemRdf4JServlet.class.getName());
 
 	private Properties jpsThermoProperties = PropertiesManager.loadProperties(
-			
 			CompChemRdf4JServlet.class.getClassLoader().getResourceAsStream("jps_thermo.management.properties"));
 
 	private String compchemServerUrl = jpsThermoProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
@@ -67,7 +66,7 @@ public class CompChemRdf4JServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 
-		throws ServletException, IOException {
+			throws ServletException, IOException {
 
 		response.setContentType("text/html;charset=UTF-8");
 
