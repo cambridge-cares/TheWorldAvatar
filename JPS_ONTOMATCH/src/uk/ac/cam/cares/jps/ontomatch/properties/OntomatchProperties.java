@@ -30,6 +30,8 @@ public class OntomatchProperties {
 	public final static String PY_NAME_ISTRINGMATCHER = "py.path.istringMatcher";
 	public final static String PY_NAME_IBOWMATCHER = "py.path.ibowMatcher";
 	public final static String PY_NAME_ONETOONECARDI = "py.path.onetooneCardi";
+	public static final String PY_NAME_LOADTBOX = "py.path.loadtbox";
+
 	public final static String TOPICMODEL_TRAININGDOCUMENTS_PATH = "topicmodel.trainingdocuments.path";
 	public final static String TOPICMODEL_DICTIONARY_PATH = "topicmodel.dictionary.path";
 	public final static String TOPICMODEL_CORPUS_PATH = "topicmodel.corpus.path";
@@ -41,7 +43,9 @@ public class OntomatchProperties {
     public final static String OWL_EXT= "owl.extension";
     public final static String SUCCESS_FLAG= "success.flag";
 	public static final String CARDINALITYFILTERING_TMP_ALIGNMENT_PATH = "caridinalityfiltering.tmp.alignment.path";
+	public static final String TEMP_ABOXFILE_NAME = "temp.aboxfile.name";
 
+	
     @Autowired
 	private Environment env;
 	private static ApplicationContext applicationContext;

@@ -31,24 +31,24 @@ class PlusImport():
 
 if __name__ == "__main__":
     #ontologyIRI = sys.argv[1]
-    #saveIRI = sys.argv[2]
-    ontologyIRI = "D:/workwork/ontoMatchFiles/jpspp.rdf"
-    saveIRI = "D:/workwork/ontoMatchFiles/jpsppcombine.rdf"
-    ontoObject = Ontology(ontologyIRI)
+    #tIRI = sys.argv[2]
+    #saveIRI = sys.argv[3]
+    #ontologyIRI = "D:/workwork/ontoMatchFiles/jpspp.rdf"
+    #saveIRI = "D:/workwork/ontoMatchFiles/jpsppcombine.rdf"
+
+    ontologyIRI = "D:/workwork/ontoMatchFiles/tmpdbp.owl"
+    saveIRI = "D:/workwork/ontoMatchFiles/tmpdbpT.owl"
+    tIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl"
+    #load all imports recursively
+    ontoObject = Ontology(tIRI)
     imports =ontoObject.imports
-    importAddrs = [
-        "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl",
-        "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl",
-        "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl",
-        "http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl",
-        "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl",
-        "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl",
-        "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl"]
     for item in imports:
         print(item)
+    imports.append(tIRI)
     imports.append(ontologyIRI)
     try:
         PlusImport(imports,saveIRI)
-    except Exception:
-        print(Exception)
+        print("success")
+    except Exception as e:
+        print(str(e))
 

@@ -26,7 +26,7 @@ public class TestAlignmentReader extends Mockito {
 	public void testAlignmentReader() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		// TODO:later make this suitable for another set up
-		String alignmentFileIRI = "http://localhost:3000/a.owl";
+		String alignmentFileIRI = "http://localhost:3000/finalTestAggregaotr.owl";
 		JSONObject jo = new JSONObject();
 		jo.put("alignmentIRI", alignmentFileIRI);
 		jo.put("threshold", 0.0);
@@ -37,6 +37,7 @@ public class TestAlignmentReader extends Mockito {
 		when(request.getMethod()).thenReturn("POST");
 		when(request.getReader()).thenReturn(reader);
 		JSONObject result = ar.processRequestParameters(jo, request);
+		System.out.println(result.toString());
 		assertTrue(result.has("alignmentlist"));
 	}
 

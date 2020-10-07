@@ -32,12 +32,6 @@ public class TestAlignmentIOHelper extends TestCase {
 		e.printStackTrace();
 	}		
 	}
-    @Ignore
-    @Test
-    public void testReadfromKB() {
-    	 //List<String[]> a = AlignmentIOHelper.readAlignmentFileAsList("http://www.theworldavatar.com/kb/testA.owl");
-    	
-    }
 	
 	
 }

@@ -20,6 +20,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
@@ -69,20 +70,26 @@ public class AlignmentIOHelper {
 		return readAlignmentFileAsList(iriOfAlignmentFile,0.0);
 	}
 
+	/**
+	 * get the list of alignment as string array given alignmentfile iri and a filter threshold on measure score field
+	 * @param iriOfAlignmentFile
+	 * @param threshold
+	 * @return
+	 * @throws ParseException
+	 */
 	public static List<String[]> readAlignmentFileAsList(String iriOfAlignmentFile, double threshold) throws ParseException {
 		SelectBuilder q = new SelectBuilder();
 		q.addPrefix(AlignmentNamespace.PREFIX, AlignmentNamespace.IRI)
-		.addVar(sparqlVar(VAR_E1)).addVar(sparqlVar(VAR_E1)).addVar(sparqlVar(VAR_M))
+		.addVar(sparqlVar(VAR_E1)).addVar(sparqlVar(VAR_E2)).addVar(sparqlVar(VAR_M))
 		.addWhere(sparqlVar(VAR_CELL),AlignmentNamespace.ENTITY1,sparqlVar(VAR_E1))
 		.addWhere(sparqlVar(VAR_CELL),AlignmentNamespace.ENTITY2,sparqlVar(VAR_E2))
 		.addWhere(sparqlVar(VAR_CELL),AlignmentNamespace.MEASURE,sparqlVar(VAR_M));
-		if(Math.abs(threshold - 0)<=Math.ulp(0.1)) {//threshold is not 0
+		if(Math.abs(threshold - 0)>Math.ulp(0.1)) {//threshold is not 0
 			q.addFilter(" ("+sparqlVar(VAR_M)+" - "+Double.toString(threshold) + ">=0 ) ");
+		} else {
 		}
-
 			OntModel model = JenaHelper.createModel(iriOfAlignmentFile);
 			ResultSet resultSet = JenaHelper.query(model, q.buildString());
-			
 			Iterator<String[]> iter = new ResultSetStringArrayIterator(resultSet, new QuerySolutionToStringArrayAdapter() {
 			    @Override
 			    public Iterator<String[]> adapt(QuerySolution qs) {
@@ -199,7 +206,7 @@ public class AlignmentIOHelper {
 		// write header: onto1 address, onto2 address
 		UpdateBuilder q = new UpdateBuilder();
 		Resource node = ResourceFactory.createResource(aIRI);
-        Resource nodeOnto1 = ResourceFactory.createResource(aIRI+"#onto1");
+        Resource nodeOnto1 = ResourceFactory.createResource(aIRI+"#onto1");//TODO
         Resource nodeOnto2 = ResourceFactory.createResource(aIRI+"#onto2");
 
 		q.addPrefix(AlignmentNamespace.PREFIX, AlignmentNamespace.IRI)
