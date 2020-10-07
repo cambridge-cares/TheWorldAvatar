@@ -1,11 +1,7 @@
 package uk.ac.cam.cares.jps.powsys.coordination;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -20,13 +16,15 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths {
 
 	private static final long serialVersionUID = 6859324316966357379L;
-	private Logger logger = LoggerFactory.getLogger(CoordinationAgent.class);
-
-	@Override
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(CoordinationAgent.class);
+    }
+    Logger logger = LoggerFactory.getLogger(CoordinationAgent.class);
+	 @Override
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	
-		JSONObject jo = AgentCaller.readJsonParameter(request);
+		JSONObject jo =requestParams;
 		String path = request.getServletPath();
 
 		if ("/startsimulation".equals(path)) {
@@ -37,19 +35,21 @@ public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths
 			
 			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
 			
-		} else if ("/processresultwithpf".equals(path)) {
+		} else if ("/processresultwithpf".equals(path)) { //unused
 			
 			String pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationPF";
 			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
 			AgentCaller.executeGetWithJsonParameter(pathForENAgent, jo.toString());
 			
-		} else if ("/processresultwithopf".equals(path)) {
+		} else if ("/processresultwithopf".equals(path)) { //unused
 			
 			String pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationOPF";
 			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
 			AgentCaller.executeGetWithJsonParameter(pathForENAgent, jo.toString());
 			
 		}
+		return jo;
+		
 	}
 	
 	public void startSimulation(JSONObject jo) {

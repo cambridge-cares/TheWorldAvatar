@@ -55,42 +55,35 @@
 		<br/><br/>The user can also choose to view the different pollutants’ dispersion profiles by selecting the listed pollutants. 
 		For Hong Kong case, the terrain elevation factor is also involved in the dispersion calculation although it is still not able to be visualized that all the buildings in the visualization are projected down directly above the ground and none of them are floating.
 		<!-- The recommended region for the Den Haag scenario is between 79173.323 and 80199.621 for X and between 454193.456 and 455030.337 for Y.</span> !-->
-
+    </span>
 </div>
 
 <div id="inputFields">
-
-    <select id="reaction-select">
-        <option value="">none</option>
-        <option value="http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001">Reduced_PRF_ERC_particles-mechanism</option>
-    </select>
-    
     <h1 id="head1"></h1>
     <p id="optmsg"></p>
     <p id="description"></p>
 
     <label for="location">Location: </label>
     <select id="location" name="location">
-        <option value="Singapore" selected>Singapore</option>
-        <option value="Hong_Kong">Hong Kong</option>
+        <option value=""></option>
+        <option value="http://dbpedia.org/resource/Singapore">Singapore</option>
+        <option value="http://dbpedia.org/resource/Hong_Kong">Hong Kong</option>
     </select>
-
-
     <label for="xlower">X lower:</label>
     <!--input id="xlower" type="text" value='13728088' readonly/-->
-    <input id="xlower" type="text" value='11560879.832'>
+    <input id="xlower" type="text" value='' disabled>
 
     <label for="xupper">X upper:</label>
     <!-- input id="xupper" type="text" value='13736486' readonly/-->
-    <input id="xupper" type="text" value='11563323.926' >
+    <input id="xupper" type="text" value='' disabled>
 
     <label for="ylower">Y lower:</label>
     <!-- input id="ylower" type="text" value='2281341' readonly/-->
-    <input id="ylower" type="text" value='140107.739' >
+    <input id="ylower" type="text" value='' disabled>
 
     <label for="yupper">Y upper:</label>
     <!-- input id="yupper" type="text" value='2286829' readonly/-->
-    <input id="yupper" type="text" value='143305.896' >
+    <input id="yupper" type="text" value='' disabled>
 
 
     <!--  select id="compose">
@@ -103,18 +96,24 @@
     </select -->
     
     <!-- input type="checkbox" id="compose" value="compose">use composition<br> temporarily disabled-->
-    
-<input type="checkbox" id="mock" value="mock">
-    <button id="start">Start simulation</button>
     <ul id="reaction-list">
-
 
     </ul>
 </div>
+<div id="mapwrapper">
 <div id="map">
-    
 </div>
+<div class="choice  container-fluid">
+    <div class="row">
+        <div id="sliderwrapper" class = "col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+        <div id="optionwrapper" class = "col-xs-3 col-sm-3 col-md-3 col-lg-3"></div>
+        <div id="legendwrapper" class = "col-xs-3 col-sm-3 col-md-3 col-lg-3"></div>
 
+    </div>
+
+</div>
+</div>
+<div id="sensorTable"></div>
 <div class="control tilt">
     <button class="dec">&#8601;</button>
     <button class="inc">&#8599;</button>
@@ -130,15 +129,6 @@
     <button class="inc">+</button>
 </div>
 
-<div class="choice  container">
-    <div class="row">
-        <div id="sliderwrapper" class = "col-lg-1 offset-lg-2"></div>
-        <div id="optionwrapper" class = "col-lg-3"></div>
-        <div id="legendwrapper" class = "col-lg-3"></div>
-
-    </div>
-
-</div>
 
 <div id="svgwrapper">
     <svg xmlns="http://www.w3.org/2000/svg"  id='contoursvg' width="1024" height="1024"></svg>

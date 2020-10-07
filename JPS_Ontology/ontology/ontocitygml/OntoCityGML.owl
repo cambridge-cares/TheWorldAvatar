@@ -1773,7 +1773,19 @@
 
     <!-- http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerCornerPoint -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerCornerPoint"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerCornerPoint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#PointType"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerHeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#lowerHeight">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#measuredHeight"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#LengthType"/>
+    </owl:ObjectProperty>
     
 
 
@@ -2012,7 +2024,10 @@
 
     <!-- http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#upperCornerPoint -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#upperCornerPoint"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#upperCornerPoint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#PointType"/>
+    </owl:ObjectProperty>
     
 
 
@@ -2142,7 +2157,9 @@
 
     <!-- http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname -->
 
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType"/>
+    </owl:DatatypeProperty>
     
 
 

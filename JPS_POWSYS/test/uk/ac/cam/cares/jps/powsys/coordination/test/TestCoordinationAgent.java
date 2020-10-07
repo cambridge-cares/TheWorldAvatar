@@ -45,46 +45,7 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		return new JSONObject(plants).getJSONArray("plants");
 	}
 
-	public void testCoordinatePFDirectCall() throws URISyntaxException, IOException { //request header is too large???
-		
-		String scenarioName = "testPOWSYSCoordinatePF";
-		copy("aasc5", scenarioName); //based on aasc5
-		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
-		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
-		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
-		System.out.println("usecaseUrl=" + usecaseUrl);
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-		
-		String electricalNetwork = TestEN.ELECTRICAL_NETWORK;
-		List<String> nuclearPowerPlants = MiscUtil.toList(getNuclearPowerPlantsFromScenarioaasc5());
-		System.out.println("nuclear size= "+nuclearPowerPlants.size());
-
-		List<String> substitutionalGenerators = MiscUtil.toList(getSubstitutionalGenerators());
-		
-		new RetrofitAgent().retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
-		
-		JSONObject jo = new JSONObject();
-		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationPF", jo.toString());
-		
-		
-//		scenarioName = "testPOWSYSCoordinatePF";
-//		scenarioUrl = BucketHelper.getScenarioUrl(scenarioName); 
-//		JPSHttpServlet.enableScenario(scenarioUrl, null);	
-		JPSHttpServlet.disableScenario();
-		JPSHttpServlet.enableScenario(scenarioUrl);	
-		String result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
-		int countgen = calculateNumberOfGenerators(result, "#EGen-", 9);
-		// generator for slack bus only, all other generators have been removed
-		//assertEquals(1, countgen);temporary as the gen cannot all been removed
-		assertEquals(25, countgen);
-		
-		result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
-		countgen = calculateNumberOfGenerators(result, "#NucGenerator", 18);
-		assertEquals(14, countgen);
-	}
+	
 	
 	public void testCoordinateOPFDirectCall() throws URISyntaxException, IOException { //request header is too large???
 		

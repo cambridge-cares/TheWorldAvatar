@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.scenario.kb;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
@@ -60,14 +63,18 @@ public class KnowledgeBaseRdf4jServer extends KnowledgeBaseAbstract {
 	@Override
 	public void update(String resourceUrl, String sparql) {
 		logger.info("update resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
-		
-		String sparqlUpdateInBody= "update=" + sparql;
-		String url = getEndpointUrl() + "/statements";
-		if (resourceUrl == null) {
-			Http.execute(Http.post(url, sparqlUpdateInBody, MediaType.APPLICATION_X_WWW_FORM_URLENCODED.type, null));
-		} else {
-			Http.execute(Http.post(url, sparqlUpdateInBody, MediaType.APPLICATION_X_WWW_FORM_URLENCODED.type, null,
-					"insert-graph-uri", resourceUrl));
+
+		try {
+			String sparqlUpdateInBody = "update=" + URLEncoder.encode(sparql, StandardCharsets.UTF_8.displayName());
+			String url = getEndpointUrl() + "/statements";
+			if (resourceUrl == null) {
+				Http.execute(Http.post(url, sparqlUpdateInBody, MediaType.APPLICATION_X_WWW_FORM_URLENCODED.type, null));
+			} else {
+				Http.execute(Http.post(url, sparqlUpdateInBody, MediaType.APPLICATION_X_WWW_FORM_URLENCODED.type, null,
+						"insert-graph-uri", resourceUrl));
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new JPSRuntimeException(e);
 		}
 	}
 

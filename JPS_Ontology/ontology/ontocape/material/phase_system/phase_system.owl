@@ -94,7 +94,6 @@ The 'phase_system' module uses the following classes, relations, and individuals
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_density">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Density"/>
     </owl:ObjectProperty>
     
 

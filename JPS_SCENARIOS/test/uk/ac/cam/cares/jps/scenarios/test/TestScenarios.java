@@ -176,4 +176,17 @@ public class TestScenarios extends TestCase {
 		JSONObject jo = new JSONObject(result);
 		assertTrue(jo.has("weatherstate"));
 	}
+	
+	public void testCreateScenarioAndCallENAgent() throws JSONException {
+		
+		String scenarioName = "testENTRIAL01";
+
+		String json = new JSONStringer().object()
+				.key("electricalnetwork").value("http://localhost:8080/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork")
+				.endObject().toString();
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/ENAgent/startsimulationOPF", json);
+		
+		System.out.println(result);
+		
+	}
 }

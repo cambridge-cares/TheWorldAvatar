@@ -24,6 +24,12 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#discharges -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#discharges">
@@ -79,10 +85,26 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PropertySet"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Actual_CO2_Emission -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Actual_CO2_Emission">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#PollutantEmission"/>
+        <rdfs:comment>the actual value instead of design emission</rdfs:comment>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#PollutantEmission"/>
+        <rdfs:comment>design CO2_Emission</rdfs:comment>
     </owl:Class>
     
 

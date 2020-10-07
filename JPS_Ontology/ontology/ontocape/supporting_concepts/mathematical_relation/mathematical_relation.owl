@@ -591,7 +591,6 @@ combinations of operators, operands, and order of evaluation. The leaves of such
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Operand">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#NodeValue"/>
-        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Operator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An Operand is one of the inputs of an Operator.</rdfs:comment>
     </owl:Class>
     

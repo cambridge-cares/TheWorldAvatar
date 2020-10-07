@@ -1,0 +1,69 @@
+# MAKEFILE
+
+#F77 = g77
+#F90 = g95
+#F90 = gfortran
+F90 =  gfortran
+
+#flags for debugging (use for the test examples)
+#F90FLAGS =  -ggdb -u -C -cpp -pedantic -ffpe-trap=invalid,underflow,zero -ftrapv -fbounds-check -finit-real=nan -#fbacktrace -fimplicit-none -finit-integer=n -ffree-form
+#normal flags
+#F90FLAGS =  -g -u -C -cpp -ffree-form
+#pendantic flags
+#F90FLAGS =  -g -u -C -cpp -pedantic -ffpe-trap=invalid,underflow,zero -ftrapv -fbounds-check -finit-real=nan -fbacktrace -fimplicit-none -finit-integer=n -ffree-form
+#-Wall
+#F90FLAGS = -g -Wall -i8 -r8 -d8
+# linux 32-bit: F90FLAGS =  -O1 -g -u -C -cpp -Wall -m32
+
+F90FLAGS = -g -u -C -cpp -pedantic -ffpe-trap=invalid,underflow,zero -ftrapv -fbounds-check -finit-real=nan -fbacktrace -fimplicit-none -finit-integer=n -ffree-form
+
+#netCDF
+#INCLUDES =  -I/usr/local/netcdf4/include
+#LIBS     =  -L/usr/local/netcdf4/lib -lnetcdf -lnetcdff 
+
+INCLUDES =  -I/usr/local/netcdf4/include
+LIBS     =  -L/usr/local/netcdf4/lib -lnetcdf -lnetcdff
+
+#subdirs
+SRC = ./src/
+
+RUNDIR = ./bin/
+
+TARGET = $(RUNDIR)tapm4cc.exe
+
+SRC_OBJ =		$(SRC)module_cc_input.o  \
+			$(SRC)stopit.o           \
+			$(SRC)get_user_input_tapm.o   \
+			$(SRC)module_writenc.o   \
+			$(SRC)read-tapm-outafile.o
+
+$(TARGET) : $(SRC_OBJ)
+	$(F90) $(FFLAGS) $(SRC_OBJ) $(LIBS) -o $@
+
+#IMPLICIT ROULE FOR FORTRAN FILES
+#.f.o:         
+#                $(F90) $(F90FLAGS) -c $< -o $@
+#
+#.f90.o:
+#	$(F90) $(F90FLAGS) -c $< -o $@
+
+.SUFFIXES: .for .o
+
+.for.o:
+	$(F90) $(F90FLAGS) $(INCLUDES) -c $< -o $@
+
+.SUFFIXES: .F90 .o
+
+.F90.o:
+	$(F90) -c $(F90FLAGS) $(INCLUDES) $*.F90
+
+# Explicit rules and targets
+
+clean:
+	rm -f $(TARGET) core a.out
+
+cleanall:
+	rm -f $(TARGET) core a.out
+	rm -f *.o *.mod
+	rm -f $(SRC)*.o $(SRC)*.for~
+

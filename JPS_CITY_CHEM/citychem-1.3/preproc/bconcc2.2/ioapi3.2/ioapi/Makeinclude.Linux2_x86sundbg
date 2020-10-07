@@ -1,0 +1,31 @@
+# VERSION "$Id: Makeinclude.Linux2_x86sundbg 1 2017-06-10 18:05:20Z coats $"
+#
+#       Linux for 32-bit x86 using the Sun Studio Express compiler suite
+
+AR   = ar
+CC   = suncc
+CXX  = sunCC
+FC   = sunf95
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -M
+E132 = -e
+
+MFLAGS    =  -xarch=native -xtarget=native -xdebugformat=dwarf -xs
+
+OMPFLAGS  = -openmp=noopt -stackvar
+OMPLIBS   = -mt -lnsl
+COPTFLAGS = -g ${MFLAGS}
+FOPTFLAGS = -g -C ${MFLAGS} -M. -xfilebyteorder=big8:%all
+FPPFLAGS  = 
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1 -DF90=1 -DBIT32=1
+PARFLAGS  =
+ARCHLIB   = -Bdynamic -lc
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3
+

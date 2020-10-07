@@ -35,7 +35,9 @@ public class ExecutionEndpoint extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		doGet(request, response);
+		//doGet(request, response);
+		JSONObject composition_result_in_JSON = new JSONObject(request.getParameter("query"));
+		CompositionResult composition_result = Convertor.deserialize_composition_result(composition_result_in_JSON);
 	}
 
 }
