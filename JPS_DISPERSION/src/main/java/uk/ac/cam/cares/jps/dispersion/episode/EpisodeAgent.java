@@ -1087,13 +1087,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	private String setUpJobOnAgentMachine(String jsonInput, String datapath) throws IOException, SlurmJobException {
 		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(dispersionAgentProperty.getHpcAddress(), timeStamp);
+		String jobFolderName = getNewJobFolderName(jobSubmission.slurmJobProperty.getHpcAddress(), timeStamp);
 		return jobSubmission.setUpJob(jsonInput,
 				new File(decodeURL(
-						getClass().getClassLoader().getResource(dispersionAgentProperty.getSlurmScriptFileName()).getPath())),
+						getClass().getClassLoader().getResource(jobSubmission.slurmJobProperty.getSlurmScriptFileName()).getPath())),
 				getInputFile(datapath, jobFolderName),
 				new File(decodeURL(
-						getClass().getClassLoader().getResource(dispersionAgentProperty.getExecutableFile()).getPath())),
+						getClass().getClassLoader().getResource(jobSubmission.slurmJobProperty.getExecutableFile()).getPath())),
 				timeStamp);
 	}
 	

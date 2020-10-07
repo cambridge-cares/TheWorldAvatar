@@ -81,7 +81,13 @@ public class Utils{
 	 * @throws IOException
 	 */
 	public static boolean isJobCompleted(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
-		return isJobFinished(jobFolder, jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()), slurmJobProperty);
+		boolean status = false;
+		try {
+			status = isJobFinished(jobFolder, jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()), slurmJobProperty);
+		} catch (Exception e) {
+			logger.info("SlurmJobAPI: failed to check the status of the job with ID " + jobFolder.getName());
+		}
+		return status;
 	}
 	
 	/**
@@ -103,7 +109,13 @@ public class Utils{
 	 * @throws IOException
 	 */
 	public static boolean isJobRunning(File jobFolder) throws IOException{
-		return isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+		boolean status = false;
+		try{
+			status = isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+		}catch(Exception e){
+			logger.info("SlurmJobAPI: failed to check the status of the job with ID "+jobFolder.getName());
+		}
+		return status;
 	}
 	
 	/**

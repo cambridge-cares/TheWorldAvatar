@@ -143,6 +143,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			jobSubmission.slurmJobProperty.setJsonInputFileName(dispersionAgentProperty.getJsonInputFileName());
 			jobSubmission.slurmJobProperty.setJsonFileExtension(dispersionAgentProperty.getJsonFileExtension());
 			jobSubmission.slurmJobProperty.setSlurmScriptFileName(dispersionAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setExecutableFile(dispersionAgentProperty.getExecutableFile());
 			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(dispersionAgentProperty.getMaxNumberOfHPCJobs());
 			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(
 					dispersionAgentProperty.getAgentInitialDelayToStartJobMonitoring());

@@ -150,7 +150,7 @@ xTRANSP.l(i,j,tt)=0;
 
 
 Model materialnetwork /all/;
-option minlp=bonmin;
+
 Solve materialnetwork using minlp minimize ObjValue;
 *execute_unload "results.gdx"
 *execute 'gdxxrw.exe results.gdx var=xTRANSP.L'
