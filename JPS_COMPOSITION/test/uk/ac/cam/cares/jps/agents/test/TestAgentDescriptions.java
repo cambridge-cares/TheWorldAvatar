@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentDescriptions extends TestCase {
@@ -21,6 +20,8 @@ public class TestAgentDescriptions extends TestCase {
 	private static final String JPS_MEN = "http://www.theworldavatar.com/JPS_MEN";
 	private static final String JPS_POWSYS = "http://www.theworldavatar.com/JPS_POWSYS";
 	private static final String JPS_SCENARIO = "http://www.theworldavatar.com/JPS_SCENARIO";
+	private static final String JPS_DES = "http://www.theworldavatar.com/JPS_DES";
+	private static final String JPS_ESS = "http://www.theworldavatar.com/JPS_ESS";
 	
 	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
 	
@@ -59,6 +60,17 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_SurrogateModel");
 		service = createDescrForAgentNuclearPP();
 		backAndforthAndWrite(service, "_NuclearAgent_startsimulation");
+		service=createDescrForAgentMEN();
+		backAndforthAndWrite(service, "_MEN");
+		service=createDescrForAgentSRMEmissions();
+		backAndforthAndWrite(service, "_SRM");
+		service=createDescrForAgentCarbonTax();
+		backAndforthAndWrite(service, "_CarbonTax");
+		service=createDescrForAgentDistributionEnergySystem();
+		backAndforthAndWrite(service, "_DES");
+		service=createDescrForAgentWeatherRetriever();
+		backAndforthAndWrite(service, "_SingporeWeatherDataRetriever");
+		
 	}
 	
 	public static void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
@@ -113,6 +125,16 @@ public class TestAgentDescriptions extends TestCase {
 			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
 			.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
 			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
+			.build();
+	}
+	
+	private Service createDescrForAgentEN() {
+		return new ServiceBuilder()
+				.operation(null, JPS_POWSYS + "/ENAgent/startsimulationPF")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.operation(null, JPS_POWSYS + "/ENAgent/startsimulationOPF")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			
 			.build();
 	}
 	
@@ -174,7 +196,7 @@ public class TestAgentDescriptions extends TestCase {
 			.build();
 	}
 	
-	private Service createDescrForAgentEmissionTest() {
+	private Service createDescrForAgentEmissionTest() { //????
 		return new ServiceBuilder()
 			.operation(null, JPS_BASE + "/EmissionTestAgent/getemission")
 			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
@@ -202,12 +224,28 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_POWSYS + "/NuclearAgent/startsimulation")
 			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
-			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
-			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plantirilist",true)
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", true, "substitutionalgenerators", true)
+			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
+//			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
+//			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+//			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
+			.build();
+	}
+	
+	private Service createDescrForRetrofit() {
+		return new ServiceBuilder()
+			.operation(null, JPS_POWSYS + "/retrofit")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant", "plants")
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", true, "substitutionalgenerators", true)
+			.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+//			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
+//			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+//			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
 			.build();
 	}
 
-	private Service createDescrForAgentScenario() {
+	private Service createDescrForAgentScenario() { 
 		return new ServiceBuilder()
 			.operation(null, JPS_SCENARIO + "/mock")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service", "scenarioagent")
@@ -227,8 +265,8 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_SCENARIO + "/delete")
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
-			.operation(null, JPS_SCENARIO + "/option")
-				.input("http://www.w3.org/2001/XMLSchema#boolean", JPSConstants.SCENARIO_OPTION_COPY_ON_READ)
+//			.operation(null, JPS_SCENARIO + "/option")
+//				.input("http://www.w3.org/2001/XMLSchema#boolean", JPSConstants.SCENARIO_OPTION_COPY_ON_READ)
 			.build();
 	}
 	
@@ -244,7 +282,7 @@ public class TestAgentDescriptions extends TestCase {
 				.build();
 	}
 	
-	private Service createDescrForAgentADMSWithScenarioTest() {
+	private Service createDescrForAgentADMSWithScenarioTest() {//????
 		return new ServiceBuilder()
 				.operation(null, JPS + "/ADMSCoordinationAgentWithScenario")
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
@@ -274,14 +312,60 @@ public class TestAgentDescriptions extends TestCase {
 				.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 				.build();
 	}
+		
+	private Service createDescrForAgentCarbonTaxCoord() {
+		return new ServiceBuilder()
+			.operation(null, JPS_POWSYS + "/startsimulation")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
+			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
+			.build();
+	}
+	
+	private Service createDescrForAgentCarbonTax() {
+		return new ServiceBuilder()
+				.operation(null, JPS_POWSYS + "/optimizeforcarbontax")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator",true, "substitutionalgenerators",true)
+				.build();
+	}
+	
+	private Service createDescrForAgentDistributionEnergySystem() {
+		return new ServiceBuilder()
+				.operation(null, JPS_DES + "/DESAgent")
+				.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#District", "district")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.output("https://www.w3.org/ns/csvw#Table", "consumptiongrid")
+				.build();
+	}
+	
+	private Service createDescrForAgentWeatherRetriever() {
+		return new ServiceBuilder()
+				.operation(null, JPS_DES + "/GetIrradiationandWeatherData")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#T-Sensor", "tempsensor")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor", "irradiationsensor")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#F-Sensor", "speedsensor")
+				.build();
+	}
+		private Service createDescrForAgentEnergyStorageSystem() {//the coordination
+		return new ServiceBuilder()
+				.operation(null, JPS_ESS + "/ESSAgent")
+				.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", "RenewableEnergyGenerator")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "BatteryCatalog")
+				.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Battery",true, "batterylist",false)
+				.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#EnergyStorageSystem",true, "batterylist",false)
+				.build();
+	}
 	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentScenario();
+		Service service = createDescrForAgentCarbonTaxCoord();
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
 		
-		backAndforthAndWrite(service, "_Nuclear");
+		backAndforthAndWrite(service, "_CarbonTaxCoord");
 	}
 }

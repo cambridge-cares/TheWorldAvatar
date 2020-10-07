@@ -30,8 +30,8 @@ public class MenDataProvider {
 	private Logger logger = LoggerFactory.getLogger(MenDataProvider.class);	
 
 
-	public MenResult startCalculation(MenCalculationParameters parameters, String transportationIRI, List<String> chemicalPlantIRIs) {
-	
+	public MenResult startCalculation(MenCalculationParameters parameters, String transportationIRI, List<String> chemicalPlantIRIs)  {
+		
 		getData(transportationIRI, chemicalPlantIRIs);
 
 		logger.debug("Number of sources = " + totalsources.size());
@@ -45,11 +45,9 @@ public class MenDataProvider {
 	    logger.debug("transportations = " + transportations);  
 	    
 	    MenGamsConverter converter = new MenGamsConverter();
-
-	    
 	    return converter.calculate(totalsources, totalsinks, feasibleConnections, transportations, parameters);
+		 
 	}
-	
 	private void getData(String Transport_OKB,List<String>plantkb)  {
 
 
@@ -456,19 +454,6 @@ public class MenDataProvider {
 	 * @param Qstring
 	 */
 	public static ResultSet sparql (String fileLocat, String sparql) {
-		
-		// TODO-AE SC 20190220 URGENT REMOVE
-		// and also change from JenaHelper to QueryBroker.query()
-		// TODO-AE SC get url from scenarionManagementAgent (move to JPS_BASE)
-		//String url = "http://localhost:8080" + ScenarioHelper.getScenarioPath("scMENinternal");
-		//ThreadContext.put(JPSConstants.SCENARIO_URL, url);
-		//new QueryBroker().readFile(fileLocat);
-		
-//		
-//		if (ThreadContext.containsKey(JPSConstants.SCENARIO_URL)) {
-//			new QueryBroker().readFile(fileLocat);
-//		}
-		
 		OntModel model = JenaHelper.createModel(fileLocat); 		
 		return JenaHelper.query(model,sparql);
 	}

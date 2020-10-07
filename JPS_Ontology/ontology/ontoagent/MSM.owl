@@ -1,28 +1,28 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl/"
-     xml:base="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl/"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+<rdf:RDF xmlns="http://www.theworldavatar.com/kb/agents/"
+     xml:base="http://www.theworldavatar.com/kb/agents/"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:MSM="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:dc="http://purl.org/dc/terms/">
+     xmlns:terms="http://purl.org/dc/terms/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl">
-        <dc:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-03-10</dc:issued>
-        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2012-03-14</dc:modified>
-        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2013-11-21</dc:modified>
-        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2011-12-03</dc:modified>
-        <dc:description xml:lang="en">This is a simple ontology that provides the core vocabulary for capturing service properties</dc:description>
-        <owl:versionInfo>1.3</owl:versionInfo>
+        <owl:versionIRI rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl"/>
+        <terms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-03-10</terms:created>
+        <terms:creator rdf:resource="http://identifiers.kmi.open.ac.uk/people/carlos-pedrinaci/"/>
+        <terms:creator rdf:resource="http://jacek.cz/#me"/>
+        <terms:creator rdf:resource="http://kmi.open.ac.uk/"/>
+        <terms:creator rdf:resource="http://kmi.open.ac.uk/people/member/luca-panziera"/>
+        <terms:description xml:lang="en">This is a simple ontology that provides the core vocabulary for capturing service properties</terms:description>
+        <terms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-03-10</terms:issued>
+        <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2011-12-03</terms:modified>
+        <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2012-03-14</terms:modified>
+        <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2013-05-03</terms:modified>
+        <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2013-11-21</terms:modified>
+        <terms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-09-03</terms:modified>
         <rdfs:label xml:lang="en">Minimal Service Model</rdfs:label>
-        <dc:creator rdf:resource="http://kmi.open.ac.uk/people/member/luca-panziera"/>
-        <dc:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-03-10</dc:created>
-        <dc:creator rdf:resource="http://kmi.open.ac.uk/"/>
-        <dc:creator rdf:resource="http://identifiers.kmi.open.ac.uk/people/carlos-pedrinaci/"/>
-        <dc:creator rdf:resource="http://jacek.cz/#me"/>
-        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-09-03</dc:modified>
-        <dc:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2013-05-03</dc:modified>
+        <owl:versionInfo>1.3</owl:versionInfo>
     </owl:Ontology>
     
 
@@ -38,15 +38,33 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#isGroundedIn -->
+    <!-- http://purl.org/dc/terms/created -->
 
-    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#isGroundedIn">
-        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl"/>
-        <rdfs:label xml:lang="en">is grounded in</rdfs:label>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#MessagePart"/>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation"/>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
-    </owl:AnnotationProperty>
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/created"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/creator -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/creator"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/description -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/description"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/issued -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/issued"/>
+    
+
+
+    <!-- http://purl.org/dc/terms/modified -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/modified"/>
     
 
 
@@ -93,6 +111,16 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMandatoryPart">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasPart"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMemoryRequirement -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMemoryRequirement">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+        <rdfs:range rdf:resource="http://cookingbigdata.com/linkeddata/ccinstances/#ram"/>
+        <rdfs:comment>This property links to the node describing the Memory requirement for running this agent</rdfs:comment>
     </owl:ObjectProperty>
     
 
@@ -160,6 +188,15 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasUnit">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:comment>This property links to the unit of a quantity</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -180,11 +217,31 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasName -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasName">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#MessagePart"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasNumberOfCore -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasNumberOfCore">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>This property indicates the number of CPU cores the service requires</rdfs:comment>
     </owl:DatatypeProperty>
     
 
@@ -207,15 +264,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl/hasHttpUrl -->
-
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl/hasHttpUrl">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -224,6 +272,22 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://cookingbigdata.com/linkeddata/ccinstances/#ram -->
+
+    <owl:Class rdf:about="http://cookingbigdata.com/linkeddata/ccinstances/#ram">
+        <rdfs:comment>Random-access memory</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Gigabyte -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Gigabyte">
+        <rdfs:comment>This concept describes the mutiple of the unit byte for digital information, which is 10^9 bytes.</rdfs:comment>
+    </owl:Class>
     
 
 
@@ -250,9 +314,24 @@
     <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#isGroundedIn">
+        <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl"/>
+        <rdfs:label xml:lang="en">is grounded in</rdfs:label>
+    </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
 

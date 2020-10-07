@@ -39,8 +39,9 @@ public class TestBuildings extends TestCase {
 		System.out.println("3 = SelectCoordinates");
 		System.out.println("4 = SelectCoordinatesOfAllBuildings");
 		System.out.println("5 = SelectClosestBuildingsForOneBuilding");
-		System.out.println("example url for fuseki = http://localhost:3030/<dataset name>");
-		System.out.println("example url for rdf4j  = http://localhost:8080/rdf4j-server/repositories/<dataset name>");
+		System.out.println("example url for fuseki      = http://localhost:3030/<dataset name>");
+		System.out.println("example url for rdf4j       = http://localhost:8080/rdf4j-server/repositories/<dataset name>");
+		System.out.println("example url for blazegraph  = http://localhost:9999/blazegraph/namespace/<dataset name>/sparql");
 		System.out.println("example id-start = GUID_75F6C (optional parameter, default is empty string)");
 	}
 	
@@ -93,7 +94,8 @@ public class TestBuildings extends TestCase {
 	}
 
 	public void testStart() throws IOException {
-		String[] args = new String[] {"1", "http://localhost:3030/buildingsthehague"};
+		//String[] args = new String[] {"5", "http://localhost:3030/buildingsthehague", "GUID_2F4006F6"};
+		String[] args = new String[] {"5", "http://localhost:9999/blazegraph/namespace/namedbuildings/sparql", "GUID_2F4"};
 		start(args);
 	}
 	

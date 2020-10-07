@@ -21,7 +21,7 @@ public class TestSPARQL extends TestCase implements Prefixes, Paths, ITestConsta
 	
 	public void testQueryBuilderNppLandlots() {
 		
-		String lotsInfo= "PREFIX OXXLAND:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> " 
+		String lotsInfo= "PREFIX JPSLAND:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> " 
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -31,7 +31,7 @@ public class TestSPARQL extends TestCase implements Prefixes, Paths, ITestConsta
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "SELECT ?entity ?xvalue ?yvalue ?areavalue ?distancevalue "
 				
-				+ "WHERE {?entity  a  OXXLAND:Landlot  ." 
+				+ "WHERE {?entity  a  JPSLAND:Landlot  ." 
 				+ "?entity   j5:hasSurfaceGeometry ?sur ."
 				+ "?sur   j5:has_area ?surarea ."
 				+ "?surarea   j2:hasValue ?vsurarea ."
@@ -45,7 +45,7 @@ public class TestSPARQL extends TestCase implements Prefixes, Paths, ITestConsta
 				+ "?y   j2:hasValue ?yval ."
 				+ "?yval   j2:numericalValue ?yvalue ."
 				
-				+ "?entity   OXXLAND:hasDistanceToClosestWaterSources ?distance ."
+				+ "?entity   JPSLAND:hasDistanceToClosestWaterSources ?distance ."
 				+ "?distance   j2:hasValue ?distval ."
 				+ "?distval   j2:numericalValue ?distancevalue ."
 								
@@ -54,25 +54,25 @@ public class TestSPARQL extends TestCase implements Prefixes, Paths, ITestConsta
 		
 		QueryBuilder builder = new QueryBuilder();
 		builder.select("?entity", "?xvalue", "?yvalue", "?areavalue", "?distancevalue");
-		builder.a("?entity", OXXLAND, "Landlot");
+		builder.a("?entity", JPSLAND, "Landlot");
 		builder.prop("?entity", "?areavalue", OCPGEOM, "hasSurfaceGeometry", OCPGEOM, "has_area", OCPSYST, "hasValue", OCPSYST, "numericalValue");
 		builder.prop("?entity", "?xvalue", PGISCOORDX);
 		builder.prop("?entity", "?yvalue", PGISCOORDY);
-		builder.prop("?entity", "?distancevalue", OXXLAND, "hasDistanceToClosestWaterSources", OCPSYST, "hasValue", OCPSYST, "numericalValue");
+		builder.prop("?entity", "?distancevalue", JPSLAND, "hasDistanceToClosestWaterSources", OCPSYST, "hasValue", OCPSYST, "numericalValue");
 		
 		System.out.println(builder.build());
 		
-		String expected = "PREFIX OXXLAND:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> \r\n" + 
+		String expected = "PREFIX JPSLAND:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> \r\n" + 
 				"PREFIX OCPGEOM:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#> \r\n" + 
 				"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
 				"PREFIX OCPSPAC:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> \r\n" + 
 				"SELECT ?entity ?xvalue ?yvalue ?areavalue ?distancevalue \r\n" + 
 				"WHERE {\r\n" + 
-				"?entity a OXXLAND:Landlot .\r\n" + 
+				"?entity a JPSLAND:Landlot .\r\n" + 
 				"?entity OCPGEOM:hasSurfaceGeometry/OCPGEOM:has_area/OCPSYST:hasValue/OCPSYST:numericalValue ?areavalue .\r\n" + 
 				"?entity OCPSPAC:hasGISCoordinateSystem/OCPSPAC:hasProjectedCoordinate_x/OCPSYST:hasValue/OCPSYST:numericalValue ?xvalue .\r\n" + 
 				"?entity OCPSPAC:hasGISCoordinateSystem/OCPSPAC:hasProjectedCoordinate_y/OCPSYST:hasValue/OCPSYST:numericalValue ?yvalue .\r\n" + 
-				"?entity OXXLAND:hasDistanceToClosestWaterSources/OCPSYST:hasValue/OCPSYST:numericalValue ?distancevalue .\r\n" + 
+				"?entity JPSLAND:hasDistanceToClosestWaterSources/OCPSYST:hasValue/OCPSYST:numericalValue ?distancevalue .\r\n" + 
 				"}";
 		
 		assertEquals(expected, builder.build().toString());

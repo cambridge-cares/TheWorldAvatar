@@ -66,11 +66,8 @@ $(function(){
     
     //***************************************************************************
     osmb.addMapTiles(
-        'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
-        {
-            attribution: '� Data <a href="https://openstreetmap.org/copyright/">OpenStreetMap</a> � � Map <a href="https://mapbox.com/">Mapbox</a>'
-        }
-    );
+            'https://api.mapbox.com/styles/v1/osmbuildings/cjt9gq35s09051fo7urho3m0f/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoib3NtYnVpbGRpbmdzIiwiYSI6IjNldU0tNDAifQ.c5EU_3V8b87xO24tuWil0w'
+        );
     //***************************************************************************
 
     
@@ -169,7 +166,8 @@ $(function(){
 
         const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
         
-        let agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+        //let agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+        let agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service"; //temporary change to be consistent
         
         var query = {
         	agent, 
@@ -211,6 +209,7 @@ $(function(){
     				});
     	   	} else {
         		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutComposition',
+//    	   		result =  $.getJSON('/JPS_DISPERSION/DMSCoordinationAgent',
         			{
 	        			query
         			});
