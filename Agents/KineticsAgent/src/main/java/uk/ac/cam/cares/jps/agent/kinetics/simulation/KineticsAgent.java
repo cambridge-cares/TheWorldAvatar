@@ -77,11 +77,15 @@ public class KineticsAgent extends JPSAgent {
 	
 
 	/**
-	 * Shows the following statistics of quantum jobs processed by Kinetics Agent.</br>
-	 * - Total number of jobs submitted - Total number of jobs currently running - Total number of jobs successfully
-	 * completed - Total number of jobs terminated with an error - Total number of jobs not started yet
+	 * Produces and returns the following statistics of Slurm jobs submitted<p>
+	 * to Kinetics Agent in JSON format:<p>
+	 * - Total number of jobs submitted<p> 
+	 * - Total number of jobs currently running<p>
+	 * - Total number of jobs successfully completed<p>
+	 * - Total number of jobs terminated with an error<p>
+	 * - Total number of jobs not started yet<p>
 	 *
-	 * @param input the JSON string specifying the return data format, e.g. JSON.
+	 * @param input the JSON string specifying the return data format.
 	 * @return the statistics in JSON format if requested.
 	 */
 	public JSONObject produceStatistics(String input) throws IOException, KineticsAgentException {
@@ -95,12 +99,15 @@ public class KineticsAgent extends JPSAgent {
 	}
 
 	/**
-	 * Shows the following statistics of quantum jobs processed by Kinetics Agent.<br>
-	 * This method covers the show statics URL that is not included in the<br>
-	 * list of URL patterns.
-	 *
-	 * - Total number of jobs submitted - Total number of jobs currently running - Total number of jobs successfully
-	 * completed - Total number of jobs terminated with an error - Total number of jobs not started yet
+	 * Shows the following statistics of Slurm jobs submitted to Kinetics Agent.<br>
+	 * This method responds against the HTTP request for showing statistics<p>
+	 * which is not included in the list of URL patterns represented in the<p>
+	 * annotation of this class.
+	 * - Total number of jobs submitted<p>
+	 * - Total number of jobs currently running<p>
+	 * - Total number of jobs successfully completed<p>
+	 * - Total number of jobs terminated with an error<p>
+	 * - Total number of jobs not started yet<p>
 	 *
 	 * @return the statistics in HTML format.
 	 */
