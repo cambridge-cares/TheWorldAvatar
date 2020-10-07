@@ -46,7 +46,11 @@ import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**
- * Kinetics Agent developed for setting-up and running kinetics simulation jobs.
+ * Kinetics Agent has implemented the processes to create input files for<p>
+ * setting up Slurm jobs to perform kinetics simulations on any High-Per-<p>
+ * formance Computing (HPC) clusters. This agent asynchronously monitors<p>
+ * jobs, post-processes outputs of simulations and receives HTTP requests<p>
+ * to respond with outputs of a submitted and successfully finished Slurm job.<p>
  *
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
