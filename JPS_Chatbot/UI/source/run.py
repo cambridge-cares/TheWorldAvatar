@@ -14,6 +14,7 @@ sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 sys.path.append('/source')
 app = Flask(__name__)
 socketio = SocketIO(app)
+socketio.init_app(app, cors_allowed_origins="*")
 
 
 @app.route('/query')
