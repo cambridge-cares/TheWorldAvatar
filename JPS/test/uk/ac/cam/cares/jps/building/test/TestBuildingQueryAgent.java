@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.building.test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +56,9 @@ public class TestBuildingQueryAgent extends TestCase {
 		double upperx = plantx + 100;
 		double uppery = planty + 200;
 
-		String targetFolder = startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		long delta = System.currentTimeMillis() - getFileLastModifiedTime(targetFolder, "test.apl");
-		assertTrue("delta smaller than 1 min", delta <= (1000 * 60));
+		startIntegrationWithPython(city, plant, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		
+		// TODO-AE assert statement is missing here 
 	}
 	
 	public void testBerlinIntegrationWithPython() throws InterruptedException {
@@ -77,18 +76,21 @@ public class TestBuildingQueryAgent extends TestCase {
 
 		double plantx = targetCenter[0];
 		double planty = targetCenter[1];
-
+//		double lowerx = plantx - 400;
+//		double lowery = planty - 400;
+//		double upperx = plantx + 400;
+//		double uppery = planty + 400;
 		
 		double lowerx = 699208.47;
 		double lowery = 533059.02;
 		double upperx = 699959.88;
 		double uppery = 533841.67;
-		String targetFolder = startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
-		long delta = System.currentTimeMillis() - getFileLastModifiedTime(targetFolder, "test.apl");
-		assertTrue("delta smaller than 1 min", delta <= (1000 * 60));
+		startIntegrationWithPython(cityIRI, plantIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
+		
+		// TODO-AE assert statement is missing here 
 	}
 	
-	private String startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
+	private void startIntegrationWithPython(String cityIRI, String plantIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) throws InterruptedException {
 		
 		ArrayList<String> args = new ArrayList<String>();
 		args.add("python");
@@ -104,12 +106,13 @@ public class TestBuildingQueryAgent extends TestCase {
 		String buildingData = retrieveBuildingDataInJSON(cityIRI, plantx, planty, buildingLimit, lowerx, lowery, upperx, uppery);
 		buildingData = buildingData.replace('\"', '\'');
 		args.add(buildingData);
+		System.out.println("building data =  \n" + buildingData);
 		
 		String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
+		System.out.println(targetFolder);
 		String result = CommandHelper.executeCommands(targetFolder, args);
-		
-		return targetFolder;
 	 
+		System.out.println("Python result: \n" + result);
 	}
 	
 	private String retrieveBuildingDataInJSON(String cityIRI, double plantx, double planty, int buildingLimit, double lowerx, double lowery, double upperx, double uppery) {
@@ -124,10 +127,5 @@ public class TestBuildingQueryAgent extends TestCase {
 	private String getCoordinatesForPython(double lowerx, double lowery, double upperx, double uppery) {
 		String template = "{'xmin':%f, 'xmax':%f, 'ymin':%f, 'ymax':%f}";
 		return String.format(template, lowerx, upperx, lowery, uppery);
-	}
-	
-	public long getFileLastModifiedTime(String targetFolder, String fileName) {
-		File file = new File(targetFolder + fileName);
-	    return file.lastModified();			
 	}
 }

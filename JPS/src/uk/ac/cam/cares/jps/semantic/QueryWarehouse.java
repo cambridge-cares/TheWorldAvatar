@@ -144,6 +144,7 @@ public class QueryWarehouse {
 					weather.put("temperature", nextSolution.get("temperature").toString());
 
 				} catch (JSONException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

@@ -41,6 +41,7 @@ public class ServiceExecutorEndpoint extends HttpServlet {
 			response.getWriter().write(FormatTranslator.convertExectorToJSON(executor).toString());
 
 		} catch (JSONException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

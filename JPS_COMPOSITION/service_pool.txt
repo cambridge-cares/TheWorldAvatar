@@ -189,20 +189,6 @@
             ],
             "uri": "http://www.theworldavatar.com/MessageContent_Input_1cxdnb45"
           },
-          
-         {
-            "optionalParts": [],
-            "mandatoryParts": [
-              {
-                "modelReference": "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#WeatherState",
-                "uri": "http://www.theworldavatar.com/Mandatory_MessagePart_keer3hY",
-                "value": "",
-                "datatypeValue": ""
-              }
-            ],
-            "uri": "http://www.theworldavatar.com/MessageContent_Input_dsfeee45"
-          },
-          
           {
             "optionalParts": [],
             "mandatoryParts": [

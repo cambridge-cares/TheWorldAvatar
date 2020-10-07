@@ -46,6 +46,7 @@ class TestBuildingJSON {
 			result.put("BldIRI", irisInJSON);
 			System.out.println(result.toString());
 		} catch (JSONException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

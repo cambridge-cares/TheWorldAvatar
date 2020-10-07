@@ -136,6 +136,7 @@ public class MessagePart{
     	try {
 			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
 		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "Can not serialize this MessagePart Object to JSON";
