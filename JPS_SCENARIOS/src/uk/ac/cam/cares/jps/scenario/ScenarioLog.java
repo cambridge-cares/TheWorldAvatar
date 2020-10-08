@@ -39,11 +39,11 @@ public class ScenarioLog {
 		if (!new File(filePath).exists()) {
 			create(scenarioName);
 		} else {
-			String content = FileUtil.readFileLocally(filePath);
+			String content = getLogAsString();
 			read(content);
 		}
 	}
-	
+		
 	public void create(String scenarioName) {
 		JSONObject message = new JSONObject().put("extendsagent", "http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Service");
 		addMessage(scenarioName, message);
@@ -63,6 +63,11 @@ public class ScenarioLog {
 		}
 	}
 
+	public String getLogAsString() {
+		return FileUtil.readFileLocally(filePath);
+	}
+
+	
 	private void addMessage(String scenarioName, JSONObject message) {
 		ScenarioLogEntry entry = new ScenarioLogEntry();
 		entry.scenario = scenarioName;

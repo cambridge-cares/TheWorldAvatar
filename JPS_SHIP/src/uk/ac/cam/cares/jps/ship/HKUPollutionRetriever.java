@@ -19,7 +19,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet("/GetHKUPollutionData")
-public class HKUPollutionRetriever extends JPSHttpServlet  {
+public class HKUPollutionRetriever extends JPSHttpServlet  {//the expected time range should be in GMT time
 
 	/**
 	 * 
@@ -111,7 +111,7 @@ public class HKUPollutionRetriever extends JPSHttpServlet  {
 
 		QueryBroker broker = new QueryBroker();
 		System.out.println("location for csv= "+fullPath);
-		broker.put(fullPath + "/1hrairpollutionhistory.csv", result);
+		broker.putLocal(fullPath + "/1hrairpollutionhistory.csv", result);
 		
 		//then put it to data set for the metadata
 	}

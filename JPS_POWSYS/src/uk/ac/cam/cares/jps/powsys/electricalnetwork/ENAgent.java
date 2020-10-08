@@ -8,14 +8,16 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.TransformerException;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -28,35 +30,35 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVReader;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization;
-import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization.StaticobjectgenClass;
-import uk.ac.cam.cares.jps.powsys.envisualization.MapPoint;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
 public class ENAgent extends JPSHttpServlet {
+	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
-	private Logger logger = LoggerFactory.getLogger(ENAgent.class);
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(ENAgent.class);
+    }
+    Logger logger = LoggerFactory.getLogger(ENAgent.class);
 
 	public DatatypeProperty getNumericalValueProperty(OntModel jenaOwlModel) {
 		return jenaOwlModel.getDatatypeProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	}
-
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-		JSONObject joforEN = AgentCaller.readJsonParameter(request);
+	
+	 @Override
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		JSONObject joforEN=requestParams;
 		String iriofnetwork = joforEN.getString("electricalnetwork");
 		String modeltype = null;
 
@@ -70,117 +72,56 @@ public class ENAgent extends JPSHttpServlet {
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		
-		startSimulation(iriofnetwork, baseUrl, modeltype);
+		JSONObject result;
+		try {
+			result = startSimulation(iriofnetwork, baseUrl, modeltype);
+			return result;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			
+		}
+		return null;
 	}
 	
-	public String createfinalKML(OntModel model) throws TransformerException {
-		ENVisualization a = new ENVisualization();
+	public JSONObject startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
 		
-
-		// ------------FOR GENERATORS-----------------
-		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");
-		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
-		ArrayList<String> coorddata = new ArrayList<String>();
-		for (int e = 0; e < generators.size(); e++) {
-			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("/" + generators.get(e)[0].split("#")[1] + ".owl");
-			gh.setx(generators.get(e)[1]);
-			gh.sety(generators.get(e)[2]);
-			//System.out.println("/" + generators.get(e)[0].split("#")[1] + ".owl");
-
-			if (coorddata.contains(gh.getx()) && coorddata.contains(gh.gety())) {
-				int index = coorddata.indexOf(gh.getx()) / 2;
-				gensmerged.get(index).setnamegen(gensmerged.get(index).getnamegen() + gh.getnamegen());
-			} else {
-				gensmerged.add(gh);
-				coorddata.add(generators.get(e)[1]);
-				coorddata.add(generators.get(e)[2]);
-			}
-
-		}
-
-		for (int g = 0; g < gensmerged.size(); g++) {
-			MapPoint c = new MapPoint(Double.valueOf(gensmerged.get(g).gety()),
-					Double.valueOf(gensmerged.get(g).getx()), 0.0, gensmerged.get(g).getnamegen());
-			a.addMark(c, "generator");
-		}
-
-		// --------------------------------
-		
-	
-		// ------------FOR BUS-----------------
-		List<String[]> bus = a.queryElementCoordinate(model, "BusNode");
-		ArrayList<ENVisualization.StaticobjectgenClass> bussesmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
-		ArrayList<String> coorddatabus = new ArrayList<String>();
-		for (int e = 0; e < bus.size(); e++) {
-			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("/" + bus.get(e)[0].split("#")[1] + ".owl");
-			gh.setx(bus.get(e)[1]);
-			gh.sety(bus.get(e)[2]);
-			//System.out.println("/" + bus.get(e)[0].split("#")[1] + ".owl");
-
-			if (coorddatabus.contains(gh.getx()) && coorddatabus.contains(gh.gety())) {
-				int index = coorddatabus.indexOf(gh.getx()) / 2;
-				bussesmerged.get(index).setnamegen(bussesmerged.get(index).getnamegen() + gh.getnamegen());
-			} else {
-				bussesmerged.add(gh);
-				coorddatabus.add(bus.get(e)[1]);
-				coorddatabus.add(bus.get(e)[2]);
-			}
-
-		}
-
-		for (int g = 0; g < bussesmerged.size(); g++) {
-			MapPoint c = new MapPoint(Double.valueOf(bussesmerged.get(g).gety()),
-					Double.valueOf(bussesmerged.get(g).getx()), 0.0, bussesmerged.get(g).getnamegen());
-			a.addMark(c, "bus");
-		}
-
-		// --------------------------------
-
-		
-//		int size2 = bus.size();
-//		for (int g = 0; g < size2; g++) {
-//			MapPoint c = new MapPoint(Double.valueOf(bus.get(g)[2]), Double.valueOf(bus.get(g)[1]), 0.0,
-//					"/" + bus.get(g)[0].split("#")[1] + ".owl");
-//			a.addMark(c, "bus");
-//		}
-
-		return a.writeFiletoString();
-	}
-
-	public void startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
+		JSONObject resjo=new JSONObject();
+		resjo.put("electricalnetwork", iriofnetwork);
 		
 		logger.info("starting simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
-		OntModel model = readModelGreedy(iriofnetwork);
-		
-		//create line javascript & kml for visualization
-		ENVisualization a=new ENVisualization();
-		QueryBroker broker = new QueryBroker();
-		broker.put(baseUrl + "/line.js", a.createLineJS(model));
-		try {
-			broker.put(baseUrl + "/test2.kml",createfinalKML(model));
-		} catch (TransformerException e1) {
-			logger.error(e1.getMessage(),e1);
-			e1.printStackTrace();
-		}
-		
+		OntModel model = readModelGreedy(iriofnetwork);	
 		
 		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
 		
 		logger.info("running PyPower simulation");
 		runModel(baseUrl);
-
-		try {
-			logger.info("converting PyPower results to OWL files");
-			doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
-		} catch (URISyntaxException e) {
-			logger.error(e.getMessage(), e);
-			throw new JPSRuntimeException(e.getMessage(), e);
+		
+		String fileName = baseUrl+"/outputstatus.txt";
+		Path path = Paths.get(fileName);
+		byte[] bytes = Files.readAllBytes(path);
+		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+		if(allLines.get(2).contains("Converged!")) {
+			resjo.put("status", "converged");
+			try {
+				logger.info("converting PyPower results to OWL files");
+				doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
+			} catch (URISyntaxException e) {
+				logger.error(e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+			}
+			
+		}else {
+			resjo.put("status", "Not Converged");
+			//return null;
 		}
+			
+
+		
 		
 		logger.info("finished simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
+		return resjo;
 	}
 
 	public List<String[]> generateInput(OntModel model, String iriofnetwork, String baseUrl, String modeltype) throws IOException {
@@ -304,7 +245,27 @@ public class ENAgent extends JPSHttpServlet {
 				+ "?vapf   j2:numericalValue ?apfvalue ." // apf
 
 				+ "}";
+		String batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+				
+				+ "SELECT DISTINCT ?entity ?V_ActivePowerInjection_of_VRB "
+				+ "WHERE {?entity  a  j1:VanadiumRedoxBattery ."
 
+				+ "?entity   j9:hasActivePowerInjection ?cap ."
+				+"?cap j2:hasValue ?vcap ."
+				+"?vcap  j2:numericalValue ?V_ActivePowerInjection_of_VRB ."
+				+ " {?class rdfs:subClassOf j1:Battery ."
+				+ "} "
+				+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
+				+ "}";
 		String genInfocost = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -515,29 +476,48 @@ public class ENAgent extends JPSHttpServlet {
 
 		List<String[]> buslist = extractOWLinArray(model, iriofnetwork, busInfo, "bus", baseUrl);
 		String content = createNewTSV(buslist, baseUrl + "/mappingforbus.csv", baseUrl + "/mappingforbus.csv");
-		broker.put(baseUrl + "/bus.txt", content);
+		broker.putLocal(baseUrl + "/bus.txt", content);
 
 		List<String[]> genlist = extractOWLinArray(model, iriofnetwork, genInfo, "generator", baseUrl);
 		content = createNewTSV(genlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
-		broker.put(baseUrl + "/gen.txt", content);
+		//only add if battery is available. 
+		
+		List<String[]> batterylist = extractOWLinArray(model, iriofnetwork, batteryInfo, "battery", baseUrl);
+		if (!batterylist.isEmpty()) {
+			content += createDummyValueTSV(batterylist); 
+			
+		}
+		broker.putLocal(baseUrl + "/gen.txt", content);
 		
 		List<String[]> gencostlist = extractOWLinArray(model, iriofnetwork, genInfocost, "generatorcost", baseUrl);
 		content = createNewTSV(gencostlist, baseUrl + "/mappingforgeneratorcost.csv", baseUrl + "/mappingforbus.csv");
-		broker.put(baseUrl + "/genCost.txt", content);
+		
+		if (!batterylist.isEmpty()) {
+			String[] dummyarray = new String[7];
+			Arrays.fill(dummyarray, "0");
+			for (int i = 0; i < batterylist.size(); i++) {
+				String message = String.join("\t", dummyarray)+"\n";
+				content += message;
+			}
+			
+		}
+		broker.putLocal(baseUrl + "/genCost.txt", content);
 
 		List<String[]> branchlist = extractOWLinArray(model, iriofnetwork, branchInfo, "branch", baseUrl);
 		content = createNewTSV(branchlist, baseUrl + "/mappingforbranch.csv", baseUrl + "/mappingforbus.csv");
-		broker.put(baseUrl + "/branch.txt", content);
+		broker.putLocal(baseUrl + "/branch.txt", content);
 
 		String resourceDir = Util.getResourceDir(this);
 		File file = new File(resourceDir + "/baseMVA.txt");
-		broker.put(baseUrl + "/baseMVA.txt", file);
+		broker.putLocal(baseUrl + "/baseMVA.txt", file);
 
-		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
-		broker.put(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
+//		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
+//		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
+		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/SGPowergrid.py");
+		broker.putLocal(baseUrl + "/SGPowergrid.py", file2);
 		
 		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
-		broker.put(baseUrl + "/runpy.bat", file3);
+		broker.putLocal(baseUrl + "/runpy.bat", file3);
 		
 		
 		return buslist;
@@ -587,12 +567,24 @@ public class ENAgent extends JPSHttpServlet {
 
 			String csv = mapper.serialize();
 			QueryBroker broker = new QueryBroker();
-			broker.put(baseUrl + "/mappingfor" + context + ".csv", csv);
+			broker.putLocal(baseUrl + "/mappingfor" + context + ".csv", csv);
 		}
 
 		return resultList;
 	}
-
+	public String createDummyValueTSV(List<String[]> activePower) throws IOException {
+		String content = "";
+		for (int i = 0; i < activePower.size(); i++) {
+			String[] dummyarray = new String[21];
+			Arrays.fill(dummyarray, "0");
+			dummyarray[3] = activePower.get(i)[1].toString();
+			String message = String.join("\t", dummyarray)+"\n";
+			content += message;
+	    }
+		
+		
+		return content;
+	}
 	public String createNewTSV(List<String[]> componentlist, String mapdir, String mapdirbus) throws IOException {
 		StringWriter writer = new StringWriter();
 //			try (BufferedWriter bw = new BufferedWriter(new FileWriter(tsvFileout))) {
@@ -707,15 +699,6 @@ public class ENAgent extends JPSHttpServlet {
 	}
 
 	public void runModel(String baseUrl) throws IOException {
-
-		 //String result = PythonHelper.callPython("model/PyPower-PF-OPF-JA-8.py",null, this);
-		// directory need to be changed soon
-		// String targetFolder = AgentLocator.getNewPathToPythonScript("model", this);
-
-		ArrayList<String> args = new ArrayList<String>();
-		args.add("python");
-		args.add("PyPower-PF-OPF-JA-8.py");
-
 		//String result = CommandHelper.executeCommands(baseUrl, args);
 		String startbatCommand =baseUrl+"/runpy.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);
@@ -726,7 +709,7 @@ public class ENAgent extends JPSHttpServlet {
 		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
 		
 		logger.info("reading result from " + outputfiledir);
-		String content = new QueryBroker().readFile(outputfiledir);
+		String content = new QueryBroker().readFileLocal(outputfiledir);
 		StringReader stringreader = new StringReader(content);
 		CSVReader reader = null;
 		try {
@@ -877,16 +860,16 @@ public class ENAgent extends JPSHttpServlet {
 			String keymapper = busoutputlist.get(a)[0];
 			int amod = Integer.valueOf(map2.getIDFromMap(originalforbus, keymapper));
 			Individual vpdbusout = jenaOwlModel.getIndividual(busoutputlist.get(a)[1]);
-			vpdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[5]));
+			vpdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[5])));
 
 			Individual vgdbusout = jenaOwlModel.getIndividual(busoutputlist.get(a)[2]);
-			vgdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[6]));
+			vgdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[6])));
 
 			Individual vpdgenout = jenaOwlModel.getIndividual(busoutputlist.get(a)[3]);
-			vpdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[3]));
+			vpdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[3])));
 
 			Individual vgdgenout = jenaOwlModel.getIndividual(busoutputlist.get(a)[4]);
-			vgdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[4]));
+			vgdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[4])));
 
 			Individual vVmout = jenaOwlModel.getIndividual(busoutputlist.get(a)[5]);
 			double basekv = Double.valueOf(buslist.get(amod - 1)[9]);
@@ -895,14 +878,15 @@ public class ENAgent extends JPSHttpServlet {
 			double originalv = basekv * Double.valueOf(resultfrommodelbus.get(amod - 1)[1]);
 			
 			//vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(originalv)); //if vm is in kv
-			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[1])); //if vm is in pu
+			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[1]))); //if vm is in pu
 			
 
 			Individual vVaout = jenaOwlModel.getIndividual(busoutputlist.get(a)[6]);
-			vVaout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[2]));
+			vVaout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[2])));
 			
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			broker.put(currentIri, content);
+//			broker.put(currentIri, content); tempchange
+			broker.putOld(currentIri, content);
 		}
 		
 		
@@ -915,6 +899,7 @@ public class ENAgent extends JPSHttpServlet {
 		IriMapper map3 = new IriMapper();
 		List<IriMapping> originalforgen = map3.deserialize2(baseUrl + "/mappingforgenerator.csv");
 		int amountofgen = genoutputlist.size();
+		logger.info("amount of gen in output="+amountofgen);
 		for (int a = 0; a < amountofgen; a++) {
 			
 			String currentIri = genoutputlist.get(a)[1];
@@ -927,13 +912,16 @@ public class ENAgent extends JPSHttpServlet {
 			int amod = Integer.valueOf(map3.getIDFromMap(originalforgen, keymapper));
 
 			Individual vpout = jenaOwlModel.getIndividual(genoutputlist.get(a)[1]);
-			vpout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
+			vpout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelgen.get(amod - 1)[1])));
 
 			Individual vqout = jenaOwlModel.getIndividual(genoutputlist.get(a)[2]);
-			vqout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[2]));
+			vqout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelgen.get(amod - 1)[2])));
+			//logger.info("initial Pout= "+jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
+			updateGeneratorEmission(jenaOwlModel); //add new functionality for updating the emission
 
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			broker.put(currentIri, content);
+//			broker.put(currentIri, content); tempchange
+			broker.putOld(currentIri, content);
 		}
 		
 		
@@ -956,22 +944,70 @@ public class ENAgent extends JPSHttpServlet {
 			int amod = Integer.valueOf(map.getIDFromMap(originalforbranch, keymapper));
 
 			Individual vploss = jenaOwlModel.getIndividual(branchoutputlist.get(a)[1]);
-			vploss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[1]));
+			vploss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[1])));
 
 			Individual vqloss = jenaOwlModel.getIndividual(branchoutputlist.get(a)[2]);
-			vqloss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[2]));
+			vqloss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[2])));
 
 			Individual vpave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[3]);
-			vpave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[3]));
+			vpave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[3])));
 
 			Individual vqave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[4]);
-			vqave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[4]));
+			vqave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[4])));
 
 			Individual vsave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[5]);
-			vsave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[5]));
+			vsave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[5])));
 			
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			broker.put(currentIri, content);
+//			broker.put(currentIri, content); tempchange
+			broker.putOld(currentIri, content);
 		}
+	}
+
+	public void updateGeneratorEmission(OntModel model) {
+		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+				+ "PREFIX j10:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "SELECT ?entity ?Pvalue ?valueemm ?emissionfactor " 
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?p ." 
+				+ "?p  a  j3:Pg  ." 
+				+ "?p  j2:hasValue ?vp ."
+				+ "?vp   j2:numericalValue ?Pvalue ." // p
+				+" ?entity j6:realizes ?genprocess ."
+				+ "?genprocess j9:hasEmission ?emm ."
+				+ "?emm a j9:Actual_CO2_Emission ."
+				+ "?emm j2:hasValue ?valueemm ." //iriofco2 emission
+				
+				+ "?genprocess j10:usesGenerationTechnology ?tech ."
+				+ "?tech j10:hasEmissionFactor ?emmfac ."
+				+ "?emmfac j2:hasValue ?valueemmfac ."
+				+ "?valueemmfac j2:numericalValue ?emissionfactor ." //emission factor 
+				
+				+ "}";
+		
+		ResultSet resultSet = JenaHelper.query(model, genInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		DatatypeProperty numval = getNumericalValueProperty(model);
+		for (int c = 0; c < resultListfromquery.size(); c++) {
+		double pvalue=	Double.valueOf(resultListfromquery.get(c)[1]);
+		double emissionf=	Double.valueOf(resultListfromquery.get(c)[3]);
+		double actualem=pvalue*emissionf;
+		Individual vemissioninstance = model.getIndividual(resultListfromquery.get(c)[2]);
+		vemissioninstance.setPropertyValue(numval, model.createTypedLiteral(new Double(actualem)));
+		//logger.info("updated Pout= "+pvalue);
+		}
+		
+		
 	}
 }

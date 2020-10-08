@@ -34,12 +34,15 @@ public class NuclearKBCreator {
 	static Individual degree;
 	static Individual MW;
 	static Individual length;
+	static Individual tph;
  
 	static Individual xaxis;
 	static Individual yaxis;
-		
+
+	public static final String GAMS_OUTPUT_FILENAME = "results.csv";
+
 	private OntClass nuclearpowerplantclass = null;
-	private OntClass organizationclass = null;
+	private OntClass CO2_emissionclass = null;
 	private OntClass coordinateclass = null;
 	private OntClass coordinatesystemclass = null;
 	private OntClass valueclass = null;
@@ -61,6 +64,7 @@ public class NuclearKBCreator {
 	private ObjectProperty hasunit = null;
 	private ObjectProperty hasaddress = null;
 	private ObjectProperty isownedby = null;
+	private ObjectProperty isSubsystemOf= null;
 	private ObjectProperty designcapacity = null;
 	private ObjectProperty hasyearofbuilt = null;
 	private ObjectProperty realizes = null;
@@ -68,7 +72,7 @@ public class NuclearKBCreator {
 	private ObjectProperty hasModelVariable = null;
 	
 	private ObjectProperty consumesprimaryfuel = null;
-	private ObjectProperty hasemission = null;
+	private ObjectProperty hasEmission = null;
 	private ObjectProperty hascosts = null;
 	private ObjectProperty hasannualgeneration = null;
 	private ObjectProperty usesgenerationtechnology = null;
@@ -91,6 +95,7 @@ public class NuclearKBCreator {
 		//generatedactivepowerclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower");
 		Pgclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pg");
 		modelclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent");
+		CO2_emissionclass=jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission");
 		
 		consumesprimaryfuel = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#consumesPrimaryFuel");
 		hasdimension = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension");
@@ -105,8 +110,10 @@ public class NuclearKBCreator {
 		realizes=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes");
 		hasSubsystem=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
 		isModeledby=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isModeledBy");
+		isSubsystemOf=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isSubsystemOf");
 		hasModelVariable=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable");
-		
+		hasEmission=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission");
+				
 		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		nuclear = jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Nuclear");
 		MW=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW");
@@ -114,6 +121,7 @@ public class NuclearKBCreator {
 		length=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length");
 		xaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis");
 		yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
+		tph=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr");
 	}
 	
 	public Map<String, OntModel> startConversion(String baseUrl) throws URISyntaxException, NumberFormatException, IOException {
@@ -124,13 +132,13 @@ public class NuclearKBCreator {
         String iriprefix = QueryBroker.getIriPrefix() + "/nuclearpowerplants/";
         
     	ArrayList<NuclearGenType> generatortype=extractInformationForGen(baseUrl + "/parameters_req.csv", "0","3");
-	    
-		String csvfileoutput = baseUrl + "/results.csv";
+
+		String csvfileoutput = baseUrl + "/" + GAMS_OUTPUT_FILENAME;
 //	   	IriMapper map2=new IriMapper();
 //	    List<IriMapping> original=map2.deserialize(csvfileoutput);
 	    	
 	    //reading from output file and put that to owl file
-		String csv = new QueryBroker().readFile(csvfileoutput);
+		String csv = new QueryBroker().readFileLocal(csvfileoutput);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
     	
     	for (int i=1; i<simulationResult.size(); i++) {
@@ -221,7 +229,7 @@ public class NuclearKBCreator {
 		
         ArrayList<NuclearGenType> nucleargeneratorlisted = new ArrayList<NuclearGenType>();
         
-		String csv = new QueryBroker().readFile(csvfileinputparam);
+		String csv = new QueryBroker().readFileLocal(csvfileinputparam);
 		List<String[]> genTypes = MatrixConverter.fromCsvToArray(csv);
 		for (int i=1; i<genTypes.size(); i++) {
 			String[] data = genTypes.get(i);
@@ -234,7 +242,7 @@ public class NuclearKBCreator {
 		return nucleargeneratorlisted;
 	}
 
-	public OntModel doConversionreactor(String iriprefix,String generatorname,String xnumval,String ynumval,double capacity) throws FileNotFoundException, UnsupportedEncodingException, URISyntaxException {
+	public OntModel doConversionreactor(String iriprefix,String generatorname,String xnumval,String ynumval,double capacity,Individual plant) throws FileNotFoundException, UnsupportedEncodingException, URISyntaxException {
 
 		String resourceDir = Util.getResourceDir(this);
 		String filePath = resourceDir + "/plantgeneratortemplate.owl"; // the empty owl file
@@ -245,7 +253,7 @@ public class NuclearKBCreator {
 		jenaOwlModel2.read(in, null);
 
 		initOWLClasses(jenaOwlModel2);
-		
+		Individual powergeneration = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NuclearGeneration");
 		Individual Pggen = Pgclass.createIndividual(iriprefix + generatorname + ".owl#Pg_"+generatorname);
 		Individual Pggenvalue = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_Pg_"+generatorname);
 		
@@ -258,8 +266,25 @@ public class NuclearKBCreator {
 		Individual ygencoordinatevalue = valueclass.createIndividual(iriprefix + generatorname + ".owl#v_y_coordinate_of_"+generatorname);
 		
 		generator.addProperty(isModeledby, model);
+		generator.addProperty(isSubsystemOf, plant);
 		model.addProperty(hasModelVariable, Pggen);
 		generator.addProperty(hascoordinatesystem, gencoordinate);
+		generator.addProperty(realizes, powergeneration);
+		OntClass emissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Actual_CO2_Emission");
+		OntClass designemissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission");
+		Individual desemission = designemissionclass.createIndividual(iriprefix + generatorname + ".owl#Design_CO2_Emission_"+generatorname);
+		Individual vdesemission = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_Design_CO2_Emission_"+generatorname);
+		Individual actemission = emissionclass.createIndividual(iriprefix + generatorname + ".owl#Actual_CO2_Emission_"+generatorname);
+		Individual vactemission = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_Actual_CO2_Emission_"+generatorname);
+		powergeneration.addProperty(hasEmission,desemission);
+		desemission.addProperty(hasvalue,vdesemission);
+		vdesemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(0.0)));
+		Individual tph = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr");
+		vdesemission.addProperty(hasunit,tph);
+		powergeneration.addProperty(hasEmission,actemission);
+		actemission.addProperty(hasvalue,vactemission);
+		vactemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(0.0)));
+		vdesemission.addProperty(hasunit,tph);
 		
 		gencoordinate.addProperty(hasx, xgencoordinate);
 		xgencoordinate.addProperty(hasvalue, xgencoordinatevalue);
@@ -317,6 +342,9 @@ public class NuclearKBCreator {
 		
 		Individual powergeneration = jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NuclearGeneration");
 		
+		Individual co2emission = CO2_emissionclass.createIndividual(iriprefix + plantname + ".owl#CO2Emission_of_"+plantname);
+		Individual vco2emission = scalarvalueclass.createIndividual(iriprefix + plantname + ".owl#v_CO2Emission_of_"+plantname);
+		
 		plant.addProperty(hascoordinatesystem, plantcoordinate);
 		
 		plantcoordinate.addProperty(hasx, xcoordinate);
@@ -339,14 +367,18 @@ public class NuclearKBCreator {
 		capavalue.addProperty(hasunit, MW);
 		
 		plant.addProperty(realizes, powergeneration);
-		powergeneration.setPropertyValue(consumesprimaryfuel, nuclear);
+		powergeneration.addProperty(consumesprimaryfuel, nuclear);
+		powergeneration.addProperty(hasEmission, co2emission);
+		co2emission.addProperty(hasvalue, vco2emission);
+		vco2emission.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (0.0)));
+		vco2emission.addProperty(hasunit, tph);
 				
 		for(int f=0; f<numberofreactorA;f++){
 			String generatorname="NucGenerator_" + plantnumber + "_A" + f;
 			String reactorIri = iriprefix + generatorname + ".owl#" + generatorname;
 
 			
-			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityA);
+			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityA,plant);
 			mapIri2Model.put(reactorIri, reactorModel);
 			
 			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
@@ -358,7 +390,7 @@ public class NuclearKBCreator {
 			String reactorIri = iriprefix + generatorname + ".owl#" + generatorname;
 
 
-			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityB);
+			OntModel reactorModel = doConversionreactor(iriprefix, generatorname, xnumval, ynumval, capacityB,plant);
 			mapIri2Model.put(reactorIri, reactorModel);
 			Individual generator=nucleargeneratorclass.createIndividual(reactorIri);
 			plant.addProperty(hasSubsystem, generator);

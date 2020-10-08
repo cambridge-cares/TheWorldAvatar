@@ -70,6 +70,9 @@ public class EmissionTestAgent extends JPSHttpServlet {
 		
 			JPSBaseLogger.info(this, "called with path=" + path + ", plant=" + powerplant);
 			JPSBaseLogger.info(this, "scenarioURL=" + ThreadContext.get("scenariourl"));
+			
+			System.out.println("MY EMISSION GET OLD EMISSION");
+			
 			double oldEmission = getEmission(powerplant);
 			JPSBaseLogger.info(this, "oldEmission=" + oldEmission);
 			
@@ -77,6 +80,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 						
 			if ("/read".equals(path)) {
 			
+				System.out.println("MY EMISSION READ");
+				
 				String result = new QueryBroker().readFile(powerplant);
 				result = result.substring(0, 400);
 				JPSBaseLogger.info(this, "read result (400 signs only):\n");
@@ -86,6 +91,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 			
 			} else if ("/queryemission".equals(path)) {
 			
+				System.out.println("MY EMISSION QUERYEMISSION");
+				
 				String result = new QueryBroker().queryFile(powerplant, SPARQL_PLANT_QUERY_EMISSION);
 				result = JenaResultSetFormatter.convertToSimplifiedList(result).toString();
 				JPSBaseLogger.info(this, "query result:\n");
@@ -94,6 +101,8 @@ public class EmissionTestAgent extends JPSHttpServlet {
 				AgentCaller.printToResponse(result, response);
 			
 			} else if ("/getemission".equals(path)) {
+				
+				System.out.println("MY EMISSION GETEMISSION");
 				
 				JSONWriter writer = new JSONStringer().object().key("hasemission")
 						.object().key("hasvalue")
@@ -104,10 +113,14 @@ public class EmissionTestAgent extends JPSHttpServlet {
 				
 			} else if ("/setemission".equals(path)) {
 				
+				System.out.println("MY EMISSION SETEMISSION");
+				
 				double emission = jo.getDouble("emission");
 				setEmission(powerplant, emission);
 				
 			} else if ("/add".equals(path)) {
+				
+				System.out.println("MY EMISSION ADD");
 				
 				double currentEmission = getEmission(powerplant);
 				double increment = jo.getDouble("increment");
@@ -115,11 +128,15 @@ public class EmissionTestAgent extends JPSHttpServlet {
 				
 			} else if ("/multiply".equals(path)) {
 				
+				System.out.println("MY EMISSION MULTIPLY");
+				
 				double currentEmission = getEmission(powerplant);
 				double factor = jo.getDouble("factor");
 				setEmission(powerplant, currentEmission * factor);
 				
 			} else if ("/change".equals(path)) {
+				
+				System.out.println("MY EMISSION CHANGE");
 				
 				// This method calls other agents in a recursive manner (see call below) to operate on the emission value.
 				// Example: if formula = "-4.3*2*0.5+4.3" then this method adds -4.3 to the emission value 
@@ -132,11 +149,16 @@ public class EmissionTestAgent extends JPSHttpServlet {
 			} else {
 				throw new JPSRuntimeException("unknown operation");
 			}
+			
+			System.out.println("MY EMISSION GET NEW EMISSION");
 					
 			double newEmission = getEmission(powerplant);
 			JPSBaseLogger.info(this, "newEmission=" + newEmission);
 			
 			if ((reducedFormula != null) && (reducedFormula.length() > 0)) {
+				
+				System.out.println("MY EMISSION REDUCED FORMULA CHANGE");
+				
 				jo.put("formula", reducedFormula);
 				AgentCaller.executeGetWithJsonParameter("/JPS_BASE/EmissionTestAgent/change", jo.toString());
 			}

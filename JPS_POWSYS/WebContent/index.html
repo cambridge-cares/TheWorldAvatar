@@ -102,7 +102,7 @@
 <body>
 <div class="jumbotron text-center" id="topBanner">
  <a href = "http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-researchs">
- <img float="left" src="images/cam_lang_negativ1%20NEW_0.png"  >
+ <img id="care-banner-img" float="left" src="images/cam_lang_negativ1%20NEW_0.png"  >
  </a>
  
      <span id="readme-button">?</span>
@@ -187,7 +187,8 @@
 				var request = $.ajax({
 					url: url,
 					type: 'GET',
-					data: { "electricalnetwork":electricalnetwork },
+					data: { "electricalnetwork":electricalnetwork,
+						"flag":"base"},
 					contentType: 'application/json; charset=utf-8'
 				});
 
@@ -327,9 +328,10 @@
 		var kmljson = {};
 		kmljson["electricalnetwork"] = electricalnetwork;
 		kmljson["n"] = String(n);
-		var kmlurl = 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createKMLFile';
+		kmljson["flag"] = "BASE"
+		// var kmlurl = 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createKMLFile';
 		//var kmlurl = 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/getKMLFile/en'+n+'.kml';
-		//var kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createKMLFile';		
+		var kmlurl = 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createKMLFile';		
 
 
 		//kmlurl += "/" + n;
@@ -341,9 +343,9 @@
 		var kmldataurl;
 				
 				var request = $.ajax({
-					url: kmlurl,
+					url: kmlurl + "?r="+(new Date()).getTime(),
 					type: 'GET',
-					data: { "electricalnetwork":electricalnetwork,"n":n},
+					data: kmljson,
 					contentType: 'application/json; charset=utf-8'
 				});
 
@@ -353,7 +355,7 @@
 							//url: 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createKMLFile/test2.kml',
 							//url: kmlurl,
 							//url: 'http://www.theworldavatar.com/ENVisualization/getKMLFile/en'+n+'.kml',
-							url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',
+							url: 'http://www.theworldavatar.com/OntoEN/testfinalBASE.kml'+"?r="+(new Date()).getTime(), 
 							suppressInfoWindows: false,
 							map: map
 						});
@@ -568,9 +570,10 @@
             
         	if(name.includes('EBus-001')){ // This is a slack bus, the magnitude is always 1 and the angle is always 0
 				//console.log("label forbidden= "+label);
-				if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')) {
+				//if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')) {
+				if(name.includes('Vm_EBus')) {
 					if (value !== 1){
-						alert('The value of the voltage magnitude and Vm for a slack bus should always be 1 kV (in p.u format)')
+						alert('The value of the Vm for a slack bus should always be 1 kV (in p.u format)')
 						proceed = false;
 					}
 				}
@@ -584,9 +587,10 @@
 			}
 			else{ // This is a load bus 
 			//console.log("label forbidden= "+label);
-				if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')){
+				//if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')){
+				if(name.includes('Vm_EBus')){
 					if( value > 1.05 || value <= 0.95){
-						alert('The value of the voltage magnitude and Vm should be between 0.95 and 1.05 kV (in p.u format)')
+						alert('The value of the Vm should be between 0.95 and 1.05 kV (in p.u format)')
 						proceed = false;
 					}
 				}			

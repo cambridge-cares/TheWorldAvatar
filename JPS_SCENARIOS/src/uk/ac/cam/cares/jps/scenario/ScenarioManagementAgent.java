@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog.ScenarioLogEntry;
 
@@ -48,11 +49,14 @@ public class ScenarioManagementAgent extends HttpServlet {
 	}
 	
 	public static String getScenarioIRI(String scenarioName) {
-		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName) + ".owl#Service";
+		//return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName) + ".owl#Service";
+		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
 	}
 	
 	public static String getScenarioUrl(String scenarioName) {
 		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
+
+		//return BucketHelper.getScenarioUrl(scenarioName);
 	}
 	
 	/**
@@ -138,7 +142,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 		
 		// add operations from the latest mocked agent
 		agent = ScenarioMockManager.getLatestMockedAgent(log);
-		if (agent != null) {
+		if ((agent != null) && !agent.isEmpty()) {
 			input = new JSONObject().put("agent", agent); 
 			jsondescr = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/describe", input.toString());
 			
@@ -182,22 +186,10 @@ public class ScenarioManagementAgent extends HttpServlet {
 		return result;
 	}
 	
-	public List<String> getScenarioIRIsOLD() {
-		List<String> result = new ArrayList<String>();
-		
-		File dir = new File(ScenarioHelper.getScenarioWorkingDir());
-		for (File current : dir.listFiles()) {
-			if (current.isFile() && current.getName().endsWith(".owl")) {
-				String iri = getScenarioIRI(current.getName());
-				result.add(iri);
-			}
-		}
-		
-		return result;
-	}
-	
 	public static String execute(String scenarioName, String httpUrl, JSONObject jo) {
 		addJpsContext(scenarioName, jo);
+		logger.info("HTTP URL RIGHT NOW= "+httpUrl);
+		logger.info("JSON= "+jo.toString());
 		return AgentCaller.executeGetWithURLAndJSON(httpUrl, jo.toString());
 	}
 	
@@ -206,12 +198,12 @@ public class ScenarioManagementAgent extends HttpServlet {
 		// this has the following consequence: if one agent makes a call to access the knowledge graph then its call is redirected
 		// to the scenario agent
 		String scenarioUrl = getScenarioUrl(scenarioName);
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		String usecaseUrl = jo.optString(JPSConstants.SCENARIO_USE_CASE_URL);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		String usecaseUrl = JPSContext.getUsecaseUrl(jo);
 		if (usecaseUrl == null) {
 			// create new usecaseUrl
 			usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
-			jo.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
+			JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		}
 	}
 }

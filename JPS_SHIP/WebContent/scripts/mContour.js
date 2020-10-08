@@ -1,12 +1,8 @@
-/**
- */
-
 //Concentration contour map threshould number
 const THRESHOULD_NUM = 8
 
 //Height is faked, each plane displayed between an interval
 const HEIGHT_INTERVAL = 5
-const LEGEND_DIV = 'legendwrapper'
 
 function getContourMaps (address, folder) {
 
@@ -18,10 +14,18 @@ function getContourMaps (address, folder) {
         folder: folder,
       },
       dataType: 'text',
-    }).done(function (d2result) {
-      console.log('get contour data')
-      d2result = JSON.parse(d2result)
-
+    }).done(function (data) {
+    	
+    	data = JSON.parse(data)
+	let d2result = data['grid']
+	let POL_LIST = data['listofpol']  
+    	let POL_NUM = data['numpol']
+    	let HEIGHT_NUM = data['numheight']
+    	let HEIGHT_GAP=data['numinterval']
+    	let INITIAL_HEIGHT=data['initialheight']
+    	
+    	
+      
       let bands = []
       //calculate global min max per polutant
       d2result.forEach(
@@ -67,19 +71,19 @@ function getContourMaps (address, folder) {
       //=============contour map as svg for each  ======================//
       let level = 0
       let svgstrs = d2result.map((output) => {
-        var svg = d3.select('#svgwrapper svg'),
-          width = +svg.attr('width'),
-          height = +svg.attr('height')
+        let svg = d3.select('#svgwrapper svg'),
+          width = +svg.attr('width')
         let range = THRESHOULD_NUM
-        let ROW_NUM = 80
-        let COL_NUM = 80
+        let sqr_size = Math.sqrt(output.length)
+        let ROW_NUM = sqr_size
+        let COL_NUM = sqr_size
         let values = output
         let ubound = bands[level][1]
         let lbound = bands[level][0]
         if (!ubound > 0) {
           ubound = 1
           range = 1
-        }else if (ubound === lbound) {
+        } else if (ubound === lbound) {
           ubound = ubound * THRESHOULD_NUM
         }
         level++
@@ -89,15 +93,15 @@ function getContourMaps (address, folder) {
           .domain([lbound, ubound]).range([0, range])
         let ticks = numberarray(range + 1)
         let thresholds = ticks.map((tik) => {return thresholdsC.invert(tik)})
-        for (var i = thresholds.length; i--;) {
+        for (let i = thresholds.length; i--;) {
           if (thresholds[i] === 0) thresholds.splice(i, 1)
         }
 
         let color = d3.scaleLog(d3.interpolateRdYlBu).
           domain(thresholds).
           range([
-        	'#b0d6f9',
-        	'#3986ce',
+            '#b0d6f9',
+            '#3986ce',
             'rgba(216,217,162,0.62)',
             'rgba(255,254,78,0.65)',
             '#fee91c',
@@ -127,12 +131,11 @@ function getContourMaps (address, folder) {
 
       //=========set up canvas for image conversion=========================//
 
-      var canvas = $('#drawcanvas')[0]
-      var context = canvas.getContext('2d')
-
-      context.translate(canvas.width, 0)
-      context.scale(-1, 1)
-
+      let canvas = $('#drawcanvas')[0]
+      let context = canvas.getContext('2d')
+      context.save();
+      context.translate(0, canvas.height);
+      context.scale(1, -1/originRatio);
       //========convert all svg strs to png images=============//
 
       let futureImages = svgstrs.map((svgstr) => {
@@ -154,8 +157,8 @@ function getContourMaps (address, folder) {
           return [dataurl, image[1], image[2]]
         })
         console.log(dataurls)
-
-        resolve(dataurls)
+        context.restore();
+        resolve([dataurls,POL_LIST,POL_NUM,HEIGHT_NUM,HEIGHT_GAP,INITIAL_HEIGHT])
 
       }, err => {//todo: err handling
         reject(err)
@@ -175,33 +178,14 @@ function getContourMaps (address, folder) {
 }
 
 function numberarray (len) {
-  var arr = []
+  let arr = []
 
-  for (var i = 0; i < len; i++) {
+  for (let i = 0; i < len; i++) {
     arr.push(i)
   }
   return arr
 }
 
-function enlarge (v) {
-  return Math.sqrt(v) * 10000
-}
-
-function restore (v) {
-  let t = v / 10000
-
-  return t * t * t
-}
-
-function d2arraymax (d2array) {
-  let mmax = 0
-  d2array.forEach((arr) => {
-    let arrmax = Math.max(...arr)
-    if (arrmax > mmax) {mmax = arrmax}
-  })
-  return mmax
-
-}
 
 function svgToImagePromise (svgstr) {
   return new Promise((resolve, reject) => {
@@ -217,7 +201,7 @@ function svgToImagePromise (svgstr) {
 }
 
 function d2Arr21d (d2array) {
-  coned = []
+  let coned = []
   d2array.forEach((row) => {
     coned = coned.concat(row)
   })
@@ -228,25 +212,20 @@ function d2Arr21d (d2array) {
 function makeLegend (selector_id, thresholds, color) {
   let range = thresholds.length - 1
 
-  var thresholdScale = d3.scaleThreshold().
+  let thresholdScale = d3.scaleThreshold().
     domain(thresholds).
     range(['rgb(244, 244, 244)'].concat(
       d3.range(range).map(function (i) { return color(thresholds[i])})))
 
-  console.log(d3.range(THRESHOULD_NUM + 1).
-    map(function (i) { return color(thresholds[i])}))
-  console.log(d3.range(6).map(function (i) { return 'q' + i + '-9'}))
 
-  var svg = d3.select('#' + selector_id).
+  let svg = d3.select('#' + selector_id).
     append('svg').
     style('height', '155px').
     style('width', '160px')
-  console.log(svg)
 
   svg.append('g').attr('class', 'legendQuant')
-  // .attr("transform", "translate(20,20)");
-  console.log('addl legend')
-  var legend = d3.legendColor().
+
+  let legend = d3.legendColor().
     labelFormat(d3.format('.3e')).
     labels(d3.legendHelpers.thresholdLabels).
     scale(thresholdScale)
@@ -257,12 +236,12 @@ function makeLegend (selector_id, thresholds, color) {
 }
 
 function makeSlider (selector_id, levelnum, callback) {
-  var parent = $('#' + selector_id)
-  console.log(parent)
+  let parent = $('#' + selector_id)
+
   parent.append(
     '<p><label for="amount">Height:</label><input class="readonlyinput" type="text" id="height-show" readonly></p>')
 
-  var slider = $('<div id=\'slider\'></div>').appendTo(parent).slider({
+  let slider = $('<div id=\'slider\'></div>').appendTo(parent).slider({
     min: 0,
     max: levelnum - 1,
     range: 'min',
@@ -275,21 +254,20 @@ function makeSlider (selector_id, levelnum, callback) {
     slider.slider('value', this.selectedIndex + 1)
 
   })
-
 }
 
 function makeRadios (selector_id, list, legend) {
-  var set = $('<form class=\'radiogroup\'></form>').
+  let set = $('<form class=\'radiogroup\'></form>').
     appendTo($('#' + selector_id))
   if (legend) {
     set.append('<legend>' + legend + '</legend>')
   }
   list.forEach((item) => {
-    set.append($('<input type=\'radio\'  value =\'' + item + '\' name=\'radio\' >' +
-      '<label>' + item + '&nbsp;</label>'))
+    set.append(
+      $('<input type=\'radio\'  value =\'' + item + '\' name=\'radio\' >' +
+        '<label>' + item + '&nbsp;</label>'))
   })
 
-  console.log(set.children('input')[0])
   $('.radiogroup').children('input').first().attr('checked', true)
 
 }
@@ -298,7 +276,8 @@ function makeRadios (selector_id, list, legend) {
 
 //make radio group
 
-const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001','SO2','O3']
-const POL_NUM = POL_LIST.length
-const HEIGHT_NUM = 4
+//const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001','SO2','O3']
+//const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx','SO2','O3', 'PM10', 'PM2.5']
+//const POL_NUM = POL_LIST.length
+//const HEIGHT_NUM = 4
 

@@ -10,14 +10,11 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
-import uk.ac.cam.cares.jps.scenario.ScenarioAgent;
 
 public class TestScenarios extends TestCase {
 	
-	// TODO-AE SC 20190218 what if the plant file is removed from claudius as OWL file and only triple store are used; find a solution such that test don't fail in future
 	//private static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";
 	public static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan";
-	
 	
 	private void putToThreadContext() {
 		ThreadContext.put("scenarioname", "abc");
@@ -72,7 +69,8 @@ public class TestScenarios extends TestCase {
 				.endObject().toString();
 		
 		String result = new ScenarioClient().call("test1234567", "/JPS_BASE/EmissionTestAgent/read", json);
-		assertTrue(result.startsWith("<rdf:RDF"));
+		System.out.println(result);
+		assertTrue(result.contains("<rdf:RDF"));
 	}
 	
 	public void testCreateAndDeleteScenario() {
@@ -179,12 +177,16 @@ public class TestScenarios extends TestCase {
 		assertTrue(jo.has("weatherstate"));
 	}
 	
-	public void xxxtestMergeScenarios() {
+	public void testCreateScenarioAndCallENAgent() throws JSONException {
 		
-		String sourceBucket = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\aascmergesource";
-		String destBucket = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\aascmerge";
+		String scenarioName = "testENTRIAL01";
+
+		String json = new JSONStringer().object()
+				.key("electricalnetwork").value("http://localhost:8080/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork")
+				.endObject().toString();
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/ENAgent/startsimulationOPF", json);
 		
-		new ScenarioAgent().copyOwlFiles(sourceBucket, destBucket);
+		System.out.println(result);
 		
 	}
 }

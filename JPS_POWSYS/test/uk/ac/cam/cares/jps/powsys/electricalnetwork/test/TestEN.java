@@ -1,17 +1,31 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
@@ -20,6 +34,7 @@ import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 public class TestEN extends TestCase {
 	
 	public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+	public static String SGELECTRICAL_NETWORK = "http://localhost:8080/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 	String dataPath = QueryBroker.getLocalDataPath();
 	String baseUrl=dataPath+"/JPS_POWSYS_EN";
 	
@@ -351,6 +366,7 @@ public class TestEN extends TestCase {
 			
 			+ "}";
 	
+	String usecaseID = UUID.randomUUID().toString();
 		
 	public void testextractOWLinArray() throws IOException, URISyntaxException {
 		//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of powsys";
@@ -362,6 +378,7 @@ public class TestEN extends TestCase {
 		   List<String[]>buslist=b.extractOWLinArray(b.readModelGreedy(ELECTRICAL_NETWORK),ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
 //		     List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfocost,"generatorcost",baseUrl);
 	      System.out.println(buslist.size());
+	      assertEquals(208, buslist.size());
 	}
 	
 		
@@ -370,11 +387,8 @@ public class TestEN extends TestCase {
 		
 		ENAgent b= new ENAgent ();
 		
-	//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
-	//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
-
 	String busmapurl=baseUrl+"/mappingforbus.csv";
-	OntModel model = b.readModelGreedy(ELECTRICAL_NETWORK);
+	OntModel model = ENAgent.readModelGreedy(ELECTRICAL_NETWORK);
 		List<String[]>list=b.extractOWLinArray(model,ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
 	List<String[]>list2=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfo,"generator",baseUrl);
 	List<String[]>list3=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfocost,"generatorcost",baseUrl);
@@ -384,43 +398,43 @@ public class TestEN extends TestCase {
 		
 		
 		String content=b.createNewTSV(list,baseUrl+"/mappingforbus.csv",busmapurl);
-		broker.put(baseUrl+"/bus.txt", content);
+		broker.putLocal(baseUrl+"/bus.txt", content);
 		
 		content=b.createNewTSV(list2,baseUrl+"/mappingforgenerator.csv",busmapurl);
-		broker.put(baseUrl+"/gen.txt", content);
+		broker.putLocal(baseUrl+"/gen.txt", content);
 		
 		content=b.createNewTSV(list4, baseUrl+"/mappingforbranch.csv",busmapurl);
-		broker.put(baseUrl+"/branch.txt", content);
+		broker.putLocal(baseUrl+"/branch.txt", content);
 		
 		content=b.createNewTSV(list3, baseUrl+"/mappingforgeneratorcost.csv",busmapurl);
-		broker.put(baseUrl+"/genCost.txt", content);
+		broker.putLocal(baseUrl+"/genCost.txt", content);
 	}	
 	
-	public void testStartSimulationPFAgentCallNonBaseScenario() throws IOException  {
+	public void testStartSimulationOPFAgentCallNonBaseScenario() throws IOException  { //no more pf
 
 		JSONObject jo = new JSONObject();
 		
-		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
-		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationPFCallAgent");
+//		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
+//		
+//		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFCallAgent");
+		jo.put("electricalnetwork", SGELECTRICAL_NETWORK);
+		String scenarioname="testSGPOWSYSOPFCallAgent6"+usecaseID;
+		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioname);
 		JPSHttpServlet.enableScenario(scenarioUrl);	
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);		
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true); //optional	
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		System.out.println("contextusecase= "+JPSContext.getUsecaseUrl());
+		System.out.println("contextuse case from jo= "+JPSContext.getUsecaseUrl(jo));
+//		
+		String usecaseUrl = BucketHelper.getUsecaseUrl();	
+		System.out.println("usecaseurl= "+usecaseUrl);
+		//JPSContext.putUsecaseUrl(jo, usecaseUrl); //if it is used, then the data will be moved to the base
+
 		
-		String usecaseUrl = BucketHelper.getUsecaseUrl();
-		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
-		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationPF", jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
+		System.out.println(resultStart);
 	}
-	
-//	public void testStartSimulationPFDirectCallBaseScenario() throws IOException  {
-//
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-//		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "PF");	
-//	}
-	
+		
 	public void testStartSimulationOPFDirectCallNonBaseScenario() throws IOException  {
 
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFDirectCall");
@@ -431,6 +445,112 @@ public class TestEN extends TestCase {
 			
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
+		JSONObject x=new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
+		System.out.println(x.toString());
+	}
+	
+	public void testStartSimulationOPFDirectCallBaseScenario() throws IOException  {			
+		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = dataPath + "/JPS_POWSYS_EN";
+		JSONObject x=new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
+		System.out.println(x.toString());
+	}
+	
+	public void xxxtestupdatelocalgenerator() throws IOException {
+		String resourceDir = "D:\\tmp\\scenario for testing with more generator\\Final Version\\owl file changed";
+		
+		for(int s=24;s<=29;s++) {
+			String x=String.format("%03d", s);
+			String filePath = resourceDir + "/EGen-"+x+".owl"; // the original owl file
+			FileInputStream inFile = new FileInputStream(filePath);
+			Reader in = new InputStreamReader(inFile, "UTF-8");
+			QueryBroker broker = new QueryBroker();
+			OntModel jenaOwlModel2 = ModelFactory.createOntologyModel();
+			jenaOwlModel2.read(in, null);
+			
+//add new import to owl files
+			//Ontology ont=jenaOwlModel2.getOntology("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl");
+			//ont.addImport(jenaOwlModel2.createResource("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl"));
+
+			//put the technology and emission 
+			Individual gen = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#EGen-"+x);
+			ObjectProperty realizes=jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes");
+			Individual powergenerationgas = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration");
+
+//			gen.addProperty(realizes,powergenerationgas);
+			ObjectProperty hasEmission=jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission");
+			ObjectProperty usestech=jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#usesGenerationTechnology");
+			ObjectProperty hasvalue = jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
+			ObjectProperty hasunit = jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
+			DatatypeProperty numval = jenaOwlModel2.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");;
+//			Individual ccgt = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CombinedCycleGasTurbine");
+//			Individual ocgt = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OpenCycleGasTurbine");
+//			Individual subcritical = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SubCriticalThermal");
+//			powergenerationgas.addProperty(usestech,ccgt);
+//			Individual ccgtval = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#V_CO2EmissionFactor_CCGT");
+//			Individual ocgtval = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#V_CO2EmissionFactor_OCGT");
+			Individual subcritval = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#V_CO2EmissionFactor_SubCritical");
+//			
+//			
+//			Individual Pact = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_PGen_EGen-"+x);
+			double emfact=subcritval.getPropertyValue(numval).asLiteral().getDouble();
+//			double actcap=Pact.getPropertyValue(numval).asLiteral().getDouble();
+//			OntClass emissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Actual_CO2_Emission");
+			OntClass scalarvalueclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
+//			Individual emission = emissionclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#Actual_CO2_Emission_EGen-"+x);
+//			Individual vemission = scalarvalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_Actual_CO2_Emission_EGen-"+x);
+//			powergenerationgas.addProperty(hasEmission,emission);
+//			emission.addProperty(hasvalue,vemission);
+//			vemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(emfact*actcap)));
+//			Individual t = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr");
+//			vemission.addProperty(hasunit,t);
+//
+//			Individual process = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#PowerGeneration_EGen-"+x);
+//			gen.removeProperty(realizes,process );
+			
+			OntClass designemissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission");
+			Individual desemission = designemissionclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#Design_CO2_Emission_EGen-"+x);
+			Individual vdesemission = scalarvalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_Design_CO2_Emission_EGen-"+x);
+			powergenerationgas.addProperty(hasEmission,desemission);
+			desemission.addProperty(hasvalue,vdesemission);
+			Individual Pmax = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_Pmax_EGen-"+x);
+			double descap=Pmax.getPropertyValue(numval).asLiteral().getDouble();
+			vdesemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(emfact*descap)));
+			Individual tph = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr");
+			vdesemission.addProperty(hasunit,tph);
+//edit the linkage of plant-generator
+//			ObjectProperty isSubsystemOf=jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isSubsystemOf");
+//			Individual gen = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#EGen-"+x);
+//			Individual plant = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore.owl#PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore");
+//			gen.removeProperty(isSubsystemOf,plant );
+//			gen.addProperty(isSubsystemOf, "http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_Oil_Power_Station_Singapore.owl#PowerSeraya_Pulau_Seraya_Oil_Power_Station_Singapore");
+
+//edit the x and y for several generator
+//			DatatypeProperty numval = jenaOwlModel2.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");;
+//			Individual xcoordinatevalue = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_x_EGen-"+x);
+//			xcoordinatevalue.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(103.72386)));
+//			Individual ycoordinatevalue = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_y_EGen-"+x);
+//			ycoordinatevalue.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(1.28135)));
+			String content = JenaHelper.writeToString(jenaOwlModel2);
+			broker.putLocal(filePath, content);
+		}
+			
+		
+	}
+	
+	public void xxxtestread() throws IOException { //need to provide specific directory first
+		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testPOWSYSENSimulationOPFDirectCall\\localhost_8080\\data\\8b7e6530-54b7-4e51-99cf-1bcc663d5658\\JPS_POWSYS_EN";
+		String fileName = baseUrl+"/outputstatus.txt";
+		Path path = Paths.get(fileName);
+		byte[] bytes = Files.readAllBytes(path);
+		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+		System.out.println(allLines.size());
+		System.out.println(allLines.get(2));
+	
+	}
+
+	public void xxxtestquerygen() {
+		OntModel jenaOwlModel = JenaHelper.createModel("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl");
+		new ENAgent().updateGeneratorEmission(jenaOwlModel);
 	}
 }
