@@ -1,10 +1,11 @@
-package uk.ac.cam.cares.jps.base.util;
+package uk.ac.cam.cares.jps.base.util.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
