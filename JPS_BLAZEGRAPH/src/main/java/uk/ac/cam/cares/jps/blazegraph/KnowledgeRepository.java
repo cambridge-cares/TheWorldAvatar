@@ -22,6 +22,7 @@ import com.bigdata.rdf.sail.webapp.client.RemoteRepository.AddOp;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**
  * This class has been designed and developed to enable performing CRUD<br>
@@ -171,7 +172,8 @@ public class KnowledgeRepository {
 		File dir = new File(this.ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
-			List<File> files = getDirectoryFiles(dir, Arrays.asList(".owl",".rdf"));
+			FileUtil fileUtil = new FileUtil();
+			List<File> files = fileUtil.getDirectoryFiles(dir, Arrays.asList(".owl",".rdf"));
 			System.out.println("Total number of files to upload: "+files.size());
 			if(files==null){
 				return;
@@ -324,7 +326,8 @@ public class KnowledgeRepository {
 		File dir = new File(ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
-			List<File> files = getDirectoryFiles(dir, Arrays.asList(".owl",".rdf"));
+			FileUtil fileUtil = new FileUtil();
+			List<File> files = fileUtil.getDirectoryFiles(dir, Arrays.asList(".owl",".rdf"));
 			System.out.println("Total number of files to upload: "+files.size());
 			if(files==null){
 				return;
@@ -338,36 +341,6 @@ public class KnowledgeRepository {
 		}
 	}
 
-	/**
-	 * Traverses the hierarchy rooted at the folder set by a calling method<p>
-	 * and looks for the list of files of the given types.<p>
-	 * <p>
-	 * To get all types of files, supply an empty string in the list of file<p>
-	 * extensions. Read more details in the fileExtensions parameter below.
-	 * 
-	 * @param folder folder or directory provided by the calling method
-	 * @param fileExtensions one or more file extensions provided as a list<p>
-	 * by the calling method, e.g. ("owl", "rdf"). If the calling method supplies<p>
-	 * empty (""), the method will return all types of files.
-	 * @return
-	 */
-	public List<File> getDirectoryFiles(File folder, List<String> fileExtensions){
-			if(folder!=null && folder.isFile()){
-				for(String fileExtension:fileExtensions){
-					if(folder.getName().endsWith(fileExtension)){
-						files.add(new File(folder.getAbsolutePath()));						
-					}
-				}
-			}
-			if (folder.isDirectory()) {
-				String[] subFolders = folder.list();
-				for (String subFolder : subFolders) {
-					getDirectoryFiles(new File(folder.getAbsolutePath().concat(File.separator).concat(subFolder)), fileExtensions);
-				}
-			}
-			return files;
-	}
-	
 	/**
 	 * Performs any SPARQL query against the provided repository.
 	 * 
