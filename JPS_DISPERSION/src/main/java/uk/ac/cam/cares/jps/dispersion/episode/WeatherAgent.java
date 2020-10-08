@@ -136,7 +136,7 @@ public class WeatherAgent extends JPSHttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				//extractAvailableContext will select the two stations
+				//extractAvailableContext will provide the two stations for modelling
 				List<String[]> listmap = extractAvailableContext(cityiri, centerPointConverted[0], centerPointConverted[1]);
 				String context = listmap.get(0)[0]; //main stn
 				String context2 = listmap.get(1)[0]; // the furthest station
@@ -189,7 +189,8 @@ public class WeatherAgent extends JPSHttpServlet {
 	}
 
 	private Map<String,String> extractMappingname(){
-		  String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+		// This method simply gives all the stations in a given city
+		String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
@@ -224,18 +225,23 @@ public class WeatherAgent extends JPSHttpServlet {
 					+ "}Limit30";
 		List<String[]> listsgstn = queryEndPointDataset(querygraph); //it will give 30 data
 		
-		// The following method gives the two latest time stamps, the time stamps may not be from the same stations
-		// Two time stamps were obtained from each station in the city and then sorted
+		// The following method gives two sets of time stamps from the two most up-to-date stations
 		List<String> time2 = getLatestTimeStationUpdate(listsgstn);
 
-		// It is unclear why do we need to loop through the two latest time stamps, the second time stamp seems redundant in my observation
-		// if there is at least one available station that satisfies the query in the latest time stamp, the second one will be skipped
+		// If there is at least one available station that satisfies the query in the latest time stamp, the second one will be skipped
 		// The current query requires the station to have exactly seven properties, not more not less
 		// I suspect this is a requirement of the episode agent to have all 7 properties
 		// There are a number of stations in Singapore that give 5 properties
 		// The indices of the queried properties could be improved to use variables instead
 
 		// listmap = list of stations that contain exactly 7 data points at the queried time stamp
+		
+		// The two main reasons for the following implementation 
+		// 1) Sometimes a weather station might be offline, so it is preferable to get a station further away but more up-to-date
+		// 2) Each station has properties from two weather sources to form a complete set for the episode model
+		// This is a bad and very inefficient way to do this because the queried time from the previous function belongs
+		// to a single station, and it is looping through all the weather stations to find the right one.
+		// Also, the properties are queried 1 by 1, so they might have different time stamp if the code hangs halfway?
 		List<String[]> listmap=new ArrayList<String[]>();
 		for(int y=0;y<time2.size();y++) { 
 			for(int x=0;x<listsgstn.size();x++) {
@@ -284,7 +290,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		
 		//find the main station = station closest to the centre 
 		//this station will provide the majority of data for the dispersion model
-		//it is unclear why do we use the time reference of the very first station
+		//it is unclear why do we use the time reference of the very first station (they are the same)
 		double distmin=CalculationUtils.distanceWGS84(y0,x0, Double.valueOf(listmap.get(0)[3]),Double.valueOf(listmap.get(0)[2]),"K");
 		String latesttimereference=listmap.get(0)[4];
 		for(int r=0;r<listmap.size();r++) {
@@ -337,7 +343,10 @@ public class WeatherAgent extends JPSHttpServlet {
 	private List<String> getLatestTimeStationUpdate(List<String[]> listsgstn) {
 		List<String>time= new ArrayList<String>();
         // For each station obtain the two latest updated properties' update time
-		// It is unclear why do we need obtain two of them
+		// This is probably because data were obtained from two different sources and within the same stations
+		// there might be different timestamps. 
+		// This method will provide two sets of timestamps from two stations, I believe the time is sorted according
+		// to the latest timestamp from each station using the 'collection' sort method
 		for(int x=0;x<listsgstn.size();x++) {
 			String context= listsgstn.get(x)[0];
 			String querydata = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -517,6 +526,7 @@ public class WeatherAgent extends JPSHttpServlet {
     
     public static String getWeatherDataFromAccuweatherAPI(String cityIRI) throws URISyntaxException {
     	String cityname=null;
+    	// These names should be stored in a database or obtained
     	if(cityIRI.toLowerCase().contains("singapore")) {
     		cityname="singapore";
     	}else if(cityIRI.toLowerCase().contains("kong")) {
