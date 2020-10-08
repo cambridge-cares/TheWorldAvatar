@@ -746,7 +746,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		System.out.println("newlowery="+lowy);
 		System.out.println("newuppery="+upy);
 
-		// it is assumed to be already in utm 48 or this calculation?
+		// Region has been converted using getNewRegionData 
 		DecimalFormat df = new DecimalFormat("0.0");
 		df.setRoundingMode(RoundingMode.HALF_EVEN);
 		double proclowx = Double.valueOf(lowx);

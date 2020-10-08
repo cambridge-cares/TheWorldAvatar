@@ -66,7 +66,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 	private JSONObject crankUpRealShipModel(String type, String newjsonfile) {
 		JSONObject json = new JSONObject(newjsonfile);
 		
-		
+		// these scaling factors are purely to make the results fall within the reasonable range
 		for(int gas=0;gas<json.getJSONArray("pollutants").length();gas++) {
 			JSONObject pollutantmass=json.getJSONArray("pollutants").getJSONObject(gas);
 			Double oldvaluemixmass= pollutantmass.getDouble("value");
