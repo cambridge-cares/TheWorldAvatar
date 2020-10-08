@@ -22,6 +22,12 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class FileUtil {
 
+	/**
+	 * Declared to return the list of files produced by the getDirectoryFiles()<p>
+	 * method.
+	 */
+	private List<File> files = new ArrayList<>();
+	
 	public static String readFileLocally(String path) {
 		
 		try {
@@ -132,4 +138,34 @@ public class FileUtil {
  			e.printStackTrace();
  		}
     }
+	
+		/**
+	 * Traverses the hierarchy rooted at the folder set by a calling method<p>
+	 * and looks for the list of files of the given types.<p>
+	 * <p>
+	 * To get all types of files, supply an empty string in the list of file<p>
+	 * extensions. Read more details in the fileExtensions parameter below.
+	 * 
+	 * @param folder folder or directory provided by the calling method
+	 * @param fileExtensions one or more file extensions provided as a list<p>
+	 * by the calling method, e.g. ("owl", "rdf"). If the calling method supplies<p>
+	 * empty (""), the method will return all types of files.
+	 * @return
+	 */
+	public List<File> getDirectoryFiles(File folder, List<String> fileExtensions){
+			if(folder!=null && folder.isFile()){
+				for(String fileExtension:fileExtensions){
+					if(folder.getName().endsWith(fileExtension)){
+						files.add(new File(folder.getAbsolutePath()));						
+					}
+				}
+			}
+			if (folder.isDirectory()) {
+				String[] subFolders = folder.list();
+				for (String subFolder : subFolders) {
+					getDirectoryFiles(new File(folder.getAbsolutePath().concat(File.separator).concat(subFolder)), fileExtensions);
+				}
+			}
+			return files;
+	}
 } 
