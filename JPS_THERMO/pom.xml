@@ -87,14 +87,14 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>com.cmclinnovations.ontochem</groupId>
+			<groupId>com.cmclinnovations</groupId>
 			<artifactId>CMCLOntoKin</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
-			<artifactId>jps-base</artifactId>
+			<artifactId>jps-base-lib</artifactId>
 			<version>1.3.0</version>
 		</dependency>
 

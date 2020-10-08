@@ -1,0 +1,29 @@
+# VERSION "$Id: Makeinclude.OSF1 1 2017-06-10 18:05:20Z coats $"
+#
+#   Enhancements due to Jinyou Liang, California Air Resources Board
+
+AR   = ar
+CC   = cc
+FC   = f90
+M4   = m4
+CPP  = cpp
+LINK = cc
+
+## Module-include-directory command
+MODI = -I
+
+MFLAGS    = -arch host -tune host
+
+OMPFLAGS  = -omp 
+OMPLIBS   = -omp
+PVMLIBS   = 
+COPTFLAGS = -O3 ${MFLAGS}
+FOPTFLAGS = -O3 -non_shared -align dcommons -automatic ${MFLAGS}
+FPPFLAGS  = -DF90=1 -DAUTO_ARRAYS=1 -DFLDMN=1
+FSFLAGS   = -static
+ARCHFLAGS = -DF90=1 -DAUTO_ARRAYS=1 -DFLDMN=1
+PARFLAGS  = -omp
+ARCHLIB   = 
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

@@ -1,0 +1,29 @@
+# VERSION "$Id: Makeinclude.IRIX5 1 2017-06-10 18:05:20Z coats $"
+#
+AR   = ar
+CC   = cc
+FC   = f90
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+MFLAGS    = -o32 -align64 -OPT:Olimit=0
+
+OMPFLAGS  = -mp -mpio
+OMPLIBS   = -lmp
+COPTFLAGS = -O2 ${MFLAGS}
+FOPTFLAGS = -O2 ${MFLAGS}
+FPPFLAGS  = -cpp -macro_expand
+FSFLAGS   = -static
+ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1 -DF90=1 -DSTAR=101
+PARFLAGS  =
+ARCHLIB   = 
+ARCHLIB   = 
+
+#  Override PVM_ARCH to get old-32-bit libs and definitions.
+
+PVM_ARCH  = SGI5
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

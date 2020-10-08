@@ -61,6 +61,7 @@ public class TestCompositionEndpoint {
 				.setHost(myHost).setPort(myPort)
 				.setPath("/JPS_COMPOSITION_LITE/CompositionEndpoint")
 				.setParameter("query", agentInString);
+		System.out.println(builder);
 		String result = Request.executeGet(builder);
 
 		System.out.println(result);
