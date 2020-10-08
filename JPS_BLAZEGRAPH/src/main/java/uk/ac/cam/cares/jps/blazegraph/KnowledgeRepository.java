@@ -3,6 +3,9 @@ package uk.ac.cam.cares.jps.blazegraph;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.openrdf.model.Statement;
@@ -36,6 +39,12 @@ public class KnowledgeRepository {
 	private String ontologyFilePath;
 	private String ontologyDirectory;
 	private String query;
+	
+	/**
+	 * Declared to return the list of files produced by the getDirectoryFiles()<p>
+	 * method.
+	 */
+	private List<File> files = new ArrayList<>();
 	
 	/**
 	 * The default constructor.
@@ -162,9 +171,14 @@ public class KnowledgeRepository {
 		File dir = new File(this.ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
-			for(File file:dir.listFiles()){
+			List<File> files = getDirectoryFiles(dir, Arrays.asList(".owl",".rdf"));
+			System.out.println("Total number of files to upload: "+files.size());
+			if(files==null){
+				return;
+			}
+			for(File file:files){
 				if(file.isFile()){
-					uploadOntology(this.endPointURL, this.repositoryName, file.getAbsolutePath());
+					uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
 					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
 				}
 			}
@@ -310,7 +324,12 @@ public class KnowledgeRepository {
 		File dir = new File(ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
-			for(File file:dir.listFiles()){
+			List<File> files = getDirectoryFiles(dir, Arrays.asList(".owl",".rdf"));
+			System.out.println("Total number of files to upload: "+files.size());
+			if(files==null){
+				return;
+			}
+			for(File file:files){
 				if(file.isFile()){
 					uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
 					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
@@ -319,6 +338,36 @@ public class KnowledgeRepository {
 		}
 	}
 
+	/**
+	 * Traverses the hierarchy rooted at the folder set by a calling method<p>
+	 * and looks for the list of files of the given types.<p>
+	 * <p>
+	 * To get all types of files, supply an empty string in the list of file<p>
+	 * extensions. Read more details in the fileExtensions parameter below.
+	 * 
+	 * @param folder folder or directory provided by the calling method
+	 * @param fileExtensions one or more file extensions provided as a list<p>
+	 * by the calling method, e.g. ("owl", "rdf"). If the calling method supplies<p>
+	 * empty (""), the method will return all types of files.
+	 * @return
+	 */
+	public List<File> getDirectoryFiles(File folder, List<String> fileExtensions){
+			if(folder!=null && folder.isFile()){
+				for(String fileExtension:fileExtensions){
+					if(folder.getName().endsWith(fileExtension)){
+						files.add(new File(folder.getAbsolutePath()));						
+					}
+				}
+			}
+			if (folder.isDirectory()) {
+				String[] subFolders = folder.list();
+				for (String subFolder : subFolders) {
+					getDirectoryFiles(new File(folder.getAbsolutePath().concat(File.separator).concat(subFolder)), fileExtensions);
+				}
+			}
+			return files;
+	}
+	
 	/**
 	 * Performs any SPARQL query against the provided repository.
 	 * 
@@ -514,21 +563,21 @@ public class KnowledgeRepository {
 	 */
 	private void checkRepositoryDataAvailability(String endPointURL, String repositoryName)
 			throws Exception {
-		if (this.endPointURL == null) {
+		if (endPointURL == null) {
 			throw new Exception("The value of endPointURL is null.");
 		}
-		if (this.endPointURL.trim().isEmpty()) {
+		if (endPointURL.trim().isEmpty()) {
 			throw new Exception("The value of endPointURL is empty.");
 		}
-		if (this.repositoryName == null) {
+		if (repositoryName == null) {
 			throw new Exception("The value of repositoryName is null.");
 		}
-		if (this.repositoryName.isEmpty()) {
+		if (repositoryName.isEmpty()) {
 			throw new Exception("The value of repositoryName is emptry.");
 		}
-		if (this.storeType == null) {
-			throw new Exception("The value of storeType is null.");
-		}
+//		if (this.storeType == null) {
+//			throw new Exception("The value of storeType is null.");
+//		}
 	}
 	
 	/**
@@ -539,7 +588,7 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	private void checkStoreTypeDataAvailability(RDFStoreType storeType) throws Exception {
-		if (this.storeType == null) {
+		if (storeType == null) {
 			throw new Exception("The value of storeType is null.");
 		}
 	}
@@ -552,10 +601,10 @@ public class KnowledgeRepository {
 	 */
 	private void checkOntologyUploadDataAvailability(String ontologyFilePath)
 			throws Exception {
-		if (this.ontologyFilePath == null) {
+		if (ontologyFilePath == null) {
 			throw new Exception("The value of ontologyFilePath is null.");
 		}
-		if (this.ontologyFilePath == null) {
+		if (ontologyFilePath == null) {
 			throw new Exception("The value of ontologyFilePath is empty.");
 		}
 	}
@@ -568,10 +617,10 @@ public class KnowledgeRepository {
 	 */
 	private void checkOntologyDiretoryAvailability(String ontologyDirectory)
 			throws Exception {
-		if (this.ontologyDirectory == null) {
+		if (ontologyDirectory == null) {
 			throw new Exception("The value of ontologyDirectory is null.");
 		}
-		if (this.ontologyDirectory == null) {
+		if (ontologyDirectory == null) {
 			throw new Exception("The value of ontologyDirectory is empty.");
 		}
 	}
@@ -584,11 +633,47 @@ public class KnowledgeRepository {
 	 */
 	private void checkQueryAvailability(String query)
 			throws Exception {
-		if (this.query == null) {
+		if (query == null) {
 			throw new Exception("The value of query is null.");
 		}
-		if (this.query == null) {
+		if (query == null) {
 			throw new Exception("The value of query is empty.");
+		}
+	}
+	
+	/**
+	 * The main method of the class developed to import ontologies (both TBox<p>
+	 * and ABox)
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args){
+		if(args.length>=3){
+			if(args[0].isEmpty()){
+				System.out.println("The first argument is empty. Provide an Endpoint URL like 'http://localhost:8080/blazegraph'");
+				System.exit(0);
+			}
+			if(args[1].isEmpty()){
+				System.out.println("The second argument is empty. Provide a repository name like 'ontokin'");
+				System.exit(0);
+			}
+			if(args[2].isEmpty()){
+				System.out.println("The third argument is empty. Provide the path to the directory where ontologies reside like C:/data/kb");
+				System.exit(0);
+			}
+			KnowledgeRepository kr = new KnowledgeRepository();
+			kr.endPointURL = args[0];
+			kr.repositoryName = args[1];
+			kr.ontologyDirectory = args[2];
+			try{
+				kr.uploadOntologies();
+				System.exit(0);
+			}catch(Exception e){
+				System.out.println(e.getMessage());
+			}
+		}else{
+			System.out.println("For uploading ontologies from a directory provide the URL of Endpoint, name of repository and absolute path of the ontology directory as follows:");
+			System.out.println("http://localhost:8080/blazegraph ontokin C:/data/kb");
 		}
 	}
 }
