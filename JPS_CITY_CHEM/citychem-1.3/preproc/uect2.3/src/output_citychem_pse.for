@@ -56,6 +56,11 @@
 !***********************************************************************
 !***  Subroutine output_citychem_pse writes output for point sources
 !***  in CityChem format (one file with meta data and emission values)
+
+!!!+++++++++++++++++++++++++++++
+!!  modified by Kang @ CARES, @ Dec, 2019:
+!!  1, adding moving point 
+!!  2, editing the point source output file date value to correct simluation time (hour)      
 !***********************************************************************
 
 !     Declarations of variables by using the MODULES feature:
@@ -91,7 +96,13 @@
       character(len=90)                 :: fbiso
       character(len=60)                 :: startdate_out
       character(len=10)                 :: pointid
-      character(len=10)                 :: yyout, mmout, ddout
+!!!==============================================
+!!! changed by Kang @ CARES
+!!! change the simluation time appeared in point source output file  
+!! orig:      character(len=10)                 :: yyout, mmout, ddout
+      character(len=10)                 :: yyout, mmout, ddout, hhout
+!!!============================================== 
+           
       real, dimension(nps,ncc,nhours)   :: pse_src_outhour
       real, dimension(nps,n_pse_params) :: pse_src_outparm
 
@@ -112,7 +123,13 @@
        yy     = year-2000
        mony   = mnth
        daynn  = daym
-       hournn = 0
+!!!==============================================
+!!! changed by Kang @ CARES
+!!! change the simluation time appeared in point source output file  
+!! orig:       hournn = 0
+       hournn = hour
+!!!==============================================
+       
        minunn = 0
        secunn = 0
 
@@ -157,8 +174,15 @@
        write (yyout,'(I2)') yy
        write (mmout,'(I2)') mony
        write (ddout,'(I2)') daynn
-       startdate_out = trim(yyout)//'        '//trim(mmout)//'         '//trim(ddout)//'         0         0         0         '
-
+!!!==============================================
+!!! changed by Kang @ CARES
+!!! change the simluation time appeared in point source output file        
+!!  orig:       startdate_out = trim(yyout)//'        '//trim(mmout)//'         '//trim(ddout)//'         0         0         0         '
+       write (hhout,'(I2)') hournn
+       startdate_out = trim(yyout)//'        '//trim(mmout)//'         '//trim(ddout)//'         '&
+                      //trim(hhout)//'         0         0         '
+!!!==============================================
+       
 ! ***   Write 4 info lines
        write (funit_out_points ,fb)                ncc,( cpname( i ), icp( i ),i=1,ncc)
        write (funit_out_points ,'(I4,4X,I4)'  )    iqu,iqt
@@ -220,9 +244,17 @@
              penergy = int(pse_src_outparm (n, 8))
 
 ! *** Change write format (16E10.2) if ncc changed
-             write (funit_out_points, 2000) pointid, (pse_src_outparm (n,p), p=1,7 ),             &
+!             write (funit_out_points, 2000) pointid, (pse_src_outparm (n,p), p=1,7 ),             &
+!                                            penergy, (pse_src_outparm (n,p), p=9,n_pse_params),   &
+!                                            ( pse_src_outhour(n,i,h), i=1,ncc )
+!!!!!!!===========================================================================================
+!!!===================================
+!!! for moving point by Kang
+!!!                                                  
+             write (funit_out_points, 2020) pointid, (pse_src_outparm (n,p), p=1,7 ),             &
                                             penergy, (pse_src_outparm (n,p), p=9,n_pse_params),   &
                                             ( pse_src_outhour(n,i,h), i=1,ncc )
+!!!!!!!===========================================================================================                                            
 ! *** Same output but including isoprene
 !             write (funit_out_points_iso, 2010) pointid, (pse_src_outparm (n,p), p=1,7 ),             &
 !                                            penergy, (pse_src_outparm (n,p), p=9,n_pse_params),   &
@@ -254,8 +286,11 @@
 
       return
 
-
- 2000 format(A10,2X, 7F11.2, I6, 2F11.2,2X, 22E10.2)
+!!!===================================
+!!! for moving point by Kang
+!!!
+ 2020 format(A10,2X, 7F11.2, I6, 7F11.2,2X, 22E10.2)
+!!!  2000 format(A10,2X, 7F11.2, I6, 2F11.2,2X, 22E10.2)
 !!! 2010 format(A10,2X, 7F11.2, I6, 2F11.2,2X, 22E10.2)
 
       end subroutine output_citychem_pse

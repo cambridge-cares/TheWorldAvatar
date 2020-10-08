@@ -95,7 +95,12 @@
 ! REVISION HISTORY
 !
 !    xx Dat 201x  Name: Line  Description of Change
+!    this subroutine is changed by Kang @ CARES, Dec. 2019 to write out average/instantanous 
+!!   (determined by ("averaged_output" read from input control file for concentration data) 
+!     emission data @ receptor and monitor stations (ground level) to .dat file. 
 !
+!     averaged_output=0, then it is instantaneous concentration at last timestep
+!     =1, average concentration for each hour.
 ! ----------------------------------------------------------------------------------
 
       use mod_main
@@ -136,6 +141,14 @@
 ! Array arguments
       double precision, allocatable :: field2D(:,:,:)
       double precision              :: field1D(STATIONS,STATIONS,1)
+!!=====================================================
+!! write out emission data at receptors and monitors to .csv file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!=======================================================
+      double precision, allocatable :: fieldmoni(:,:,:)   !!! monitor station gas concentrtions
+      double precision, allocatable :: fieldrecp(:,:,:,:) !! receptor gas concentrations
+      integer :: II
+!!=======================================================
 
 ! ALLOCATE THE RECEPTOR CONC ARRAYS
         ! Receptor point coordinates: xr(NR), yr(NR)
@@ -147,7 +160,14 @@
         facres = INT(dx/gridwidth)
 
         if (.not. allocated(field2D) )  allocate(field2D(NX*facres,NY*facres,1))
-
+!!=====================================================
+!! write out emission data at receptors and monitors to .csv file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!=======================================================
+        if (.not. allocated(fieldmoni) )  allocate(fieldmoni(STATIONS,1,NC))
+        if (.not. allocated(fieldrecp) )  allocate(fieldrecp(NX*facres,NY*facres,1,NC))
+!!=======================================================
+          
 ! If no receptor concentration file then return
 
          !print *,'wstatr, file: ',rstafn
@@ -230,7 +250,13 @@
                   do I = 1, (NX*facres)
 
                       field2D(I,J,1) = CRAVED(IC,K)          
-
+!!=====================================================
+!! write out emission data at receptors and monitors to .csv file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!=======================================================
+                      fieldrecp(I,J,1,IC) = CRAVED(IC,K)
+!!=======================================================
+                      
 !MSK debug start
 !MSK debug:   Check all NC compounds before write netCDF
 !MSK debug                      if (K.eq.10000) then
@@ -291,6 +317,14 @@
                    ! write values in the diagonale
                      if (I.eq.J) then
                        field1D(J,I,1) = CRAVED(IC,K)          
+
+!!===============================================================
+!! write out emission data at receptors and monitors to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!===============================================================
+                      fieldmoni(K,1,IC) = CRAVED(IC,K)
+!!===============================================================
+                      
                        K=K+1
                     else
                        field1D(J,I,1) = 0.0 
@@ -319,6 +353,35 @@
 
   100 CONTINUE
 
+
+!!=================================================================
+!! write out emission data at receptors and monitors to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!=================================================================
+      open(unit=1111,file="../OUTPUT/recp_hour.dat")  !! open receptor hourly emission datafile
+      open(unit=1112,file="../OUTPUT/monitor_hour.dat")  !! open monitor station hourly emission datafile
+      write(1111,2140)(CMPND(IC),IC=1,NC)
+      write(1112,2140)(CMPND(IC),IC=1,NC)  
+      K = STATIONS + 1
+      do  J = 1, (NY*facres) 
+         do I = 1, (NX*facres)
+             write(1111,2150)  (mdate(II,Nhh_in),II=1,4), XR(K),YR(K),ZR(K),(fieldrecp(I,J,1,IC), IC=1,NC)  
+             K=K+1
+          enddo
+      enddo 
+
+      K = 1
+      do  K=1,STATIONS 
+               write(1112,2150) (mdate(II,Nhh_in),II=1,4), XR(K),YR(K),ZR(K),(fieldmoni(K,1,IC),IC=1,NC)  
+      
+      enddo  
+
+        if (allocated(fieldmoni))     deallocate(fieldmoni)
+        if (allocated(fieldrecp))     deallocate(fieldrecp)
+
+       close(1111)
+       close(1112)   
+!!==================================================================      
 ! Deallocate
         if (allocated(field2D))     deallocate(field2D)
 
@@ -332,4 +395,11 @@
 
 ! End of subroutine WSTATR
 
+!!==================================================================
+!! write out emission data at receptors and monitors to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!==================================================================
+ 2140 format ("Year, Month, Day, Hour, X(m), Y(m), Z(m), ",22A10)
+ 2150 format (I4,3I3,3F12.3,22F12.3)
+!!==================================================================
       end subroutine wstatr
