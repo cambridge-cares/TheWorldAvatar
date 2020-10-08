@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 
 public class JSonRequestParser {
 	
@@ -53,6 +50,34 @@ public class JSonRequestParser {
 	}
 	
 	// mods part
+	public static boolean getIfOnlyEval(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("onlyEval");
+		if (locateNode.asText().toLowerCase().contains("y")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static boolean getIfEvalFirst(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("evalFirst");
+		if (locateNode.asText().toLowerCase().contains("y")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static List<String> getRxnsMustInclude(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("reactionMustInclude");
+		List<String> reactionIRI = new ArrayList<>();
+		for (JsonNode arrayItem : locateNode) {
+			reactionIRI.add(arrayItem.asText());
+		}
+		
+		return reactionIRI;
+	}
+	
 	public static String getIgnDelayMethod(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("ignDelayOption").path("method");
 		
@@ -65,8 +90,20 @@ public class JSonRequestParser {
 		return locateNode.asText();
 	}
 	
+	public static String getIgnDelayScaling(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("ignDelayOption").path("scaling");
+		
+		return locateNode.asText();
+	}
+	
 	public static String getFlameSpdTranModel(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("flameSpeedOption").path("tranModel");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getFlameSpdScaling(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("flameSpeedOption").path("scaling");
 		
 		return locateNode.asText();
 	}
@@ -79,6 +116,96 @@ public class JSonRequestParser {
 	
 	public static String getRelPerturb(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensAna").path("relPerturbation");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getNumOfSobolPoints(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("samplingAlg").path("sobolPoints");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getOutputInterval(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("samplingAlg").path("outputInterval");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getActiveParamScaling(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("samplingAlg").path("activeParamScaling");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getNumOfInitPoints(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("initPoints");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getMoDSExePath(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("executable").path("path");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getCanteraCondaEnv(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("cantera").path("environment");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getSimEnd(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("kinetics").path("numerical").path("simEnd");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getNIters(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("nIters");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getRho(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("rho");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getRhoFactor(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("rhoFactor");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getEpsilon(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("epsilon");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getObjectiveFunction(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("objectiveFunction");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getIgnDelayResponseRatio(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("ignDelayOption").path("responseRatio");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getFlameSpdResponseRatio(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("flameSpeedOption").path("responseRatio");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getRangeOfMultipliers(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("samplingAlg").path("rangeOfMultipliers");
 		
 		return locateNode.asText();
 	}

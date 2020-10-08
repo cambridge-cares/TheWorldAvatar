@@ -9,8 +9,6 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -27,6 +25,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpPost;
+import org.apache.commons.validator.routines.IntegerValidator;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -37,6 +37,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -78,17 +79,17 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		validateInput(requestParams.toString());
 		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 		String agentiri = requestParams.optString("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
+		String options = requestParams.optString("options","1");//How do we select the options? 
+		
 		String coordinates = readCoordinate(stationiri,agentiri);
 		String gasType, dispMatrix ="";
-		String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
 		String[] directorydata = getLastModifiedDirectory(agentiri, location);
 		File dirFile = new File(directorydata[0]);
 		String directoryFolder = dirFile.getParent();
 		Date directorytime=ConvertTime(directorydata[1]);
 		DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-		
-		String options = requestParams.optString("options","1");//How do we select the options? 
 		String[] arrayFile = finder(directoryFolder);
 		String fGas = arrayFile[0];
 		File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst
@@ -531,6 +532,14 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			return "[" + sb.toString() + "]";
 		
     }
+    /** performs scheduled update to triple storage
+     * 
+     * @param context
+     * @param propnameclass
+     * @param scaledvalue
+     * @param prescaledvalue
+     * @param newtimestamp
+     */
     public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, Date newtimestamp) {
 		DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
@@ -588,7 +597,15 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			
 			KnowledgeBaseClient.update(dataseturl, null, sparqlupdate); //update the dataset	
 	}
-    
+    /** runs matlab code using CommandHelper/Comand Line
+     * 
+     * @param baseUrl
+     * @param coordinates
+     * @param gasType
+     * @param options
+     * @param dispMatrix
+     * @throws Exception
+     */
     public void createCommand(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
 		String loc = " virtual_sensor(" + coordinates +"," +gasType
 				+"," +options+",'"+baseUrl+"/','" + dispMatrix+"'";
@@ -603,70 +620,58 @@ public class InterpolationAgent  extends JPSHttpServlet {
         String result = CommandHelper.executeSingleCommand(baseUrl, args);
         System.out.println(result);
 	}
-    public static boolean isNumeric(String strNum) {
-	    if (strNum == null) {
-	        return false;
-	    }
-	    try {
-	        Integer d = Integer.parseInt(strNum);
-	    } catch (NumberFormatException nfe) {
-	    	System.out.println(nfe);
-	        throw new NumberFormatException();
-	    }
-	    return true;
-	}
-	 private static boolean isValidURL(String url) throws MalformedURLException, Exception 
-	    { 
-	        /* Try creating a valid URL */
-	        try { 
-	            new URL(url).toURI(); 
-	            return true; 
-	        } 
-	          
-	        // If there was an Exception 
-	        // while creating URL object 
-	        catch (MalformedURLException e) {
-	        	throw e;
-	        }
-	        catch (Exception e) {
-		        throw new Exception("Invalid URL exception ");
-	        } 
-	    } 
+    /** validates input given json-toString()
+     * 
+     * @param json
+     */
     public void validateInput(String json) {
 
             JSONObject args = new JSONObject(json);
-            boolean a,b,c,d;
-
+            boolean option_opt,agent_opt,city_opt,airStatn_opt; 
+            option_opt = agent_opt= city_opt= airStatn_opt = false;
+            IntegerValidator iv = new IntegerValidator();
+            UrlValidator urlValidator = new UrlValidator();
         	try {
             if (args.has("options")) {
-            	//check if options is Numeric
-            	a = isNumeric(args.get("options").toString());
+            	//check if options is Numeric //Check if within 1 - 4
+            	option_opt = iv.isValid(args.get("options").toString()) && iv.isInRange(Integer.parseInt(args.get("options").toString()),1,4);
             	
             }
             if (args.has("agent")) {
-					b = isValidURL(args.get("agent").toString());
+            	agent_opt = urlValidator.isValid(args.get("agent").toString());
 				
             	
             }
             if (args.has("city")) {
-            	c = isValidURL(args.get("city").toString());
+            	city_opt = urlValidator.isValid(args.get("city").toString());
             	
             }
             if (args.has("airStationIRI")) {
-            	d = isValidURL(args.get("airStationIRI").toString());
-            	
+            	airStatn_opt = urlValidator.isValid(args.get("airStationIRI").toString());
             }
-        	} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JSONException e) {
+           
+        	} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+        	 if (option_opt &&agent_opt&&city_opt&&airStatn_opt== true) {
+        		 System.out.println("All outputs valid");
+          		
+        		 return;
+         	}else {
+         		System.out.println("Invalid value input: Please try again ");
+         		logger.info("Invalid value input: Please try again ");
+         	}
+        	
     }
+    /** Queries 
+     * 
+     * @param querycontext
+     * @return List<String[]>
+     */
 	private List<String[]> queryEndPointDataset(String querycontext) {
 		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
