@@ -14,6 +14,13 @@ import org.cts.CRSFactory;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
 
+/**
+ * This class contains unit tests for CRSTransformer 
+ * 
+ * @author CSL
+ *
+ */
+
 public class CRSTransformerTest {
 
 	CRSTransformer crsTransformer;
@@ -24,6 +31,15 @@ public class CRSTransformerTest {
 		crsTransformer = new CRSTransformer();
 	}
 	
+	/**
+	 * Tests the private method getFactory. Asserts a CRSFactory object is returned.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testGetFactory() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 	
@@ -40,23 +56,45 @@ public class CRSTransformerTest {
 	    }
 	}
 	
+	/**
+	 * Tests the transform method with a coordinate transformation from spherical Mercator to WSG84.
+	 */
 	@Test
 	public void testTransform() {
 		  
-		// Test spherical Mercator to WGS84
 		double[] result = CRSTransformer.transform(CRSTransformer.EPSG_3857, CRSTransformer.EPSG_4326, new double[] {11563323.926, 143305.896, 11560879.832, 140107.739});
 		double[] expected = {103.87510617, 1.28723046, 103.85315050, 1.25850802};
 		
 		assertArrayEquals(expected, result, 0.00000001);
 	}
 	
+	/**
+	 * Check runtime exception thrown by transform when given a bad source CRS name. 
+	 */
 	@Test(expected = JPSRuntimeException.class)
-	public void testTransformException() {
-		  
-		CRSTransformer.transform("badSource", "badTarget", new double[] {11563323.926, 143305.896, 11560879.832, 140107.739});
+	public void testTransformExceptionSource() {
+		
+		CRSTransformer.transform("badSource", CRSTransformer.EPSG_4326, new double[] {11563323.926, 143305.896, 11560879.832, 140107.739});
 	}
 	
-	// Test transformInternal, a private method called by transform 
+	/**
+	 * Check runtime exception thrown by transform when given a bad target CRS name. 
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testTransformExceptionTarget() {
+		
+		CRSTransformer.transform(CRSTransformer.EPSG_3857, "badTarget", new double[] {11563323.926, 143305.896, 11560879.832, 140107.739});
+	}
+	
+	/**
+	 * 	Test transformInternal, a private method called by transform to perform coordinate transformation.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */ 
 	@Test
 	public void testTransformInternal() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -72,23 +110,16 @@ public class CRSTransformerTest {
 	    
 	    assertArrayEquals(expected, result, 0.00000001);
 	}
-	
-	@Test
-	public void testTransformInternalException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
 		
-		// access private member
-		assertNotNull(crsTransformer.getClass().getDeclaredMethod("transformInternal", String.class, String.class, double[].class));
-	    Method transformInternal = crsTransformer.getClass().getDeclaredMethod("transformInternal", String.class, String.class, double[].class);
-	    transformInternal.setAccessible(true);
-	    
-	    try {
-	    	transformInternal.invoke(crsTransformer, "badSource", "badTarget", new double[] {1.0, 1.0});
-	    	fail("CRSException did not occur");
-	    } catch (InvocationTargetException ex) {
-	    	assertEquals(CRSException.class, ex.getCause().getClass());
-	    } 
-	}
-	
+	/**
+	 * Checks a CoordinateReferenceSystem object is returned by getCRS method.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testgetCRS() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -105,6 +136,14 @@ public class CRSTransformerTest {
 	    }
 	}
 	
+	/**
+	 * Checks CRS exception is thrown by getCRS given a bad CRS name.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 */
 	@Test
 	public void testgetCRSException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
 		

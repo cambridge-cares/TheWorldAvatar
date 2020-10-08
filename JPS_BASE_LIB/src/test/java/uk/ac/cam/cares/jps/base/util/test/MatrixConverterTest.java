@@ -10,9 +10,18 @@ import java.util.HashMap;
 
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
+/**
+ * This class contains unit tests for MatrixConverter.
+ * 
+ * @author CSL
+ *
+ */
 public class MatrixConverterTest {
-	
-	// Put list to map and get list 
+	 
+	/**
+	 * Tests putColumn and getList methods.
+	 * Put a list to map and then return the list.
+	 */
 	@Test
 	public void testColumn() {
 		
@@ -24,7 +33,10 @@ public class MatrixConverterTest {
 		assertEquals(testList, testMC.getList("testKey"));
 	}
 	
-	// Put list to map and convert to Json
+	/**
+	 * Test conversion to JSON by toJson method.
+	 * Put a list to map and convert to Json.
+	 */
 	@Test
 	public void testToJson() {
 		
@@ -39,9 +51,13 @@ public class MatrixConverterTest {
 		assertEquals(expectedJson,result);
 	}
 	
-	// Json to map
+	/**
+	 * Test conversion from JSON to Map.
+	 */
 	@Test
 	public void testFromJson() {
+		
+		// expected result
 		Map<String, List<String>> expectedMap = new HashMap<String, List<String>>();
 		List<String> testList = Arrays.asList("A","B","C");
 		expectedMap.put("testKey", testList);
@@ -52,12 +68,15 @@ public class MatrixConverterTest {
 		assertEquals(expectedMap, testMC.fromJson(testSJson));
 	}
 	
-	// CSV to map
+	/**
+	 * Test conversion of CSV string to Map.
+	 */
 	@Test
 	public void testFromCsv() {
 		
 		String testCSVString = "Column1,Column2\r\nData11,Data12\r\nData21,Data22\r\n";
-				
+		
+		// expected results
 		Map<String, List<String>> expectedMap = new HashMap<String, List<String>>();
 		List<String> column1 = Arrays.asList("Data11","Data21");
 		List<String> column2 = Arrays.asList("Data12","Data22");
@@ -69,10 +88,13 @@ public class MatrixConverterTest {
 		assertEquals(expectedMap, resultMap);
 	}
 	
-	// Array to CSV
+	/**
+	 * Test conversion of array to CSV.
+	 */
 	@Test	
 	public void testFromArraytoCsv() {
 		
+		// expected result
 		String testCSVString = "Column1,Column2\r\nData11,Data12\r\nData21,Data22\r\n";
 		
 		List<String[]> testRows = Arrays.asList(new String[]{"Column1", "Column2"},new String[]{"Data11", "Data12"},new String[]{"Data21","Data22"});
@@ -80,10 +102,13 @@ public class MatrixConverterTest {
 		assertEquals(testCSVString, MatrixConverter.fromArraytoCsv(testRows));
 	}
 	
-	// CSV to array
+	/**
+	 * Test conversion of CSV string to array.
+	 */
 	@Test
 	public void testFromCsvToArray() {
 		
+		// expected result
 		List<String[]> testRows = Arrays.asList(new String[]{"Column1", "Column2"},new String[]{"Data11", "Data12"},new String[]{"Data21","Data22"});
 		
 		String testCSVString = "Column1,Column2\r\nData11,Data12\r\nData21,Data22\r\n";
@@ -97,7 +122,9 @@ public class MatrixConverterTest {
 		}
 	}
 	
-	// List to array
+	/**
+	 * Test conversion of list to array.
+	 */
 	@Test
 	public void testAsArray() {
 		List<String> testList = Arrays.asList("A","B","C");

@@ -23,12 +23,23 @@ import org.junit.rules.TemporaryFolder;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
+/**
+ * This class contains unit tests for FileUtil.
+ * 
+ * @author CSL
+ *
+ */
 public class FileUtilTest {
 
 	// temporary folder for testing
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	
+	/**
+	 * Check a local file is correctly read to string. 
+	 * 
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void testReadFileLocally() throws URISyntaxException {
 		
@@ -39,13 +50,21 @@ public class FileUtilTest {
 		assertEquals("This is a test file.\r\nTest input.", result);
 	}
 	
+	/**
+	 * Check runtime exception thrown when reading nonexistent file path. 
+	 */
 	@Test(expected = JPSRuntimeException.class)
 	public void testReadFileLocallyException() {
 		
 		String path = "nonexistent/path";
-		String result = FileUtil.readFileLocally(path);
+		FileUtil.readFileLocally(path);
 	}
 	
+	/**
+	 * Check a string is correctly written to a new local file. 
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testWriteFileLocally() throws IOException {
 		
@@ -60,11 +79,16 @@ public class FileUtilTest {
 		File file = new File(filePath);
 		assertTrue(file.exists());
 		
-		// check contents
+		// read file and check contents
 		String result = new String(Files.readAllBytes(Paths.get(filePath)));
 		assertEquals(content, result);
 	}
 	
+	/**
+	 * Check an InputStream is correctly converted to a string.
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testInputStreamToString() throws IOException {
 		
@@ -76,12 +100,17 @@ public class FileUtilTest {
 		assertEquals(expectedString, result);
 	}
 
+	/**
+	 * Check a string is converted to an InputStream.
+	 * This is done by converting the InputStream returned by the method back to a string and comparing the contents.
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testStringToInputStream() throws IOException {
 		
 		String expectedString = "This is a test string.\r\nConvert to inputstream.";
 		
-		// Test the method by converting the inputstream returned by the method back to a string and compare the contents
 		try (ByteArrayOutputStream out = new ByteArrayOutputStream()) { // this takes care of closing the stream
 
 			InputStream result = FileUtil.stringToInputStream(expectedString);
@@ -93,7 +122,12 @@ public class FileUtilTest {
 		} 
 	}
 	
-
+	/**
+	 * Test reading file using BufferedReader.
+	 * 
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
 	@Test
 	public void testOpenSourceFile() throws URISyntaxException, IOException {
 			
@@ -125,6 +159,11 @@ public class FileUtilTest {
 		}		
 	}
 	
+	/**
+	 * Test writing to file using BufferedWriter.
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testOpenBufferedWriter() throws IOException {
 		
@@ -152,6 +191,11 @@ public class FileUtilTest {
 		}
 	}
 	
+	/**
+	 * Check that the unzip method unzips a file to target location.
+	 * 
+	 * @throws URISyntaxException
+	 */
 	@Test
 	public void testUnzip() throws URISyntaxException {
 		
