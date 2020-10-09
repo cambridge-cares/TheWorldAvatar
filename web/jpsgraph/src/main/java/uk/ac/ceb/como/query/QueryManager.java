@@ -1,5 +1,7 @@
 package uk.ac.ceb.como.query;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.LinkedList;
@@ -99,8 +101,9 @@ public class QueryManager {
 	 * @param repositoryUrl 
 	 * @param queryString
 	 * @return
+	 * @throws IOException 
 	 */
-public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryString) {
+public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryString) throws IOException {
 		
 		LinkedList<String> speciesIRIList = new LinkedList<String>();
 		
@@ -110,6 +113,13 @@ public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryS
 
 		RepositoryConnection connection = repository.getConnection();
 		
+		//sparql_query_result.txt
+		File sparqlQueryResultFile =new File("C:\\TOMCAT\\conf\\Catalina\\generatecsv\\"+"sparql_query_result.txt");
+		
+		sparqlQueryResultFile.createNewFile();
+
+		FileWriter queryResultsFileWriter = new FileWriter(sparqlQueryResultFile, false);
+		
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
@@ -118,6 +128,7 @@ public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryS
 
 			TupleQueryResult result = tupleQuery.evaluate();
 
+			
 			try {
 
 				while (result.hasNext()) {
@@ -127,6 +138,11 @@ public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryS
 					String speicesIRI = new String();
 					
 					speicesIRI =bindingSet.getValue("s").stringValue();
+					
+					queryResultsFileWriter.write("speciesIRI: " + speicesIRI);
+					queryResultsFileWriter.write(System.lineSeparator());
+					
+//					System.out.println("speicesIRI: " + speicesIRI);
 					
 					speciesIRIList.add(speicesIRI);
 				}
@@ -141,22 +157,122 @@ public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryS
 			}
 
 			connection.commit();
-
+			
+			connection.rollback();
+			
+			connection.close();
+			
+			repository.shutDown();
+			
 		} catch (RepositoryException e) {
 
 			e.printStackTrace();
 
-			connection.rollback();
+			/**
+			 * commented
+			 */
+//			connection.rollback();
 
-		} finally {
-
-			connection.close();
-			
-			repository.shutDown();
-
-		}
+		} 
+//		finally {
+//
+//			connection.close();
+//			
+//			repository.shutDown();
+//
+//		}
+		
+		queryResultsFileWriter.close();
 
 		return speciesIRIList;
 
 	}
+
+public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryString, String sparqlQueryResultsFileName) throws IOException {
+	
+	LinkedList<String> speciesIRIList = new LinkedList<String>();
+	
+	Repository repository = new HTTPRepository(repositoryUrl);
+
+	repository.initialize();
+
+	RepositoryConnection connection = repository.getConnection();
+	
+	//sparql_query_result.txt
+	File sparqlQueryResultFile =new File("C:\\TOMCAT\\conf\\Catalina\\generatecsv\\"+ sparqlQueryResultsFileName);
+	
+	sparqlQueryResultFile.createNewFile();
+
+	FileWriter queryResultsFileWriter = new FileWriter(sparqlQueryResultFile, false);
+	
+	try {
+
+		connection.begin(IsolationLevels.SNAPSHOT_READ);
+
+		TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+		TupleQueryResult result = tupleQuery.evaluate();
+
+		
+		try {
+
+			while (result.hasNext()) {
+
+				BindingSet bindingSet = result.next();
+				
+				String speicesIRI = new String();
+				
+				speicesIRI =bindingSet.getValue("s").stringValue();
+				
+				queryResultsFileWriter.write("speciesIRI: " + speicesIRI + "\n");
+				queryResultsFileWriter.write(System.lineSeparator());
+				
+//				System.out.println("speicesIRI: " + speicesIRI);
+				
+				speciesIRIList.add(speicesIRI);
+			}
+
+		} catch (Exception e) {
+
+			e.getMessage();
+
+		} finally {
+
+			result.close();
+		}
+
+		connection.commit();
+		
+		connection.rollback();
+		
+		connection.close();
+		
+		repository.shutDown();
+		
+	} catch (RepositoryException e) {
+
+		e.printStackTrace();
+
+		/**
+		 * commented
+		 */
+//		connection.rollback();
+
+	} 
+//	finally {
+//
+//		connection.close();
+//		
+//		repository.shutDown();
+//
+//	}
+	
+	queryResultsFileWriter.close();
+
+	return speciesIRIList;
+
+}
+
+
+
 }
