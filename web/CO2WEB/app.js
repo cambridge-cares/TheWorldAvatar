@@ -19,53 +19,53 @@ var util = require('util');
 var config = require("./config.js");
 var getAttrList =require("./routes/getAttrList");
 
-/**
-var visualizeWorld =require("./routes/visualizeWorld.js");
-var visualizeBMS =require("./routes/visualizeBms.js");
-var visualizeSemakau =require("./routes/visualizeSemakau.js");
+if (config.onCares){ //configure to be on Claudius or on CMCL server
+    var visualizeWorld =require("./routes/visualizeWorld.js");
+    var visualizeBMS =require("./routes/visualizeBms.js");
+    var visualizeSemakau =require("./routes/visualizeSemakau.js");
+    var visualizeJurong =require("./routes/visualizeJurong.js");
+    var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
+    var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
+    var visualizeAgent = require("./routes/visualizeAgent.js");
+    var visualizeOntokin= require("./routes/visualizeOntokin.js");
+    var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 
-var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
-var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
-var visualizeAgent = require("./routes/visualizeAgent.js");
-var visualizeOntokin= require("./routes/visualizeOntokin.js");
-var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
+    var visualizeOntokinR= require("./routes/visualizeOntokinRemote.js");
 
-var visualizeOntokinR= require("./routes/visualizeOntokinRemote.js");
+    var getAttrList =require("./routes/getAttrList");
+    var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 
-var getAttrList =require("./routes/getAttrList");
-//var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
-
-var showCO2 = require("./routes/showCO2");
-// var bmsplot= require("./routes/plotBMSCached.js");
+    var showCO2 = require("./routes/showCO2");
+    var bmsplot= require("./routes/plotBMSCached.js");
 
 
-var MAUPlot = require("./routes/plotMAU")
-//  var MAU = require("./routes/runMAU");
-var HW =require("./routes/runHeatWasteNetworkMap")
-//var PPCO2 = require("./routes/powerplantCO2Cached");
-var PPCO2 = require("./routes/powerplantCO2");
+    var MAUPlot = require("./routes/plotMAU")
+    // var MAU = require("./routes/runMAU");
+    var HW =require("./routes/runHeatWasteNetworkMap")
+    // var PPCO2 = require("./routes/powerplantCO2Cached");
+    var PPCO2 = require("./routes/powerplantCO2");
 
-var ppMap = require('./routes/mapPowerPlant');
+    var ppMap = require('./routes/mapPowerPlant');
 
-var semakauMap = require("./routes/mapSemakau")
-var b2Map = require("./routes/mapB2");
-var ppalt = require("./routes/mapPPAlt");
-var parallelWorld = require('./routes/parallelWorld');
-var wteMap= require('./routes/wTEroute');
+    var semakauMap = require("./routes/mapSemakau")
+    var b2Map = require("./routes/mapB2");
+    var ppalt = require("./routes/mapPPAlt");
+    var parallelWorld = require('./routes/parallelWorld');
+    var wteMap= require('./routes/wTEroute');
 
-var admsEpi= require('./routes/admsEpi');
+    var admsEpi= require('./routes/admsEpi');
 
-var essMap = require('./routes/ess');
-var DESPlot = require('./routes/DESPlot');
-var literalData = require('./agents/GetLiteralData');
-var getChildrenSingle = require('./routes/GetChildrenSingle');
-**/
+    var essMap = require('./routes/ess');
+    var DESPlot = require('./routes/DESPlot');
+    var literalData = require('./agents/GetLiteralData');
+    var getChildrenSingle = require('./routes/GetChildrenSingle');
+    var agentWatcher = require('./agents/msgFace');
+}
 var ppMap = require('./routes/mapPowerPlant');
 var visualizeJurong =require("./routes/visualizeJurong.js");
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var ontoTwinMap= require('./routes/ontoTwinUK');
 var BMSWatcher = require('./agents/setBMSWatcher');
-// var agentWatcher = require('./agents/msgFace');
 let setEpWatcher = require('./agents/setEPWatcher');
 
 
@@ -95,7 +95,7 @@ app.use(bodyParser.text({ type: 'application/json' }));
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
-/**
+if (config.onCares){
 app.use('/getChildrenSingle',getChildrenSingle);
  app.use('/visualizeAgent', visualizeAgent);
  app.use('/visualizeWorld', visualizeWorld);
@@ -117,7 +117,7 @@ app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
 app.use('/visualizeOntokin',visualizeOntokin);
 
-// app.use("/bmsplot", bmsplot);
+app.use("/bmsplot", bmsplot);
 
 app.use('/ppmap', ppMap);
 app.use("/DESplot", DESPlot);
@@ -127,13 +127,13 @@ app.use('/b2map', b2Map)
 
 app.use("/DESplot", DESPlot);
 app.use("/mauplot", MAUPlot);
-// app.use("/MAU", MAU);
+//  app.use("/MAU", MAU);
 app.use("/getAttrList", getAttrList);
-// app.use("/getSpecAttr", getSpecAttr);
+app.use("/getSpecAttr", getSpecAttr);
 
 
 app.use('/visualizeOntokinRemote',visualizeOntokinR);
-
+}
 
 /*posting to dataObserve to get orginal data & register for future data change*/
 app.use("/getAttrList", getAttrList);
@@ -188,7 +188,7 @@ var bmsWatcher = watcherReturn.bmsWatcher;
 }
 })
 
-/**
+if (config.onCares){
 agentWatcher.init(io);
 	ev.on('update', function (data) {
     logger.debug("update event: "+" on "+data.uri+"_nodata");
@@ -209,7 +209,7 @@ agentWatcher.init(io);
 		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
 }
 })
-**/
+}
 //When any change happened to the file system
 let testId = null
 

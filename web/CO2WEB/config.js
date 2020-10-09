@@ -18,9 +18,10 @@ config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
 config.localRDF4j = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant"
 
-configDevelop();
+// configDevelop();
 
-// configDeploy();
+configDeploy();
+configClaudius();
 config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
 config.ppNode = path.join(config.root , "kb/powerplants/WorldPowerPlants.owl");
@@ -69,6 +70,12 @@ function configDeploy() {
     config.ppFolder = path.join(config.root , "kb/powerplants");
 	//config.ppFolder = path.normalize("C:/TOMCAT/webapps/ROOT/kb/powerplants");
 
+}
+function configClaudius(){
+    config.onCares = true;
+}
+function configCOMO(){
+    config.onCares = false;
 }
 
 module.exports = config;
