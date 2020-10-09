@@ -487,12 +487,15 @@ public class gPROMSAgent extends JPSAgent {
 
     csvWriter.flush();
     csvWriter.close();
+    File dest = new File(System.getProperty("user.home")+"//input//matlab_input.csv");
+    Files.copy(file.toPath(),dest.toPath());
+    System.out.println("Copied matlab file to input folder");
 }
 	
-	public static String getMatlabFile() {
-		
-		return(slurmJob.getJobFolderName());
-	}
+	//public static String getMatlabFile() {
+		//
+		//return(slurmJob.getJobFolderName());
+//	}
 	
 	/**
 	 * Sets up a quantum job by creating the job folder and the following files</br>
