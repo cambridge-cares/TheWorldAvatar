@@ -14,6 +14,12 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+/**
+ * This class contains unit tests for CommandHelper 
+ * 
+ * @author CSL
+ *
+ */
 class testCommandHelper {
 
 	private CommandHelper commandHelper;
@@ -28,7 +34,10 @@ class testCommandHelper {
 		resourcesFolderPath = Paths.get(this.getClass().getResource("/").toURI()).toFile().getPath(); // path to test resources in target/test-classes/
 		targetFolder = resourcesFolderPath; // use the test resources folder as the working directory
 	}
-	
+
+	/**
+	 * Test executeSingleCcommand. Echo "Hello World!".
+	 */
 	@Test
 	public void testExecuteSingleCommand() {
 		String expected = null;
@@ -43,6 +52,9 @@ class testCommandHelper {
 		assertEquals(expected, actual, "The command was not executed correctly");
 	}
 
+	/**
+	 * Check exception thrown for bad path and command
+	 */
 	@Test
 	public void testExecuteSingleCommandException() {
 
@@ -50,6 +62,9 @@ class testCommandHelper {
 				"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
+	/**
+	 * Test executeCommands. Echo "Hello World!".
+	 */
 	@Test
 	public void testexecuteCommands() {
 		ArrayList<String> cmds = new ArrayList<String>();
@@ -70,6 +85,9 @@ class testCommandHelper {
 		assertEquals(expected, actual, "The command was not executed correctly");
 	}
 
+	/**
+	 * Check exception thrown for bad path.
+	 */
 	@Test
 	public void testexecuteCommandsException() {
 		
@@ -87,6 +105,9 @@ class testCommandHelper {
 				"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
+	/**
+	 * Test executeAsyncSingleCommand. Command run in a separate window. Expected to return "".
+	 */
 	@Test
 	public void testexecuteAsyncSingleCommand() {
 		
@@ -95,6 +116,9 @@ class testCommandHelper {
 		assertEquals(expected, actual, "The command was not executed correctly");
 	}
 
+	/**
+	 * Check exception thrown for bad path and command.
+	 */
 	@Test
 	public void testexecuteAsyncSingleCommandException() {
 
@@ -103,7 +127,17 @@ class testCommandHelper {
 				"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
-	// Test getCommandProcess(String targetFolder, String command), a private member of CommandHelper 
+	/**
+	 * Test getCommandProcess(String targetFolder, String command), a private member of CommandHelper
+	 * called by executeSingleCommand. Expected to return a Process
+	 * 
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testGetCommandProcess() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -124,7 +158,15 @@ class testCommandHelper {
         assertNotNull(pr);
 	}
 	
-	// Test getCommandProcess(String targetFolder, String command), JPSRuntimeException thrown by passing nonexistent target folder
+	/**
+	 * Test getCommandProcess(String targetFolder, String command), JPSRuntimeException thrown by passing nonexistent target folder.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testGetCommandProcessTargetFolderException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -145,7 +187,15 @@ class testCommandHelper {
         assertEquals(JPSRuntimeException.class, ex.getCause().getClass(),"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
-	// Test getCommandProcess(String targetFolder, String command), JPSRuntimeException thrown by passing bad command
+	/**
+	 * Test getCommandProcess(String targetFolder, String command), JPSRuntimeException thrown by passing bad command.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testGetCommandProcessCommandException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -159,7 +209,16 @@ class testCommandHelper {
         assertEquals(JPSRuntimeException.class, ex.getCause().getClass(),"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
-	// Test getCommandProcess(String targetFolder, String [] command)
+	/**
+	 * Test getCommandProcess(String targetFolder, String [] command), private member called by executeCommands.
+	 * Expected to return a process.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testGetCommandProcessOverload() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -182,7 +241,15 @@ class testCommandHelper {
         assertNotNull(pr);
 	}
 		
-	// Test getCommandProcess(String targetFolder, String [] command), JPSRuntimeException thrown by passing nonexistent target folder
+	/**
+	 * Test getCommandProcess(String targetFolder, String [] command), JPSRuntimeException thrown by passing nonexistent target folder.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testGetCommandProcessOverloadTargetFolderException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -206,8 +273,15 @@ class testCommandHelper {
         assertEquals(JPSRuntimeException.class, ex.getCause().getClass(),"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
-	
-	// Test getCommandProcess(String targetFolder, String [] command), JPSRuntimeException thrown by passing bad command
+	/**
+	 * Test getCommandProcess(String targetFolder, String [] command), JPSRuntimeException thrown by passing bad command.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testGetCommandProcessOverloadCommandException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -223,7 +297,15 @@ class testCommandHelper {
         assertEquals(JPSRuntimeException.class, ex.getCause().getClass(),"Unknown exception thrown, expected JPS runtime exception");
 	}
 	
-	// Test getAsyncCommandProcess(String targetFolder, String command) 
+	/**
+	 * Test getAsyncCommandProcess(String targetFolder, String command), private member called by executeAsyncSingleCommand.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */ 
 	@Test
 	public void testGetAsyncCommandProcess() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -237,8 +319,16 @@ class testCommandHelper {
         // assert a process is returned
         assertNotNull(pr);
 	}
-		
-	// Test getCommandProcess(String targetFolder, String [] command), JPSRuntimeException thrown by passing nonexistent target folder
+	
+	/**
+	 * Test getCommandProcess(String targetFolder, String [] command), JPSRuntimeException thrown by passing nonexistent target folder.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testGetAsyncCommandProcessException() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -256,7 +346,12 @@ class testCommandHelper {
         ex = assertThrows(InvocationTargetException.class, () -> getAsyncCommandProcess.invoke(commandHelper, nonexistentFolder, "CommandHelperTest.bat"));
         assertEquals(JPSRuntimeException.class, ex.getCause().getClass(),"Unknown exception thrown, expected JPS runtime exception");
 	}
-		
+	
+	/**
+	 * Check output from executing command is read by getCommandResultString.
+	 * 
+	 * @throws IOException
+	 */
 	@Test
 	public void testGetCommandResultString() throws IOException {
 		
