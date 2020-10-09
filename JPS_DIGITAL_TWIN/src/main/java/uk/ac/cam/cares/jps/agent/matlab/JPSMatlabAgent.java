@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.matlab;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -16,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentConfiguration;
+import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentProperty;
+import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
@@ -41,15 +45,17 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 
 	//Read the gPROMS output file from /res/input/ directory
 	
-	//Input filename: input.csv
+	//Input filename: Pump_power.csv
 	
 	//Get the values starting from row 2 and store it in array
 	
 	//Loop the array till end and multiply ActivePower values with 0.5 in a new array key to get the reactive power
 	
-	//Create a new CSV file and write it into the output directory /res/matlab
+	//Create a new CSV file and write it into the output directory /ElChemo/matlab
 	
-	//Output filename: output.dat
+	//Output filename: matInput.dat
+    
+    //Create a batch file to execute MATLAB
 	
 	@Override
 	 //this should ONLY be called by scenarioAgent
@@ -61,12 +67,15 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 			//String sourceName = BucketHelper.getScenarioName(sourceUrl);
 			//logger.info("Scenario Url" + sourceUrl);
 			//jo.put("baseUrl", baseUrl);
-			
 			// Input file path
-			String pathToInputFile = "C:/JParkSimulator-git-project/JPS_DIGITAL_TWIN/src/main/resources/input_mat/input.csv";
+			String current = System.getProperty("user.home");
+			
+			String pathToInputFile = current + "\\ElChemo\\input_mat\\Pump_power.csv";
+			//String inputFile = gPROMSAgent.getMatlabFile();
+			//System.out.println("\n Matlab input file is generated.\n Matlab input file is located at:" + inputFile +"\n");
 			
 		 
-			// Appending on the 
+			// Appending reactive power value on the Pump_power CSV file
 			BufferedReader csvReader = null;
 			try {
 				csvReader = new BufferedReader(new FileReader(pathToInputFile));
@@ -95,15 +104,15 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 				    output.add(inner);		    
 				    
 				}
-				
 				//close the reader
 				csvReader.close();
 				
 				//Write the ArrayList into CSV into the path specified
 				
-				String pathToOutputFile = "C:/JParkSimulator-git-project/JPS_DIGITAL_TWIN/src/main/resources/matlab/output.dat";			
+				String matInputFile = current + "\\ElChemo\\matlab\\matInput.dat";
+				System.out.printf("\n Matlab input file is generated.\n Matlab input file is located at:" + matInputFile +"\n");
 				 
-				FileWriter csvWriter = new FileWriter(pathToOutputFile);
+				FileWriter csvWriter = new FileWriter(matInputFile);
 				
 				for (List<String> rowData : output) {
 				    csvWriter.append(String.join(",", rowData));
@@ -119,24 +128,56 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			//Execute matlab
+			//Create file path for batch file
+			String batchFile = current + "\\ElChemo\\matlab\\call_matlab.bat";
+			System.out.printf("\n Matlab batch file generated. \n Batch file to execute matlab from cmd prompt is created at location:" + batchFile +"\n");
+			//File path for Matlab script file
+			String scriptFile = current + "\\ElChemo\\matlab\\Run_Script.m";
+			System.out.println("\n Executing the matlab script file. \n Matlab script file is located at:" + scriptFile + "\n");
+			//Command string 
+			String cmd = "matlab -nodisplay -nosplash -nodesktop -r \"run('"+ scriptFile + "');exit;\"";
+	        //System.out.println(cmd);
+			//Creating batch file
+		    try {
+		    	File file = new File(batchFile);
+	            FileWriter writer = new FileWriter(batchFile, true);
+	            writer.write(cmd);
+	            writer.close();
+	            //Execute batch file 
+	            Runtime rs = Runtime.getRuntime();
+	            try {
+					rs.exec(batchFile).waitFor();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	            System.out.printf("\nCompleted Execution\n");
+				file.delete();
+	            
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+			/*
+		    //Execute matlab batch file
 			Runtime rs = Runtime.getRuntime();
 		    try {
 				try {
-					System.out.printf("\n----------------------Starting the execution of the electrical system-----------------------\n ");
-					rs.exec("C:/JParkSimulator-git-project/JPS_DIGITAL_TWIN/src/main/resources/matlab/call_matlab.bat").waitFor();
+					//System.out.printf("\n----------------------Starting the execution of the electrical system-----------------------\n ");
+					rs.exec(batchFile).waitFor();
 					
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.printf("\n---------------------------Completed Execution-------------------------------\n");
+				System.out.printf("\nCompleted Execution\n");
+				writer.delete();
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		    //response.getWriter().append("Served at: ").append(request.getContextPath());
+		    */
 		    return jo;
 		}
 

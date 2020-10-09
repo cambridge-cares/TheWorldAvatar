@@ -63,7 +63,6 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-//import uk.ac.cam.cares.jps.agent.matlab;
 import uk.ac.cam.cares.jps.agent.matlab.*;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
@@ -103,6 +102,7 @@ public class gPROMSAgent extends JPSAgent {
 	public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
 	public static final String JOB_STATISTICS_PATH = "/job/statistics";
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
+	
 	
 	// Create a temporary folder in the user's home location
 	private Path temporaryDirectory = null;
@@ -463,6 +463,7 @@ public class gPROMSAgent extends JPSAgent {
         System.out.println("resultStart");
 	    return true;
 		}
+	
 		
 	public static void exportDataToExcel(String fileName, float[][] data) throws FileNotFoundException, IOException{
     File file = new File(fileName);
@@ -487,6 +488,12 @@ public class gPROMSAgent extends JPSAgent {
     csvWriter.flush();
     csvWriter.close();
 }
+	
+	public static String getMatlabFile() {
+		
+		return(slurmJob.getJobFolderName());
+	}
+	
 	/**
 	 * Sets up a quantum job by creating the job folder and the following files</br>
 	 * under this folder:</br>

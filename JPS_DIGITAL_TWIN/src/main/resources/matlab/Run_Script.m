@@ -9,7 +9,7 @@ close all
 %load output_reboilerdata_25000.mat;
 
 %data = xlsread('Motor_Step_1.xlsx'); 
-filename = 'output.dat';
+filename = 'matInput.dat';
 data = csvread(filename);
 
 
