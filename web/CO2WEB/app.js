@@ -40,7 +40,7 @@ if (config.onCares){ //configure to be on Claudius or on CMCL server
 
 
     var MAUPlot = require("./routes/plotMAU")
-    // var MAU = require("./routes/runMAU");
+    var MAU = require("./routes/runMAU");
     var HW =require("./routes/runHeatWasteNetworkMap")
     // var PPCO2 = require("./routes/powerplantCO2Cached");
     var PPCO2 = require("./routes/powerplantCO2");
@@ -96,43 +96,43 @@ app.use(bodyParser.text({ type: 'application/json' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 if (config.onCares){
-app.use('/getChildrenSingle',getChildrenSingle);
- app.use('/visualizeAgent', visualizeAgent);
- app.use('/visualizeWorld', visualizeWorld);
- app.use('/visualizeBMS', visualizeBMS);
- app.use('/visualizeSemakau', visualizeSemakau);
- 
+    app.use('/getChildrenSingle',getChildrenSingle);
+    app.use('/visualizeAgent', visualizeAgent);
+    app.use('/visualizeWorld', visualizeWorld);
+    app.use('/visualizeBMS', visualizeBMS);
+    app.use('/visualizeSemakau', visualizeSemakau);
+     
 
-app.use('/PowerPlantCO2',  PPCO2);
-app.use('/semakaumap', semakauMap);
-app.use('/ppalt', ppalt);
-app.use('/pwScenario', parallelWorld);
-app.use('/essMap', essMap);
-app.use('/wteMap', wteMap);
+    app.use('/PowerPlantCO2',  PPCO2);
+    app.use('/semakaumap', semakauMap);
+    app.use('/ppalt', ppalt);
+    app.use('/pwScenario', parallelWorld);
+    app.use('/essMap', essMap);
+    app.use('/wteMap', wteMap);
 
-app.use('/JPS_SHIP', admsEpi);
+    app.use('/JPS_SHIP', admsEpi);
 
-app.use('/JurongIsland.owl/showCO2', showCO2);
-app.use('/visualizeOntoEN',visualizeOntoEN);
-app.use('/visualizeOntoChem',visualizeOntoChem);
-app.use('/visualizeOntokin',visualizeOntokin);
+    app.use('/JurongIsland.owl/showCO2', showCO2);
+    app.use('/visualizeOntoEN',visualizeOntoEN);
+    app.use('/visualizeOntoChem',visualizeOntoChem);
+    app.use('/visualizeOntokin',visualizeOntokin);
 
-app.use("/bmsplot", bmsplot);
+    app.use("/bmsplot", bmsplot);
 
-app.use('/ppmap', ppMap);
-app.use("/DESplot", DESPlot);
+    app.use('/ppmap', ppMap);
+    app.use("/DESplot", DESPlot);
 
-app.use('/b2map', b2Map)
- app.use("/hw", HW);
+    app.use('/b2map', b2Map)
+     app.use("/hw", HW);
 
-app.use("/DESplot", DESPlot);
-app.use("/mauplot", MAUPlot);
-//  app.use("/MAU", MAU);
-app.use("/getAttrList", getAttrList);
-app.use("/getSpecAttr", getSpecAttr);
+    app.use("/DESplot", DESPlot);
+    app.use("/mauplot", MAUPlot);
+    app.use("/MAU", MAU);
+    app.use("/getAttrList", getAttrList);
+    app.use("/getSpecAttr", getSpecAttr);
 
 
-app.use('/visualizeOntokinRemote',visualizeOntokinR);
+    app.use('/visualizeOntokinRemote',visualizeOntokinR);
 }
 
 /*posting to dataObserve to get orginal data & register for future data change*/
