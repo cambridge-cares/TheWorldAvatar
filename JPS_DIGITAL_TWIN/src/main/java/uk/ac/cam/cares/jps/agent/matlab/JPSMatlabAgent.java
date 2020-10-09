@@ -70,9 +70,9 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 			// Input file path
 			String current = System.getProperty("user.home");
 			
-			String pathToInputFile = current + "\\ElChemo\\input_mat\\Pump_power.csv";
+			String pathToInputFile = current + "\\input_mat\\Pump_power.csv";
 			//String inputFile = gPROMSAgent.getMatlabFile();
-			//System.out.println("\n Matlab input file is generated.\n Matlab input file is located at:" + inputFile +"\n");
+			//System.out.println("\n gPROMS outputput file is generated.\n gPROMS output file is located at:" + inputFile +"\n");
 			
 		 
 			// Appending reactive power value on the Pump_power CSV file
@@ -109,7 +109,7 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 				
 				//Write the ArrayList into CSV into the path specified
 				
-				String matInputFile = current + "\\ElChemo\\matlab\\matInput.dat";
+				String matInputFile = current + "\\matlab\\matInput.dat";
 				System.out.printf("\n Matlab input file is generated.\n Matlab input file is located at:" + matInputFile +"\n");
 				 
 				FileWriter csvWriter = new FileWriter(matInputFile);
@@ -129,10 +129,10 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 				e.printStackTrace();
 			}
 			//Create file path for batch file
-			String batchFile = current + "\\ElChemo\\matlab\\call_matlab.bat";
+			String batchFile = current + "\\matlab\\call_matlab.bat";
 			System.out.printf("\n Matlab batch file generated. \n Batch file to execute matlab from cmd prompt is created at location:" + batchFile +"\n");
 			//File path for Matlab script file
-			String scriptFile = current + "\\ElChemo\\matlab\\Run_Script.m";
+			String scriptFile = current + "\\matlab\\Run_Script.m";
 			System.out.println("\n Executing the matlab script file. \n Matlab script file is located at:" + scriptFile + "\n");
 			//Command string 
 			String cmd = "matlab -nodisplay -nosplash -nodesktop -r \"run('"+ scriptFile + "');exit;\"";
