@@ -1,0 +1,18 @@
+1. Create a virtual environment in the project folder, install packages from the requirements.
+
+
+2. Activate the environment, try the following command (replace the path "/home/zxc/Desktop/JPS_Chatbot/chatbot/" to the path of the virtual environment in the project folder ):
+
+ /home/zxc/Desktop/JPS_Chatbot/chatbot/bin/gunicorn --config gunicorn_config.py -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --timeout 120 --bind 127.0.0.1:5000 UI.source.wsgi:app
+
+3. Visit 127.0.0.1:5000, test it out. If it works, Ctrl-C and quit it.
+
+4. In directory "/etc/systemd/system", create file chatbot.service based on sample.service in the git. replace user name and all the paths (e.g. "/home/zxc/Desktop").
+
+5. sudo systemctl start chatbot.service
+sudo systemctl enable chatbot.service
+sudo systemctl status chatbot.service
+
+At this point, 127.0.0.1:5000 should again give you the website 
+
+6. Then if it works, configure apache as proxy. This is the step that I am really not sure about. I assure it should provide a mapping between "kg.cmclinnovations.com/" and "127.0.0.1:5000" 
