@@ -5,10 +5,10 @@
       Character(50) simid, name_mp !! name of simulation case, stations (name_mp)
       character(10) name_var  
       integer nx, ny, nmp, idnum_rec  !! number of subgrid cells, monitor stations, and receptor # (=total number of stations+1)
-      integer x_mp,y_mp,y_rec,x_rec  !! (x,y,z) of receptor points and monitor stations
-      real z_mp, z_rec
-      integer dx,dy   !! grid size (m) of receptor subgrid (usually 100m)
-      integer xsw_main,ysw_main  !! sw corner of main grid
+      double precision x_mp,y_mp,y_rec,x_rec  !! (x,y,z) of receptor points and monitor stations
+      double precision z_mp, z_rec
+      double precision dx,dy   !! grid size (m) of receptor subgrid (usually 100m)
+      double precision xsw_main,ysw_main  !! sw corner of main grid
       integer rcmax !! max distance of a source to the receptor point, set as -9900 (missing)
       integer i,j
       
@@ -27,14 +27,14 @@
       write(*,30) name_var, dx  
       read(10,30) name_var, dy
       write(*,30) name_var, dy
-      read(10,40) name_var, z_rec  !! height of receptor (same for all receptors)
-      write(*,40) name_var, z_rec
-      read(10,50) name_var, xsw_main  !! south-west corner of main grid (UTM, @m)
-      write(*,50) name_var, xsw_main
-      read(10,50) name_var, ysw_main  !! south-west corner of main grid (UTM, @m)
-      write(*,50) name_var, ysw_main
-      read(10,50) name_var, rcmax  !! max distance of a source to the receptor point, set as -9900 (missing)
-      write(*,50) name_var, rcmax
+      read(10,30) name_var, z_rec  !! height of receptor (same for all receptors)
+      write(*,30) name_var, z_rec
+      read(10,30) name_var, xsw_main  !! south-west corner of main grid (UTM, @m)
+      write(*,30) name_var, xsw_main
+      read(10,30) name_var, ysw_main  !! south-west corner of main grid (UTM, @m)
+      write(*,30) name_var, ysw_main
+      read(10,20) name_var, rcmax  !! max distance of a source to the receptor point, set as -9900 (missing)
+      write(*,20) name_var, rcmax
  
 
       open(unit=20,file="./output/receptor_stations_raster.txt")
@@ -74,14 +74,12 @@
 
    10 format(a10,a50)
    11 format(a50)  
-   12 format('* Dummy Receptor points for ',i3,'x',i3,'m2 raster grid')  
-   13 format('*                                   GUID  X       Y       Z       NUMPERSONS        NAME')
-   20 format(a10,i4)  
-   30 format(a10,i4)  !!! for reading location values
-   40 format(a10,f8.2)  !!! for reading height of receptor
-   50 format(a10,i8)  !! for reading UTM location value   
-   60 format(a10,2i8,f8.2,a50) !! reading station information
-   61 format(a40,2i8,f8.1,i8,2X, a50) !! reading station information
-   62 format(a40,2i8,f8.1,2i8) !! reading station information
+   12 format('* Dummy Receptor points for ',f8.1,' x ',f8.1,'m2 raster grid')  
+   13 format('*                                   GUID         X         Y       Z   NUMPERSONS NAME')
+   20 format(a10,i8)  
+   30 format(a10,f15.1)  !!! for reading location values  
+   60 format(a10,2f10.1,f8.1,a50) !! reading station information
+   61 format(a40,2f10.1,f8.1,i8,2X, a50) !! reading station information
+   62 format(a40,2f10.1,f8.1,2i8) !! reading station information
 
       end program
