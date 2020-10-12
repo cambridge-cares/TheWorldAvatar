@@ -18,8 +18,8 @@ import uk.ac.ceb.como.query.QueryString;
 public class GenerateCsv {
 	
 
-//	private static String statisticsFolderPath ="C:/TOMCAT/webapps/ROOT/data/statistics/";
-	private static String statisticsFolderPath = "C:/TOMCAT/conf/Catalina/generatecsv/";
+	private static String statisticsFolderPath ="C:/TOMCAT/webapps/ROOT/data/statistics/";
+//	private static String statisticsFolderPath = "C:/TOMCAT/conf/Catalina/generatecsv/";
 	private static String ontocompchemkb = "http://localhost/rdf4j-server/repositories/ontocompchem";
 	private static String ontokinkb = "http://localhost/rdf4j-server/repositories/ontokin";
 	private static String ontospecieskb = "http://localhost/rdf4j-server/repositories/ontospecieskb";
@@ -387,8 +387,10 @@ public class GenerateCsv {
 
 		};
 
-		// init Delay = 1, repeat the task every 1 second
-		ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(generateCSVFilesTask, 1, 1, TimeUnit.HOURS);
+		/**
+		 * Repeat the task ones on every 12 hours.
+		 */
+		ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(generateCSVFilesTask, 1, 2, TimeUnit.HOURS);
 
 		System.out.println("scheduledFuture.isDone(): " + scheduledFuture.isDone());
 		

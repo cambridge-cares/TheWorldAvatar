@@ -7,14 +7,20 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import ch.qos.logback.classic.Logger;
 import uk.ac.ceb.como.query.QueryManager;
 
 
@@ -321,5 +327,37 @@ public class PropertiesManager {
 		
 		return linkedHashMap;
 		
+	}
+	
+	/**
+	 * 
+	 * @param lastDate the latest date when OWL file is uploaded to RDF4J
+	 * @return the date that is three months earlier than lastDate
+	 * @throws ParseException
+	 */
+	public static LocalDate getDateThreeMonthsEarlier(LinkedList<String> labelList, int numberOfMonths) throws ParseException {
+		
+//		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//	     Calendar c = Calendar.getInstance(); 
+//	     c.setTime(new Date()); 
+//	     c.add(Calendar.MONTH, -3);
+//
+//	     Date d = c.getTime();
+//	     String res = format.format(d);
+//
+//	     System.out.println(res);
+		
+	     Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(labelList.getLast().toString());
+	     String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
+	     
+	     LocalDate statedDate = LocalDate.parse(formattedDate);
+	     String threeMonthEarlierDate=statedDate.minusMonths(numberOfMonths-1).toString();	     
+		
+	     Date threeMonthsBeforeDate = new SimpleDateFormat("yyyy-MM-dd").parse(threeMonthEarlierDate);
+	     String formattedThreeMonthsBeforeDate = new SimpleDateFormat("yyyy-MM-dd").format(threeMonthsBeforeDate);
+	     
+	     LocalDate statedThreeMonthBeforeDate = LocalDate.parse(formattedThreeMonthsBeforeDate);
+	     
+		return statedThreeMonthBeforeDate; 
 	}
 }

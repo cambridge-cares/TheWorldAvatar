@@ -3,9 +3,11 @@ package uk.ac.ceb.como.action;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -65,11 +67,17 @@ public class StatisticsAction extends ActionSupport {
 	
 	private String numberOfReactionsHydrocarbonSpecies;
 	
-	private LinkedList<String> labelList = new LinkedList<String>();	
+	private LinkedList<String> labelList = new LinkedList<String>();
+	
+	private LinkedList<String> labelListThreeMonths = new LinkedList<String>();
 	
 	private LinkedList<String> ontoCompChemDataSetList = new LinkedList<String>();
 	
+	private LinkedList<String> ontoCompChemDataSetListThreeMonths = new LinkedList<String>();
+	
 	private LinkedList<String> ontoKinDataSetList = new LinkedList<String>();
+	
+	private LinkedList<String> ontoKinDataSetListThreeMonths = new LinkedList<String>();
 	
 	public List<String> getOntoKinDataSetList() {
 		return ontoKinDataSetList;
@@ -90,9 +98,33 @@ public class StatisticsAction extends ActionSupport {
 	public LinkedList<String> getLabelList() {
 		return labelList;
 	}
-
+	
 	public void setLabelList(LinkedList<String> labelList) {
 		this.labelList = labelList;
+	}
+
+	public LinkedList<String> getLabelListThreeMonths() {
+		return labelListThreeMonths;
+	}
+
+	public void setLabelListThreeMonths(LinkedList<String> labelListThreeMonths) {
+		this.labelListThreeMonths = labelListThreeMonths;
+	}
+	
+	public LinkedList<String> getOntoCompChemDataSetListThreeMonths() {
+		return ontoCompChemDataSetListThreeMonths;
+	}
+
+	public void setOntoCompChemDataSetListThreeMonths(LinkedList<String> ontoCompChemDataSetListThreeMonths) {
+		this.ontoCompChemDataSetListThreeMonths = ontoCompChemDataSetListThreeMonths;
+	}
+
+	public LinkedList<String> getOntoKinDataSetListThreeMonths() {
+		return ontoKinDataSetListThreeMonths;
+	}
+
+	public void setOntoKinDataSetListThreeMonths(LinkedList<String> ontoKinDataSetListThreeMonths) {
+		this.ontoKinDataSetListThreeMonths = ontoKinDataSetListThreeMonths;
 	}
 
 	public String getNumberOfReactionsHydrocarbonSpecies() {
@@ -201,7 +233,9 @@ public class StatisticsAction extends ActionSupport {
 	}
 
 	@Override	
-	public String execute() throws IOException {		
+	public String execute() throws IOException, ParseException {		
+		
+		logger.info("started:");
 		
 		/**
 		 * Calculates current time. 
@@ -232,7 +266,7 @@ public class StatisticsAction extends ActionSupport {
 		
 
 		for(int i =0;i<table1Data.length;i++) {			
-			logger.info(table1Data[i]);				
+//			logger.info(table1Data[i]);				
 		}
 		
 		numberOfCalculations = table1Data[0];
@@ -266,8 +300,32 @@ public class StatisticsAction extends ActionSupport {
 			
 			labelList.add(data[i]);
 			
-			logger.info(data[i]);				
+		
 		}
+		
+
+		/**
+		 * Calculates date that is three months earlier than date of last uploaded OWL file.
+		 */
+		LocalDate threeMonthsEarlierDate = PropertiesManager.getDateThreeMonthsEarlier(labelList,3);
+		
+		logger.info("three months earlier date: " + threeMonthsEarlierDate.toString());
+
+	     
+		/**
+		 * Populates label list with dates that are three months earlier than current date 
+		 */
+		for(int i =0;i<data.length;i++) {
+			
+			Date labelDate = new SimpleDateFormat("yyyy-MM-dd").parse(data[i].toString());
+            String formattedLabelDate = new SimpleDateFormat("yyyy-MM-dd").format(labelDate);		     
+		     LocalDate statedLabelDate = LocalDate.parse(formattedLabelDate);
+		     
+		     if(threeMonthsEarlierDate.isBefore(statedLabelDate) || threeMonthsEarlierDate.isEqual(statedLabelDate)) {
+
+					labelListThreeMonths.add(data[i]); 
+		     }
+		}	     
 		
 		csvLabelReader.close();
 		
@@ -283,11 +341,27 @@ public class StatisticsAction extends ActionSupport {
 		for(int i =0;i<ontocompchemData.length;i++) {
 			
 			ontoCompChemDataSetList.add(ontocompchemData[i]);
-			
-			logger.info(ontocompchemData[i]);				
 		}
 		
-		ontocompchemCsvReader.close();
+	  logger.info("reading ontocompchem data for last three months");
+	  
+	  int sizeOfLabelLastThreeMonths = labelListThreeMonths.size();
+	  
+	  logger.info("number of dates used in bar chart: " + sizeOfLabelLastThreeMonths);
+	  
+	  int sizeOfLabelList = labelList.size();
+	  
+	  int difference = sizeOfLabelList - sizeOfLabelLastThreeMonths;
+	  
+	  /**
+	   * Adding ontocompchem data into ontocomcphem data set list last three months.
+	   */
+	  for(int i = difference;i<ontocompchemData.length;i++) {
+		  
+		  ontoCompChemDataSetListThreeMonths.add(ontocompchemData[i]);
+	  }
+	  
+	  ontocompchemCsvReader.close();
 		
       BufferedReader ontokinCsvReader = new BufferedReader(new FileReader(statisticsFolderPath+"ontokin.csv"));
 		
@@ -302,8 +376,14 @@ public class StatisticsAction extends ActionSupport {
 			
 			ontoKinDataSetList.add(ontokinData[i]);
 			
-			logger.info(ontokinData[i]);				
 		}
+		
+		
+		for(int i = difference;i<ontokinData.length;i++) {
+			
+			ontoKinDataSetListThreeMonths.add(ontokinData[i]);	
+		}
+		
 		
 		ontokinCsvReader.close();
 		
@@ -322,7 +402,7 @@ public class StatisticsAction extends ActionSupport {
 		
 
 		for(int i =0;i<table2Data.length;i++) {			
-			logger.info(table2Data[i]);				
+//			logger.info(table2Data[i]);				
 		}
 		numberOfReactionsHydrocarbonSpecies = table2Data[0];
 		numberOfReactionsThatInvolveNitrogenSpecies=table2Data[1];		
