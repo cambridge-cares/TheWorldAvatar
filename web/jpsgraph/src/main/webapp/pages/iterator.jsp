@@ -448,7 +448,8 @@ Here is java script for visualization molecules.
 
 <script>
 var arrayList = new Array();
-arrayList= new Array('<s:property value="%{labelList}"/>');
+<!--labelList-->
+arrayList= new Array('<s:property value="%{labelListThreeMonths}"/>');
 var jsList = arrayList.toString();
 jsList = jsList.replace("[","");
 jsList = jsList.replace("]","");
@@ -456,14 +457,16 @@ jsList = jsList.split(",");
 
 
 var ontoCompChemList = new Array();
-ontoCompChemList= new Array('<s:property value="%{ontoCompChemDataSetList}"/>');
+<!-- ontoCompChemDataSetList -->
+ontoCompChemList= new Array('<s:property value="%{ontoCompChemDataSetListThreeMonths}"/>');
 var jsOntoCompChemList = ontoCompChemList.toString();
 jsOntoCompChemList = jsOntoCompChemList.replace("[","");
 jsOntoCompChemList = jsOntoCompChemList.replace("]","");
 jsOntoCompChemList = jsOntoCompChemList.split(",");
 
 var ontoKinList = new Array();
-ontoKinList= new Array('<s:property value="%{ontoKinDataSetList}"/>');
+<!--ontoKinDataSetList -->
+ontoKinList= new Array('<s:property value="%{ontoKinDataSetListThreeMonths}"/>');
 var jsOntoKinList = ontoKinList.toString();
 jsOntoKinList = jsOntoKinList.replace("[","");
 jsOntoKinList = jsOntoKinList.replace("]","");

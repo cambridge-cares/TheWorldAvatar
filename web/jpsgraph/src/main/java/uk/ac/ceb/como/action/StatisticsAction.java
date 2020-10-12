@@ -1,27 +1,22 @@
 package uk.ac.ceb.como.action;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.LocalDate;
 import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-
 import uk.ac.ceb.como.properties.PropertiesManager;
-import uk.ac.ceb.como.query.QueryManager;
-import uk.ac.ceb.como.query.QueryString;
 
 /**
  * 
@@ -32,6 +27,7 @@ import uk.ac.ceb.como.query.QueryString;
  *         mechanisms.
  *
  */
+
 public class StatisticsAction extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
@@ -40,13 +36,7 @@ public class StatisticsAction extends ActionSupport {
 	
 	static Properties kbProperties = PropertiesManager.loadProperties(StatisticsAction.class.getClassLoader().getResourceAsStream("kb.properties"));	
 	
-	private static String ontocompchemkb = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
-	private static String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
-	private static String ontospecieskb = kbProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
-		
 	private static String statisticsFolderPath = kbProperties.getProperty("data.folder.path");
-	
-	
 	
 	private String numberOfCalculations;
 
@@ -58,6 +48,9 @@ public class StatisticsAction extends ActionSupport {
 
 	private String numberOfChemicalReactions;
 	
+	/**
+	 * This is temporally commented.
+	 */
 //	private String numberOfAgents;
 	
 	private String numberOfSynonyms;
@@ -74,11 +67,17 @@ public class StatisticsAction extends ActionSupport {
 	
 	private String numberOfReactionsHydrocarbonSpecies;
 	
-	private LinkedList<String> labelList = new LinkedList<String>();	
+	private LinkedList<String> labelList = new LinkedList<String>();
+	
+	private LinkedList<String> labelListThreeMonths = new LinkedList<String>();
 	
 	private LinkedList<String> ontoCompChemDataSetList = new LinkedList<String>();
 	
+	private LinkedList<String> ontoCompChemDataSetListThreeMonths = new LinkedList<String>();
+	
 	private LinkedList<String> ontoKinDataSetList = new LinkedList<String>();
+	
+	private LinkedList<String> ontoKinDataSetListThreeMonths = new LinkedList<String>();
 	
 	public List<String> getOntoKinDataSetList() {
 		return ontoKinDataSetList;
@@ -99,9 +98,33 @@ public class StatisticsAction extends ActionSupport {
 	public LinkedList<String> getLabelList() {
 		return labelList;
 	}
-
+	
 	public void setLabelList(LinkedList<String> labelList) {
 		this.labelList = labelList;
+	}
+
+	public LinkedList<String> getLabelListThreeMonths() {
+		return labelListThreeMonths;
+	}
+
+	public void setLabelListThreeMonths(LinkedList<String> labelListThreeMonths) {
+		this.labelListThreeMonths = labelListThreeMonths;
+	}
+	
+	public LinkedList<String> getOntoCompChemDataSetListThreeMonths() {
+		return ontoCompChemDataSetListThreeMonths;
+	}
+
+	public void setOntoCompChemDataSetListThreeMonths(LinkedList<String> ontoCompChemDataSetListThreeMonths) {
+		this.ontoCompChemDataSetListThreeMonths = ontoCompChemDataSetListThreeMonths;
+	}
+
+	public LinkedList<String> getOntoKinDataSetListThreeMonths() {
+		return ontoKinDataSetListThreeMonths;
+	}
+
+	public void setOntoKinDataSetListThreeMonths(LinkedList<String> ontoKinDataSetListThreeMonths) {
+		this.ontoKinDataSetListThreeMonths = ontoKinDataSetListThreeMonths;
 	}
 
 	public String getNumberOfReactionsHydrocarbonSpecies() {
@@ -209,8 +232,10 @@ public class StatisticsAction extends ActionSupport {
 		this.numberOfCalculations = numberOfCalculations;
 	}
 
-	@Override
-	public String execute() throws IOException {		
+	@Override	
+	public String execute() throws IOException, ParseException {		
+		
+		logger.info("started:");
 		
 		/**
 		 * Calculates current time. 
@@ -224,256 +249,8 @@ public class StatisticsAction extends ActionSupport {
 		String time = date[0];
 		String am_pm_marker = date[1];
 		
-		
 
 		logger.info("current time (int): " + time + " current am/pm marker: " + am_pm_marker);
-		
-		/**
-		 * Data structure LinkedHashMap<String,String> used in generating data for bar chart
-		 */
-		LinkedHashMap<String,String> ontoCompChemMap = new LinkedHashMap<String,String>();
-		LinkedHashMap<String,String> ontoKinMap = new LinkedHashMap<String,String>();		
-		LinkedHashMap<String,String> updatedOntoCompChemMap = new LinkedHashMap<String,String>();
-		LinkedHashMap<String,String> updatedOntoKinMap = new LinkedHashMap<String,String>();
-		
-		LinkedList<String> labelListTemp = new LinkedList<String>();
-		LinkedList<String> ontoCompChemDataSetListTemp = new LinkedList<String>();
-		LinkedList<String> ontoKinDataSetListTemp = new LinkedList<String>();
-		
-		/**
-		 * String(s) data used for first table 
-		 */
-		String numberOfCalculationsTemp= new String();
-		String numberOfReactionMechanismsTemp = new String();
-		String numberOfSpeciesInOntoKinTemp = new String();
-		String numberOfChemicalReactionsTemp = new String();
-		String numberOfSynonymsTemp = new String();
-		String numberOfSpeciesInOntoSpeciesTemp = new String();
-		
-		
-		/**
-		 * String(s) used for second table
-		 */
-		String numberOfReactionsHydrocarbonSpeciesTemp = new String();
-		String numberOfReactionsThatInvolveNitrogenSpeciesTemp = new String();
-		String numberOfReactionsThatInvolveOxygenHydrocarbonSpeciesTemp = new String();
-		String numberOfCabronAndHydrogenSpeciesTemp = new String();
-		String numberOfCabronAndHydrogenAndOxygenSpeciesTemp = new String();
-		String numberOfNitrogenSpeciesInOntoKinTemp = new String();
-		
-		/**
-		 * Run SPARQL queries and update the cache (csv files) on given time that is between 02:00am and 02:05am. 
-		 */
-		if ( (time.compareTo("020000")>0)  && (time.compareTo("020500")<0) && (am_pm_marker.equalsIgnoreCase("AM"))) {
-			
-			/**
-			 * @author NK510 (caresssd@hermes.cam.ac.uk)
-			 * 
-			 * Generate data to be shown in bar chart. 
-			 */
-			
-			File labelFile  = new File(statisticsFolderPath+"label.csv");
-			
-			if(!labelFile.exists()) {
-				
-				labelFile.createNewFile();
-			}
-			
-			File ontocompchemFile  = new File(statisticsFolderPath+"ontocompchem.csv");
-			
-			if(!ontocompchemFile.exists()) {
-				
-				ontocompchemFile.createNewFile();
-			}
-			
-			File ontoKinFile  = new File(statisticsFolderPath+"ontokin.csv");
-			
-			if(!ontoKinFile.exists()) {
-				
-				ontoKinFile.createNewFile();
-			}
-			
-		PropertiesManager propertiesManager = new PropertiesManager();		
-		ontoCompChemMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontocompchemkb,QueryString.getSpeciesIRIFromOntoCompChem()));
-		ontoKinMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontokinkb,QueryString.getSpeciesIRIFromOntoKin()));
-		updatedOntoCompChemMap.putAll(new PropertiesManager().updateFrequenciesMapData(ontoKinMap, ontoCompChemMap));
-		updatedOntoKinMap.putAll(new PropertiesManager().updateFrequenciesMapData(updatedOntoCompChemMap,ontoKinMap));
-		
-		for(Map.Entry<String, String> map: updatedOntoKinMap.entrySet()) {
-			
-			logger.info("key: " + map.getKey() + " value: " +map.getValue());
-		}
-
-		
-		/**
-		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * Updated onto compchem data
-		 * 
-		 */
-		
-		for(Map.Entry<String, String> compChemMap: updatedOntoCompChemMap.entrySet()) {
-			labelListTemp.add(compChemMap.getKey());
-			ontoCompChemDataSetListTemp.add(compChemMap.getValue());
-		}
-
-
-		/**
-		 * 
-		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * Updated ontokin data.
-		 * 
-		 */
-		
-		for(Map.Entry<String, String> m: updatedOntoKinMap.entrySet()) {			
-			ontoKinDataSetListTemp.add(m.getValue());
-			}
-		
-//		labelList.addAll(labelListTemp);
-//		ontoCompChemDataSetList.addAll(ontoCompChemDataSetListTemp);
-//		ontoKinDataSetList.addAll(ontoKinDataSetListTemp);
-
-		/**
-		 * write results in csv files
-		 */
-	   logger.info("Data set writen in label.csv file:");
-	   String labelCSVFile = statisticsFolderPath +"label.csv";
-       FileWriter labelCSVWriter = new FileWriter(labelCSVFile);
-
-	   for(String s: labelListTemp) {
-			
-			    labelCSVWriter.append(s);
-			    labelCSVWriter.append(",");
-			    
-			    logger.info(s);
-	   }
-	   labelCSVWriter.append("\n");
-
-	   labelCSVWriter.flush();
-	   labelCSVWriter.close();
-		
-		
-		logger.info("OntoCompChem data set writen in ontocompchem.csv file:");
-		String ontoCompChemCSVFile = statisticsFolderPath +"ontocompchem.csv";
-        FileWriter ontoCompChemCSVWriter = new FileWriter(ontoCompChemCSVFile);
-		for(String s: ontoCompChemDataSetListTemp) {
-			
-			ontoCompChemCSVWriter.append(s);
-		    ontoCompChemCSVWriter.append(",");
-		
-		    
-			logger.info(s);
-		}
-		ontoCompChemCSVWriter.append("\n");
-		
-		ontoCompChemCSVWriter.flush();
-		ontoCompChemCSVWriter.close();
-		
-		
-		
-		logger.info("OntoKin data set writen in ontokin.csv file:");	
-		String ontoKinCSVFile = statisticsFolderPath +"ontokin.csv";
-      FileWriter ontoKinCSVWriter = new FileWriter(ontoKinCSVFile);
-		for(String s: ontoKinDataSetListTemp) {
-			
-			ontoKinCSVWriter.append(s);
-		    ontoKinCSVWriter.append(",");
-			logger.info(s);
-		}
-		ontoKinCSVWriter.append("\n");
-		ontoKinCSVWriter.flush();
-		ontoKinCSVWriter.close();
-		
-		/**
-		 * 
-		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * These properties are shown in first table. 
-		 * 
-		 */
-		
-		File table1File  = new File(statisticsFolderPath+"table1.csv");
-		
-		if(!table1File.exists()) {
-			
-			table1File.createNewFile();
-		}
-		
-	numberOfCalculationsTemp = new QueryManager().getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations());		
-	numberOfReactionMechanismsTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionMechanisms());
-	numberOfSpeciesInOntoKinTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfSpeciesInOntoKin());
-	numberOfChemicalReactionsTemp = new QueryManager().getQuery(ontokinkb,QueryString.getNumberOfChemicalReactionsInOntoKin());		
-	numberOfSynonymsTemp = new QueryManager().getQuery(ontospecieskb,QueryString.getNumberOfSynonymsInOntoSpecies());		
-	numberOfSpeciesInOntoSpeciesTemp = new QueryManager().getQuery(ontospecieskb,QueryString.getNumberOfSpeciesInOntoSpecies());
-	
-	logger.info("data set writen in table1.csv file:");
-	String table1CSVFile = statisticsFolderPath +"table1.csv";
-    FileWriter table1CSVWriter = new FileWriter(table1CSVFile);
-				
-	table1CSVWriter.append(numberOfCalculationsTemp);
-	table1CSVWriter.append(",");
-	table1CSVWriter.append(numberOfReactionMechanismsTemp);
-	table1CSVWriter.append(",");
-	table1CSVWriter.append(numberOfSpeciesInOntoKinTemp);
-	table1CSVWriter.append(",");
-	table1CSVWriter.append(numberOfChemicalReactionsTemp);
-	table1CSVWriter.append(",");
-	table1CSVWriter.append(numberOfSynonymsTemp);
-	table1CSVWriter.append(",");
-	table1CSVWriter.append(numberOfSpeciesInOntoSpeciesTemp);
-	table1CSVWriter.append(",");
-	
-	
-	table1CSVWriter.append("\n");		
-	
-	table1CSVWriter.flush();
-	table1CSVWriter.close();
-	
-	
-	/**
-	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * These properties are shown in second table.
-	 * 
-	 */
-	
-File table2File  = new File(statisticsFolderPath+"table2.csv");
-	
-if(!table2File.exists()) {
-		
-table2File.createNewFile();
-
-}
-
-numberOfReactionsHydrocarbonSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveHydrocarbonSpecies());		
-numberOfReactionsThatInvolveNitrogenSpeciesTemp=new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveNitrogenSpecies());			
-numberOfReactionsThatInvolveOxygenHydrocarbonSpeciesTemp =new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies());		
-numberOfCabronAndHydrogenSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getCabronHydrogenSpeciesInOntoKin());		
-numberOfCabronAndHydrogenAndOxygenSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getCabronHydrogenOxygenSpeciesInOntoKin());		
-numberOfNitrogenSpeciesInOntoKinTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberNitrogenSpeciesInOntoKin());
-
-logger.info("data set writen in table1.csv file:");
-String table2CSVFile = statisticsFolderPath +"table2.csv";
-FileWriter table2CSVWriter = new FileWriter(table2CSVFile);
-			
-table2CSVWriter.append(numberOfReactionsHydrocarbonSpeciesTemp);
-table2CSVWriter.append(",");
-table2CSVWriter.append(numberOfReactionsThatInvolveNitrogenSpeciesTemp);
-table2CSVWriter.append(",");
-table2CSVWriter.append(numberOfReactionsThatInvolveOxygenHydrocarbonSpeciesTemp);
-table2CSVWriter.append(",");
-table2CSVWriter.append(numberOfCabronAndHydrogenSpeciesTemp);
-table2CSVWriter.append(",");
-table2CSVWriter.append(numberOfCabronAndHydrogenAndOxygenSpeciesTemp);
-table2CSVWriter.append(",");
-table2CSVWriter.append(numberOfNitrogenSpeciesInOntoKinTemp);
-table2CSVWriter.append(",");
-
-table2CSVWriter.append("\n");		
-
-table2CSVWriter.flush();
-table2CSVWriter.close();	
-
-}	
-		
 
 		/**
 		 * Reads data from table1.csv file 
@@ -489,22 +266,21 @@ table2CSVWriter.close();
 		
 
 		for(int i =0;i<table1Data.length;i++) {			
-			logger.info(table1Data[i]);				
+//			logger.info(table1Data[i]);				
 		}
 		
-//		numberOfCalculations = table1Data[0];
-		numberOfCalculations=new QueryManager().getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations());
+		numberOfCalculations = table1Data[0];
+		/**
+		 * Line below is commented because we are not querying ontocompchem knowledge graph when running statistics service. 
+		 */
+//		numberOfCalculations=new QueryManager().getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations());
 		numberOfReactionMechanisms=table1Data[1];
 		numberOfSpeciesInOntoKin=table1Data[2];
 		numberOfChemicalReactions=table1Data[3];
 		numberOfSynonyms=table1Data[4];
 		numberOfSpeciesInOntoSpecies=table1Data[5];
 		
-		
-		table1Reader.close();
-		
-
-		
+		table1Reader.close();		
 		
 		/**
 		 * Reads csv data to plot it on bar chart 
@@ -518,13 +294,38 @@ table2CSVWriter.close();
 			data = row.split(","); 
 		}
 		
-		logger.info("reading label.csv file :");
+		logger.info("reading label.csv file :");		
+		
 		for(int i =0;i<data.length;i++) {
 			
 			labelList.add(data[i]);
 			
-			logger.info(data[i]);				
+		
 		}
+		
+
+		/**
+		 * Calculates date that is three months earlier than date of last uploaded OWL file.
+		 */
+		LocalDate threeMonthsEarlierDate = PropertiesManager.getDateThreeMonthsEarlier(labelList,3);
+		
+		logger.info("three months earlier date: " + threeMonthsEarlierDate.toString());
+
+	     
+		/**
+		 * Populates label list with dates that are three months earlier than current date 
+		 */
+		for(int i =0;i<data.length;i++) {
+			
+			Date labelDate = new SimpleDateFormat("yyyy-MM-dd").parse(data[i].toString());
+            String formattedLabelDate = new SimpleDateFormat("yyyy-MM-dd").format(labelDate);		     
+		     LocalDate statedLabelDate = LocalDate.parse(formattedLabelDate);
+		     
+		     if(threeMonthsEarlierDate.isBefore(statedLabelDate) || threeMonthsEarlierDate.isEqual(statedLabelDate)) {
+
+					labelListThreeMonths.add(data[i]); 
+		     }
+		}	     
 		
 		csvLabelReader.close();
 		
@@ -540,11 +341,27 @@ table2CSVWriter.close();
 		for(int i =0;i<ontocompchemData.length;i++) {
 			
 			ontoCompChemDataSetList.add(ontocompchemData[i]);
-			
-			logger.info(ontocompchemData[i]);				
 		}
 		
-		ontocompchemCsvReader.close();
+	  logger.info("reading ontocompchem data for last three months");
+	  
+	  int sizeOfLabelLastThreeMonths = labelListThreeMonths.size();
+	  
+	  logger.info("number of dates used in bar chart: " + sizeOfLabelLastThreeMonths);
+	  
+	  int sizeOfLabelList = labelList.size();
+	  
+	  int difference = sizeOfLabelList - sizeOfLabelLastThreeMonths;
+	  
+	  /**
+	   * Adding ontocompchem data into ontocomcphem data set list last three months.
+	   */
+	  for(int i = difference;i<ontocompchemData.length;i++) {
+		  
+		  ontoCompChemDataSetListThreeMonths.add(ontocompchemData[i]);
+	  }
+	  
+	  ontocompchemCsvReader.close();
 		
       BufferedReader ontokinCsvReader = new BufferedReader(new FileReader(statisticsFolderPath+"ontokin.csv"));
 		
@@ -559,8 +376,14 @@ table2CSVWriter.close();
 			
 			ontoKinDataSetList.add(ontokinData[i]);
 			
-			logger.info(ontokinData[i]);				
 		}
+		
+		
+		for(int i = difference;i<ontokinData.length;i++) {
+			
+			ontoKinDataSetListThreeMonths.add(ontokinData[i]);	
+		}
+		
 		
 		ontokinCsvReader.close();
 		
@@ -579,7 +402,7 @@ table2CSVWriter.close();
 		
 
 		for(int i =0;i<table2Data.length;i++) {			
-			logger.info(table2Data[i]);				
+//			logger.info(table2Data[i]);				
 		}
 		numberOfReactionsHydrocarbonSpecies = table2Data[0];
 		numberOfReactionsThatInvolveNitrogenSpecies=table2Data[1];		
