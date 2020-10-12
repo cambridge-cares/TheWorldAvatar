@@ -1,17 +1,15 @@
  // Import the File class
 import java.io.IOException;  // Import the IOException class to handle errors
-import java.io.FileWriter;
-import java.io.BufferedReader;
+import java.io.FileWriter; 
 //import java.io.BufferedReader;
 //import java.io.File;
 //import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 //import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 //import java.io.FileOutputStream;
 //import java.io.FileReader;
-import java.io.FileReader;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -74,7 +72,7 @@ public class Matlab_agent {
 		
 		//Output filename: output.dat
 		
-		/*
+		
 		FileInputStream file = new FileInputStream("/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/output/gPROMS_output.xlsx");
 		
 		
@@ -149,7 +147,6 @@ public class Matlab_agent {
 			System.out.println();
 		}
 		file2.close();
-		*/
 	    
 	    //Get the current relative path
 		Path currentRelativePath = Paths.get("");
@@ -157,7 +154,7 @@ public class Matlab_agent {
 		
 		
 		//Append current relative path with the input file path
-		
+		/*
 		 String pathToInputFile = s+"/res/input/input.csv";
 		 
 		
@@ -167,10 +164,10 @@ public class Matlab_agent {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-		String row;
+		} */
+		//String row;
 		try {
-			
+			/*
 			ArrayList<ArrayList<String>> output = new ArrayList<ArrayList<String>>();
 			
 			row = csvReader.readLine();			
@@ -193,7 +190,7 @@ public class Matlab_agent {
 			
 			//close the reader
 			csvReader.close();
-			
+			*/
 			
 			//Write the ArrayList into CSV into the path specified
 			String pathToOutputFile = s+"/res/matlab/output.dat";			
