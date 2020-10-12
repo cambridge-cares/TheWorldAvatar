@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Testing sockets</title>
+</head>
+<body>
+
+<input id="input-field"/>
+<button onclick="ask_question()">TEST</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+
+    function ask_question(){
+      socket.emit('message', {message: 'I\'m connected!', username: namespace});
+    }
+
+
+    let namespace = 'USER1234'
+    var socket = io();
+    socket.on('connect', function() {
+
+    });
+
+    socket.on('response', function(msg) {
+        console.log('from coordinate agent', msg)
+    });
+
+</script>
+</body>
+</html>

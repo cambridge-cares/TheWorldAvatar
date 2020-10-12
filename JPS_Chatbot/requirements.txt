@@ -44,7 +44,6 @@ future==0.17.1
 fuzzywuzzy==0.18.0
 gast==0.2.2
 gensim==3.8.3
-gevent==1.5.0
 google-api-core==1.22.2
 google-api-python-client==1.11.0
 google-auth==1.19.2
@@ -54,7 +53,6 @@ google-pasta==0.2.0
 google-search-results-serpwow==1.1.11
 googleapis-common-protos==1.52.0
 graphviz==0.14.1
-greenlet==0.4.16
 grpcio==1.30.0
 h11==0.8.1
 h2==3.2.0
@@ -125,8 +123,6 @@ PySocks==1.7.1
 pytest==6.0.1
 python-crfsuite==0.9.7
 python-dateutil==2.8.1
-python-engineio==3.12.1
-python-socketio==4.5.1
 python-telegram-bot==12.8
 pytz==2019.3
 PyYAML==5.3.1
@@ -193,3 +189,19 @@ wrapt==1.12.1
 xmltodict==0.12.0
 yarl==1.5.0
 zipp==3.1.0
+click==7.1.2
+Flask==1.1.2
+Flask-SocketIO==4.3.1
+gevent==20.9.0
+gevent-websocket==0.10.1
+greenlet==0.4.17
+gunicorn==20.0.4
+itsdangerous==1.1.0
+Jinja2==2.11.2
+MarkupSafe==1.1.1
+python-engineio==3.13.2
+python-socketio==4.6.0
+six==1.15.0
+Werkzeug==1.0.1
+zope.event==4.5.0
+zope.interface==5.1.2
