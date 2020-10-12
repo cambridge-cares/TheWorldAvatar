@@ -8,8 +8,10 @@ import uk.ac.ceb.como.molhub.model.QueryManager;
 /**
  * The Class QueryString.
  *
- * @author nk510
  * <p>The Class QueryString. Class implements methods for parametrised SPARQL queries.</p>
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 public class QueryString {	
 	
@@ -41,7 +43,6 @@ public class QueryString {
 		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
 		        + "PREFIX gc: <http://purl.org/gc/>"
 				+ "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
-//				+ "SELECT (strafter(str(?s), 'compchem/') AS ?uuid) ?name " + "WHERE { "
 				+ "SELECT (strafter(str(?s), '.owl#') AS ?uuid) ?name " 
                 + "WHERE { "
 				+ "?s "+ontoCompChemNS+":hasInitialization ?in . " 
@@ -115,7 +116,9 @@ public class QueryString {
 				+ "PREFIX gc: <http://purl.org/gc/>" 
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+ "SELECT DISTINCT (strafter(str(?g09), '.owl#') AS ?uuid) ?levelOfTheory ?basisSetValue "
+//				+ "SELECT DISTINCT (strafter(str(?g09), '.owl#') AS ?uuid) ?levelOfTheory ?basisSetValue "
+//				commented line above and added line below.
+				+ "SELECT DISTINCT (strafter(str(?g09), 'ontocompchem/') AS ?uuid) ?levelOfTheory ?basisSetValue "
 				+ "WHERE {" 
 				+ "?g09 "+ontoCompChemNS+":hasInitialization ?mn0 ." 
 				+ "?mn0 gc:hasMoleculeProperty ?mp0 ."
@@ -131,35 +134,35 @@ public class QueryString {
 		return query;
 	}
 
+
+	
 	/**
-	 * Ge non compositet molecule properties.
-	 *
-	 * @param uuid
-	 *            the uuid
+	 * @param uuid the UUID that denotes unique folder name and used in naming upladed Log files.
+	 * @param uuidFile the UUID name of uploaded OWL file that is used as second parameter in HTTP request.
 	 * @return the string.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be molecule name,
 	 *         level of theory, basis value set, geometry type.
 	 *         </p>
 	 */
-	public static String geNonCompositetMoleculeProperties(String uuid) {
+	public static String geNonCompositetMoleculeProperties(String uuid, String uuidFile) {
 
 		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+ "SELECT ?moleculeName ?levelOfTheory ?basisSetValue ?geometryTypeValue " 
+				+ "SELECT ?moleculeName ?levelOfTheory ?basisSetValue ?geometryTypeValue ?mn0 " 
 				+ "WHERE {"
-				+ "<"+ontoCompChemAboxBaseUri+uuid+"/"+uuid+".owl#"+ uuid + "> "+ontoCompChemNS+":hasInitialization ?mn0 ."
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/"+uuidFile+"#"+ uuid + "> "+ontoCompChemNS+":hasInitialization ?mn0 ."
 				+ "?mn0 gc:hasMoleculeProperty ?mp0 ." 
 				+ "?mp0 gc:hasName ?moleculeName ."
-				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid + "> "+ontoCompChemNS+":hasInitialization ?mn0 ."
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuidFile+"#"+ uuid + "> "+ontoCompChemNS+":hasInitialization ?mn0 ."
 				+ "?mn0 gc:hasParameter ?p1 ."
 				+ "?p1  rdf:type "+ontoCompChemNS+":LevelOfTheory ."
 				+ "?p1  <"+ontoCompChemUri+"hasLevelOfTheory> ?levelOfTheory ."
-				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid + ">  "+ontoCompChemNS+":hasInitialization ?mn2 ."
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuidFile+"#"+ uuid + ">  "+ontoCompChemNS+":hasInitialization ?mn2 ."
 				+ "?mn2 gc:hasParameter ?p2 ." + "?p2  rdf:type <http://purl.org/gc/BasisSet> ."
 				+ "?p2  gc:hasBasisSet ?basisSetValue ." 
-				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid + "> gc:isCalculationOn ?c1. " 
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuidFile+"#"+ uuid + "> gc:isCalculationOn ?c1. " 
                 + "?c1 a <"+ontoCompChemUri+"GeometryType> ."
 				+ "?c1 "+ontoCompChemNS+":hasGeometryType ?geometryTypeValue ." 
                 + "}";
@@ -171,7 +174,7 @@ public class QueryString {
 	 * Ge frequency.
 	 *
 	 * @param uuid
-	 *            the uuid
+	 *            the UUID
 	 * @return the string.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be frequency size,
@@ -196,19 +199,43 @@ public class QueryString {
 
 		return query;
 	}
+	
+
+	/**
+	 * @param uuid the UUID
+	 * @param uuidFile the uuidFile 
+	 * @return frequency values as a string
+	 */
+	public static String geFrequency(String uuid, String uuidFile) {
+
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+				+ "SELECT ?frequenciesSize ?frequenciesValue ?frequenciesUnit " + "WHERE {"
+//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">  gc:isCalculationOn ?fc1 ."
+				+ "<"+ontoCompChemAboxBaseUri+ uuid+"/" +uuidFile+"#"+ uuid + ">  gc:isCalculationOn ?fc1 ."
+				+ "?fc1 rdf:type gc:VibrationalAnalysis." 
+				+ "?fc1 gc:hasResult ?r ." 
+				+ "?r rdf:type gc:Frequency ."
+				+ "?r gc:hasVibrationCount ?frequenciesSize ." 
+				+ "?r "+ontoCompChemNS+":hasFrequencies ?frequenciesValue ."
+				+ "?r gc:hasUnit ?frequenciesUnit ." 
+				+ "}";
+
+		return query;
+	}
 
 	/**
 	 * Gets the atomic mass.
-	 *
 	 * @param uuid
-	 *            the uuid
+	 * @param uuidFile
 	 * @return the atomic mass.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be atom name, mass
 	 *         value, and mass unit.
 	 *         </p>
 	 */
-	public static String getAtomicMass(String uuid) {
+	public static String getAtomicMass(String uuid, String uuidFile) {
 
 		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 				+ "PREFIX gc: <http://purl.org/gc/>" 
@@ -216,41 +243,41 @@ public class QueryString {
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+ "SELECT (strafter(str(?atomName), '#') AS ?atomicName) ?massValue ?massUnit " 
 				+ "WHERE {"
-//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">  gc:isCalculationOn ?go ."
-				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid +">  gc:isCalculationOn ?go ."
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuidFile+"#"+ uuid +">  gc:isCalculationOn ?go ."
 				+ "?go rdf:type gc:GeometryOptimization ." 
 				+ "?go gc:hasMolecule ?mol1. " 
 				+ "?mol1 gc:hasAtom ?at1 ."
 				+ "?at1 gc:isElement ?atomName ." 
 				+ "?at1 gc:hasMass ?mass ." 
 				+ "?mass gc:hasValue ?massValue . "
-				+ "?mass gc:hasUnit ?massUnit . " 
+				+ "OPTIONAL { "
+				+ "?mass gc:hasUnit ?massUnit . "
+				+ "} . " 
 				+ "}";
 
 		return query;
 	}
 
+	
 	/**
+	 * 
 	 * Gets the spin multiplicity.
-	 *
 	 * @param uuid
-	 *            the uuid
+	 * @param uuidFile
 	 * @return the spin multiplicity.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be spin multiplicity value.
 	 *         </p>
 	 */
-	
-	public static String getSpinMultiplicity(String uuid) {
+	public static String getSpinMultiplicity(String uuid, String uuidFile) {
 
 		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 				+ "PREFIX gc: <http://purl.org/gc/>" 
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
 				+ "SELECT ?spinMultiplicityValue "
-//				+ "WHERE {" + "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">   gc:isCalculationOn ?go1 . "
 				+ "WHERE {" 
-                + "<"+ontoCompChemAboxBaseUri+ uuid+"/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go1 . "				
+                + "<"+ontoCompChemAboxBaseUri+ uuid+"/" +uuidFile+"#"+ uuid +">   gc:isCalculationOn ?go1 . "				
 				+ "?go1 rdf:type gc:GeometryOptimization ." 
                 + "?go1 gc:hasMolecule ?mol2."
 				+ "?mol2 "+ontoCompChemNS+":hasSpinMultiplicity ?spinMultiplicityValue ." 
@@ -262,12 +289,12 @@ public class QueryString {
 	/**
 	 * Gets the formal charge.
 	 *
-	 * @param uuid the uuid
+	 * @param uuid the UUID
 	 * @return the formal charge
 	 * <p>Query as a string. Result of that query should be formal charge value. </p>
 	 */
 
-	public static String getFormalCharge(String uuid) {
+	public static String getFormalCharge(String uuid, String uuidFile) {
 
 		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 				+ "PREFIX gc: <http://purl.org/gc/>" 
@@ -275,8 +302,7 @@ public class QueryString {
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>" 
 				+ "SELECT ?formalChargeValue  ?formalChargeUnit "
 				+ "WHERE {" 
-//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">   gc:isCalculationOn ?go1 . "
-				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go1 . "
+				+ "<"+ontoCompChemAboxBaseUri+uuid+"/" +uuidFile+"#"+ uuid +">   gc:isCalculationOn ?go1 . "
 				+ "?go1 rdf:type gc:GeometryOptimization ." 
 				+ "?go1 gc:hasMolecule ?mol2."
 				+ "?mol2 gc:hasFormalCharge ?formalCharge ."
@@ -292,14 +318,14 @@ public class QueryString {
 	 * Gets the rotational symmetry number.
 	 *
 	 * @param uuid
-	 *            the uuid
+	 *            the UUID
 	 * @return the string.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be the rotational symmetry number.
 	 *         
 	 *         </p>
 	 */
-	public static String getRotationalSymmertyNumber(String uuid) {
+	public static String getRotationalSymmertyNumber(String uuid, String uuidFile) {
 
 		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 				+ "PREFIX gc: <http://purl.org/gc/>" 
@@ -307,40 +333,37 @@ public class QueryString {
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+ "SELECT DISTINCT ?rotationalSymmetryNumber " 
 				+ "WHERE {"
-//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">   gc:isCalculationOn ?go5 ."
-				+ "<"+ontoCompChemAboxBaseUri+ uuid +"/" +uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go5 ."
+				+ "<"+ontoCompChemAboxBaseUri+ uuid +"/" +uuidFile+"#"+ uuid +">   gc:isCalculationOn ?go5 ."
 				+ "?go5 rdf:type "+ontoCompChemNS+":RotationalSymmetry ."
 				+ "?go5 "+ontoCompChemNS+":hasRotationalSymmetryNumber ?rotationalSymmetryNumber . " + "}";
 
 		return query;
-	}
-
+	}	
+	
 	/**
-	 * Gets the rotational constant.
-	 *
-	 * @param uuid
-	 *            the uuid as a parameter for SPARQL query.
-	 * @return the string.
+	 * @param uuid the UUID as a parameter for SPARQL query.
+	 * @param uuidFile a parameter for SPARQL query used in IRIs.
+	 * @return  the string.
 	 *         <p>
 	 * 		Query as a string. Result of that query should be the rotational
 	 *         constant as 3-tuple (rotational constant size, rotational constant
 	 *         value, and rotational constant unit)
 	 *         </p>
 	 */
-	public static String getRotationalConstant(String uuid) {
+	public static String getRotationalConstant(String uuid, String uuidFile) {
 
 		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
 				+ "PREFIX gc: <http://purl.org/gc/>" 
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+ "SELECT DISTINCT ?rotationalConstantsSize  ?rotationalConstantsValue ?rotationalConstantsUnit "
-//				+ "WHERE {" + "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">   gc:isCalculationOn ?go4 ."
 				+ "WHERE {" 
-                + "<"+ontoCompChemAboxBaseUri+ uuid+"/"+uuid+".owl#"+ uuid +">   gc:isCalculationOn ?go4 ."
+                + "<"+ontoCompChemAboxBaseUri+ uuid+"/"+uuidFile+"#"+ uuid +">   gc:isCalculationOn ?go4 ."
 				+ "?go4 rdf:type "+ontoCompChemNS+":RotationalConstants ."
 				+ "?go4 "+ontoCompChemNS+":hasRotationalConstants ?rotationalConstantsValue ."
 				+ "?go4 gc:hasUnit ?rotationalConstantsUnit ."
-				+ "?go "+ontoCompChemNS+":hasRotationalConstantsCount ?rotationalConstantsSize ." + "}";
+				+ "?go4 "+ontoCompChemNS+":hasRotationalConstantsCount ?rotationalConstantsSize ." 
+				+ "}";
 
 		return query;
 	}
@@ -348,12 +371,12 @@ public class QueryString {
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
-	 * @param uuid the uuid as a parameter for SPARQL query.
-	 * @param energyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy
-	 * @return A SPARQL query as a String. Result of this query should be scf energy value and scf energy unit.
+	 * @param uuid the UUID as a parameter for SPARQL query.
+	 * @param energyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy, ElectronicAndZPEEnergy
+	 * @return A SPARQL query as a String. Result of this query should be energy value and  energy unit.
 	 * 
 	 */
-	public static String getElectronicEnergy(String uuid, String energyClass) {
+	public static String getElectronicEnergy(String uuid, String uuidFile, String energyClass) {
 		
 
 		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
@@ -362,7 +385,7 @@ public class QueryString {
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
 				+ "SELECT DISTINCT ?energyValue  ?energyUnit "
 				+ "WHERE {" 
-                + "<"+ontoCompChemAboxBaseUri+ uuid+"/"+uuid+".owl#"+ uuid +"> gc:isCalculationOn ?cal1 ."
+                + "<"+ontoCompChemAboxBaseUri+ uuid+"/"+uuidFile+"#"+ uuid +"> gc:isCalculationOn ?cal1 ."
 				+ "?cal1 rdf:type "+ontoCompChemNS+":"+energyClass+" ."
 				+ "?cal1 gc:hasElectronicEnergy ?elecEn . " 
 				+ "?elecEn gc:hasValue  ?energyValue . "
@@ -371,6 +394,9 @@ public class QueryString {
 		
 		return query;
 	}
+	
+	
+	
 	
 	
 	

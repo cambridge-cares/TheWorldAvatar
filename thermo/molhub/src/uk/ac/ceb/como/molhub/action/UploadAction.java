@@ -42,7 +42,7 @@ import uk.ac.ceb.como.molhub.model.XMLValidationManager;
  * on server, and generates XML, ontology file, image file, and<br>
  * adds ontologies into triple store (RDF4J).
  *
- * @author nk510 (Nenad Krdzabac)
+ * @author nk510 (Nenad Krdzavac)
  * @author msff2 (Feroz Farazi)
  * 
  */
@@ -195,13 +195,16 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 				}
 				// Generates image (.png file) from uploaded Gaussian file by
 				// using JmolData.jar.
+				
 				String[] cmd = { "java", "-jar", jmolDataJarFilePath, "--nodisplay", "-j", "background white",
 						inputG09File.getAbsolutePath().toString(), "-w",
 						"png:" + pngFile.getAbsolutePath().toString() };
+				
 				Runtime.getRuntime().exec(cmd);
 			}
+			
 			/**
-			 * It validates of generated Compchem xml file against Compchem XML schema,
+			 * It validates generated Compchem xml file against Compchem XML schema,
 			 * and checks consistency of the generated Compchem ontology (ABox).
 			 */
 			boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlFile);

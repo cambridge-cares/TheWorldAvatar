@@ -4,8 +4,11 @@ package uk.ac.ceb.como.molhub.bean;
 /**
  * The Class Term.
  *
- * @author nk510 <p>Represents a query term that will be used in search box. For
+ * <p>Represents a query term that will be used in search box. For
  *         example: "(H2 and O) or Cl2"</p>
+ *         
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 public class Term {
 
@@ -20,7 +23,7 @@ public class Term {
 	private String cnf;
 
 	/**
-	 * Gets the cnf.
+	 * Gets the cnf (Conjunctive normal form).
 	 *
 	 * @return the cnf. <p> Represents conjunctive normal form of input query given as name in this class. </p>
 	 */
@@ -31,7 +34,7 @@ public class Term {
 	/**
 	 * Sets the cnf.
 	 *
-	 * @param cnf the new cnf (Conjunctive normal form)
+	 * @param cnf the new cnf 
 	 */
 	public void setCnf(String cnf) {
 		this.cnf = cnf;

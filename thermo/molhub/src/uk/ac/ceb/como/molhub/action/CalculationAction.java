@@ -86,18 +86,15 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		 */
 		
 		for (Map.Entry<String, Object> mp : session.entrySet()) {
-			
-
 
 			String speciesFolder = owlFolderPath +  mp.getKey().toString() + "/";
-
 			
 			String jsonFolderPath = dataFolderPath + mp.getKey().toString() + "/";
 
 			List<File> aboxFiles = utility.getArrayFileList(speciesFolder, ".owl");
 
-			for (File af : aboxFiles) {
-
+			for (File af : aboxFiles) {				
+				
 				OntModel model = CompChemQuery.getOntModel(af.getAbsolutePath());
 
 				String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
@@ -116,7 +113,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 				/**
 				 * 
-				 * @author nk510 <p>Runs Python script for thermodynamic calculations. Python script is implemented by {@author danieln@cmclinnovations.com} 
+				 * @author nk510 <p>Runs Python script for thermodynamic calculations. Python script is implemented by Dr Daniel Nurkowski {@author danieln@cmclinnovations.com} 
 				 * 
 				 */
 				
@@ -130,12 +127,12 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 				Runtime.getRuntime().exec(cmd);
 				
-				
 			}
 			
 		}
 		
 		/**
+		 * 
 		 * @author nk510
 		 * <p>Removes all data from session's map after finishing thermo calculations.</p>
 		 * 
@@ -143,7 +140,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		
 		for (Map.Entry<String, Object> entry : session.entrySet()) {
 		     
-		        session.remove(entry.getKey());
+        session.remove(entry.getKey());
+        
 		}
 		
 		addActionMessage("Calculations successfully completed.");
