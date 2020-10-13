@@ -291,6 +291,7 @@ case util:
      cd preproc/${mcwind}/
      make -f Makefile.mc clean
      make -f Makefile.mc
+     ln -s ./bin/MCWIND.exe
 
 #> 2 UECT
      cd .. &&  cd ./${uect}/
