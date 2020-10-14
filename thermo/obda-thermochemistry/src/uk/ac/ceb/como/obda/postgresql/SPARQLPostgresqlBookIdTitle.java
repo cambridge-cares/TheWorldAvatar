@@ -1,3 +1,4 @@
+package uk.ac.ceb.como.obda.postgresql;
 import it.unibz.inf.ontop.sesame.RepositoryConnection;
 
 import it.unibz.inf.ontop.sesame.SesameVirtualRepo;
@@ -21,23 +22,26 @@ import java.io.IOException;
  *         This class demonstrate how to perform SPARQL query on book database
  *         visa Book ontology using ontop Sesame virtual repository api and
  *         openrdf api.
+ *         
+ *         This example demonstrates how to access data in 'books' Postgresql database via exampleBooks ontology.
  *
  */
-public class SPARQLSesame {
+
+public class SPARQLPostgresqlBookIdTitle {
 
 	/**
 	 * Book ontology
 	 */
-	final String owlFile = "./resources/example/books/exampleBooks.owl";
+	final String owlFile = "./resources/books/exampleBooks.owl";
 	/**
-	 * Mapping between Book ontology and book database
+	 * Mapping between exampleBooks ontology and books database stored in Postgresql.
 	 */
-	final String obdaFile = "./resources/example/books/bk_code_title.obda";
+	final String obdaFile = "./resources/postgresql/books_all.obda";
 
 	/**
-	 * SPARQL query.
+	 * SPARQL query performed on Postgresql book database via exampleBooks ontology.
 	 */
-	final String sparqlFile = "./resources/example/books/book_id_title.rq";
+	final String sparqlFile = "./resources/books/book_id_title.rq";
 
 	private BufferedReader br;
 
@@ -45,7 +49,7 @@ public class SPARQLSesame {
 
 		try {
 
-			SPARQLSesame example = new SPARQLSesame();
+			SPARQLPostgresqlBookIdTitle example = new SPARQLPostgresqlBookIdTitle();
 
 			example.runSPARQL();
 
@@ -55,7 +59,7 @@ public class SPARQLSesame {
 	}
 
 	/**
-	 * Performs SPARQL query on Book database via Book ontology and returns as
+	 * Performs SPARQL query on Book database via exampleBooks ontology and returns as
 	 * result book id and its title.
 	 */
 	public void runSPARQL() throws Exception {
@@ -64,10 +68,12 @@ public class SPARQLSesame {
 
 		/**
 		 * Create and initialize repository
+		 * 
 		 */
 		boolean existential = false;
 
 		/**
+		 * 
 		 * A type of rewriting technique.
 		 * 
 		 * Reference paper that explains tree-withness rewriting technique is
@@ -76,6 +82,7 @@ public class SPARQLSesame {
 		 * Access with Databases: A Short Course. In S. Rudolph, G. Gottlob, I.
 		 * Horrocks, F. van Harmelen, editors, Summer School on Reasoning Web (Mannheim,
 		 * 30 July - 2 August), vol. 8067 of LNCS, pp. 194-229. Springer, 2013."
+		 * 
 		 */
 		String rewriting = "TreeWitness";
 
@@ -94,12 +101,12 @@ public class SPARQLSesame {
 			TupleQuery tq = (TupleQuery) query;
 
 			FileOutputStream resultingFile = new FileOutputStream(
-					new File("./resources/example/sparql_sesame_result.txt"));
+					new File("./resources/sparql_sesame_result_book_id_title_postgresql.txt"));
 
 			TupleQueryResultHandler writer = new SPARQLResultsCSVWriter(resultingFile);
 
 			/**
-			 * Stores SPARQL results into target file.
+			 * Stores SPARQL results into target txt file.
 			 */
 
 			tq.evaluate(writer);
@@ -109,6 +116,13 @@ public class SPARQLSesame {
 
 	}
 
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param sparqlFile the sparql file path
+	 * @return the string that contains sparql query content
+	 * @throws IOException
+	 */
 	private String readSPARQL(String sparqlFile) throws IOException {
 
 		String queryString = "";

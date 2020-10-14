@@ -1,3 +1,4 @@
+package uk.ac.ceb.como.obda.h2;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -21,12 +22,23 @@ import static java.util.stream.Collectors.joining;
  *         mode. It demonstrates inconsistency of sparql result where instances
  *         of books:AudioBook and books:E-Book are disjoint.
  *
+ *         This example demonstrates how to access data in 'books' Postgresql database via exampleBooks ontology.
  */
 public class SPARQLInconsistentInference {
 
-	final String owlFile = "./resources/example/books/exampleBooks.owl";
-	final String obdaFile = "./resources/example/books/bk_code_audio_book_inference_inconsistency.obda";
-	final String sparqlFile = "./resources/example/books/book_id_audio_and_ebook.rq";
+	/**
+	 * exampleBooks ontology file path
+	 */
+
+	final String owlFile = "./resources/books/exampleBooks.owl";
+	/**
+	 * Mapping between exampleBooks ontology and 'books' Postgresql database file path
+	 */
+	final String obdaFile = "./resources/books/bk_code_audio_book_inference_inconsistency.obda";
+	/**
+	 * SPARQL query file path that is performed on 'books' database via exampleBooks ontology.
+	 */
+	final String sparqlFile = "./resources/books/book_id_audio_and_ebook.rq";
 
 	public static void main(String[] args) {
 		try {
@@ -56,7 +68,7 @@ public class SPARQLInconsistentInference {
 				QuestOWLResultSet rs = st.executeTuple(sparqlQuery)) {
 			int columnSize = rs.getColumnCount();
 			BufferedWriter bufferOutput = new BufferedWriter(
-					new FileWriter("./resources/example/sparql_inconsistent_inference_result_1.txt"));
+					new FileWriter("./resources/example/sparql_inconsistent_inference_h2.txt"));
 			bufferOutput.write("reasoner.isQuestConsistent() :" + reasoner.isQuestConsistent());
 			bufferOutput.write("\n");
 			while (rs.nextRow()) {
