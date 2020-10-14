@@ -39,49 +39,20 @@ public class RenameTool {
 		//CSL TODO: add Graph
 		//CSL TODO: work with prefix
 		
+		// Get sparql update as String
 		String strSparqlUpdate = buildSparqlUpdate(target, replacement).toString(); 
 		
-		// sparql update performs find and replace of subject, predicate or object that contain target string
-		String sparqlUpdate = "DELETE {?s ?p ?o}" +
-		"INSERT {?newS ?newP ?newO}" +
-		"WHERE {" +
-		  "?s ?p ?o ." +
-		  "BIND( regex(str(?s), str(\"" + target + "\")) AS ?matchS ) ." +
-		  "BIND( regex(str(?p), str(\"" + target + "\")) AS ?matchP ) ." +
-		  "BIND( regex(str(?o), str(\"" + target + "\")) AS ?matchO ) ." +
-		  "FILTER(?matchS || ?matchP || ?matchO) ." +
-		  "BIND ( IF( ?matchS, URI(REPLACE(STR(?s), \"" + target + "\", \"" + replacement + "\")), ?s) AS ?newS) ." +
-		  "BIND ( IF( ?matchP, URI(REPLACE(STR(?p), \"" + target + "\", \"" + replacement + "\")), ?p) AS ?newP) ." +
-		  "BIND ( IF( ?matchO, URI(REPLACE(STR(?o), \"" + target + "\", \"" + replacement + "\")), ?o) AS ?newO) . }";
-			
-		String updateUrl = null;
-		
-		// Blazegraph, Fuseki and RDF4J use Jena JDBC
 		// Local owl file uses old method
-		if (type == RenameType.BLAZEGRAPH.type) {
-			updateUrl = endpointUrl + "/update";
-			
-		}else if(type == RenameType.FUSEKI.type) {
-			updateUrl = endpointUrl + "/update";
-			
-		}else if(type == RenameType.RDF4J.type) {			
-			
-			updateUrl = endpointUrl + "/statements";
-			
-		}else if(type == RenameType.OWL_FILE.type) {
+		if(type == "owl-file") {
 			// updates a locally stored owl file
 			// this is executed correctly by case 1b in KnowledgeBaseClient.update
 			KnowledgeBaseClient.update(null, endpointUrl, strSparqlUpdate);
 			return;
-			
-		}else{
-			// unsupported type
-			throw new UnsupportedOperationException();
-		}
+		}	
 		
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(null, updateUrl, strSparqlUpdate);
-		int result = kbClient.executeUpdate();
-		
+		// For Blazegraph, Fuseki, RDF4J etc. use Jena JDBC
+		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(null, endpointUrl, strSparqlUpdate);
+		kbClient.executeUpdate();
 		return;
 	}
 

@@ -105,6 +105,13 @@
     <version>3.16.0</version>
 </dependency>
 
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-querybuilder -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-querybuilder</artifactId>
+    <version>3.16.0</version>
+</dependency>
+
 
 <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-shaded-guava -->
 <dependency>
