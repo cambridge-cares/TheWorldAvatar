@@ -40,7 +40,7 @@ TH {
 
 
     <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
-        <img  src="images/cam_lang_negativ1%20NEW_0.png">
+        <img id="care-banner-img" src="images/cam_lang_negativ1%20NEW_0.png">
     </a>
        <h1 id="head1">J-Park Simulator : Agents and Scenarios</h1>
 	   
@@ -55,8 +55,10 @@ TH {
 
 <div class="container">
   <div class="panel">
-    <button id="loadData" class="btn btn-default">Load Data</button>
-
+  	<button id="loadAgents">Load Agents</button>
+  	<button id="loadScenarios">Load Scenarios</button>
+  </div>
+  <div class="panel">
     <table id="tablescenarios" class="display" cellspacing="0" width="100%">
       <thead>
         <tr>
@@ -71,7 +73,7 @@ TH {
 
 
 
-<div class="container">
+<div class="container" id="containernewscenario">
   <div class="panel">
    	<input type="text" id="newscenarioname">
 	<button id="createscenariobutton">Create Scenario</button>
@@ -80,8 +82,11 @@ TH {
 
 
 
-<div class="container">
+<div class="container" id="containeroperations">
   <div class="panel">
+    <label>Selected: </label>
+    <label id="selectedscenario"></label>
+	<br>
 	<!-- p><b>Operations</b></p -->
 	<label>Operations: </label>
 	<input type="radio" id="op0" name="operationgroup">
@@ -114,12 +119,15 @@ TH {
 	<label id="op13label"></label>
 	<input type="radio" id="op14" name="operationgroup">
 	<label id="op14label"></label>
-  </div>
-</div>
+	
+	<br>
+  <!--  /div>
+
+<  /div>
 
 
-<div class="container">
-  <div class="panel">
+<div class="container" id="containertableparams2">
+  <div class="panel" -->
     <!--  button id="loadData2" class="btn btn-default">Load Data</button-->
 
     <table id="tableparams2" class="display" cellspacing="0" width="100%">
@@ -128,21 +136,28 @@ TH {
           <th>in/out</th>
           <th>name</th>
           <th>class/datatype</th>
+          <th>array</th>
           <th>instance/value</th>
         </tr>
       </thead>
     </table>
-  </div>
+  <!--  /div>
 </div>
 
 
-<div class="container">
-  <div class="panel">
+<div class="container" id="containerlinkbuttons">
+  <div class="panel" -->
+  
+    <br>
+  
 	<button id="showlinkbutton">Show Link</button>
  	<button id="executelinkbutton">Execute Link</button>
-  </div>
-  <div class="panel">
-	<a id="linkforaction"></a>
+ 	<button id="executelinkandshowresultbutton">Execute Link and Show Result</button>
+  <!--  /div>
+  <div class="panel" -->
+  
+    <br><br>
+	<a id="linkforaction" target="_blank"></a>
   </div>
 </div>
 

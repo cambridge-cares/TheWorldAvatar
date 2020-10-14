@@ -1,18 +1,15 @@
 package uk.ac.cam.cares.jps.servicespool;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -38,23 +35,14 @@ public class ADMSAgent extends JPSHttpServlet {
     private static final String DATA_KEY_ITEMS = "items";
     private static final String DATA_KEY_LAT = "lat";
     private static final String DATA_KEY_LON = "lon";
+    private static final String DATA_KEY_MMSI = "mmsi";
     private static final String FILENAME_ADMS_PROCESSOR = "adms_processor.py";
 
-    private void setLogger() {
+    @Override
+    protected void setLogger() {
         logger = LoggerFactory.getLogger(ADMSAgent.class);
     }
-
-    @Override
-    protected void doGetJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        setLogger();
-        super.doGetJPS(request, response);
-    }
-
-    @Override
-    protected void doPostJPS(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        setLogger();
-        super.doPostJPS(request, response);
-    }
+    Logger logger = LoggerFactory.getLogger(ADMSAgent.class);
 
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams) {
@@ -91,14 +79,10 @@ public class ADMSAgent extends JPSHttpServlet {
             if (requestParams.has(PARAM_KEY_SHIP)) {
                 JSONArray coords  = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
                 QueryBroker broker = new QueryBroker();
-                broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
+                broker.putLocal(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
-                String chimney = new String();
-                if (requestParams.has(PARAM_KEY_CHIMNEY)) {
-                    chimney = requestParams.getString(PARAM_KEY_CHIMNEY);
-                }
 
-                writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation, chimney);
+                writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation);
                 writeMetFile(weather, fullPath);
                 writeBkgFile(bkgjson, fullPath);
 
@@ -112,17 +96,19 @@ public class ADMSAgent extends JPSHttpServlet {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
 
-        String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 
-        String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
 
         startADMS(fullPath);
-        File name=new File(fullPath + "/test.levels.gst");
-        
+        String target = fullPath + "/test.levels.gst";
+        File name=new File(target);
         if(name.length()!=0&&name.exists()) {
-        	MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);	
+        	String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
+            //String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
+        	//MetaDataAnnotator.annotateWithTimeAndAgent(target, timestamp, agent);	
+        	List<String> topics = new ArrayList<String>();
+        	topics.add(cityIRI);
+        	MetaDataAnnotator.annotate(target, null, agent, true, topics);
         }
-
         JSONObject responseParams = new JSONObject();
 
         responseParams.put("folder", fullPath);
@@ -222,6 +208,7 @@ public class ADMSAgent extends JPSHttpServlet {
                         JSONObject latlon = new JSONObject();
                         latlon.put(DATA_KEY_LAT, item.getDouble(DATA_KEY_LAT));
                         latlon.put(DATA_KEY_LON, item.getDouble(DATA_KEY_LON));
+                        latlon.put(DATA_KEY_MMSI, item.get(DATA_KEY_MMSI));
                         coordinates.put(latlon);
                     }
                 }
@@ -290,7 +277,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return result;
     }
 
-    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation, String chimney) {
+    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation) {
 
         //fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 
@@ -320,7 +307,6 @@ public class ADMSAgent extends JPSHttpServlet {
         args.add(targetCRSName);
         logger.info(targetCRSName);
         args.add(precipitation);
-        args.add(chimney);
         // TODO-AE use PythonHelper instead of CommandHelper
         String result = CommandHelper.executeCommands(targetFolder, args);
         logger.info("ARGUMENTS");
@@ -329,7 +315,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return result;
     }
 
-    private String retrieveBuildingDataInJSONOLD(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
+    public String retrieveBuildingDataInJSONOLD(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
 
         logger.info("retrieveBuildingDataInJSON, city=" + city + ", plantx=" + plantx + ", planty=" + planty
                 + ", lowerx=" + lowerx + ", lowery=" + lowery + ", upperx=" + upperx + ", uppery=" + uppery);
@@ -341,7 +327,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return argument;
     }
 
-    private String retrieveBuildingDataInJSON(JSONObject input) {
+    public String retrieveBuildingDataInJSON(JSONObject input) {
 
         String city = input.getString("city");
         int buildingnum = input.getJSONArray("building").length();
@@ -359,7 +345,7 @@ public class ADMSAgent extends JPSHttpServlet {
     }
 
 
-    private void startADMS(String targetFolder) {
+    public void startADMS(String targetFolder) {
         String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
         CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
     }

@@ -14,9 +14,18 @@ function getContourMaps (address, folder) {
         folder: folder,
       },
       dataType: 'text',
-    }).done(function (d2result) {
-      d2result = JSON.parse(d2result)
-
+    }).done(function (data) {
+    	
+    	data = JSON.parse(data)
+	let d2result = data['grid']
+	let POL_LIST = data['listofpol']  
+    	let POL_NUM = data['numpol']
+    	let HEIGHT_NUM = data['numheight']
+    	let HEIGHT_GAP=data['numinterval']
+    	let INITIAL_HEIGHT=data['initialheight']
+    	
+    	
+      
       let bands = []
       //calculate global min max per polutant
       d2result.forEach(
@@ -124,10 +133,9 @@ function getContourMaps (address, folder) {
 
       let canvas = $('#drawcanvas')[0]
       let context = canvas.getContext('2d')
-
-      context.translate(canvas.width, 0)
-      context.scale(-1, 1)
-
+      context.save();
+      context.translate(0, canvas.height);
+      context.scale(1, -1/originRatio);
       //========convert all svg strs to png images=============//
 
       let futureImages = svgstrs.map((svgstr) => {
@@ -149,8 +157,8 @@ function getContourMaps (address, folder) {
           return [dataurl, image[1], image[2]]
         })
         console.log(dataurls)
-
-        resolve(dataurls)
+        context.restore();
+        resolve([dataurls,POL_LIST,POL_NUM,HEIGHT_NUM,HEIGHT_GAP,INITIAL_HEIGHT])
 
       }, err => {//todo: err handling
         reject(err)
@@ -268,15 +276,8 @@ function makeRadios (selector_id, list, legend) {
 
 //make radio group
 
-const POL_LIST = [
-  'CO2',
-  'CO',
-  'NO2',
-  'HC',
-  'NOx',
-  'Particulate001',
-  'SO2',
-  'O3']
-const POL_NUM = POL_LIST.length
-const HEIGHT_NUM = 4
+//const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001','SO2','O3']
+//const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx','SO2','O3', 'PM10', 'PM2.5']
+//const POL_NUM = POL_LIST.length
+//const HEIGHT_NUM = 4
 

@@ -1,0 +1,713 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasAirFuelRatio -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasAirFuelRatio">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CombustionProcess"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AFR"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBore -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBore">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Bore"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBowlDepth -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBowlDepth">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Piston"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlDepth"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBowlRadius -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBowlRadius">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Piston"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlRadius"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasClosingConditionAngle -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasClosingConditionAngle">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCompressionRatio -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCompressionRatio">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CompressionRatio"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasConnectingRodLength -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasConnectingRodLength">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ConnectingRodLength"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCtoHRatio -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCtoHRatio">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CtoHRatio"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDisplacementVolume -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDisplacementVolume">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DisplacementVolume"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasEngineSpeed -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasEngineSpeed">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineSpeed"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExhaustEventHeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExhaustEventHeight">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustEventHeight"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExhaustValveDiameter -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExhaustValveDiameter">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveDiameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExternalEGR -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExternalEGR">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExternalEGR"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFuel -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFuel">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInitialFuelAirRatio -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInitialFuelAirRatio">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CombustionProcess"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#FuelAirEquivalentRatio"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeEventHeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeEventHeight">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeEventHeight"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeValveArea -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeValveArea">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveArea"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeValveDiameter -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeValveDiameter">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveDiameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInternalEGR -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInternalEGR">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InternalEGR"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNozzleDiameter -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNozzleDiameter">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Nozzle"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#NozzleDiameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasOpeningConditionAngle -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasOpeningConditionAngle">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRON -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRON">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RON"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStoichiometricAirFuelRatio -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStoichiometricAirFuelRatio">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CombustionProcess"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AFRstoich"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStrokeDistance -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStrokeDistance">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#StrokeDistance"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasWristPinOffset -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasWristPinOffset">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#WristPinOffset"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfCylinder -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfCylinder">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfExhaustValve -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfExhaustValve">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfIntakeValve -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfIntakeValve">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfNozzle -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfNozzle">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfStroke -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#numberOfStroke">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AFR -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AFR">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>Air–fuel ratio (AFR) is the mass ratio of air to a solid, liquid, or gaseous fuel present in a combustion process. The combustion may take place in a controlled manner such as in an internal combustion engine or industrial furnace, or may result in an explosion (e.g., a dust explosion, gas or vapour explosion or in a thermobaric weapon).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AFRstoich -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AFRstoich">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>The the stoichiometric A/F ratio is the ratio of required theoritical air consumption to fuel consumption for  all the available oxygen is used to burn the fuel completely</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Bore -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Bore">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlDepth -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlDepth">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlRadius -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlRadius">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CombustionProcess -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CombustionProcess">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#IrreversibleReaction"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CompressionIgnitionEngine -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CompressionIgnitionEngine">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CompressionRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CompressionRatio">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ConnectingRodLength -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ConnectingRodLength">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CtoHRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CtoHRatio">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DisplacementVolume -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DisplacementVolume">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValve"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValve"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Nozzle"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CombustionProcess"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineSpeed -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineSpeed">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+        <rdfs:comment>RPM</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustEventHeight -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustEventHeight">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValve -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValve">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasClosingConditionAngle"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveClosingPosition"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasOpeningConditionAngle"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveOpeningPosition"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveClosingPosition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveClosingPosition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveDiameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveDiameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveOpeningPosition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExhaustValveOpeningPosition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExternalEGR -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ExternalEGR">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#FuelAirEquivalentRatio -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#FuelAirEquivalentRatio">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#FuelFraction -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#FuelFraction">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeEventHeight -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeEventHeight">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValve -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValve">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasClosingConditionAngle"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveClosingPosition"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasOpeningConditionAngle"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveOpeningPosition"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveClosingPosition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveClosingPosition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveDiameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveDiameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveOpeningPosition -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IntakeValveOpeningPosition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InternalEGR -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InternalEGR">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#MassFlowRate -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#MassFlowRate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Nozzle -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Nozzle">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#NozzleDiameter -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#NozzleDiameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Piston -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Piston">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Pressure -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Pressure">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RON -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RON">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#SparkIgnitionEngine -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#SparkIgnitionEngine">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#StrokeDistance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#StrokeDistance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Temperature -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Temperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#WristPinOffset -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#WristPinOffset">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

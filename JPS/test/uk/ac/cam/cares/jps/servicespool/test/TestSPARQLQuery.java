@@ -12,9 +12,13 @@ import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Test;
 
+import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.servicespool.ADMSAgent;
 
-public class TestSPARQLQuery {
+public class TestSPARQLQuery extends TestCase {
 
 	@After
 	public void tearDown() throws Exception {
@@ -65,6 +69,64 @@ public class TestSPARQLQuery {
 		System.out.println(testArray);
 	
 	}
+	
+	public void testparallelADMS() {
+       
+		String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"./ADMS/test.apl\"";
+		String targetFolder = AgentLocator.getPathToJpsWorkingDir() + "/JPS";
+//		
+//		String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
+//         String targetFolder = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\www_theworldavatar_com\\cde2d26c-842e-44d6-9dd2-bfc7855c297e\\JPS_ADMS";
+        //new ADMSAgent().startADMS(targetFolder);
+        CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
+		
+		
+	}
+	
+	
+	public void testStartADMSParallel() { //max 4
+		
+		String[] uuids = {"parallel_1", "parallel_2", "parallel_3", "parallel_4"};
+		
+		for (String uuid : uuids) {
+		
+			Thread t1 = new Thread(new Runnable() {
+				public void run() {
+		         
+					System.out.println("starting ADMS for uuid = " + uuid);
+					try {
+						startADMS(uuid);
+						System.out.println("finished ADMS for uuid = " + uuid);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+		    }});  
+			t1.start();
+			//t1.run();
+			
+			
+			System.out.println("waiting");
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	
+	public void startADMS(String uuid) {
+	       
+		String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"./" + uuid + "/JPS_ADMS/test.apl\"";
+        String targetFolder = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\www_theworldavatar_com\\";
+        //new ADMSAgent().startADMS(targetFolder);
+        System.out.println(startADMSCommand);
+        CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
+	}
+	
 	public String executeGet(URIBuilder builder) {
 		try {
 			URI uri = builder.build();

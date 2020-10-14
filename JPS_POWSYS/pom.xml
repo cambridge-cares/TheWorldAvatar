@@ -49,10 +49,10 @@
            					<directory>python</directory>
            					<targetPath>python</targetPath>
            				</resource>
-						<resource>
+						<!--  resource>
 							<directory>WebContent/css</directory>
 							<targetPath>css</targetPath>
-						</resource>
+						</resource -->
 						<resource>
 							<directory>WebContent/images</directory>
 							<targetPath>/images</targetPath>
@@ -60,6 +60,10 @@
 					 	<resource>
 							<directory>WebContent/scripts</directory>
 							<targetPath>/scripts</targetPath>
+						</resource>
+						<resource>
+							<directory>workingdir</directory>
+							<targetPath>workingdir</targetPath>
 						</resource>
 
 						<resource>
@@ -80,7 +84,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
-			<artifactId>jps-base</artifactId>
+			<artifactId>jps-base-lib</artifactId>
 			<version>1.3.0</version>
 		</dependency>
 

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JPS Arbitrage</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
+    <!--<link rel="stylesheet" type="text/css" href="./css/styles.css">-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+	<script type="module" src="./script/marketdata-handler.js"></script>
+	<script type="module" src="./script/exchangerates-handler.js"></script>
+	<script type="module" src="./script/utilities-handler.js"></script>
+	<script type="module" src="./script/plantparams-handler.js"></script>
+	<script type="module" src="./script/mods-handler.js"></script>
+    <script type="module" src="./script/index.js"></script>
+</head>
+<body>
+	<div class="jumbotron text-center" id="topBanner">
+		<a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+			<img id="care-banner-img" src="./images/cam_lang_negativ1%20NEW_0.png" />
+		</a>
+		<h1 id="title">Arbitrage Spotter</h1>
+		<span id="readme-button">?</span>
+		<span id="readme-text">This agent considers the chemical processes of converting natural gas into methanol and crude palm oil and methanol into biodiesel and glycerol for 
+		an automated arbitrage spotter. The arbitrage spotter searches for opportunities to make additional profit by analysing the futures market prices for both the reagent and the product, 
+		while taking into consideration the cost of storage and production (steam, electricity, cooling water, process water and fuel gas) derived from simulations of the chemical process. 
+		To reduce the computation time for the simulation, approximation models were developed for the chemical processes.
+		<br/><br/>The futures market prices are sourced from the Chicago Mercantile Exchange (<a href="https://www.cmegroup.com">https://www.cmegroup.com</a>) for natural gas, crude palm oil and biodiesel, 
+		and Zhengzhou Commodity Exchange (<a href="http://english.czce.com.cn">http://english.czce.com.cn</a>) for methanol. The latest futures market prices data is retrieved every time the arbitrage spotter 
+		is executed (graphs on the left).
+		<br/>The necessary currency conversions between CNY-USD and SGD-USD were computed using the latest exchange rates data sourced from 
+		the XE Currency Converter (<a href="https://www.xe.com/currencyconverter/">https://www.xe.com/currencyconverter/</a>). 
+		<br/><br/>The user can modify the chemical process of interest by selecting from the dropdown list and executing the simulation to determine the recommendation.
+		<br/>The user can also modify the price of cooling water, fuel gas, electricity and the flow rate of crude palm oil for the biodiesel plant or flow rate of natural gas for the methanol plant.
+		<br/><br/>The arbitrage spotter would compute the highest marginal profit for the product, the ratio of reagent to product at which the futures contracts need to be accepted, 
+		the delivery date on which the reagent’s futures contracts should be purchased and the delivery date on which the product’s futures contracts should be sold.
+		<br/>
+		<a href="https://como.ceb.cam.ac.uk/media/preprints/c4e-Preprint-203.pdf">link to paper </a></span>
+		<p id="description">
+			An implementation of an automated arbitrage spotter powered
+			by market and physical data applied to two scenarios:
+			conversion of natural gas to methanol and crude palm oil to
+			biodiesel. The programme searches for opportunities to make
+			additional profit by analysing the futures market prices for
+			both the reagent and the product.
+		</p>
+	</div>
+	
+	<div class="content container">
+
+		<div class="row" id="plantTypes">
+			<div class="col-lg-4">
+				<label for="plantSelection">Plant: </label>
+				<select name="plantSelection" id="plantSelection">
+					<option value="biodiesel" selected="selected">Biodiesel</option>
+					<option value="methanol">Methanol</option>
+				</select>
+			</div>
+			<div class="col-lg-4 input-label">
+				<label id="labelPlantSpecificParam">
+					<span>Flow-rate of Crude Palm Oil (kg/hour):</span>
+					<input class="input-blank" id="plantSpecificParam" type="text" required/>
+				</label>
+			</div>
+			<div class="col-lg-4">
+
+			</div>
+		</div>
+
+		<div class="row" id="generalParams">
+			<div class="col-lg-4 input-label">
+				<label>
+					Price of cooling water (USD/kg):
+					<input class="input-blank" id="priceCoolingWater" type="text" required />
+				</label>
+			</div>
+			<div class="col-lg-4 input-label">
+				<label>
+					Price of fuel gas (USD/mmBTU):
+					<input class="input-blank" id="priceFuelGas" type="text" required />
+				</label>
+			</div>
+			<div class="col-lg-4 input-label">
+				<label>
+					Price of electricity (SGD/kJ):
+					<input class="input-blank" id="priceElectricity" type="text" required />
+				</label>
+			</div>
+		</div>
+
+		<div class="row" id="analysis" style="display: inline-block">
+			<input id="startSimButton" type="submit" value="Start Simulation"/>
+		</div>
+
+		<div class="row" id="analysisOutput">
+			<div class="col-lg-6">
+				<svg id="line-chart-output-1" class="line-chart"></svg>
+			</div>
+			<div class="col-lg-6">
+				<h2>Recommendation</h2>
+				<p id="MoDSOutput"></p>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-6">
+				<svg id="line-chart-output-2" class="line-chart"></svg>
+			</div>
+		</div>
+
+    </div>
+</body>
+</html>
