@@ -8,12 +8,12 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Controller;
 
 import com.cmclinnovations.jps.agent.configuration.EBRAgentProperty;
+import com.cmclinnovations.jps.agent.configuration.SpringConfiguration;
 import com.cmclinnovations.jps.agent.ebr.EBRAgent;
 import com.cmclinnovations.jps.agent.ebr.Property;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 @Controller
 public class SpeciesBean extends EBRAgent{	
 
