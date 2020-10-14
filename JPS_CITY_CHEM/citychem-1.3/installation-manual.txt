@@ -177,3 +177,6 @@ cd ../SIMU
 ln -s ../bin/citychem.exe
 
 This is the end of the installation of EPISODE CityChem.
+
+4. Run test cases
+There are three test cases available to test your installation. They are saved at JPS_CITY_CHEM\src\main\resources, there is a readme file at that location with instructions on how to run the tests
