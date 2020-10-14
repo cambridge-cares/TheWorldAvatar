@@ -470,24 +470,28 @@ public class gPROMSAgent extends JPSAgent {
     if (!file.isFile())
         file.createNewFile();
 
-    CSVWriter csvWriter = new CSVWriter(new FileWriter(file));
+    FileWriter csvWriter = new FileWriter(file);
 
     int rowCount = data.length;
 
     for (int i = 0; i < rowCount; i++)
     {
         int columnCount = data[i].length;
-        String[] values = new String[columnCount];
+        float[][] values = new float[rowCount][columnCount];
         for (int j = 0; j < columnCount; j++)
         {
-            values[j] = data[i][j] + "";
+            values[i][j] = data[i][j];
+        
+        csvWriter.append(String.valueOf(values[i][j]));
+        csvWriter.append(",");
         }
-        csvWriter.writeNext(values);
+        csvWriter.append("\n");
+        
     }
 
     csvWriter.flush();
     csvWriter.close();
-    File dest = new File(System.getProperty("user.home")+"//input//matlab_input.csv");
+    File dest = new File(System.getProperty("user.home")+"\\input\\matlab.csv");
     Files.copy(file.toPath(),dest.toPath());
     System.out.println("Copied matlab file to input folder");
 }

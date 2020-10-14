@@ -70,7 +70,7 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 			// Input file path
 			String current = System.getProperty("user.home");
 			
-			String pathToInputFile = current + "\\input_mat\\Pump_power.csv";
+			String pathToInputFile = current + "\\input\\matlab.csv";
 			//String inputFile = gPROMSAgent.getMatlabFile();
 			//System.out.println("\n gPROMS outputput file is generated.\n gPROMS output file is located at:" + inputFile +"\n");
 			
