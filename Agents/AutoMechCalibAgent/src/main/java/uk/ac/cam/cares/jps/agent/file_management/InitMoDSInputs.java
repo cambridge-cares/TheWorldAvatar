@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import uk.ac.cam.cares.jps.agent.configuration.AutoMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
 import uk.ac.cam.cares.jps.agent.file_management.mods.MoDS;
 import uk.ac.cam.cares.jps.agent.file_management.mods.algorithms.Algorithm;
@@ -25,6 +26,10 @@ import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.WorkingRead;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.WorkingWrite;
 
 public class InitMoDSInputs extends MoDSMarshaller implements IInitMoDSInputs {
+	public InitMoDSInputs(AutoMechCalibAgentProperty autoMechCalibAgentProperty) {
+		super(autoMechCalibAgentProperty);
+	}
+	
 	public void init() {
 		mods = new MoDS();
 		
