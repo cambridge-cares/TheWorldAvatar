@@ -43,15 +43,7 @@ public class HttpRequest {
        System.out.println("query inside perfromHTTPRequest " + query);
         
       URLConnection httpURLConnection = httpURL.openConnection();
-      /**
-       * -------------
-       */
-      httpURLConnection.setUseCaches(false);
-      httpURLConnection.setDoOutput(true); // indicates POST method
-      httpURLConnection.setDoInput(true);
-      /**
-       * --------------------
-       */
+      
       System.out.println("httpURLConnection.getURL(): " + httpURLConnection.getURL());
       
       BufferedReader in = new BufferedReader(
@@ -73,18 +65,6 @@ public class HttpRequest {
         
       in.close();
       
-      /**
-       * Nenad
-       */
-      OutputStream outputStream = httpURLConnection.getOutputStream();
-      PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, fileContent),
-              true);
-      
-      writer.close();
-      /**
-       * -------------
-       */
-        
       System.out.println("fileContent: "+ fileContent + "  fileContent.isEmpty(): " +fileContent.isEmpty());
         
       return fileContent;
@@ -163,7 +143,7 @@ public class HttpRequest {
 			
 //			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(encodeIntoURLFormat(jsonInput)));
 			
-			performHTTPRequest("http://www.theworldavatar.com/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
+			performHTTPRequest("http://localhost:8080/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
 			
 //			sendReceive("http://theworldavatar.com/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
 			

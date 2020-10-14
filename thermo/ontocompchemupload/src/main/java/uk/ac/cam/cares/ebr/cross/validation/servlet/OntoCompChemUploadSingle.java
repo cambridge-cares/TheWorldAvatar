@@ -36,10 +36,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
 
 @WebServlet("/convert/single")
-public class OntoCompChemUploadSingle extends HttpServlet{
-	
-		// TODO Auto-generated method stub
-		
+public class OntoCompChemUploadSingle extends HttpServlet{	
 
 		private static final long serialVersionUID = 1L;
 		

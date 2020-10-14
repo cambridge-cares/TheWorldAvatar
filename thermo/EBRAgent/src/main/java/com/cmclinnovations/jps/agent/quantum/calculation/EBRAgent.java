@@ -47,7 +47,7 @@ import com.cmclinnovations.slurm.job.SlurmJob;
 import com.cmclinnovations.slurm.job.Status;
 import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
 import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
-import com.jayway.jsonpath.JsonPath;
+
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
