@@ -39,7 +39,7 @@ public class RenameToolTest {
 	@Test
 	public void testReplaceBlazegraph() throws SQLException, ParseException {
 	
-		String dataSetURL = "http://localhost:8080/blazegraph/namespace/species/sparql"; 
+		String dataSetURL = "http://localhost:8080/blazegraph/namespace/species"; 
 		String type = "blazegraph";
 		
 		String target = null;
@@ -69,7 +69,7 @@ public class RenameToolTest {
 		String target = null;
 		String replacement = null;
 		
-		if (false) {
+		if (true) {
 			target = "http://www.w3.org/2008/05/skos#altLabel";
 			replacement =  "http://www.example.com/Test";
 		}else {
@@ -93,7 +93,7 @@ public class RenameToolTest {
 		String target = null;
 		String replacement = null;
 		
-		if (false) {
+		if (true) {
 			target = "http://www.w3.org/2008/05/skos#altLabel";
 			replacement =  "http://www.example.com/Test";
 		}else {
