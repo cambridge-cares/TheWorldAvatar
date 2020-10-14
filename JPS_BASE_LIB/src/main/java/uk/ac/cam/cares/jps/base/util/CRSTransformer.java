@@ -86,7 +86,7 @@ public class CRSTransformer {
 	 * @throws CoordinateOperationException
 	 * @throws CRSException 
 	 */
-	   private static double[] transformInternal(String sourceCRSName, String targetCRSName, double[] sourcePoint)
+	    static double[] transformInternal(String sourceCRSName, String targetCRSName, double[] sourcePoint)
 		         throws IllegalCoordinateException, CoordinateOperationException, CRSException {
 		   
 		GeodeticCRS sourceCRS = (GeodeticCRS) getCRS(sourceCRSName);
