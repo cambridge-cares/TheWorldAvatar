@@ -11,6 +11,9 @@ import uk.ac.cam.cares.jps.base.rename.RenameTool;
 
 public class RenameToolTest {
 
+	
+	//additional tests for private methods to build queries 
+	
 	@SuppressWarnings("unused")
 	@Test
 	public void testReplaceRdf4j() throws SQLException, ParseException {
@@ -87,13 +90,13 @@ public class RenameToolTest {
 	@Test
 	public void testReplaceFuseki() throws SQLException, ParseException {
 	
-		String dataSetURL = "http://localhost:8080/fuseki/species/update"; 
+		String dataSetURL = "http://localhost:8080/fuseki/species/update";
 		String type = "fuseki";
 		
 		String target = null;
 		String replacement = null;
 		
-		if (true) {
+		if (false) {
 			target = "http://www.w3.org/2008/05/skos#altLabel";
 			replacement =  "http://www.example.com/Test";
 		}else {
@@ -130,19 +133,4 @@ public class RenameToolTest {
 		// test using query
 		fail("Not yet implemented");
 	}
-	
-	
-	// input: data source, data type, search, replace
-//	public static String query(String dataSetURL, String type, String target, String replacement) {
-			
-		// build sparql update
-//		String sparqlUpdate = "SELECT ?s ?p ?o" +
-//		"WHERE {" +
-//		  "BIND ( <" + target + "> AS ?oldURI) ." +
-//		  "?s ?p ?o ." +
-//		  "FILTER(regex(str(?s), str(?oldURI)) || regex(str(?p), str(?oldURI)) || regex(str(?o), str(?oldURI))) }";
-//
-//		KnowledgeBaseClient.query(String datasetUrl, String targetUrl, String sparqlQuery);
-//		return queryLocal(null, dataSetURL, sparqlUpdate);	
-//	}
 }

@@ -42,11 +42,10 @@ public class RenameTool {
 	public static void renameURI(String endpointUrl, String type, String target, String replacement) throws SQLException, ParseException {
 					
 		//CSL TODO: add Graph
-		//CSL TODO: work with prefix
 		
-		// Get sparql update as String
-//		String strSparqlUpdate = buildSparqlUpdate(target, replacement).toString(); 
-		String strSparqlUpdate = buildSparqlUpdateString(target, replacement).toString();
+		// Get sparql update as String 
+		//String strSparqlUpdate = buildSparqlUpdate(target, replacement, null).toString();
+		String strSparqlUpdate = buildSparqlUpdate(target, replacement, "http://species").toString();
 		
 		// Local owl file uses old method
 		if(type == "owl-file") {
@@ -71,8 +70,8 @@ public class RenameTool {
 	 * @return
 	 * @throws ParseException
 	 */
-	private static UpdateRequest buildSparqlUpdate(String target, String replacement) throws ParseException {
-
+	private static UpdateRequest buildSparqlUpdate(String target, String replacement, String graph) throws ParseException {
+				
 		// VARIABLES
 		// new s, p, o		
 		Var newS = Var.alloc("newS");
@@ -108,15 +107,14 @@ public class RenameTool {
 		Expr ifO = new E_Conditional(new E_Equals(exprOldO, exprTarget), exprReplacement, exprOldO);
 		
 		// Build WHERE statement of the form:
-		/* String strWhere = "WHERE {" +
-				  "?s ?p ?o ." +
-				  "BIND( <target> AS ?targetURI ) ." +
-				  "BIND( <replacement> AS ?replacementURI ) ." +
-				  "FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI ) ." +
-				  "BIND ( IF( ?s = ?targetURI, ?replacementURI, ?s) AS ?newS) ." +
-				  "BIND ( IF( ?p = ?targetURI, ?replacementURI, ?p) AS ?newP) ." +
-				  "BIND ( IF( ?o = ?targetURI, ?replacementURI, ?o) AS ?newO) . }"; 
-		*/
+		// String strWhere = "WHERE {" +
+		//		  "?s ?p ?o ." +
+		//		  "BIND( <target> AS ?targetURI ) ." +
+		//		  "BIND( <replacement> AS ?replacementURI ) ." +
+		//		  "FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI ) ." +
+		//		  "BIND ( IF( ?s = ?targetURI, ?replacementURI, ?s) AS ?newS) ." +
+		//		  "BIND ( IF( ?p = ?targetURI, ?replacementURI, ?p) AS ?newP) ." +
+		//		  "BIND ( IF( ?o = ?targetURI, ?replacementURI, ?o) AS ?newO) . }"; 
 		WhereBuilder where = new WhereBuilder()
 				.addWhere(varOldS, varOldP, varOldO)
 				.addBind( "<" + target + ">", varTarget)
@@ -126,12 +124,22 @@ public class RenameTool {
 				.addBind(ifP, newP)
 				.addBind(ifO, newO);
 				
-		// Build update 
-		UpdateBuilder builder = new UpdateBuilder()
-				.addInsert(newS, newP, newO)
-				.addDelete(varOldS, varOldP, varOldO)
-				.addWhere(where);			
+		// Build update
+		UpdateBuilder builder = new UpdateBuilder();
 				
+		// Add where 
+		if (graph == null) {
+			builder.addInsert(newS, newP, newO)
+				.addDelete(varOldS, varOldP, varOldO)
+				.addWhere(where);
+		}else {	
+			// Graph
+			String graphURI = "<" + graph + ">";
+			builder.addInsert(graphURI, newS, newP, newO)
+				.addDelete(graphURI, varOldS, varOldP, varOldO)
+				.addGraph(graphURI, where);	
+		}
+		
 		return builder.buildRequest();
 	}
 	
@@ -200,16 +208,15 @@ public class RenameTool {
 		Expr ifO = new E_Conditional(exprMatchO, new E_URI(replaceO), exprOldO);
 		
 		// Build WHERE statement of the form:
-		/* String strWhere = "WHERE {" +
-				  "?s ?p ?o ." +
-				  "BIND( regex(str(?p), target) AS ?matchP ) ." +
-				  "BIND( regex(str(?p), target) AS ?matchP ) ." +
-				  "BIND( regex(str(?o), target) AS ?matchO ) ." +
-				  "FILTER(?matchS || ?matchP || ?matchO) ." +
-				  "BIND ( IF( ?matchS, URI(REPLACE(STR(?s), target, replacement)), ?s) AS ?newS) ." +
-				  "BIND ( IF( ?matchP, URI(REPLACE(STR(?p), target, replacement)), ?p) AS ?newP) ." +
-				  "BIND ( IF( ?matchO, URI(REPLACE(STR(?o), target, replacement)), ?o) AS ?newO) . }"; 
-		*/
+		// String strWhere = "WHERE {" +
+		//		  "?s ?p ?o ." +
+		//		  "BIND( regex(str(?p), target) AS ?matchP ) ." +
+		//		  "BIND( regex(str(?p), target) AS ?matchP ) ." +
+		//		  "BIND( regex(str(?o), target) AS ?matchO ) ." +
+		//		  "FILTER(?matchS || ?matchP || ?matchO) ." +
+		//		  "BIND ( IF( ?matchS, URI(REPLACE(STR(?s), target, replacement)), ?s) AS ?newS) ." +
+		//		  "BIND ( IF( ?matchP, URI(REPLACE(STR(?p), target, replacement)), ?p) AS ?newP) ." +
+		//		  "BIND ( IF( ?matchO, URI(REPLACE(STR(?o), target, replacement)), ?o) AS ?newO) . }"; 
 		WhereBuilder where = new WhereBuilder()
 				.addWhere(varOldS, varOldP, varOldO)
 				.addBind(regexS, matchS)
