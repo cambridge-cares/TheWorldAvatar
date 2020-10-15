@@ -37,6 +37,30 @@ public class RenameToolTest {
 	
 	@SuppressWarnings("unused")
 	@Test
+	public void testReplaceRdf4jString() throws SQLException, ParseException {
+	
+		String dataSetURL = "http://localhost:8080/rdf4j-server/repositories/species/statements"; 
+		String type = "rdf4j";
+		
+		String target = null;
+		String replacement = null;
+		
+		if (false) {
+			target = "05/skos#altLabel";
+			replacement = "/Test";
+		}else {
+			target = "/Test";
+			replacement = "05/skos#altLabel";
+		}
+		
+		RenameTool.renameURI(dataSetURL, type, target, replacement);
+		
+		// test using query
+		fail("Not yet implemented");
+	}
+	
+	@SuppressWarnings("unused")
+	@Test
 	public void testReplaceBlazegraph() throws SQLException, ParseException {
 	
 		String dataSetURL = "http://localhost:8080/blazegraph/namespace/species/update"; 
