@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.blazegraph;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -163,6 +164,9 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public void uploadOntologies() throws Exception{
+		BufferedWriter br_detailed_log = FileUtil.openBufferedWriter("import-detailed.log");
+		BufferedWriter br = FileUtil.openBufferedWriter("import.log");
+		int n_of_problematic_abox = 0;
 		try{
 			checkRepositoryDataAvailability(this.endPointURL, this.repositoryName);
 			checkOntologyDiretoryAvailability(this.ontologyDirectory);
@@ -180,11 +184,19 @@ public class KnowledgeRepository {
 			}
 			for(File file:files){
 				if(file.isFile()){
+					try{
 					uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
 					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
+					}catch(Exception e){
+						br_detailed_log.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
+						br.write("["+ n_of_problematic_abox + "] File "+file.getName()+" could not be imported.\n");
+						System.out.println("Now proceeding with the next import");
+					}
 				}
 			}
 		}
+		br_detailed_log.close();
+		br.close();
 	}
 
 	/**
