@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.openrdf.model.Statement;
@@ -187,10 +188,15 @@ public class KnowledgeRepository {
 					try{
 					uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
 					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
+					if(i%1000 == 0){
+						TimeUnit.SECONDS.sleep(30);
+					}
 					}catch(Exception e){
 						br_detailed_log.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
 						br.write("["+ n_of_problematic_abox + "] File "+file.getName()+" could not be imported.\n");
+						System.out.println("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
 						System.out.println("Now proceeding with the next import");
+						TimeUnit.MILLISECONDS.sleep(500);
 					}
 				}
 			}
@@ -302,17 +308,21 @@ public class KnowledgeRepository {
 		}catch(Exception e){
 			throw new Exception(e.getMessage());
 		}
-		RemoteRepository repository = getRepository(endPointURL, repositoryName, RDFStoreType.BLAZEGRAPH);
-		if (repository != null) {
-			final InputStream is = new FileInputStream(new File(ontologyFilePath));
-			try {
-				repository.add(new AddOp(is, RDFFormat.forMIMEType("application/xml")));
-			} finally {
-				is.close();
+		try {
+			RemoteRepository repository = getRepository(endPointURL, repositoryName, RDFStoreType.BLAZEGRAPH);
+			if (repository != null) {
+				final InputStream is = new FileInputStream(new File(ontologyFilePath));
+				try {
+					repository.add(new AddOp(is, RDFFormat.forMIMEType("application/xml")));
+				} finally {
+					is.close();
+				}
+			} else {
+				log.info("The following repository does not exist: " + endPointURL + repositoryName);
+				log.info("Create a repository with this name and try again.");
 			}
-		} else {
-			log.info("The following repository does not exist: " + endPointURL + repositoryName);
-			log.info("Create a repository with this name and try again.");
+		} catch (Exception e) {
+			System.out.println("UploadOntology:" + e.getMessage());
 		}
 	}
 	
