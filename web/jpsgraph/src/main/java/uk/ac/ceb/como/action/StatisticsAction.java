@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.Iterator;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -235,7 +235,7 @@ public class StatisticsAction extends ActionSupport {
 	@Override	
 	public String execute() throws IOException, ParseException {		
 		
-		logger.info("started:");
+		logger.info("started reading csv files:");
 		
 		/**
 		 * Calculates current time. 
@@ -264,11 +264,6 @@ public class StatisticsAction extends ActionSupport {
 			table1Data = table1Row.split(","); 
 		}
 		
-
-		for(int i =0;i<table1Data.length;i++) {			
-//			logger.info(table1Data[i]);				
-		}
-		
 		numberOfCalculations = table1Data[0];
 		/**
 		 * Line below is commented because we are not querying ontocompchem knowledge graph when running statistics service. 
@@ -282,8 +277,9 @@ public class StatisticsAction extends ActionSupport {
 		
 		table1Reader.close();		
 		
+		
 		/**
-		 * Reads csv data to plot it on bar chart 
+		 * Reads csv data to plot it on bar chart  for the period of last three months starting from current date (date when last OWL was uploaded)
 		 */
 		
 		BufferedReader csvLabelReader = new BufferedReader(new FileReader(statisticsFolderPath+"label.csv"));
@@ -313,13 +309,13 @@ public class StatisticsAction extends ActionSupport {
 
 	     
 		/**
-		 * Populates label list with dates that are three months earlier than current date 
+		 * Populates label list with dates that are three months earlier than current date (last date when OWL file is uploaded)
 		 */
 		for(int i =0;i<data.length;i++) {
 			
 			Date labelDate = new SimpleDateFormat("yyyy-MM-dd").parse(data[i].toString());
             String formattedLabelDate = new SimpleDateFormat("yyyy-MM-dd").format(labelDate);		     
-		     LocalDate statedLabelDate = LocalDate.parse(formattedLabelDate);
+		    LocalDate statedLabelDate = LocalDate.parse(formattedLabelDate);
 		     
 		     if(threeMonthsEarlierDate.isBefore(statedLabelDate) || threeMonthsEarlierDate.isEqual(statedLabelDate)) {
 
@@ -384,9 +380,7 @@ public class StatisticsAction extends ActionSupport {
 			ontoKinDataSetListThreeMonths.add(ontokinData[i]);	
 		}
 		
-		
 		ontokinCsvReader.close();
-		
 		
 		/**
 		 * Reads data from table2.csv file 

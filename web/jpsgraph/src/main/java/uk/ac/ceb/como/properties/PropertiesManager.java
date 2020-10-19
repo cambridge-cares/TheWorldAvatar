@@ -4,23 +4,30 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.time.LocalDate;
+
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import ch.qos.logback.classic.Logger;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+
 import uk.ac.ceb.como.query.QueryManager;
 
 
@@ -92,182 +99,65 @@ public class PropertiesManager {
 		if(inputDate.equalsIgnoreCase("Dec")) {monthNumber ="12";return monthNumber;}
 		
 		return monthNumber;
-	}
-	
+	}	
+
 	/**
-	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * 
-	 * @return the Map of frequencies for species per date
-	 * @throws MalformedURLException
+	 * @author NK510
+	 * @param filesList list of Files stored in given folder including sub folders. 
+	 * @param level the level of a folder in folder hierarchy 
+	 * @param speciesMap the species hash map that contains unique OWL file name  
 	 * @throws IOException
-	 * 
 	 */
-	public LinkedHashMap<String,String> getFrequencyOfSpeciesPerDate(String serverUrl, String queryString) throws MalformedURLException, IOException{
+	static void getAllFiles(File[] filesList, int level,LinkedHashMap<String,String> speciesMap) throws IOException  
+    {
 		
-		LinkedList<String> linkedList = new LinkedList<String>();
-		
-		QueryManager qm = new QueryManager();
-		
-		/**
-		 * An example of querying ontocompchem repository
-		 */
-//		linkedList.addAll((qm.getQueryDateStamp("http://theworldavatar.com/rdf4j-server/repositories/ontocompchem", QueryString.getSpeciesIRIOfGaussianCalculations())));
-		
-		linkedList.addAll(qm.getQueryDateStamp(serverUrl, queryString));
-
-		LinkedHashMap<String,String> speciesMap = new LinkedHashMap<String,String>();		
-		
-		File linkedListFile =new File("C:\\TOMCAT\\conf\\Catalina\\generatecsv\\"+"linkedList.txt");
-		
-		linkedListFile.createNewFile();
-		
-		FileWriter linkedListFileWriter = new FileWriter(linkedListFile, false);
-		
-		for(String list: linkedList) {
-			
-			String[] parts = list.split("\\#");		
-			
-//			System.out.println("parts[0]: " + parts[0] + " parts[1]: " + parts[1]);
-			
-			URLConnection connection = new URL(parts[0]).openConnection();
-			
-			String lastModified = connection.getHeaderField("Last-Modified");
-			
-//			System.out.println("last modified: " + lastModified);
-			
-			try {
-
-			    linkedListFileWriter.write("parts[0]: " + parts[0] + " parts[1]: " + parts[1] + " last modified: " + lastModified);
-			    linkedListFileWriter.write(System.lineSeparator());
-			
-			} catch (IOException e) {
-			    e.printStackTrace();
-			}           
-			
-			
-			/**
-			 * Dated: October 07th, 2020.
-			 * Some OWL files are uploaded on Claudius but these owl files are removed from folder in Tomcat server. These OWL files are not included into statistics. Currently there are 29 of these OWL files.
-			 */
-			if(lastModified!=null) {
-			
-			String[] dateParts = lastModified.split(" ");
-                    
-//          System.out.println("file: " + parts[0] + "  lastModified: " + lastModified + " modified date: " + dateParts[1]+"-"+dateParts[2]+"-"+dateParts[3]);
-            
-            speciesMap.put(parts[0], dateParts[3]+"-"+PropertiesManager.getNumberFromMonthName(dateParts[2])+"-"+dateParts[1]);
-            
-			}
-		}
-		
-		linkedListFileWriter.close();
-		
-		LinkedHashMap<String,String> speciesFrequecniesPerDate = new LinkedHashMap<String,String>();
-		
-		for(Map.Entry<String,String> map: speciesMap.entrySet()) {
-			
-			int count = Collections.frequency(new ArrayList<String>(speciesMap.values()), map.getValue());
-			
-			System.out.println("date: " +map.getValue() + " count:" + count);
-			
-			if(!speciesFrequecniesPerDate.containsKey(map.getValue())) {
-				 
-				speciesFrequecniesPerDate.put(map.getValue(),String.valueOf(count));
-			}
-		}
-		
-		Map<String, String> treeMap = new TreeMap<String, String>(speciesFrequecniesPerDate);
-		
-		System.out.println(" - - - - - treeMap - - - -  - - -");		
-		
-		for(Map.Entry<String, String> m: treeMap.entrySet()) {	
-			
-			System.out.println(m.getKey() + " " + m.getValue());
-			
-		}
-		
-		LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>(treeMap);
-		
-		System.out.println(" - - - - - linkedHashMap - - - -  - - -");		
-		
-		for(Map.Entry<String, String> lhm: linkedHashMap.entrySet()) {	
-			
-			System.out.println(lhm.getKey() + " " + lhm.getValue());
-			
-		}
-		
-		return linkedHashMap;
-	}
+    for (File f : filesList)  
+    {        
+    if(f.isFile()) {
+        	
+    BasicFileAttributes basicAttribute = Files.readAttributes(f.getAbsoluteFile().toPath(), BasicFileAttributes.class);
+			    
+	String[] date = basicAttribute.creationTime().toString().split("T");
 	
-	public LinkedHashMap<String,String> getFrequencyOfSpeciesPerDate(String serverUrl, String queryString, String linkedListFileName, String queryResultsFileName) throws MalformedURLException, IOException{
+	speciesMap.put(f.getName(), date[0]);
+              
+    }else if(f.isDirectory())  
+    {  
+ 
+    getAllFiles(f.listFiles(), level + 1,speciesMap);
+    
+    }
+    
+    }
+    
+    }
+/**
+ * @author NK510
+ * @param folderPath the folder that contains OWL files uploaded to JPS knowledge graph.
+ * @return the map that contains unique OWL file name and created date (uploaded date)
+ * @throws MalformedURLException the ex
+ * @throws IOException
+ * @throws InterruptedException
+ */
+	
+public  LinkedHashMap<String,String> getFrequencyOfSpeciesPerDate(String folderPath) throws IOException{
 		
-		LinkedList<String> linkedList = new LinkedList<String>();
-		
-		QueryManager qm = new QueryManager();
-		
-		/**
-		 * An example of querying ontocompchem repository
-		 */
-//		linkedList.addAll((qm.getQueryDateStamp("http://theworldavatar.com/rdf4j-server/repositories/ontocompchem", QueryString.getSpeciesIRIOfGaussianCalculations())));
-		
-		linkedList.addAll(qm.getQueryDateStamp(serverUrl, queryString, queryResultsFileName));
-
 		LinkedHashMap<String,String> speciesMap = new LinkedHashMap<String,String>();
 		
-		//linkedList
-		File linkedListFile =new File("C:\\TOMCAT\\conf\\Catalina\\generatecsv\\"+linkedListFileName);
+		File maindir = new File(folderPath);
 		
-		linkedListFile.createNewFile();
-		
-		FileWriter linkedListFileWriter = new FileWriter(linkedListFile, false);
-		
-		for(String list: linkedList) {
-			
-			String[] parts = list.split("\\#");		
-			
-//			System.out.println("parts[0]: " + parts[0] + " parts[1]: " + parts[1]);
-			
-			URLConnection connection = new URL(parts[0]).openConnection();
-			
-			String lastModified = connection.getHeaderField("Last-Modified");
-			
-//			System.out.println("last modified: " + lastModified);
-			
-			try {
-
-			    linkedListFileWriter.write("parts[0]: " + parts[0] + " parts[1]: " + parts[1] + " last modified: " + lastModified + "\n");
-			    linkedListFileWriter.write(System.lineSeparator());
-			
-			} catch (IOException e) {
-			    e.printStackTrace();
-			}           
-			
-			
-			/**
-			 * Dated: October 07th, 2020.
-			 * Some OWL files are uploaded on Claudius but these owl files are removed from folder in Tomcat server. These OWL files are not included into statistics. Currently there are 29 of these OWL files.
-			 */
-			if(lastModified!=null) {
-			
-			String[] dateParts = lastModified.split(" ");
-                    
-//            System.out.println("file: " + parts[0] + "  lastModified: " + lastModified + " modified date: " + dateParts[1]+"-"+dateParts[2]+"-"+dateParts[3]);
-            
-            speciesMap.put(parts[0], dateParts[3]+"-"+PropertiesManager.getNumberFromMonthName(dateParts[2])+"-"+dateParts[1]);
-            
-			}
-		}
-		
-		linkedListFileWriter.close();
-		
+        if(maindir.exists() && maindir.isDirectory()) 
+        { 
+        	File fileList[] = maindir.listFiles();            
+          
+            getAllFiles(fileList, 0,speciesMap);  
+       } 
+        
 		LinkedHashMap<String,String> speciesFrequecniesPerDate = new LinkedHashMap<String,String>();
 		
 		for(Map.Entry<String,String> map: speciesMap.entrySet()) {
 			
 			int count = Collections.frequency(new ArrayList<String>(speciesMap.values()), map.getValue());
-			
-			System.out.println("date: " +map.getValue() + " count:" + count);
 			
 			if(!speciesFrequecniesPerDate.containsKey(map.getValue())) {
 				 
@@ -277,27 +167,11 @@ public class PropertiesManager {
 		
 		Map<String, String> treeMap = new TreeMap<String, String>(speciesFrequecniesPerDate);
 		
-		System.out.println(" - - - - - treeMap - - - -  - - -");		
-		
-		for(Map.Entry<String, String> m: treeMap.entrySet()) {	
-			
-			System.out.println(m.getKey() + " " + m.getValue());
-			
-		}
-		
 		LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>(treeMap);
-		
-		System.out.println(" - - - - - linkedHashMap - - - -  - - -");		
-		
-		for(Map.Entry<String, String> lhm: linkedHashMap.entrySet()) {	
-			
-			System.out.println(lhm.getKey() + " " + lhm.getValue());
-			
-		}
 		
 		return linkedHashMap;
 	}
-	
+
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
@@ -306,8 +180,9 @@ public class PropertiesManager {
 	 * @param sourceMap the source map of number of uploaded species per given date.
 	 * @param targetMap the target map of number of uploaded species per given date.
 	 * @return the updated target map of number of uploaded species per given date.
+	 * @throws InterruptedException 
 	 */
-	public LinkedHashMap<String, String> updateFrequenciesMapData(Map<String,String> sourceMap, Map<String,String> targetMap){
+	public LinkedHashMap<String, String> updateFrequenciesMapData(Map<String,String> sourceMap, Map<String,String> targetMap) throws InterruptedException{
 		
 		for(Map.Entry<String, String> m: sourceMap.entrySet()) {
 			
@@ -336,16 +211,6 @@ public class PropertiesManager {
 	 * @throws ParseException
 	 */
 	public static LocalDate getDateThreeMonthsEarlier(LinkedList<String> labelList, int numberOfMonths) throws ParseException {
-		
-//		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//	     Calendar c = Calendar.getInstance(); 
-//	     c.setTime(new Date()); 
-//	     c.add(Calendar.MONTH, -3);
-//
-//	     Date d = c.getTime();
-//	     String res = format.format(d);
-//
-//	     System.out.println(res);
 		
 	     Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(labelList.getLast().toString());
 	     String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);

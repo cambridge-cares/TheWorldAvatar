@@ -446,6 +446,8 @@ Here is java script for visualization molecules.
 
 <canvas id="myChart"></canvas>
 
+<script src="chartjs-plugin-datalabels.js"></script> 
+
 <script>
 var arrayList = new Array();
 <!--labelList-->
@@ -497,7 +499,8 @@ var chart = new Chart(ctx, {
     },
 
     // Configuration options go here
-    options: {}
+    options: { 
+    }
 });
 </script>
 
