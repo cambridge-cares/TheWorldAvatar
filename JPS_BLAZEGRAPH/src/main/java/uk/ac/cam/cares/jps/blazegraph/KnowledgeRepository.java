@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
@@ -168,9 +169,23 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public void uploadOntologies() throws Exception{
-		BufferedWriter br_detailed_log = FileUtil.openBufferedWriter("import-detailed.log");
-		BufferedWriter br = FileUtil.openBufferedWriter("import.log");
+		String importedFile = "imported.log";
+		BufferedWriter bw_detailed_log = FileUtil.openBufferedWriter("import-detailed.log");
+		BufferedWriter bw = FileUtil.openBufferedWriter("import.log");
+		FileWriter fw = new FileWriter(importedFile, true);
+		BufferedWriter bw_imported = new BufferedWriter(fw);
+		BufferedWriter bw_not_rdf_or_owl_file = FileUtil.openBufferedWriter("non-rdf-owl-file.log");
+		// Reading the list of already imported files to avoid re-importing them.
+		BufferedReader br = FileUtil.openSourceFile(importedFile);
+		List<String> listOfImportedFiles = new ArrayList<>();
+		String line = "";
+		while((line=br.readLine())!=null){
+			listOfImportedFiles.add(line.trim());
+		}
+		br.close();
+		System.out.println("No of already imported files: "+listOfImportedFiles.size());
 		int n_of_problematic_abox = 0;
+		int non_ref_owl_file = 0;
 		try{
 			checkRepositoryDataAvailability(this.endPointURL, this.repositoryName);
 			checkOntologyDiretoryAvailability(this.ontologyDirectory);
@@ -188,30 +203,42 @@ public class KnowledgeRepository {
 			}
 			for(File file:files){
 				if(file.isFile()){
+					if(listOfImportedFiles.contains(file.getAbsolutePath())){
+						System.out.println("Already imported file: "+file.getAbsolutePath()+", so skipping.");
+						continue;
+					}
 					try{
 						if(isOwlOrRdf(file.getAbsolutePath())){
 							uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
+							bw_imported.write(file.getAbsolutePath()+"\n");
 						}else{
-							br_detailed_log.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
-							System.out.println("["+ ++n_of_problematic_abox + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
-							br.write("["+ n_of_problematic_abox + "] File "+file.getName()+" is not imported.\n");
+							bw_not_rdf_or_owl_file.write("["+ ++non_ref_owl_file + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
+							System.out.println("["+ non_ref_owl_file + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
+							continue;
 						}
 					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
 					if(i%1000 == 0){
 						TimeUnit.SECONDS.sleep(5);
 					}
 					}catch(Exception e){
-						br_detailed_log.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
-						br.write("["+ n_of_problematic_abox + "] File "+file.getName()+" could not be imported.\n");
-						System.out.println("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
-						System.out.println("Now proceeding with the next import");
+						bw_detailed_log.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
+						bw.write("["+ n_of_problematic_abox + "] File "+file.getName()+" could not be imported.\n");
+						System.out.println("["+ n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
+						System.out.println("Now the tool will stop. Run it again to finish the import.");
 						TimeUnit.MILLISECONDS.sleep(500);
+						bw_detailed_log.close();
+						bw.close();
+						bw_imported.close();
+						bw_not_rdf_or_owl_file.close();
+						System.exit(0);
 					}
 				}
 			}
 		}
-		br_detailed_log.close();
-		br.close();
+		bw_detailed_log.close();
+		bw.close();
+		bw_imported.close();
+		bw_not_rdf_or_owl_file.close();
 	}
 	
 	/**
