@@ -50,22 +50,27 @@ class WolframGoogle:
         print(resp.status_code)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.content, "html.parser")
-            div_result = soup.find_all('div', id='rso')[0]
-            children_divs = div_result.findChildren()
-            first_child = children_divs[0]
-            first_result = first_child.findChildren()[0]
-            headings = first_result.find_all('div', role='heading')
-            valid_results = []
-            for head in headings:
-                if 'People also search for' in str(head) or ('View 10+' in str(head)):
-                    pass
-                else:
-                    valid_results.append(head.text)
-            result_div = '<br/>'.join(valid_results)
-            print('====== result div ==========')
-            print(result_div)
+            blk_result = soup.find_all('div', class_='g mnr-c g-blk')[0]
 
-            return result_div
+
+
+            return blk_result
+            # div_result = soup.find_all('div', id='rso')[0]
+            # children_divs = div_result.findChildren()
+            # first_child = children_divs[0]
+            # first_result = first_child.findChildren()[0]
+            # headings = first_result.find_all('div', role='heading')
+            # valid_results = []
+            # for head in headings:
+            #     if 'People also search for' in str(head) or ('View 10+' in str(head)):
+            #         pass
+            #     else:
+            #         valid_results.append(head.text)
+            # result_div = '<br/>'.join(valid_results)
+            # print('====== result div ==========')
+            # print(result_div)
+            #
+            # return result_div
 
         else:
             # This indicates that Google does not give you a direct answer...

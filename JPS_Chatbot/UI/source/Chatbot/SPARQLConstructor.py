@@ -87,9 +87,6 @@ def fill_sparql_query_for_one_intent(intent, template, order, entities, index_or
     if intent == 'batch_restriction_query_numerical_and_attribute':
         entities = rename_keys(entities)
     r = retrieve_uris_from_entities(entities, order=order)
-
-
-
     combinations = generate_combinations(r)
     print('=============== check =============')
     print('entities', entities)

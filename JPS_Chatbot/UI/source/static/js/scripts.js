@@ -336,7 +336,8 @@ function visualize_google_result(result){
         $("#google-results" ).html('<div class="div-row">Google failed to provide a direct answer</div>')
         $('#query_progress').append('<div>Google failed to provide a director answer</div>')
     }else{
-        div = '<div class="div-row">' + result + '</div>'
+        //div = '<div class="div-row">' + result + '</div>'
+        div = result
         $("#google-results" ).html(div)
     }
 }

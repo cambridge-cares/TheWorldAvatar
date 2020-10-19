@@ -48,8 +48,6 @@ class SearchEngine:
     def __init__(self):
         self.file_path = os.path.join(WIKI_DICT_DIR, 'wiki_dictionary_new')
         print('file path', self.file_path)
-
-
         with open(self.file_path) as f:
             self.wiki_dictionary = json.loads(f.read())
         self.top_k = 3
