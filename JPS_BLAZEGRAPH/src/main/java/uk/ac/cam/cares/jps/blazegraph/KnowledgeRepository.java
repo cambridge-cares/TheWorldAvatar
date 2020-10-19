@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.blazegraph;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOError;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -186,10 +189,16 @@ public class KnowledgeRepository {
 			for(File file:files){
 				if(file.isFile()){
 					try{
-					uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
+						if(isOwlOrRdf(file.getAbsolutePath())){
+							uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
+						}else{
+							br_detailed_log.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
+							System.out.println("["+ ++n_of_problematic_abox + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
+							br.write("["+ n_of_problematic_abox + "] File "+file.getName()+" is not imported.\n");
+						}
 					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
 					if(i%1000 == 0){
-						TimeUnit.SECONDS.sleep(30);
+						TimeUnit.SECONDS.sleep(5);
 					}
 					}catch(Exception e){
 						br_detailed_log.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
@@ -203,6 +212,40 @@ public class KnowledgeRepository {
 		}
 		br_detailed_log.close();
 		br.close();
+	}
+	
+	/**
+	 * Verifies if the current file is an OWL or RDF file.
+	 * 
+	 * @param path the path to an OWL or RDF file
+	 * @return
+	 */
+	public boolean isOwlOrRdf(String path) throws IOException{
+		BufferedReader br = FileUtil.openSourceFile(path);
+		String line;
+		String xmlDeclaration = "^<\\?xml.*?\\?>";
+		String rdfStartingTag = "^<rdf:RDF.*?";
+		String rdfClosingTag = "^</rdf:RDF>";
+		boolean isXmlDeclarationAppears = false;
+		boolean isRdfStartingTagAppears = false;
+		boolean isRdfClosingTagAppears = false;
+		
+		while((line=br.readLine())!=null){
+			if(line.trim().matches(xmlDeclaration)){
+				isXmlDeclarationAppears = true;
+			}
+			if(line.trim().matches(rdfStartingTag)){
+				isRdfStartingTagAppears = true;
+			}
+			if(line.trim().matches(rdfClosingTag)){
+				isRdfClosingTagAppears = true;
+			}
+		}
+		
+		if(isXmlDeclarationAppears && isRdfStartingTagAppears && isRdfClosingTagAppears){
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -323,6 +366,8 @@ public class KnowledgeRepository {
 			}
 		} catch (Exception e) {
 			System.out.println("UploadOntology:" + e.getMessage());
+			System.out.println("UploadOntology: uploading the file " + ontologyFilePath);
+			throw new Exception(e.getMessage());
 		}
 	}
 	
