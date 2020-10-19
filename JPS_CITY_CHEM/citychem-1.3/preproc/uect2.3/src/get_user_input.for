@@ -61,6 +61,12 @@
 ! Tel: +47 63898000 Fax: +47 63898050
 ! E-mail: sam-erik.walker@nilu.no
 !
+!!!!!========================================================================
+!!!  modified by Kang @ CARES, @ Dec. 2019
+!!   1, add time factor control variable for point source emission rate calculation;  
+!       ntime_factor=0, don't use time factor; =1, use the default time factor   
+!!   2, change start and end simulation date value so that the correct date (hour) can be 
+!!      printed in point source output file.    
 ! ----------------------------------------------------------------------------------
 
       subroutine get_user_input
@@ -187,10 +193,15 @@
 !     Start/End date of input
       read(funit_run,*) startdate
       read(funit_run,*) enddate
-
-      read(funit_run,*)  (bdat(i),i=1,3)
-      read(funit_run,*)  (edat(i),i=1,3)
-
+!!!==============================================
+!!! changed by Kang @ CARES
+!!! change the simluation time appeared in point source output file
+!!! here, it is hour value.      
+! orig:      read(funit_run,*)  (bdat(i),i=1,3)
+!      read(funit_run,*)  (edat(i),i=1,3)
+      read(funit_run,*)  (bdat(i),i=1,4)
+      read(funit_run,*)  (edat(i),i=1,4)
+!!!==============================================      
 !     TAPM file for temperature is used in SNAP2 emission calculation
 !     if it is not present, the normal way to calculate SNAP2 is used
 !     !   INQUIRE(DIRECTORY=fname_inpath_tapm,EXIST = fe_in_tapm)
@@ -203,10 +214,11 @@
 !     Model dimensions:
       read(funit_run,*) n_nx
       read(funit_run,*) n_ny
-
-      if (n_nx /= n_ny) then
-        call stopit('UECT can only be used for quadratic domains (nx=ny)')
-      endif
+!!!  deleted by Kang @ Apr. 30, 2020.  For no square case. 
+!      if (n_nx /= n_ny) then
+!        call stopit('UECT can only be used for quadratic domains (nx=ny)')
+!      endif
+!!   end of change
 
 !     Horizontal grid resolution (in meters):
       read(funit_run,*) dxarea   ! gridded area source
@@ -242,13 +254,38 @@
 !     Optional netCDF output for checking
       read(funit_run,*) NC_out
 
+!!!!==============================================================================
+!!! changed by kang @ CARES.  
+!!! define a new variable to control if using time factor for emission rate calculation on different date
+
+      read(funit_run,*) ntime_factor
+!!!!==============================================================================
+
+
 
 !     Construct the begin date
 !     Set start time and day of week
-      bdat(4) = 0               ! hour(0-23)
+!!!==============================================
+!!! changed by Kang @ CARES
+!!! change the simluation time appeared in point source output file
+!!! here, it is hour value.   
+!      bdat(4) = 0               ! hour(0-23)
+!      bdat(5) = 0
+!      bdat(6) = 0
+!      edat(4) = 23              ! hour(0-23)
+!      edat(5) = 0
+!      edat(6) = 0
+!      year = bdat(1)
+!      mnth = bdat(2)
+!      daym = bdat(3)
+!      hour = bdat(4)
+!      minu = bdat(5)
+!      seco = bdat(6)
+
+
       bdat(5) = 0
       bdat(6) = 0
-      edat(4) = 23              ! hour(0-23)
+
       edat(5) = 0
       edat(6) = 0
       year = bdat(1)
@@ -257,6 +294,7 @@
       hour = bdat(4)
       minu = bdat(5)
       seco = bdat(6)
+!!!==============================================
 
 !     UECT2.3: we check if the biogenic VOC pre-emission files are there
       INQUIRE(FILE=trim('./input/'//'BVOC_4_UECT_RheinRuhr.nc'),EXIST = fe_in_bvocrr)

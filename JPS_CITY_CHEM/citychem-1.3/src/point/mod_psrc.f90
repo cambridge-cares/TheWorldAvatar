@@ -141,7 +141,24 @@
       real,allocatable :: qx(:)
       real,allocatable :: qy(:)
       real,allocatable :: qz(:)
+      
+!!!===============================================
+!!!  for moving point source, by Kang Dec.10,2019
+!!   further changed for circular moving route @ Jan 21, 2020 by Kang  
+!! 
+      real,allocatable :: qx1(:)   !! used for storing real point source location
+      real,allocatable :: qy1(:)   
+      real,allocatable :: vel_point(:)  !!! point source moving velocity (m/s)
+      real,allocatable :: dd_point(:)         !!! point source moving direction (deg).  0-360.  0, moving north, 180, moving south
+      real,allocatable :: t_mpoint1(:)  !!! point source start to moving (s) in current hour.  (0-3600)
+      real,allocatable :: t_mpoint2(:)  !!! point source stop to moving (s)
 
+      real :: t_point           !!! current simluation time in current hour (0-3600)
+      logical :: point_moving   !!! if any point source will move.  True: will move.
+
+      real,allocatable :: cir_ang(:)   !! used for moving point source at circular route (deg).  0-360
+!!!===============================================
+!!       
 ! qdi - Stack diameter (m) (nq)
 ! qhb - Stack height of building (nq)
 ! qem - Stack emission rate (g/s or kg/h) (nq,nc)
@@ -158,6 +175,7 @@
 ! qy  - Stack y-coordinate (nq)
 ! qz  - Stack z-coordinate (height above sea level) (m) (nq)
 
+      
       integer :: nq
 
 ! nq  - Number of stacks
@@ -344,7 +362,8 @@
       if (allocated(qx))         deallocate(qx)
       if (allocated(qy))         deallocate(qy)
       if (allocated(qz))         deallocate(qz)
-      
+     
+
       if (allocated(qid))        deallocate(qid)
       
       if (allocated(change))     deallocate(change)
@@ -358,6 +377,21 @@
       if (allocated(psrcaccemi)) deallocate(psrcaccemi)
       
       if (allocated(cmpvec))     deallocate(cmpvec)
+
+
+
+!!!===============================================
+!!!  for moving point source, by Kang Dec.10,2019
+!! 
+          IF (.NOT. ALLOCATED(QX1))     deallocate(QX1)
+          IF (.NOT. ALLOCATED(QY1))     deallocate(QY1)
+          IF (.NOT. ALLOCATED(vel_point))     deallocate(vel_point)
+          IF (.NOT. ALLOCATED(dd_point))     deallocate(dd_point)
+          IF (.NOT. ALLOCATED(t_mpoint1))     deallocate(t_mpoint1)
+          IF (.NOT. ALLOCATED(t_mpoint2))     deallocate(t_mpoint2)  
+
+          IF (.NOT. ALLOCATED(cir_ang))     deallocate(cir_ang) 
+!!!===============================================
 
       mq = 0
       mp = 0
@@ -402,6 +436,11 @@
       enddo
 
       qhaifafn = ' '
+
+!!!===============================================
+!!!  for moving point source, by Kang Dec.10,2019
+      point_moving = .False. 
+!!!===============================================
 
 ! End of subroutine FreePsrcMemory
 

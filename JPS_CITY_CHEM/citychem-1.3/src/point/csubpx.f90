@@ -569,9 +569,18 @@
 
 ! Add concentration to main grid (ug/m3)
 
-          IF (ICV .EQ. 1)      &
-            CM(IXE,IYE,IC) =    CM(IXE,IYE,IC) +  CRVV*AREAV/(DX*DY)
-
+!!!===============================================
+!!! for averaged main grid concentration, by Kang Dec.23,2019
+!!! need to be double check 
+!!!===============================================
+! orig          IF (ICV .EQ. 1)      &
+!            CM(IXE,IYE,IC) =    CM(IXE,IYE,IC) +  CRVV*AREAV/(DX*DY)
+        if(averaged_output) then
+         IF (ICV .EQ. 1) CM(IXE,IYE,IC) =  CM(IXE,IYE,IC) +  CRVV*AREAV/(DX*DY)/FLOAT(NTS)
+        else
+          IF (ICV .EQ. 1) CM(IXE,IYE,IC) =  CM(IXE,IYE,IC) +  CRVV*AREAV/(DX*DY)
+        endif
+!!!===============================================        
 ! Add dry deposition to main grid (g/m2)
 
           IF (IDV .EQ. 1)      &

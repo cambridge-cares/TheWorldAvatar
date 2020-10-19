@@ -502,8 +502,8 @@
          'Min. final 3D-divergence: ', &
          MINVAL(div_3D),MINLOC(div_3D)
         write(funit_log,*)
-        write(funit_log,'(1X,A,E10.4)') &
-         'Final 3D-divergence(11,9,1): ',div_3D(11,9,1)
+       ! write(funit_log,'(1X,A,E10.4)') &
+       !  'Final 3D-divergence(11,9,1): ',div_3D(11,9,1)
         write(funit_log,*)
 
       end if  ! (fe_log)
