@@ -157,27 +157,9 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
-			/*
-		    //Execute matlab batch file
-			Runtime rs = Runtime.getRuntime();
-		    try {
-				try {
-					//System.out.printf("\n----------------------Starting the execution of the electrical system-----------------------\n ");
-					rs.exec(batchFile).waitFor();
-					
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.printf("\nCompleted Execution\n");
-				writer.delete();
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		    //response.getWriter().append("Served at: ").append(request.getContextPath());
-		    */
+			File tempFile = new File(pathToInputFile);
+			tempFile.delete();
+			
 		    return jo;
 		}
 
