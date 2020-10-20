@@ -169,14 +169,17 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public void uploadOntologies() throws Exception{
-		String importedFile = "imported.log";
-		BufferedWriter bw_detailed_log = FileUtil.openBufferedWriter("import-detailed.log");
-		BufferedWriter bw = FileUtil.openBufferedWriter("import.log");
-		FileWriter fw = new FileWriter(importedFile, true);
-		BufferedWriter bw_imported = new BufferedWriter(fw);
-		BufferedWriter bw_not_rdf_or_owl_file = FileUtil.openBufferedWriter("non-rdf-owl-file.log");
+		String importedFileLog = "imported-file.log";
+		String importErrorDetailedLog = "import-error-detailed.log";
+		String nonRdfOrOwlFileLog = "non-rdf-or-owl-file.log";
+		FileWriter fWDetailedLog = new FileWriter(importErrorDetailedLog, true);
+		BufferedWriter bWDetailedLog = new BufferedWriter(fWDetailedLog);
+		FileWriter fW = new FileWriter(importedFileLog, true);
+		BufferedWriter bWImported = new BufferedWriter(fW);
+		FileWriter fWNonRdfOrOwlFile = new FileWriter(nonRdfOrOwlFileLog, true);
+		BufferedWriter bWNonRdfOrOwlFile = new BufferedWriter(fWNonRdfOrOwlFile);
 		// Reading the list of already imported files to avoid re-importing them.
-		BufferedReader br = FileUtil.openSourceFile(importedFile);
+		BufferedReader br = FileUtil.openSourceFile(importedFileLog);
 		List<String> listOfImportedFiles = new ArrayList<>();
 		String line = "";
 		while((line=br.readLine())!=null){
@@ -210,9 +213,9 @@ public class KnowledgeRepository {
 					try{
 						if(isOwlOrRdf(file.getAbsolutePath())){
 							uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
-							bw_imported.write(file.getAbsolutePath()+"\n");
+							bWImported.write(file.getAbsolutePath()+"\n");
 						}else{
-							bw_not_rdf_or_owl_file.write("["+ ++non_ref_owl_file + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
+							bWNonRdfOrOwlFile.write("["+ ++non_ref_owl_file + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
 							System.out.println("["+ non_ref_owl_file + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
 							continue;
 						}
@@ -221,24 +224,20 @@ public class KnowledgeRepository {
 						TimeUnit.SECONDS.sleep(5);
 					}
 					}catch(Exception e){
-						bw_detailed_log.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
-						bw.write("["+ n_of_problematic_abox + "] File "+file.getName()+" could not be imported.\n");
+						bWDetailedLog.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
 						System.out.println("["+ n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
 						System.out.println("Now the tool will stop. Run it again to finish the import.");
 						TimeUnit.MILLISECONDS.sleep(500);
-						bw_detailed_log.close();
-						bw.close();
-						bw_imported.close();
-						bw_not_rdf_or_owl_file.close();
+						bWDetailedLog.close();
+						bWImported.close();
+						bWNonRdfOrOwlFile.close();
 						System.exit(0);
 					}
 				}
 			}
 		}
-		bw_detailed_log.close();
-		bw.close();
-		bw_imported.close();
-		bw_not_rdf_or_owl_file.close();
+		bWImported.close();
+		bWNonRdfOrOwlFile.close();
 	}
 	
 	/**
