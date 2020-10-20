@@ -168,7 +168,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 			assertEquals("JSONObject[\"region\"] not found.", e.getTargetException().getMessage());
 		}
 
-		args = args.put("region", "");
+		args = args.put(Region.keyRegion, "");
 
 		try {
 			getCity.invoke(dmsa, args);
@@ -176,7 +176,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 			assertEquals("JSONObject[\"region\"] is not a JSONObject.", e.getTargetException().getMessage());
 		}
 
-		args = args.put("region", JSONObject.NULL);
+		args = args.put(Region.keyRegion, JSONObject.NULL);
 
 		try {
 			getCity.invoke(dmsa, args);
@@ -185,19 +185,19 @@ public class DMSCoordinationAgentTest extends TestCase {
 		}
 
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", JSONObject.NULL);
-		upcorn.put("uppery", JSONObject.NULL);
+		upcorn.put(Region.keyUpperx, JSONObject.NULL);
+		upcorn.put(Region.keyUppery, JSONObject.NULL);
 
 		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", JSONObject.NULL);
-		lowcorn.put("lowery", JSONObject.NULL);
+		lowcorn.put(Region.keyLowerx, JSONObject.NULL);
+		lowcorn.put(Region.keyLowery, JSONObject.NULL);
 
 		JSONObject region = new JSONObject();
-		region.put("srsname", JSONObject.NULL);
-		region.put("lowercorner", lowcorn);
-		region.put("uppercorner", upcorn);
+		region.put(Region.keySrsname, JSONObject.NULL);
+		region.put(Region.keyLowercorner, lowcorn);
+		region.put(Region.keyUppercorner, upcorn);
 
-		args = args.put("region", region);
+		args = args.put(Region.keyRegion, region);
 
 		try {
 			getCity.invoke(dmsa, args);
@@ -205,7 +205,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 			assertTrue(e.getTargetException().getMessage().contains(DMSCoordinationAgent.NO_CITY_FOUND_MSG));
 		}
 		
-		args.remove("region");
+		args.remove(Region.keyRegion);
 		Region.putRegion(args, 2);
 
 		try {
