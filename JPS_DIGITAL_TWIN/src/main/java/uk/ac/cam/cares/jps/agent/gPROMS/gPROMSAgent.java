@@ -76,15 +76,13 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 
 /**
- * gPROMS Agent developed for setting-up and running gPROMS chemical network on
- * HPC.
- *The input files for gPROMS execution should be placed in user.home//input folder
+ * gPROMS Agent developed for setting-up and running gPROMS chemical network on HPC.
+ * The input files for gPROMS execution should be placed in user.home//input folder
  * @author Aravind Devanand (aravind@u.nus.edu)
  *
  */
 @Controller
-@WebServlet(urlPatterns = { gPROMSAgent.JOB_REQUEST_PATH, gPROMSAgent.JOB_STATISTICS_PATH,
-		/* gPROMSAgent.JOB_OUTPUT_REQUEST_PATH */ })
+@WebServlet(urlPatterns = { gPROMSAgent.JOB_REQUEST_PATH, gPROMSAgent.JOB_STATISTICS_PATH,})
 public class gPROMSAgent extends JPSAgent {
 
 	private static final long serialVersionUID = 1L;
@@ -408,8 +406,7 @@ public class gPROMSAgent extends JPSAgent {
 			}
 		} catch (IOException e) {
 			logger.error("gPROMSsAgent: IOException.".concat(e.getMessage()));
-			e.printStackTrace();
-		}
+			}
 	}
 
 	
@@ -441,9 +438,6 @@ public class gPROMSAgent extends JPSAgent {
 	    }
 	    br.close();
 		}
-	    //System.out.println(result.size());
-	    //System.out.println(result.get(16038));
-	    //System.out.println(result.get(0));
 	    // Integer r is the line number of the required variable minus 1
 	    int r=16038;
 	    int vars=Integer.parseInt(result.get(0)); 
@@ -496,10 +490,6 @@ public class gPROMSAgent extends JPSAgent {
     System.out.println("Copied matlab file to input folder");
 }
 	
-	//public static String getMatlabFile() {
-		//
-		//return(slurmJob.getJobFolderName());
-//	}
 	
 	/**
 	 * Sets up a quantum job by creating the job folder and the following files</br>
@@ -534,9 +524,6 @@ public class gPROMSAgent extends JPSAgent {
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(gpROMSAgentProperty.getHpcAddress(), timeStamp);
 		System.out.println("Jobfolder is"+ jobFolderName);
-		//
-		
-		
 		Path temporaryDirectory1 = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
 		System.out.println("tempdir is"+ temporaryDirectory1.toString());
 		System.out.println("tempdir1 is"+ temporaryDirectory1.toString());
@@ -544,11 +531,7 @@ public class gPROMSAgent extends JPSAgent {
 		System.out.println("scrptdir is"+gpROMSAgentProperty.getAgentScriptsLocation().toString());
 		return jobSubmission.setUpJob(jsonInput,
 				new File(URLDecoder.decode(getClass().getClassLoader().getResource(gpROMSAgentProperty.getSlurmScriptFileName())
-						.getPath(), "utf-8")),
-			/**	new File("C:/Users/caresadmin/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/input.zip"),
-			*	timeStamp);
-			*/
-				getInputFile(jsonInput, jobFolderName),timeStamp);
+						.getPath(), "utf-8")),getInputFile(jsonInput, jobFolderName),timeStamp);
 	}			
 	
 
@@ -563,12 +546,7 @@ public class gPROMSAgent extends JPSAgent {
 	 */
 	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, gPROMSAgentException {
 		
-		//Preparation of settings.input file
-		
-		
-		
-		
-
+//Preparation of settings.input file
 //Extracting required variables from owl files
 			System.out.println(System.getProperty("user.dir"));
 		   String filePath = System.getProperty("user.home")+"\\input\\debutaniser_section.owl";
@@ -582,32 +560,7 @@ public class gPROMSAgent extends JPSAgent {
 			} catch (Exception e) {
 			    e.printStackTrace();
 			}
-//Sample Sparql query
-//			String sparqlQuery =
-//					"SELECT ?Temp\n"+
-//					"WHERE {\n "+
-//					"?x a <http://www.semanticweb.org/caresadmin1/ontologies/2020/5/untitled-ontology-396#Temperature> .\n"+	
-//					"?x  <http://www.semanticweb.org/caresadmin1/ontologies/2020/5/untitled-ontology-396#hasValue>  ?Temp .\n"+
-//					"}" ;
-//			//System.err.println(sparqlQuery); //Prints the query
-//			Query query = QueryFactory.create(sparqlQuery);
-//
-//			QueryExecution qe = QueryExecutionFactory.create(query, model);
-//
-//			ResultSet results = qe.execSelect();
-//			//ResultSetFormatter.out(System.out, results, query);			
-//			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();	
-//			ResultSetFormatter.outputAsCSV(byteArrayOutputStream,results);
-//			String s=byteArrayOutputStream.toString();
-//			System.out.println(s);
-//			//List se=Arrays.asList(s.split("\\s*,\\s*|http"));
-//			//System.out.println(se);
-//			String[] sa= s.split("\\r?\\n");
-//			//System.out.println(Arrays.toString(sa[1]));
-//			System.out.println(sa[1]);
 
-//Trial one with the debutaniser file
-			
 			String TempQuery =
 					"PREFIX process:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#>\r\n" +
 					"PREFIX system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" +
@@ -617,22 +570,14 @@ public class gPROMSAgent extends JPSAgent {
 					"?x a  system:ScalarValue  .\n" + 
 					"?x system:value ?Temp .\n"+
 					"}" ;
-			//System.err.println(TempQuery); //Prints the query
+			
 			Query queryt = QueryFactory.create(TempQuery);
-
 			QueryExecution qet = QueryExecutionFactory.create(queryt, model);
-
 			ResultSet results = qet.execSelect();
-			//ResultSetFormatter.out(System.out, results, query);			
 			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();	
 			ResultSetFormatter.outputAsCSV(byteArrayOutputStream,results);
 			String s=byteArrayOutputStream.toString();
-			//System.out.println(s);
-			//List se=Arrays.asList(s.split("\\s*,\\s*|http"));
-			//System.out.println(se);
 			String[] sa= s.split("\\r?\\n");
-			//System.out.println(Arrays.toString(sa[1]));
-			//System.out.println(sa[1]);			
 			
 //Once the file is created, data has to be written to it
 		  try {
@@ -721,23 +666,16 @@ public class gPROMSAgent extends JPSAgent {
 	
 		
 		// Compress all files in the temporary directory into a ZIP
-		//Path zipFile = Paths.get(System.getProperty("user.home"), temporaryDirectory.getFileName().toString() + ".zip");
 		Path zipFile = Paths.get(System.getProperty("user.home")+"\\input.zip");
 		// Create a temporary folder in the user's home location
-		//Path temporaryDirectory= Paths.get("C:\\Users\\caresadmin\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\main\\resources\\input");
-
 		Path temporaryDirectory= Paths.get(System.getProperty("user.home")+"\\input");
-		// Path temporaryDirectory= Paths.get("C:\\Users\\caresadmin\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\main\\resources\\input");
 		List<File> zipContents = new ArrayList<>();
 
 		Files.walk(temporaryDirectory)
 			.map(Path::toFile)
 			.forEach((File f) -> zipContents.add(f));
 		zipContents.remove(temporaryDirectory.toFile());
-
-		// Will throw an IOException if something goes wrong
 		new ZipUtility().zip(zipContents, zipFile.toString());
-
 		// Return the final ZIP file
 		return new File(zipFile.toString());
 	}

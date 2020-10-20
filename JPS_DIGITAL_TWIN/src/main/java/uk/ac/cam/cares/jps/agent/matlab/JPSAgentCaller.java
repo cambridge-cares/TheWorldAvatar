@@ -24,14 +24,9 @@ public class JPSAgentCaller extends JPSHttpServlet {
 	 //this should ONLY be called by scenarioAgent
 	   	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 			JSONObject jo = AgentCaller.readJsonParameter(request);
-			//String baseUrl= QueryBroker.getLocalDataPath("/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/matlab/output.dat");
 			String baseUrl= "C:/JParkSimulator-git-project/JPS_DIGITAL_TWIN/src/main/resources/input_mat/";
-			//check name of scenario: 
-			//String sourceUrl = JPSContext.getScenarioUrl(requestParams);
-			//String sourceName = BucketHelper.getScenarioName(sourceUrl);
-			//logger.info("Scenario Url" + sourceUrl);
 			jo.put("baseUrl", baseUrl);
-			AgentCaller.executeGetWithJsonParameter("JPS_DIGITALTWIN/test", jo.toString()); //I pray hard that this works
+			AgentCaller.executeGetWithJsonParameter("JPS_DIGITALTWIN/test", jo.toString());
 			return jo;
 		}
 
