@@ -22,10 +22,10 @@ public class Region {
     public static String keySrsname = "srsname";
 
     // City IRIs
-    private static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
-    private static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
-    private static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
-    private static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
+    public static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
+    public static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
+    public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
+    public static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
 
     private JSONObject getScope(int option) {
         /**
