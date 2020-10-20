@@ -82,6 +82,14 @@ public class Region {
         return joScope;
     }
 
+    public static void putRegion(JSONObject jo, int option) {
+        /**
+         * Adds region to the JSON object received
+         * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
+         */
+        jo.put(keyRegion, getScope(option));
+    }
+
     public static void putRegionAndStation(JSONObject jo, int option) {
         /**
          * Adds region and air quality station IRI to the JSON object received

@@ -204,18 +204,9 @@ public class DMSCoordinationAgentTest extends TestCase {
 		} catch (InvocationTargetException e) {
 			assertTrue(e.getTargetException().getMessage().contains(DMSCoordinationAgent.NO_CITY_FOUND_MSG));
 		}
-
-		upcorn.put("upperx", "11572101.89");
-		upcorn.put("uppery", "151860.32");
-
-		lowcorn.put("lowerx", "11552101.832");
-		lowcorn.put("lowery", "131707.739");
-
-		region.put("srsname", "EPSG:3857");
-		region.put("lowercorner", lowcorn);
-		region.put("uppercorner", upcorn);
-
-		args = args.put("region", region);
+		
+		args.remove("region");
+		Region.putRegion(args, 2);
 
 		try {
 			getCity.invoke(dmsa, args);
