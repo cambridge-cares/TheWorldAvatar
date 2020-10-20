@@ -73,8 +73,8 @@ if __name__ == "__main__":
     # general input
     # forecast weather
     DF_FORECAST = pd.read_csv("WeatherForecast.csv", header = None)
-    AirTemp = DF_FORECAST[4].to_numpy()
-    Radiation = DF_FORECAST[8].to_numpy()
+    AirTemp = DF_FORECAST[0].to_numpy()
+    Radiation = DF_FORECAST[1].to_numpy()
     # electricity bill structure
     household_below = np.array([0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002])
     household_above = np.array([0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004])
@@ -145,15 +145,15 @@ if __name__ == "__main__":
     
     DF_PV = pd.read_csv("PV_parameters.csv", header=None )
     # change the following parameters only if you understand their physical meanings
-    alpha_sc = DF_PV.iloc[4,1] # Temperature coefficient for short circuit current [A/K]
-    a_ref = DF_PV.iloc[5,1] # ideality factor parameter at SRC [eV]
     Il_ref = DF_PV.iloc[0,1] # Short circuit current at SRC (standard rating condition) [A]
-    Io_ref = DF_PV.iloc[7,1] # Diode reverse saturation current at SRC [A]
-    Rs_ref = DF_PV.iloc[8,1] # Series resistance at SRC [Ohm]
-    Rsh_ref = DF_PV.iloc[9,1] # Shunt resistance at SRC [Ohm]
-    Tc_ref = DF_PV.iloc[10,1] # Cell temperature at SRC [K]
-    G_ref = DF_PV.iloc[11,1] # Radiation at SRC conditions [W/m^2]
-    Eg_ref = DF_PV.iloc[12,1] # Material band gap at SRC [eV]
+    alpha_sc = DF_PV.iloc[1,1] # Temperature coefficient for short circuit current [A/K]
+    a_ref = DF_PV.iloc[2,1] # ideality factor parameter at SRC [eV]
+    Io_ref = DF_PV.iloc[3,1] # Diode reverse saturation current at SRC [A]
+    Rs_ref = DF_PV.iloc[4,1] # Series resistance at SRC [Ohm]
+    Rsh_ref = DF_PV.iloc[5,1] # Shunt resistance at SRC [Ohm]
+    Tc_ref = DF_PV.iloc[6,1] # Cell temperature at SRC [K]
+    G_ref = DF_PV.iloc[7,1] # Radiation at SRC conditions [W/m^2]
+    Eg_ref = DF_PV.iloc[8,1] # Material band gap at SRC [eV]
     k = 8.6173324e-5 # Boltzmann constant [eV/K]
     Ns = 3000
 
@@ -208,10 +208,10 @@ if __name__ == "__main__":
     R = -2.04              #[Ohm*C]
     # operation parameters:
     DF_FC = pd.read_csv("FuelCell.csv", header=None )
-    nc2 = DF_FC.iloc[1,1] # no. of cells
-    eta = DF_FC.iloc[2,1] # fuel utilization factor
-    Tlow = DF_FC.iloc[3,1] #[C]
-    Thigh = DF_FC.iloc[4,1] #[C]
+    nc2 = DF_FC.iloc[0,1] # no. of cells
+    eta = DF_FC.iloc[1,1] # fuel utilization factor
+    Tlow = DF_FC.iloc[2,1] #[C]
+    Thigh = DF_FC.iloc[3,1] #[C]
     # track optimal operating temperature if possible:
     Ilow = Tlow**2*E1/R #[A]
     Ihigh = Thigh**2*E1/R #[A]

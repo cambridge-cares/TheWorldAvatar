@@ -34,13 +34,14 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
+import uk.ac.cam.cares.jps.des.DESAgentNew;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
 import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
 public class Test_DES extends TestCase{
 	
-	private String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
+	private static String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 	
 	/*
@@ -544,7 +545,6 @@ public class Test_DES extends TestCase{
 		}
 	
 	}
-	
 	
 
 	
