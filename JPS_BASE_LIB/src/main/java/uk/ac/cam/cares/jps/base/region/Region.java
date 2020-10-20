@@ -27,7 +27,7 @@ public class Region {
     public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
     public static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
 
-    private JSONObject getScope(int option) {
+    private static JSONObject getScope(int option) {
         /**
          * Returns a JSONObject containing the scope coordinates and SRS name
          * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
@@ -75,7 +75,7 @@ public class Region {
         return joScope;
     }
 
-    public void putRegion(JSONObject jo, int option) {
+    public static void putRegion(JSONObject jo, int option) {
         /**
          * Adds region JSON object to the JSON object received
          * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
