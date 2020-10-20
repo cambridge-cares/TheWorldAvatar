@@ -83,14 +83,6 @@ public class DMSCoordinationAgentTest extends TestCase {
 
 	}
 
-	public void testcalllastestpath() {
-		JSONObject jo = new JSONObject();
-		jo.put("city", "http://dbpedia.org/resource/Singapore");
-		String resultStart = AgentCaller.executeGetWithJsonParameter("/JPS_DISPERSION/adms/results/latest",
-				jo.toString());
-		System.out.println("result= " + resultStart);
-	}
-
 	public void testvalidationWeather() {
 		String context = "http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-004.owl#WeatherStation-004";
 		boolean isValid = new DMSCoordinationAgent().validateWeatherInput(context);
