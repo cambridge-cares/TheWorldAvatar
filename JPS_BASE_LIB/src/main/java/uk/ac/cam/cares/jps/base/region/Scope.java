@@ -6,11 +6,11 @@ public class Scope {
     /** Scope is the simulation domain for dispersion modelling
      * It contains the coordinates of the lower left and upper right corners along with the source CRS
      */
-    double upperx;
-    double uppery;
-    double lowerx;
-    double lowery;
-    String sourceCRS;
+    private double upperx;
+    private double uppery;
+    private double lowerx;
+    private double lowery;
+    private String sourceCRS;
 
     // constructor
     public Scope(JSONObject region) {
@@ -31,5 +31,9 @@ public class Scope {
          */
         double [] centreXY = new double[] {(this.lowerx + this.upperx)/2, (this.lowery + this.uppery)/2};
         return centreXY;
+    }
+
+    public String getSourceCRS() {
+        return sourceCRS;
     }
 }
