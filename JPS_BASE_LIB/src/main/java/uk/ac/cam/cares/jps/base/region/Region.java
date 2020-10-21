@@ -28,6 +28,12 @@ public class Region {
     public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
     public static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
 
+    // City names
+    private static final String Berlin = "Berlin";
+    private static final String The_Hague = "The_Hague";
+    private static final String Singapore = "Singapore";
+    private static final String Hong_Kong = "Hong_Kong";
+
     private static JSONObject getScope(int option) {
         /**
          * Returns a JSONObject containing the scope coordinates and SRS name
@@ -120,13 +126,13 @@ public class Region {
          */
         String targetCRSName = null;
 
-        if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
+        if (cityIRI.contains(Berlin)) {
             targetCRSName = CRSTransformer.EPSG_25833;
         }
-        else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+        else if (cityIRI.contains(The_Hague)) {
             targetCRSName = CRSTransformer.EPSG_28992;
         }
-        else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
+        else if (cityIRI.contains(Singapore)) {
             if (agentIRI.contains("ADMS")) {
                 targetCRSName = CRSTransformer.EPSG_3414;
             }
@@ -134,7 +140,7 @@ public class Region {
                 targetCRSName = CRSTransformer.EPSG_32648;
             }
         }
-        else if (cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+        else if (cityIRI.contains(Hong_Kong)) {
             if (agentIRI.contains("ADMS")) {
                 targetCRSName = CRSTransformer.EPSG_2326;
             }
