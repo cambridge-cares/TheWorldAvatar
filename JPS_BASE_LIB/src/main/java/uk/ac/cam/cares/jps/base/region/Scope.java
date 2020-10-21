@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.base.region;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+
 public class Scope {
     /** Scope is the simulation domain for dispersion modelling
      * It contains the coordinates of the lower left and upper right corners along with the source CRS
@@ -33,7 +35,32 @@ public class Scope {
         return centreXY;
     }
 
-    public String getSourceCRS() {
-        return sourceCRS;
+    public String getUTMzone() {
+        /**
+         * Returns the UTM zone using the scope centre
+         */
+        int zoneNumber;
+
+        // obtain x y coordinates of the centre
+        double [] centre = this.getScopeCentre();
+
+        // convert coordinates to latitude longitude
+        if (!this.sourceCRS.equals(CRSTransformer.EPSG_4326)) {
+            centre = CRSTransformer.transform(this.sourceCRS, CRSTransformer.EPSG_4326, centre);
+        }
+
+        // Determine zone based on longitude, the size of each UTM zone is 6 degrees
+        zoneNumber = (int) Math.ceil((centre[0] + 180)/6);
+
+        // determine whether it's north or south of the equator
+        String NS = null; 
+        if (centre[1]>0) {
+        	NS = "N";
+        }
+        else {
+        	NS = "S";
+        }
+        String UTMZone = String.valueOf(zoneNumber) + NS;
+        return UTMZone;
     }
 }
