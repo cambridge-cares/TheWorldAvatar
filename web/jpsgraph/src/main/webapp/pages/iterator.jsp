@@ -457,9 +457,8 @@ jsList = jsList.replace("[","");
 jsList = jsList.replace("]","");
 jsList = jsList.split(",");
 
-
-var ontoCompChemList = new Array();
 <!-- ontoCompChemDataSetList -->
+var ontoCompChemList = new Array();
 ontoCompChemList= new Array('<s:property value="%{ontoCompChemDataSetListThreeMonths}"/>');
 var jsOntoCompChemList = ontoCompChemList.toString();
 jsOntoCompChemList = jsOntoCompChemList.replace("[","");

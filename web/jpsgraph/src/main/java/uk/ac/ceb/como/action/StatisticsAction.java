@@ -264,11 +264,7 @@ public class StatisticsAction extends ActionSupport {
 			table1Data = table1Row.split(","); 
 		}
 		
-		numberOfCalculations = table1Data[0];
-		/**
-		 * Line below is commented because we are not querying ontocompchem knowledge graph when running statistics service. 
-		 */
-//		numberOfCalculations=new QueryManager().getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations());
+		numberOfCalculations = table1Data[0];		
 		numberOfReactionMechanisms=table1Data[1];
 		numberOfSpeciesInOntoKin=table1Data[2];
 		numberOfChemicalReactions=table1Data[3];
@@ -279,7 +275,9 @@ public class StatisticsAction extends ActionSupport {
 		
 		
 		/**
-		 * Reads csv data to plot it on bar chart  for the period of last three months starting from current date (date when last OWL was uploaded)
+		 * 
+		 * Reads CSV data to plot the data on bar chart for the period of last three months starting from current date (date when last OWL was uploaded)
+		 * 
 		 */
 		
 		BufferedReader csvLabelReader = new BufferedReader(new FileReader(statisticsFolderPath+"label.csv"));
@@ -294,32 +292,32 @@ public class StatisticsAction extends ActionSupport {
 		
 		for(int i =0;i<data.length;i++) {
 			
-			labelList.add(data[i]);
-			
+		labelList.add(data[i]);
 		
 		}
-		
 
 		/**
+		 * 
 		 * Calculates date that is three months earlier than date of last uploaded OWL file.
+		 * 
 		 */
 		LocalDate threeMonthsEarlierDate = PropertiesManager.getDateThreeMonthsEarlier(labelList,3);
 		
-		logger.info("three months earlier date: " + threeMonthsEarlierDate.toString());
-
-	     
+		logger.info("Three months earlier date from last date when species is uploaded: " + threeMonthsEarlierDate.toString());
+		
 		/**
 		 * Populates label list with dates that are three months earlier than current date (last date when OWL file is uploaded)
 		 */
-		for(int i =0;i<data.length;i++) {
+		for(int i=0;i<data.length;i++){
 			
 			Date labelDate = new SimpleDateFormat("yyyy-MM-dd").parse(data[i].toString());
             String formattedLabelDate = new SimpleDateFormat("yyyy-MM-dd").format(labelDate);		     
 		    LocalDate statedLabelDate = LocalDate.parse(formattedLabelDate);
 		     
-		     if(threeMonthsEarlierDate.isBefore(statedLabelDate) || threeMonthsEarlierDate.isEqual(statedLabelDate)) {
+            if(threeMonthsEarlierDate.isBefore(statedLabelDate) || threeMonthsEarlierDate.isEqual(statedLabelDate)) {
 
-					labelListThreeMonths.add(data[i]); 
+			labelListThreeMonths.add(data[i]);
+			
 		     }
 		}	     
 		
@@ -394,10 +392,6 @@ public class StatisticsAction extends ActionSupport {
 			table2Data = table2Row.split(","); 
 		}
 		
-
-		for(int i =0;i<table2Data.length;i++) {			
-//			logger.info(table2Data[i]);				
-		}
 		numberOfReactionsHydrocarbonSpecies = table2Data[0];
 		numberOfReactionsThatInvolveNitrogenSpecies=table2Data[1];		
 		numberOfReactionsThatInvolveOxygenHydrocarbonSpecies=table2Data[2];		
