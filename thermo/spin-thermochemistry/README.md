@@ -7,7 +7,7 @@ SPIN is an industry standard to represent SPARQL rules and constraints on Semant
 
 ### Create a Maven project and add Dependencies
 
-In the development of this SPIN project, you will employ [SPIN](https://www.w3.org/Submission/spin-sparql/), which is SPIN - SPARQL syntax, that is the W3C submission. Create a Maven project and include the following dependencies in the pom.xml file to enable the use of different SPIN related features supported by these software.
+In the development of this SPIN project, you will employ [SPIN - SPARQL syntax](https://www.w3.org/Submission/spin-sparql/). Create a Maven project and include the following dependencies in the pom.xml file to enable the use of different SPIN related features supported by these software.
  
         <!-- https://mvnrepository.com/artifact/org.topbraid/spin -->
         <dependency>
@@ -39,14 +39,16 @@ The dependencies provided above are collected from the following Maven repositor
 
 ### Create or copy the kennedysSPIN.ttl ontology
 
-You can either copy the following ontologies
+Copy the following ontologies
 
-* Create *kennedys.ttl* ontology from [here](http://topbraid.org/examples/kennedys) to the *resources* (/resources) folder in the Maven project you created. If you already have copied the ontology into the resources folder, you can go to the next section.
+* Copy *kennedys.ttl* ontology from [here](http://topbraid.org/examples/kennedys) to the *resources* (/resources) folder in the Maven project you created.
 
-* Create *kennedysSPIN.ttl* ontology from [here](http://topbraid.org/examples/kennedysSPIN.ttl) to the *resources* (/resources) folder in the Maven project you created. If you already have copied the ontology into the resources folder, you can go to the next section.
+* Copy *kennedysSPIN.ttl* ontology from [here](http://topbraid.org/examples/kennedysSPIN.ttl) to the *resources* (/resources) folder in the Maven project you created.
 
 * Import *kennedys.ttl* ontology into *kennedysSPIN.ttl* ontology.
 * Import [spin.ttl](http://spinrdf.org/spin) ontology into *kennedysSPIN.ttl* ontology.
+
+Create or copy the following ontology
 
 * Create *kennedys* ontology with the OntologyIRI *http://topbraid.org/examples/kennedys#* named as *kennedys*. Include the classes from the following hierarchy in this ontology. Classes which have the same indentation are siblings, and classes which have different indentations are connected with subclass of relations. Classes indented to the right are subclasses of the class which is indented to the left and above. For example, Gender and Person are siblings.
 
