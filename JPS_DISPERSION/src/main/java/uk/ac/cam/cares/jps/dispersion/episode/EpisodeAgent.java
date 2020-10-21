@@ -572,12 +572,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
 			double x0 = coordinateship.getJSONObject(0).getDouble(DATA_KEY_LON);
 			double y0 = coordinateship.getJSONObject(0).getDouble(DATA_KEY_LAT);
-			double x1 = coordinateship.getJSONObject(1).getDouble(DATA_KEY_LON);
-			double y1 = coordinateship.getJSONObject(1).getDouble(DATA_KEY_LAT);
 			double[] locationshipconverted0 = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
 					new double[] { x0, y0 });
 			double[] locationshipconverted1 = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
-					new double[] { x1, y1 });
+					new double[] { x0+0.1, y0+0.1 });
 			try {
 				String fileContext = FileUtils.readFileToString(file);
 				fileContext = fileContext.replaceAll("351474", "" + locationshipconverted0[0]);
