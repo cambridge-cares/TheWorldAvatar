@@ -148,66 +148,16 @@ public class PropertiesManager {
 		return linkedHashMap;
 	}
 
+	
+
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
-	 *         Iterates through source map and adds key value in target map if that
-	 *         key value does not exist in target map. The method adds "0" frequency
-	 *         for number of uploaded species.
-	 * 
-	 * @param sourceMap the source map of number of uploaded species per given date.
-	 * @param targetMap the target map of number of uploaded species per given date.
-	 * @return the updated target map of number of uploaded species per given date.
-	 * @throws InterruptedException
-	 */
-	public LinkedHashMap<String, String> updateFrequenciesMapData(Map<String, String> sourceMap,
-			Map<String, String> targetMap) throws InterruptedException {
-
-		for (Map.Entry<String, String> m : sourceMap.entrySet()) {
-
-			if (!targetMap.containsKey(m.getKey())) {
-
-				targetMap.put(m.getKey(), "0");
-			}
-
-		}
-
-		/**
-		 * Sort target map by key values.
-		 * 
-		 */
-		Map<String, String> treeMap = new TreeMap<String, String>(targetMap);
-
-		LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<String, String>(treeMap);
-
-		return linkedHashMap;
-
-	}
-
-	/**
-	 * 
-	 * @param lastDate the latest date when OWL file is uploaded to RDF4J
-	 * @return the date that is three months earlier than lastDate
+	 * @param todaysDate
+	 * @param numberOfMonths
+	 * @return
 	 * @throws ParseException
-	 * 
 	 */
-	public static LocalDate getDateThreeMonthsEarlier(LinkedList<String> labelList, int numberOfMonths)
-			throws ParseException {
-
-		Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(labelList.getLast().toString());
-		String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
-
-		LocalDate statedDate = LocalDate.parse(formattedDate);
-		String threeMonthEarlierDate = statedDate.minusMonths(numberOfMonths).toString();
-
-		Date threeMonthsBeforeDate = new SimpleDateFormat("yyyy-MM-dd").parse(threeMonthEarlierDate);
-		String formattedThreeMonthsBeforeDate = new SimpleDateFormat("yyyy-MM-dd").format(threeMonthsBeforeDate);
-
-		LocalDate statedThreeMonthBeforeDate = LocalDate.parse(formattedThreeMonthsBeforeDate);
-
-		return statedThreeMonthBeforeDate;
-	}
-
 	public static LocalDate getDateThreeMonthsEarlierFromTodaysDate(String todaysDate, int numberOfMonths)
 			throws ParseException {
 
@@ -225,7 +175,19 @@ public class PropertiesManager {
 		return statedThreeMonthBeforeDate;
 	}
 
-	public LinkedHashMap<LocalDate,LocalDate> getWeeklyDatesBetweenTwoDates(String startingDate, String endDate) {
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param startingDate the current date. It is last date of a year i.e. today's
+	 *                     date.
+	 * @param endDate      the date that is seven days earlier from starting date,
+	 *                     including that date.
+	 * @return the hash map of seven days range where key is starting date and value
+	 *         is end date seven days earlier than starting date. Implementation of
+	 *         this method can be easly change to support range between date to any
+	 *         number of days. For example, 5 or 10 days.
+	 */
+	public LinkedHashMap<LocalDate, LocalDate> getWeeklyDatesBetweenTwoDates(String startingDate, String endDate) {
 
 		LocalDate start = LocalDate.parse(startingDate);
 		LocalDate end = LocalDate.parse(endDate);
@@ -236,6 +198,12 @@ public class PropertiesManager {
 
 			listOfDates.add(start);
 
+			/**
+			 * In line below change number of days that we want to have as difference
+			 * between dates in a range of dates on bar chart label. For example, if we use
+			 * -5 instead of -5 then difference between each range in bar chart label will
+			 * be 5 days.
+			 */
 			start = start.plusDays(-7);
 
 			LocalDate dayAfter = start.plusDays(1);
@@ -246,9 +214,12 @@ public class PropertiesManager {
 
 		}
 		listOfDates.add(end);
-		
+
 		int k = 0;
 
+		/**
+		 * Printing all dates from start date to the date that is three month earlier with seven days difference.  
+		 */
 		for (LocalDate d : listOfDates) {
 
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -260,7 +231,7 @@ public class PropertiesManager {
 			k++;
 		}
 
-		LinkedHashMap<LocalDate,LocalDate> pairsDateMap = new LinkedHashMap<LocalDate,LocalDate>();
+		LinkedHashMap<LocalDate, LocalDate> pairsDateMap = new LinkedHashMap<LocalDate, LocalDate>();
 		System.out.println("Pairs of dates:");
 		int s = 0;
 		for (int i = 0; i < listOfDates.size(); i++) {
@@ -273,33 +244,60 @@ public class PropertiesManager {
 
 		return pairsDateMap;
 	}
-	
-	
-	public LinkedHashMap<String, String> getSpeciesStatisticsWeekly(LinkedHashMap<LocalDate, LocalDate> pairsOfDatesMap,LinkedHashMap<String,String> speciesMap){
-		
-		LinkedHashMap<String,String> updatedSpeciesMap = new LinkedHashMap<String,String>();
-		
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param pairsOfDatesMap pairs of dates between two dates. Difference between
+	 *                        these two days in each pair is seven days, including
+	 *                        start and end date in every pair.
+	 * @param speciesMap      the map that contains a pair of dates (taken from
+	 *                        pairsOfDatesMap) and sum of uploaded species between
+	 *                        these two days in a pair.
+	 * @return the hash map that contains pair of dates and sum of upladed species.
+	 */
+	public LinkedHashMap<String, String> getSpeciesStatisticsWeekly(LinkedHashMap<LocalDate, LocalDate> pairsOfDatesMap,
+			LinkedHashMap<String, String> speciesMap) {
+
+		LinkedHashMap<String, String> updatedSpeciesMap = new LinkedHashMap<String, String>();
+
 		for (Map.Entry<LocalDate, LocalDate> m : pairsOfDatesMap.entrySet()) {
-			
+
 			int sum = 0;
-			
+
 			for (Map.Entry<String, String> map : speciesMap.entrySet()) {
-				
+
 				LocalDate date = LocalDate.parse(map.getKey().toString());
 
 				int value = Integer.parseInt(map.getValue());
 
-				if ((date.isBefore(m.getKey()) ||  date.isEqual(m.getKey())) && (date.isAfter(m.getValue()) || date.isEqual(m.getValue()) ) ) {
+				if ((date.isBefore(m.getKey()) || date.isEqual(m.getKey()))
+						&& (date.isAfter(m.getValue()) || date.isEqual(m.getValue()))) {
 
 					System.out.println(date + " is between " + m.getKey() + " and " + m.getValue());
 
+					/**
+					 * sums number of uploaded species for dates that are after and before given
+					 * range of seven days.
+					 */
 					sum = sum + value;
 
-					updatedSpeciesMap.put("[ " + m.getKey().toString() + " ; " + m.getValue().toString() + " ] ",String.valueOf(sum));
+					updatedSpeciesMap.put("[ " +m.getKey().toString() + ";" + m.getValue().toString() +" ]",
+							String.valueOf(sum));
+				} else {
+					/**
+					 * If there is not uploaded species for given dates then sum of uploaded species
+					 * is zero.
+					 */
+
+					value = 0;
+					sum = sum + value;
+					updatedSpeciesMap.put("[ "+m.getKey().toString() + ";" + m.getValue().toString()+" ]",
+							String.valueOf(sum));
 				}
 			}
 		}
-		
+
 		return updatedSpeciesMap;
 	}
 
