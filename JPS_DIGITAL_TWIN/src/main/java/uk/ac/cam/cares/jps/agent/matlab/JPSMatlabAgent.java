@@ -58,7 +58,7 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 	   	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 			JSONObject jo = AgentCaller.readJsonParameter(request);
 			String current = System.getProperty("user.home");
-			String pathToInputFile = current + "\\input\\matlab.csv";
+			String pathToInputFile = current + "\\matlab\\matlab.csv";
 			
 			// Appending reactive power value on the Pump_power CSV file
 			BufferedReader csvReader = null;

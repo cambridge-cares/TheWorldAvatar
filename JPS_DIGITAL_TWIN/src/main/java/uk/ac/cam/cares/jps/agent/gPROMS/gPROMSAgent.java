@@ -485,7 +485,7 @@ public class gPROMSAgent extends JPSAgent {
 
     csvWriter.flush();
     csvWriter.close();
-    File dest = new File(System.getProperty("user.home")+"\\input\\matlab.csv");
+    File dest = new File(System.getProperty("user.home")+"\\matlab\\matlab.csv");
     Files.copy(file.toPath(),dest.toPath());
     System.out.println("Copied matlab file to input folder");
 }
