@@ -10,11 +10,11 @@ import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 public class RegionTest extends TestCase {
+    /** 
+     * This test ensures that the method getTargetCRSName gives the correct CRS for the right combinations of cities and models
+     */
     @Test
     public void testGetTargetCRSName() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        /** 
-         * This test ensures that the method getTargetCRSName gives the correct CRS for the right combinations of cities and models
-         */
         // agent IRI
         String episodeIRI = "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service";
         String admsIRI = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";

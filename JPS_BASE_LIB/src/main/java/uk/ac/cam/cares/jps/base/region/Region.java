@@ -4,13 +4,12 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
+/**
+ * The purpose of this class is to store region specific parameters for dispersion modelling in one place.
+ * In the future, these may be queried from the triplestore. 
+ * There are currently 4 sets of scope, 2 for both Sg and HK.
+ */
 public class Region {
-    /**
-     * The purpose of this class is to store region specific parameters for dispersion modelling in one place.
-     * In the future, these may be queried from the triplestore. 
-     * There are currently 4 sets of scope, 2 for both Sg and HK.
-     */
-
     // keys for JSON object
     public static String keyUppercorner = "uppercorner";
     public static String keyLowercorner = "lowercorner";
@@ -34,11 +33,11 @@ public class Region {
     private static final String Singapore = "Singapore";
     private static final String Hong_Kong = "Hong_Kong";
 
+    /**
+     * Returns a JSONObject containing the scope coordinates and SRS name
+     * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
+     */
     private static JSONObject getScope(int option) {
-        /**
-         * Returns a JSONObject containing the scope coordinates and SRS name
-         * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
-         */
         String x_low = null, x_up = null , y_low = null, y_up = null;
 
         JSONObject joScope = new JSONObject();
@@ -88,20 +87,20 @@ public class Region {
         return joScope;
     }
 
+    /**
+     * Adds region to the JSON object received
+     * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
+     */
     public static void putRegion(JSONObject jo, int option) {
-        /**
-         * Adds region to the JSON object received
-         * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
-         */
         jo.put(keyRegion, getScope(option));
     }
 
+    /**
+     * Adds region and air quality station IRI to the JSON object received
+     * The air quality stations were created manually for each option
+     * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
+     */
     public static void putRegionAndStation(JSONObject jo, int option) {
-        /**
-         * Adds region and air quality station IRI to the JSON object received
-         * The air quality stations were created manually for each option
-         * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
-         */
         jo.put(keyRegion, getScope(option));
 
         switch (option) {
@@ -120,10 +119,10 @@ public class Region {
         }
     }
 
+    /**
+     * Different combinations of city and model (Episode/ADMS) require different CRS 
+     */
     public static String getTargetCRSName(String agentIRI, String cityIRI) {
-        /**
-         * Different combinations of city and model (Episode/ADMS) require different CRS 
-         */
         String targetCRSName = null;
 
         if (cityIRI.contains(Berlin)) {

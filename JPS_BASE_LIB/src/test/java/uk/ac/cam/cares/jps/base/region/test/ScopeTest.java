@@ -9,11 +9,12 @@ import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 
 public class ScopeTest {
+
+    /** 
+     *  Ensure the correct UTM zone is returned
+     */
     @Test
-    public void testGetUTMzone() {
-        /** 
-         *  Ensure the correct UTM zone is returned
-         */
+    public void testGetUTMzone() { 
         JSONObject jo1 = new JSONObject();
         Region.putRegion(jo1, 1);
         Scope sc1 = new Scope(jo1.getJSONObject(Region.keyRegion)); // Singapore scope

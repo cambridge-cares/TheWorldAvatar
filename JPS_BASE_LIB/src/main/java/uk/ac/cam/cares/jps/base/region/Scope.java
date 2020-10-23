@@ -10,21 +10,22 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
+/** 
+ * Scope is the simulation domain for dispersion modelling
+ * It contains the coordinates of the lower left and upper right corners along with the source CRS
+ */
+
 public class Scope {
-    /** Scope is the simulation domain for dispersion modelling
-     * It contains the coordinates of the lower left and upper right corners along with the source CRS
-     */
     private double upperx;
     private double uppery;
     private double lowerx;
     private double lowery;
     private String sourceCRS;
 
-    // constructor
+    /** 
+     * Create a scope from region JSON Object
+     */
     public Scope(JSONObject region) {
-        /** 
-         * Create a scope from region JSON Object
-         */
         this.upperx = Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyUppercorner).get(Region.keyUpperx)));
         this.uppery = Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyUppercorner).get(Region.keyUppery)));
         this.lowerx = Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyLowercorner).get(Region.keyLowerx)));
@@ -32,19 +33,19 @@ public class Scope {
         this.sourceCRS = region.getString(Region.keySrsname);
     }
 
+    /**
+     * Calculate scope centre from scope object.
+     * index[0] = x coordinate, index[1] = y coordinate
+     */
     public double[] getScopeCentre() {
-        /**
-         * Calculate scope centre from scope object.
-         * index[0] = x coordinate, index[1] = y coordinate
-         */
         double [] centreXY = new double[] {(this.lowerx + this.upperx)/2, (this.lowery + this.uppery)/2};
         return centreXY;
     }
 
+    /**
+     * Returns the UTM zone using the scope centre
+     */
     public String getUTMzone() {
-        /**
-         * Returns the UTM zone using the scope centre
-         */
         int zoneNumber;
 
         // obtain x y coordinates of the centre
@@ -70,10 +71,10 @@ public class Scope {
         return UTMZone;
     }
 
+    /**
+     * Obtain GMT time zone with coordinates of scope centre through Google API by default
+     */
     public int getTimeZone() {
-        /**
-         * Obtain GMT time zone with coordinates of scope centre through Google API by default
-         */
         int timeZone = 0;
         try {
             // obtain x y coordinates of the centre
@@ -94,10 +95,10 @@ public class Scope {
         return timeZone;
     }
 
+    /** 
+     * sends request to google API with centre of scope
+     */
     private int getTimeZoneFromGoogle(double[] centre) {
-        /** 
-         * sends request to google API with centre of scope
-         */
         String latlon = String.valueOf(centre[1]) + "," + String.valueOf(centre[0]);
         URIBuilder builder = new URIBuilder().setScheme("https").setHost("maps.googleapis.com")
                 .setPath("/maps/api/timezone/json");
