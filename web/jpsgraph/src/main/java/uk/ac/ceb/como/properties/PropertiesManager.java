@@ -282,8 +282,7 @@ public class PropertiesManager {
 					 */
 					sum = sum + value;
 
-					updatedSpeciesMap.put("[ " +m.getKey().toString() + ";" + m.getValue().toString() +" ]",
-							String.valueOf(sum));
+					updatedSpeciesMap.put(m.getKey().toString() + " to " + m.getValue().toString(),String.valueOf(sum));
 				} else {
 					/**
 					 * If there is not uploaded species for given dates then sum of uploaded species
@@ -292,8 +291,7 @@ public class PropertiesManager {
 
 					value = 0;
 					sum = sum + value;
-					updatedSpeciesMap.put("[ "+m.getKey().toString() + ";" + m.getValue().toString()+" ]",
-							String.valueOf(sum));
+					updatedSpeciesMap.put(m.getKey().toString() + " to " + m.getValue().toString(),String.valueOf(sum));
 				}
 			}
 		}

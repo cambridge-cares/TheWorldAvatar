@@ -26,22 +26,26 @@ import uk.ac.ceb.como.properties.PropertiesManager;
 import uk.ac.ceb.como.query.QueryManager;
 import uk.ac.ceb.como.query.QueryString;
 
+/**
+ * 
+ * @author NK510 (caresssd@hermes.cam.ac.uk
+ * 
+ * Main method in this class should be saved on the Following Claudius folder path 'C:\TOMCAT\conf\Catalina\generatecsv'
+ * To run it please use the following command in cmd: java -jar generatecsv.jar
+ *
+ */
 public class GenerateCsv {
 
 	/**
-	 * Folder where stastistics data are stored in csv files.
+	 * Folder path on Claudius where stastistics data are stored in csv files.
 	 */
 	private static String statisticsFolderPath = "C:\\TOMCAT\\webapps\\ROOT\\data\\statistics\\";	
-//	private static String statisticsFolderPath = "C:\\statistics\\";
 
 	/**
-	 * Folder paths where OWL files are stored. We use them to calculate date stamp.
+	 * Folder paths on Claudius where OWL files are stored. We use them to calculate date stamp.
 	 */
 	private static String ontocompchemKBFolderPath = "C:\\TOMCAT\\webapps\\ROOT\\kb\\ontocompchem";
 	private static String ontokinKBFolderPath = "C:\\TOMCAT\\webapps\\ROOT\\kb\\ontokin";
-
-//	private static String ontocompchemKBFolderPath = "C:\\apache-tomcat-8.5.35\\webapps\\ROOT\\kb\\ontocompchem";
-//	private static String ontokinKBFolderPath = "C:\\apache-tomcat-8.5.35\\webapps\\ROOT\\kb\\ontokin";
 
 	/**
 	 * RDF4J remote repositories. Works if runs from local machine.
@@ -142,8 +146,7 @@ public class GenerateCsv {
 			for (Map.Entry<String, String> m : ontoCompChemSumMap.entrySet()) {
 
 				System.out.println(m.getKey() + " " + m.getValue());
-			}
-			
+			}			
 
 			/**
 			 * Weekly (seven days) sum of uploaded species in ontokin repository from today's date to date that is three months eaarlier. 
@@ -293,7 +296,6 @@ public class GenerateCsv {
 			System.out.println("data set writen to table1.csv file:");
 			String table1CSVFile = statisticsFolderPath + "table1.csv";
 			FileWriter table1CSVWriter = new FileWriter(table1CSVFile);
-
 				table1CSVWriter.write(numberOfCalculationsTemp);
 				table1CSVWriter.write(",");
 				table1CSVWriter.write(numberOfReactionMechanismsTemp);
@@ -334,7 +336,6 @@ public class GenerateCsv {
 			System.out.println("data set writen to table2.csv file:");
 			String table2CSVFile = statisticsFolderPath + "table2.csv";
 			FileWriter table2CSVWriter = new FileWriter(table2CSVFile);
-
 				table2CSVWriter.write(numberOfReactionsHydrocarbonSpeciesTemp);
 				table2CSVWriter.write(",");
 				table2CSVWriter.write(numberOfReactionsThatInvolveNitrogenSpeciesTemp);
@@ -347,7 +348,6 @@ public class GenerateCsv {
 				table2CSVWriter.write(",");
 				table2CSVWriter.write(numberOfNitrogenSpeciesInOntoKinTemp);
 				table2CSVWriter.write(",");
-
 			table2CSVWriter.write("\n");
 			table2CSVWriter.flush();
 			table2CSVWriter.close();
@@ -363,7 +363,7 @@ public class GenerateCsv {
 
 		System.out.println("Running...generate CSV Files task - number of runs : " + count);
 
-		};
+	};
 
 		/**
 		 * Repeat the task ones on every 10 hours.

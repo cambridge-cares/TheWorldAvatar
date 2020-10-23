@@ -46,7 +46,7 @@ public class StatisticsAction extends ActionSupport {
 	private String numberOfChemicalReactions;
 	
 	/**
-	 * This is temporally commented.
+	 * This is temporally commented. It is using to store number of agents we use in JPS. This part of the implementation is completed together with Dr Feroz Farazi (msff2@cam.ac.uk)
 	 */
 //	private String numberOfAgents;
 	
@@ -69,8 +69,6 @@ public class StatisticsAction extends ActionSupport {
 	private LinkedList<String> ontoCompChemDataSetList = new LinkedList<String>();
 	
 	private LinkedList<String> ontoKinDataSetList = new LinkedList<String>();
-	
-	
 	
 	@Override	
 	public String execute() throws IOException, ParseException {		
@@ -100,7 +98,7 @@ public class StatisticsAction extends ActionSupport {
 		
 		/**
 		 * 
-		 * Reads CSV data to plot the data on bar chart for the period of last three months starting from current date (date when last OWL was uploaded)
+		 * Reads data data from table.csv and shows  data in label (x-axes) in bar chart for the period of last three months starting from current date (date when last OWL was uploaded)
 		 * 
 		 */
 		
@@ -122,6 +120,9 @@ public class StatisticsAction extends ActionSupport {
 		
 		csvLabelReader.close();
 		
+		/**
+		 * Reads data from ontocompchem.csv file and shows data in bar chart as values. It contains weekly sum of uploaded ontocomcphem species. 
+		 */
 	    BufferedReader ontocompchemCsvReader = new BufferedReader(new FileReader(statisticsFolderPath+"ontocompchem.csv"));
 		
 		String ontocompchemRrow="";				
@@ -139,6 +140,9 @@ public class StatisticsAction extends ActionSupport {
 	  
 	  ontocompchemCsvReader.close();
 		
+	  /**
+		 * Reads data from ontokin.csv file and shows data in bar chart as values. It contains weekly sum of uploaded ontokin species. 
+		 */
       BufferedReader ontokinCsvReader = new BufferedReader(new FileReader(statisticsFolderPath+"ontokin.csv"));
 		
 		String ontokinRrow="";				
