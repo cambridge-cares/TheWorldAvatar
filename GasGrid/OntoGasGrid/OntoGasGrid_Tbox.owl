@@ -1,0 +1,170 @@
+@prefix ns1: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://example.org/coastal-terminal> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/intake> .
+
+<https://example.org/hasButaneVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasComposition> .
+
+<https://example.org/hasCapacity> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/storage> .
+
+<https://example.org/hasCarbonDioxideVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasComposition> .
+
+<https://example.org/hasCoating> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/pipe> .
+
+<https://example.org/hasDemand> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/offtake> .
+
+<https://example.org/hasDiameter> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/pipe> .
+
+<https://example.org/hasEfficiency> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/compression-station> .
+
+<https://example.org/hasEndLocation> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasLocation> .
+
+<https://example.org/hasEthaneVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasComposition> .
+
+<https://example.org/hasHeliumVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasComposition> .
+
+<https://example.org/hasHydrogenVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasComposition> .
+
+<https://example.org/hasInput> a ns1:ObjectProperty ;
+    rdfs:domain <https://example.org/compression-station>,
+        <https://example.org/intake>,
+        <https://example.org/offtake>,
+        <https://example.org/pipe>,
+        <https://example.org/storage> ;
+    ns1:inverseOf <https://example.org/isInputOf> .
+
+<https://example.org/hasLength> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/pipe> .
+
+<https://example.org/hasMethaneVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasComposition> .
+
+<https://example.org/hasNitrogenVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasComposition> .
+
+<https://example.org/hasOutput> a ns1:ObjectProperty ;
+    rdfs:domain <https://example.org/compression-station>,
+        <https://example.org/intake>,
+        <https://example.org/offtake>,
+        <https://example.org/pipe>,
+        <https://example.org/storage> ;
+    ns1:inverseOf <https://example.org/isOutputOf> .
+
+<https://example.org/hasPressureDrop> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/pipe> .
+
+<https://example.org/hasPressureRatio> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/compression-station> .
+
+<https://example.org/hasPropaneVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasComposition> .
+
+<https://example.org/hasStartLocation> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/pipe> ;
+    rdfs:subPropertyOf <https://example.org/hasLocation> .
+
+<https://example.org/hasStartPressure> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/pipe> .
+
+<https://example.org/hasSupply> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/intake> .
+
+<https://example.org/hasTemperature,hasWobbeIndex> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> .
+
+<https://example.org/hasThickness> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/pipe> .
+
+<https://example.org/hasWithin> a ns1:ObjectProperty ;
+    rdf:Property <https://example.org/within-pipe> ;
+    rdfs:domain <https://example.org/compression-station>,
+        <https://example.org/intake>,
+        <https://example.org/offtake>,
+        <https://example.org/pipe>,
+        <https://example.org/storage> ;
+    rdfs:range <https://example.org/within-pipe> .
+
+<https://example.org/hp-storage> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/storage> .
+
+<https://example.org/international-export> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/offtake> .
+
+<https://example.org/lng-import> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/intake> .
+
+<https://example.org/lng-storage> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/storage> .
+
+<https://example.org/local-distribution> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/offtake> .
+
+<https://example.org/onshore-field> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/intake> .
+
+<https://example.org/pipeline-import> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/intake> .
+
+<https://example.org/power-station> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/offtake> .
+
+<https://example.org/salt-cavity> a ns1:Class ;
+    rdfs:subClassOf <https://example.org/storage> .
+
+<https://example.org/isInputOf> a ns1:ObjectProperty ;
+    rdfs:domain <https://example.org/compression-station>,
+        <https://example.org/intake>,
+        <https://example.org/offtake>,
+        <https://example.org/pipe>,
+        <https://example.org/storage> .
+
+<https://example.org/isOutputOf> a ns1:ObjectProperty ;
+    rdfs:domain <https://example.org/compression-station>,
+        <https://example.org/intake>,
+        <https://example.org/offtake>,
+        <https://example.org/pipe>,
+        <https://example.org/storage> .
+
+<https://example.org/hasLocation> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/compression-station>,
+        <https://example.org/intake>,
+        <https://example.org/offtake>,
+        <https://example.org/storage> .
+
+<https://example.org/compression-station> a ns1:Class .
+
+<https://example.org/hasComposition> a ns1:DatatypeProperty ;
+    rdfs:domain <https://example.org/within-pipe> .
+
+<https://example.org/offtake> a ns1:Class .
+
+<https://example.org/storage> a ns1:Class .
+
+<https://example.org/intake> a ns1:Class .
+
+<https://example.org/within-pipe> a ns1:Class .
+
+<https://example.org/pipe> a ns1:Class .
+
