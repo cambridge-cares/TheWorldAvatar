@@ -137,7 +137,6 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		readingFromCSV.add(newline);
 		List<String[]> actualWeather = new ArrayList<String[]>();
 		actualWeather.add(newline);
-		new QueryBroker().putLocal(folder + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(actualWeather));
 		
 		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
@@ -145,7 +144,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(irifortemp+" is updated");
 		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation","001","SG");
 		System.out.println(iriforirradiation+" is updated");
-		String iriforwind=converter.startConversion(readingFromCSV,"windpseed","001","SG");
+		String iriforwind=converter.startConversion(readingFromCSV,"windspeed","001","SG");
 		System.out.println(iriforwind+" is updated");
 		JSONObject resultweather = new JSONObject();
 		//resultweather.put("folder",folder );
