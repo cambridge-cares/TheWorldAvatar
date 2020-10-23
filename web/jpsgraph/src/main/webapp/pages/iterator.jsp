@@ -446,27 +446,26 @@ Here is java script for visualization molecules.
 
 <canvas id="myChart"></canvas>
 
+<script src="chartjs-plugin-datalabels.js"></script> 
+
 <script>
 var arrayList = new Array();
-<!--labelList-->
-arrayList= new Array('<s:property value="%{labelListThreeMonths}"/>');
+
+arrayList= new Array('<s:property value="%{labelList}"/>');
 var jsList = arrayList.toString();
 jsList = jsList.replace("[","");
 jsList = jsList.replace("]","");
 jsList = jsList.split(",");
 
-
 var ontoCompChemList = new Array();
-<!-- ontoCompChemDataSetList -->
-ontoCompChemList= new Array('<s:property value="%{ontoCompChemDataSetListThreeMonths}"/>');
+ontoCompChemList= new Array('<s:property value="%{ontoCompChemDataSetList}"/>');
 var jsOntoCompChemList = ontoCompChemList.toString();
 jsOntoCompChemList = jsOntoCompChemList.replace("[","");
 jsOntoCompChemList = jsOntoCompChemList.replace("]","");
 jsOntoCompChemList = jsOntoCompChemList.split(",");
 
 var ontoKinList = new Array();
-<!--ontoKinDataSetList -->
-ontoKinList= new Array('<s:property value="%{ontoKinDataSetListThreeMonths}"/>');
+ontoKinList= new Array('<s:property value="%{ontoKinDataSetList}"/>');
 var jsOntoKinList = ontoKinList.toString();
 jsOntoKinList = jsOntoKinList.replace("[","");
 jsOntoKinList = jsOntoKinList.replace("]","");
@@ -497,7 +496,8 @@ var chart = new Chart(ctx, {
     },
 
     // Configuration options go here
-    options: {}
+    options: { 
+    }
 });
 </script>
 

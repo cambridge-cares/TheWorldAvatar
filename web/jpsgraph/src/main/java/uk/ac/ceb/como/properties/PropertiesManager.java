@@ -4,32 +4,40 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import ch.qos.logback.classic.Logger;
-import uk.ac.ceb.como.query.QueryManager;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 
+import uk.ac.ceb.como.query.QueryManager;
 
 public class PropertiesManager {
 
 	/**
 	 * @author NK510
 	 * @param inputStream the Input Stream.
-	 * @return Properties (key, value) given in .properties file for self growing knowledge graph statistics project
+	 * @return Properties (key, value) given in .properties file for self growing
+	 *         knowledge graph statistics project
 	 */
 	public static Properties loadProperties(InputStream inputStream) {
 
@@ -68,296 +76,227 @@ public class PropertiesManager {
 		return properties;
 
 	}
-	
+
 	/**
-	 * 
-	 * @param inputDate A month given by name.
-	 * @return Month given by number.
-	 */
-	public static String getNumberFromMonthName (String inputDate) {
-		
-		String monthNumber = "";
-		
-		if(inputDate.equalsIgnoreCase("Jan")) {monthNumber ="01";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Feb")) {monthNumber ="02";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Mar")) {monthNumber ="03";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Apr")) {monthNumber ="04";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("May")) {monthNumber ="05";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Jun")) {monthNumber ="06";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Jul")) {monthNumber ="07";return monthNumber;}		
-		if(inputDate.equalsIgnoreCase("Aug")) {monthNumber ="08";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Sep")) {monthNumber ="09";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Oct")) {monthNumber ="10";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Nov")) {monthNumber ="11";return monthNumber;}
-		if(inputDate.equalsIgnoreCase("Dec")) {monthNumber ="12";return monthNumber;}
-		
-		return monthNumber;
-	}
-	
-	/**
-	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * 
-	 * @return the Map of frequencies for species per date
-	 * @throws MalformedURLException
+	 * @author NK510
+	 * @param filesList  list of Files stored in given folder including sub folders.
+	 * @param level      the level of a folder in folder hierarchy
+	 * @param speciesMap the species hash map that contains unique OWL file name
 	 * @throws IOException
-	 * 
 	 */
-	public LinkedHashMap<String,String> getFrequencyOfSpeciesPerDate(String serverUrl, String queryString) throws MalformedURLException, IOException{
-		
-		LinkedList<String> linkedList = new LinkedList<String>();
-		
-		QueryManager qm = new QueryManager();
-		
-		/**
-		 * An example of querying ontocompchem repository
-		 */
-//		linkedList.addAll((qm.getQueryDateStamp("http://theworldavatar.com/rdf4j-server/repositories/ontocompchem", QueryString.getSpeciesIRIOfGaussianCalculations())));
-		
-		linkedList.addAll(qm.getQueryDateStamp(serverUrl, queryString));
+	static void getAllFiles(File[] filesList, int level, LinkedHashMap<String, String> speciesMap) throws IOException {
 
-		LinkedHashMap<String,String> speciesMap = new LinkedHashMap<String,String>();		
-		
-		File linkedListFile =new File("C:\\TOMCAT\\conf\\Catalina\\generatecsv\\"+"linkedList.txt");
-		
-		linkedListFile.createNewFile();
-		
-		FileWriter linkedListFileWriter = new FileWriter(linkedListFile, false);
-		
-		for(String list: linkedList) {
-			
-			String[] parts = list.split("\\#");		
-			
-//			System.out.println("parts[0]: " + parts[0] + " parts[1]: " + parts[1]);
-			
-			URLConnection connection = new URL(parts[0]).openConnection();
-			
-			String lastModified = connection.getHeaderField("Last-Modified");
-			
-//			System.out.println("last modified: " + lastModified);
-			
-			try {
+		for (File f : filesList) {
+			if (f.isFile()) {
 
-			    linkedListFileWriter.write("parts[0]: " + parts[0] + " parts[1]: " + parts[1] + " last modified: " + lastModified);
-			    linkedListFileWriter.write(System.lineSeparator());
-			
-			} catch (IOException e) {
-			    e.printStackTrace();
-			}           
-			
-			
-			/**
-			 * Dated: October 07th, 2020.
-			 * Some OWL files are uploaded on Claudius but these owl files are removed from folder in Tomcat server. These OWL files are not included into statistics. Currently there are 29 of these OWL files.
-			 */
-			if(lastModified!=null) {
-			
-			String[] dateParts = lastModified.split(" ");
-                    
-//          System.out.println("file: " + parts[0] + "  lastModified: " + lastModified + " modified date: " + dateParts[1]+"-"+dateParts[2]+"-"+dateParts[3]);
-            
-            speciesMap.put(parts[0], dateParts[3]+"-"+PropertiesManager.getNumberFromMonthName(dateParts[2])+"-"+dateParts[1]);
-            
+				BasicFileAttributes basicAttribute = Files.readAttributes(f.getAbsoluteFile().toPath(),
+						BasicFileAttributes.class);
+
+				String[] date = basicAttribute.creationTime().toString().split("T");
+
+				speciesMap.put(f.getName(), date[0]);
+
+			} else if (f.isDirectory()) {
+
+				getAllFiles(f.listFiles(), level + 1, speciesMap);
+
 			}
+
 		}
-		
-		linkedListFileWriter.close();
-		
-		LinkedHashMap<String,String> speciesFrequecniesPerDate = new LinkedHashMap<String,String>();
-		
-		for(Map.Entry<String,String> map: speciesMap.entrySet()) {
-			
+
+	}
+
+	/**
+	 * @author NK510
+	 * @param folderPath the folder that contains OWL files uploaded to JPS
+	 *                   knowledge graph.
+	 * @return the map that contains unique OWL file name and created date (uploaded
+	 *         date)
+	 * @throws MalformedURLException the ex
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+
+	public LinkedHashMap<String, String> getFrequencyOfSpeciesPerDate(String folderPath) throws IOException {
+
+		LinkedHashMap<String, String> speciesMap = new LinkedHashMap<String, String>();
+
+		File maindir = new File(folderPath);
+
+		if (maindir.exists() && maindir.isDirectory()) {
+			File fileList[] = maindir.listFiles();
+
+			getAllFiles(fileList, 0, speciesMap);
+		}
+
+		LinkedHashMap<String, String> speciesFrequecniesPerDate = new LinkedHashMap<String, String>();
+
+		for (Map.Entry<String, String> map : speciesMap.entrySet()) {
+
 			int count = Collections.frequency(new ArrayList<String>(speciesMap.values()), map.getValue());
-			
-			System.out.println("date: " +map.getValue() + " count:" + count);
-			
-			if(!speciesFrequecniesPerDate.containsKey(map.getValue())) {
-				 
-				speciesFrequecniesPerDate.put(map.getValue(),String.valueOf(count));
+
+			if (!speciesFrequecniesPerDate.containsKey(map.getValue())) {
+
+				speciesFrequecniesPerDate.put(map.getValue(), String.valueOf(count));
 			}
 		}
-		
+
 		Map<String, String> treeMap = new TreeMap<String, String>(speciesFrequecniesPerDate);
-		
-		System.out.println(" - - - - - treeMap - - - -  - - -");		
-		
-		for(Map.Entry<String, String> m: treeMap.entrySet()) {	
-			
-			System.out.println(m.getKey() + " " + m.getValue());
-			
-		}
-		
-		LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>(treeMap);
-		
-		System.out.println(" - - - - - linkedHashMap - - - -  - - -");		
-		
-		for(Map.Entry<String, String> lhm: linkedHashMap.entrySet()) {	
-			
-			System.out.println(lhm.getKey() + " " + lhm.getValue());
-			
-		}
-		
+
+		LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<String, String>(treeMap);
+
 		return linkedHashMap;
 	}
-	
-	public LinkedHashMap<String,String> getFrequencyOfSpeciesPerDate(String serverUrl, String queryString, String linkedListFileName, String queryResultsFileName) throws MalformedURLException, IOException{
-		
-		LinkedList<String> linkedList = new LinkedList<String>();
-		
-		QueryManager qm = new QueryManager();
-		
-		/**
-		 * An example of querying ontocompchem repository
-		 */
-//		linkedList.addAll((qm.getQueryDateStamp("http://theworldavatar.com/rdf4j-server/repositories/ontocompchem", QueryString.getSpeciesIRIOfGaussianCalculations())));
-		
-		linkedList.addAll(qm.getQueryDateStamp(serverUrl, queryString, queryResultsFileName));
 
-		LinkedHashMap<String,String> speciesMap = new LinkedHashMap<String,String>();
-		
-		//linkedList
-		File linkedListFile =new File("C:\\TOMCAT\\conf\\Catalina\\generatecsv\\"+linkedListFileName);
-		
-		linkedListFile.createNewFile();
-		
-		FileWriter linkedListFileWriter = new FileWriter(linkedListFile, false);
-		
-		for(String list: linkedList) {
-			
-			String[] parts = list.split("\\#");		
-			
-//			System.out.println("parts[0]: " + parts[0] + " parts[1]: " + parts[1]);
-			
-			URLConnection connection = new URL(parts[0]).openConnection();
-			
-			String lastModified = connection.getHeaderField("Last-Modified");
-			
-//			System.out.println("last modified: " + lastModified);
-			
-			try {
-
-			    linkedListFileWriter.write("parts[0]: " + parts[0] + " parts[1]: " + parts[1] + " last modified: " + lastModified + "\n");
-			    linkedListFileWriter.write(System.lineSeparator());
-			
-			} catch (IOException e) {
-			    e.printStackTrace();
-			}           
-			
-			
-			/**
-			 * Dated: October 07th, 2020.
-			 * Some OWL files are uploaded on Claudius but these owl files are removed from folder in Tomcat server. These OWL files are not included into statistics. Currently there are 29 of these OWL files.
-			 */
-			if(lastModified!=null) {
-			
-			String[] dateParts = lastModified.split(" ");
-                    
-//            System.out.println("file: " + parts[0] + "  lastModified: " + lastModified + " modified date: " + dateParts[1]+"-"+dateParts[2]+"-"+dateParts[3]);
-            
-            speciesMap.put(parts[0], dateParts[3]+"-"+PropertiesManager.getNumberFromMonthName(dateParts[2])+"-"+dateParts[1]);
-            
-			}
-		}
-		
-		linkedListFileWriter.close();
-		
-		LinkedHashMap<String,String> speciesFrequecniesPerDate = new LinkedHashMap<String,String>();
-		
-		for(Map.Entry<String,String> map: speciesMap.entrySet()) {
-			
-			int count = Collections.frequency(new ArrayList<String>(speciesMap.values()), map.getValue());
-			
-			System.out.println("date: " +map.getValue() + " count:" + count);
-			
-			if(!speciesFrequecniesPerDate.containsKey(map.getValue())) {
-				 
-				speciesFrequecniesPerDate.put(map.getValue(),String.valueOf(count));
-			}
-		}
-		
-		Map<String, String> treeMap = new TreeMap<String, String>(speciesFrequecniesPerDate);
-		
-		System.out.println(" - - - - - treeMap - - - -  - - -");		
-		
-		for(Map.Entry<String, String> m: treeMap.entrySet()) {	
-			
-			System.out.println(m.getKey() + " " + m.getValue());
-			
-		}
-		
-		LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>(treeMap);
-		
-		System.out.println(" - - - - - linkedHashMap - - - -  - - -");		
-		
-		for(Map.Entry<String, String> lhm: linkedHashMap.entrySet()) {	
-			
-			System.out.println(lhm.getKey() + " " + lhm.getValue());
-			
-		}
-		
-		return linkedHashMap;
-	}
 	
+
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
-	 * Iterates through source map and adds key value in target map if that key value does not exist in target map. The method adds "0" frequency for number of uploaded species.
-	 * 
-	 * @param sourceMap the source map of number of uploaded species per given date.
-	 * @param targetMap the target map of number of uploaded species per given date.
-	 * @return the updated target map of number of uploaded species per given date.
-	 */
-	public LinkedHashMap<String, String> updateFrequenciesMapData(Map<String,String> sourceMap, Map<String,String> targetMap){
-		
-		for(Map.Entry<String, String> m: sourceMap.entrySet()) {
-			
-		if(!targetMap.containsKey(m.getKey())){
-				
-				targetMap.put(m.getKey(), "0");
-		} 
-		
-		}
-		
-		/**
-		 * sort target map by key values.
-		 */
-		Map<String, String> treeMap = new TreeMap<String, String>(targetMap);
-		
-		LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>(treeMap);
-		
-		return linkedHashMap;
-		
-	}
-	
-	/**
-	 * 
-	 * @param lastDate the latest date when OWL file is uploaded to RDF4J
-	 * @return the date that is three months earlier than lastDate
+	 * @param todaysDate
+	 * @param numberOfMonths
+	 * @return
 	 * @throws ParseException
 	 */
-	public static LocalDate getDateThreeMonthsEarlier(LinkedList<String> labelList, int numberOfMonths) throws ParseException {
-		
-//		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//	     Calendar c = Calendar.getInstance(); 
-//	     c.setTime(new Date()); 
-//	     c.add(Calendar.MONTH, -3);
-//
-//	     Date d = c.getTime();
-//	     String res = format.format(d);
-//
-//	     System.out.println(res);
-		
-	     Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(labelList.getLast().toString());
-	     String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
-	     
-	     LocalDate statedDate = LocalDate.parse(formattedDate);
-	     String threeMonthEarlierDate=statedDate.minusMonths(numberOfMonths-1).toString();	     
-		
-	     Date threeMonthsBeforeDate = new SimpleDateFormat("yyyy-MM-dd").parse(threeMonthEarlierDate);
-	     String formattedThreeMonthsBeforeDate = new SimpleDateFormat("yyyy-MM-dd").format(threeMonthsBeforeDate);
-	     
-	     LocalDate statedThreeMonthBeforeDate = LocalDate.parse(formattedThreeMonthsBeforeDate);
-	     
-		return statedThreeMonthBeforeDate; 
+	public static LocalDate getDateThreeMonthsEarlierFromTodaysDate(String todaysDate, int numberOfMonths)
+			throws ParseException {
+
+		Date currentDate = new SimpleDateFormat("yyyy-MM-dd").parse(todaysDate);
+		String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
+
+		LocalDate statedDate = LocalDate.parse(formattedDate);
+		String threeMonthEarlierDate = statedDate.minusMonths(numberOfMonths).toString();
+
+		Date threeMonthsBeforeDate = new SimpleDateFormat("yyyy-MM-dd").parse(threeMonthEarlierDate);
+		String formattedThreeMonthsBeforeDate = new SimpleDateFormat("yyyy-MM-dd").format(threeMonthsBeforeDate);
+
+		LocalDate statedThreeMonthBeforeDate = LocalDate.parse(formattedThreeMonthsBeforeDate);
+
+		return statedThreeMonthBeforeDate;
 	}
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param startingDate the current date. It is last date of a year i.e. today's
+	 *                     date.
+	 * @param endDate      the date that is seven days earlier from starting date,
+	 *                     including that date.
+	 * @return the hash map of seven days range where key is starting date and value
+	 *         is end date seven days earlier than starting date. Implementation of
+	 *         this method can be easly change to support range between date to any
+	 *         number of days. For example, 5 or 10 days.
+	 */
+	public LinkedHashMap<LocalDate, LocalDate> getWeeklyDatesBetweenTwoDates(String startingDate, String endDate) {
+
+		LocalDate start = LocalDate.parse(startingDate);
+		LocalDate end = LocalDate.parse(endDate);
+
+		LinkedList<LocalDate> listOfDates = new LinkedList<LocalDate>();
+
+		while (!start.isBefore(end)) {
+
+			listOfDates.add(start);
+
+			/**
+			 * In line below change number of days that we want to have as difference
+			 * between dates in a range of dates on bar chart label. For example, if we use
+			 * -5 instead of -5 then difference between each range in bar chart label will
+			 * be 5 days.
+			 */
+			start = start.plusDays(-7);
+
+			LocalDate dayAfter = start.plusDays(1);
+
+			if (!dayAfter.isBefore(end) || (dayAfter.isEqual(end))) {
+				listOfDates.add(dayAfter);
+			}
+
+		}
+		listOfDates.add(end);
+
+		int k = 0;
+
+		/**
+		 * Printing all dates from start date to the date that is three month earlier with seven days difference.  
+		 */
+		for (LocalDate d : listOfDates) {
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+			String formattedString = d.format(formatter);
+
+			System.out.println(k + " " + formattedString);
+
+			k++;
+		}
+
+		LinkedHashMap<LocalDate, LocalDate> pairsDateMap = new LinkedHashMap<LocalDate, LocalDate>();
+		System.out.println("Pairs of dates:");
+		int s = 0;
+		for (int i = 0; i < listOfDates.size(); i++) {
+			if (2 * i < listOfDates.size()) {
+				System.out.println(s + ". " + listOfDates.get(i * 2) + "  " + listOfDates.get((1 + i) * 2 - 1));
+				pairsDateMap.put(listOfDates.get(i * 2), listOfDates.get((1 + i) * 2 - 1));
+				s++;
+			}
+		}
+
+		return pairsDateMap;
+	}
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param pairsOfDatesMap pairs of dates between two dates. Difference between
+	 *                        these two days in each pair is seven days, including
+	 *                        start and end date in every pair.
+	 * @param speciesMap      the map that contains a pair of dates (taken from
+	 *                        pairsOfDatesMap) and sum of uploaded species between
+	 *                        these two days in a pair.
+	 * @return the hash map that contains pair of dates and sum of upladed species.
+	 */
+	public LinkedHashMap<String, String> getSpeciesStatisticsWeekly(LinkedHashMap<LocalDate, LocalDate> pairsOfDatesMap,
+			LinkedHashMap<String, String> speciesMap) {
+
+		LinkedHashMap<String, String> updatedSpeciesMap = new LinkedHashMap<String, String>();
+
+		for (Map.Entry<LocalDate, LocalDate> m : pairsOfDatesMap.entrySet()) {
+
+			int sum = 0;
+
+			for (Map.Entry<String, String> map : speciesMap.entrySet()) {
+
+				LocalDate date = LocalDate.parse(map.getKey().toString());
+
+				int value = Integer.parseInt(map.getValue());
+
+				if ((date.isBefore(m.getKey()) || date.isEqual(m.getKey()))
+						&& (date.isAfter(m.getValue()) || date.isEqual(m.getValue()))) {
+
+					System.out.println(date + " is between " + m.getKey() + " and " + m.getValue());
+
+					/**
+					 * sums number of uploaded species for dates that are after and before given
+					 * range of seven days.
+					 */
+					sum = sum + value;
+
+					updatedSpeciesMap.put(m.getKey().toString() + " to " + m.getValue().toString(),String.valueOf(sum));
+				} else {
+					/**
+					 * If there is not uploaded species for given dates then sum of uploaded species
+					 * is zero.
+					 */
+
+					value = 0;
+					sum = sum + value;
+					updatedSpeciesMap.put(m.getKey().toString() + " to " + m.getValue().toString(),String.valueOf(sum));
+				}
+			}
+		}
+
+		return updatedSpeciesMap;
+	}
+
 }

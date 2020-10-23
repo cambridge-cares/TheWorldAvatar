@@ -278,6 +278,10 @@ public class QueryString {
 	 return query;
  }
  
+ /**
+  * 
+  * @return ontocompchem species IRIs
+  */
  public static String getSpeciesIRIFromOntoCompChem() {
 	 
 		String query = "PREFIX gc: <http://purl.org/gc/>"
@@ -286,12 +290,16 @@ public class QueryString {
 				+ "SELECT ?s  "
 				+ "WHERE { "
 				+ "?s rdf:type ?type . "
-				+ "FILTER((str(?type)='http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G16') ||(str(?type)='http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09')) . "
+				+ "FILTER((str(?type)='http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G16') ||(str(?type)='http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09')) ."				
 				+ "}";
 		
 		return query;
 	}
  
+ /**
+  * 
+  * @return ontokin species IRIs.
+  */
  public static String getSpeciesIRIFromOntoKin() {
 	 
 	 String query= "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
