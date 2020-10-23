@@ -154,21 +154,21 @@ public class CoordinationDataCollection extends HttpServlet {
 		System.out.println("CoordinationDataCollection is called with scenarioUrl = " + scenarioUrl);
 		
 		
-		new HKUWeatherRetriever().readWritedata();
-		System.out.println(" finished reading writing data weather");
-		new HKUPollutionRetriever().readWritedata();
-		System.out.println(" finished reading writing airpollution weather");
+//		new HKUWeatherRetriever().readWritedata();
+//		System.out.println(" finished reading writing data weather");
+//		new HKUPollutionRetriever().readWritedata();
+//		System.out.println(" finished reading writing airpollution weather");
 
 		
 		//retrieveShipdata();
 		try {
 			JSONObject episode=executeSGDataEPISODE(jo2);
 			JSONObject adms=executeSGDataADMS(jo);
-			JSONObject episodeHK=executeHKDataEPISODE(jo4);
-			JSONObject admsHK=executeHKDataADMS(jo3);
+//			JSONObject episodeHK=executeHKDataEPISODE(jo4);
+//			JSONObject admsHK=executeHKDataADMS(jo3);
 			
 			callAgent(adms,episode);
-			callAgent(admsHK,episodeHK);
+//			callAgent(admsHK,episodeHK);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
