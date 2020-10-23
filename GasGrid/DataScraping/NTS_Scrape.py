@@ -14,20 +14,27 @@ import re
 driver = webdriver.Firefox()
 driver.get("https://mip-prd-web.azurewebsites.net/DataItemExplorer")
 
-def get_actual_offtake_flows(from_date,to_date):
+def get_data(from_date,to_date,data):
     wait = WebDriverWait(driver,10)
-    reports_element = wait.until(ec.visibility_of_element_located\
-        ((By.XPATH,"/html/body/div[1]/div/div[2]/div[2]/div/div/ul/li[14]/span/span[1]")))
-    reports_element.click()
-    offtake_element = wait.until(ec.visibility_of_element_located\
-        ((By.XPATH,"/html/body/div[1]/div/div[2]/div[2]/div/div/ul/li[14]/ul/li[4]/span/span[2]")))
-    offtake_element.click()
+    base_text = '/html/body/div[1]/div/div[2]/div[2]/div/div'
+    end_text = '/span/span[1]'
+    add_text = ''
+    for i in range(len(data)):
+        if i == len(data)-1:
+            end_text = '/span/span[2]'
+        add_text += '/ul/li['+data[i]+']' 
+        complete_text = base_text + add_text + end_text 
+        wait.until(ec.visibility_of_element_located\
+            ((By.XPATH,complete_text))).click()
+
+
+        
     wait.until(ec.element_to_be_clickable((By.ID,"applicableForRadioButton"))).click()
     wait.until(ec.element_to_be_clickable((By.ID,"FromDateTime"))).clear()
     wait.until(ec.element_to_be_clickable((By.ID,"FromDateTime"))).send_keys(from_date)
     wait.until(ec.element_to_be_clickable((By.ID,"ToDateTime"))).clear()
     wait.until(ec.element_to_be_clickable((By.ID,"ToDateTime"))).send_keys(to_date)
-    csv = wait.until(ec.visibility_of_element_located((By.ID,"viewReportButton"))).click()
+    wait.until(ec.visibility_of_element_located((By.ID,"viewReportButton"))).click()
     header = []
     for i in range(6):
        header.append(wait.until(ec.visibility_of_element_located\
@@ -46,8 +53,9 @@ def get_actual_offtake_flows(from_date,to_date):
     table.columns = header
     return table
 
-offtake_flows = get_actual_offtake_flows('01/10/2020','03/10/2020')
-print(offtake_flows['Data Item'])
+actual_flows = ['14','4']
+comp_weather_var_actual = ['18','1','1']
+comp_weather_table = get_data('01/10/2020','01/10/2020',comp_weather_var_actual)
 
 
 
