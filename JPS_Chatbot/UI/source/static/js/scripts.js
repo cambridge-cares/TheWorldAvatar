@@ -108,7 +108,7 @@ let address = cmcl_address
 
   function update_log(msg){
      // TODO: update the log info
-     if (msg.includes('Querying') && msg.includes('JPS Knowledge Graph')){
+     if (msg.includes('Querying') && msg.includes('The World Avatar Knowledge Graph')){
         $('#query_progress').append('<div>' + msg + '</div>')
         console.log('updating the progress bar item ')
         $('#query_progress_bar').empty()
@@ -188,7 +188,7 @@ function process_json_result(result){
 
   if (result === 'Nothing'){
     console.log('Received nothing')
-    update_log('JPS failed to provide an answer')
+    update_log('The World Avatar failed to provide an answer')
     $('#query_progress_bar').html('')
 
 
@@ -334,7 +334,7 @@ function visualize_google_result(result){
     $('#google_result_box').show()
     if (result.trim() === ''){
         $("#google-results" ).html('<div class="div-row">Google failed to provide a direct answer</div>')
-        $('#query_progress').append('<div>Google failed to provide a director answer</div>')
+        $('#query_progress').append('<div>Google failed to provide a direct answer</div>')
     }else{
         //div = '<div class="div-row">' + result + '</div>'
         div = result
@@ -346,7 +346,7 @@ function visualize_wolfram_result(result){
     $('#wolfram_result_box').show()
         if (result.trim() === ''){
         $("#wolfram-results" ).html('<div class="div-row">Google failed to provide a direct answer</div>')
-        $('#query_progress').append('<div>Wolfram alpha failed to provide a director answer</div>')
+        $('#query_progress').append('<div>Wolfram alpha failed to provide a direct answer</div>')
     }else{
         div = '<div class="div-row">' + result + '</div>'
         $("#wolfram-results" ).html(div)
@@ -422,7 +422,7 @@ function displayResults(myData, source) {
 
   $('#query_progress_bar').html('')
   $('#query_progress_bar').hide()
-  update_log('Obtained result from the JPS KG')
+  update_log('Obtained result from the World Avatar KG')
 
   // EXTRACT VALUE FOR HTML HEADER.
   // ('Book ID', 'Book Name', 'Category' and 'Price')

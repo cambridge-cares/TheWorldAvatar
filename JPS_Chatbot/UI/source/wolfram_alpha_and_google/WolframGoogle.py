@@ -48,6 +48,7 @@ class WolframGoogle:
         soup = BeautifulSoup(html, 'html.parser')
         try:
             div_result = soup.find_all('div', class_='ifM9O')[0]
+            driver.quit()
             return str(div_result)
         except:
             return 'Google failed to provide an answer'
