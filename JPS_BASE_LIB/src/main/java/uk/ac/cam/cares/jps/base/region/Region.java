@@ -156,15 +156,16 @@ public class Region {
     /**
      * Get SRTM file names required for Episode topology preprocessor
      * Ideally these files should be stored in some kind of database
+     * Note that the code is currently hard coded to take in a maximum of 2 files
      * Shortcut fix to tidy up Episode agent
      */
     public static List<String> getSRTM(String cityIRI) {
         List<String> srtm = new ArrayList<String>();
         if (cityIRI.contains(Singapore)) {
-            srtm.add("N01E103.tif");
-            srtm.add("N01E104.tif");
+            srtm.add("N01E103");
+            srtm.add("N01E104");
         } else if (cityIRI.contains(Hong_Kong)) {
-            srtm.add("N22E114.tif");
+            srtm.add("N22E114");
         }
         return srtm;
     }

@@ -42,11 +42,11 @@ public class RegionTest extends TestCase {
         getSRTM.setAccessible(true);
 
         List<String> srtm_sg = new ArrayList<String>();
-        srtm_sg.add("N01E103.tif");
-        srtm_sg.add("N01E104.tif");
+        srtm_sg.add("N01E103");
+        srtm_sg.add("N01E104");
 
         List<String> srtm_hk = new ArrayList<String>();
-        srtm_hk.add("N22E114.tif");
+        srtm_hk.add("N22E114");
 
         assertEquals(getSRTM.invoke(reg, Region.SINGAPORE_IRI),srtm_sg);
         assertEquals(getSRTM.invoke(reg, Region.HONG_KONG_IRI),srtm_hk);
