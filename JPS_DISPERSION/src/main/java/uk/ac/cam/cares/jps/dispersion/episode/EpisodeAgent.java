@@ -250,11 +250,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
             }
 
             if(cityIRI.toLowerCase().contains("singapore")) {
-                epsgInUTM="48";
                 epsgActive="32648";
             }
             else if(cityIRI.toLowerCase().contains("kong")) {
-                epsgInUTM="50";
                 epsgActive="32650";
             }
 
@@ -784,7 +782,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 			fileContext = fileContext.replaceAll(tif1, tif1aft); // replace with the new tif
 			fileContext = fileContext.replaceAll(tif2, tif2aft); // replace with the new tif
-			fileContext = fileContext.replaceAll("48",epsgInUTM); //replace with the new value
+			fileContext = fileContext.replaceAll("48",epsgInUTM.substring(0,epsgInUTM.length()-1)); //without the N/S
 			// of UTM coordinate system if needed
 			fileContext = fileContext.replaceAll("330600.0", "" + (proclowx - 1000)); // replace with the new value
 																						// xmin-1000
@@ -846,7 +844,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			String line21b = separator + "!" + separator + lineoffile.get(20).split("!")[1];
 			newcontent.add(" "+proclowx + "," + proclowy + line21b);// corner left
 			String line22b = separator + "!" + separator + lineoffile.get(21).split("!")[1];
-			newcontent.add(" '"+epsgInUTM+"N'"+ line22b);// UTM
+			newcontent.add(" '"+epsgInUTM+"'"+ line22b);// UTM
 			String line23b = separator + "!" + separator + lineoffile.get(22).split("!")[1];
 			newcontent.add(" "+size+line23b);// number of point source?
 			for (int r = 23; r < lineoffile.size(); r++) {
@@ -899,7 +897,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int r = 46; r < 48; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add("\""+epsgInUTM+"N"+"\"\n"); //line 49
+			newcontent.add("\""+epsgInUTM+"\"\n"); //line 49
 			for (int r = 49; r < 51; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
