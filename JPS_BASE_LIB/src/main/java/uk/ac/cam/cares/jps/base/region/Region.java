@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.base.region;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -148,5 +151,21 @@ public class Region {
             }
         }
         return targetCRSName;
+    }
+
+    /**
+     * Get SRTM file names required for Episode topology preprocessor
+     * Ideally these files should be stored in some kind of database
+     * Shortcut fix to tidy up Episode agent
+     */
+    public static List<String> getSRTM(String cityIRI) {
+        List<String> srtm = new ArrayList<String>();
+        if (cityIRI.contains(Singapore)) {
+            srtm.add("N01E103.tif");
+            srtm.add("N01E104.tif");
+        } else if (cityIRI.contains(Hong_Kong)) {
+            srtm.add("N22E114.tif");
+        }
+        return srtm;
     }
 }
