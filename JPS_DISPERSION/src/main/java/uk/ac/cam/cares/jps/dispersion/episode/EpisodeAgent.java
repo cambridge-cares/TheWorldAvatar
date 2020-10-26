@@ -252,12 +252,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
             if(cityIRI.toLowerCase().contains("singapore")) {
                 epsgInUTM="48";
                 epsgActive="32648";
-                gmttimedifference="-8";
             }
             else if(cityIRI.toLowerCase().contains("kong")) {
                 epsgInUTM="50";
                 epsgActive="32650";
-                gmttimedifference="-8";
             }
 
             List<String>stniri=new ArrayList<String>();
