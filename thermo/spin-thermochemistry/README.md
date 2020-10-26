@@ -1,13 +1,13 @@
-# Developing an SPARQL Inferencing Notation (SPIN) Project
+# Developing a SPARQL Inferencing Notation (SPIN) Project
 ### Authors
 * [Nenad Krdzavac](caresssd@hermes.cam.ac.uk)
 * [Feroz Farazi](msff2@cam.ac.uk)
 
-SPIN is an industry standard to represent SPARQL rules and constraints on Semantic Web models [[1](https://spinrdf.org)]. This short document aims to describe the steps required to develop an SPIN project using Java.
+SPIN is an industry-standard to represent SPARQL rules and constraints on Semantic Web models [[1](https://spinrdf.org)]. This short document aims to describe the steps required to develop a SPIN project using Java.
 
-### Create a Maven project and add Dependencies
+### Create a Maven project and add dependencies
 
-In the development of this SPIN project, you will employ [SPIN - SPARQL syntax](https://www.w3.org/Submission/spin-sparql/). Create a Maven project and include the following dependencies in the pom.xml file to enable the use of different SPIN related features supported by these software.
+In the development of this SPIN project, you will employ [SPIN - SPARQL syntax](https://www.w3.org/Submission/spin-sparql/). Create a Maven project and include the following dependencies in the pom.xml file to enable the use of different SPIN related features supported by this software.
  
         <!-- https://mvnrepository.com/artifact/org.topbraid/spin -->
         <dependency>
@@ -37,35 +37,30 @@ The dependencies provided above are collected from the following Maven repositor
 * [Jena ARQ](https://mvnrepository.com/artifact/org.apache.jena/jena-arq) 
 
 
-### Create or copy the kennedysSPIN.ttl ontology
+### Apply relevant ontologies
 
-Copy the following ontologies
+In general, three ontologies are required to develop a SPIN project. a) [SPIN](http://spinrdf.org/spin) is the common ontology used across all SPIN projects or applications; b) the target ontology on top of which rules and constraints are written; and c) the rule and constraint ontology that contains rules and constraints created or reused in the project. 
 
-* Copy *kennedys.ttl* ontology from [here](http://topbraid.org/examples/kennedys) to the *resources* (/resources) folder in the Maven project you created.
+You can either provide the URLs of ontologies or copy them into a specific folder, as described below. In this implementation, URLs are used.
 
-* Copy *kennedysSPIN.ttl* ontology from [here](http://topbraid.org/examples/kennedysSPIN.ttl) to the *resources* (/resources) folder in the Maven project you created.
+* Copy the *kennedys.ttl* ontology from [here](http://topbraid.org/examples/kennedys) into the *resources* (/resources) folder in the Maven project you created.
 
-* Import *kennedys.ttl* ontology into *kennedysSPIN.ttl* ontology.
-* Import [spin.ttl](http://spinrdf.org/spin) ontology into *kennedysSPIN.ttl* ontology.
+* Copy the *kennedysSPIN.ttl* ontology from [here](http://topbraid.org/examples/kennedysSPIN) into the same folder as above.
 
-Create or copy the following ontology
+You will notice that
 
-* Create *kennedys* ontology with the OntologyIRI *http://topbraid.org/examples/kennedys#* named as *kennedys*. Include the classes from the following hierarchy in this ontology. Classes which have the same indentation are siblings, and classes which have different indentations are connected with subclass of relations. Classes indented to the right are subclasses of the class which is indented to the left and above. For example, Gender and Person are siblings.
+* The *kennedys.ttl* ontology is imported into the *kennedysSPIN.ttl* ontology.
+* The [spin.ttl](http://spinrdf.org/spin) ontology is imported into the *kennedysSPIN.ttl* ontology.
 
-    kennedys:College        
-    kennedys:Gender        
-    kennedys:Person
-    kennedys:Profession
-    
-It is important to remember that the expressivity of the ontology used in SPIN should not exceed the capability of [OWL2 RL](https://www.w3.org/TR/owl2-profiles/#OWL_2_RL). If your ontology contains only simple class hierarchies, object properties and data properties as above, it is OWL2 RL compatiable.
+If you use different target and rule and constraint ontologies, it is important to remember that these ontologies' expressivity should not exceed the capability of [OWL2 RL](https://www.w3.org/TR/owl2-profiles/#OWL_2_RL). If the ontologies contain only simple class hierarchies, object properties, and data properties as provided in the spin.ttl, kennedys.ttl, and kennedysSPIN.ttl ontologies, they are OWL2 RL compatible.
 
 
-### Create a SPIN rules
+### Create SPIN rules
 
-To creare SPIN rules we use [TopBraid Composer](https://www.topquadrant.com) editor. Each SPIN rule is attached to an ontology class, by using *spin:rule* property. The following SPIN rule is used by SPIN inference engine to infer age of a person based on values of property *kennedys:birthYear*. It calculates current year and performs operation minus between current year and birth year, in order to infer the age of particular person (instance of ontology class *kennedys:Person*). The resulted age is stored as value of *kspin:age* property.
+To create SPIN rules, use the [TopBraid Composer](https://www.topquadrant.com) editor. Each SPIN rule is attached to one or more ontology classes/properties using the *spin:rule* construct. The following SPIN rule is used by the SPIN inference engine to infer the age of a person based on values of the property *kennedys:birthYear*. It takes the current year and performs a subtraction operation between the current year and birth year to infer the age of a particular person (an instance of the ontology class *kennedys:Person*). The resulted age is stored as the value of the *kspin:age* property.
 
 	 CONSTRUCT {
-    ?this kspin:age ?age .
+       ?this kspin:age ?age .
     }
     WHERE {
     ?this kennedys:birthYear ?birthYear .
@@ -74,9 +69,9 @@ To creare SPIN rules we use [TopBraid Composer](https://www.topquadrant.com) edi
     }
 
 
-### Create a SPIN constraints
+### Create SPIN constraints
 
-To model SPIN constraints we use *spin:constraint*. The SPIN inference engine uses SPIN constraints to detect whether all members of a class fulfill certain conditions. The following constraint is attached to ontology class *kennedys:Person*. It checks whether each instance of the class has age outside of range [0,120].  
+To model SPIN constraints, use *spin:constraint*. The SPIN inference engine uses SPIN constraints to detect whether all members of a class fulfil certain conditions. The following constraint is attached to the ontology class *kennedys:Person*. It checks whether each instance of the class has age outside of the range [0,120].  
 
 
 	ASK WHERE {
@@ -84,9 +79,9 @@ To model SPIN constraints we use *spin:constraint*. The SPIN inference engine us
     FILTER ((?age < 0) || (?age > 120)) .
     }
 
-### Run Java code
+### Develop and run Java code
 
-Create a Java class with the name ConstraintViolations under the package uk.ac.ceb.como.spin, remove all content from the class file, copy and paste the following code into this empty file, and run this file as a Java Application.
+Create a Java class with the name ConstraintViolations under the package uk.ac.ceb.como.spin, remove all content from the class file, copy and paste the following code into this empty file, and run it as a Java Application.
 
 	 package uk.ac.ceb.como.spin;
     import java.util.List;
