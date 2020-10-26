@@ -827,12 +827,7 @@ public class WeatherAgent extends JPSHttpServlet {
 						System.out.println("new station unrecorded is found");
 					}
 				}
-
-			} else {
-		
-				
-			}
-
+			} 
 		} else {
 			String name = null;
 			if (cityIRI.toLowerCase().contains("berlin")) {
@@ -931,6 +926,12 @@ public class WeatherAgent extends JPSHttpServlet {
 				updatePropertiesFromHKU(stnmap, "OutsideWindDirection", joPr, completeformat);
 				updatePropertiesFromHKU(stnmap, "OutsideAirPressure", joPr, completeformat);// in hPa exactly the
 																							// same as millibar
+			}
+			if (!APIresult.isEmpty()) {
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirCloudCover", joPr, completeformat, cityIRI,
+						APIresult);// accu
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirPrecipitation", joPr, completeformat, cityIRI,
+						APIresult);// accu
 			}
 
 		} else {

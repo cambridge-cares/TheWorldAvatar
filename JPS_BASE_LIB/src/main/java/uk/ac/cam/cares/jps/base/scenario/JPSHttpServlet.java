@@ -119,6 +119,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
             response.getWriter().write(responseBody);
         } catch (BadRequestException e) {
             response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+        } catch (JPSRuntimeException e) {
+        	response.setStatus(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
         }
     }
 
