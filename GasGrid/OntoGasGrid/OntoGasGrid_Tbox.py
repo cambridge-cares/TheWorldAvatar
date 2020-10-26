@@ -3,7 +3,7 @@ from rdflib import *
 from rdflib.namespace import OWL,RDF,RDFS
 
 g = Graph()
-w = Namespace('https://example.org/')
+w = Namespace('https://theworldavatar.com/')
 
 def populate_classes(classes):
     # classes array takes string arguements and converts each to a class

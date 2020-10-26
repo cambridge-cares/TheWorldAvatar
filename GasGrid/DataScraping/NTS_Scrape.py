@@ -11,10 +11,10 @@ import pandas as pd
 import time
 import re
 
-driver = webdriver.Firefox()
-driver.get("https://mip-prd-web.azurewebsites.net/DataItemExplorer")
 
 def get_data(from_date,to_date,data):
+    driver = webdriver.Firefox()
+    driver.get("https://mip-prd-web.azurewebsites.net/DataItemExplorer")
     wait = WebDriverWait(driver,10)
     base_text = '/html/body/div[1]/div/div[2]/div[2]/div/div'
     end_text = '/span/span[1]'
@@ -26,9 +26,6 @@ def get_data(from_date,to_date,data):
         complete_text = base_text + add_text + end_text 
         wait.until(ec.visibility_of_element_located\
             ((By.XPATH,complete_text))).click()
-
-
-        
     wait.until(ec.element_to_be_clickable((By.ID,"applicableForRadioButton"))).click()
     wait.until(ec.element_to_be_clickable((By.ID,"FromDateTime"))).clear()
     wait.until(ec.element_to_be_clickable((By.ID,"FromDateTime"))).send_keys(from_date)
@@ -52,22 +49,24 @@ def get_data(from_date,to_date,data):
     table = pd.DataFrame(table)
     table.columns = header
     return table
+'''
+EXAMPLE CODE HERE FOR USE
+'''
+# actual_flows = ['14','4']
+# comp_weather_var_actual = ['18','1','1']
+# comp_weather_table = get_data('01/10/2020','20/10/2020',comp_weather_var_actual)
+# print(comp_weather_table)
 
-actual_flows = ['14','4']
-comp_weather_var_actual = ['18','1','1']
-comp_weather_table = get_data('01/10/2020','01/10/2020',comp_weather_var_actual)
+def instantaneous_flows():
+    driver = webdriver.Firefox()
+    driver.get("http://mip-prd-web.azurewebsites.net/InstantaneousView")
+    wait = WebDriverWait(driver,10)
+    return 
+
+# instantaneous_flows()
 
 
 
 
 
 
-
-
-# for i in range(1,19):
-#     element = driver.find_elements_by_xpath\
-#         ("/html/body/div[1]/div/div[2]/div[2]/div/div/ul/li["+str(i)+"]/span/span[1]")[0]
-#     element.click()
-#     element_text = driver.find_elements_by_xpath\
-#         ("/html/body/div[1]/div/div[2]/div[2]/div/div/ul/li["+str(i)+"]/span/span[4]")[0]
-#     print(element_text.get_attribute("innerHTML"))
