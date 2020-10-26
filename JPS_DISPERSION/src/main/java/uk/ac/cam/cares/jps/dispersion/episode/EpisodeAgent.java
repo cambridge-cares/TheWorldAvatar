@@ -42,6 +42,8 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.region.Region;
+import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -218,7 +220,6 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
         if (validateInput(requestParams)) {
             JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
-            JSONObject region = requestParams.getJSONObject("region");
             JSONObject shipdata=requestParams.getJSONObject("ship");
             String dataPath = QueryBroker.getLocalDataPath()+"/input";
             String cityIRI = requestParams.getString("city"); //later to be used for annotation??
@@ -226,32 +227,40 @@ public class EpisodeAgent extends DispersionModellingAgent {
             String airstn=requestParams.getString("airStationIRI");
             String extrainfo=requestParams.toString();
             new QueryBroker().putLocal(QueryBroker.getLocalDataPath()+"/extra_info.json", extrainfo);			
-            String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
-            if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
-                sourceCRSName = CRSTransformer.EPSG_4326; 
-            }
+
+            // create a Scope object
+            JSONObject region = requestParams.getJSONObject(Region.keyRegion);
+            Scope sc = new Scope(region);
+            String sourceCRSName = "EPSG:3857";
+
+            // collect region specific properties
+            epsgInUTM = sc.getUTMzone();
+            epsgActive = Region.getTargetCRSName(agent, cityIRI);
+            // time zone required by Episode is the negative of GMT, see section 4.3 of citychem user guide
+            gmttimedifference = String.valueOf(-sc.getTimeZone());
+
+            // Get filenames required for topology
             List<String>srtm=new ArrayList<String>();
+            srtm = Region.getSRTM(cityIRI);
+            for(int x=0;x<srtm.size();x++) {
+                // copy topology files from workingdir to simulation directory
+                // source files have hgt extension
+                // note that the code is currently hard coded to take in a maximum of 2 hgt files
+                copyTemplate(dataPath, srtm.get(x)+".hgt");
+            }
+
             if(cityIRI.toLowerCase().contains("singapore")) {
                 epsgInUTM="48";
                 epsgActive="32648";
                 gmttimedifference="-8";
-                srtm.add("N01E103.tif");
-                srtm.add("N01E104.tif");
-                copyTemplate(dataPath, "N01E103.hgt");
-                copyTemplate(dataPath, "N01E104.hgt");
             }
             else if(cityIRI.toLowerCase().contains("kong")) {
                 epsgInUTM="50";
                 epsgActive="32650";
                 gmttimedifference="-8";
-                srtm.add("N22E114.tif");
-
-                copyTemplate(dataPath, "N22E114.hgt");
             }
 
             List<String>stniri=new ArrayList<String>();
-//          stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
-//          stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
             stniri.add(stnIRI.getString(0));
             stniri.add(stnIRI.getString(1));
 
@@ -767,12 +776,12 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			int sizeofsrtm=inputparameter.getJSONArray("srtminput").length();
 			String srtmin1 = inputparameter.getJSONArray("srtminput").get(0).toString();
 			String tif1 = "   DATAFILE  \"./srtm3/N01E103.tif\"   tiffdebug";
-			String tif1aft = "   DATAFILE  \"" + "./srtm3/" + srtmin1 + "\"   tiffdebug";
+			String tif1aft = "   DATAFILE  \"" + "./srtm3/" + srtmin1 + ".tif\"   tiffdebug";
 			String tif2 = "   DATAFILE  \"./srtm3/N01E104.tif\"   tiffdebug";
 			String tif2aft="";
 			if(sizeofsrtm>1) {
 				String srtmin2 = inputparameter.getJSONArray("srtminput").get(1).toString();
-				tif2aft = "   DATAFILE  " + "\"./srtm3/" + srtmin2 + "\"   tiffdebug";
+				tif2aft = "   DATAFILE  " + "\"./srtm3/" + srtmin2 + ".tif\"   tiffdebug";
 			}
 
 			fileContext = fileContext.replaceAll(tif1, tif1aft); // replace with the new tif
