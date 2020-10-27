@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
@@ -153,7 +154,22 @@ public class SparqlOverHttpService {
 		URI uri = null;
 		if (RDFStoreType.RDF4J.equals(type)) {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
-		} else {
+		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
+			kbClient = new KnowledgeBaseClient();
+			kbClient.setQueryEndpoint(sparqlServiceURIForQuery);
+			kbClient.setQuery(sparqlQuery);
+			try {
+				JSONArray jsonArray = kbClient.executeQuery();
+				if(jsonArray!=null){
+					return jsonArray.toString();
+				}else{
+					return null;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
 		}
 		HttpGet request = new HttpGet(uri);
