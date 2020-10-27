@@ -82,16 +82,13 @@ public class GaussianHelper {
 //         * if() statement is added to prevent for loop to return java.lang.NullPointerException in case of object variable js==null. 
 //         */
 //    	if(js!=null) {
-        
-System.out.println("js.size(): "+ js.size());
 
-        for (int i = 0; i < js.size(); i++) {        	
-        if (js.get(i).matches("^ \\d\\\\\\d\\\\GINC.*")) {            	
-                fia = i;                
+        for (int i = 0; i < js.size(); i++) {
+            if (js.get(i).matches("^ \\d\\\\\\d\\\\GINC.*")) {
+                fia = i;
                 break;
             }
         }
-        
 //    	}
 
         if (fia >= 0) {

@@ -55,17 +55,9 @@ public abstract class GaussianParser extends ChemFileParser {
 
 	@Override
 	public void parse() throws Exception {
-		
-		System.out.println("passed here: public void parse() throws Exception");
-		
 		this.obj = this.createCompChem();
-		
-		System.out.println("passed here: this.obj = this.createCompChem();");
-		
 		this.chelper = new ContainerHelper((CompChem) this.obj);
-		
 		this.jSections = this.extractJobSections(this.f);		
-		
 		if (this.jSections.isEmpty()) {
 
 			 throw new RuntimeException("Invalid Gaussian file");
@@ -261,12 +253,10 @@ public abstract class GaussianParser extends ChemFileParser {
 	protected ComputedInfoImpl getComputedInfo(JobSection jobsec) {
 
 		ComputedInfoImpl computedInfo = new ComputedInfoImpl();
-		
 		computedInfo.setFinalSCFEnergyInHartree(Double.parseDouble(ParserHelper.parseLine(
 				Pattern.compile("\\s*SCF Done:.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ")\\s+A\\.U\\.\\s+.*"),
 				jobsec.get(jobsec.getLastMatchPosition(0,
 						"\\s*SCF Done:.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ")\\s+A\\.U\\.\\s+.*")))));
-		
 		return computedInfo;
 	}
 
