@@ -1,0 +1,672 @@
+@prefix gc: <http://purl.org/gc/> .
+@prefix ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix table: <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#> .
+@prefix unit: <http://data.nasa.gov/qudt/owl/unit#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#> a owl:Ontology ;
+    owl:imports <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#71-41-0> a ontocompchem:G09,
+        owl:Thing ;
+    gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_electronic_and_zpe_energy_C5H12O1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_geometry_optimization_C5H12O1_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_geometry_type_C5H12O1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_rotational_constants_C5H12O1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_rotational_symmetry_C5H12O1_ef2af78c-70f9-394e-8e62-f4a5d32e719e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_scf_energy_C5H12O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_vibrations_C5H12O1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_1> ;
+    ontocompchem:hasEnvironment <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#job_module_has_environment_module_C5H12O1_1> ;
+    ontocompchem:hasInitialization <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#job_module_has_initilization_module_C5H12O1_1> .
+
+<http://theworldavatar.com/data/ontocompchem/71-41-0/71-41-0.g09> a ontocompchem:OutputSource,
+        owl:Thing .
+
+<http://theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl> a ontocompchem:OutputSource,
+        owl:Thing .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_electronic_and_zpe_energy_C5H12O1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1> a ontocompchem:ElectronicAndZPEEnergy,
+        owl:Thing ;
+    gc:hasElectronicEnergy <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_electronic_and_zpe_energy_value_C5H12O1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_electronic_and_zpe_energy_value_C5H12O1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -2.728051e+02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_geometry_optimization_C5H12O1_1> a gc:GeometryOptimization,
+        owl:Thing ;
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_molecule_C5H12O1_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_geometry_type_C5H12O1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1> a ontocompchem:GeometryType,
+        owl:Thing ;
+    ontocompchem:hasGeometryType "nonlinear" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:O .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.01013e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.25289e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 4.47177e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 7.7124e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 5.71396e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 4.70359e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 4.21659e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 9.9316e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -4.554e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 5.5212e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 6.01394e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 6.56516e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 6.81e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.22185e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.77368e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.01225e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.50747e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_x3_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.3607e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.29426e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.66876e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.63039e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.28992e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.01555e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.64993e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.0594e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.78885e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.84788e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.516e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.58643e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 9.98e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 5.2324e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.33496e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.76478e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 6.5166e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.23689e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_y3_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 9.7977e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.88337e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.23466e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.16815e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 9.8212e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.50973e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.5067e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.07181e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.265e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.46466e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.18986e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 6.231e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.1988e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.42646e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.169e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.81969e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 9.0042e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.2795e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_coordinate_z3_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 6.2367e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_mass_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.599491e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_molecule_C5H12O1_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_C4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_atom_C5H12O1_O5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasFormalCharge <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_molecule_formal_charge_C5H12O1_1> ;
+    ontocompchem:hasSpinMultiplicity "1"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_has_molecule_formal_charge_C5H12O1_1> a gc:IntegerValue,
+        owl:Thing ;
+    gc:hasUnit gc:atomicUnit ;
+    gc:hasValue 0 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_rotational_constants_C5H12O1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1> a ontocompchem:RotationalConstants,
+        owl:Thing ;
+    gc:hasUnit unit:GigaHertz ;
+    ontocompchem:hasRotationalConstants "1.25293000 1.34052000 9.08342000"^^xsd:string ;
+    ontocompchem:hasRotationalConstantsCount "3"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_rotational_symmetry_C5H12O1_ef2af78c-70f9-394e-8e62-f4a5d32e719e_1> a ontocompchem:RotationalSymmetry,
+        owl:Thing ;
+    ontocompchem:hasRotationalSymmetryNumber "1.0"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_scf_energy_C5H12O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a ontocompchem:ScfEnergy,
+        owl:Thing ;
+    gc:hasElectronicEnergy <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_scf_energy_value_C5H12O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_scf_energy_value_C5H12O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -2.729698e+02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_vibrations_C5H12O1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_1> a gc:VibrationalAnalysis,
+        owl:Thing ;
+    gc:hasResult <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_vibrations_frequencies_C5H12O1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#finalization_module_vibrations_frequencies_C5H12O1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_1> a gc:Frequency,
+        owl:Thing ;
+    gc:hasUnit gc:cm-1 ;
+    gc:hasVibrationCount "48"^^xsd:string ;
+    ontocompchem:hasFrequencies "3858.0196 3084.0492 3079.7604 3068.5332 3055.0989 3024.2692 3019.7012 3013.0077 3003.0386 2994.5358 2988.8940 2977.3349 1506.0261 1502.1424 1495.0338 1494.1765 1483.6203 1473.6586 1410.4943 1405.6775 1394.4973 1375.8877 1363.0350 1324.3872 1314.6479 1288.7419 1248.0600 1210.9874 1133.3504 1095.9511 1084.6752 1062.9133 1031.5683 976.5881 920.7644 889.4685 858.7040 782.7721 731.1495 509.5020 393.5568 316.4335 292.9878 239.8009 189.2704 145.2651 88.6752 74.7811"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#has_atom_C5H12O1_C5_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#has_atom_C5H12O1_H12_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#has_atom_C5H12O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:O .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_basis_set_parameter_C5H12O1_1> a gc:BasisSet,
+        owl:Thing ;
+    gc:hasBasisSet "6-311+G(d,p)" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_level_of_theory_parameter_C5H12O1_1> a gc:MethodologyFeature,
+        ontocompchem:LevelOfTheory,
+        owl:Thing ;
+    ontocompchem:hasLevelOfTheory "RB971/6-311+G(d,p)" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_molecule_C5H12O1_C5_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#has_atom_C5H12O1_C5_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "5"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_molecule_C5H12O1_H12_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#has_atom_C5H12O1_H12_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "12"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_molecule_C5H12O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#has_atom_C5H12O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "1"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_molecule_property_C5H12O1_1> a gc:MoleculeProperty,
+        owl:Thing ;
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_molecule_C5H12O1_C5_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_molecule_C5H12O1_H12_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_molecule_C5H12O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasName "C5H12O1" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#job_module_has_environment_module_C5H12O1_1> a gc:SourcePackage,
+        owl:Thing ;
+    gc:hasOutputFile <http://theworldavatar.com/data/ontocompchem/71-41-0/71-41-0.g09>,
+        <http://theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl> ;
+    ontocompchem:hasProgram "Gaussian"^^xsd:string ;
+    ontocompchem:hasProgramVersion "2009+D.01"^^xsd:string ;
+    ontocompchem:hasRunDate "Mon Apr 27 05:15:50 2015"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#job_module_has_initilization_module_C5H12O1_1> a ontocompchem:InitializationModule,
+        owl:Thing ;
+    gc:hasMoleculeProperty <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_molecule_property_C5H12O1_1> ;
+    gc:hasParameter <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_basis_set_parameter_C5H12O1_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/71-41-0/71-41-0.g09.owl#initialization_module_has_level_of_theory_parameter_C5H12O1_1> .
+
+table:O a table:Element,
+        owl:Thing .
+
+table:C a table:Element,
+        owl:Thing .
+
+table:H a table:Element,
+        owl:Thing .
+

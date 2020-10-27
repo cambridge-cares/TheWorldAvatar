@@ -15,7 +15,6 @@ public class NISTSpeciesGeometry {
 	private String string;
 	// Represents all bonds between atoms as a plain string.
 	private String atomicBondsString;
-	
 	public List<NISTElementGeometry> getValue() {
 		return value;
 	}

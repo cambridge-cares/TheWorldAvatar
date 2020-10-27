@@ -4,8 +4,11 @@ package uk.ac.ceb.como.molhub.bean;
 /**
  * The Class Frequency.
  * 
- * @author nk510
+ * 
  * <p>Class provides a bean for frequencies data : frequency value, frequency unit, and frequency size.</p>
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
 public class Frequency {

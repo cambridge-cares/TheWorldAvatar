@@ -13,11 +13,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
 
 /**
- * @author nk510
+ * 
  * The Class FolderManager.
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
+ *  
  */
 public class FolderManager {
 
@@ -33,7 +38,7 @@ public class FolderManager {
 	 * @author nk510
 	 * @param fileName Name of Gaussian file
 	 * @throws UnsupportedEncodingException the unsupported encoding exception
-	 * @return uuid the unique identifier used to name folder and files.
+	 * @return uuid the unique identifier (UUID) we use to name folder and files.
 	 * 
 	 */
 	public static String generateUniqueFolderName(String fileName)
@@ -48,8 +53,8 @@ public class FolderManager {
 
 		/**
 		 * 
-		 * @author nk510 Generates source for universally unique identifier (uuid) based
-		 *         on file name, date, time, and cpu milliseconds.
+		 * @author nk510 Generates source for universally unique identifier (UUID) based
+		 *         on file name, date, time, and  CPU milliseconds.
 		 * 
 		 */
 
@@ -67,7 +72,7 @@ public class FolderManager {
 	 * Creates the folder.
 	 *
 	 * @author nk510
-	 * @param folderName <p>A folder's name to be created based on using uuid.</p>
+	 * @param folderName <p>A folder's name to be created based on using UUID.</p>
 	 */
 	public static void createFolder(String folderName) {
 
@@ -112,7 +117,7 @@ public class FolderManager {
 	/**
 	 * Gets the upload report list.
 	 *
-	 * @return the upload report list that includes uuid, Gaussian file name, XML validation (true/false), OWL consistency (true/false) 
+	 * @return the upload report list that includes UUID, Gaussian file name, OWL file name, OWL consistency (true/false), Comment 
 	 */
 	public List<GaussianUploadReport> getUploadReportList() {
 		return uploadReportList;
@@ -131,13 +136,14 @@ public class FolderManager {
 	 * Gets the file name.
 	 * 
 	 * @author nk510
-	 * @param uuid the unique identifier
+	 * @param uuid the unique identifier (UUID)
 	 * @param kbFolderPath folder where owl files are stored.
-	 * @param dataFolderPath folder where Gaussian, xml, and png files are stored.
+	 * @param dataFolderPath folder where Gaussian, JSON, OWL, and PNG files are stored.
 	 * @param format the format of file.
 	 * @return the file name
+	 *  
 	 */
-//	public String getFileName(String uuid,  String catalinaFolderPath, String format) {
+
 	public String getFileName(String uuid,  String kbFolderPath, String dataFolderPath, String format) {
 		
 		String fileName=null;
@@ -145,19 +151,16 @@ public class FolderManager {
 		String folderName = null;
 		
 		if(format.endsWith(".owl")) {
-		
-//			folderName = catalinaFolderPath + "/webapps/ROOT/kb/ontocompchem/" + uuid.toString();
-			folderName =kbFolderPath + uuid.toString();
+			
+		folderName =kbFolderPath + uuid.toString();
 		
 		}
 		else {
 			
-//			folderName = catalinaFolderPath + "/webapps/ROOT/data/ontocompchem/" + uuid.toString();
-			folderName= dataFolderPath + uuid.toString();
+		folderName= dataFolderPath + uuid.toString();
 			
 		}
 		
-//		String folderName = folderPath + uuid.toString();
 		File file = new File(folderName);
 
 		for(File f : file.listFiles()) {
@@ -172,5 +175,91 @@ public class FolderManager {
 		
         return fileName;
 	
-	}	
+	}
+
+/**
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
+ * @param uuidFile the unique identifies (parameter) for OWL file name.
+ * @return JSON file name that contains data extracted from Log file.
+ */
+public String getGaussianJsonFileName(String uuidFile) {
+	
+	return uuidFile.replaceAll(".owl", ".json");
+}
+
+	public String getOwlFileName(String uuid, String uuidFile, String kbFolderPath, String format) {
+		
+		String folderName = null;
+		
+		if(format.endsWith(".owl")) {
+		folderName =kbFolderPath + uuid.toString();
+		}
+		
+		File file = new File(folderName + "/" + uuidFile);
+		
+        return file.getName()  ;
+}
+
+	
+	/**
+	 * 
+	 * @param uuid the unique identifier that is used to create unique folder inside Tomcat server 
+	 * @param uuidFile the uuid file 
+	 * @param dataFolderPath data folder path
+	 * @return file Gaussian file name that is uploaded 
+	 */
+	public String getGaussianFileName(String uuid, String uuidFile, String dataFolderPath) {
+		
+		String fileName = "";
+		
+		
+		File[] fileList = new FileUtility().getFileList(dataFolderPath + "/" + uuid +"/",".log", ".g09", ".g16");
+		
+
+		for(File f: fileList) {
+			
+			fileName = f.getName();
+		}
+		
+		return fileName;
+
+}
+	
+
+
+
+	/**
+	 * @param uuid unique identifier (UUID) that we use to create folder, name uploaded Log file.
+	 * @param uuidFile unique identifier for generated OWL file.
+	 * @param dataFolderPath data folder path
+	 * @param format format of a file.
+	 * @return the JSON file name that contains information about results of NASA polynomial calculations.
+	 */
+	public String getJsonNasaFileName(String uuid, String uuidFile, String dataFolderPath, String format) {
+		
+		String folderName = null;
+		
+		if(format.endsWith("q_nasa.json")) {
+
+		folderName =dataFolderPath + uuid.toString() + "/" + uuidFile.replaceAll(".owl", "") + format;
+		
+		} 
+		
+		File file = new File(folderName);
+		
+		/**
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Checks whether NASA polynomial JSON file is generated. 
+		 */
+		if(file.exists()) {
+			
+        return file.getName()  ;
+        
+		}else {
+			
+			return null;
+		}
+	
+	}
+	
 }

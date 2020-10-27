@@ -19,9 +19,11 @@ import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdf.model.ModelFactory;
 
 import org.apache.jena.util.FileManager;
+import org.apache.log4j.Logger;
 
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
+
 
 /**
  * 
@@ -44,6 +46,8 @@ public class CompChemQuery {
 	public static final String ABOX_SOURCE="./src/test/resources/ontology/compchem_abox/";
 	public static final String TRAGET_FOLDER="./src/test/resources/ontology/sparql_results/";
 	public static final String SPARQL_FOLDER ="./src/test/resources/ontology/sparql_query/";
+	
+	final static Logger logger = Logger.getLogger(CompChemQuery.class.getName());
 	
 	/**
 	 * The main method.
@@ -164,8 +168,12 @@ public class CompChemQuery {
 			ResultSet resultSet = qexec.execSelect();
 			
 			while(resultSet.hasNext()) { 
-		    
-		    fileOutputStream=new FileOutputStream(new File(targetFolder+ StringUtils.substringBefore(fileName, ".")  +".json"),false);
+				
+			/**
+			 * Creates json file based on name of created OWL file including log/g09/g16 extension.
+			 */
+			logger.info("fileName.substring(0, fileName.lastIndexOf(\".\")): " + fileName.substring(0, fileName.lastIndexOf(".")));
+			fileOutputStream=new FileOutputStream(new File(targetFolder+ fileName.substring(0, fileName.lastIndexOf("."))  +"q.json"),false);
 	       		
 			ResultSetFormatter.outputAsJSON(fileOutputStream, resultSet);
 

@@ -11,6 +11,11 @@ import org.xml.sax.SAXException;
 
 /**
  * The Class XMLValidationManager.
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
+ *  
+ *  TODO: If it is necessary, this class should be removed from molhub project
  */
 public class XMLValidationManager {
 
@@ -18,9 +23,9 @@ public class XMLValidationManager {
 	 * <p>Validates Generated Compchem XML files against Compchem XML schema.</p>
 	 *
 	 * @author nk510
-	 * @param xsdPath a path to Compchem xml schema.
-	 * @param xmlFile the xml file
-	 * @return true if generated xml file is valid, and false if generated xml file is not valid.
+	 * @param xsdPath a path to Compchem XMl schema.
+	 * @param xmlFile the XML file
+	 * @return true if generated XML file is valid, and false if generated XML file is not valid.
 	 */
 	public static boolean validateXMLSchema(String xsdPath, File xmlFile) {
 		try {

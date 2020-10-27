@@ -1,0 +1,5 @@
+PREFIX books: <http://meraka/moss/exampleBooks.owl#>
+SELECT DISTINCT ?book
+WHERE { 
+?book a books:Book .  
+}

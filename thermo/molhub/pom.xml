@@ -29,7 +29,7 @@
         <version>3.0.0</version>
         <configuration>
           <warSourceDirectory>WebContent</warSourceDirectory>
-          <outputDirectory>${tomcatPath}/webapps</outputDirectory>
+         <!--  <outputDirectory>${tomcatPath}/webapps</outputDirectory> -->
         </configuration>
       </plugin>
     </plugins>
@@ -151,24 +151,32 @@
             <version>0.0.0</version>
 </dependency>
 
+<!-- 
+-  After removing Philipp's parser code, this library is removed from molhub build path.
 <dependency>
             <groupId>uk.ac.cam.ceb.como</groupId>
             <artifactId>CoMoIOChemistry</artifactId>
             <version>0.0.0</version>
 </dependency>
+-->
 
+<!--
+- After removing Philipp's parser code, this library is removed from molhub build path. 
 <dependency>
             <groupId>uk.ac.cam.ceb.como</groupId>
             <artifactId>CoMoMath</artifactId>
             <version>0.0.0</version>
 </dependency>
+-->
 
-
+<!-- 
+- After removing Philipp's parser code, this library is removed from molhub build path.
 <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>CMCLIO</artifactId>
             <version>0.0.1-SNAPSHOT</version>
 </dependency>
+-->
 
 <dependency>
     <groupId>xml-apis</groupId>

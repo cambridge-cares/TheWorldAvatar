@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -18,7 +17,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
+
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -28,7 +30,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmclinnovations.jps.agent.configuration.DFTAgentConfiguration;
@@ -39,70 +40,36 @@ import com.cmclinnovations.jps.kg.OntoAgentKG;
 import com.cmclinnovations.jps.kg.OntoKinKG;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 import com.cmclinnovations.jps.upload.CompChemUpload;
-import com.cmclinnovations.slurm.job.JobSubmission;
-import com.cmclinnovations.slurm.job.SlurmJob;
-import com.cmclinnovations.slurm.job.SlurmJobException;
-import com.cmclinnovations.slurm.job.Status;
-import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
-import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
 import com.jayway.jsonpath.JsonPath;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 import net.minidev.json.JSONArray;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
 
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
- * jobs at increasing levels of theory.   
+ * jobs at a level of theory.   
  * 
- * @author msff2
+ * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
 @Controller
-public class DFTAgent extends HttpServlet{
+@WebServlet(urlPatterns = {Property.JOB_REQUEST_PATH, Property.JOB_STATISTICS_PATH})
+public class DFTAgent extends JPSAgent{
+	private static final long serialVersionUID = -8669607645910441935L;
 	private Logger logger = LoggerFactory.getLogger(DFTAgent.class);	
-	String server = "login-skylake.hpc.cam.ac.uk";
-	String username = "msff2";
-	String password = "Abcdl955_l7_l7_l7_aB";
-	boolean isAuthenticated;
-	private File jobSpace;
-	
-	static Session session;
-	static JSch jsch = new JSch();
-	
-	static int scheduledIteration = 0;
-	static List<String> jobsRunning = new ArrayList<>();
-	
-	SlurmJob slurmJob = new SlurmJob();
+	private File workspace;
 	static JobSubmission jobSubmission;
-	public static ApplicationContext applicationContext;
-	public static SlurmJobProperty slurmJobProperty;
 	public static ApplicationContext applicationContextDFTAgent;
 	public static DFTAgentProperty dftAgentProperty;
 	
-	
-	public static void main(String[] args) throws ServletException, DFTAgentException{
-		DFTAgent dftAgent = new DFTAgent();
-		dftAgent.init();
-	}
-	
-	/**
-     * Allows to perform a SPARQL query of any complexity.</br>
-     * It returns the results in JSON format.
-     * 
-     * @param input the JSON input to set up and run a quantum job.
-     * @return a message if the job was set up successfully or failed. 
-     */
-	@RequestMapping(value="/job/request", method = RequestMethod.GET)
-    @ResponseBody
-    public String query(@RequestParam String input) throws IOException, DFTAgentException, SlurmJobException{
-		System.out.println("received query:\n"+input);
-		logger.info("received query:\n"+input);
-		return setUpJob(input);
-    }
-	
+	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
+	public static final String UNKNOWN_REQUEST = "The request is unknown to DFT Agent";
 	
 	/**
      * Shows the following statistics of quantum jobs processed by DFT Agent.</br>
@@ -115,19 +82,21 @@ public class DFTAgent extends HttpServlet{
      * @param input the JSON string specifying the return data format, e.g. JSON.
      * @return the statistics in JSON format if requested. 
      */
-	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
-    @ResponseBody
-    public String produceStatistics(@RequestParam String input) throws IOException, DFTAgentException{
+    public JSONObject produceStatistics(String input) throws IOException, DFTAgentException{
 		System.out.println("Received a request to send statistics.\n");
 		logger.info("Received a request to send statistics.\n");
-		if(jobSubmission==null){
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
+		// Initialises all properties required for this agent to set-up<br>
+		// and run jobs. It will also initialise the unique instance of<br>
+		// Job Submission class.
+		initAgentProperty();
 		return jobSubmission.getStatistics(input);
     }
 	
 	/**
-     * Shows the following statistics of quantum jobs processed by DFT Agent.</br>
+     * Shows the following statistics of quantum jobs processed by DFT Agent.<br>
+     * This method covers the show statics URL that is not included in the<br>
+     * list of URL patterns.
+     * 
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -136,19 +105,17 @@ public class DFTAgent extends HttpServlet{
      * 
      * @return the statistics in HTML format. 
      */
-	@RequestMapping(value="/job/show/statistics", method = RequestMethod.GET)
+	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH, method = RequestMethod.GET)
     @ResponseBody
     public String showStatistics() throws IOException, DFTAgentException{
 		System.out.println("Received a request to show statistics.\n");
 		logger.info("Received a request to show statistics.\n");
-		if(jobSubmission==null){
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
+		initAgentProperty();
 		return jobSubmission.getStatistics();
     }
 	
 	/**
-	 * Starts the scheduler to monitor quantum jobs.
+	 * Starts the asynchronous scheduler to monitor quantum jobs.
 	 * 
 	 * @throws DFTAgentException
 	 */
@@ -157,32 +124,143 @@ public class DFTAgent extends HttpServlet{
         System.out.println("---------- Quantum Calculation Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         DFTAgent dftAgent = new DFTAgent();
-       	// the first 60 refers to the delay (in seconds) before the job scheduler
-        // starts and the second 60 refers to the interval between two consecu-
-        // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(dftAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
 		// initialising classes to read properties from the dft-agent.properites file
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-	    if (applicationContextDFTAgent == null) {
-	    	applicationContextDFTAgent = new AnnotationConfigApplicationContext(DFTAgentConfiguration.class);
-		}		
-		if (dftAgentProperty == null) {
-			dftAgentProperty = applicationContextDFTAgent.getBean(DFTAgentProperty.class);
-		}
-        logger.info("---------- Quantum jobs are being monitored  ----------");
+        initAgentProperty();
+		// In the following method call, the parameter getAgentInitialDelay-<br>
+		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
+		// the job scheduler starts and getAgentPeriodicActionInterval<br>
+		// refers to the interval between two consecutive executions of<br>
+		// the scheduler.
+		executorService.scheduleAtFixedRate(() -> {
+			try {
+				dftAgent.monitorJobs();
+			} catch (SlurmJobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}, dftAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
+				dftAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+		logger.info("---------- Quantum jobs are being monitored  ----------");
         System.out.println("---------- Quantum jobs are being monitored  ----------");
        	
 	}
 	
-	private void monitorJobs(){
-		if(jobSubmission==null){
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
+	/**
+	 * Initialises the unique instance of the DFTAgentProperty class that<br>
+	 * reads all properties of DFTAgent from the dft-agent property file.<br>
+	 * 
+	 * Initialises the unique instance of the SlurmJobProperty class and<br>
+	 * sets all properties by reading them from the dft-agent property file<br>
+	 * through the DFTAgent class.
+	 */
+	private void initAgentProperty() {
+		// initialising classes to read properties from the dft-agent.properites
+		// file
+		if (applicationContextDFTAgent == null) {
+			applicationContextDFTAgent = new AnnotationConfigApplicationContext(DFTAgentConfiguration.class);
 		}
+		if (dftAgentProperty == null) {
+			dftAgentProperty = applicationContextDFTAgent.getBean(DFTAgentProperty.class);
+		}
+		if (jobSubmission == null) {
+			jobSubmission = new JobSubmission(dftAgentProperty.getAgentClass(), dftAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(dftAgentProperty.getHpcServerLoginUserName());
+			jobSubmission.slurmJobProperty
+					.setHpcServerLoginUserPassword(dftAgentProperty.getHpcServerLoginUserPassword());
+			jobSubmission.slurmJobProperty.setAgentClass(dftAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty
+					.setAgentCompletedJobsSpacePrefix(dftAgentProperty.getAgentCompletedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty
+					.setAgentFailedJobsSpacePrefix(dftAgentProperty.getAgentFailedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setHpcAddress(dftAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setInputFileName(dftAgentProperty.getInputFileName());
+			jobSubmission.slurmJobProperty.setInputFileExtension(dftAgentProperty.getInputFileExtension());
+			jobSubmission.slurmJobProperty.setOutputFileName(dftAgentProperty.getOutputFileName());
+			jobSubmission.slurmJobProperty.setOutputFileExtension(dftAgentProperty.getOutputFileExtension());
+			jobSubmission.slurmJobProperty.setJsonInputFileName(dftAgentProperty.getJsonInputFileName());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(dftAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(dftAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setSlurmScriptFileName(dftAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(dftAgentProperty.getMaxNumberOfHPCJobs());
+			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(
+					dftAgentProperty.getAgentInitialDelayToStartJobMonitoring());
+			jobSubmission.slurmJobProperty
+					.setAgentPeriodicActionInterval(dftAgentProperty.getAgentPeriodicActionInterval());
+		}
+	}
+	
+	/**
+	 * Initialises the unique instance of the SlurmJobProperty class and<br>
+	 * sets all properties by reading them from the dft-agent property file<br>
+	 * through the DFTAgent class. 
+	 * 
+	 */
+	private void initSlurmJobProperty(){
+	}
+	
+	/**
+	 * Receives and processes HTTP requests that match with the URL patterns<br>
+	 * listed in the annotations of this class.
+	 * 
+	 */
+    @Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		String path = request.getServletPath();
+    	System.out.println("A request has been received..............................");
+		if(path.equals(Property.JOB_REQUEST_PATH)) {
+			try{
+				validateInput(requestParams);
+			}catch(BadRequestException e){
+				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
+			}
+			try{
+			   return setUpJob(requestParams.toString());
+			}catch(SlurmJobException | IOException | DFTAgentException e){
+				throw new JPSRuntimeException(e.getMessage());
+			}
+		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
+			try {
+				return produceStatistics(requestParams.toString());
+			} catch (IOException | DFTAgentException e) {
+				throw new JPSRuntimeException(e.getMessage());
+			}
+		} else {
+			System.out.println("Unknown request");
+			throw new JPSRuntimeException(UNKNOWN_REQUEST);
+		}
+	}
+    
+    /**
+     * Validates input parameters specific to DFT Agent to decide whether<br>
+     * the job set up request can be served.
+     */
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+    	String speciesIRI = JSonRequestParser.getSpeciesIRI(requestParams.toString());
+    	if(speciesIRI == null || speciesIRI.trim().isEmpty()){
+    		throw new BadRequestException(Property.JOB_SETUP_SPECIES_IRI_MISSING.getPropertyName());
+    	}
+    	String levelOfTheory = JSonRequestParser.getLevelOfTheory(requestParams.toString());
+    	if(levelOfTheory == null || levelOfTheory.trim().isEmpty()){
+    		throw new BadRequestException(Property.JOB_SETUP_LEVEL_OF_THEORY_MISSING.getPropertyName());
+    	}
+        return true;
+    }
+    
+    /**
+     * Monitors already set up jobs.
+     * 
+     * @throws SlurmJobException
+     */
+	private void monitorJobs() throws SlurmJobException{
+		if(jobSubmission==null){
+			jobSubmission = new JobSubmission(dftAgentProperty.getAgentClass(), dftAgentProperty.getHpcAddress());
+		}
+		//Configures all properties required for setting-up and running a Slurm job. 
+		initSlurmJobProperty();
 		jobSubmission.monitorJobs();
 		processOutputs();
 	}
@@ -194,25 +272,11 @@ public class DFTAgent extends HttpServlet{
 	 * 
 	 */
 	public void processOutputs() {
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
-		if (applicationContextDFTAgent == null) {
-	    	applicationContextDFTAgent = new AnnotationConfigApplicationContext(DFTAgentConfiguration.class);
-		}		
-		if (dftAgentProperty == null) {
-			dftAgentProperty = applicationContextDFTAgent.getBean(DFTAgentProperty.class);
-		}
-		jobSpace = jobSubmission.getWorkspaceDirectory();
+		initAgentProperty();
+		workspace = jobSubmission.getWorkspaceDirectory();
 		try {
-			if (jobSpace.isDirectory()) {
-				File[] jobFolders = jobSpace.listFiles();
+			if (workspace.isDirectory()) {
+				File[] jobFolders = workspace.listFiles();
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
@@ -252,13 +316,13 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 */
 	private void runThermodataAgent(File jobFolder, String uuid) throws IOException{
-		boolean isInvokingThermodataAgentRequired = Utils.isInvokingThermoAgentRequired(jobFolder, slurmJobProperty);
+		boolean isInvokingThermodataAgentRequired = Utils.isInvokingThermoAgentRequired(jobFolder, dftAgentProperty);
 		if(isInvokingThermodataAgentRequired){
 			String result = invokeThermodataAgent(jobFolder, Property.ONTOCOMPCHEM_KB_IRI.getPropertyName()
 					.concat(uuid).concat("/").concat(uuid).concat(".owl#").concat(uuid));
-			boolean isApplyingThermoUpdateToMechanismRequired = Utils.isApplyingThermoUpdateToMechanismRequired(jobFolder, slurmJobProperty);
+			boolean isApplyingThermoUpdateToMechanismRequired = Utils.isApplyingThermoUpdateToMechanismRequired(jobFolder, dftAgentProperty);
 			if(isApplyingThermoUpdateToMechanismRequired && !result.isEmpty()){
-				String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
+				String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, dftAgentProperty);
 				JSONArray lowTCoeffArray = JSonRequestParser.getLowTemperatureCoefficient(result);
 				String lowTCoeff = formatCoefficient(lowTCoeffArray);
 				JSONArray highTCoeffArray = JSonRequestParser.getHighTemperatureCoefficient(result);
@@ -367,10 +431,10 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 */
 	private String UploadLogFile(File jobFolder) throws IOException{
-		File logFile = new File(jobFolder.getAbsolutePath().concat(File.separator).concat(jobFolder.getName()).concat(slurmJobProperty.getOutputFileExtension()));
+		File logFile = new File(jobFolder.getAbsolutePath().concat(File.separator).concat(jobFolder.getName()).concat(dftAgentProperty.getOutputFileExtension()));
 		String uploadMessage = "";
 		if(logFile.exists()){
-			String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
+			String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, dftAgentProperty);
 			try{
 				CompChemUpload compChemUpload = new CompChemUpload();
 				compChemUpload.setCalculationFileName(logFile.getName());
@@ -408,7 +472,7 @@ public class DFTAgent extends HttpServlet{
 		String httpRequest = dftAgentProperty.getThermoAgentHttpRequestFirstPart().concat(URLEncoder.encode(json.toString(), "UTF-8"));
 		int limit = 5;
 		String result = "";
-		for(int i = 1; i<=5; i++){
+		for(int i = 1; i<=limit; i++){
 			try{
 				result = performHTTPRequest(httpRequest);
 				break;
@@ -451,11 +515,11 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	public String setUpJob(String jsonString) throws IOException, DFTAgentException, SlurmJobException{
+	public JSONObject setUpJob(String jsonString) throws IOException, DFTAgentException, SlurmJobException{
         	String message = setUpJobOnAgentMachine(jsonString);
 			JSONObject obj = new JSONObject();
 			obj.put("message", message);
-        	return obj.toString();
+        	return obj;
     }
 	
 	/**
@@ -467,15 +531,12 @@ public class DFTAgent extends HttpServlet{
 	 * @throws DFTAgentException
 	 */
 	private String setUpJobOnAgentMachine(String jsonInput) throws IOException, DFTAgentException, SlurmJobException {
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
-					slurmJobProperty.getHpcAddress());
-		}
+		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
+		String jobFolderName = getNewJobFolderName(dftAgentProperty.getHpcAddress(), timeStamp);
 		return jobSubmission.setUpJob(
 				jsonInput, new File(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
+						.getResource(dftAgentProperty.getSlurmScriptFileName()).getPath()),
 				getInputFile(jsonInput, jobFolderName), timeStamp);
 	}
 	
@@ -491,12 +552,12 @@ public class DFTAgent extends HttpServlet{
 	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, DFTAgentException{
 		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
     	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonInput);
-    	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
-    		throw new DFTAgentException(Status.JOB_SETUP_SPECIES_IRI_MISSING.getName());
+    	if(speciesIRI == null || speciesIRI.trim().isEmpty()){
+    		throw new DFTAgentException(Property.JOB_SETUP_SPECIES_IRI_MISSING.getPropertyName());
     	}
-		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI, slurmJobProperty);
-		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
-			throw new DFTAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
+		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI, dftAgentProperty);
+		if(speciesGeometry == null || speciesGeometry.trim().isEmpty()){
+			throw new DFTAgentException(Property.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getPropertyName());
     	}
 		String inputFilePath = getInputFilePath();
 		String inputFileMsg = createInputFile(inputFilePath, jobFolderName, speciesGeometry, jsonInput);
@@ -524,10 +585,10 @@ public class DFTAgent extends HttpServlet{
 		inputFile.write(Property.JOB_NO_OF_CORES_PREFIX.getPropertyName().concat(AgentRequirementParser.getNumberOfCores(OntoAgentKG.getNumberOfCores()).concat("\n")));
 		inputFile.write(Property.JOB_MEMORY_PREFIX.getPropertyName().concat(AgentRequirementParser.getRAMSize(OntoAgentKG.getMemorySize()))
 				.concat(Property.JOB_MEMORY_UNITS.getPropertyName()).concat("\n"));
-		inputFile.write(Property.JOB_CHK_POINT_FILE_PREFIX.getPropertyName().concat(slurmJobProperty.getHpcAddress()).concat("_")
+		inputFile.write(Property.JOB_CHK_POINT_FILE_PREFIX.getPropertyName().concat(dftAgentProperty.getHpcAddress()).concat("_")
 				.concat(getTimeStampPart(jobFolder))
-				.concat(slurmJobProperty.getCheckPointFileExtension()).concat("\n"));
-		inputFile.write(slurmJobProperty.getJobPreprintDirective().concat(" ")
+				.concat(dftAgentProperty.getCheckPointFileExtension()).concat("\n"));
+		inputFile.write(dftAgentProperty.getJobPreprintDirective().concat(" ")
 				.concat(JSonRequestParser.getLevelOfTheory(jsonString)).concat(" ")
 				.concat(JSonRequestParser.getJobKeyword(jsonString)).concat(" ")
 				.concat(JSonRequestParser.getAlgorithmChoice(jsonString)).concat("\n\n"));
@@ -578,8 +639,8 @@ public class DFTAgent extends HttpServlet{
 	 * @return
 	 */
 	public String getInputFilePath(){
-		return Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getInputFileName())
-		.concat(slurmJobProperty.getInputFileExtension());
+		return Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(dftAgentProperty.getInputFileName())
+		.concat(dftAgentProperty.getInputFileExtension());
 	}
 	
 	/**

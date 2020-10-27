@@ -38,10 +38,12 @@ public class NISTSDFParser {
 	List<Map<String, List<Integer>>> listOfAtomVsBondTypeMap = new ArrayList<Map<String, List<Integer>>>();
 	Map<String, List<Integer>> atomVsBondTypeMap = new HashMap<String, List<Integer>>();
 	List<Integer> bondType = new ArrayList<Integer>();
-	NISTSpeciesGeometry speciesGeometry;
+	NISTSpeciesGeometry speciesGeometry = new NISTSpeciesGeometry();
 	NISTElementGeometry elementGeometry;
 	NISTDipoleMoment dipoleMoment;
 	NISTElectronicEnergy electronicEnergy;
+	StringBuffer geometryString = new StringBuffer();
+	StringBuffer atomicBondsString = new StringBuffer();
 	
 	/**
 	 * A parser designed to extract data from all SDF files.
@@ -57,6 +59,15 @@ public class NISTSDFParser {
 		// Populate a list with atom vs valence electrons.   
 		fillAtomVsElectronList();
 		for (File f : sdfFiles) {
+			if(isSDFFileEmpty(f)){
+				continue;
+			}
+			if(containIncompleteConnectivity(f)){
+				continue;
+			}
+			if(containIncompleteGeometry(f)){
+				continue;
+			}
 			if(data.containsKey(f.getName().replace(".sdf", ""))){
 				reader = data.get(f.getName().replace(".sdf", ""));
 			} else{
@@ -74,6 +85,7 @@ public class NISTSDFParser {
 	 * @throws IOException
 	 */
 	private void parse() throws IOException{
+		System.out.println("CAS Reg No:"+reader.getCASRegNr());
 		BufferedReader br = openSourceFile(path);
 		String line = "";
 		lines = new ArrayList<String>();
@@ -94,6 +106,9 @@ public class NISTSDFParser {
 	 */
 	private void parseAtomicBonds(List<String> lines){
 		parseElementalBonds(lines, 0);
+		if(atomicBondsString!=null && !atomicBondsString.toString().isEmpty()){
+			speciesGeometry.setAtomicBondsString(atomicBondsString.toString());
+		}
 		int pairedElectrons = calculatePairedElectrons();
 		reader.setPairedElectrons(pairedElectrons);
 		int unpairedElectrons = calculateUnpairedElectrons(pairedElectrons);
@@ -109,8 +124,14 @@ public class NISTSDFParser {
 	 */
 	private void parseGeometry(List<String> lines){
 		parseElementalBonds(lines, 1);
-		if(speciesGeometry!=null){
+		if(geometryString!=null && !geometryString.toString().isEmpty()){
+			speciesGeometry.setString(geometryString.toString());
+		}
+		if(!geometryString.toString().isEmpty() || !atomicBondsString.toString().isEmpty()){
 			reader.setSpeciesGeometry(speciesGeometry);
+			atomicBondsString = new StringBuffer();
+			geometryString = new StringBuffer();
+			speciesGeometry = new NISTSpeciesGeometry();
 		}
 	}
 
@@ -153,7 +174,6 @@ public class NISTSDFParser {
 		
 		atomVsBondList = new ArrayList<Map<String,Integer>>();
 		listOfAtomVsBondTypeMap = new ArrayList<Map<String, List<Integer>>>();
-		speciesGeometry = new NISTSpeciesGeometry();
 		for(String line:lines){
 			if(line.contains("Copyright by the U.S. Sec.")){
 				flag = true;
@@ -176,6 +196,12 @@ public class NISTSDFParser {
 				}
 			}
 			if(line.contains("M  END")){
+				if(!geometryString.toString().isEmpty()){
+					speciesGeometry.setString(geometryString.toString());
+				}
+				if(!atomicBondsString.toString().isEmpty()){
+					speciesGeometry.setAtomicBondsString(atomicBondsString.toString());
+				}
 				break;
 			}
 		}
@@ -346,6 +372,64 @@ public class NISTSDFParser {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Designed to exclude input SDF files which are empty.
+	 * 
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean isSDFFileEmpty(File f) throws IOException{
+		BufferedReader br = openSourceFile(f.getAbsolutePath());
+		String line;
+		while((line=br.readLine())!=null){
+			if(!line.trim().isEmpty()){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Designed to exclude input SDF files which contain "M CHG" in the</br>
+	 * first and second column in the atom connectivity block.
+	 * 
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean containIncompleteConnectivity(File f) throws IOException{
+		BufferedReader br = openSourceFile(f.getAbsolutePath());
+		String line;
+		while((line=br.readLine())!=null){
+			if(line.contains("M  ") && !line.contains("M  END")){
+				return true;
+			}
+			if(line.contains("M  END")){
+				return false;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Designed to exclude input SDF files which do not contain geometry.
+	 * 
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean containIncompleteGeometry(File f) throws IOException{
+		BufferedReader br = openSourceFile(f.getAbsolutePath());
+		String line;
+		while((line=br.readLine())!=null){
+			if(line.contains("M  END")){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**

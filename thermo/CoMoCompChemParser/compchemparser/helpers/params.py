@@ -1,0 +1,21 @@
+﻿# 1 J = kg*m^2/s^2
+#-----------------------------------------------------------------------------
+kB= 1.380648813e-23      # Boltzmann const [kg*m^2/(s^2*K)] or [J/K]
+h= 6.6260695729e-34      # Planck const    [kg*m^2/s] or [J*s]
+Angs=1.0e-10             # Angstrom        [m]
+NA=6.0221412927e23        # Avogadro nr      [#]
+c=2.99792458e8            # Light speed      [m/s]
+a0=0.5291772109217e-10    # Bohr radius      [m]
+R=8.314462175             # Gas const        [J/(mol*K)]
+kcm = kB/(h*100*c)        # Wavenumber in    [1/(cm*K)]
+kcal_to_J = 4184          # Conversion to    [kJ]
+cal_to_J =4.184           # Conversion to    [J]
+Ha=4.3597439422e-18       # Conversion to    [J]
+amu= 1.66053892173e-27    # Atomic mass      [kg]
+pi=3.141592653589793
+patm = 101325.0
+pbar = 1E5
+Pref = pbar
+eV = 1.602176620898E-19
+m_to_cm = 100             # m to cm conversion
+BI_pref = h/(8.0*pi*pi*c)

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.cam.ceb.como.chem.filemgmt.filter.HTMLFileFilter;
 import org.cam.ceb.como.nist.webbook.filter.NISTSpeciesFilterByComposition;
@@ -37,7 +38,9 @@ public class DownloadHTML {
 		Map<String, NISTSpeciesInfo> data = new HashMap<String, NISTSpeciesInfo>();
 		parsingHTML("D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\", data);
 	}
-
+	
+	static int speciesNo = 0;
+	
 	public static void parsingHTML(String htmlFolderPath, Map<String, NISTSpeciesInfo> data) throws Exception {
 
 		// TODO Auto-generated method stub
@@ -55,11 +58,16 @@ public class DownloadHTML {
 			reader.parse();
 
 			data.put(f.getName().replace(".html", ""), (NISTSpeciesInfo) reader.get());
-			display(data);
+			++speciesNo;
+			System.out.println("###########################");
+			System.out.println("Parsed file:"+ speciesNo + " / " + htmlFiles.size());
+			System.out.println("###########################");
+			System.out.print("Formula elements: ");
+//			display(data, htmlFiles);
 		}
 	}
 
-	public static void display(Map<String, NISTSpeciesInfo> data){
+	public static void display(Map<String, NISTSpeciesInfo> data, Collection<File> htmlFiles){
 		for (Map.Entry<String, NISTSpeciesInfo> speciesData : data.entrySet()) {
 			
 			NISTSpeciesInfo value = speciesData.getValue();
@@ -67,8 +75,6 @@ public class DownloadHTML {
 			String formula = value.getFormula().getFormula();
 
 			Collection<String> formulaElements = value.getFormula().getElements();
-
-			System.out.print("Formula elements: ");
 
 			for (String formulaElement : formulaElements) {
 
