@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.query;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.sql.SQLException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -29,6 +30,9 @@ public class SparqlOverHttpService {
 	private RDFStoreType type = RDFStoreType.FUSEKI;
 	private String sparqlServiceURIForQuery = null;
 	private String sparqlServiceURIForUpdate = null;
+	
+	// Declared the kbClient variable
+	private KnowledgeBaseClient kbClient;
 	
 	public SparqlOverHttpService(String datasetUrl) {
 		
@@ -84,7 +88,19 @@ public class SparqlOverHttpService {
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
 			messageBody = "update=" + messageBody;
 			//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
-		} else {
+		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
+			kbClient = new KnowledgeBaseClient();
+			kbClient.setUpdateEndpoint(sparqlServiceURIForUpdate);
+			kbClient.setQuery(messageBody);
+			try {
+				int response = kbClient.executeUpdate();
+				return ""+response;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else {
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
 		}
 		
