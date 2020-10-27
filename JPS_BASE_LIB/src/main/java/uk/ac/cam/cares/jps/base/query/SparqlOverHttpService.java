@@ -79,6 +79,14 @@ public class SparqlOverHttpService {
 		return b.toString();
 	}
 	
+	/**
+	 * A method developed for performing update operations on different<br>
+	 * types of triple stores including Blazegraph.
+	 * 
+	 * @param messageBody
+	 * @return
+	 * @throws SQLException
+	 */
 	public String executePost(String messageBody) throws SQLException{
 
 		URI uri = AgentCaller.createURI(sparqlServiceURIForUpdate);
@@ -92,10 +100,10 @@ public class SparqlOverHttpService {
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
 			kbClient = new KnowledgeBaseClient();
 			if(sparqlServiceURIForUpdate==null){
-				throw new SQLException("SparqlOverHttpService: SPARQL service URL for update is null. Provide a valid URL.");
+				throw new SQLException("SparqlOverHttpService: SPARQL service URI for update is null. Provide a valid URI.");
 			}
 			if(sparqlServiceURIForUpdate.isEmpty()){
-				throw new SQLException("SparqlOverHttpService: SPARQL service URL for update is emptry. Provide a valid URL.");
+				throw new SQLException("SparqlOverHttpService: SPARQL service URI for update is emptry. Provide a valid URI.");
 			}
 			kbClient.setUpdateEndpoint(sparqlServiceURIForUpdate);
 			kbClient.setQuery(messageBody);
@@ -155,6 +163,14 @@ public class SparqlOverHttpService {
 		return responseBody;
 	}
 	
+	/**
+	 * A method developed for forwarding query to different triples stores<br>
+	 * including Blazegraph.
+	 * 
+	 * @param sparqlQuery
+	 * @return
+	 * @throws SQLException
+	 */
 	public String executeGet(String sparqlQuery) throws SQLException{
 
 		URI uri = null;
