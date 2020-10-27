@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>uk.ac.cam.cares.ebr</groupId>
-  <artifactId>EBRAgent</artifactId>
+  <artifactId>FederatedQuery</artifactId>
   <version>0.0.1</version>
   <packaging>war</packaging>
-  <name>EBRAgent</name>
+  <name>FederatedQuery</name>
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
