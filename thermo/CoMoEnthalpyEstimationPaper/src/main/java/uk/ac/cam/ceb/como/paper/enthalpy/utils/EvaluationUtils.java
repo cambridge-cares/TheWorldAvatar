@@ -89,12 +89,8 @@ public class EvaluationUtils {
      * @param inputJsonKey
      * @return the number of runs used in global cross validation algorithm
      */
-    public static int[] getCtrRuns(String inputJsonKey) {
-    	
-    	int i = Integer.parseInt(inputJsonKey);   	
-
-    	int[] ctrRuns = new int[] {i};
-    	
+    public static int[] getCtrRuns(int inputJsonKey) {
+    	int[] ctrRuns = new int[] {inputJsonKey};
     	return ctrRuns;
     }
     /**
@@ -102,12 +98,8 @@ public class EvaluationUtils {
      * @param inputJsonKey
      * @return the number of reactions to be generated in global cross validation algorithm.
      */
-    public static int[] getCtrRes(String inputJsonKey) {
-    	
-    	int i = Integer.parseInt(inputJsonKey);
-    	
-    	int[] ctrRes = new int[] {i};
-    	
+    public static int[] getCtrRes(int inputJsonKey) {
+    	int[] ctrRes = new int[] {inputJsonKey};
     	return ctrRes;
     }
     
@@ -116,12 +108,8 @@ public class EvaluationUtils {
      * @param inputJsonKey
      * @return the number of radicals used in global cross validation algorithm.
      */
-    public static int[] getCtrRadicals(String inputJsonKey) {
-    	
-    	int i = Integer.parseInt(inputJsonKey);
-    	
-    	int[] ctrRadicals = new int[] {i};
-    	
+    public static int[] getCtrRadicals(int inputJsonKey) {
+    	int[] ctrRadicals = new int[] {inputJsonKey};
     	return ctrRadicals;
     }
 }

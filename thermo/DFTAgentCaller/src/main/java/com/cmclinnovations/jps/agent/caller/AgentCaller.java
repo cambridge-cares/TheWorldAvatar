@@ -95,7 +95,7 @@ public class AgentCaller {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	private String produceHTTPRequest(String speciesIRI) throws UnsupportedEncodingException{
+	public String produceHTTPRequest(String speciesIRI) throws UnsupportedEncodingException{
 		return getHTTPRequestFirstPart().concat(URLEncoder.encode(getJSONInputPart(speciesIRI), "UTF-8"));
 	}
 	

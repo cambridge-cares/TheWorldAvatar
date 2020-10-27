@@ -1,9 +1,12 @@
 package uk.ac.ceb.como.molhub.bean;
 
 /**
- * @author nk510
+ * 
  * The Class RotationalConstant.
  * <p>Class provides a bean for rotational constatnt data : rotational constant size, rotational constant value, rotational constant unit.</p>
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 public class RotationalConstant {
 

@@ -1,0 +1,23 @@
+[PrefixDeclaration]
+:   		http://meraka/moss/exampleBooks.owl#
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:		http://www.w3.org/2001/XMLSchema#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+quest:		http://obda.org/quest#
+
+[SourceDeclaration]
+sourceUri	books
+connectionUrl	jdbc:postgresql://localhost/books
+username	postgres
+password    admin
+driverClass	org.postgresql.Driver
+
+
+[MappingDeclaration] @collection [[
+
+mappingId	cl_Books
+target		:book/{bk_code}/ a :Book .
+source		select "bk_code" from "tb_books"
+
+]]

@@ -5,94 +5,87 @@ import java.util.Map;
 
 
 import com.jayway.jsonpath.JsonPath;
-
+/**
+ * This file reads all properties from the JSON input file, that is to say it reads:
+ * - reference species
+ * - target species (if available)
+ * - the relative path to DFT calculation files
+ * - the name of the destination folder where all outputs including EBRs<br>
+ * and the EoF of target species are stored
+ * - the name of the temporary folder
+ * - the reaction class
+ * - the number of runs
+ * - the number of EBRs to identify
+ * - the number of radicals to use
+ * - the name of the zip file including the extension where all inputs are available
+ * - the input indicating whether to run cross-validation or the EoF calculation
+ * - the boolean value indicating if the target set of species is the same<br>
+ * as the reference set. In this case, user needs to provide reference set.<br>
+ * EBR Agent will assume that the reference set can be reused as the target set. 
+ * 
+ * @author msff2
+ *
+ */
 public class JSonRequestParser {
-
 	
-	
-	public static String getLevelOfTheory(String jsonString){
-		
-	return JsonPath.read(jsonString, "$.job.levelOfTheory");
-	
-	}
-	
-	public static String getJobKeyword(String jsonString){
-		
-	return JsonPath.read(jsonString, "$.job.keyword");
-	
-	}
-	
-	public static String getAlgorithmChoice(String jsonString){
-		
-	return JsonPath.read(jsonString, "$.job.algorithmChoice");
-	
-	}
-
-	public static String getSpeciesIRI(String jsonString){
-		
-	return JsonPath.read(jsonString, "$.speciesIRI");
-	
-	}
-	
-	/**
-	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * 
-	 * @param jsonString input json content
-	 * @return all species IRIs and ontocomcpchem IRIs given in json input file.
-	 * 
-	 */
-	public static List<Map<String, Object>> getAllTargetSpeciesIRI(String jsonString){
-		
-		return JsonPath.parse(jsonString).read("$.job.targetSpecies[*]");
-	}
-	
-	/**
-	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * 
-	 * @param jsonString input json content
-	 * @return all ontospecies IRIs and ontocompchem IRIs that are reference species given in Json input file.
-	 *  
-	 */
 	public static List<Map<String, Object>> getAllReferenceSpeciesIRI(String jsonString){
-		
-		boolean booleanIndicator = JsonPath.parse(jsonString).read("$.isTargetSpeciesSameAsReferenceSpecies");
-		
-		/**
-		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * 
-		 * Checks whether target species list is the same as reference species list		
-		 */
-		if(booleanIndicator==true) {
-			
-			return JsonPath.parse(jsonString).read("$.job.targetSpecies[*]");
-			
-		} else {
-		
 		return JsonPath.parse(jsonString).read("$.job.referenceSpecies[*]");
+	}
+	
+	public static List<Map<String, Object>> getAllTargetSpeciesIRI(String jsonString){
+		boolean booleanIndicator = JsonPath.parse(jsonString).read("$.isRefAndTargetSetSame");
+		if(booleanIndicator==true) {
+			return JsonPath.parse(jsonString).read("$.job.referenceSpecies[*]");
+		} else {
+			return JsonPath.parse(jsonString).read("$.job.targetSpecies[*]");
 		}
 	}
+
+	public static String getDFTCalculationPath(String jsonString) {
+		return JsonPath.read(jsonString, "$.srcCompoundsRef");
+	}
 	
-	public static String getSrcRefPool(String jsonString){
-		
+	public static String getReferenceSpeciesPool(String jsonString){		
 		return JsonPath.read(jsonString, "$.srcRefPool");
 	}
 	
-public static String getInputZipFile(String jsonString){
-		
-		return JsonPath.read(jsonString, "$.inputZipFile");
-		
+	public static String getTargetSpeciesPool(String jsonString){		
+		return JsonPath.read(jsonString, "$.srcTargetPool");
 	}
 
-/**
- * @author NK510 (caresssd@hermes.cam.ac.uk)
- * 
- * @param jsonString the input JSON string
- * @return folder path where Gaussian files are copied.
- */
-public static String getGaussianFolderPath(String jsonString) {
+	public static String getOutputFolderName(String jsonString){	
+		return JsonPath.read(jsonString, "$.destRList");
+	}
+
+	public static String getTemporaryFolderName(String jsonString){	
+		return JsonPath.read(jsonString, "$.tempFolder");
+	}
+
+	public static String getReactionClass(String jsonString){	
+		return JsonPath.read(jsonString, "$.reactionType");
+	}
+
+	public static int getNumberOfRuns(String jsonString){	
+		return JsonPath.read(jsonString, "$.ctrRuns");
+	}
+
+	public static int getNumberOfEBRsToFind(String jsonString){	
+		return JsonPath.read(jsonString, "$.ctrRes");
+	}
+
+	public static int getNumberOfRadicalsToUse(String jsonString){	
+		return JsonPath.read(jsonString, "$.ctrRadicals");
+	}
 	
-	return JsonPath.read(jsonString, "$.srcCompoundsRef");
-}
+	public static String getInputZipFile(String jsonString){	
+		return JsonPath.read(jsonString, "$.inputZipFile");
+	}
+
+	public static String getWhichProcessToRun(String jsonString){	
+		return JsonPath.read(jsonString, "$.whichProcessToRun");
+	}
+
+	public static boolean getIsRefAndTargetSetSame(String jsonString){	
+		return JsonPath.read(jsonString, "$.isRefAndTargetSetSame");
+	}
 }

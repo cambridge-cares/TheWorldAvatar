@@ -12,7 +12,7 @@
  	
 <package name="default" namespace="/" extends="struts-default">
 
-    <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadAction" method="execute">
+    <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadLogAction" method="execute">
 
      <interceptor-ref name="fileUpload"/>
      <interceptor-ref name="basicStack"/>
@@ -22,7 +22,7 @@
          
     </action>
       
-   <action name="search" class="uk.ac.ceb.como.molhub.action.TermValidationAction" method="execute">
+   <action name="search" class="uk.ac.ceb.como.molhub.action.TermValidationLogAction" method="execute">
     
     <result name="success">/search.jsp</result>
 	<result name="input">/search.jsp</result>
@@ -36,7 +36,7 @@
 
    </action>
    
-   <action name="calculation" class="uk.ac.ceb.como.molhub.action.CalculationAction" method="execute">  
+   <action name="calculation" class="uk.ac.ceb.como.molhub.action.CalculationLogAction" method="execute">  
     
        <result name="success">/search.jsp</result>
        <result name="input">/search.jsp</result>
@@ -50,7 +50,7 @@
     
     </action>
     	
-    <action name="moleculeview" class="uk.ac.ceb.como.molhub.action.MoleculeViewAction" method="execute">  
+    <action name="moleculeview" class="uk.ac.ceb.como.molhub.action.MoleculeViewLogAction" method="execute">  
     
        <result name="success">/moleculeview.jsp</result>
        <result name="input">/moleculeview.jsp</result>

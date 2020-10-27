@@ -29,9 +29,6 @@ public class GlobalCrossValidation {
 	  FileUtils.getUnzipFolder(jObject.getString("inputZipFile"));
 	  
       LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
-      leaveOneOutCrossValidationAlgorithm.runGlobalCrossValidation(jObject.get("srcCompoundsRef").toString()+"/", jObject.get("srcRefPool").toString(), jObject.get("destRList").toString(), EvaluationUtils.getCtrRuns(jObject.get("ctrRuns").toString()), EvaluationUtils.getCtrRuns(jObject.get("ctrRes").toString()), EvaluationUtils.getCtrRuns(jObject.get("ctrRadicals").toString()),EvaluationUtils.getReactionType(jObject.get("reactionType").toString()), jObject.get("tempFolder").toString()+"/");
-
-
-
+      leaveOneOutCrossValidationAlgorithm.runGlobalCrossValidation(jObject.get("srcCompoundsRef").toString()+"/", jObject.get("srcRefPool").toString(), jObject.get("destRList").toString(), EvaluationUtils.getCtrRuns(jObject.getInt("ctrRuns")), EvaluationUtils.getCtrRuns(jObject.getInt("ctrRes")), EvaluationUtils.getCtrRuns(jObject.getInt("ctrRadicals")),EvaluationUtils.getReactionType(jObject.get("reactionType").toString()), jObject.get("tempFolder").toString()+"/");
 	}
 }

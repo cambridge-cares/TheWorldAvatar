@@ -1,0 +1,16 @@
+__pycache__/
+build/
+dist/
+*~*
+.vscode/
+venv/
+.mypy_cache/
+coverage.xml
+.coverage
+*.gv
+*.png
+
+## User defined
+*.egg-info
+*.mp4
+gaussian-parser/
