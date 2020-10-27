@@ -89,9 +89,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	boolean restart=false;
 	
 	//below is based on location input (city iri)
-	private String epsgInUTM="48";//48N
-	private String epsgActive="32648";
-	private String gmttimedifference="-8"; //it should be dependent on the location it simulates
+	private String epsgInUTM="";//48N
+	private String epsgActive="";
+	private String gmttimedifference=""; //it should be dependent on the location it simulates
 	
     String chimneyiriInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
             + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
@@ -249,13 +249,6 @@ public class EpisodeAgent extends DispersionModellingAgent {
                 copyTemplate(dataPath, srtm.get(x)+".hgt");
             }
 
-            if(cityIRI.toLowerCase().contains("singapore")) {
-                epsgActive="32648";
-            }
-            else if(cityIRI.toLowerCase().contains("kong")) {
-                epsgActive="32650";
-            }
-
             List<String>stniri=new ArrayList<String>();
             stniri.add(stnIRI.getString(0));
             stniri.add(stnIRI.getString(1));
@@ -290,8 +283,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
             System.out.println("upperx="+upx);
             System.out.println("lowery="+lowy);
             System.out.println("uppery="+upy);
-            System.out.println("targetcoordinate= "+"EPSG:"+epsgActive);
-            region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
+            System.out.println("targetcoordinate= "+epsgActive);
+            region = getNewRegionData(upx, upy, lowx, lowy, epsgActive, sourceCRSName);
             createEmissionInput(dataPath, "points.csv",shipdata);
             createEmissionInput(dataPath, "lines.csv",shipdata);
             try { //for control file
@@ -546,7 +539,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				content[0] = "8";
 				double shipx = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LON);
 				double shipy = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LAT);
-				double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+				double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", epsgActive,
 						new double[] { shipx, shipy });
 				content[1] = "" + locationshipconverted[0];
 				content[2] = "" + locationshipconverted[1];
@@ -577,9 +570,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
 			double x0 = coordinateship.getJSONObject(0).getDouble(DATA_KEY_LON);
 			double y0 = coordinateship.getJSONObject(0).getDouble(DATA_KEY_LAT);
-			double[] locationshipconverted0 = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+			double[] locationshipconverted0 = CRSTransformer.transform("EPSG:4326", epsgActive,
 					new double[] { x0, y0 });
-			double[] locationshipconverted1 = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+			double[] locationshipconverted1 = CRSTransformer.transform("EPSG:4326", epsgActive,
 					new double[] { x0+0.1, y0+0.1 });
 			try {
 				String fileContext = FileUtils.readFileToString(file);
@@ -901,7 +894,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int r = 49; r < 51; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add("\""+epsgActive+"\"\n"); //line 52
+			newcontent.add("\""+epsgActive.substring(5,epsgActive.length())+"\"\n"); //line 52
+			// just the EPSG number without EPSG
 			for (int r = 52; r < 55; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
@@ -983,9 +977,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			String loc2x = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("x").toString();
 			String loc2y = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("y").toString();
 
-			double[] p1convert = CRSTransformer.transform("EPSG:4326", "EPSG:"+epsgActive,
+			double[] p1convert = CRSTransformer.transform("EPSG:4326", epsgActive,
 					new double[] { Double.valueOf(loc1x), Double.valueOf(loc1y) });
-			double[] p2convert = CRSTransformer.transform("EPSG:4326", "EPSG:"+epsgActive,
+			double[] p2convert = CRSTransformer.transform("EPSG:4326", epsgActive,
 					new double[] { Double.valueOf(loc2x), Double.valueOf(loc2y) });
 			
 			
@@ -1002,7 +996,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				newcontent.add(lineoffile.get(r));
 			}
 
-			double[] pmidconvert = CRSTransformer.transform("EPSG:"+epsgActive, "EPSG:4326",
+			double[] pmidconvert = CRSTransformer.transform(epsgActive, "EPSG:4326",
 					new double[] { center[0], center[1] });
 			DecimalFormat df2 = new DecimalFormat("#.#");
 			String xmid = df2.format(pmidconvert[0]);
