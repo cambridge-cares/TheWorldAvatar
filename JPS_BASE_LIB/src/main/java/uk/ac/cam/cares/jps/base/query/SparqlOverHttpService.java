@@ -155,13 +155,19 @@ public class SparqlOverHttpService {
 		return responseBody;
 	}
 	
-	public String executeGet(String sparqlQuery) {
+	public String executeGet(String sparqlQuery) throws SQLException{
 
 		URI uri = null;
 		if (RDFStoreType.RDF4J.equals(type)) {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
 			kbClient = new KnowledgeBaseClient();
+			if(sparqlServiceURIForQuery == null){
+				throw new SQLException("SparqlOverHttpService: SPARQL service URI for query is null. Provide a valid URI.");
+			}
+			if(sparqlServiceURIForQuery.isEmpty()){
+				throw new SQLException("SparqlOverHttpService: SPARQL service URI for query is empty. Provide a valid URI.");
+			}
 			kbClient.setQueryEndpoint(sparqlServiceURIForQuery);
 			kbClient.setQuery(sparqlQuery);
 			try {
