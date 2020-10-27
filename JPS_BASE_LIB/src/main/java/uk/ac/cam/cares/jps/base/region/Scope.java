@@ -33,6 +33,20 @@ public class Scope {
         this.sourceCRS = region.getString(Region.keySrsname);
     }
 
+    // Getters
+    public double getUpperx() {
+        return this.upperx;
+    }
+    public double getUppery() {
+        return this.uppery;
+    }
+    public double getLowerx() {
+        return this.lowerx;
+    }
+    public double getLowery() {
+        return this.lowery;
+    }
+
     /**
      * Calculate scope centre from scope object.
      * index[0] = x coordinate, index[1] = y coordinate
@@ -116,5 +130,23 @@ public class Scope {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
         return result;
+    }
+
+    /** 
+     * Convert scope to targetCRS
+     */
+    public void transform(String targetCRS) {
+        // convert lower corner
+        double[] lowercorner = CRSTransformer.transform(this.sourceCRS, targetCRS, new double[] {this.lowerx,this.lowery});
+        this.lowerx = lowercorner[0];
+        this.lowery = lowercorner[1];
+
+        // convert upper corner
+        double[] uppercorner = CRSTransformer.transform(this.sourceCRS, targetCRS, new double[] {this.upperx,this.uppery});
+        this.upperx = uppercorner[0];
+        this.uppery = uppercorner[1];
+
+        // update CRS
+        this.sourceCRS = targetCRS;
     }
 }
