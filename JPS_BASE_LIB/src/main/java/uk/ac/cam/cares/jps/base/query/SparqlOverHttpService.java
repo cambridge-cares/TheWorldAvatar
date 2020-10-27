@@ -79,7 +79,7 @@ public class SparqlOverHttpService {
 		return b.toString();
 	}
 	
-	public String executePost(String messageBody) {
+	public String executePost(String messageBody) throws SQLException{
 
 		URI uri = AgentCaller.createURI(sparqlServiceURIForUpdate);
 		HttpPost request = new HttpPost(uri);
@@ -91,6 +91,12 @@ public class SparqlOverHttpService {
 			//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
 			kbClient = new KnowledgeBaseClient();
+			if(sparqlServiceURIForUpdate==null){
+				throw new SQLException("SparqlOverHttpService: SPARQL service URL for update is null. Provide a valid URL.");
+			}
+			if(sparqlServiceURIForUpdate.isEmpty()){
+				throw new SQLException("SparqlOverHttpService: SPARQL service URL for update is emptry. Provide a valid URL.");
+			}
 			kbClient.setUpdateEndpoint(sparqlServiceURIForUpdate);
 			kbClient.setQuery(messageBody);
 			try {
