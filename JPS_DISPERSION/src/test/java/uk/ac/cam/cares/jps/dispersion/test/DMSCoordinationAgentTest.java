@@ -210,12 +210,24 @@ public class DMSCoordinationAgentTest extends TestCase {
 
 		try {
 			getCity.invoke(dmsa, args);
-			assertEquals(getCity.invoke(dmsa, args), "http://dbpedia.org/resource/Singapore");
+			assertEquals(getCity.invoke(dmsa, args), Region.SINGAPORE_IRI);
+		} catch (JPSRuntimeException e) {
+			assertTrue(false);
+
+		}
+		
+		args.remove(Region.keyRegion);
+		Region.putRegion(args, 4);
+
+		try {
+			getCity.invoke(dmsa, args);
+			assertEquals(getCity.invoke(dmsa, args), Region.HONG_KONG_IRI);
 			System.out.println("testGetCity ran.");
 		} catch (JPSRuntimeException e) {
 			assertTrue(false);
 
 		}
+	
 	}
 
 }
