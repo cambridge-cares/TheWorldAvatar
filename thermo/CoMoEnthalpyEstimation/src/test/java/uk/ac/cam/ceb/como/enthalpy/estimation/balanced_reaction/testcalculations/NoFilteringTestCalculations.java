@@ -16,7 +16,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesP
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.reactions.ReactionListWriter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
-//import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.AbsolutValueFeasibilityReactionSelector;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.AbsolutValueFeasibilityReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.FeasibleReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.MeanReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.MedianReactionSelector;
@@ -64,7 +64,7 @@ public class NoFilteringTestCalculations {
         //selector.add(new RangeBasedReactionSelector(10, 1));
         //selector.add(new FeasibleReactionSelector(-2500.0, 2500.0));
         //selector.add(new MedianReactionSelector());
-//        selector.add(new AbsolutValueFeasibilityReactionSelector());
+        selector.add(new AbsolutValueFeasibilityReactionSelector());
         
         run(runs, "test_data/isd_nofiltering25_50runs", ref, selector, new MPSFormat(false, new ISDReactionType()));
     }

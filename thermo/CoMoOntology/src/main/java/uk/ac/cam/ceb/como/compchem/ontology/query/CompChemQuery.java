@@ -164,7 +164,7 @@ public class CompChemQuery {
 			ResultSet resultSet = qexec.execSelect();
 			
 			while(resultSet.hasNext()) { 
-			
+		    
 		    fileOutputStream=new FileOutputStream(new File(targetFolder+ StringUtils.substringBefore(fileName, ".")  +".json"),false);
 	       		
 			ResultSetFormatter.outputAsJSON(fileOutputStream, resultSet);

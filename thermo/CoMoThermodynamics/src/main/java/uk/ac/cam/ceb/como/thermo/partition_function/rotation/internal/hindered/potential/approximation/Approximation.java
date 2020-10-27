@@ -15,7 +15,7 @@ import uk.ac.cam.ceb.como.math.function.FunctionCalculationException;
 public abstract class Approximation<T> {
     
     // Function!!!
-//    public abstract Function approximate() throws ApproximationException;
+    public abstract Function approximate() throws ApproximationException;
     
-//    public abstract DataPoint approximate(T[] coordinate) throws ApproximationException, FunctionCalculationException;
+    public abstract DataPoint approximate(T[] coordinate) throws ApproximationException, FunctionCalculationException;
 }
