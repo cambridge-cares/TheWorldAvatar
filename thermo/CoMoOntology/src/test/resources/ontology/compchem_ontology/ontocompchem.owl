@@ -81,6 +81,12 @@
     <rdfs:isDefinedBy rdf:resource="http://chemicalsemantics.com/"/>
     <rdfs:label xml:lang="en">6-311+G* Basis Set</rdfs:label>
   </owl:Class>
+  <owl:Class rdf:ID="ElectronicAndZPEEnergy">
+    <rdfs:label>Electronic and ZPEEnergy</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://purl.org/gc/SystemEnergies"/>
+    </rdfs:subClassOf>
+  </owl:Class>
   <owl:Class rdf:about="http://purl.org/gc/Frequency">
     <rdfs:comment xml:lang="en">Frequency is defined as the number of occurrences of a repeating event per unit of time. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</rdfs:comment>
     <rdfs:isDefinedBy rdf:resource="https://cmclinnovations.com/"/>
@@ -700,6 +706,19 @@ thermodynamics, the symmetry number corrects for any overcounting of equivalent 
     <rdfs:comment xml:lang="en">A wavenumber - the unit of frequency.</rdfs:comment>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   </qudt:FrequencyUnit>
+
+<owl:NamedIndividual rdf:about="http://data.nasa.gov/qudt/owl/unit#Angstrom">
+<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Angstrom</rdfs:label>
+<qudt:abbreviation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Å</qudt:abbreviation>
+<qudt:code rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0085</qudt:code>
+<qudt:conversionMultiplier rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0E-10</qudt:conversionMultiplier>
+<qudt:conversionOffset rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</qudt:conversionOffset>
+<qudt:quantityKind rdf:resource="http://data.nasa.gov/qudt/owl/quantity#Length"/>
+<qudt:symbol rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Å</qudt:symbol>
+<rdf:type rdf:resource="http://data.nasa.gov/qudt/owl/qudt#LengthUnit"/>
+</owl:NamedIndividual>
+
+  
   <owl:NamedIndividual rdf:about="http://data.nasa.gov/qudt/owl/unit#JoulePerMole">
     <qudt:quantityKind>
       <qudt:ChemistryQuantityKind rdf:about="http://data.nasa.gov/qudt/owl/quantity#MolarEnergy">
