@@ -1,16 +1,18 @@
 package uk.ac.cam.cares.jps.base.region;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
+/**
+ * The purpose of this class is to store region specific parameters for dispersion modelling in one place.
+ * In the future, these may be queried from the triplestore. 
+ * There are currently 4 sets of scope, 2 for both Sg and HK.
+ */
 public class Region {
-    /**
-     * The purpose of this class is to store region specific parameters for dispersion modelling in one place.
-     * In the future, these may be queried from the triplestore. 
-     * There are currently 4 sets of scope, 2 for both Sg and HK.
-     */
-
     // keys for JSON object
     public static String keyUppercorner = "uppercorner";
     public static String keyLowercorner = "lowercorner";
@@ -28,11 +30,17 @@ public class Region {
     public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
     public static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
 
+    // City names
+    private static final String Berlin = "Berlin";
+    private static final String The_Hague = "The_Hague";
+    private static final String Singapore = "Singapore";
+    private static final String Hong_Kong = "Hong_Kong";
+
+    /**
+     * Returns a JSONObject containing the scope coordinates and SRS name
+     * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
+     */
     private static JSONObject getScope(int option) {
-        /**
-         * Returns a JSONObject containing the scope coordinates and SRS name
-         * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
-         */
         String x_low = null, x_up = null , y_low = null, y_up = null;
 
         JSONObject joScope = new JSONObject();
@@ -82,20 +90,20 @@ public class Region {
         return joScope;
     }
 
+    /**
+     * Adds region to the JSON object received
+     * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
+     */
     public static void putRegion(JSONObject jo, int option) {
-        /**
-         * Adds region to the JSON object received
-         * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
-         */
         jo.put(keyRegion, getScope(option));
     }
 
+    /**
+     * Adds region and air quality station IRI to the JSON object received
+     * The air quality stations were created manually for each option
+     * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
+     */
     public static void putRegionAndStation(JSONObject jo, int option) {
-        /**
-         * Adds region and air quality station IRI to the JSON object received
-         * The air quality stations were created manually for each option
-         * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
-         */
         jo.put(keyRegion, getScope(option));
 
         switch (option) {
@@ -114,19 +122,19 @@ public class Region {
         }
     }
 
+    /**
+     * Different combinations of city and model (Episode/ADMS) require different CRS 
+     */
     public static String getTargetCRSName(String agentIRI, String cityIRI) {
-        /**
-         * Different combinations of city and model (Episode/ADMS) require different CRS 
-         */
         String targetCRSName = null;
 
-        if (cityIRI.equalsIgnoreCase(BERLIN_IRI)) {
+        if (cityIRI.contains(Berlin)) {
             targetCRSName = CRSTransformer.EPSG_25833;
         }
-        else if (cityIRI.equalsIgnoreCase(THE_HAGUE_IRI)) {
+        else if (cityIRI.contains(The_Hague)) {
             targetCRSName = CRSTransformer.EPSG_28992;
         }
-        else if (cityIRI.equalsIgnoreCase(SINGAPORE_IRI)) {
+        else if (cityIRI.contains(Singapore)) {
             if (agentIRI.contains("ADMS")) {
                 targetCRSName = CRSTransformer.EPSG_3414;
             }
@@ -134,7 +142,7 @@ public class Region {
                 targetCRSName = CRSTransformer.EPSG_32648;
             }
         }
-        else if (cityIRI.equalsIgnoreCase(HONG_KONG_IRI)) {
+        else if (cityIRI.contains(Hong_Kong)) {
             if (agentIRI.contains("ADMS")) {
                 targetCRSName = CRSTransformer.EPSG_2326;
             }
@@ -143,5 +151,22 @@ public class Region {
             }
         }
         return targetCRSName;
+    }
+
+    /**
+     * Get SRTM file names required for Episode topology preprocessor
+     * Ideally these files should be stored in some kind of database
+     * Note that the code is currently hard coded to take in a maximum of 2 files
+     * Shortcut fix to tidy up Episode agent
+     */
+    public static List<String> getSRTM(String cityIRI) {
+        List<String> srtm = new ArrayList<String>();
+        if (cityIRI.contains(Singapore)) {
+            srtm.add("N01E103");
+            srtm.add("N01E104");
+        } else if (cityIRI.contains(Hong_Kong)) {
+            srtm.add("N22E114");
+        }
+        return srtm;
     }
 }
