@@ -334,6 +334,8 @@ socket.on('join', function (uriSubscribeList) {
 			diskLoc = path.normalize(diskLoc)
             socket.leave(diskLoc+"_data");
             socket.leave(diskLoc+"_nodata");
+                        socket.leave(diskLoc+"_endpoint");
+
             logger.debug(socket.id, "left", diskLoc);
             //TODO: deregister if a room owns no client?
 
