@@ -2,6 +2,12 @@ import numpy as np
 from rdflib import *
 from rdflib.namespace import OWL,RDF,RDFS
 
+
+'''
+TODO
+- Make sure properties have appropriate domains
+
+'''
 g = Graph()
 w = Namespace('https://theworldavatar.com/')
 
@@ -111,17 +117,16 @@ def populate_DatatypeProperties(ontoclass,properties,composition_properties):
     return
 
 pipe_properties = ['hasDiameter','hasStartPressure','hasPressureDrop',\
-    'hasLength','hasThickness','hasCoating']
+    'hasLength']
 populate_DatatypeProperties('pipe',pipe_properties,[])
 
-compressor_properties = ['hasPressureRatio','hasEfficiency']
+compressor_properties = ['hasCompressionRatio','hasEfficiency']
 populate_DatatypeProperties('compression-station',compressor_properties,[])
 
 intake_properties = ['hasSupply']
 populate_DatatypeProperties('intake',intake_properties,[])
 
-
-offtake_properties = ['hasDemand']
+offtake_properties = ['hasDemand','hasMaxHydrogenPercentage']
 populate_DatatypeProperties('offtake',offtake_properties,[])
 
 storage_properties = ['hasCapacity']
@@ -129,23 +134,24 @@ populate_DatatypeProperties('storage',storage_properties,[])
 
 def within_pipe_creation():
     # adding the 'stuff' in a pipe as a class
-    g.add((w['within-pipe'],RDF.type,OWL.Class))
+    within_class = 'within_conditions'
+    g.add((w[within_class],RDF.type,OWL.Class))
     g.add((w.hasWithin,RDF.type,OWL.ObjectProperty))
     for i in classes:
         g.add((w.hasWithin,RDFS.domain,w[i]))
-        g.add((w.hasWithin,RDFS.range,w['within-pipe']))
-        g.add((w.hasWithin,RDF.Property,w['within-pipe']))
+        g.add((w.hasWithin,RDFS.range,w[within_class]))
+        g.add((w.hasWithin,RDF.Property,w[within_class]))
 
     within_pipe_properties = ['hasComposition','hasTemperature,hasWobbeIndex']
     composition_properties = ['hasMethaneVolume','hasEthaneVolume',\
         'hasPropaneVolume','hasButaneVolume','hasNitrogenVolume',\
             'hasCarbonDioxideVolume','hasHydrogenVolume','hasHeliumVolume']
 
-    populate_DatatypeProperties('within-pipe',within_pipe_properties,composition_properties)
+    populate_DatatypeProperties(within_class,within_pipe_properties,composition_properties)
     return 
+
+within_pipe_creation()
+
 
 g.serialize(destination='OntoGasGrid_Tbox.owl',format='n3')
 
-#
-# todo 
-# make sure appropriate domains are defined for all properties
