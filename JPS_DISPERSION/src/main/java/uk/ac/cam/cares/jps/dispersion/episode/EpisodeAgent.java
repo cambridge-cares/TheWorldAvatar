@@ -28,6 +28,9 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.cts.CRSFactory;
+import org.cts.registry.EPSGRegistry;
+import org.cts.registry.RegistryManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -86,9 +89,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	boolean restart=false;
 	
 	//below is based on location input (city iri)
-	private String epsgInUTM="";//48N
-	private String epsgActive="";
-	private String gmttimedifference=""; //it should be dependent on the location it simulates
+	private String epsgInUTM="48N";//48N
+	private String epsgActive="EPSG:32648";
+	private String gmttimedifference="-8"; //it should be dependent on the location it simulates
 	
     String chimneyiriInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
             + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
@@ -342,7 +345,15 @@ public class EpisodeAgent extends DispersionModellingAgent {
                 }
                 JSONObject region = input.getJSONObject("region");
                 // try creating a scope object
-                new Scope(region); 
+                Scope sc = new Scope(region); 
+                String sourceCRSName = sc.getCRSName();
+
+                // check if CRS is valid
+                CRSFactory crsFact = new CRSFactory();
+                RegistryManager registryManager = crsFact.getRegistryManager();
+                registryManager.addRegistry(new EPSGRegistry());
+                crsFact.getCRS(sourceCRSName);
+
                 // city IRI
                 String cityIRI = input.getString("city");
                 new URL(cityIRI).toURI();
