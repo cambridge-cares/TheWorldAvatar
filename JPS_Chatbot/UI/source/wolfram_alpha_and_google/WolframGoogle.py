@@ -4,17 +4,12 @@ from pprint import pprint
 import wolframalpha
 from googleapiclient.discovery import build
 from serpwow.google_search_results import GoogleSearchResults
-from selenium import webdriver
-
-import json
 import requests
-from bs4 import BeautifulSoup
-import time
+
+from selenium.webdriver.firefox.options import Options
 import re
-import urllib.parse
-from urllib.parse import urlparse
-
-
+from selenium import webdriver
+from bs4 import BeautifulSoup
 # For the google search api, we followed the https://linuxhint.com/google_search_api_python/
 # Google customized search ID: 3499ed51db04db22e
 # Google customized search API key: AIzaSyB4J9XxLeCeKdVm9Vs0fcihWhaQBV7jpjI

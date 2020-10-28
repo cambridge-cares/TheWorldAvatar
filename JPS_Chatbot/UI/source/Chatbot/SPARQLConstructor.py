@@ -25,17 +25,24 @@ def generate_combinations(results):
         else:
             temp.append(uris)
     list_of_combination = list(itertools.product(*temp))
+
     # TODO: calculate a score for the results
     list_of_combination_with_score = []
     for combination in list_of_combination:
+        min_score = 100
         combination_score = 1
         for item in combination:
             if type(item) is tuple:
                 uri = item[0]
                 score = item[1]
+                int_score = int(score)
+                # if int(score) < min_score:
+                #     min_score = int(score)
                 if score != 0:
                     combination_score = combination_score * score
-
+        # if min_score <= 70:
+        #     pass
+        # else:
         list_of_combination_with_score.append({'uris': combination, 'score': combination_score})
 
     # print('-------------  list_of_combination_with_score --------------')

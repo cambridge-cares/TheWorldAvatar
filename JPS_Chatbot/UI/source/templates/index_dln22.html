@@ -22,6 +22,8 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="../static/css/style.css" rel="stylesheet" />
+        <link href="../static/css/google_style.css" rel="stylesheet" />
+
     </head>
     <body id="page-top" style="font-family: Hind">
         <!-- Navigation-->
@@ -29,7 +31,7 @@
 
         <nav class="navbar navbar-expand-md  sticky-top" style="background-color:#338cea">
             <div class="container" style="color:#338cea">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="https://en.wikipedia.org/wiki/Marie_Curie">
                     <img  style="width:180px" src="../static/img/marie.jpg">
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
@@ -75,7 +77,11 @@
                         <i class="fa fa-search" id="search-icon"></i>
                         <i class="fas fa-spinner fa-spin" id="search-spinner"></i>
 					  </button>
-					</div>
+
+                    </div>
+
+
+
 					<input type="search" class="form-control" placeholder="Type your query" list="ex-queries" id="input-field"/>
 					<!--<datalist id="ex-queries">
                         <option value="stability of FMOC amide + zinc"/>
@@ -91,6 +97,10 @@
 						<option value="what reactions produce NO2 + O2"/>
                     </datalist>
                     -->
+                    <button class="btn btn-secondary" type="button" onclick="get_random_question()">
+                        <i class="fa fa-random" id="random-icon"></i>
+					</button>
+
                     <datalist id="ex-queries">
 
 					    <option value="Molecular model of  aromatic hydrocarbons"/>
@@ -154,8 +164,9 @@
         <div id="google_result_box" >
             <hr/>
         <h1 class="container text-dark font-weight-bold mt-5" id="header_google"> Result (from Google Knowledge Graph)</h1>
-        <div class="container text-dark font-weight-bold mt-5" id="google-results"></div>
-         </div>
+
+            <div class="container" id="google-results"></div>
+        </div>
 
         <div id="wolfram_result_box" >
         <hr/>
@@ -279,8 +290,8 @@
                     <div class="divider-custom-line"></div>
                 </div>
                 <!-- Portfolio Grid Items-->
+                <!--
                 <div class="row align-items-center">
-                    <!-- Portfolio Item 1-->
                     <div class="col-md-6 col-lg-4 mb-5 justify-content-center">
                         <img class="img-fluid" src="../static/img/chatbot.svg" alt="" width="200"/>
                     </div>
@@ -288,8 +299,10 @@
                         <h4 class="masthead-heading mb-0">Powered By an Intelligent Natural Language Processor</h4>
                     </div>
                 </div>
+                -->
+
+                <!--
                 <div class="row align-items-center">
-                    <!-- Portfolio Item 2-->
                     <div class="col-md-6 col-lg-4 mb-5">
                         <img class="img-fluid" src="../static/img/KG.svg " alt="" width="200"/>
                     </div>
@@ -297,6 +310,9 @@
                         <h4 class="masthead-heading mb-0">Explores The Power of Cross Domain Knowledge Graphs</h4>
                     </div>
                 </div>
+                -->
+
+
             </div>
         </section>
         <!-- Partners Section-->

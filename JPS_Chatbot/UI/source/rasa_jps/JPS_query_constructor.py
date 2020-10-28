@@ -4,6 +4,7 @@ import urllib.parse
 import urllib.request
 from pprint import pprint
 
+from .species_validator import SpeciesValidator
 from .locations import JPS_SPARQL_TEMPLATE_PATH
 from .search_interface import SearchInterface
 from .OntoCompChem_Queries import ontocompchem_simple_intents, \
@@ -31,11 +32,15 @@ class JPS_query_constructor:
             self.template_dict = json.loads(f.read())
         self.serach_interface = SearchInterface()
         self.socketio = socketio
+        self.validator = SpeciesValidator()
 
     @staticmethod
     def process_species_for_ontocompchem(species):
         # to convert H2O2 or h2o2 to H 2 O 2
         # to convert H2O2 or h2o2 to H 2 O 2
+
+
+
         temp = ''
         number_regex = r'[0-9]+'
         alphabet_regex = r'[a-zA-Z]'
@@ -229,7 +234,11 @@ class JPS_query_constructor:
         # VIBRATION_FREQUENCY_QUERY
         # ROTATIONAL_SYMMETRY_NUMBER
         original_species = species
-        species = JPS_query_constructor.process_species_for_ontocompchem(species)
+        species = self.validator.validate('ontocompchem', intent, species)
+        if species is None:
+            self.socketio.emit('coordinate_agent', 'This species does not have this information in the World Avatar KG')
+            return None
+
         if intent == 'rotational_constants':
             q = ROTATIONAL_CONSTANT_QUERY % species
             rst = self.fire_query_ontochemcomp(q).decode('utf-8')

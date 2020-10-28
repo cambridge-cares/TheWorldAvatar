@@ -7,6 +7,9 @@ import urllib.request
 
 # ontocompchem queries
 def fire_query(query):
+    with open('queries', 'a') as f:
+        f.write('----------- ontocompchem -----------')
+        f.write('\n' + str(query))
     print('----------- firing the query to JPS ontochemcomp -------------')
     print(query)
     # x = input()
@@ -281,6 +284,9 @@ BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short
 def fire_query_ontokin(query):
     print('----------- firing the query to JPS -------------')
     print(query)
+    with open('queries', 'a') as f:
+        f.write('----------- ontokin -----------')
+        f.write('\n' + str(query))
     url = "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy"
     values = {'queryString': query}
     data = urllib.parse.urlencode(values).encode('utf-8')

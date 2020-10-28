@@ -32,7 +32,7 @@ def make_query():
 @app.route('/query_wolfram')
 def make_query_wolfram():
     socketio.emit('coordinate_agent', 'Querying the wolfram alpha engine')
-    question = request.args.get('question')
+    question = request.args.get('question').strip()
     print(question)
     print('the questions received', question)
     result = wolfram_and_google.get_result_from_wolfram(question)
@@ -45,12 +45,13 @@ def make_query_wolfram():
 @app.route('/query_google')
 def make_query_google():
     socketio.emit('coordinate_agent', 'Querying the Google engine')
-    question = request.args.get('question')
+    question = request.args.get('question').strip()
     # r = wolfram_and_google.get_result_from_google_directly(question)
-    r = wolfram_and_google.get_result_from_google(question)
-
+    r = google_api.run(question)
+    print('========== the result from google ========\n')
+    print(r)
     socketio.emit('coordinate_agent', 'Obtained result from the Google engine')
-    return r
+    return str(r)
 
 
 @app.route('/')
@@ -61,10 +62,11 @@ print('----------- sys path ------------')
 print(sys.path)
 from CoordinateAgent import CoordinateAgent
 from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
+from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
 
 coordinate_agent = CoordinateAgent(socketio)
 wolfram_and_google = WolframGoogle()
-
+google_api = GoogleAPI()
 
 if __name__ == '__main__':
     app.run(host='https://kg.cmclinnovations.com/', port=8080, debug=True)
