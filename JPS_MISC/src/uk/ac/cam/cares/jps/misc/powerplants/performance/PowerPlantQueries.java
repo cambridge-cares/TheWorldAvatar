@@ -89,21 +89,26 @@ public class PowerPlantQueries {
 		return plantList;
 	}
 
-	public double queryEmission(String iri) {
+	/**
+	 * Retrieves the amount of emission from the current plant.
+	 * 
+	 * @param iri the IRI of the current plant.
+	 * @return the amount of emission from the current plant.
+	 * @throws SQLException
+	 */
+	public double queryEmission(String iri) throws SQLException {
 
 		String query = MiscUtil.format(SPARQL_PLANT, iri, iri);
 
 		//System.out.println(query);
 		
-		String result = null;
+		String result;
 		try {
 			result = getSparqlsService().executeGet(query);
 		} catch (SQLException e) {
 			logger.error("PowerPlantQueries: Querying emission was not successful due to "+e.getMessage());
 			System.out.println("PowerPlantQueries: Querying emission failed because of "+e.getMessage());
-		}
-		if(result==null){
-			return 0;
+			throw new SQLException(e.getMessage());
 		}
 		StringTokenizer tokenizer = new StringTokenizer(result, "\r\n");
 		tokenizer.nextToken();
@@ -117,7 +122,12 @@ public class PowerPlantQueries {
 		return emission;
 	}
 
-	
+	/**
+	 * Updates the amount of emission from the current plant. 
+	 * 
+	 * @param iri the IRI of the current plant.
+	 * @param emission the amount of emission from the current plant. 
+	 */
 	public void updateEmission(String iri, double emission) {
 		
 		String query = MiscUtil.format(SPARQL_PLANT_UPDATE_EMISSION, emission, iri);
@@ -132,7 +142,7 @@ public class PowerPlantQueries {
 	}
 	
 	/**
-	 * Iterates on the list of plants to show the emission from them.
+	 * Iterates on the list of plant IRIs to show the emission from corresponding plants.
 	 * 
 	 * @param numberPlants
 	 * @param select
