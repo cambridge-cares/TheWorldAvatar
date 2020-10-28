@@ -220,6 +220,7 @@ case util:
      dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/PARMS3.EXT
      dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/STATE3.EXT
      chmod +x ~/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fix_src.csh
+     chmod +x ~/citychem-1.3/preproc/auxiliary/srtm_generate_hdr.sh
 #> Write the makefiles using the *.tmpl templates
 #     sed \
 #       -e "s%@{F90}%${F90}%g" \
