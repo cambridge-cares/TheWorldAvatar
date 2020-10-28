@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -18,6 +21,11 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
  *
  */
 public class TestPowerPlants extends TestCase {
+	/**
+	 * An instance of Logger class is created to keep track of the event when<br>
+	 * an exception occurs in any method in this class. 
+	 */
+	private static Logger logger = LoggerFactory.getLogger(TestPowerPlants.class);
 
 	private static final String IRI_TEST_PLANT = "http://www.theworldavatar.com/kb/powerplants/powerplant_test";
 	
@@ -34,7 +42,7 @@ public class TestPowerPlants extends TestCase {
 		System.out.println("example url for rdf4j  = http://localhost:8080/rdf4j-server/repositories/<dataset name>");
 	}
 	
-	public void start(String[] args) throws IOException {
+	public void start(String[] args) throws IOException, SQLException {
 		
 		if (args.length == 0) {
 			printHelp();
@@ -50,14 +58,32 @@ public class TestPowerPlants extends TestCase {
 			break;
 		case 2: 
 			double emissionValue = Double.valueOf(args[2]);
-			createModel().loopOnPlants(10000, false, true, emissionValue);
+			try {
+				createModel().loopOnPlants(10000, false, true, emissionValue);
+			} catch (SQLException e) {
+				logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+				System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+				throw new SQLException(e.getMessage());
+			}
 			break;
 		case 3: 
-			createModel().loopOnPlants(10000, true, false, 0.);
+			try {
+				createModel().loopOnPlants(10000, true, false, 0.);
+			} catch (SQLException e) {
+				logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+				System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+				throw new SQLException(e.getMessage());
+			}
 			break;
 		case 4: 
 			emissionValue = Double.valueOf(args[2]);
-			createModel().loopOnPlants(10000, true, true, emissionValue);
+			try {
+				createModel().loopOnPlants(10000, true, true, emissionValue);
+			} catch (SQLException e) {
+				logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+				System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+				throw new SQLException(e.getMessage());
+			}
 			break;
 		case 99: 
 			testPerformanceInsertEmissionTriplesForAllPlants();
@@ -107,7 +133,7 @@ public class TestPowerPlants extends TestCase {
 		return new PowerPlantQueries(createSparqlOverHttpService());
 	}
 	
-	public void testPostUpdateWithDATA() {
+	public void testPostUpdateWithDATA() throws SQLException {
 		
 		String messageBody = "PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> \r\n" + 
 				"PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
@@ -119,11 +145,13 @@ public class TestPowerPlants extends TestCase {
 		try {
 			createSparqlOverHttpService().executePost(messageBody);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());
 		}
 	}
 	
-	public void testPostDeleteWithDATA() {
+	public void testPostDeleteWithDATA() throws SQLException {
 		
 		String messageBody = "PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> \r\n" + 
 				"PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
@@ -135,11 +163,13 @@ public class TestPowerPlants extends TestCase {
 		try {
 			createSparqlOverHttpService().executePost(messageBody);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());
 		}
 	}
 	
-	public void testPostDeleteWithWHERE() {
+	public void testPostDeleteWithWHERE() throws SQLException {
 		
 		String messageBody = "PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> \r\n" + 
 				"PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
@@ -152,35 +182,56 @@ public class TestPowerPlants extends TestCase {
 		try {
 			createSparqlOverHttpService().executePost(messageBody);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());
 		}
 	}
 
-	public void testOnePlantQuery() throws IOException {
-			
-		//Double estimatedEmission = createModel().queryPowerplantProperty("http://www.theworldavatar.com/kb/powerplants/powerplant_1");
-		Double estimatedEmission = createModel().queryEmission("http://www.theworldavatar.com/kb/powerplants/powerplant_1001");
-		System.out.println("Estimated Emission = " + estimatedEmission);
+	public void testOnePlantQuery() throws IOException, SQLException {
+		try{
+			//Double estimatedEmission = createModel().queryPowerplantProperty("http://www.theworldavatar.com/kb/powerplants/powerplant_1");
+			Double estimatedEmission = createModel().queryEmission("http://www.theworldavatar.com/kb/powerplants/powerplant_1001");
+			System.out.println("Estimated Emission = " + estimatedEmission);
+		}catch(SQLException e){
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());
+		}
 	}
 	
-	public void testPerformanceLoopOnPlantsWithSelectOnly() throws IOException {
+	public void testPerformanceLoopOnPlantsWithSelectOnly() throws IOException, SQLException {
+		try {
+			createModel().loopOnPlants(10000, true, false, 1.);
+		} catch (SQLException e) {
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());		}
+	}
+	
+	public void testPerformanceLoopOnPlantsWithUpdateOnly() throws IOException, SQLException {
 		
-		createModel().loopOnPlants(10000, true, false, 1.);
+		try {
+			createModel().loopOnPlants(10000, false, true, 2.);
+		} catch (SQLException e) {
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());		}
 	}
 	
-	public void testPerformanceLoopOnPlantsWithUpdateOnly() throws IOException {
-		
-		createModel().loopOnPlants(10000, false, true, 2.);
-	}
-	
-	public void testPerformanceLoopOnPlantSelectAndUpdate() {
+	public void testPerformanceLoopOnPlantSelectAndUpdate() throws SQLException {
 		
 		// https://jena.apache.org/documentation/fuseki2/soh.html#soh-sparql-update
 		// https://www.baeldung.com/httpclient-post-http-request
 		// https://www.w3.org/TR/sparql11-protocol/#update-bindings-http-examples
 		// https://www.w3.org/TR/sparql11-update/#deleteData
 		
-		createModel().loopOnPlants(10000, true, true, 3.);
+		try {
+			createModel().loopOnPlants(10000, true, true, 3.);
+		} catch (SQLException e) {
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());		}
 	}
 	
 	public void testOneTestPlantInsertEmissionTriples() {
@@ -203,10 +254,18 @@ public class TestPowerPlants extends TestCase {
 
 	/**
 	 * Inserting exactly the same triples (with object type relations and same IRIs) does not lead to duplication of already existing triples (what is for datatype relations?)
+	 * @throws SQLException 
 	 */
-	public void testPerformanceInsertEmissionTriplesForAllPlants() {
+	public void testPerformanceInsertEmissionTriplesForAllPlants() throws SQLException {
 		PowerPlantQueries model = createModel();
-		List<String> plants = model.queryAllPowerplants();
+		List<String> plants;
+		try {
+			plants = model.queryAllPowerplants();
+		} catch (SQLException e) {
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());
+		}
 		int i=1;
 		for (String current: plants) {
 			System.out.println("inserting for " + i + "th plant: " + current);
@@ -283,9 +342,15 @@ public class TestPowerPlants extends TestCase {
 		System.out.println(result);
 	}
 	
-	public void testPerformanceGetAllPowerPlants() {
+	public void testPerformanceGetAllPowerPlants() throws SQLException {
 		
-		createModel().queryAllPowerplants();
+		try {
+			createModel().queryAllPowerplants();
+		} catch (SQLException e) {
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+			throw new SQLException(e.getMessage());
+		}
 	}
 	
 }
