@@ -1,15 +1,23 @@
 package uk.ac.cam.cares.jps.misc.powerplants.performance;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
 public class PowerPlantQueries {
-	
+	/*
+	 * An instance of Logger class is created to log the background knowledge<br>
+	 * of a situation when something goes wrong at run-time within this class.
+	 */
+	private static Logger logger = LoggerFactory.getLogger(PowerPlantQueries.class);
 	public static final String SPARQL_PREFIXES = "PREFIX : <http://www.theworldavatar.com/kb/powerplants/>\r\n"
 			+ "PREFIX powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>\r\n"
 			+ "PREFIX system_v1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#>\r\n"
@@ -51,8 +59,17 @@ public class PowerPlantQueries {
 		
 		System.out.println(SPARQL_ALL_PLANTS);
 		
-		String result = getSparqlsService().executeGet(SPARQL_ALL_PLANTS);
+		String result = null;
+		try {
+			result = getSparqlsService().executeGet(SPARQL_ALL_PLANTS);
+		} catch (SQLException e) {
+			logger.error("PowerPlantQueries: Querying all power plants was not successful due to "+e.getMessage());
+			System.out.println("PowerPlantQueries: Querying all power plants failed because of "+e.getMessage());
+		}
 		
+		if(result == null){
+			return null;
+		}
 	
 		StringTokenizer tokenizer = new StringTokenizer(result, "\r\n");
 		tokenizer.nextElement(); // remove the header
@@ -75,7 +92,16 @@ public class PowerPlantQueries {
 
 		//System.out.println(query);
 		
-		String result = getSparqlsService().executeGet(query);
+		String result = null;
+		try {
+			result = getSparqlsService().executeGet(query);
+		} catch (SQLException e) {
+			logger.error("PowerPlantQueries: Querying emission was not successful due to "+e.getMessage());
+			System.out.println("PowerPlantQueries: Querying emission failed because of "+e.getMessage());
+		}
+		if(result==null){
+			return 0;
+		}
 		StringTokenizer tokenizer = new StringTokenizer(result, "\r\n");
 		tokenizer.nextToken();
 		double emission = 0.;
@@ -94,7 +120,12 @@ public class PowerPlantQueries {
 		String query = MiscUtil.format(SPARQL_PLANT_UPDATE_EMISSION, emission, iri);
 		//System.out.println(query);
 		
-		getSparqlsService().executePost(query);
+		try {
+			getSparqlsService().executePost(query);
+		} catch (SQLException e) {
+			logger.error("PowerPlantQueries: Updating emission was not successful due to "+e.getMessage());
+			System.out.println("PowerPlantQueries: Updating emission failed because of "+e.getMessage());
+		}
 	}
 	
 	public void loopOnPlants(int numberPlants, boolean select, boolean insert, double emission) {
