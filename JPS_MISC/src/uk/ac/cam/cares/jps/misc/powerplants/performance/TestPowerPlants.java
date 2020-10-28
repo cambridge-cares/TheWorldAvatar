@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.misc.powerplants.performance;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -115,7 +116,11 @@ public class TestPowerPlants extends TestCase {
 				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> \r\n" + 
 				"INSERT DATA { <http://www.theworldavatar.com/kb/powerplants/powerplant_my> a powerplant:PowerPlant.} ";
 		
-		createSparqlOverHttpService().executePost(messageBody);
+		try {
+			createSparqlOverHttpService().executePost(messageBody);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void testPostDeleteWithDATA() {
@@ -127,7 +132,11 @@ public class TestPowerPlants extends TestCase {
 				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> \r\n" + 
 				"DELETE DATA { <http://www.theworldavatar.com/kb/powerplants/powerplant_my> a powerplant:PowerPlant.} ";
 		
-		createSparqlOverHttpService().executePost(messageBody);
+		try {
+			createSparqlOverHttpService().executePost(messageBody);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void testPostDeleteWithWHERE() {
@@ -140,7 +149,11 @@ public class TestPowerPlants extends TestCase {
 				"DELETE { <http://www.theworldavatar.com/kb/powerplants/powerplant_my> ?pred ?obj } \r\n" +
 				"WHERE { <http://www.theworldavatar.com/kb/powerplants/powerplant_my> ?pred ?obj .} \r\n";
 		
-		createSparqlOverHttpService().executePost(messageBody);
+		try {
+			createSparqlOverHttpService().executePost(messageBody);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void testOnePlantQuery() throws IOException {
@@ -178,7 +191,11 @@ public class TestPowerPlants extends TestCase {
 				+ "}";
 			
 		// create test plant
-		createSparqlOverHttpService().executePost(query);
+		try {
+			createSparqlOverHttpService().executePost(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		// add emissions
 		insertEmissionTriples(IRI_TEST_PLANT);
@@ -200,8 +217,15 @@ public class TestPowerPlants extends TestCase {
 		String query = PowerPlantQueries.SPARQL_PREFIXES 
 				+ "SELECT (COUNT(*) as ?plantcount) WHERE { ?plant technical_system:realizes ?generation . ?generation system_performance:hasEmission ?emission . ?emission system:hasValue ?emissionvalue . ?emissionvalue system:numericalValue ?emissionvaluenum . }";
 		
-		String result = createSparqlOverHttpService().executeGet(query);
-		System.out.println("result count = " + result);
+		String result = null;
+		try {
+			result = createSparqlOverHttpService().executeGet(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(result!=null){
+			System.out.println("result count = " + result);
+		}
 	}
 	
 	public void insertEmissionTriples(String plantiri) {
@@ -220,7 +244,11 @@ public class TestPowerPlants extends TestCase {
 		
 		//System.out.println(query);
 		
-		createSparqlOverHttpService().executePost(query);
+		try {
+			createSparqlOverHttpService().executePost(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void testOneTestPlantUpdateEmission() {
@@ -243,7 +271,15 @@ public class TestPowerPlants extends TestCase {
 		query = MiscUtil.format(query, IRI_TEST_PLANT);
 		System.out.println(query);
 		
-		String result = createSparqlOverHttpService().executeGet(query);
+		String result = null;
+		try {
+			result = createSparqlOverHttpService().executeGet(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if(result==null){
+			return;
+		}
 		System.out.println(result);
 	}
 	
