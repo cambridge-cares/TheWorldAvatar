@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.misc.performance;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -106,9 +107,20 @@ public class TestBuildings extends TestCase {
 	public String  performQuery(String query, Object... args) {
 		query = MiscUtil.format(query, args);
 		System.out.println(query);
-		
-		String result = createSparqlOverHttpService().executeGet(query);
+		// The result variable is initialised with null to use later in the
+		// code if an exception occurs. 
+		String result = null;
+		try {
+			result = createSparqlOverHttpService().executeGet(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		//System.out.println(result);
+		// The result remains null if an SQL exception is thrown.
+		// Hence, null is returned to the calling method.
+		if(result == null){
+			return null;
+		}
 		
 		StringTokenizer t = new StringTokenizer(result, "\r\n");
 		int maxNumber = 10;
