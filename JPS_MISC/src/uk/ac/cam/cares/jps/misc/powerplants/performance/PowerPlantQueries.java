@@ -53,22 +53,25 @@ public class PowerPlantQueries {
 		return sparqlsService;
 	}
 
-	public List<String> queryAllPowerplants() {
+	/**
+	 * Queries all power plants available in a triple store under the given repository.
+	 * 
+	 * @return the list of power plants 
+	 * @throws SQLException
+	 */
+	public List<String> queryAllPowerplants() throws SQLException{
 
 		List<String> plantList = new ArrayList<String>();
 		
 		System.out.println(SPARQL_ALL_PLANTS);
 		
-		String result = null;
+		String result;
 		try {
 			result = getSparqlsService().executeGet(SPARQL_ALL_PLANTS);
 		} catch (SQLException e) {
 			logger.error("PowerPlantQueries: Querying all power plants was not successful due to "+e.getMessage());
 			System.out.println("PowerPlantQueries: Querying all power plants failed because of "+e.getMessage());
-		}
-		
-		if(result == null){
-			return null;
+			throw new SQLException(e.getMessage());
 		}
 	
 		StringTokenizer tokenizer = new StringTokenizer(result, "\r\n");
@@ -128,8 +131,17 @@ public class PowerPlantQueries {
 		}
 	}
 	
-	public void loopOnPlants(int numberPlants, boolean select, boolean insert, double emission) {
-		
+	/**
+	 * Iterates on the list of plants to show the emission from them.
+	 * 
+	 * @param numberPlants
+	 * @param select
+	 * @param insert
+	 * @param emission
+	 * @throws SQLException
+	 */
+	public void loopOnPlants(int numberPlants, boolean select, boolean insert, double emission) throws SQLException{
+		try{
 		List<String> plants = queryAllPowerplants();
 
 		long start = System.currentTimeMillis();
@@ -158,6 +170,9 @@ public class PowerPlantQueries {
 
 		if (select) {
 			System.out.println("sum of queried emissions (after possible update) = " + sumEmission);
+		}
+		}catch(SQLException e){
+			throw new SQLException(e.getMessage());
 		}
 	}
 }
