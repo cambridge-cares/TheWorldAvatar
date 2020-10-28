@@ -136,6 +136,7 @@ public class EpisodeAgentTest extends TestCase {
         String keyAgent = "agent";
         String keyStationIRI = "stationiri";
         String keyAirStationIRI = "airStationIRI";
+        String keySrsname = "srsname";
         String agentiri = "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service";
         String airstationiri = "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl"
                 + "#AirQualityStation-002";
@@ -160,6 +161,7 @@ public class EpisodeAgentTest extends TestCase {
         low.put(keyLowery, ymin);
         scope.put(keyLowercorner, low);
         scope.put(keyUppercorner, up);
+        scope.put(keySrsname,"EPSG:3857");
         jo.put(keyRegion,scope);
         jo.put(keyAgent, agentiri);
         jo.put(keyCity,Region.SINGAPORE_IRI);
@@ -244,12 +246,10 @@ public class EpisodeAgentTest extends TestCase {
         low.put(keyLowery, ymin);
         assertTrue(checkInput(ea,validateInput,jo));
 
-        //empty srsname is ok
-        String keySrsname = "srsname";
-        scope.put(keySrsname,"");
-        assertTrue(checkInput(ea,validateInput,jo));
         scope.remove(keySrsname);
-        assertTrue(checkInput(ea,validateInput,jo));
+        assertFalse(checkInput(ea,validateInput,jo));
+        scope.put(keySrsname,"");
+        assertFalse(checkInput(ea,validateInput,jo));
         scope.put(keySrsname,"abc");
         assertFalse(checkInput(ea,validateInput,jo));
         scope.put(keySrsname,"EPSG:3857");
