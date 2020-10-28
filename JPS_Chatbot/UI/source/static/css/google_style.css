@@ -1,0 +1,14 @@
+.head { width: 600px; padding:  6px; padding-left: 10px; text-color:#222;   text-align: left; font-family: arial,sans-serif; 	font-size:14px}
+.value {font-size: 35px;  font-family: arial,sans-serif;  vertical-align: middle;   display: inline-block; margin-left: 10px }
+.key_img { margin-left: 300px}
+.main_result {width: 600px;}
+.description {width: 600px;  padding-left: 10px; padding:  6px;}
+.google_result {margin-left: 20px; margin-top: 10px}
+.sideways {margin-right: 70px; }
+.sideways-container {	display:flex;
+                        flex-direction:row;
+                        width: 600px;
+                        }
+.webanswers-webanswers_table__webanswers-table {padding: 10px}
+.g {padding: 10px}
+.extra {width: 600px}

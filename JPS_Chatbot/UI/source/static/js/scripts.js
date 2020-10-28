@@ -62,7 +62,7 @@ let address = cmcl_address
            document.getElementById('input-field').value = q;
            $('html,body').scrollTop(0);
 
-           ask_question()
+           // ask_question()
     });
 
 
