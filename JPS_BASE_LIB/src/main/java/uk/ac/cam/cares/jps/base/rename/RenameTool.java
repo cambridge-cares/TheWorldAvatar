@@ -33,22 +33,19 @@ public class RenameTool {
 	 * 
 	 * 
 	 * @param endpointUrl
-	 * @param type
 	 * @param target
 	 * @param replacement
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	public static void renameURI(String endpointUrl, String type, String target, String replacement) throws SQLException, ParseException {
-					
-		//CSL TODO: add Graph
+	public static void renameURI(String endpointUrl, String target, String replacement) throws SQLException, ParseException {
 		
 		// Get sparql update as String 
 		//String strSparqlUpdate = buildSparqlUpdate(target, replacement, null).toString();
 		String strSparqlUpdate = buildSparqlUpdate(target, replacement, "http://species").toString();
 		
 		// Local owl file uses old method
-		if(type == "owl-file") {
+		if(!endpointUrl.startsWith("http:")) {
 			// updates a locally stored owl file
 			// this is executed correctly by case 1b in KnowledgeBaseClient.update
 			KnowledgeBaseClient.update(null, endpointUrl, strSparqlUpdate);

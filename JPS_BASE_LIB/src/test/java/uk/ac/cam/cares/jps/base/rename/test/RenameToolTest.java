@@ -19,7 +19,6 @@ public class RenameToolTest {
 	public void testReplaceRdf4j() throws SQLException, ParseException {
 	
 		String dataSetURL = "http://localhost:8080/rdf4j-server/repositories/species/statements"; 
-		String type = "rdf4j";
 		
 		String target = null;
 		String replacement = null;
@@ -32,7 +31,7 @@ public class RenameToolTest {
 			replacement = "http://www.w3.org/2008/05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, type, target, replacement);
+		RenameTool.renameURI(dataSetURL, target, replacement);
 		
 		// test using query
 		fail("Not yet implemented");
@@ -43,7 +42,6 @@ public class RenameToolTest {
 	public void testReplaceRdf4jString() throws SQLException, ParseException {
 	
 		String dataSetURL = "http://localhost:8080/rdf4j-server/repositories/species/statements"; 
-		String type = "rdf4j";
 		
 		String target = null;
 		String replacement = null;
@@ -56,7 +54,7 @@ public class RenameToolTest {
 			replacement = "05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, type, target, replacement);
+		RenameTool.renameURI(dataSetURL, target, replacement);
 		
 		// test using query
 		fail("Not yet implemented");
@@ -67,7 +65,6 @@ public class RenameToolTest {
 	public void testReplaceBlazegraph() throws SQLException, ParseException {
 	
 		String dataSetURL = "http://localhost:8080/blazegraph/namespace/species/update"; 
-		String type = "blazegraph";
 		
 		String target = null;
 		String replacement = null;
@@ -80,7 +77,7 @@ public class RenameToolTest {
 			replacement = "http://www.w3.org/2008/05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, type, target, replacement);
+		RenameTool.renameURI(dataSetURL, target, replacement);
 
 		// test using query
 		fail("Not yet implemented");	
@@ -91,7 +88,6 @@ public class RenameToolTest {
 	public void testReplaceFuseki() throws SQLException, ParseException {
 	
 		String dataSetURL = "http://localhost:8080/fuseki/species/update";
-		String type = "fuseki";
 		
 		String target = null;
 		String replacement = null;
@@ -104,7 +100,7 @@ public class RenameToolTest {
 			replacement = "http://www.w3.org/2008/05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, type, target, replacement);
+		RenameTool.renameURI(dataSetURL, target, replacement);
 		
 		// test using query
 		fail("Not yet implemented");
@@ -114,8 +110,7 @@ public class RenameToolTest {
 	@Test
 	public void testReplaceLocal() throws SQLException, ParseException {
 	
-		String dataSetURL = "C:\\Users\\CLIN01\\Documents\\Codes\\JParkSimulator4-git\\JPS_BASE_LIB\\src\\test\\resources\\species.owl"; 
-		String type = "owl-file";
+		String dataSetURL = "file:\\\\\\C:\\Users\\CLIN01\\Documents\\Codes\\JParkSimulator4-git\\JPS_BASE_LIB\\src\\test\\resources\\species.owl"; 
 		
 		String target = null;
 		String replacement = null;
@@ -128,7 +123,7 @@ public class RenameToolTest {
 			replacement = "http://www.w3.org/2008/05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, type, target, replacement);
+		RenameTool.renameURI(dataSetURL, target, replacement);
 		 
 		// test using query
 		fail("Not yet implemented");
