@@ -1,6 +1,10 @@
 package uk.ac.cam.cares.jps.misc.main;
 
 import java.io.IOException;
+import java.sql.SQLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.misc.http.AdmsLoop;
@@ -11,14 +15,23 @@ import uk.ac.cam.cares.jps.misc.performance.UploadFilesForRDF4J;
 import uk.ac.cam.cares.jps.misc.powerplants.performance.TestPowerPlants;
 
 public class Starter extends TestCase {
-	
-	public static void main(String[] args) {
-			
-		try {
-			new Starter().start(args);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	/**
+	 * Created an instance of Logger to keep record of any exceptional cases<br>
+	 * that may happen in this class at run time.
+	 */
+	private static Logger logger = LoggerFactory.getLogger(Starter.class);
+	public static void main(String[] args) throws IOException, SQLException {
+				try {
+					new Starter().start(args);
+				} catch (IOException e) {
+					logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+					System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+					throw new IOException(e.getMessage());
+				} catch (SQLException e){
+					logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+					System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+					throw new SQLException(e.getMessage());
+				}
 	}
 	
 	public void testMain() {
@@ -46,10 +59,15 @@ public class Starter extends TestCase {
 		String[] args = new String[] {"AdmsLoop", "15", "2019-06-04T07:35:14.000", "2019-06-05T07:35:14.000", "scloop1", "10", "15"}; 
 		
 		
-		main(args);
+		try {
+			main(args);
+		} catch (IOException | SQLException e) {
+			logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+			System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+		}
 	}
 	
-	private void start(String[] args) throws IOException {
+	private void start(String[] args) throws IOException, SQLException {
 			
 		if (args.length == 0) {
 			printHelp();
@@ -66,7 +84,19 @@ public class Starter extends TestCase {
 		String[] applargs = getApplicationArguments(args);
 		
 		if ("TestPowerPlants".equals(application)) {
-			new TestPowerPlants().start(applargs);
+			try {
+				new TestPowerPlants().start(applargs);
+			} catch (SQLException e) {
+				logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+				System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+				try {
+					throw new SQLException(e.getMessage());
+				} catch (SQLException e1) {
+					logger.error("TestPowerPlants: An exception occured due to "+e.getMessage());
+					System.out.println("TestPowerPlants: The reason for the exception is "+e.getMessage());
+					throw new SQLException(e.getMessage());
+				}
+			}
 		} else if ("TestHttp".equals(application)) {
 			new TestHttp().start(applargs);
 		} else if ("TestBuildings".equals(application)) {
