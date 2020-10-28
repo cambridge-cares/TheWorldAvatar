@@ -46,6 +46,9 @@ public class Scope {
     public double getLowery() {
         return this.lowery;
     }
+    public String getCRSName() {
+        return this.sourceCRS;
+    }
 
     /**
      * Calculate scope centre from scope object.
