@@ -4,6 +4,8 @@ testcase1:  for singapore area (70km by 70km) with dx=dy=1km (this is a case sho
 testcase2:  for hongkong (40km by 40km) with dx=dy=1km (this is a case showing the very 1st simulation that with "restart" variable =0)
 testcase3:  for hongkong (40km by 40km) with dx=dy=1km (this is a restart case that requires two additional input files - "plume_segments" and "icmhour_2020_moving00.nc" that generated from last hour's simulation).
 
+bashrc-example is an example of a compatible bashrc file to run the simulations successfully.
+
 To run these test cases, run the following commands:
 cp -r ~/Codes/JParkSimulator-git/JPS_CITY_CHEM/src/main/resources/* ~/
 cd ~/testcase1/
