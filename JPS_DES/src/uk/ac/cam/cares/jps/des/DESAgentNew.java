@@ -26,6 +26,8 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
+import uk.ac.cam.cares.jps.des.ResidentialAgent;
+
 @WebServlet(urlPatterns = { "/DESAgentNew"})
 
 public class DESAgentNew extends JPSHttpServlet {
@@ -61,7 +63,7 @@ public class DESAgentNew extends JPSHttpServlet {
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
 		broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
 		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
-		extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+		new ResidentialAgent().extractResidentialData(iriofdistrict, baseUrl); //csv for residential
 		return responseParams;
     }
     /** Query OWL for Temperature and Radiation readings and place in csv file
@@ -272,199 +274,5 @@ public class DESAgentNew extends JPSHttpServlet {
 
         return resultListforcsv;
     }
-    public void extractResidentialData(String iriofnetworkdistrict, String baseUrl) {
-		OntModel model = readModelGreedy(iriofnetworkdistrict);
-		String groupInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "SELECT DISTINCT ?entity (COUNT(?entity) AS ?group) ?propval ?user " + "WHERE {"
-				+ "{ ?entity a j6:Building ." + "  ?entity j2:hasProperty ?prop ." + " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." + "?entity j4:isComprisedOf ?user ." + "}"
-				+ "FILTER regex(STR(?user),\"001\") ." + "}" + "GROUP BY ?entity ?propval ?user ";
-
-		String groupInfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "SELECT DISTINCT ?entity (COUNT(?entity) AS ?group) " + "WHERE " + "{ ?entity a j6:Building ."
-				+ "?entity j4:isComprisedOf ?user ."
-
-				+ "}"
-
-				+ "GROUP BY ?entity ";
-
-		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j7:<http://www.w3.org/2006/time#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "SELECT ?entity ?Pmaxval ?Pminval ?unwillval ?Pactval ?hourval " + "WHERE "
-				+ "{ ?entity a j6:Electronics ." + "?entity j9:hasActivePowerAbsorbed ?Pmax ."
-				+ "?Pmax a j9:MaximumActivePower ." + " ?Pmax   j2:hasValue ?vPmax ."
-				+ " ?vPmax   j2:numericalValue ?Pmaxval ."
-
-				+ "  ?entity j2:hasProperty ?prop ." + "?prop a j6:IdealityFactor ." + " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?unwillval ."
-
-				+ "?entity j9:hasActivePowerAbsorbed ?Pmin ." + "?Pmin a j9:MinimumActivePower ."
-				+ " ?Pmin   j2:hasValue ?vPmin ." + " ?vPmin   j2:numericalValue ?Pminval ."
-
-				+ "?entity j9:hasActivePowerAbsorbed ?Pact ." + "?Pact a j9:AbsorbedActivePower ."
-				+ " ?Pact   j2:hasValue ?vPact ." + " ?vPact   j2:numericalValue ?Pactval ."
-				+ " ?vPact   j7:hasTime ?proptime ." + "?proptime j7:hour ?hourval ."
-
-				+ "}" + "ORDER BY ASC(?hourval)";
-
-		// ?user ?user ?equipment
-
-		ResultSet resultSet = JenaHelper.query(model, groupInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		System.out.println("sizeofresult=" + resultList.size());
-		int size = resultList.size();
-		List<String> iriofgroupuser = new ArrayList<String>();
-		List<String[]> csvofbcap = new ArrayList<String[]>();
-		QueryBroker broker = new QueryBroker();
-		for (int d = 0; d < size; d++) {
-			for (int t = 0; t < keys.length; t++) {
-				// System.out.println("elementonquery1 "+t+"= "+resultList.get(d)[t]);
-				if (t == 3) {
-					iriofgroupuser.add(resultList.get(d)[t]);
-				}
-
-			}
-			String[] e = { resultList.get(d)[3], resultList.get(d)[2] };
-			csvofbcap.add(e);
-
-		}
-		Collections.sort(csvofbcap, new Comparator<String[]>() {
-			public int compare(String[] strings, String[] otherStrings) {
-				return strings[0].compareTo(otherStrings[0]);
-			}
-		});
-		String bcapcsv = MatrixConverter.fromArraytoCsv(csvofbcap);
-		System.out.println(bcapcsv);
-		broker.putLocal(baseUrl + "/" + bcap, bcapcsv);
-
-		// part 2 to see how many multiplication factor
-		ResultSet resultSet2 = JenaHelper.query(model, groupInfo2);
-		String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
-		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-		List<String[]> resultList2 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
-		System.out.println("sizeofresult=" + resultList2.size());
-		int size2 = resultList2.size();
-		for (int d = 0; d < size2; d++) {
-			for (int t = 0; t < keys2.length; t++) {
-				System.out.println("elementonquery2 " + t + "= " + resultList2.get(d)[t]);
-			}
-			System.out.println("---------------------------------------");
-
-		}
-
-		int sizeofiriuser = iriofgroupuser.size();
-		Collections.sort(iriofgroupuser);
-		System.out.println("sizeofiriuser=" + sizeofiriuser);
-		List<String[]> csvofpmax = new ArrayList<String[]>();
-		List<String[]> csvofpmin = new ArrayList<String[]>();
-		List<String[]> csvofw = new ArrayList<String[]>();
-		List<String[]> csvofschedule = new ArrayList<String[]>();
-		List<String> header = new ArrayList<String>();
-		header.add("");
-		String[] timeschedu = {"t1","t2", "t3", "t4", "t5","t6","t7", "t8", "t9", "t10","t11","t12", "t13", "t14", "t15","t16","t17", "t18", "t19", "t20","t21","t22", "t23", "t24"};
-		//grab the current time
-		List<String> lst = Arrays.asList(timeschedu);
-		Date date = new Date();   // given date
-		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
-		calendar.setTime(date);   // assigns calendar to given date 
-		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
-		
-		//rotate it according to the current hour to get the appropriate profile
-		Collections.rotate(lst, h);
-		for(int x=1;x<=sizeofiriuser;x++) {
-			List<String[]> subList =  new ArrayList<String[]>();
-			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
-			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
-			String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
-			String[] keysx = JenaResultSetFormatter.getKeys(resultx);
-			List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
-			System.out.println("sizeofresult="+resultListx.size());
-
-			List<String>groupPmax=new ArrayList<String>();
-			groupPmax.add(iriofgroupuser.get(x-1));
-			List<String>groupPmin=new ArrayList<String>();
-			groupPmin.add(iriofgroupuser.get(x-1));
-			List<String>groupw=new ArrayList<String>();
-			groupw.add(iriofgroupuser.get(x-1));
-			List<String>groupschedule=new ArrayList<String>();
-			groupschedule.add(iriofgroupuser.get(x-1));
-			//Set to ensure no repeats
-			int countr = 1; 
-			groupschedule.add(lst.get(0));
-			for(int d=0;d<resultListx.size();d++) {
-					if(resultListx.get(d)[5].contentEquals("1")) {
-						//System.out.println("equipment= "+resultListx.get(d)[0]);
-						if(x==1) {
-						header.add(resultListx.get(d)[0].split("#")[1].split("-")[0]);
-						}
-						groupPmax.add(resultListx.get(d)[1]);
-						groupPmin.add(resultListx.get(d)[2]);
-						groupw.add(resultListx.get(d)[3]);
-					}
-					//HashMap
-					countr ++; 
-					if (countr < 12) { //11 appliances
-						groupschedule.add(resultListx.get(d)[4]);
-					} else {
-						groupschedule.add(resultListx.get(d)[4]);
-						String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-						subList.add(arr4);
-						//clear groupschedule
-						groupschedule=new ArrayList<String>();
-						countr = 1;
-						if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
-							groupschedule.add(iriofgroupuser.get(x-1));
-//							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
-							groupschedule.add(lst.get(Integer.parseInt(resultListx.get(d)[5])));
-						}
-					}				
-			}
-
-			
-			String[] arr1 = groupPmax.toArray(new String[groupPmax.size()]);
-			csvofpmax.add(arr1);
-			String[] arr2 = groupPmin.toArray(new String[groupPmin.size()]);
-			csvofpmin.add(arr2);
-			String[] arr3 = groupw.toArray(new String[groupw.size()]);
-			csvofw.add(arr3);
-			System.out.println(groupschedule.toArray().toString());
-			String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-			subList.add(arr4);
-			Collections.rotate(subList, -h);
-			csvofschedule.addAll(subList);
-
-		}
-
-		// csvofpmax.add(0, arr0);
-		String pmaxcsv = MatrixConverter.fromArraytoCsv(csvofpmax);
-		System.out.println(pmaxcsv);
-		broker.putLocal(baseUrl + "/" + Pmax, pmaxcsv);
-
-		// csvofpmin.add(0, arr0);
-		String pmincsv = MatrixConverter.fromArraytoCsv(csvofpmin);
-		System.out.println(pmincsv);
-		broker.putLocal(baseUrl + "/" + Pmin, pmincsv);
-
-		// csvofw.add(0, arr0);
-		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
-		System.out.println(wcsv);
-		broker.putLocal(baseUrl + "/" + unwill, wcsv);
-
-		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
-		System.out.println(schedulecsv);
-		broker.putLocal(baseUrl + "/" + schedule, schedulecsv);
-
-	}
+    
 }

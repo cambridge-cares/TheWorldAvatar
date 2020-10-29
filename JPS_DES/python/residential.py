@@ -234,9 +234,33 @@ def residential(totGen, aggrLoad, household_below, household_above, flex, sche, 
     return [rh.res.x, rh.objfunction(rh.res.x), rh.report_load(), opt, load-opt, load]
 
 if __name__ == "__main__":
-    household_below = np.array([0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002, 0.0002])
-    household_above = np.array([0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004, 0.0004])
-    flex1 = np.array([[False, False, True, True, True, False, False, False, False, False, False], [False, False, True, True, True, False, False, False, False, False, False], [False, False, True, True, True, False, False, False, False, False, False], [False, False, True, True, True, False, False, False, False, False, False], [False, False, True, True, True, False, False, False, False, False, False], [False, False, True, True, True, False, False, False, False, False, False], [False, False, False, True, True, False, False, True, True, False, False], [False, False, False, True, True, False, True, False, False, False, False], [False, False, False, True, True, False, True, False, False, False, False], [False, False, False, True, True, False, True, False, False, False, False], [False, False, False, True, True, False, True, False, False, False, False], [False, False, False, True, True, False, True, False, False, False, False], [False, False, False, True, True, False, True, False, False, False, True], [False, False, False, True, True, True, True, False, False, False, True], [True, False, False, True, True, True, True, False, False, False, False], [True, False, False, True, True, False, True, False, False, False, False], [True, False, False, True, True, False, True, False, False, False, False], [True, False, False, True, True, True, True, False, False, False, False], [True, False, False, True, True, True, True, True, False, True, False], [False, True, False, True, True, True, True, False, False, False, False], [False, True, True, True, True, True, True, False, False, False, False], [False, True, True, True, True, False, True, False, False, False, False], [False, False, True, True, True, False, True, False, False, False, False], [False, False, True, True, True, False, False, False, False, False, False]])
+    #automatically assigned
+    household_below = 1/50*0.01*np.ones(24)
+    household_above = 1/50*0.02*np.ones(24)
+    flex1 = np.array([[False, False, True, True, True, False, False, False, False, False, False],
+     [False, False, True, True, True, False, False, False, False, False, False],
+      [False, False, True, True, True, False, False, False, False, False, False],
+       [False, False, True, True, True, False, False, False, False, False, False],
+        [False, False, True, True, True, False, False, False, False, False, False],
+         [False, False, True, True, True, False, False, False, False, False, False],
+          [False, False, False, True, True, False, False, True, True, False, False],
+           [False, False, False, True, True, False, True, False, False, False, False],
+            [False, False, False, True, True, False, True, False, False, False, False],
+             [False, False, False, True, True, False, True, False, False, False, False],
+              [False, False, False, True, True, False, True, False, False, False, False],
+               [False, False, False, True, True, False, True, False, False, False, False],
+                [False, False, False, True, True, False, True, False, False, False, True],
+                 [False, False, False, True, True, True, True, False, False, False, True],
+                  [True, False, False, True, True, True, True, False, False, False, False],
+                   [True, False, False, True, True, False, True, False, False, False, False],
+                    [True, False, False, True, True, False, True, False, False, False, False],
+                     [True, False, False, True, True, True, True, False, False, False, False],
+                      [True, False, False, True, True, True, True, True, False, True, False],
+                       [False, True, False, True, True, True, True, False, False, False, False],
+                        [False, True, True, True, True, True, True, False, False, False, False],
+                         [False, True, True, True, True, False, True, False, False, False, False],
+                          [False, False, True, True, True, False, True, False, False, False, False],
+                           [False, False, True, True, True, False, False, False, False, False, False]])
     sche1 = np.array([[0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.0, 0.65, 0.45, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.95], [0.0, 0.0, 0.0, 0.2, 0.01, 0.17, 0.32, 0.0, 0.0, 0.0, 0.95], [0.6, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.6, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.6, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [3.1, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [3.1, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.65, 0.0, 0.725, 0.0], [0.0, 2.4, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.2, 1.6, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.2, 0.1, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
     low1  = np.array([0.6, 0.2, 0.1, 0.2, 0.01, 0.17, 0.32, 0.65, 0.45, 0.725, 0.95])
     high1 = np.array([3.9, 3.0, 3.1, 0.2, 0.1, 0.17, 0.32, 0.65, 0.45, 0.725, 0.95])
