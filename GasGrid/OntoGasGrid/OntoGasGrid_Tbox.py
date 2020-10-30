@@ -47,23 +47,32 @@ def populate_location_property():
     with the subproperty of start and end location 
     '''
     # addition of location as a property 
-    g.add((w.hasLocation,RDF.type,OWL.DatatypeProperty))
-    # addition of start and end as a property and 
-    # subsequently as a subproperty of location 
-    location_subproperties = ['hasStartLocation','hasEndLocation']
-    for i in location_subproperties:
+
+    g.add((w.hasLongitude,RDF.type,OWL.DatatypeProperty))
+    g.add((w.hasLatitude,RDF.type,OWL.DatatypeProperty))
+    # addition of start and end as a property 
+
+    lng_subproperties = ['hasStartLongitude','hasEndLongitude']
+    lat_subproperties = ['hasStartLatitude','hasEndLatitude']
+    for i in lng_subproperties:
         g.add((w[i],RDF.type,OWL.DatatypeProperty))
-        g.add((w[i],RDFS.subPropertyOf,w.hasLocation))
 
+    for i in lat_subproperties:
+        g.add((w[i],RDF.type,OWL.DatatypeProperty))
     # allowing every class to have a location, except for a pipe
-    # which has a start and an end location 
+    # which has a start and an end location
+
     for i in classes:
-        g.add((w.hasLocation,RDFS.domain,w[i]))
+        g.add((w.hasLongitude,RDFS.domain,w[i]))
+        g.add((w.hasLatitude,RDFS.domain,w[i]))
 
-    g.remove((w.hasLocation,RDFS.domain,w.pipe))
+    g.remove((w.hasLongitude,RDFS.domain,w.pipe))
+    g.remove((w.hasLatitude,RDFS.domain,w.pipe))
 
-    g.add((w.hasStartLocation,RDFS.domain,w.pipe))
-    g.add((w.hasEndLocation,RDFS.domain,w.pipe))
+    g.add((w.hasStartLongitude,RDFS.domain,w.pipe))
+    g.add((w.hasEndLongitude,RDFS.domain,w.pipe))
+    g.add((w.hasStartLatitude,RDFS.domain,w.pipe))
+    g.add((w.hasEndLatitude,RDFS.domain,w.pipe))
     return
 
 populate_location_property()
@@ -153,5 +162,9 @@ def within_pipe_creation():
 within_pipe_creation()
 
 
-g.serialize(destination='OntoGasGrid_Tbox.owl',format='n3')
+
+
+
+
+g.serialize(destination='OntoGasGrid/OntoGasGrid_Tbox.owl',format='n3')
 

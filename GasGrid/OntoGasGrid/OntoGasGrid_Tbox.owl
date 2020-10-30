@@ -16,6 +16,9 @@
     rdfs:domain <https://theworldavatar.com/within_conditions> ;
     rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
 
+<https://theworldavatar.com/hasCompressionRatio> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station> .
+
 <https://theworldavatar.com/hasDemand> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/offtake> .
 
@@ -25,9 +28,11 @@
 <https://theworldavatar.com/hasEfficiency> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/compression-station> .
 
-<https://theworldavatar.com/hasEndLocation> a ns1:DatatypeProperty ;
-    rdfs:domain <https://theworldavatar.com/pipe> ;
-    rdfs:subPropertyOf <https://theworldavatar.com/hasLocation> .
+<https://theworldavatar.com/hasEndLatitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasEndLongitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
 
 <https://theworldavatar.com/hasEthaneVolume> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/within_conditions> ;
@@ -49,8 +54,20 @@
         <https://theworldavatar.com/storage> ;
     ns1:inverseOf <https://theworldavatar.com/isInputOf> .
 
+<https://theworldavatar.com/hasLatitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/storage> .
+
 <https://theworldavatar.com/hasLength> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasLongitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/storage> .
 
 <https://theworldavatar.com/hasMaxHydrogenPercentage> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/offtake> .
@@ -74,16 +91,15 @@
 <https://theworldavatar.com/hasPressureDrop> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/pipe> .
 
-<https://theworldavatar.com/hasPressureRatio> a ns1:DatatypeProperty ;
-    rdfs:domain <https://theworldavatar.com/compression-station> .
-
 <https://theworldavatar.com/hasPropaneVolume> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/within_conditions> ;
     rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
 
-<https://theworldavatar.com/hasStartLocation> a ns1:DatatypeProperty ;
-    rdfs:domain <https://theworldavatar.com/pipe> ;
-    rdfs:subPropertyOf <https://theworldavatar.com/hasLocation> .
+<https://theworldavatar.com/hasStartLatitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasStartLongitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
 
 <https://theworldavatar.com/hasStartPressure> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/pipe> .
@@ -144,16 +160,10 @@
         <https://theworldavatar.com/pipe>,
         <https://theworldavatar.com/storage> .
 
-<https://theworldavatar.com/hasLocation> a ns1:DatatypeProperty ;
-    rdfs:domain <https://theworldavatar.com/compression-station>,
-        <https://theworldavatar.com/intake>,
-        <https://theworldavatar.com/offtake>,
-        <https://theworldavatar.com/storage> .
-
-<https://theworldavatar.com/compression-station> a ns1:Class .
-
 <https://theworldavatar.com/hasComposition> a ns1:DatatypeProperty ;
     rdfs:domain <https://theworldavatar.com/within_conditions> .
+
+<https://theworldavatar.com/compression-station> a ns1:Class .
 
 <https://theworldavatar.com/storage> a ns1:Class .
 
@@ -161,7 +171,7 @@
 
 <https://theworldavatar.com/offtake> a ns1:Class .
 
-<https://theworldavatar.com/pipe> a ns1:Class .
-
 <https://theworldavatar.com/within_conditions> a ns1:Class .
+
+<https://theworldavatar.com/pipe> a ns1:Class .
 
