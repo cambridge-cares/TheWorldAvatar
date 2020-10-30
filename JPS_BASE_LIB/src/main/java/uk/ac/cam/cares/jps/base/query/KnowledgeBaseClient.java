@@ -35,7 +35,7 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public abstract class KnowledgeBaseClient {
 	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
-	private static KnowledgeBaseClient instance = null;
+	// private static KnowledgeBaseClient instance = null;
 		
 	protected String query;
 	
@@ -49,6 +49,46 @@ public abstract class KnowledgeBaseClient {
 	}
 	*/
 
+	
+	public abstract JSONArray executeQuery() throws SQLException;
+
+	/**
+	 * Execute sparlq update
+	 * @return JSONArray as String 
+	 * @throws SQLException
+	 */
+	public abstract JSONArray executeQuery(String query) throws SQLException;
+	
+	/**
+	 * Execute sparql update
+	 * @return JSONArray as String 
+	 * @throws SQLException
+	 */
+	public String execute() throws SQLException{
+		return execute(this.query);
+	}
+	
+	/**
+	 * Excute sparql query with string provided
+	 * @param sparql
+	 * @return JSONArray as String
+	 * @throws SQLException
+	 */
+	public String execute(String query) throws SQLException{
+		JSONArray result = executeQuery(query);
+		if(result==null){
+			throw new SQLException();
+		}else{
+			return result.toString();
+		}
+	}
+	
+	public abstract int executeUpdate() throws SQLException;
+	
+	public abstract int executeUpdate(String update) throws SQLException;
+	
+	
+	
 	public KnowledgeBaseClient() {}
 	
 	// constructor

@@ -91,7 +91,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 	 * 
 	 * @return
 	 */
-	private String getConnectionUrl() {
+	public String getConnectionUrl() {
 		StringBuilder sb = new StringBuilder();
 		boolean queryFlag = false;
 		sb.append(JenaDriver.DRIVER_PREFIX);
@@ -141,35 +141,6 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 		}else{
 			throw new SQLException("KnowledgeBaseClient: the URL to connect to the endpoint is not valid");
 		}
-	}
-	
-	/**
-	 * Executes the provided by the calling method and returns the result<p>
-	 * as a string.
-	 * 
-	 * @param query
-	 * @return
-	 * @throws SQLException
-	 */
-	public String execute(String query) throws SQLException{
-		JSONArray result = executeQuery(query);
-		if(result==null){
-			throw new SQLException();
-		}else{
-			return result.toString();
-		}
-	}
-	
-	/**
-	 * Executes the provided by the calling method and returns the result<p>
-	 * as a string.
-	 * 
-	 * @param query
-	 * @return
-	 * @throws SQLException
-	 */
-	public String execute() throws SQLException{
-		return execute(this.query);
 	}
 	
 	/**
