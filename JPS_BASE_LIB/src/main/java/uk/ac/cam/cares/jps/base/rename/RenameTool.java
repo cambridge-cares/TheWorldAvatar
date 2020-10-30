@@ -42,8 +42,9 @@ public class RenameTool {
 		
 		// Get sparql update as String 
 		//String strSparqlUpdate = buildSparqlUpdate(target, replacement, null).toString();
-		String strSparqlUpdate = buildSparqlUpdate(target, replacement, "http://species").toString();
+		String strSparqlUpdate = buildSparqlUpdateString(target, replacement, "http://species").toString();
 		
+		// To Be removed
 		// Local owl file uses old method
 		if(!endpointUrl.startsWith("http:")) {
 			// updates a locally stored owl file
@@ -67,7 +68,7 @@ public class RenameTool {
 	 * @return
 	 * @throws ParseException
 	 */
-	private static UpdateRequest buildSparqlUpdate(String target, String replacement, String graph) throws ParseException {
+	private static UpdateRequest buildSparqlUpdateURI(String target, String replacement, String graph) throws ParseException {
 				
 		// VARIABLES
 		// new s, p, o		
@@ -149,7 +150,7 @@ public class RenameTool {
 	 * @return
 	 * @throws ParseException
 	 */
-	private static UpdateRequest buildSparqlUpdateString(String target, String replacement) {
+	private static UpdateRequest buildSparqlUpdateString(String target, String replacement, String graph) {
 
 		// Create expression factory
 		ExprFactory exprFactory = new ExprFactory();
@@ -222,14 +223,24 @@ public class RenameTool {
 				.addFilter(or)
 				.addBind(ifS, newS)
 				.addBind(ifP, newP)
-				.addBind(ifO, newO);
+				.addBind(ifO, newO);			
 				
-		// Build update with INSERT and DELETE 
-		UpdateBuilder builder = new UpdateBuilder()
-				.addInsert(newS, newP, newO)
+		// Build update
+		UpdateBuilder builder = new UpdateBuilder();
+				
+		// Add where 
+		if (graph == null) {
+			builder.addInsert(newS, newP, newO)
 				.addDelete(varOldS, varOldP, varOldO)
-				.addWhere(where);			
-				
+				.addWhere(where);
+		}else {	
+			// Graph
+			String graphURI = "<" + graph + ">";
+			builder.addInsert(graphURI, newS, newP, newO)
+				.addDelete(graphURI, varOldS, varOldP, varOldO)
+				.addGraph(graphURI, where);	
+		}
+		
 		return builder.buildRequest();
 	}
 }
