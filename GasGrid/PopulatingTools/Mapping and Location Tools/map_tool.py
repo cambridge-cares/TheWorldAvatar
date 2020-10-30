@@ -52,8 +52,6 @@ def map_creation():
         overall_location = np.append(overall_location,class_location,axis=0)
     overall_location = overall_location[1:,:]
 
-
-
     connection_matrix = np.random.randint(0,2,(len(overall_location),len(overall_location)))
 
     for i in range(len(connection_matrix)):
