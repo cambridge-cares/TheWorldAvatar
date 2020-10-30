@@ -1,70 +1,43 @@
-BACTON BBL,Bishop, Apache
-BACTON IC,Auckland, Barrow
-BACTON IPs Terminal,Carnforth, Brent 
-BACTON PERENCO,Nether," Burnhervie, SC"
-BACTON SEAL,Kellett, Carrington
-BACTON SHELL,Warrington," Farningham, SE"
-BACTON UKCS Terminal,Hatton, Fordoun
-BARROW SOUTH,Alrewas, Keadby 
-BARROW TERMINAL,Wisbech, PalmPaper
-DYNEVOR ARMS,King's Lynn, Rough
-DYNEVOR ,Peterborough,St Fergus
-EASINGTON DIMLINGTON,Churchover, Teesside NSMP
-EASINGTON LANGELED,Huntingdon, West Burton 
-EASINGTON ROUGH ST,Cambridge, Apache 
-EASINGTON TERMINAL,Diss, Barrow
-GLENMAVIS,Chelmsford, Brent
-GLENMAVIS ,Aylesbury," Burnhervie, SC"
-GRAIN,Lockerley, Carrington
-GRAIN,Wormington," Farningham, SE"
-"Hilltop Farm, Cheshire",Aberdeen, Fordoun
-HOLE HOUSE FARM,Avonbridge, Keadby
-HOLFORD,Kirriemuir, PalmPaper
-HORNSEA,Moffat, Rough 
-ISLE OF GRAIN TERMINAL,St Fergus,St Fergus
-MILFORD HAVEN - DRAGON,, Teesside NSMP
-MILFORD HAVEN - SOUTH HOOK,, West Burton PS
-MILFORD HAVEN TERMINAL,," Aberdeen, SC"
-PARTINGTON,, Aldbrough
-PARTINGTON ,," Alrewas, EM"
-ST FERGUS MOBIL,," Alrewas, WM"
-ST FERGUS NSMP,, AM Paper
-ST FERGUS SHELL,, Apache
-ST FERGUS TERMINAL,, Armadale
-LACH DENNIS,," Aspley, WM"
-Teeside Central Area Transmission System,," Asselby, NE"
-TEESSIDE ,," Auckland, NO"
-TEESSIDE ,," Auckland, NO"
-THEDDLETHORPE,," Audley, NW"
-THEDDLETHORPE TERMINAL,," Audley, WM"
-,," Austrey, WM"
-,, Avonmouth
-,," Aylesbeare, SW"
-,," Bacton, EA"
-,, Bacton
-,, Bacton BBL
-,, Bacton BBL
-,, Baglan Bay
-,," Baldersby, NE"
-,, Balgray
-,, Barking
-,, Barrow 
-,, BASF
-,, Bathgate
-,," Blaby, EM"
-,, BlackBridge
-,, Blackburn
-,," Blackrod, NW"
-,," Blyborough, EM"
-,, BOC Teeside
-,, BP Grngmouth
-,, BP Saltend
-,," Braishfield, SO"
-,," Braishfield, SO"
-,, Brdgewater 
-,, Brent 
-,, Brigg
-,," Brisley, EA"
+INTAKES,COMPRESSORS,OFFTAKES
+BACTON BBL,Bishop Auckland," Aberdeen, SC"
+BACTON IC,Carnforth, Aldbrough
+BACTON IPs Terminal,Nether Kellett," Alrewas, EM"
+BACTON PERENCO,Warrington," Alrewas, WM"
+BACTON SEAL,Hatton, AM Paper
+BACTON SHELL,Alrewas, Armadale
+BACTON UKCS Terminal,Wisbech," Aspley, WM"
+BARROW SOUTH,King's Lynn," Asselby, NE"
+BARROW TERMINAL,Peterborough,"Bishop Auckland, NO"
+DYNEVOR ARMS,Churchover," Bishop Auckland, NO"
+DYNEVOR ,Huntingdon," Audley, NW"
+EASINGTON DIMLINGTON,Cambridge," Audley, WM"
+EASINGTON LANGELED,Diss," Austrey, WM"
+EASINGTON ROUGH ST,Chelmsford, Avonmouth
+EASINGTON TERMINAL,Aylesbury," Aylesbeare, SW"
+GLENMAVIS,Lockerley," Bacton, EA"
+GLENMAVIS ,Wormington, Bacton
+GRAIN,Aberdeen, Bacton BBL
+GRAIN,Avonbridge, Bacton BBL
+"Hilltop Farm, Cheshire",Kirriemuir, Baglan Bay
+HOLE HOUSE FARM,Moffat," Baldersby, NE"
+HOLFORD,St Fergus, Balgray
+HORNSEA,, Barking
+ISLE OF GRAIN TERMINAL,, Barrow 
+MILFORD HAVEN - DRAGON,, BASF
+MILFORD HAVEN - SOUTH HOOK,, Bathgate
+MILFORD HAVEN TERMINAL,," Blaby, EM"
+PARTINGTON,, BlackBridge
+PARTINGTON ,, Blackburn
+ST FERGUS MOBIL,," Blackrod, NW"
+ST FERGUS NSMP,," Blyborough, EM"
+ST FERGUS SHELL,, BOC Teeside
+ST FERGUS TERMINAL,, BP Grngmouth
+LACH DENNIS,, BP Saltend
+Teeside Central Area Transmission System,," Braishfield, SO"
+TEESSIDE ,," Braishfield, SO"
+TEESSIDE ,, Brdgewater 
+THEDDLETHORPE,, Brent 
+THEDDLETHORPE TERMINAL,," Brisley, EA"
 ,, Broxburn
 ,, Burley Bank
 ,, Burnhervie
@@ -172,7 +145,7 @@ THEDDLETHORPE TERMINAL,," Audley, WM"
 ,, Peters Green
 ,, Conoco Philips Teeside
 ,," Pickering, NE"
-,, Pitcairn
+,, Pitcairn Fife
 ,," Pucklechurch, SW"
 ,," Rawcliffe, NE"
 ,, Rocksavage
