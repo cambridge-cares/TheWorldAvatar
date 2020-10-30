@@ -137,6 +137,8 @@ PROJ_DIR=${HOME}/proj
 cd ..
 
 2.7 Gdal installation
+Known issue for kinetics users: you need to remove the line 'module load python/3.7/' from your bashrc and use the default option in CSD3. A copy of the bashrc file that worked can be found at JPS_CITY_CHEM\src\main\resources
+
 Download gdal-3.0.4.tar.gz from here https://gdal.org/download.html. This 
 version might be available here
 https://github.com/OSGeo/gdal/releases/download/v3.0.4/gdal-3.0.4.tar.gz.
@@ -159,6 +161,8 @@ export PATH=${HOME}/gdal/bin:$PATH
 Following the addition, press the ESC key. Type colon, w and q (:wq) and press Enter.
 
 3. EPISODE CityChem installation
+Remember to logout and login again for changes to bashrc to take effect.
+
 WARNING: Do not copy the folder from Windows to Linux to compile the code, they will have messed up line endings!
 Assuming you have a folder called '~/Codes/' in your home directory, perform the following commands:
 cd Codes
