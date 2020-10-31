@@ -31,7 +31,7 @@
 
         <nav class="navbar navbar-expand-md  sticky-top" style="background-color:#338cea">
             <div class="container" style="color:#338cea">
-                <a class="navbar-brand" href="https://en.wikipedia.org/wiki/Marie_Curie">
+                <a class="navbar-brand" data-toggle="tooltip" data-placement="bottom" title="Marie Skłodowska Curie, was a Polish and naturalized-French physicist and chemist who conducted pioneering research on radioactivity. This website for accessing data, especially chemical related data, in large Knowledge Graph is named in her honour" href="https://en.wikipedia.org/wiki/Marie_Curie">
                     <img  style="width:180px" src="../static/img/marie.jpg">
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
@@ -52,6 +52,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href='#about'>About</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href='#partners'>Partners</a>
                         </li>
@@ -69,7 +70,7 @@
                 <!-- Masthead Avatar Image-->
                 <!--img class="masthead-avatar mb-5" src="static/img/avataaars.svg" alt="" /-->
                 <!-- Masthead Heading-->
-                <h1 class="mb-2 text-white">Marie: Search Chemistry Knowledge Graph</h1><br/>
+               <!-- <h1 class="mb-2 text-white">Marie: Search Chemistry Knowledge Graph</h1><br/> -->
                 <!-- Icon Divider-->
 				<div class="input-group">
 					<div class="input-group-append">
@@ -82,8 +83,10 @@
 
 
 
-					<input type="search" class="form-control" placeholder="Type your query" list="ex-queries" id="input-field"/>
-					<!--<datalist id="ex-queries">
+					<input autocomplete="off" type="search" class="form-control" placeholder="Type your query" list="ex-queries" id="input-field"/>
+
+
+                    <!--<datalist id="ex-queries">
                         <option value="stability of FMOC amide + zinc"/>
 						<option value="what are the boiling points of all fatty acids"/>
                         <option value="what is the melting point of diethylstilbestrol"/>
@@ -100,7 +103,7 @@
                     <button class="btn btn-secondary" type="button" onclick="get_random_question()">
                         <i class="fa fa-random" id="random-icon"></i>
 					</button>
-
+                    <!--
                     <datalist id="ex-queries">
 
 					    <option value="Molecular model of  aromatic hydrocarbons"/>
@@ -122,6 +125,7 @@
                         <option value="rotational relaxation collision number of C8H14"/>
                         <option value="Molecular weight of ch4."/>
                         <option value="chemical structure of aromatic hydrocarbon with molecular weight more than 200"/> -->
+                        <!--
                         <option value="what is the molecular weight of c1ccccc1"/>
                         <option value="show me the molecular model of  CH2=CHCHO "/>
                         <option value="show me the ionization energy of C1=CC=CC=C1"/>
@@ -138,7 +142,7 @@
                         <option value="where is the capital of Saudi Arabia"/>
                         <hr/>
 
-                     </datalist>
+                     </datalist> -->
                  </div>
 
             </div>
@@ -290,16 +294,17 @@
                     <div class="divider-custom-line"></div>
                 </div>
                 <!-- Portfolio Grid Items-->
-                <!--
+
                 <div class="row align-items-center">
                     <div class="col-md-6 col-lg-4 mb-5 justify-content-center">
                         <img class="img-fluid" src="../static/img/chatbot.svg" alt="" width="200"/>
                     </div>
                     <div class="col-md-6 col-lg-8 mb-5 align-items-center justify-content-center">
-                        <h4 class="masthead-heading mb-0">Powered By an Intelligent Natural Language Processor</h4>
+                        <div style="font-size: 25px; font-family: Hind" >
+                            This website presents a proof-of-concept Question Answering system for accessing chemical data from the <a href="http://www.theworldavatar.com">World Avatar</a> knowledge graph and the <a href="https://www.wikidata.org/">Wikidata</a> knowledge graph.  The knowledge graphs offers inter-connected data from chemical kinetics to chemical and physical properties of species and many other domains. We trained a question type classification model and an entity extraction model to interpret chemistry-related questions of interest. The system has a novel design which applies a topic model to identify the question-to-ontology affiliation to improve its accuracy.                        </div>
                     </div>
                 </div>
-                -->
+
 
                 <!--
                 <div class="row align-items-center">
@@ -514,6 +519,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <!-- Core theme JS-->
+        <script src="../static/js/dict.js"></script>
         <script src="../static/js/scripts.js"></script>
     </body>
 </html>

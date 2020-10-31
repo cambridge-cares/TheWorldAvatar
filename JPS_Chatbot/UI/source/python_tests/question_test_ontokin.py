@@ -14,7 +14,7 @@ import urllib
 import urllib.parse
 import urllib.request
 from pprint import pprint
-from ONTOCOMPCHEM_QUERY_DICT import query_list_ontocompchem
+from ONTOKIN_QUERY_DICT import query_list_ontokin
 import time
 
 RotationalRelaxationCollisionNumber = '''
@@ -73,20 +73,22 @@ def parse_test_query_result():
 # parse_test_query_result_ontokin()
 # Make a dictionary, with question type names.
 
-def write_ontocompchem_dictionary(key, result):
-    with open('ontocompchem_dict_%s' % key, 'w') as f:
+def write_ontokin_dictionary(key, result):
+    with open('ontokin_dict_%s' % key, 'w') as f:
         f.write(json.dumps(result,indent=4))
 
 
-for ontocompchem_query in query_list_ontocompchem:
-    key = ontocompchem_query
-    query = query_list_ontocompchem[key]
+for ontokin_query in query_list_ontokin:
+    key = ontokin_query
+    query = query_list_ontokin[key]
     print(query)
-    r = fire_query_ontochemcomp(query)
-    species = r.decode('utf-8').split('\r\n')
-    species = [x for x in species if x != 'name' and (x != '')]
+    r = fire_query_ontokin(query)
+    print('the result is', r.decode('utf-8'))
+    species = r.decode('utf-8')
+    # species = [x for x in species if x != 'name' and (x != '')]
     # ontocompchem_result[key] = species
-    write_ontocompchem_dictionary(key, species)
+    write_ontokin_dictionary(key, species)
     time.sleep(60)
+
 
 # TODO: the species are in different forms ... now, try something ...
