@@ -31,9 +31,9 @@ def map_creation():
         except:
             break
     locations = locations[1:,:]
-    c = ['k','b','r','g','orange','w','purple']
-
-    location_index = np.arange(0,len(locations[0,:]),len(titles))
+    c = ['seagreen','orange','gold','w','navy','hotpink','skyblue']
+    location_index = np.arange(0,len(locations[0,:]),3)
+   
     overall_location = np.array([[0,0]])
     for j in location_index:
 
@@ -47,19 +47,21 @@ def map_creation():
         class_location = class_location[1:,:]
 
         gmap.scatter(class_location[:,0],class_location[:,1],s=2000,c=c[int(j/3)]\
-            ,marker=False,title=titles[int(j/3)])
+            ,marker=True,title=titles[int(j/3)],alpha=1)
 
         overall_location = np.append(overall_location,class_location,axis=0)
     overall_location = overall_location[1:,:]
 
-    connection_matrix = np.random.randint(0,2,(len(overall_location),len(overall_location)))
+    # connection_matrix = np.random.randint(0,2,(len(overall_location),len(overall_location)))
 
-    for i in range(len(connection_matrix)):
-        for j in range(i,len(connection_matrix)):
-            if connection_matrix[i,j] == 1:
-                u = np.random.uniform()
-                if u < 0.005:
-                    gmap.plot([overall_location[i,0],overall_location[j,0]],[overall_location[i,1],overall_location[j,1]])
+    # for i in range(len(connection_matrix)):
+    #     for j in range(i,len(connection_matrix)):
+    #         if connection_matrix[i,j] == 1:
+    #             u = np.random.uniform()
+    #             if u < 0.005:
+    #                 gmap.plot([overall_location[i,0],overall_location[j,0]],[overall_location[i,1],overall_location[j,1]],alpha=0.5,ew=3)
+    #                 break
+
     gmap.draw('PopulatingTools\Mapping and Location Tools\map.html')
     return 
 

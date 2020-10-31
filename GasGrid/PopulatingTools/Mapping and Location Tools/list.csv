@@ -1,203 +1,121 @@
-INTAKES,COMPRESSORS,OFFTAKES
-BACTON BBL,Bishop Auckland," Aberdeen, SC"
-BACTON IC,Carnforth, Aldbrough
-BACTON IPs Terminal,Nether Kellett," Alrewas, EM"
-BACTON PERENCO,Warrington," Alrewas, WM"
-BACTON SEAL,Hatton, AM Paper
-BACTON SHELL,Alrewas, Armadale
-BACTON UKCS Terminal,Wisbech," Aspley, WM"
-BARROW SOUTH,King's Lynn," Asselby, NE"
-BARROW TERMINAL,Peterborough,"Bishop Auckland, NO"
-DYNEVOR ARMS,Churchover," Bishop Auckland, NO"
-DYNEVOR ,Huntingdon," Audley, NW"
-EASINGTON DIMLINGTON,Cambridge," Audley, WM"
-EASINGTON LANGELED,Diss," Austrey, WM"
-EASINGTON ROUGH ST,Chelmsford, Avonmouth
-EASINGTON TERMINAL,Aylesbury," Aylesbeare, SW"
-GLENMAVIS,Lockerley," Bacton, EA"
-GLENMAVIS ,Wormington, Bacton
-GRAIN,Aberdeen, Bacton BBL
-GRAIN,Avonbridge, Bacton BBL
-"Hilltop Farm, Cheshire",Kirriemuir, Baglan Bay
-HOLE HOUSE FARM,Moffat," Baldersby, NE"
-HOLFORD,St Fergus, Balgray
-HORNSEA,, Barking
-ISLE OF GRAIN TERMINAL,, Barrow 
-MILFORD HAVEN - DRAGON,, BASF
-MILFORD HAVEN - SOUTH HOOK,, Bathgate
-MILFORD HAVEN TERMINAL,," Blaby, EM"
-PARTINGTON,, BlackBridge
-PARTINGTON ,, Blackburn
-ST FERGUS MOBIL,," Blackrod, NW"
-ST FERGUS NSMP,," Blyborough, EM"
-ST FERGUS SHELL,, BOC Teeside
-ST FERGUS TERMINAL,, BP Grngmouth
-LACH DENNIS,, BP Saltend
-Teeside Central Area Transmission System,," Braishfield, SO"
-TEESSIDE ,," Braishfield, SO"
-TEESSIDE ,, Brdgewater 
-THEDDLETHORPE,, Brent 
-THEDDLETHORPE TERMINAL,," Brisley, EA"
-,, Broxburn
-,, Burley Bank
-,, Burnhervie
-,, Burton Point
-,, Caldecott
-,, Careston
-,, Carrington
-,, Centrax
-,," Choakford, SW"
-,," Churchovr, WM"
-,," Cirencester, SW"
-,," Coffinswell, SW"
-,," Coldstream, NO"
-,," Corbridge, NO"
-,, Corby
-,, Coryton
-,, Cottam
-,," Cowpen Bewley, NO"
-,, Damhead Creek
-,, Deeside
-,, Didcot
-,," Dowlais, WS"
-,," Drointon, EM"
-,," Drum, SC"
-,," DyffrynClyd, WS"
-,, DynevorArms
-,," EastonGrey, SW"
-,," Eccleston, NW"
-,, Elton
-,, Epping Green
-,," Evesham, SW"
-,," Farningham, SE"
-,," Farningham, SE"
-,," Fiddington, SW"
-,, Fordoun
-,," Ganstead, NE"
-,," Gilwern, WS"
-,, Glenmavis
-,, Glenmavis
-,, Goole Glass
-,," Gosberton, EM"
-,, Gowkhall
-,, Grain
-,, Great Wilbraham
-,, Great Yarmouth
-,," Guyzance, NO"
-,," Hardwick, SO"
-,, Hatfield Moor
-,, HillTop
-,, Hole House Farm
-,, Holford
-,," Holmes Chapel, NW"
-,," Horndon, NT"
-,, Hornsea
-,," Humbleton, NO"
-,, Humbly Grove
-,, Hume
-,, ICI Billinghm
-,, ICI Runcorn
-,, ICI Svrnside
-,," Ilchester, SW"
-,, Immingham
-,," Ipsden, SO"
-,," Ipsden, SO"
-,, Keadby
-,, Keadby
-,, Keadby
-,," Keld, NO"
-,," Kenn, SW"
-,, KingsLynn
-,, Kinknockie
-,," Kirkstead, EM"
-,, Langage
-,, Langholm
-,," Leamington, WM"
-,," LittletnDrew, SW"
-,, Lockerbie
-,," LowerQuinton, WM"
-,, LtBarford
-,,"Burdon, NE"
-,," Lupton, NW"
-,," LuxboroughLn, NT"
-,, Maelor
-,," Malpas, NW"
-,," Mappowder, SO"
-,, Marchwood
-,," MatchngGreen, EA"
-,, Medway
-,," Melkinthorpe, NO"
-,, Mickle Trafford
-,," Milwich, WM"
-,, Market Harborogh
-,, Moffat
-,, Murco
-,, NetherHwclgh
-,, PalmPaper
-,," Pannal, NE"
-,, Partington
-,," Partington, NW"
-,," Paull, NE"
-,, Peterborough
-,, Peterborough
-,, Peterhead
-,, Peters Green
-,, Peters Green
-,, Conoco Philips Teeside
-,," Pickering, NE"
-,, Pitcairn Fife
-,," Pucklechurch, SW"
-,," Rawcliffe, NE"
-,, Rocksavage
-,, Roosecote
-,," Ross, SW"
-,, Ross On Wye
-,," RoudhamHeath, EA"
-,, Rough
-,, Rough
-,," Royston, EA"
-,, Rugby
-,, RyeHouse
-,, Saltend
-,," Saltwick, NO"
-,," SaltwickH, NO"
-,," Samlesbury, NW"
-,, Seabank
-,," Seabank, SW"
-,, SeabankB
-,, Sellafield
-,,St Fergus
-,," Shorne, SE"
-,, Shotton Paper
-,," Shustoke, WM"
-,, Silk Willough
-,, Soutra
-,, Spalding
-,, Stallingbor
-,, Stallingbor
-,, Staythorpe
-,, StFergus
-,, Stratford Upon Avon
-,, Stublach
-,," SuttonBridge, EM"
-,, SuttonBridge
-,," Tatsfield, SE"
-,, Teesside NSMP
-,," ThorntonCurt, EM"
-,, ThorntonCurt
-,," Thrintoft, NO"
-,," TowLaw, NO"
-,," Towton, NE"
-,," TurLangton, EM"
-,," Walesby, EM"
-,," Warburton, NW"
-,, WestBurtonPS
-,," WestonPoint, NW"
-,," WestWinch, EA"
-,," Wetheral, NO"
-,," Whitwell, EA"
-,," Winkfield, NT"
-,," Winkfield, SE"
-,," Winkfield, SO"
-,, Winnington
-,, Yelverton
+Intake,Compressor,Industrial Offtake,LDZ Offtake,Power Station,Storage
+BACTON BBL,Bishop Auckland,Aberdeen, Aberdeen, BaglanBay, Aldbrough
+BACTON IC,Carnforth, Barrow, Alrewas, BlackBridge, Hatfield Moor
+BACTON IPs Terminal,Nether Kellett, BASF Redditch, Alrewas, Brigg, HillTop
+BACTON PERENCO,Warrington, Blackburn, Armadale, BurtonPoint, Hole House Farm
+BACTON SEAL,Hatton, BOC Teeside, Aspley, Carrington, Holford
+BACTON SHELL,Alrewas, BP Grangemouth, Asselby, Corby, Hornsea
+BACTON UKCS Terminal,Wisbech, BP Saltend, Auckland, Coryton, Humbly Grove
+BARROW SOUTH,King's Lynn, Bridgewater, Auckland , Cottam, Rough
+BARROW TERMINAL,Peterborough, Brent, Audley, Damhead Creek, Stublach
+DYNEVOR ARMS,Churchover, Centrax, Audley, Didcot,
+DYNEVOR ,Huntingdon, Fordoun, Austrey, EppingGreen,
+EASINGTON DIMLINGTON,Cambridge, GooleGlass, Aylesbeare, Grain,
+EASINGTON LANGELED,Diss, ICI Billnghm, Bacton, Gt Yarmouth,
+EASINGTON ROUGH ST,Chelmsford, ICI Runcorn, Baldersby, Keadby,
+EASINGTON TERMINAL,Aylesbury, Immingham, Balgray, Keadby,
+GLENMAVIS,Lockerley, Keadby, Bathgate, KingsLynn,
+GLENMAVIS ,Wormington, Conoco Philips Teeside, Blaby, Langage,
+GRAIN,Aberdeen, Rough, Blackrod, Barford,
+GRAIN,Avonbridge,St Fergus , Blyborough, Marchwood,
+"Hilltop Farm, Cheshire",Kirriemuir,Shell Mossmoran, BraishfieldA, Medway,
+HOLE HOUSE FARM,Moffat, Winnington, BraishfieldB, Palm Paper,
+HOLFORD,St Fergus,, Brisley, Peterborough,
+HORNSEA,,, Broxburn, Rocksavage,
+ISLE OF GRAIN TERMINAL,,, BurleyBank, RyeHouse,
+MILFORD HAVEN - DRAGON,,, Burnhervie, Saltend,
+MILFORD HAVEN - SOUTH HOOK,,, Caldecott, Seabank,
+MILFORD HAVEN TERMINAL,,, Careston, SeabankB,
+PARTINGTON,,, Choakford, Sellafield,
+PARTINGTON ,,, Cirencester, Spalding,
+ST FERGUS MOBIL,,, Coffinswell, Staythorpe,
+ST FERGUS NSMP,,, Coldstream, SuttonBridge,
+ST FERGUS SHELL,,, Corbridge, Teesside NSMP,
+ST FERGUS TERMINAL,,, Cowpen Bewley, ThorntonCurt,
+LACH DENNIS,,, Dowlais, WestBurton,
+Teeside Central Area Transmission System,,, Drointon, Stallingborough 1,
+TEESSIDE ,,, Drum, Stallingborough 2,
+TEESSIDE ,,, DyffrynClyd,,
+THEDDLETHORPE,,, EastonGrey,,
+THEDDLETHORPE TERMINAL,,, Eccleston,,
+,,, Elton,,
+,,, Evesham,,
+,,, Farningham,,
+,,, FarninghamB,,
+,,, Fiddington,,
+,,, Ganstead,,
+,,, Gilwern,,
+,,, Glenmavis,,
+,,, Gosberton,,
+,,, Gt Wilbraham,,
+,,, Guyzance,,
+,,, Hardwick,,
+,,, Holmes Chapel,,
+,,, Horndon,,
+,,, Humbleton,,
+,,, Hume,,
+,,, Ilchester,,
+,,, Ipsden1,,
+,,, Ipsden2,,
+,,, Keld,,
+,,, Kenn,,
+,,, Kinknockie,,
+,,, Kirkstead,,
+,,, Langholm,,
+,,, Leamington,,
+,,, Littleton Drew,,
+,,, Lockerbie,,
+,,, LowerQuinton,,
+,,, Burdon,,
+,,, Lupton,,
+,,, Luxborough Lane,,
+,,, Maelor,,
+,,, Malpas,,
+,,, Mappowder,,
+,,, Matching Green,,
+,,, Melkinthorpe,,
+,,, Mickle Trafford,,
+,,, Milwich,,
+,,, Market Harborogh,,
+,,, Nether Kellett,,
+,,, Pannal,,
+,,, Partington,,
+,,, Paull,,
+,,, Peterborough Eye,,
+,,, Peters Green,,
+,,, Peters Green,,
+,,, Pickering,,
+,,, Pitcairn Fife,,
+,,, Pucklechurch,,
+,,, Rawcliffe,,
+,,, Ross,,
+,,, RoudhamHeath,,
+,,, Royston,,
+,,, Rugby,,
+,,, Saltwick,,
+,,, SaltwickH,,
+,,, Samlesbury,,
+,,, Seabank,,
+,,, Shorne,,
+,,, Shustoke,,
+,,, Silk Willoughby,,
+,,, Soutra,,
+,,, StFergus,,
+,,, Stratford Upon Avon,,
+,,, SuttonBridge,,
+,,, Tatsfield,,
+,,, ThorntonCurt,,
+,,, Thrintoft,,
+,,, TowLaw,,
+,,, Towton,,
+,,, Tur Langton,,
+,,, Walesby,,
+,,, Warburton,,
+,,, WestonPoint,,
+,,, WestWinch,,
+,,, Wetheral,,
+,,, Whitwell,,
+,,, Winkfield,,
+,,, Winkfield,,
+,,, Winkfield,,
+,,, Yelverton,,
