@@ -149,10 +149,6 @@ WHERE  {
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn    ?GeometryType .
 ?GeometryType   ontocompchem:hasGeometryType ?GeometryTypeValue .  
-OPTIONAL {
-?x gc:hasUnit ?unit .
-BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short) .
-} # http://data.nasa.gov/qudt/owl/unit#Hartree
 }
 
 '''

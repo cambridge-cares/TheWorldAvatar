@@ -22,6 +22,9 @@ function autocomplete(inp, arr) {
       // if val === ' ' {return false; }
       currentFocus = -1;
       if (val === '') {return false;}
+      // trigger the search only if the val contains more than one character
+      if (val.length <= 1) {return false;}
+
       /*create a DIV element that will contain the items (values):*/
       a = document.createElement("DIV");
       a.setAttribute("id", this.id + "autocomplete-list");
