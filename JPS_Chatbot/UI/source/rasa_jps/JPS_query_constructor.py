@@ -17,7 +17,8 @@ from .OntoOntokin_Queries import  LENNARD_JONES_WELL_DEPTH, \
     ontokin_simple_intents
 
 from functools import lru_cache
-
+from cachier import cachier
+import datetime
 # try:
 #     from __main__ import socketio
 #
@@ -202,8 +203,18 @@ class JPS_query_constructor:
 
     def query_thermo_of_moleculars(self, intent, species):
         species = species.upper()
+        print('============= line 206 ============')
+        print('intent', intent)
+        print('species', species)
+        species = self.validator.validate('ontokin', intent, species)
+        print('======== species =======')
+        print(species)
+
         if intent == 'lennard_jones_well':
             q = LENNARD_JONES_WELL_DEPTH % species
+            print('===========JONE WELL DEPTH========== ')
+            print(q)
+            print('=======================')
             rst = self.fire_query(q).decode('utf-8')
             return rst
         elif intent == 'polarizability':
@@ -234,7 +245,11 @@ class JPS_query_constructor:
         # VIBRATION_FREQUENCY_QUERY
         # ROTATIONAL_SYMMETRY_NUMBER
         original_species = species
+        print('=========== line 238 =============')
+        print('intent', intent)
+        print('species', species)
         species = self.validator.validate('ontocompchem', intent, species)
+        self.socketio.emit('coordinate_agent', 'this is from the validator' + str(species))
         if species is None:
             self.socketio.emit('coordinate_agent', 'This species does not have this information in the World Avatar KG')
             return None
@@ -378,7 +393,8 @@ class JPS_query_constructor:
         print('result after', result)
         return result
 
-    @lru_cache(maxsize=64)
+    # @lru_cache(maxsize=64)
+    # @cachier(stale_after=datetime.timedelta(days=3))
     def fire_query(self, query):
 
         print('Importing socketIO from run_socket in interpretation')
@@ -395,6 +411,7 @@ class JPS_query_constructor:
         response = urllib.request.urlopen(req).read()
         return response
 
+    # @cachier(stale_after=datetime.timedelta(days=3))
     def fire_query_ontochemcomp(self, query):
         print('----------- firing the query to JPS ontochemcomp -------------')
         print(query)

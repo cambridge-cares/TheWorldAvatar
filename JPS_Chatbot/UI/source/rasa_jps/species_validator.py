@@ -4,6 +4,7 @@ import os
 import chemparse
 from .locations import RASA_JPS_DIR
 
+word_map = {'hydrogen': 'H2', 'water': 'H2O', 'oxygen': 'O2', 'benzene': 'C6H6', 'methane': 'CH4'}
 
 class SpeciesValidator:
 
@@ -11,6 +12,9 @@ class SpeciesValidator:
         with open(os.path.join(RASA_JPS_DIR, 'ontocompchem_dict')) as f:
             self.ontocompchem_species_dict = json.loads(f.read())
             f.close()
+
+        with open(os.path.join(RASA_JPS_DIR, 'ontokin_dict')) as f:
+            self.ontokin_species_dict = json.loads(f.read())
 
         # with open('ontokin_dict') as f:
         #     self.ontokin_species_dict = json.loads(f.read())
@@ -43,6 +47,8 @@ class SpeciesValidator:
             return ''.join(sorted(temp))
 
     def validate(self, ontology, intent, species):
+        if species.lower() in word_map:
+            species = word_map[species]
         species = self.normalize_formula(species)
         print('normalized species', species)
         # use regular expression to separate the components
@@ -51,6 +57,7 @@ class SpeciesValidator:
         # replace the species with what is in the dict ...
         if ontology == 'ontocompchem':
             species_dict = self.ontocompchem_species_dict[intent]
+            print('line 54')
         elif ontology == 'ontokin':
             species_dict = self.ontokin_species_dict[intent]
         else:
@@ -90,3 +97,9 @@ class SpeciesValidator:
 #     r = speices_validator.validate(intent, species)
 #     print('the result for validation is', r)
 #     print('------------')
+
+species = 'C2H2O2'
+speices_validator = SpeciesValidator()
+intent = 'lennard_jones_well'
+r = speices_validator.validate('ontokin',intent, species)
+print('the r is', r)

@@ -367,8 +367,28 @@ ontocompchem_url = 'http://www.theworldavatar.com/rdf4j-server/repositories/onto
 
 # r = fire_query_free(ontokin_url, hasLennardJonesDiameter, 'query')
 # r = fire_query_ontokin(has_transport_query)
-r = fire_query_ontokin(relaxation_collision)
-print('result from', r)
+# r = fire_query_ontokin(relaxation_collision)
+# print('result from', r)
+q = '''
+PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+SELECT DISTINCT  ?name   ?File
+WHERE  {
+?g_calculation rdf:type ontocompchem:G09 .
+?g_calculation ontocompchem:hasInitialization ?initialization .
+?initialization gc:hasMoleculeProperty ?molecule_property .
+?molecule_property gc:hasName ?name .
+FILTER regex(?name, "^C 8 H 14 $")
+# ============ to match molecule =========================
+?g_calculation  ontocompchem:hasEnvironment   ?Environment .
+?Environment    gc:hasOutputFile  ?File .
+}
+'''
+r = fire_query(q)
+print(r)
 
 #
 # process_species_for_ontocompchem('h2o2')

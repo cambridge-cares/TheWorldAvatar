@@ -352,6 +352,23 @@ FILTER regex(?Reactant_2_label, "^OH$")
 
 '''
 
-result = fire_query(query_e).decode('utf-8')
+lwd = '''
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?LennardJonesDiameter ?DiameterUnits ?LennardJonesWellDepth ?WellDepthUnits
+{
+  ?Species rdfs:label ?label .
+  FILTER regex(?label, "^C2H2O2$")
+  ?Species ontokin:hasTransportModel ?TransportModel .
+  ?TransportModel rdf:type ontokin:TransportModel .
+  ?TransportModel ontokin:hasLennardJonesDiameter  ?LennardJonesDiameter .
+  ?TransportModel ontokin:hasLennardJonesDiameterUnits ?DiameterUnits .
+  ?TransportModel ontokin:hasLennardJonesWellDepth ?LennardJonesWellDepth .
+  ?TransportModel ontokin:hasLennardJonesWellDepthUnits ?WellDepthUnits .
+}
+
+'''
+
+result = fire_query(lwd).decode('utf-8')
 print(result)
 print('Here we go')

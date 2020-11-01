@@ -12,7 +12,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s $")
+FILTER regex(?name, "^%s$")
 # ============ to match molecule =========================
 ?g_calculation gc:isCalculationOn ?rotational_constants .
 ?rotational_constants ontocompchem:hasRotationalConstants ?rotational_constants_value . 
@@ -35,7 +35,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s $")
+FILTER regex(?name, "^%s$")
 
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn  ?VibrationalAnalysis .
@@ -61,7 +61,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s $")
+FILTER regex(?name, "^%s$")
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn  ?RotationalSymmetry .
 ?RotationalSymmetry rdf:type ontocompchem:RotationalSymmetry .
@@ -81,7 +81,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s $")
+FILTER regex(?name, "^%s$")
 # ============ to match molecule =========================
 ?g_calculation  ontocompchem:hasEnvironment   ?Environment .
 ?Environment    gc:hasOutputFile  ?File . 
@@ -100,7 +100,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s $")
+FILTER regex(?name, "^%s$")
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
 ?GeometryOptimization    gc:hasMolecule    ?Molecule .
@@ -120,7 +120,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s $")
+FILTER regex(?name, "^%s$")
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
 ?GeometryOptimization    gc:hasMolecule    ?Molecule .
@@ -146,7 +146,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s $")
+FILTER regex(?name, "^%s$")
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn    ?ScfEnergy .
 ?ScfEnergy    gc:hasElectronicEnergy  ?x .
@@ -171,7 +171,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s $")
+FILTER regex(?name, "^%s$")
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn    ?GeometryType .
 ?GeometryType   ontocompchem:hasGeometryType ?GeometryTypeValue .  
