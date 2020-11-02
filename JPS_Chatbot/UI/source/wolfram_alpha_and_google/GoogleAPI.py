@@ -14,7 +14,7 @@ class GoogleAPI:
         self.options = Options()
         self.options.add_argument('--headless')
         self.options.add_argument('--disable-logging') 
-        self.driver = webdriver.Firefox(options=self.options)
+        self.driver = webdriver.Firefox(options=self.options, service_log_path='/dev/null')
         self.url_template = 'https://www.google.com/search?q=%s'
 
     def combine_key_components(self, key_components):
