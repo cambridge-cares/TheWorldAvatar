@@ -13,6 +13,7 @@ class GoogleAPI:
     def __init__(self):
         self.options = Options()
         self.options.add_argument('--headless')
+        self.options.add_argument('--disable-logging') 
         self.driver = webdriver.Firefox(options=self.options)
         self.url_template = 'https://www.google.com/search?q=%s'
 
