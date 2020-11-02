@@ -3,9 +3,9 @@
 set F90         = ifort
 set F90FLAGS    = '-g -fpp -FR -traceback -debug -free -fp-stack-check -check all -extend_source 132 -heap-arrays 10'
 set F90OPTFLAGS = '-O3 -fpp -xHost -traceback -fp-model precise -fp-model except -m64 -ipo -heap-arrays 10'
-set NCLIB       = '-L/usr/local/netcdf4/lib -lnetcdf -lnetcdff' 
-set NCINC       = '-I/usr/local/netcdf4/include'
-set HOMEPATH    = /home/matthias/CITYCHEM_DEV/citychem-1.3/
+set NCLIB       = '-L${HOME}/netcdf4/lib -lnetcdf -lnetcdff' 
+set NCINC       = '-I${HOME}/netcdf4/include'
+set HOMEPATH    = ${HOME}/citychem-1.3/
 set IOAPI       = Linux2_x86_64ifort
-set IOAPIDIR    = /home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2/
+set IOAPIDIR    = ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/
 

@@ -77,7 +77,7 @@
 
 .SUFFIXES: .m4 .c .F .f .f90 .F90 .mod
 
-BASEDIR = /home/matthias/CITYCHEM_DEV/citychem-1.3//preproc/bconcc2.2/ioapi3.2
+BASEDIR = ${HOME}/citychem-1.3//preproc/bconcc2.2/ioapi3.2
 INSTDIR = 
 
 IODIR  = ${BASEDIR}/ioapi
@@ -90,7 +90,7 @@ FIXDIR  = ${IODIR}/fixed_src
 
 # Architecture dependent stuff
 
-include /home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2//ioapi/Makeinclude.Linux2_x86_64gfort
+include ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2//ioapi/Makeinclude.Linux2_x86_64gfort
  
 DEFINEFLAGS  =                $(ARCHFLAGS) $(PARFLAGS)
 #DEFINEFLAGS = -DIOAPICPL=1   $(ARCHFLAGS) $(PARFLAGS)

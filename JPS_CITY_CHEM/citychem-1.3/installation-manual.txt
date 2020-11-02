@@ -123,6 +123,7 @@ mkdir ${HOME}/sqlite3
 export SQLITE3_LIBS=${HOME}/sqlite3/lib
 export SQLITE3_CFLAGS=${HOME}/sqlite3/include
 ./configure --prefix=${HOME}/sqlite3 --enable-shared SQLITE3_CFLAGS="-I${HOME}/sqlite3/include" SQLITE3_LIBS="-L${HOME}/sqlite3/lib"
+make
 make install
 cd ..
 cd ${HOME}/proj-6.0.0
@@ -136,6 +137,8 @@ PROJ_DIR=${HOME}/proj
 cd ..
 
 2.7 Gdal installation
+Known issue for kinetics users: you need to remove the line 'module load python/3.7/' from your bashrc and use the default option in CSD3. A copy of the bashrc file that worked can be found at JPS_CITY_CHEM\src\main\resources
+
 Download gdal-3.0.4.tar.gz from here https://gdal.org/download.html. This 
 version might be available here
 https://github.com/OSGeo/gdal/releases/download/v3.0.4/gdal-3.0.4.tar.gz.
@@ -158,79 +161,17 @@ export PATH=${HOME}/gdal/bin:$PATH
 Following the addition, press the ESC key. Type colon, w and q (:wq) and press Enter.
 
 3. EPISODE CityChem installation
-Make a directory called citychem-1.3 under the user home (${HOME}). To make the
-directory, run the following command:
+Remember to logout and login again for changes to bashrc to take effect.
 
-mkdir ${HOME}/citychem-1.3
+WARNING: Do not copy the folder from Windows to Linux to compile the code, they will have messed up line endings!
+Assuming you have a folder called '~/Codes/' in your home directory, perform the following commands:
+cd Codes
+git clone ssh://USERNAME@vienna.cheng.cam.ac.uk/home/userspace/CoMoCommon/Codes/CARES/JParkSimulator-git
+cp -r ~/Codes/JParkSimulator-git/JPS_CITY_CHEM/citychem-1.3/ ~/
+cd ~/citychem-1.3/
+chmod +x ~/citychem-1.3/installcc.csh
 
-Download both citychem-1.3.tar.gz and cc_example_data_new2_201307.tar.gz from here 
-https://zenodo.org/record/1116174. Citychem-1.3.tar.gz might be available here
-https://zenodo.org/record/3549415/files/citychem-1.3.tar.gz?download=1.
-Cc_example_data_new2_201307.tar.gz might be available here
-https://zenodo.org/record/3549415/files/cc_example_data_new2_201307.tar.gz?download=1.
-After the download, put both of them under the path of citychem-1.3 (${HOME}/citychem-1.3).
-Go to the citychem-1.3 directory (${HOME}/citychem-1.3) and run the following commands.
-
-tar -zxvf citychem-1.3.tar.gz
-tar -zxvf cc_example_data_new2_201307.tar.gz
-./configure --prefix=${HOME}/gdal --enable-shared CPPFLAGS="-I${HOME}/proj/include" LDFLAGS="-L${HOME}/proj/lib"
-
-Open the aermap_reader.for file from ${HOME/citychem-1.3/preproc/auxiliary/src} and replace the following line:
-
-Replace integer, parameter :: nrec = 10          ! 25 values in one line of AERMAP.REC file
-with integer, parameter :: nrec = 25          ! 25 values in one line of AERMAP.REC file
-
-Save the changes and close the file.
-
-Open the config.user file in a text editor and replace the following lines manually:
-
-Replace set NCLIB       = '-L/usr/local/netcdf4/lib -lnetcdf -lnetcdff' 
-with set NCLIB       = '-L${HOME}/netcdf4/lib -lnetcdf -lnetcdff' 
-
-Replace set NCINC       = '-I/usr/local/netcdf4/include'
-with set NCINC       = '-I${HOME}/netcdf4/include'
-
-Replace set HOMEPATH    = /home/matthias/CITYCHEM_DEV/citychem-1.3/
-with set HOMEPATH    = ${HOME}/citychem-1.3
-
-Replace set IOAPIDIR    = /home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2/
-with set IOAPIDIR    = /home/msff2/citychem-1.3/preproc/bconcc2.2/ioapi3.2
-
-Save the changes and close the file.
-
-Open the config.user.gfortran file in a text editor and replace the following lines manually:
-
-Replace set NCLIB       = '-L/usr/local/netcdf4/lib -lnetcdf -lnetcdff' 
-with set NCLIB       = '-L${HOME}/netcdf4/lib -lnetcdf -lnetcdff' 
-
-Replace set NCINC       = '-I/usr/local/netcdf4/include'
-with set NCINC       = '-I${HOME}/netcdf4/include'
-
-Replace set HOMEPATH    = /home/matthias/CITYCHEM_DEV/citychem-1.3/
-with set HOMEPATH    = ${HOME}/citychem-1.3
-
-Replace set IOAPIDIR    = /home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2/
-with set IOAPIDIR    = /home/msff2/citychem-1.3/preproc/bconcc2.2/ioapi3.2
-
-Save the changes and close the file.
-
-Open the config.user.intel file in a text editor and replace the following lines manually:
-
-Replace set NCLIB       = '-L/usr/local/netcdf4/lib -lnetcdf -lnetcdff' 
-with set NCLIB       = '-L${HOME}/netcdf4/lib -lnetcdf -lnetcdff' 
-
-Replace set NCINC       = '-I/usr/local/netcdf4/include'
-with set NCINC       = '-I${HOME}/netcdf4/include'
-
-Replace set HOMEPATH    = /home/matthias/CITYCHEM_DEV/citychem-1.3/
-with set HOMEPATH    = /home/msff2/citychem-1.3
-
-Replace set IOAPIDIR    = /home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2/
-with set IOAPIDIR    = ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2
-
-Save the changes and close the file.
-
-Execute the following commands:
+Then, execute the following commands:
 
 ./installcc.csh city example
 ./installcc.csh util example
@@ -240,3 +181,6 @@ cd ../SIMU
 ln -s ../bin/citychem.exe
 
 This is the end of the installation of EPISODE CityChem.
+
+4. Run test cases
+There are three test cases available to test your installation. They are saved at JPS_CITY_CHEM\src\main\resources, there is a readme file at that location with instructions on how to run the tests

@@ -376,8 +376,21 @@
           IF (.NOT. ALLOCATED(CHANGE)) ALLOCATE(CHANGE(NQ))
 
 
-      ENDIF
+!!!===============================================
+!!!  for moving point source, by Kang Dec.10,2019
+!!   further changed for circular moving route @ Jan 21, 2020 by Kang          
+          IF (.NOT. ALLOCATED(QX1))     ALLOCATE(QX1(NQ))
+          IF (.NOT. ALLOCATED(QY1))     ALLOCATE(QY1(NQ))
+          IF (.NOT. ALLOCATED(vel_point))     ALLOCATE(vel_point(NQ))
+          IF (.NOT. ALLOCATED(dd_point))      ALLOCATE(dd_point(NQ))
+          IF (.NOT. ALLOCATED(t_mpoint1))     ALLOCATE(t_mpoint1(NQ))
+          IF (.NOT. ALLOCATED(t_mpoint2))     ALLOCATE(t_mpoint2(NQ))     
 
+          IF (.NOT. ALLOCATED(cir_ang))     ALLOCATE(cir_ang(NQ)) 
+       
+      ENDIF
+!!!===============================================
+ 
 
   200 CONTINUE
 
@@ -408,14 +421,20 @@
               IF (LEOF) GOTO 250
 
 ! Read point source data
-
-              READ (PSRCUN,*) QIDV,QXV,QYV,QZV,QHSV,QDIV,QHBV,QWBV,      &
-                             QTEV,QTGV,QVGV,(QEMVEC(J),J=1,MJVEC)
-
+!!=================================================================================
+!! original code:
+ !             READ (PSRCUN,*) QIDV,QXV,QYV,QZV,QHSV,QDIV,QHBV,QWBV,      &
+ !                            QTEV,QTGV,QVGV,(QEMVEC(J),J=1,MJVEC)
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          !print *,'rpsrc: point source data: ', QIDV,QXV,QYV,QZV,QHSV,QDIV,QHBV,QWBV,      &
          !                    QTEV,QTGV,QVGV,(QEMVEC(J),J=1,MJVEC)
-
-         !print *,'rpsrc 2: iqc ',(IQC(IC),IC=1,NC)
+              READ (PSRCUN,*) QIDV,QXV,QYV,QZV,&
+                              QHSV,QDIV,QHBV,QWBV,      &
+                             QTEV,QTGV,QVGV,&
+                              vel_point(IQ),dd_point(IQ),cir_ang(IQ),t_mpoint1(IQ),t_mpoint2(IQ), &                             
+                             (QEMVEC(J),J=1,MJVEC)
+   !      print *,'rpsrc 2: IQ= ',IQ, 'vel_point=',vel_point(IQ),', dd_point=',dd_point(IQ), &
+   !            ',t_mpoint1=',t_mpoint1(IQ),',t_mpoint2=',t_mpoint2(IQ)
 
 ! Process point source data and insert into common variables
 
@@ -439,10 +458,21 @@
 
           CALL NXTDAT(PSRCUN,LEOF)
           IF (LEOF) GOTO 250
-
-          READ (PSRCUN,*) (CHTIME(I),I=1,6)
+!!!========================================================
+!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!changed by Kang @ Dec.5, 2019 for correctly reading point source
+!!!!!!!!!   Again for 1 hr emission data file, may need to 
+!!!!!!         (1):  further change the date in emission file 
+!!!!!!       or (2):  modify the TSPSRC() function to avoid double call cpsrc
+!!!!!!!!!!!!!!!!!!!!!
+! orig:          READ (PSRCUN,*) (CHTIME(I),I=1,6)
           !print *,'rpsrc: CHTIME end ', (CHTIME(I),I=1,6)
-
+           READ (PSRCUN,*) (CHTIME(I),I=1,6)
+          CHTIME(5) = 59
+          CHTIME(6) = 59
+!!! end of change
+!!!========================================================
+          
           IF ( 0 .LE. CHTIME(1) .AND. CHTIME(1) .LT. 50)      &
          CHTIME(1) = CHTIME(1) + 2000
           IF (50 .LE. CHTIME(1) .AND. CHTIME(1) .LE. 99)      &
