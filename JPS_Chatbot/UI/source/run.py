@@ -9,7 +9,7 @@ from pprint import pprint
 from flask import Flask, request
 from flask import render_template
 from flask_socketio import SocketIO, send, emit
-
+from functools import lru_cache
 sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 sys.path.append('/source')
 app = Flask(__name__)

@@ -11,7 +11,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import time
 
+from functools import lru_cache
 
+@lru_cache(maxsize=None)
 def make_request(_url, index, query):
     headers = {'Accept': 'application/sparql-results+json'}
     html = requests.get(_url, stream=True, headers=headers)

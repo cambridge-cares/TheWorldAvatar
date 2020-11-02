@@ -369,6 +369,20 @@ SELECT DISTINCT ?label ?LennardJonesDiameter ?DiameterUnits ?LennardJonesWellDep
 
 '''
 
-result = fire_query(lwd).decode('utf-8')
+get_reaction = '''
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontokin:
+        <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+        PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+        SELECT  DISTINCT   ?Equation   
+        WHERE  {
+        ?reaction ontokin:hasEquation ?Equation ;
+ 
+        }  LIMIT 50
+'''
+
+result = fire_query(get_reaction).decode('utf-8')
 print(result)
+
 print('Here we go')

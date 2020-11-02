@@ -60,8 +60,7 @@ class CoordinateAgent:
     # TODO: show progress
     # def identify_topics(self, question):
 
-
-
+    @lru_cache(maxsize=None)
     def run(self, question):
 
         # TODO: put the LDA model here

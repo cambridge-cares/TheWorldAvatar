@@ -17,7 +17,7 @@ from .OntoOntokin_Queries import  LENNARD_JONES_WELL_DEPTH, \
     ontokin_simple_intents
 
 from functools import lru_cache
-from cachier import cachier
+# from cachier import cachier
 import datetime
 # try:
 #     from __main__ import socketio
@@ -34,6 +34,8 @@ class JPS_query_constructor:
         self.serach_interface = SearchInterface()
         self.socketio = socketio
         self.validator = SpeciesValidator()
+        # self.fire_query.clear_cache()
+        # self.fire_query_ontochemcomp.clear_cache()
 
     @staticmethod
     def process_species_for_ontocompchem(species):
@@ -394,7 +396,7 @@ class JPS_query_constructor:
         return result
 
     # @lru_cache(maxsize=64)
-    # @cachier(stale_after=datetime.timedelta(days=3))
+    @lru_cache(maxsize=None)
     def fire_query(self, query):
 
         print('Importing socketIO from run_socket in interpretation')
@@ -411,7 +413,7 @@ class JPS_query_constructor:
         response = urllib.request.urlopen(req).read()
         return response
 
-    # @cachier(stale_after=datetime.timedelta(days=3))
+    @lru_cache(maxsize=None)
     def fire_query_ontochemcomp(self, query):
         print('----------- firing the query to JPS ontochemcomp -------------')
         print(query)

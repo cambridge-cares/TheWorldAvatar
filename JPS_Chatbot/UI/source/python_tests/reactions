@@ -1,0 +1,137 @@
+[  {
+    "Equation": "H + O2 =] O + OH"
+  },
+  {
+    "Equation": "O + OH =] H + O2"
+  },
+  {
+    "Equation": "H2 + O =] H + OH"
+  },
+  {
+    "Equation": "H + OH =] H2 + O"
+  },
+  {
+    "Equation": "H2 + OH =] H + H2O"
+  },
+  {
+    "Equation": "H + H2O =] H2 + OH"
+  },
+  {
+    "Equation": "O + H2O =] OH"
+  },
+  {
+    "Equation": "OH =] O + H2O"
+  },
+  {
+    "Equation": "H2 + M =] H + M"
+  },
+  {
+    "Equation": "H + M =] H2 + M"
+  },
+  {
+    "Equation": "O2 + M =] O + M"
+  },
+  {
+    "Equation": "O + M =] O2 + M"
+  },
+  {
+    "Equation": "OH + M =] H + O + M"
+  },
+  {
+    "Equation": "H + O + M =] OH + M"
+  },
+  {
+    "Equation": "H + HO2 =] H2 + O2"
+  },
+  {
+    "Equation": "H2 + O2 =] H + HO2"
+  },
+  {
+    "Equation": "H + HO2 =] OH"
+  },
+  {
+    "Equation": "OH =] H + HO2"
+  },
+  {
+    "Equation": "O + HO2 =] O2 + OH"
+  },
+  {
+    "Equation": "O2 + OH =] O + HO2"
+  },
+  {
+    "Equation": "OH + HO2 =] O2 + H2O"
+  },
+  {
+    "Equation": "O2 + H2O =] OH + HO2"
+  },
+  {
+    "Equation": "O2 + H2O2 =] HO2"
+  },
+  {
+    "Equation": "HO2 =] O2 + H2O2"
+  },
+  {
+    "Equation": "H + H2O2 =] OH + H2O"
+  },
+  {
+    "Equation": "OH + H2O =] H + H2O2"
+  },
+  {
+    "Equation": "H + H2O2 =] H2 + HO2"
+  },
+  {
+    "Equation": "H2 + HO2 =] H + H2O2"
+  },
+  {
+    "Equation": "O + H2O2 =] OH + HO2"
+  },
+  {
+    "Equation": "OH + HO2 =] O + H2O2"
+  },
+  {
+    "Equation": "OH + H2O2 =] H2O + HO2"
+  },
+  {
+    "Equation": "H2O + HO2 =] OH + H2O2"
+  },
+  {
+    "Equation": "O2 + CO =] O + CO2"
+  },
+  {
+    "Equation": "O + CO2 =] O2 + CO"
+  },
+  {
+    "Equation": "OH + CO =] H + CO2"
+  },
+  {
+    "Equation": "H + CO2 =] OH + CO"
+  },
+  {
+    "Equation": "HO2 + CO =] OH + CO2"
+  },
+  {
+    "Equation": "OH + CO2 =] HO2 + CO"
+  },
+  {
+    "Equation": "HCO + M =] H + CO + M"
+  },
+  {
+    "Equation": "H + CO + M =] HCO + M"
+  },
+  {
+    "Equation": "O2 + HCO =] HO2 + CO"
+  },
+  {
+    "Equation": "HO2 + CO =] O2 + HCO"
+  },
+  {
+    "Equation": "H + HCO =] H2 + CO"
+  },
+  {
+    "Equation": "H2 + CO =] H + HCO"
+  },
+  {
+    "Equation": "O + HCO =] OH + CO"
+  }
+]
+

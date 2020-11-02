@@ -2,7 +2,7 @@ import json, re, random
 import os
 
 import chemparse
-from .locations import RASA_JPS_DIR
+from  .locations import RASA_JPS_DIR
 
 word_map = {'hydrogen': 'H2', 'water': 'H2O', 'oxygen': 'O2', 'benzene': 'C6H6', 'methane': 'CH4'}
 
@@ -47,8 +47,21 @@ class SpeciesValidator:
             return ''.join(sorted(temp))
 
     def validate(self, ontology, intent, species):
+
+        if ontology == 'ontocompchem':
+            species_dict = self.ontocompchem_species_dict[intent]
+            if species in species_dict:
+                return species
+        elif ontology == 'ontokin':
+            species_dict = self.ontokin_species_dict[intent]
+            if species in species_dict:
+                return species
+        else:
+            return None
+
         if species.lower() in word_map:
             species = word_map[species]
+
         species = self.normalize_formula(species)
         print('normalized species', species)
         # use regular expression to separate the components
@@ -98,8 +111,8 @@ class SpeciesValidator:
 #     print('the result for validation is', r)
 #     print('------------')
 
-species = 'C2H2O2'
-speices_validator = SpeciesValidator()
-intent = 'lennard_jones_well'
-r = speices_validator.validate('ontokin',intent, species)
-print('the r is', r)
+# species = 'C8H17O-1-2'
+# speices_validator = SpeciesValidator()
+# intent = 'rotational_relaxation_collision'
+# r = speices_validator.validate('ontokin',intent, species)
+# print('the r is', r)

@@ -118,15 +118,21 @@ autocomplete(document.getElementById("input-field"), species);
 
 
 
-
+//$('#test-button').click(function() {
+//    for (let idx in question_set){
+//        q = question_set[idx]
+//        console.log('q', q)
+//
+//    }
+//});
 
 
 
 function get_random_question(){
 
-const index = Math.floor(Math.random() * vibration_frequency.length);
+const index = Math.floor(Math.random() * random_questions.length);
 
-    qst = '  show me the vibration frequency of ' + vibration_frequency[index]
+    qst =  random_questions[index]
     document.getElementById('input-field').value = qst;
 
 }
@@ -136,6 +142,8 @@ let cmcl_address = 'https://kg.cmclinnovations.com/'
 let address = cmcl_address
 
 	$(window).on('load', function(){
+
+        $('#progress-container').hide();
 
 	    let hostname = location.hostname;
 	    console.log('host name is', hostname)
@@ -270,16 +278,22 @@ let address = cmcl_address
 
 
 
-  function ask_question() {
+  function ask_question(test_question) {
+
+
 
     $('#query_progress').empty()
-    $('#progress-container').show()
+    // $('#progress-container').show()
 
     document.getElementById('search-icon').style.display = 'none';
     document.getElementById('search-spinner').style.display = 'block';
 
     // =========================
     msg = $('#input-field').val();
+    if (test_question){
+        msg = test_question;
+    }
+
     //$('#input-field').val(null);
     // =========================
     msg = msg.replace(/[/+]/g, 'add_sign')
@@ -296,17 +310,18 @@ let address = cmcl_address
     query_google(address, msg);
 
     $.get(address + "query?question=" + msg, function( data ) {
-      displayResults(data, 'jps')
+      displayResults(msg, data, 'jps')
     });
 
 }
 
 
 
-function process_json_result(result){
+function process_json_result(question, result){
 
   // result = result.replace(/=\]/g, '=>').replace(/[}][\n ]+[{]/g, '},{')
   console.log('The request has returned a response ', result)
+  console.log('the question is', question)
   result = JSON.parse(result)
   console.log('the result parsed', result, typeof(result) )
 
@@ -542,8 +557,8 @@ function drawTable(result_array) {
 
 }
 
-function displayResults(myData, source) {
-     myData = process_json_result(myData)
+function displayResults(question,myData, source) {
+     myData = process_json_result(question, myData)
 
   $('#query_progress_bar').html('')
   $('#query_progress_bar').hide()
