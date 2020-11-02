@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.CDL;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -189,7 +190,7 @@ public class SparqlOverHttpService {
 			try {
 				JSONArray jsonArray = kbClient.executeQuery();
 				if(jsonArray!=null){
-					return jsonArray.toString();
+					return CDL.toString(jsonArray);
 				}else{
 					return null;
 				}
