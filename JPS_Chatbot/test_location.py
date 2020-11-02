@@ -7,3 +7,4 @@ import sys, os
 from flask import Flask
 from UI.source.run import app
 
+app.run()
