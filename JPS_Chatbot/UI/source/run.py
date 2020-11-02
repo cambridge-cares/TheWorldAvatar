@@ -70,4 +70,4 @@ google_api = GoogleAPI()
 
 if __name__ == '__main__':
     app.run(host='https://kg.cmclinnovations.com/', port=8080, debug=True)
-    socketio.run(app)
+    # socketio.run(app)
