@@ -181,12 +181,18 @@ class GoogleAPI:
         url = self.make_url(question)
         self.options = Options()
         self.options.add_argument('--headless')
-        self.driver = webdriver.Firefox(options=self.options)
-        self.driver.get(url)
-        html_source = self.driver.find_element_by_tag_name('html').get_attribute('innerHTML')
-        self.driver.quit()
-        html = BeautifulSoup(html_source, 'html.parser')
-        return html
+        self.options.add_argument('--disable-logging')
+        self.driver = webdriver.Firefox(options=self.options, service_log_path='/dev/null', timeout=30, executable_path='geckodriver')
+        # self.driver = webdriver.Firefox(options=self.options)
+        try:
+            self.driver.get(url)
+            html_source = self.driver.find_element_by_tag_name('html').get_attribute('innerHTML')
+            self.driver.quit()
+            html = BeautifulSoup(html_source, 'html.parser')
+            return html
+
+        except:
+            return 'Time out'
 
     # this function will remove all the hidden and non-essential text returned by google
 
