@@ -8,6 +8,7 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,7 +29,7 @@ import com.github.owlcs.ontapi.OntManagers;
 import com.github.owlcs.ontapi.Ontology;
 import com.github.owlcs.ontapi.OntologyManager;
 
-public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
+public class FileBasedKnowledgeBaseClientONTAPI extends KnowledgeBaseClient {
 	
 	private String filePath;
 	private Ontology ont;
@@ -36,14 +37,14 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	/**
 	 * Default constructor
 	 */
-	public FileBasedKnowledgeBaseClient() {}
+	public FileBasedKnowledgeBaseClientONTAPI() {}
 	
 	/**
 	 * Constructor with file path provided
 	 * 
 	 * @param filePath
 	 */
-	public FileBasedKnowledgeBaseClient(String filePath) {
+	public FileBasedKnowledgeBaseClientONTAPI(String filePath) {
 		this.filePath = filePath;
 	}
 	
@@ -56,8 +57,57 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	 */
 	
-	public int executeUpdate() throws SQLException {
+	/*
+	 * Load file
+	 */
+	@Override
+	public void load() {
+		
+		OntologyManager m = OntManagers.createONT();
+		File file = new File(this.filePath);
+		try {
+			this.ont = m.loadOntologyFromOntologyDocument(file);
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+	
+	/*
+	 * Write file, note this writes to the same file
+	 */
+	@Override
+	public void finish() {
+		
+		try (OutputStream out = new FileOutputStream(filePath)){
+			ont.saveOntology(out);
+			out.flush();
+		}catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch (OWLOntologyStorageException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	}
+	
+	/*
+	 * Perform update 
+	 */	
+	// sparql update as UpdateRequest from sparql builder
+//	public void executeUpdate(UpdateRequest update) {
+//		UpdateAction.execute(update, this.ont.asGraphModel());
+//	}
+	@Override
+	public int executeUpdate() {
 		return executeUpdate(this.query);
+	}
+	
+	@Override
+	public int executeUpdate(String update) {
+		
+		UpdateAction.parseExecute(update, this.ont.asGraphModel());
+		return 0; //return a useful integer?
 	}
 	
 	/*
@@ -73,12 +123,14 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		return results;
 	}
 
+	@Override
 	public JSONArray executeQuery(String sparql) {
 		
 		Query query = QueryFactory.create(sparql);
 		return convert(performExecuteQuery(query));
 	}	
 	
+	@Override
 	public JSONArray executeQuery() {
 		return executeQuery(this.query);
 	}
@@ -98,11 +150,5 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			json.put(obj);
 		}
 		return json;
-	}
-
-	@Override
-	public int executeUpdate(String update) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

@@ -18,4 +18,8 @@ public interface KnowledgeBaseClientInterface {
 	
 	public int executeUpdate(String update) throws SQLException;
 	
+	public void load();
+	
+	public void finish();
+	
 }

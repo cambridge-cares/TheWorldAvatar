@@ -1,27 +1,17 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-import org.apache.jena.jdbc.JenaDriver;
-import org.apache.jena.jdbc.remote.RemoteEndpointDriver;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -33,7 +23,7 @@ import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
-public abstract class KnowledgeBaseClient {
+public abstract class KnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
 	// private static KnowledgeBaseClient instance = null;
 		
@@ -48,19 +38,51 @@ public abstract class KnowledgeBaseClient {
 		return instance;
 	}
 	*/
-
 	
+	/**
+	 * Default constructor
+	 */
+	public KnowledgeBaseClient() {}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param query
+	 */
+	public KnowledgeBaseClient(String query) {
+
+			this.query = query;
+	}
+	
+	
+	public void load() {
+		// do nothing
+	}
+	
+	public void finish() {
+		// do nothing
+	}
+	
+	/**
+	 * Execute sparql query using the query variable
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
 	public abstract JSONArray executeQuery() throws SQLException;
 
 	/**
-	 * Execute sparlq update
-	 * @return JSONArray as String 
+	 * Execute sparql query
+	 * 
+	 * @param query
+	 * @return
 	 * @throws SQLException
 	 */
 	public abstract JSONArray executeQuery(String query) throws SQLException;
 	
 	/**
-	 * Execute sparql update
+	 * Execute sparql query using the query variable
+	 * 
 	 * @return JSONArray as String 
 	 * @throws SQLException
 	 */
@@ -69,7 +91,8 @@ public abstract class KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Excute sparql query with string provided
+	 * Excute sparql query
+	 * 
 	 * @param sparql
 	 * @return JSONArray as String
 	 * @throws SQLException
@@ -83,25 +106,51 @@ public abstract class KnowledgeBaseClient {
 		}
 	}
 	
+	/**
+	 * Execute sparql update
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
 	public abstract int executeUpdate() throws SQLException;
 	
+	/**
+	 * Execute sparql update using the query variable
+	 * 
+	 * @param update
+	 * @return
+	 * @throws SQLException
+	 */
 	public abstract int executeUpdate(String update) throws SQLException;
 	
-	
-	
-	public KnowledgeBaseClient() {}
-	
-	// constructor
-	public KnowledgeBaseClient(String query) {
-
-			this.query = query;
+	/**
+	 * Returns the available query.
+	 * 
+	 * @return
+	 */
+	public String getQuery() {
+		return query;
 	}
-		
-	// necessary
+
+	/**
+	 * Sets a query if provided.
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public String setQuery(String query) {
+		this.query = query;
+		return this.query;
+	}
+	
+	
+	///////////////////////////////////	
+	// necessary?
 	public void close() throws IOException {
 		//do nothing
 	}
 	
+	// csl: deprecated methods
 	
 	/**
 	 * https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-put<br>
@@ -325,27 +374,6 @@ public abstract class KnowledgeBaseClient {
 			return url.substring(0, i);
 		}
 		return url;
-	}
-	
-	
-	/**
-	 * Returns the available query.
-	 * 
-	 * @return
-	 */
-	public String getQuery() {
-		return query;
-	}
-
-	/**
-	 * Sets a query if provided.
-	 * 
-	 * @param query
-	 * @return
-	 */
-	public String setQuery(String query) {
-		this.query = query;
-		return this.query;
 	}
 
 }

@@ -58,22 +58,34 @@ public class FileBasedKnowledgeBaseClientRDFConnection extends KnowledgeBaseClie
 	}
 	
 	//
+	@Override
+	public void load() {
+		init();
+	}
+	
 	public void load(String filePath) {
 		this.filePath = filePath;
 		init();
 	}
 	
 	// close connection
-	public void close() throws IOException {	//cannot be closed unless in base class
+	@Override
+	public void finish() {
 		
-		writeToFile();
-		conn.close();
+		try {
+			writeToFile();
+			conn.close();
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
+	@Override
 	public int executeUpdate() {
 		return executeUpdate(this.query);
 	}
 	
+	@Override
 	public int executeUpdate(String update) {
 		
 		conn.begin( TxnType.WRITE );
@@ -86,11 +98,13 @@ public class FileBasedKnowledgeBaseClientRDFConnection extends KnowledgeBaseClie
 		return 0; //return a useful integer?
 	}
 
+	@Override
 	public JSONArray executeQuery(String sparql) {
 		ResultSet results = perfromExecuteQuery(sparql);
 		return convert(results);
 	}	
 	
+	@Override
 	public JSONArray executeQuery() {
 		return executeQuery(this.query);
 	}

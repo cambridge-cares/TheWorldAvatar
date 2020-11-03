@@ -80,7 +80,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 	 * @param query
 	 */
 	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query){
-		super(query);
+		super(query); // query variable in super class
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
@@ -131,6 +131,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 	 * 
 	 * @return
 	 */
+	@Override
 	public JSONArray executeQuery() throws SQLException{
 		String connectionUrl = getConnectionUrl();
 		if(connectionUrl.isEmpty()){
@@ -150,6 +151,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 	 * @param query
 	 * @return
 	 */
+	@Override
 	public JSONArray executeQuery(String query) throws SQLException {
 		JSONArray results = new JSONArray();
 		Connection conn = null;
@@ -174,6 +176,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 	 * 
 	 * @return
 	 */
+	@Override
 	public int executeUpdate() throws SQLException{
 		String connectionUrl = getConnectionUrl();
 		if(connectionUrl.isEmpty()){
@@ -192,6 +195,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 	 * @param query
 	 * @return
 	 */
+	@Override
 	public int executeUpdate(String query) throws SQLException {
 		Connection conn = null;
 		Statement stmt = null;
