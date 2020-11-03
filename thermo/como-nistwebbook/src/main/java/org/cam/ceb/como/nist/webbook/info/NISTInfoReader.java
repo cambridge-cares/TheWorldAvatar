@@ -999,7 +999,7 @@ public class NISTInfoReader extends NISTParser {
 				}
 				entropy.setTemperature(temperature);
 				entropy.setReference(reference);
-				if(comment.trim().length()>0){
+				if(comment!=null && comment.trim().length()>0){
 					entropy.setComment(comment);
 				}
 				info.getEntropyOfFusion().add(entropy);

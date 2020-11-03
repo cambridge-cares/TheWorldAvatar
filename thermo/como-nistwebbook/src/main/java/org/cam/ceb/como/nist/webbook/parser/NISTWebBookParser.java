@@ -101,7 +101,7 @@ public class NISTWebBookParser {
 		for(String key:data.keySet()){
 			NISTSpeciesInfo speciesInfo = data.get(key);
 		}
-		display();
+		//display();
 		return data;
 	}
 	
