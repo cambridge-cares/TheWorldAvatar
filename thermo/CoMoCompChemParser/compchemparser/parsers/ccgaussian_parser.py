@@ -39,6 +39,12 @@ FREQ_UNIT = 'Frequencies unit'
 # group 6 (energy)
 ELECTRONIC_ZPE_ENERGY = 'Electronic and ZPE energy'
 ELECTRONIC_ENERGY = 'Electronic energy'
+HOMO_ENERGY = 'HOMO energy'
+HOMO_MIN_1_ENERGY = 'HOMO-1 energy'
+HOMO_MIN_2_ENERGY = 'HOMO-2 energy'
+LUMO_ENERGY = 'LUMO energy'
+LUMO_PLUS_1_ENERGY = 'LUMO+1 energy'
+LUMO_PLUS_2_ENERGY = 'LUMO+2 energy'
 # group 7 (program, run date)
 PROGRAM_NAME = 'Program name'
 PROGRAM_VERSION = 'Program version'
@@ -62,7 +68,9 @@ CCKEYS_DATA = [
             METHOD, BASIS_SET, SPIN_MULT, FORMAL_CHARGE, FORMAL_CHARGE_UNIT,
             GEOM, GEOM_UNIT, GEOM_TYPE, ROT_SYM_NR, ROT_CONST, ROT_CONST_NR,
             ROT_CONST_UNIT, FREQ, FREQ_NR, FREQ_UNIT, ELECTRONIC_ENERGY,
-            ELECTRONIC_ZPE_ENERGY, PROGRAM_NAME, PROGRAM_VERSION,
+            ELECTRONIC_ZPE_ENERGY,HOMO_ENERGY,HOMO_MIN_1_ENERGY ,
+            HOMO_MIN_2_ENERGY,LUMO_ENERGY,LUMO_PLUS_1_ENERGY,LUMO_PLUS_2_ENERGY,
+            PROGRAM_NAME, PROGRAM_VERSION,
             RUN_DATE
         ]
 
@@ -80,6 +88,8 @@ ATOMS_RE = re.compile(r"([a-zA-Z]+)(\d+)")
 JOB_SUCCESS_RE = re.compile(r"^\s?Normal termination of Gaussian")
 FOOTER_RE = re.compile(r"^\s(1\\1\\|1\|1\|)")
 ROT_CONST_RE = re.compile(r"Rotational constants? \(")
+HOMO_RE = re.compile(r"Alpha\s*?occ\. eigenvalues \-\-")
+LUMO_RE = re.compile(r"Alpha\s*?virt\. eigenvalues \-\-")
 
 # energy conversion factor between cclib eV and Hartrees
 EV_TO_HARTREE = 0.0367493237908520
@@ -189,6 +199,12 @@ class CcGaussianParser():
                     fjob_log.close()
 
             return log_names
+        #---------------------------------------------
+        def split(a, n):
+            #This function splits a list into k parts of approximately equal length.
+            k, m = divmod(len(a), n)
+            return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
+
         #================================================
 
         #================================================
@@ -371,6 +387,49 @@ class CcGaussianParser():
 
                 data[ROT_CONST_NR] = len(data[ROT_CONST])
             return cur_line
+        #---------------------------------------------
+        def check_homo(data,cur_line,log_lines):
+
+            line = log_lines[cur_line]
+            occupied = []
+            while HOMO_RE.search(line):
+                line = line.strip()
+                line = line.split()
+                occupied.append(line[4:]) 
+                cur_line += 1
+                if cur_line >= len(log_lines):
+                    break
+                line = log_lines[cur_line]
+            occupied = sum(occupied, [])
+            if occupied: 
+                data[HOMO_ENERGY] = float(occupied[-1])
+                if len(occupied) > 1 : 
+                    data[HOMO_MIN_1_ENERGY] = float(occupied[-2])
+                if len(occupied) > 2 : 
+                    data[HOMO_MIN_2_ENERGY] = float(occupied[-3])
+            return cur_line
+        #---------------------------------------------
+        def check_lumo(data,cur_line,log_lines):
+
+            line = log_lines[cur_line]
+            virtual = []
+            while LUMO_RE.search(line):
+                line = line.strip()
+                line = line.split()
+                virtual.append(line[4:]) 
+                cur_line += 1
+                if cur_line >= len(log_lines):
+                    break
+                line = log_lines[cur_line]
+            virtual = sum(virtual, [])
+            if virtual: 
+                data[LUMO_ENERGY] = float(virtual[0])
+                if len(virtual) > 1 : 
+                    data[LUMO_PLUS_1_ENERGY] = float(virtual[1])
+                if len(virtual) > 2 : 
+                    data[LUMO_PLUS_2_ENERGY] = float(virtual[2])
+            return cur_line
+
         #---------------------------------------------
         def check_zpe(misc, cur_line,log_lines):
             # tries to extract zpe energy from a log file line
@@ -590,6 +649,8 @@ class CcGaussianParser():
             cur_line = check_zpe(parsedmisc, cur_line,log_lines)
             cur_line = check_E0_zpe(parseddata, cur_line,log_lines)
             cur_line = check_E0(parseddata, cur_line,log_lines)
+            cur_line = check_homo(parseddata,cur_line,log_lines)
+            cur_line = check_lumo(parseddata,cur_line,log_lines)
             cur_line = check_CI_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_TD_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_Casscf_E0(parsedmisc, cur_line,log_lines)
