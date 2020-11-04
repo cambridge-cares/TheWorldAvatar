@@ -540,6 +540,11 @@ owlProcessor.getType = function (root) {
 }
     //convert google GPS coordi to 1984w coordi(the one used in our own)
    owlProcessor.convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
+   function parseValue(vstr){
+   var pat = /\d+\.?\d+/;
+var parsed =vstr.match(pat)[0];
+return parsed
+   }
 //https://github.com/proj4js/proj4js
         var googleProjection = 'EPSG:4326'; //google
         var ourProjection = 'EPSG:3857';//our
@@ -548,8 +553,8 @@ owlProcessor.getType = function (root) {
         return google2Owl?converted(googleProjection, ourProjection) : converted(ourProjection, googleProjection);
         function converted(fromProjection, toProjection){
 
-            GPSLong  = typeof GPSLong === "string"?parseFloat(GPSLong) : GPSLong
-            GPSLat  = typeof GPSLat === "string"?parseFloat(GPSLat) : GPSLat
+            GPSLong  = typeof GPSLong === "string"?parseValue(GPSLong) : GPSLong
+            GPSLat  = typeof GPSLat === "string"?parseValue(GPSLat) : GPSLat
 
             var result =  proj4(fromProjection, toProjection, [GPSLong,GPSLat]);
 
