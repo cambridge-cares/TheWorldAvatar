@@ -1,0 +1,1 @@
+(cd "JParkSimulator-git"; git checkout jps-chatbot)
