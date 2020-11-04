@@ -1,0 +1,1 @@
+(cd /JParkSimulator-git/JPS_Chatbot/UI/source; nohup python -m flask run)
