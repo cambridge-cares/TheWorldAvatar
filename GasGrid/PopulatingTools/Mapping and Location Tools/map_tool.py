@@ -52,15 +52,28 @@ def map_creation():
         overall_location = np.append(overall_location,class_location,axis=0)
     overall_location = overall_location[1:,:]
 
-    # connection_matrix = np.random.randint(0,2,(len(overall_location),len(overall_location)))
 
-    # for i in range(len(connection_matrix)):
-    #     for j in range(i,len(connection_matrix)):
-    #         if connection_matrix[i,j] == 1:
-    #             u = np.random.uniform()
-    #             if u < 0.005:
-    #                 gmap.plot([overall_location[i,0],overall_location[j,0]],[overall_location[i,1],overall_location[j,1]],alpha=0.5,ew=3)
-    #                 break
+
+    ''' TEST CODE FOR HOW CONNECTIONS WILL BE VISUALISED
+        WITH TEST AS EUCLIDIAN DISTANCE TO COMPARE WITH ACTUAL NTS'''
+    node_num = len(overall_location)
+    # creating distance matrix
+    distances = np.zeros((node_num,node_num))
+    for i in range(node_num):
+        for j in range(node_num):
+            diff = overall_location[i] - overall_location[j]
+            distances[i,j] = np.linalg.norm(diff)
+            # calculating distances
+            if distances[i,j] == 0.0 or distances[i,j] == 0.0:
+                distances[i,j] = 100 # if ontop then set high
+    # plot lines between the 5 closest nodes that aren't 0 
+    for i in range(node_num):
+        for j in range(node_num):
+            for k in range(5):
+                if distances[i,j] == np.partition(distances[i],k)[k]:
+                    gmap.plot([overall_location[i,0],overall_location[j,0]],[overall_location[i,1],overall_location[j,1]],alpha=0.5,ew=3)
+
+
 
     gmap.draw('PopulatingTools\Mapping and Location Tools\map.html')
     return 

@@ -2,21 +2,21 @@ Intake,Compressor,Industrial Offtake,LDZ Offtake,Power Station,Storage
 BACTON BBL,Bishop Auckland,Aberdeen, Aberdeen, BaglanBay, Aldbrough
 BACTON IC,Carnforth, Barrow, Alrewas, BlackBridge, Hatfield Moor
 BACTON IPs Terminal,Nether Kellett, BASF Redditch, Alrewas, Brigg, HillTop
-BACTON PERENCO,Warrington, Blackburn, Armadale, BurtonPoint, Hole House Farm
+BACTON PERENCO,Warrington, Blackburn, Armadale West Lothian, BurtonPoint, Hole House Farm
 BACTON SEAL,Hatton, BOC Teeside, Aspley, Carrington, Holford
 BACTON SHELL,Alrewas, BP Grangemouth, Asselby, Corby, Hornsea
 BACTON UKCS Terminal,Wisbech, BP Saltend, Auckland, Coryton, Humbly Grove
-BARROW SOUTH,King's Lynn, Bridgewater, Auckland , Cottam, Rough
+BARROW SOUTH,King's Lynn, Bridgewater, Auckland , Cottam,Easington
 BARROW TERMINAL,Peterborough, Brent, Audley, Damhead Creek, Stublach
 DYNEVOR ARMS,Churchover, Centrax, Audley, Didcot,
 DYNEVOR ,Huntingdon, Fordoun, Austrey, EppingGreen,
-EASINGTON DIMLINGTON,Cambridge, GooleGlass, Aylesbeare, Grain,
+EASINGTON DIMLINGTON,Cambridge, Goole, Aylesbeare, Grain,
 EASINGTON LANGELED,Diss, ICI Billnghm, Bacton, Gt Yarmouth,
 EASINGTON ROUGH ST,Chelmsford, ICI Runcorn, Baldersby, Keadby,
 EASINGTON TERMINAL,Aylesbury, Immingham, Balgray, Keadby,
 GLENMAVIS,Lockerley, Keadby, Bathgate, KingsLynn,
 GLENMAVIS ,Wormington, Conoco Philips Teeside, Blaby, Langage,
-GRAIN,Aberdeen, Rough, Blackrod, Barford,
+GRAIN,Aberdeen,Easington, Blackrod, Barford,
 GRAIN,Avonbridge,St Fergus , Blyborough, Marchwood,
 "Hilltop Farm, Cheshire",Kirriemuir,Shell Mossmoran, BraishfieldA, Medway,
 HOLE HOUSE FARM,Moffat, Winnington, BraishfieldB, Palm Paper,
@@ -118,4 +118,4 @@ THEDDLETHORPE TERMINAL,,, Eccleston,,
 ,,, Winkfield,,
 ,,, Winkfield,,
 ,,, Winkfield,,
-,,, Yelverton,,
+,,, Yelverton Norwich,,
