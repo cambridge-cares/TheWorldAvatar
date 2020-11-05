@@ -501,7 +501,7 @@ owlProcessor.getGeoCoord = function(root) {
         // logger.debug("converted coordi: " +  util.inspect(convertCoordinate(x[0].text().trim(), y[0].text().trim(), false)));
         
         if(!x[0].text() && !y[0].text()){
-         //   return null;
+            return null;
         }
         return owlProcessor.convertCoordinate(x[0].text().trim(), y[0].text().trim(), false);
     } else {
@@ -543,7 +543,7 @@ owlProcessor.getType = function (root) {
    function parseValue(vstr){
    var pat = /\d+\.?\d+/;
 var parsed =vstr.match(pat)[0];
-return parsed
+return parseFloat(parsed);
    }
 //https://github.com/proj4js/proj4js
         var googleProjection = 'EPSG:4326'; //google
@@ -556,9 +556,14 @@ return parsed
             GPSLong  = typeof GPSLong === "string"?parseValue(GPSLong) : GPSLong
             GPSLat  = typeof GPSLat === "string"?parseValue(GPSLat) : GPSLat
 
-            var result =  proj4(fromProjection, toProjection, [GPSLong,GPSLat]);
+            try{
+                var result =  proj4(fromProjection, toProjection, [GPSLong,GPSLat]);
+                return {x: result[0], y:result[1]};
 
-            return {x: result[0], y:result[1]};
+            }catch(err){
+                return null;
+            }
+
         }
 
     };
