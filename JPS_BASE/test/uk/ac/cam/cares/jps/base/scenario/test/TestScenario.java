@@ -235,6 +235,10 @@ public class TestScenario extends TestCase {
 		System.out.println("diff=" + diff);
 	}
 	
+	public static void main(String[] args){
+		new TestScenario().xxxtestReadScenarioAgentPerformance();
+	}
+	
 	public void xxxtestReadScenarioAgentPerformance() {
 		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testReadScenarioPerformance");
@@ -246,7 +250,8 @@ public class TestScenario extends TestCase {
 
 		long start = System.currentTimeMillis();
 		for (int i=0; i<10; i++) {
-			new QueryBroker().readFile(url);
+			String testResult = new QueryBroker().readFile(url);
+			System.out.println(testResult);
 		}
 
 		long diff = System.currentTimeMillis() - start;	
