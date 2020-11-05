@@ -5,10 +5,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 import io
+from tabulate import tabulate
 import os
 import numpy as np 
 import bs4 as bs 
 import pandas as pd
+from tqdm import tqdm
 import time
 import re
 
@@ -94,39 +96,57 @@ def real_time_intakes():
     Units are mcm/day.
     '''
     #--- opening intakes webpage ---#
-    driver = webdriver.Firefox()
-    driver.get("https://mip-prd-web.azurewebsites.net/InstantaneousView")
-    wait = WebDriverWait(driver,10)
-    html = driver.page_source
+    os.system('cls' if os.name == 'nt' else 'clear')
+    while True:
+        driver = webdriver.Firefox()
+        try:
+            driver.get("https://mip-prd-web.azurewebsites.net/InstantaneousView")
+        except:
+            print('ONLINE DATABASE UNAVAILABLE, CHECK NETWORK CONNECTION')
+            break 
+        wait = WebDriverWait(driver,10)
+        html = driver.page_source
 
-    #--- converting all the information to a table ---#
-    #--- as all data presented in a large html table ---#
-    soup = bs.BeautifulSoup(html,'lxml')
-    driver.quit()
-    table = []
-    for tr in soup.find_all('tr')[1:]:
-        tds = tr.find_all('td')
-        row = []
-        for i in tds:
-            row.append(i.text)
-        table.append(row)
-    table = pd.DataFrame(table)
-    #--- ontaining only the required values ---#
-    table = table.to_numpy()[4:,1:]
-    zone_names = table[1:29,0]
-    latest_zone_value = table[1:29,6]
-    latest_zone_value[6] = latest_zone_value[6][1:]
-    latest_zone_value = latest_zone_value.astype(np.float)
-    zone_supply = np.concatenate(([zone_names],[latest_zone_value]),axis=0).T
+        #--- converting all the information to a table ---#
+        #--- as all data presented in a large html table ---#
+        soup = bs.BeautifulSoup(html,'lxml')
+        driver.quit()
+        table = []
+        for tr in soup.find_all('tr')[1:]:
+            tds = tr.find_all('td')
+            row = []
+            for i in tds:
+                row.append(i.text)
+            table.append(row)
+        table = pd.DataFrame(table)
+        #--- ontaining only the required values ---#
+        table = table.to_numpy()[4:,1:]
+        zone_names = table[1:29,0]
+        latest_zone_value = table[1:29,6]
+        latest_zone_value[6] = latest_zone_value[6][1:]
+        latest_zone_value = latest_zone_value.astype(np.float)
+        zone_supply = np.concatenate(([zone_names],[latest_zone_value]),axis=0).T
 
-    terminal_names = table[47:59,0]
-    latest_terminal_value = table[47:59,6].astype(np.float)
-    terminal_supply = np.concatenate(([terminal_names],[latest_terminal_value]),axis=0).T
+        zone_supply_pd = pd.DataFrame(zone_supply)
 
-    return zone_supply,terminal_supply
+        terminal_names = table[47:59,0]
+        latest_terminal_value = table[47:59,6].astype(np.float)
+        terminal_supply = np.concatenate(([terminal_names],[latest_terminal_value]),axis=0).T
+
+        terminal_supply_pd = pd.DataFrame(terminal_supply)
+
+        overall_df = pd.concat((zone_supply_pd,terminal_supply_pd),axis=1,ignore_index=True)
+
+        header = ['Zone Supply','Instananeous Flow (mcm/day)','Terminal Supply','Instananeous Flow (mcm/day)']
+        print(tabulate(overall_df,headers=header,showindex="never"))
+        for i in reversed(range(120)):
+            print('TIME FOR NEXT UPDATE: ',i,' SECONDS',end='\r')
+            time.sleep(1)
+        os.system('cls' if os.name == 'nt' else 'clear')
+    return 
 
 '''
 EXAMPLE CODE FOR real_time_intakes()
 '''
-# zone_supply,terminal_supply = real_time_intakes()
-# print(zone_supply,terminal_supply)
+
+real_time_intakes()
