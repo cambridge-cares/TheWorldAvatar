@@ -2,6 +2,7 @@
 import numpy as np
 from scipy.optimize import *
 import math  
+import pandas as pd
 
 def industrial(totGen, aggrLoad, AirTemp, industry_below, industry_above, cf, T0, F,
  z1, dG0, dH, r1, r2, s, t1, t2, t3, f1, f2, h_cond, h_conv, Ar, nc1, Ct, Rt, taut,
@@ -585,8 +586,52 @@ if __name__ == "__main__":
     industry_above = np.array([0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308])
     cf = np.array([0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462, 0.00462])
     T0 = 99
-
-    industial(np.zeros(24), np.zeros(24), AirTemp, industry_below, industry_above,
+# physical constants:
+    F = 96485.34 #[A*s/mol]
+    z1 = 2 # no. of electrons transferred per reaction
+    # reaction information: (25 degreeC and 1 bar @ standard conditions) 
+    dG0 = 237e3 #[J/mol]
+    dH = 286e3 #[J/mol]
+    # I-U curve parameters:
+    r1 = 8.05e-5 #[Ohm*m^2]
+    r2 = -2.5e-7 #[Ohm*m^2/C]
+    s = 0.185 #[V]
+    t1 = -0.1002 #[m^2/A]
+    t2 = 8.424 #[m^2*C/A]
+    t3 = 247.3 #[m^2*C^2/A]
+    # Faraday efficiency parameters: (80 degreeC @ HYSOLAR) 
+    f1 = 250e2             #[A^2/m^4]
+    f2 = 0.98              #[1]
+    # UA_HX parameters:
+    h_cond = 7             #[W/C]
+    h_conv = 0.02          #[W/C/A]
+    # operation parameters:
+    Ar = 0.25   #[m^2]
+    nc1 = 21 # no. of cells in series
+    Ct = 625e3 #[J/C]
+    Rt = 0.167 #[C/W]
+    taut = Ct*Rt #[s]
+    Qcw = 0.6/3600 #[m^3/s] flow rate of cooling water
+    Tcwi = 14.5 #[C]
+    Ccw = 4.18e3*1e3*Qcw #[W/C]
+    z2 = 2
+    # polarization curve parameters:
+    U0 = 33.18             #[V]
+    E1 = -0.013            #[V/C]
+    E2 = -1.57             #[1]
+    I0 = 8.798             #[A]
+    R = -2.04              #[Ohm*C]
+    DF_FC = pd.read_csv("FuelCell.csv", header=None )
+    nc2 = DF_FC.iloc[0,1] # no. of cells
+    eta = DF_FC.iloc[1,1] # fuel utilization factor
+    Tlow = DF_FC.iloc[2,1] #[C]
+    Thigh = DF_FC.iloc[3,1] #[C]
+    # track optimal operating temperature if possible:
+    Ilow = Tlow**2*E1/R #[A]
+    Ihigh = Thigh**2*E1/R #[A]
+    quantity = 2500
+    Ni = 30
+    industrial(np.zeros(24), np.zeros(24), AirTemp, industry_below, industry_above,
      cf, T0,  F, z1, dG0, dH, r1, r2, s, t1, t2, t3, f1, f2, h_cond, h_conv, Ar,
       nc1, Ct, Rt, taut, Qcw, Tcwi, Ccw, z2, U0, E1, E2, I0, R, nc2, eta, Tlow,
        Thigh, Ilow, Ihigh, quantity, Ni)[3:]

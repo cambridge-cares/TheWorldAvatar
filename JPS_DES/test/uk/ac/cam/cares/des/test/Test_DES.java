@@ -355,10 +355,10 @@ public class Test_DES extends TestCase{
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		SelectQuery selectQuery = Queries.SELECT();
-		ConstructQuery constructQuery = Queries.CONSTRUCT();
-		Prefix j4 = SparqlBuilder.prefix("j4", iri("http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#"));
-		Prefix j6 = SparqlBuilder.prefix("j6", iri("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"));
+//		SelectQuery selectQuery = Queries.SELECT();
+//		ConstructQuery constructQuery = Queries.CONSTRUCT();
+//		Prefix j4 = SparqlBuilder.prefix("j4", iri("http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#"));
+//		Prefix j6 = SparqlBuilder.prefix("j6", iri("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"));
 		
 		
 //		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
