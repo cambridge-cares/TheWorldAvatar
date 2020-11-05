@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 public class DataDownload {
@@ -51,7 +52,9 @@ public class DataDownload {
 	public static String downloadMarketData(String script, String source) throws Exception {
 		String result = "";
 		do {
-			result = PythonHelper.callPython(script, source, new DataDownload());
+			String path = AgentLocator.getCurrentJpsAppDirectory(new DataDownload());
+			
+			result = CommandHelper.executeSingleCommand( path, "python " + path + " " + source);
 		} while (result.equals("retry"));
 		
 		return result;
