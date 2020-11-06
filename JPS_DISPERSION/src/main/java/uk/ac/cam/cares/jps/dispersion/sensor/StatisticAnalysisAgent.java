@@ -21,6 +21,14 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 @WebServlet("/StatisticAnalysis")
 public class StatisticAnalysisAgent extends JPSHttpServlet{
+	/**
+	 * Summary of Statistic Analysis agent:
+	 * Calculates statistical properties of pollutants:
+	 * mean, max, min and PSI = pollutant standards index
+	 * PSI is calculated through a hard coded table and linear interpolation - very bad!
+	 * Source of the PSI table:
+	 * https://www.haze.gov.sg/docs/default-source/faq/computation-of-the-pollutant-standards-index-(psi).pdf
+	 */
 	 protected void setLogger() {
 	        logger = LoggerFactory.getLogger(StatisticAnalysisAgent.class);
 	    }

@@ -32,7 +32,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 /**
- * This class allows to establish connection with remote knowledge repositories<p>
+ * This class allows to establish a connection with remote knowledge repositories<p>
  * to perform SPARQL query and update operations. It supports many triple stores<p>
  * such as Blazegraph and RDF4J. It requires to set the end point URL for the<p>
  * intended type of operation. See some example end point URLS:<p>

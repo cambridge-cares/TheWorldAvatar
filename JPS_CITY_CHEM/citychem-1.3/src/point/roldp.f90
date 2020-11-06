@@ -129,13 +129,20 @@
 
 ! Read all old plume segments data
 
+
          DO 100 I = 1,NP
-
-              call getdat(OLDPUN,TXTSTR,LEOF)
+!!===================================================
+!! changed by Kang @ 2019.11 @ CARES
+!! orig:
+           !   call getdat(OLDPUN,TXTSTR,LEOF)
 !MSK problem  READ (TXTSTR,1000) (PU(J,I),J=1,10 + 2*NC)  
-              READ (TXTSTR,*) (PU(J,I),J=1,10 + 2*NC)
-              !print *,'roldp: PU', (PU(J,I),J=1,10 + 2*NC)
-
+            !  READ (TXTSTR,*) (PU(J,I),J=1,10 + 2*NC)
+!!            
+             ! if (mod(I-1,5) .eq. 0) go to 100
+          call nxtdat(OLDPUN,LEOF)
+              read (OLDPUN,*)(PU(J,I),J=1,10 + 2*NC)
+             ! print *,'roldp: PU', (PU(J,I),J=1,10 + 2*NC)
+!!! end of change. 
 
 ! Next plume segment
 

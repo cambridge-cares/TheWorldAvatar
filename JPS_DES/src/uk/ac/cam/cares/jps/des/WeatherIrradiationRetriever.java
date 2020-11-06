@@ -145,7 +145,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(irifortemp+" is updated");
 		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation","001","SG");
 		System.out.println(iriforirradiation+" is updated");
-		String iriforwind=converter.startConversion(readingFromCSV,"windpseed","001","SG");
+		String iriforwind=converter.startConversion(readingFromCSV,"windspeed","001","SG");
 		System.out.println(iriforwind+" is updated");
 		JSONObject resultweather = new JSONObject();
 		//resultweather.put("folder",folder );

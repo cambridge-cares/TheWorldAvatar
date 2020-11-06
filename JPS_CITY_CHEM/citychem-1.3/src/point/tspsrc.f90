@@ -117,6 +117,24 @@
       real    :: Q1
       logical :: ISOPEN
 
+
+!!!===============================================
+!!!  for moving point source, by Kang Dec.10,2019
+!!   further changed for circular moving route @ Jan 21, 2020 by Kang  
+!! 
+         real :: dis_point,dir_point,ddx_point,ddy_point,dt_point !!! used for calculating the point source new location
+         real :: f0,f1
+         logical :: run_cpsrc  !!! if run cprsc.  if any point source moves, it is true.
+         logical :: nlast_moving !! if last timestep for moving, if yes, update the final point source location
+         integer :: IQ
+
+                
+         real :: dcir_ang, dR_ship, dcir_ang_virtual, dr_ship_virtual 
+         real :: dxr_ship_virtual,dyr_ship_virtual,dtheta,dr_ship_real,dxr_ship,dyr_ship
+!!!===============================================
+          
+
+!!     
 !MSK start
 ! *** IF ZERO POINT SOURCES LEAVE
        IF (.not.PSRCFE) RETURN
@@ -129,6 +147,11 @@
 
   100 CONTINUE
 
+!$$$$$$         If(ATTIME(BDAT)) then 
+!$$$$$$          open(unit=123, file='../OUTPUT/point_location.txt')
+!$$$$$$          write(123,*) 'dd_point(1), QX,QY,QX1,QY1,ITS, dR_ship,dcir_ang,dr_ship_virtual,', &
+!$$$$$$               'dxr_ship_virtual,dyr_ship_virtual,dr_ship_real,dxr_ship,dyr_ship'
+!$$$$$$         endif
 ! *** Preprocessing calculations
 
 ! *** Beginning of simulation period?
@@ -141,32 +164,331 @@
            call roldp
 
       ENDIF
+!$$$$$$              print *,'tspsrc: after read oldplume, CHTIME=',CHTIME, ', BFTIME(CHTIME)=',BFTIME(CHTIME),&
+!$$$$$$              'RONCE=',RONCE,', ATTIME(BDAT)=',ATTIME(BDAT), ', BDAT=',BDAT, 'ITS=',ITS, ', NTS=',NTS
+
+
+!!!==============================================
+!!! orignal code !!!!
+! *** Changes has occurred to point sources data?
+!MSK start
+!      IF (.NOT. ATTIME(BDAT)) THEN
+!        IF (.NOT. BFTIME(CHTIME) .OR. .NOT. RONCE) THEN
+! ***     Read new point sources data
+             !print *,'tspsrc: read new psrc data'
+!             call rpsrc
+! ***     Calculate point sources data
+!            IF (RUNOK) call cpsrc
+!        ENDIF
+! *** First timestep in current simulation period?
+!        IF (ITS .EQ. 1) THEN
+         !print *,'tspsrc: before cpsrc'
+! ***    Calculate point sources data
+!            IF (RUNOK)  call cpsrc
+!        ENDIF
+!      ENDIF
+!MSK end
+!!! end of orignal code !!!
+!!!==============================================
 
 ! *** Changes has occurred to point sources data?
 !MSK start
-      IF (.NOT. ATTIME(BDAT)) THEN
+!      IF (.NOT. ATTIME(BDAT)) THEN  !!! disable this to read point source input at ITS=1
         IF (.NOT. BFTIME(CHTIME) .OR. .NOT. RONCE) THEN
 
 ! ***     Read new point sources data
-             !print *,'tspsrc: read new psrc data'
+             print *,'tspsrc: read new psrc data'
              call rpsrc
+ 
 
+!!!===============================================
+!!!  for moving point source, by Kang Dec.10,2019
+!!! update the new location when point source is moving!! 
+!!  
+
+          point_moving= .False.
+          t_point=0.0   !!!! simulation running time in current simluation period @ s (0-3600s)
+          
+        do IQ=1,CHANQ
+                        
+        if (vel_point(IQ) .gt. 0.0 ) then   
+          !!! only when point is moving (vel>0 and within moving time period). t_mpoint1 and t_mpoint2 are the start and end time of point if moving within 1hour (0-3600)
+          point_moving= .True.  
+
+        endif 
+          
+          QX1(IQ)=QX(IQ)
+          QY1(IQ)=QY(IQ)
+        enddo
+
+!$$$$$$            write(123,*) dd_point(1), QX(1), QY(1), QX1(1),QY1(1), ITS, dR_ship,dcir_ang/3.141592654*180 &
+!$$$$$$                         ,dr_ship_virtual,dxr_ship_virtual,dyr_ship_virtual,dr_ship_real,dxr_ship,dyr_ship
+
+        if (point_moving) then 
+         
+
+          
+     !    point_moving= .False.
+         
+        do IQ=1,CHANQ
+  
+ 
+          
+        if (vel_point(IQ).gt.0.0 .and. (t_point+DT).ge.t_mpoint1(IQ) .and. t_point.le.t_mpoint2(IQ)) then   !!! only when point is moving (vel>0 and within moving time period)
+          point_moving= .True.  
+       !    QX(IQ)=QX1(IQ)
+       !    QY(IQ)=QY1(IQ)
+          dt_point=DT
+
+        if (cir_ang(IQ) .eq. 0.0) then  !! straight line 
+
+         if ( t_point .lt. t_mpoint1(IQ))     dt_point=t_point+DT-t_mpoint1(IQ)  !! if point is close to start.
+         if ((t_point+DT) .gt. t_mpoint2(IQ)) dt_point=t_mpoint2(IQ)-t_point  !! if point is close to stop.     
+                          
+          dis_point=vel_point(IQ)*dt_point   !!! distance for point moving in this DT or dt_point
+          
+          dir_point=dd_point(IQ)*3.141592654/180
+          
+          ddx_point=dis_point*sin(dir_point)  !!! check sin() and cos() for degree or for rad?? 
+          ddy_point=dis_point*cos(dir_point)
+
+          QX(IQ)=QX1(IQ)+ddx_point/2   !! virtual location of point during this DT if moving
+          QY(IQ)=QY1(IQ)+ddy_point/2          
+
+          if (t_point .lt. t_mpoint1(IQ)) then
+            f1=dt_point/DT   !! time fraction for moving
+            f0=1.0-f1        !! time fraction before moving
+              
+            QX(IQ)=QX1(IQ)+ ddx_point*0.5*f1/(f1+f0)
+            QY(IQ)=QY1(IQ)+ ddy_point*0.5*f1/(f1+f0)
+          endif
+
+          if ((t_point+DT) .gt. t_mpoint2(IQ)) then
+            f1=dt_point/DT   !! time fraction for moving
+            f0=1.0-f1        !! time fraction after moving
+              
+            QX(IQ)=QX1(IQ)+ ddx_point - ddx_point*0.5*f1/(f1+f0)
+            QY(IQ)=QY1(IQ)+ ddy_point - ddy_point*0.5*f1/(f1+f0)
+          endif
+          
+   
+          QX1(IQ)=QX1(IQ)+ddx_point   !! real location of point after this DT if moving
+          QY1(IQ)=QY1(IQ)+ddy_point
+        
+          endif !!! end of straight line (cirang=0)
+ 
+
+
+          if (cir_ang(IQ) .ne. 0.0) then
+           dcir_ang=cir_ang(IQ)/NTS*3.141592654/180  !!! angle that ship is moving around for DT.      >0 clockwise, <0, counter-clockwise.  Should <90
+           dR_ship=vel_point(IQ)*DT/abs(dcir_ang)   !!! radius that ship is moving around
+           
+           dcir_ang_virtual=dcir_ang/2  !!! virtual angle that ship is sitting at for DT 
+
+           dr_ship_virtual=2*dR_ship*abs(sin(dcir_ang_virtual/2)) 
+           dxr_ship_virtual=dr_ship_virtual*cos(dcir_ang_virtual/2)  !! x of ship virtual position at circular coordinate based on orig @ ship start position. Always >=0
+           dyr_ship_virtual=dr_ship_virtual*sin(-dcir_ang_virtual/2) !! >0, counterclockwise;  <0, clockwise
+          
+           dtheta=(90-dd_point(IQ))*3.141592654/180 
+           QX(IQ)=QX1(IQ) + cos(dtheta)*dxr_ship_virtual - sin(dtheta)*dyr_ship_virtual   !!! x of ship virtual position for DT
+           QY(IQ)=QY1(IQ) + sin(dtheta)*dxr_ship_virtual + cos(dtheta)*dyr_ship_virtual 
+
+
+           
+           dr_ship_real=2*dR_ship*abs(sin(dcir_ang/2)) 
+           dxr_ship=dr_ship_real*cos(dcir_ang/2)  !! x of ship real position at circular coordinate based on orig @ ship start position
+           dyr_ship=dr_ship_real*sin(-dcir_ang/2)
+          
+           QX1(IQ)=QX1(IQ) + cos(dtheta)*dxr_ship - sin(dtheta)*dyr_ship   !!! x of ship real position for DT
+           QY1(IQ)=QY1(IQ) + sin(dtheta)*dxr_ship + cos(dtheta)*dyr_ship 
+
+           dd_point(IQ)=dd_point(IQ)+cir_ang(IQ)/NTS
+           endif  !!! end of cirang >0           
+
+        endif   !!! end of if for calculating QX and QY
+        
+        enddo
+        
+         t_point=t_point+DT
+
+         
+        endif !!! end of if for point_moving 
+
+!$$$$$$          print *,'tspsrc 1: IQ= 1, vel_point=',vel_point(1),', dd_point=',dd_point(1), &
+!$$$$$$                ',t_mpoint1=',t_mpoint1(1),',t_mpoint2=',t_mpoint2(1),'cir_ang(IQ)=',cir_ang(1)   
+!$$$$$$          print *,'tspsrc 1: IQ= 1, point_moving=',point_moving,', t_point=',t_point,', dt=',DT, &
+!$$$$$$                ',QX1=',QX1(1),',QY1=',QY1(1),',QX=',QX(1),',QY=',QY(1),', ITS=',ITS    
+!$$$$$$ 
+!$$$$$$            write(123,*) dd_point(1), QX(1), QY(1), QX1(1),QY1(1), ITS, dR_ship,dcir_ang/3.141592654*180 &
+!$$$$$$                         ,dr_ship_virtual,dxr_ship_virtual,dyr_ship_virtual,dr_ship_real,dxr_ship,dyr_ship
+                            
 ! ***     Calculate point sources data
             IF (RUNOK) call cpsrc
-
-
+              
+         do IQ=1,CHANQ
+           QX(IQ)=QX1(IQ)  !!! update the location to real location after cpsrc.
+           QY(IQ)=QY1(IQ)
+         enddo
+         
         ENDIF
+
 
 ! *** First timestep in current simulation period?
 
-        IF (ITS .EQ. 1) THEN
+  !      IF (ITS .EQ. 1) THEN
          !print *,'tspsrc: before cpsrc'
 ! ***    Calculate point sources data
-            IF (RUNOK)  call cpsrc
+  !          IF (RUNOK)  call cpsrc
 
-        ENDIF
-      ENDIF
+  !      ENDIF
+!      ENDIF  
 !MSK end
+
+!$$$$$$          print *,'tspsrc: before 2nd moving cycle, point_moving=',point_moving,& 
+!$$$$$$                ', CHANQ=',CHANQ, 'run_cpsrc=',run_cpsrc, 'ITS=',ITS, 'DT=',DT, 'runok=',RUNOK 
+                        
+        if (ITS .gt. 1 ) then 
+          if (point_moving) then
+                   
+      !   point_moving= .False.
+          run_cpsrc = .False.    
+
+          nlast_moving =.False.
+                    
+          do IQ=1,CHANQ           !!! if point source stops after last step. if yes, then point source location needs to be updated to final value in cpsrc.
+        !     nmoving_mpoint(IQ)=0.0  
+             if (vel_point(IQ).gt.0.0 .and. (t_point-DT).lt.t_mpoint2(IQ) .and. t_point.ge.t_mpoint2(IQ)) then
+                nlast_moving = .True.
+        !        nmoving_mpoint(IQ)=1.0    !!! if one point source is moving
+             endif  
+          enddo
+          
+        do IQ=1,CHANQ
+ 
+!$$$$$$          print *,'tspsrc33: before 2nd moving cycle, point_moving=',point_moving,& 
+!$$$$$$                ', CHANQ=',CHANQ, 'run_cpsrc=',run_cpsrc, 'ITS=',ITS, 'runok=',RUNOK,", nlast_moving=",nlast_moving         
+
+         
+        if (vel_point(IQ).gt.0.0 .and. (t_point+DT).ge.t_mpoint1(IQ) .and. t_point.le.t_mpoint2(IQ)) then   !!! only when point is moving (vel>0 and within moving time period)
+          run_cpsrc = .True.  
+       !   nmoving_mpoint(IQ)=1 
+       !    QX(IQ)=QX1(IQ)
+       !    QY(IQ)=QY1(IQ)
+          dt_point=DT 
+   
+          if (cir_ang(IQ) .eq. 0.0) then   !! start of straight line
+
+         if ( t_point .lt. t_mpoint1(IQ))     dt_point=t_point+DT-t_mpoint1(IQ)  !! if point is close to start.
+         if ((t_point+DT) .gt. t_mpoint2(IQ)) dt_point=t_mpoint2(IQ)-t_point  !! if point is close to stop.     
+                          
+          dis_point=vel_point(IQ)*dt_point   !!! distance for point moving in this DT or dt_point
+          
+          dir_point=dd_point(IQ)*3.141592654/180
+          
+          ddx_point=dis_point*sin(dir_point)  !!! check sin() and cos() for degree or for rad?? 
+          ddy_point=dis_point*cos(dir_point)
+
+          QX(IQ)=QX1(IQ)+ddx_point/2   !! virtual location of point during this DT if moving
+          QY(IQ)=QY1(IQ)+ddy_point/2          
+
+          if (t_point .lt. t_mpoint1(IQ)) then
+            f1=dt_point/DT   !! time fraction for moving
+            f0=1.0-f1        !! time fraction before moving
+              
+            QX(IQ)=QX1(IQ)+ ddx_point*0.5*f1/(f1+f0)
+            QY(IQ)=QY1(IQ)+ ddy_point*0.5*f1/(f1+f0)
+          endif
+
+          if ((t_point+DT) .gt. t_mpoint2(IQ)) then
+            f1=dt_point/DT   !! time fraction for moving
+            f0=1.0-f1        !! time fraction after moving
+              
+            QX(IQ)=QX1(IQ)+ ddx_point - ddx_point*0.5*f1/(f1+f0)
+            QY(IQ)=QY1(IQ)+ ddy_point - ddy_point*0.5*f1/(f1+f0)
+          endif
+          
+   
+          QX1(IQ)=QX1(IQ)+ddx_point   !! real location of point after this DT if moving
+          QY1(IQ)=QY1(IQ)+ddy_point
+          
+          endif !!! end of straight line (cir_ang = 0)
+          
+
+
+          if (cir_ang(IQ) .ne. 0.0) then
+           dcir_ang=cir_ang(IQ)/NTS*3.141592654/180  !!! angle that ship is moving around for DT.    should < 90, otherwise, may need to think about the location calacuation equations.
+           dR_ship=vel_point(IQ)*DT/abs(dcir_ang)   !!! radius that ship is moving around
+           
+           dcir_ang_virtual=dcir_ang/2  !!! virtual angle that ship is sitting at for DT 
+
+           dr_ship_virtual=2*dR_ship*abs(sin(dcir_ang_virtual/2)) 
+           dxr_ship_virtual=dr_ship_virtual*cos(dcir_ang_virtual/2)  !! x of ship virtual position at circular coordinate based on orig @ ship start position
+           dyr_ship_virtual=dr_ship_virtual*sin(-dcir_ang_virtual/2)
+           
+
+
+           dtheta=(90-dd_point(IQ))*3.141592654/180 
+           QX(IQ)=QX1(IQ) + cos(dtheta)*dxr_ship_virtual - sin(dtheta)*dyr_ship_virtual   !!! x of ship virtual position for DT
+           QY(IQ)=QY1(IQ) + sin(dtheta)*dxr_ship_virtual + cos(dtheta)*dyr_ship_virtual 
+
+
+           
+           dr_ship_real=2*dR_ship*abs(sin(dcir_ang/2)) 
+           dxr_ship=dr_ship_real*cos(dcir_ang/2)  !! x of ship real position at circular coordinate based on orig @ ship start position
+           dyr_ship=dr_ship_real*sin(-dcir_ang/2)
+          
+           QX1(IQ)=QX1(IQ) + cos(dtheta)*dxr_ship - sin(dtheta)*dyr_ship   !!! x of ship real position for DT
+           QY1(IQ)=QY1(IQ) + sin(dtheta)*dxr_ship + cos(dtheta)*dyr_ship 
+
+           dd_point(IQ)=dd_point(IQ)+cir_ang(IQ)/NTS
+           endif  !!! end of cirang >0           
+
+        endif   !!! end of if for calculating QX and QY
+
+     !   
+      !  if(t_point .gt. t_mpoint2(IQ)  point_moving = .False.   
+
+        enddo   !!! end of IQ cycle
+
+
+                 
+           
+!$$$$$$          print *,'tspsrc44: before 2nd moving cycle, point_moving=',point_moving,& 
+!$$$$$$                ', CHANQ=',CHANQ, 'run_cpsrc=',run_cpsrc, 'ITS=',ITS, 'runok=',RUNOK         
+
+! ***     Calculate point sources data
+         
+            if (RUNOK ) then
+              if (run_cpsrc .or. nlast_moving) call cpsrc
+            endif           
+
+!$$$$$$          print *,'tspsrc 2: IQ= 1, run_cpsrc=',run_cpsrc,', t_point=',t_point,', dt=',DT, &
+!$$$$$$                ',QX1=',QX1(1),',QY1=',QY1(1),',QX=',QX(1),',QY=',QY(1),', ITS=',ITS, &
+!$$$$$$                ', sin(dd)=',sin(dir_point),', dis_point=',dis_point, 'dt_point=',dt_point, &
+!$$$$$$                ', nlast_moving=',nlast_moving,'dcir_ang=',dcir_ang,'dR_ship=',dR_ship, &
+!$$$$$$                 'dr_ship_virtual=',dr_ship_virtual,'dr_ship=',dr_ship 
+               
+         t_point=t_point+DT
+
+!$$$$$$            write(123,*) dd_point(1), QX(1), QY(1), QX1(1),QY1(1), ITS, dR_ship,dcir_ang/3.141592654*180 &
+!$$$$$$                         ,dr_ship_virtual,dxr_ship_virtual,dyr_ship_virtual,dr_ship_real,dxr_ship,dyr_ship
+        
+          do IQ=1,CHANQ        
+           QX(IQ)=QX1(IQ)  !!! update the location to real location after cpsrc.
+           QY(IQ)=QY1(IQ)
+          enddo
+                            
+        endif !!! end of if for ITS>1 
+        endif
+               
+
+!!!===============================================
+!!!  for moving point source, by Kang Dec.10,2019
+!!! end of updating the new location when point source is moving!! 
+!!!===============================================
+
+
+
 
 !MSK start
 ! No treatment of point sources if PSRCMTYPE == 0
@@ -273,8 +595,29 @@
 ! ***      Calculate plume segments radioactive decays
            call psradi
 
+
+
+
+!!!===============================================
+!!! for averaged receptor concentration, by Kang Dec.23,2019
+!!! need to be double check 
+!!!===============================================
+            if(averaged_output .and. ITS .ne. NTS) then
+! ***         Calculate plume segments concentrations and depositions
+! ***         ... in main grid and subgrid cells
+              call csubpx(PSRCAI,PSRCAI,PSRCAI,TSIMRES)
+
+! ***         ... in the irregular receptor points
+              call csubpr(PSRCAI,PSRCAI,PSRCAI,TSIMRES)
+
+! ***         ... in the line source associated receptor points
+              call csubpl(PSRCAI,PSRCAI,PSRCAI,TSIMRES)
+             endif
+
+
 ! ***      Last timestep in current simulation period?
-           IF (ITS .EQ. NTS) THEN
+           IF (ITS .eq. NTS) THEN
+!!!===============================================             
               IF (MESSFE) THEN
                  WRITE (MESSUN,*)
                  WRITE (MESSUN,2000) NQ

@@ -175,9 +175,9 @@
 
              p=1
              do IZ=1,NZ
-               do IX=1,NX
-                 do IY=1,NY
-
+            !   do IX=1,NX
+               do IY=1,NY
+                 do IX=1,NX  !!!! changed by Kang @ Dec. 3nd, 2019
  
                    FAKE_C(IC,IX,IY,IZ) = field1D(p)
                    p=p+1
@@ -206,9 +206,44 @@
                enddo
              enddo
 
+!!!!!!!!!!!!!!!!!!! for testing 3D concentration output file by Kang @ Dec.2, 2019
+!             if(IC .eq. 3) then
+!                open(unit=1111,file="../OUTPUT/3D_field_read_Fake_C.txt")  !!
+!                open(unit=1113,file="../OUTPUT/3D_field_read_C.txt")  !!
+!                open(unit=1112,file="../OUTPUT/3D_field_para_read.txt")  !!        
+!                do 351 IZ=1,NZ
+!                    do 353 IY = 1,NY
+
+
+!                      write(1111,*) (FAKE_C(3,IX,IY,IZ),IX=1,NX)
+!                      write(1113,*) (C(3,IX+1,IY+1,IZ),IX=1,NX)
+!  353               continue
+!  351           continue
+!  350          continue
+
+!                 write(1112,*)"read 3D concentration nc file, input: NX=",NX,", NY=", &
+!                              NY, "NZ=",NZ, "nfetch=",nfetch
+!                 write(1112,*)"read from nc file: varname=",varname, ", IC2GRIDFN=",IC2GRIDFN
+               
+!                close(1113)
+!                close(1112)
+!                close(1111)
+!            endif
+!!!!!!!!!!!!!!!!!!! end for testing 3D concentration output file by Kang @ Dec.2, 2019
 
 
   100     CONTINUE
+
+
+
+
+
+
+
+
+
+
+
 
         else
 

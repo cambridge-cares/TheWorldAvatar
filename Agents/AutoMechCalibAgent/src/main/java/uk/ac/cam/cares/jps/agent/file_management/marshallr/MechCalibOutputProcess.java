@@ -37,6 +37,7 @@ import com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter;
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.google.common.primitives.Doubles;
 
+import uk.ac.cam.cares.jps.agent.configuration.AutoMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.coordination.AutoMechCalibAgentException;
@@ -47,6 +48,8 @@ import uk.ac.cam.cares.jps.kg.OntoKinKG;
 import uk.ac.cam.cares.jps.kg.RepositoryManager;
 
 public class MechCalibOutputProcess {
+	private AutoMechCalibAgentProperty autoMechCalibAgentProperty;
+	
 	private LinkedHashMap<String, String> origParams = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> multipliers = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> updatedParams = new LinkedHashMap<String, String>();
@@ -75,24 +78,9 @@ public class MechCalibOutputProcess {
 		this.updatedParams = updatedParams;
 	}
 	
-//	private String getCorrespondParam(String key) {
-//		return getUpdatedParams().get(key);
-//	}
-	
-	public static void main(String[] args) {
-		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
-		
-		String jobFolderPath = "C:\\Users\\jb2197\\Desktop\\PODE_Project\\Data\\Temp";
-		String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\",\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264155_173\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264148_166\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264020_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264017_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264156_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264154_172\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264157_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264152_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264053_71\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264158_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264104_122\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264135_153\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264142_160\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264134_152\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264165_183\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264137_155\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264159_177\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264136_154\"]},\"mods\":{\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\"},\"flameSpeedOption\":{\"tranModel\":\"mix-average\"},\"sensAna\":{\"topN\":\"10\",\"relPerturbation\":\"1e-3\"}}}}";
-		
-		try {
-			mechCalibPro.processResults(jobFolderPath, jsonString);
-		} catch (IOException | AutoMechCalibAgentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public MechCalibOutputProcess(AutoMechCalibAgentProperty autoMechCalibAgentProperty) {
+		this.autoMechCalibAgentProperty = autoMechCalibAgentProperty;
 	}
-	
 	
 	public void processResults(String jobFolderPath, String jsonString) throws IOException, AutoMechCalibAgentException {
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
@@ -231,7 +219,7 @@ public class MechCalibOutputProcess {
 		}
 		
 		// query the rate params
-		OntoKinKG ontokinkg = new OntoKinKG();
+		OntoKinKG ontokinkg = new OntoKinKG(autoMechCalibAgentProperty);
 		LinkedHashMap<String, String> orig = ontokinkg.queryRxnPreExpFactor(mechanismIRI, reactionIRIList);
 		List<String[]> dataLines = new ArrayList<>();
 		dataLines.add(new String[] {"ReactionNo", "OrigPreExpFactor", "Multiplier", "UpdatedPreExpFactor"});

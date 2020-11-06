@@ -128,9 +128,7 @@ public class JobSubmission{
 	 */
 	public String setUpJob(String jsonInput, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
         	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, timeStamp);
-			JSONObject obj = new JSONObject();
-			obj.put("message", message);
-        	return obj.toString();
+        	return message;
     }
 
 	/**
@@ -217,7 +215,7 @@ public class JobSubmission{
     	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input)==null){
     		return null;
     	}
-    	return Status.JOB_SETUP_SUCCESS_MSG.getName();
+    	return jobFolder.getName();
 	}
 	
 	/**

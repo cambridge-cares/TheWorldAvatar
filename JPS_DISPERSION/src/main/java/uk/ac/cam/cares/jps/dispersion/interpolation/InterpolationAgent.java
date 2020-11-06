@@ -45,6 +45,8 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.base.region.Region;
+
 @WebServlet(urlPatterns ={"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
 	public String SIM_START_PATH = "/InterpolationAgent/startSimulation";
@@ -82,7 +84,9 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
 		String options = requestParams.optString("options","1");//How do we select the options? 
 		
-		String coordinates = readCoordinate(stationiri,agentiri);
+		String targetCRSName = Region.getTargetCRSName(agentiri,location);
+		String coordinates = readCoordinate(stationiri,targetCRSName);
+
 		String gasType, dispMatrix ="";
 		String[] directorydata = getLastModifiedDirectory(agentiri, location);
 		File dirFile = new File(directorydata[0]);
@@ -475,7 +479,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
      * @param stationiri
      * @return
      */
-    public String readCoordinate(String stationiri,String agent) {
+    public String readCoordinate(String stationiri,String targetCRSName) {
 		String sparqlQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
 				"PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>" + 
 				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>" + 
@@ -498,31 +502,11 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				"}"
 				+ "}" ;
 
-		String epsgActive="3414";//singapore
-		if(stationiri.contains("singapore")) {
-			if(agent.contains("ADMS")) {
-				epsgActive="3414";
-			}else {
-				epsgActive="32648";
-			}
-			
-		}else if(stationiri.contains("hongkong")) {
-			if(agent.contains("ADMS")) {
-				epsgActive="2326";
-			}else {
-				epsgActive="32650";
-			}
-		}else if(stationiri.contains("berlin")) {
-			epsgActive="25833";
-		}else if(stationiri.contains("thehague")) {
-			epsgActive="28992";
-		}
-		
 			List<String[]> resultListfromquery =queryEndPointDataset(sparqlQuery);
 			String xVal = resultListfromquery.get(0)[0];
 			String yVal = resultListfromquery.get(0)[1];
 			String zVal = resultListfromquery.get(0)[2];
-			double[] locationstnconverted = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+			double[] locationstnconverted = CRSTransformer.transform("EPSG:4326", targetCRSName,
 					new double[] { Double.valueOf(xVal), Double.valueOf(yVal) });
 			
 			StringJoiner sb = new StringJoiner(" ");

@@ -82,6 +82,14 @@
 !           2017  M. Karl: restart with IC files possible
 !           2017  M. Karl: c,dcdt,d2cdx2,d2cdy2,excz,bc defined as double precision
 !
+!           2019 Dec. Kang @ CARES, write out 3D emission data (instantanous) to .dat file
+!!          here, two height (Z) are given: 
+!                 Z(IZ) - vertical layer height, 
+!                 Z_act - height after considering topograhpy
+!           2020 Mar. Kang @ CARES, write out 3D emission data (including BC, instantanous)
+!                Changes include:
+!                1. C(NC,NX+2,NY+2,NZ+1)
+!!               2. location of main grid point is changed from sw and top to central point 
 ! ----------------------------------------------------------------------------------
 
       use mod_util
@@ -164,6 +172,31 @@
 
       double precision        :: field3D(NX,NY,NZ)
       !double precision        :: field3D(NY,NX,NZ)
+!!=====================================================================================
+!! write out main grid emission data at last timestep of the simulation to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!=====================================================================================
+      double precision, allocatable :: field3D_output(:,:,:,:)
+      integer :: II
+      real,   allocatable :: mxm_i(:,:)
+      real,   allocatable :: mxm_j(:,:)
+      
+!$$$$$$       real,   allocatable :: mxm_i_new(:,:)
+!$$$$$$       real,   allocatable :: mxm_j_new(:,:)
+!$$$$$$       real,   allocatable :: Znew(:)
+!$$$$$$       real,   allocatable :: Znew0(:)      
+! Allocate
+        if (.not. allocated(mxm_i) )    allocate(mxm_i(NY,NX))
+        if (.not. allocated(mxm_j) )    allocate(mxm_j(NY,NX))     
+      
+
+
+! Allocate
+!$$$$$$         if (.not. allocated(mxm_i_new) )    allocate(mxm_i_new(NY+2*NBCY,NX+2*NBCX))
+!$$$$$$         if (.not. allocated(mxm_j_new) )    allocate(mxm_j_new(NY+2*NBCY,NX+2*NBCX))    
+!$$$$$$         if (.not. allocated(Znew) )    allocate(Znew(NZ+NBCZ))   
+!$$$$$$         if (.not. allocated(Znew0) )    allocate(Znew0(NZ))                                      
+!!=====================================================================================      
 !MSK end
 
 !!DEC$ IF DEFINED (emep68)
@@ -391,6 +424,38 @@
 ! ***   Replaces roldc from EPISODE
 
                call ricon
+
+
+
+
+!!!!!!!!!!!!!!!!!!! for testing 3D concentration output file by Kang @ Dec.2, 2019
+!             if(restart .eq. 1) then
+!                open(unit=1113,file="../OUTPUT/3D_field_new.txt")  !!
+!                open(unit=1112,file="../OUTPUT/3D_field_para.txt")  !!   
+!              do 350 IC=1,NC    
+!               if (IC .eq. 3) then        
+!                do 351 IZ=1,NZ
+!                  do 352 IX = 1,NX
+!                    do 353 IY = 1,NY
+
+                     !!  field3D(IX,IY,IZ) = C(3,IX+1,IY+1,IZ)
+                  !     field3D(IY,IX,IZ) = C(IC,IX+1,IY+1,IZ)
+!                      write(1113,*) C(3,IX+1,IY+1,IZ)
+!  351               continue
+!  352             continue
+!  353           continue
+!               endif  !!! end if of IC=3
+!  350          continue
+
+!                 write(1112,*)"dump out 3D concentration file, NX=",NX,", NY=", NY, "NZ=",NZ, "Nhh_in=",Nhh_in, "mdate=",mdate, ", validity=",validity, ", dopacking=",dopacking,", dofloat=", dofloat, ", domirror=",domirror
+               
+!                close(1113)
+!                close(1112)
+!            endif
+!!!!!!!!!!!!!!!!!!! end for testing 3D concentration output file by Kang @ Dec.2, 2019
+
+
+
 !MSK start debug
 !debug           do IZ=1,NZ+NBCZ
 !debug             print *,'tsgrid C(Z) 2', IZ, C(1,2,2,IZ)
@@ -1268,7 +1333,13 @@
       if (ATDATE(EDAT) .AND. ISH == NSH .AND. ITS == NTS) then
       
 !MSK        CALL WNEWC
-
+!!==========================================================================
+!! write out main grid emission data at last timestep of the simulation to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!==========================================================================
+        if (.not. allocated(field3D_output) )  allocate(field3D_output(NX,NY,NZ,NC))
+!!==========================================================================
+          
 ! Write the netCDF output file of main grid C() for RESTART
           if (IC1GRIDFE) then
 
@@ -1308,7 +1379,12 @@
 
                        field3D(IX,IY,IZ) = C(IC,IX+1,IY+1,IZ)
                   !     field3D(IY,IX,IZ) = C(IC,IX+1,IY+1,IZ)
-
+!!==========================================================================
+!! write out main grid emission data at last timestep of the simulation to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!==========================================================================
+                 field3D_output(IX,IY,IZ,IC) = C(IC,IX+1,IY+1,IZ)
+!!==========================================================================
   330               continue
   320             continue
   310           continue
@@ -1316,11 +1392,227 @@
                 call writeconcfield(IC1GRIDFN, namefield,unitname,field3D(1:NX,1:NY,1:NZ), NX, NY, NZ, &
                                  Nhh_in, mdate, validity, dopacking, dofloat, domirror)
 
-  300         continue
+!!!!!!!!!!!!!!!!!!! for testing 3D concentration output file by Kang @ Dec.2, 2019
+!               if (IC .eq. 3) then
+!                open(unit=1111,file="../OUTPUT/3D_field_write.txt")  !!
+!                open(unit=1112,file="../OUTPUT/3D_field_para_write.txt")  !!                
+!                do 311 IZ=1,NZ
+!                    do 331 IY = 1,NY
+
+!                      write(1111,*) (field3D(IX,IY,IZ), IX=1,NX)
+                    !  write(1111,*) (C(3,IX+1,IY+1,IZ), IX=1,NX)
+!  331               continue
+
+!  311           continue
+
+!                write(1112,*)"write out 3D concentration file, namefield=",namefield,"unitname=",unitname, & 
+!                              ", NX=",NX,", NY=",NY, "NZ=",NZ, "Nhh_in=",Nhh_in, "mdate=",mdate,  & 
+!                              ", validity=",validity,", dopacking=",dopacking,", dofloat=", dofloat,  &
+!                              ", domirror=",domirror, ", IC1GRIDFN=", IC1GRIDFN
+               
+!                close(1111)
+!                close(1112)
+!                endif
+!!!!!!!!!!!!!!!!!!! end for testing 3D concentration output file by Kang @ Dec.2, 2019
+
+
+  300          continue
+
 
           endif
 !MSK end
+!!===================================================================================
+!! write out main grid emission data at last timestep of the simulation to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!===================================================================================
 
+      open(unit=1116,file="../OUTPUT/3D_instantanous_mainconc_center.dat")  !! 3D data at center point of main cell
+
+      write(1116,2140)(CMPND(IC),IC=1,NC)
+      
+       do  IZ=1,NZ
+            do  IX = 1,NX
+                do  IY = 1,NY
+                    mxm_i(IY,IX) = SITEX0 + (IX-1)*DX + 0.5*DX 
+                    mxm_j(IY,IX) = SITEY0 + (IY-1)*DY + 0.5*DY         
+             write(1116,2150) (mdate(II,Nhh_in),II=1,4), mxm_i(IY,IX),mxm_j(IY,IX),Z(IZ)-0.5*DZ(IZ),& 
+                      (field3D_output(IX,IY,IZ,IC), IC=1,NC)  
+                enddo
+          enddo
+      enddo 
+
+      close(1116)
+
+!$$$$$$ 
+!$$$$$$       open(unit=1113,file="../OUTPUT/3D_instantanous_mainconc.dat")  !! 3D data at SW+top point of main cell
+!$$$$$$ 
+!$$$$$$       write(1113,2140)(CMPND(IC),IC=1,NC)
+!$$$$$$       
+!$$$$$$        do  IZ=1,NZ
+!$$$$$$             do  IX = 1,NX
+!$$$$$$                 do  IY = 1,NY
+!$$$$$$                     mxm_i(IY,IX) = SITEX0 + (IX-1)*DX 
+!$$$$$$                     mxm_j(IY,IX) = SITEY0 + (IY-1)*DY          
+!$$$$$$              write(1113,2150) (mdate(II,Nhh_in),II=1,4), mxm_i(IY,IX),mxm_j(IY,IX),Z(IZ),& 
+!$$$$$$                                Z(IZ)*DEPTHM(IX,IY)/MOD_H,(field3D_output(IX,IY,IZ,IC), IC=1,NC)  
+!$$$$$$                 enddo
+!$$$$$$           enddo
+!$$$$$$       enddo 
+ 
+
+        if (allocated(field3D_output))  deallocate(field3D_output)
+
+! Deallocate
+        if (allocated(mxm_i))     deallocate(mxm_i)
+        if (allocated(mxm_j))     deallocate(mxm_j)
+          
+!$$$$$$        close(1113)
+
+
+
+   !   open(unit=1114,file="../OUTPUT/3D_instantanous_mainconc_centerBCZ.dat") !!!! 3D data at center point of main cell including (BC @ x,y,z direction)
+      
+   !   write(1114,2140)(CMPND(IC),IC=1,NC)
+      
+   !    do  IZ=1,NZ+NBCZ
+   !             if (IZ .lt. NZ+NBCZ) then    
+   !             Znew(IZ)=Z(IZ)-0.5*DZ(IZ)
+   !             else
+   !             Znew(IZ)=Znew(IZ-1)+DZ(IZ-1)
+   !             endif  
+                    
+   !         do  IX = 1,NX+2*NBCX
+   !             do  IY = 1,NY+2*NBCY
+   !                 mxm_i_new(IY,IX) = SITEX0 + (IX-1)*DX-0.5*DX 
+   !                 mxm_j_new(IY,IX) = SITEY0 + (IY-1)*DY-0.5*DY   
+             
+   !          if (IX .ne. 1 .and. IX .ne. NX+2*NBCX .and. IY .ne. 1 .and. IY .ne. NY+2*NBCY ) then
+               
+   !          write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+!$$$$$$                                Znew(IZ)*DEPTHM(IX-1,IY-1)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)  
+   !          endif
+               
+   !          if (IX .eq. 1) then
+   !            if (IY .eq. NY+2*NBCY) then                 
+   !          write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+   !                            Znew(IZ)*DEPTHM(IX,IY-2)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC) 
+   !            endif 
+   !            if (IY .eq. 1) then
+   !         write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+   !                            Znew(IZ)*DEPTHM(IX,IY)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)
+   !            endif
+   !            if (IY .ne.1 .and. IY .ne. NY+2*NBCY) then   
+   !         write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+   !                            Znew(IZ)*DEPTHM(IX,IY-1)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)  
+   !            endif
+   !          endif
+   !          if (IX .eq. NX+2*NBCX) then
+!$$$$$$                if (IY .eq. NY+2*NBCY) then               
+!$$$$$$              write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+!$$$$$$                                Znew(IZ)*DEPTHM(IX-2,IY-2)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC) 
+!$$$$$$                endif 
+!$$$$$$               if (IY .eq. 1) then
+!$$$$$$             write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+!$$$$$$                                Znew(IZ)*DEPTHM(IX-2,IY)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)
+!$$$$$$                endif
+!$$$$$$               if (IY .ne.1 .and. IY .ne. NY+2*NBCY) then 
+!$$$$$$             write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+!$$$$$$                                Znew(IZ)*DEPTHM(IX-2,IY-1)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)  
+!$$$$$$                endif
+!$$$$$$              endif
+!$$$$$$  
+!$$$$$$              if ( IX .ne. 1 .and. IX .ne. NX+2*NBCX) then  
+!$$$$$$                if (IY .eq. 1) then                
+!$$$$$$              write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+!$$$$$$                                Znew(IZ)*DEPTHM(IX-1,IY)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC) 
+!$$$$$$                endif
+!$$$$$$                if (IY .eq.  NY+2*NBCY) then
+!$$$$$$              write(1114,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew(IZ),& 
+!$$$$$$                                Znew(IZ)*DEPTHM(IX-1,IY-2)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)
+!$$$$$$                endif
+!$$$$$$              endif
+!$$$$$$            
+!$$$$$$                 enddo
+!$$$$$$           enddo
+!$$$$$$       enddo 
+!$$$$$$  
+! Deallocate
+!$$$$$$         if (allocated(Znew))     deallocate(Znew)          
+!$$$$$$        close(1114)
+
+
+!$$$$$$       open(unit=1115,file="../OUTPUT/3D_instantanous_mainconc_centerBC.dat") !!!! 3D data at center point of main cell including (BC @ x,y direction)
+!$$$$$$       
+!$$$$$$       write(1115,2140)(CMPND(IC),IC=1,NC)
+!$$$$$$       
+!$$$$$$        do  IZ=1,NZ
+!$$$$$$ 
+!$$$$$$                 Znew0(IZ)=Z(IZ)-0.5*DZ(IZ)
+!$$$$$$                     
+!$$$$$$             do  IX = 1,NX+2*NBCX
+!$$$$$$                 do  IY = 1,NY+2*NBCY
+!$$$$$$                     mxm_i_new(IY,IX) = SITEX0 + (IX-1)*DX-0.5*DX 
+!$$$$$$                     mxm_j_new(IY,IX) = SITEY0 + (IY-1)*DY-0.5*DY   
+!$$$$$$        
+!$$$$$$              if (IX .ne. 1 .and. IX .ne. NX+2*NBCX .and. IY .ne. 1 .and. IY .ne. NY+2*NBCY ) then             
+!$$$$$$              write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX-1,IY-1)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)  
+!$$$$$$              endif
+!$$$$$$                
+!$$$$$$              if (IX .eq. 1) then
+!$$$$$$                if (IY .eq. NY+2*NBCY) then               
+!$$$$$$              write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX,IY-2)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC) 
+!$$$$$$                endif 
+!$$$$$$                if (IY .eq. 1) then
+!$$$$$$             write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX,IY)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)
+!$$$$$$                endif
+!$$$$$$                if (IY .ne.1 .and. IY .ne. NY+2*NBCY) then   
+!$$$$$$             write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX,IY-1)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)  
+!$$$$$$                endif
+!$$$$$$              endif
+!$$$$$$ 
+!$$$$$$              if (IX .eq. NX+2*NBCX) then
+!$$$$$$                if (IY .eq. NY+2*NBCY) then               
+!$$$$$$              write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX-2,IY-2)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC) 
+!$$$$$$                endif 
+!$$$$$$               if (IY .eq. 1) then
+!$$$$$$             write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX-2,IY)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)
+!$$$$$$                endif
+!$$$$$$               if (IY .ne.1 .and. IY .ne. NY+2*NBCY) then 
+!$$$$$$             write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX-2,IY-1)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)  
+!$$$$$$                endif
+!$$$$$$              endif
+!$$$$$$  
+!$$$$$$              if ( IX .ne. 1 .and. IX .ne. NX+2*NBCX) then  
+!$$$$$$                if (IY .eq. 1) then                
+!$$$$$$              write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX-1,IY)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC) 
+!$$$$$$                endif
+!$$$$$$               if (IY .eq.  NY+2*NBCY) then
+!$$$$$$              write(1115,2150) (mdate(II,Nhh_in),II=1,4), mxm_i_new(IY,IX),mxm_j_new(IY,IX),Znew0(IZ),& 
+!$$$$$$                                Znew0(IZ)*DEPTHM(IX-1,IY-2)/MOD_H,(C(IC,IX,IY,IZ), IC=1,NC)
+!$$$$$$                endif
+!$$$$$$              endif
+!$$$$$$              
+!$$$$$$                 enddo
+!$$$$$$           enddo
+!$$$$$$       enddo 
+ 
+
+! Deallocate
+!$$$$$$         if (allocated(mxm_i_new))     deallocate(mxm_i_new)
+!$$$$$$         if (allocated(mxm_j_new))     deallocate(mxm_j_new)
+!$$$$$$         if (allocated(Znew0))     deallocate(Znew0)          
+!$$$$$$        close(1115)
+
+      
+!!==========================================================================  
       endif
       
 !!DEC$ IF DEFINED (emep68)
@@ -1350,7 +1642,12 @@
 ! 2067 FORMAT ('TSGRID: H_DIFFU(1) = ',F14.7)
 ! 2068 FORMAT ('TSGRID: H_DIFFU(2) = ',F14.7)
 ! 2069 FORMAT ('TSGRID: H_DIFFU(3) = ',F14.7)
+!!==============================================================================
 
+!!! added by Kang for outputing data to .dat file @ 2020 
+ 2140 format ("Year      Month     Day      Hour      X(m)      Y(m)      Z(m)      ",22A10)
+ 2150 format (I4,3I3,3F12.3,22E16.7)
+!!==============================================================================
 
 !     End of subroutine TSGRID
 
