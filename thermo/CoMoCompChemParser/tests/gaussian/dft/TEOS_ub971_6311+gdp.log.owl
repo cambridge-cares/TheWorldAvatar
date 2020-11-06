@@ -8,7 +8,7 @@
 <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#> a owl:Ontology ;
     owl:imports <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl> .
 
-<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#TEOS_ub971_6311+gdp> a ontocompchem:G16,
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#TEOS_ub971_6311+gdp> a ontocompchem:G03,
         owl:Thing ;
     gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_electronic_and_zpe_energy_C8H20O4Si1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_geometry_optimization_C8H20O4Si1_1>,
