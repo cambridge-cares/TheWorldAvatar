@@ -45,7 +45,7 @@ RUN apt install dos2unix -y
 RUN dos2unix /etc/init.d/flask
 RUN chmod +x /etc/init.d/flask
 RUN update-rc.d flask defaults
-RUN /bin/bash service flask start
+# RUN /bin/bash service flask start
 # RUN systemctl start flask
 # RUN (cd /JParkSimulator-git/JPS_Chatbot/UI/source; nohup python -m flask run)
 # ADD flask.conf /etc/init
