@@ -119,8 +119,8 @@ public class RelationalDB {
             if (entities.has(KEY_ITEMS)) {
                 JSONArray items = entities.getJSONArray(KEY_ITEMS);
                 if (items.isEmpty()) {
-                    //Try querying for entities within the region 2 months and 1 hour from now
-                    seconds = seconds - 10368000;
+                    //Try querying for entities within the region 250 days and 1 hour from now
+                    seconds = seconds - 21600000;
                     epoch_back = seconds - SHIP_QUERY_INTERVAL_MINUTES_BACK * 60;
                     results = getEntitiesWithinRegionAndTimestamp(xmin, xmax, ymin, ymax, epoch_back, seconds);
                 }
