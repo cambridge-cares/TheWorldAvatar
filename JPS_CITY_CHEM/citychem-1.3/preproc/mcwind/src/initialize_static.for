@@ -308,8 +308,8 @@
 
 
         write(funit_log,*)
-        write(funit_log,'(1X,A16,F10.5)') &
-        'Landuse(14,12): ',landuse(14,12)
+      !  write(funit_log,'(1X,A16,F10.5)') &
+      !  'Landuse(14,12): ',landuse(14,12)
         write(funit_log,*)
 
       end if
@@ -692,14 +692,14 @@
         n_tol_not_reached  = 0
 
         write(funit_log,*)
-        write(funit_log,*) 'Initialize_static:  f1st(20,16,1) = ', &
-                       f1st(20,16,1)
-        write(funit_log,*) 'Initialize_static:    f2(20,16,1) = ', &
-                       f2(20,16,1)
-        write(funit_log,*) 'Initialize_static:    f3(20,16,1) = ', &
-                       f3(20,16,1)
-        write(funit_log,*) 'Initialize_static:    f4(20,16,1) = ', &
-                       f4(20,16,1)
+      !   write(funit_log,*) 'Initialize_static:  f1st(20,16,1) = ', &
+      !                 f1st(20,16,1)
+      !  write(funit_log,*) 'Initialize_static:    f2(20,16,1) = ', &
+      !                 f2(20,16,1)
+      !  write(funit_log,*) 'Initialize_static:    f3(20,16,1) = ', &
+      !                 f3(20,16,1)
+      !  write(funit_log,*) 'Initialize_static:    f4(20,16,1) = ', &
+      !                 f4(20,16,1)
       end if
 
       return

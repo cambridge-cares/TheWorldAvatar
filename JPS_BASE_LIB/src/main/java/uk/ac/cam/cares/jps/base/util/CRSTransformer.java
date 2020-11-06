@@ -48,7 +48,15 @@ public class CRSTransformer {
 	 * used by Hong Kong apl input file
 	 */
 	public static final String EPSG_2326 = "EPSG:2326";
-	
+	/**
+	 * used by Singapore Episode
+	 */
+	public static final String EPSG_32648 = "EPSG:32648";
+	/**
+	 * used by Hong Kong Episode
+	 */
+	public static final String EPSG_32650 = "EPSG:32650";
+
 	private static Logger logger;
 	private static CRSFactory cRSFactory;
 	private static Map<String, CoordinateReferenceSystem> crsMap = new HashMap<String, CoordinateReferenceSystem>();

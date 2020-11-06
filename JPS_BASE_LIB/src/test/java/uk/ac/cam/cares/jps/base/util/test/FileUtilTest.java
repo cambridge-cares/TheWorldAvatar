@@ -22,7 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 /**
  * This class contains unit tests for FileUtil.
  * 
@@ -47,7 +47,12 @@ public class FileUtilTest {
 		String path = Paths.get(this.getClass().getResource("/FileUtilTestInput.txt").toURI()).toFile().getPath();
 		String result = FileUtil.readFileLocally(path);
 		
-		assertEquals("This is a test file.\r\nTest input.", result);
+		if (CommandHelper.isWindows()) {
+			assertEquals("This is a test file.\r\nTest input.", result);
+		} else {
+			assertEquals("This is a test file.\nTest input.", result);
+		}
+				
 	}
 	
 	/**

@@ -134,6 +134,10 @@ public class RegionToCity extends HttpServlet {
 			}
 		}
 		
+		if (cityIRI.contains("Hong_Kong")) {
+			cityIRI = cityIRI.replace("British_", "");
+		}
+	
 		return cityIRI;
 	}
 

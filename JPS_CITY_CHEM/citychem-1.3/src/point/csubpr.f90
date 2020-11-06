@@ -154,8 +154,18 @@
 
 ! Add concentration  to current receptor point
 
-          IF (ICV .EQ. 1)    CR(IC,IR) =    CR(IC,IR) +  CRV(IC)
 
+!!!===============================================
+!!! for averaged receptor concentration, by Kang Dec.23,2019
+!!! need to be double check 
+!!!===============================================
+!! orig          IF (ICV .EQ. 1)    CR(IC,IR) =    CR(IC,IR) +  CRV(IC)
+            if(averaged_output) then
+              IF (ICV .EQ. 1)    CR(IC,IR) =    CR(IC,IR) + (CRV(IC)/FLOAT(NTS))
+            else
+              IF (ICV .EQ. 1)    CR(IC,IR) =    CR(IC,IR) +  CRV(IC)
+            endif
+!!!===============================================            
 ! Add dry deposition to current receptor point
 
           IF (IDV .EQ. 1) DDEPR(IC,IR) = DDEPR(IC,IR) + DDRV(IC)

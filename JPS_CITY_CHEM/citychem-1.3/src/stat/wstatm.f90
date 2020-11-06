@@ -96,6 +96,12 @@
 !
 !    xx Dat 201x  Name: Line  Description of Change
 !
+!    this subroutine is changed by Kang @ CARES, Dec. 2019 to write out average/instantanous 
+!!   (determined by ("averaged_output" read from input control file for concentration data) 
+!     emission data @ main grid (ground level) to .dat file. 
+!
+!     averaged_output=0, then it is instantaneous concentration at last timestep
+!     =1, average concentration for each hour.
 ! ----------------------------------------------------------------------------------
 
       use mod_main
@@ -131,6 +137,23 @@
 ! Array arguments
 
       double precision        :: field2D(NX,NY,1)
+
+!!=====================================================
+!! write out emission data at main grid (ground level) to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!=======================================================
+      double precision, allocatable ::  fieldmain(:,:,:,:)   !!! main grid (ground level) gas concentrtions
+      integer :: II
+      real,   allocatable :: mxm_i(:,:)
+      real,   allocatable :: mxm_j(:,:)
+
+! Allocate
+        if (.not. allocated(mxm_i) )    allocate(mxm_i(NY,NX))
+        if (.not. allocated(mxm_j) )    allocate(mxm_j(NY,NX))        
+      if (.not. allocated(fieldmain) )  allocate(fieldmain(NX,NY,1,NC))
+
+!!=======================================================
+
 
 ! New write routine based on wconcm.for, main grid concentration
 
@@ -193,6 +216,13 @@
 
                 field2D(IX,IY,1) = CMAVED(IX,IY,IC)
 
+!!===================================================================
+!! write out emission data at main grid (ground level) to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!===================================================================
+                fieldmain(IX,IY,1,IC) = CMAVED(IX,IY,IC)
+!!===================================================================
+
   120           continue
   110         continue
 
@@ -214,7 +244,56 @@
 ! Next compound
 
   100 CONTINUE
+  
+!!===================================================================
+!! write out emission data at main grid (ground level) to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!! Further changed @ Mar. 10,2020 by Kang for Center point main grid results and BC data output.
+!!===================================================================
 
+      open(unit=1226,file="../OUTPUT/mainground_hour_center.dat")  !! 3D data at center point of main cell
+
+      write(1226,2140)(CMPND(IC),IC=1,NC)
+      
+ 
+            do  IX = 1,NX
+                do  IY = 1,NY
+                    mxm_i(IY,IX) = SITEX0 + (IX-1)*DX + 0.5*DX 
+                    mxm_j(IY,IX) = SITEY0 + (IY-1)*DY + 0.5*DY         
+             write(1226,2150) (mdate(II,Nhh_in),II=1,4), mxm_i(IY,IX),mxm_j(IY,IX),Z(1)-0.5*DZ(1),&
+                              (fieldmain(IX,IY,1,IC), IC=1,NC) 
+                  
+                enddo
+          enddo
+
+
+      close(1226)
+
+!$$$$$$       open(unit=1114,file="../OUTPUT/mainground_hour.dat")  !! open receptor hourly emission datafile
+!$$$$$$ 
+!$$$$$$       write(1114,2140)(CMPND(IC),IC=1,NC)
+  
+
+!$$$$$$           do  IX = 1,NX
+!$$$$$$               do  IY = 1,NY
+!$$$$$$                   mxm_i(IY,IX) = SITEX0 + (IX-1)*DX 
+!$$$$$$                   mxm_j(IY,IX) = SITEY0 + (IY-1)*DY  
+!$$$$$$              write(1114,2150)  (mdate(II,Nhh_in),II=1,4), mxm_i(IY,IX),mxm_j(IY,IX),Z(1),(fieldmain(IX,IY,1,IC), IC=1,NC)  
+!$$$$$$             
+!$$$$$$             enddo
+!$$$$$$         enddo 
+
+
+        if (allocated(fieldmain))     deallocate(fieldmain)
+
+        if (allocated(mxm_i))     deallocate(mxm_i)
+        if (allocated(mxm_j))     deallocate(mxm_j)
+!$$$$$$        close(1114)
+
+
+
+   
+!!================================================================== 
 
       RETURN
 
@@ -224,5 +303,11 @@
          ' for date ',3I2.2)
 
 ! End of subroutine WSTATM
-
+!!==================================================================
+!! write out emission data at main grid (ground level) to .dat file
+!! added by Kang @ CARES, Dec. 23, 2019
+!!==================================================================
+ 2140 format ("Year, Month, Day, Hour, X(m), Y(m), Z(m), ",22A10)
+ 2150 format (I4,3I3,3F12.3,22F12.3)
+!!==================================================================
       end subroutine wstatm

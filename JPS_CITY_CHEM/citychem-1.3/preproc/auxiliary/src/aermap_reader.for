@@ -75,7 +75,7 @@
         implicit none
 
 ! User edit section
-      integer, parameter :: nrec = 10          ! 25 values in one line of AERMAP.REC file
+      integer, parameter :: nrec = 500          ! 25 values in one line of AERMAP.REC file
       character(len=256) :: aermap_name = 'AERMAP_NAD83_NED.REC'       ! name of AERMAP.REC file
 ! End User edit section
 
