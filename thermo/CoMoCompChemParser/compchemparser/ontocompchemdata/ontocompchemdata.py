@@ -193,13 +193,13 @@ class OntoCompChemData:
          self.generate_atom_count(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
          self.generate_electronic_and_zpe_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
 
-         self.generate_homo_electronic_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_homo_minus_one_electronic_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_homo_minus_two_electronic_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_homo_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_homo_minus_one_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_homo_minus_two_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
 
-         self.generate_lumo_electronic_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_lumo_plus_one_electronic_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_lumo_plus_two_electronic_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_lumo_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_lumo_plus_one_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_lumo_plus_two_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
 
          self.generate_scf_energy(ontocompchem_graph, dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
          self.generate_file_iri(ontocompchem_graph,  dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, source_kb_base_uri, source_data_base_uri, file_name, log_file_name, owl_name,rnd)
@@ -653,7 +653,7 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(source_kb_base_uri+ owl_name), RDF.type, ontocompchem_namespace.OutputSource))#os.path.splitext(self.log)[0]+'.owl'
         ontocompchem_graph.add((URIRef(source_kb_base_uri+ owl_name), RDF.type, OWL.Thing))#os.path.splitext(self.log)[0]+'.owl'
 
-    def generate_homo_electronic_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_homo_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_homo_electronic_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"homo.electronic.energy")
@@ -671,13 +671,13 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.HomoEnergy))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd)), gc_namespace.hasSystemEnergiesResult, URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd)), RDF.type, gc_namespace.FloatValue))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd)), gc_namespace.hasValue, homo_electronic_energy_literal))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_electronic_energy)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
-    def generate_homo_minus_one_electronic_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_homo_minus_one_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_homo_minus_one_electronic_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"homo.minus.one.electronic.energy")
@@ -696,13 +696,13 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.HomoMinusOneEnergy))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd)), gc_namespace.hasSystemEnergiesResult, URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd)), RDF.type, gc_namespace.FloatValue))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd)), gc_namespace.hasValue, homo_minus_one_electronic_energy_literal))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_one_electronic_energy)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
-    def generate_homo_minus_two_electronic_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_homo_minus_two_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_homo_minus_two_electronic_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"homo.minus.two.electronic.energy")
@@ -721,14 +721,14 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.HomoMinusTwoEnergy))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd)), gc_namespace.hasSystemEnergiesResult, URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd)), RDF.type, gc_namespace.FloatValue))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd)), gc_namespace.hasValue, homo_minus_two_electronic_energy_literal))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_homo_minus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_homo_minus_two_electronic_energy)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
 
-    def generate_lumo_electronic_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_lumo_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_lumo_electronic_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"lumo.electronic.energy")
@@ -746,14 +746,14 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.LumoEnergy))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd)), gc_namespace.hasSystemEnergiesResult, URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd)), RDF.type, gc_namespace.FloatValue))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd)), gc_namespace.hasValue, lumo_electronic_energy_literal))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_electronic_energy)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
 
-    def generate_lumo_plus_one_electronic_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_lumo_plus_one_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_lumo_plus_one_electronic_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"lumo.plus.one.electronic.energy")
@@ -771,14 +771,14 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.LumoPlusOneEnergy))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd)), gc_namespace.hasSystemEnergiesResult, URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd)), RDF.type, gc_namespace.FloatValue))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd)), gc_namespace.hasValue, lumo_plus_one_electronic_energy_literal))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_one_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_one_electronic_energy)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
 
-    def generate_lumo_plus_two_electronic_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_lumo_plus_two_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_lumo_plus_two_electronic_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"lumo.plus.two.electronic.energy")
@@ -796,7 +796,7 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.LumoPlusTwoEnergy))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd)), gc_namespace.hasSystemEnergiesResult, URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd))))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd)), RDF.type, gc_namespace.FloatValue))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_lumo_plus_two_electronic_energy_value_"+str(empirical_formula)+ "_"+str(uuid_lumo_plus_two_electronic_energy)+"_"+str(rnd)), gc_namespace.hasValue, lumo_plus_two_electronic_energy_literal))

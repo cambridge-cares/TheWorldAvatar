@@ -12,6 +12,12 @@
         owl:Thing ;
     gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_geometry_optimization_H1O1_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_geometry_type_H1O1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_electronic_energy_H1O1_7bdc9c28-f33d-359c-a265-7ccc679804af_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_minus_one_electronic_energy_H1O1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_minus_two_electronic_energy_H1O1_227a9315-b21e-3c18-8589-9ed236d5f00a_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_electronic_energy_H1O1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_plus_one_electronic_energy_H1O1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_plus_two_electronic_energy_H1O1_422306b5-3f92-37fb-b83f-636dbe097c5b_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_rotational_constants_H1O1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_scf_energy_H1O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> ;
     ontocompchem:hasEnvironment <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#job_module_has_environment_module_H1O1_1> ;
@@ -98,6 +104,60 @@
         owl:Thing ;
     gc:hasUnit gc:atomicUnit ;
     gc:hasValue 0 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_electronic_energy_H1O1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> a ontocompchem:HomoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_electronic_energy_value_H1O1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_electronic_energy_value_H1O1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -5.6285e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_minus_one_electronic_energy_H1O1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> a ontocompchem:HomoMinusOneEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_minus_one_electronic_energy_value_H1O1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_minus_one_electronic_energy_value_H1O1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -6.5962e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_minus_two_electronic_energy_H1O1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> a ontocompchem:HomoMinusTwoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_minus_two_electronic_energy_value_H1O1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_homo_minus_two_electronic_energy_value_H1O1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -6.8719e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_electronic_energy_H1O1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> a ontocompchem:LumoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_electronic_energy_value_H1O1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_electronic_energy_value_H1O1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 1.4741e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_plus_one_electronic_energy_H1O1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> a ontocompchem:LumoPlusOneEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_plus_one_electronic_energy_value_H1O1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_plus_one_electronic_energy_value_H1O1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 2.2361e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_plus_two_electronic_energy_H1O1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> a ontocompchem:LumoPlusTwoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_plus_two_electronic_energy_value_H1O1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_lumo_plus_two_electronic_energy_value_H1O1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 2.2954e-01 .
 
 <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_rotational_constants_H1O1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1> a ontocompchem:RotationalConstants,
         owl:Thing ;

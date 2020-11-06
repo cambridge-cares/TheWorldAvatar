@@ -1,11 +1,11 @@
 {
     "Empirical formula": "Cl1O3",
     "Atom counts": {
-        "CL": 1,
+        "Cl": 1,
         "O": 3
     },
     "Atom types": [
-        "CL",
+        "Cl",
         "O",
         "O",
         "O"

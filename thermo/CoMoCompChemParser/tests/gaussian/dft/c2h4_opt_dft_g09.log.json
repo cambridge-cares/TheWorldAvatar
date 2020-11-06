@@ -68,6 +68,12 @@
     "Rotational constants number": 3,
     "Rotational constants unit": "GHZ",
     "Electronic energy": -78.5814372284,
+    "HOMO energy": -0.2792,
+    "HOMO-1 energy": -0.35917,
+    "HOMO-2 energy": -0.42561,
+    "LUMO energy": -0.00466,
+    "LUMO+1 energy": 0.03097,
+    "LUMO+2 energy": 0.04441,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
     "Run date": "Thu Oct 2 08:28:32 2014"
