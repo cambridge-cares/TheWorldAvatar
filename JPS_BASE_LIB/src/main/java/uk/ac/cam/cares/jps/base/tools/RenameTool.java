@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.rename;
+package uk.ac.cam.cares.jps.base.tools;
 
 import java.sql.SQLException;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
@@ -20,52 +20,62 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.arq.querybuilder.ExprFactory;
 
 /**
- * This class replaces a given target string in a triple store with a replacement string   
- * using a sparql update.
- * Works with Blazegraph, Fuseki, Rdf4j and local owl files.
+ * This class replaces a given target string in a triple store with    
+ * a replacement string using a sparql update.
  * 
  * @author Casper Lindberg
  *
  */
 public class RenameTool {
 	
+	//TODO: perform only execute update here, loading and finishing should be performed elsewhere e.g. calling method
+	//		the rename method should only check that the kbclient object is valid i.e. has a connection/model loaded.
+	//TODO (maybe): restrict fragment rename to before/after hash
+	
 	/**
+	 * Renames a target URI fragment with replacement
 	 * 
-	 * 
-	 * @param endpointUrl
-	 * @param target
-	 * @param replacement
+	 * @param KnowledgeBaseClient object
+	 * @param target string
+	 * @param replacement string
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	public static void renameURI(String endpointUrl, String target, String replacement) throws SQLException, ParseException {
+	public static void renameURIFragment(KnowledgeBaseClient kbClient, String target, String replacement, String graph) throws SQLException, ParseException {
 		
 		// Get sparql update as String 
-		//String strSparqlUpdate = buildSparqlUpdate(target, replacement, null).toString();
-		String strSparqlUpdate = buildSparqlUpdateString(target, replacement, "http://species").toString();
+		String sparql = buildSparqlUpdateString(target, replacement, graph).toString();
 		
-		// To Be removed
-		// Local owl file uses old method
-		if(!endpointUrl.startsWith("http:")) {
-			// updates a locally stored owl file
-			// this is executed correctly by case 1b in KnowledgeBaseClient.update
-			KnowledgeBaseClient.update(null, endpointUrl, strSparqlUpdate);
-			return;
-		}	
-		
-		// For Blazegraph, Fuseki, RDF4J etc. use Jena JDBC
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(null, endpointUrl, strSparqlUpdate);
-		kbClient.executeUpdate();
-		return;
+		// create KBClient and perform update
+		kbClient.executeUpdate(sparql);
 	}
-
+	
+	/**
+	 * Renames a target URI with replacement
+	 * 
+	 * @param KnowledgeBaseClient object
+	 * @param target string
+	 * @param replacement string
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
+	public static void renameURI(KnowledgeBaseClient kbClient, String target, String replacement, String graph) throws SQLException, ParseException {
+		
+		// Get sparql update as String 
+		String sparql = buildSparqlUpdateURI(target, replacement, graph).toString();
+		
+		// create KBClient and perform update
+		kbClient.executeUpdate(sparql);
+	}
+	
 	/**
 	 * Builds sparql update using Jena update builder
 	 * target and replacement are URIs 
 	 * 
 	 * @param target
 	 * @param replacement
-	 * @return
+	 * @param graph
+	 * @return sparql update request
 	 * @throws ParseException
 	 */
 	private static UpdateRequest buildSparqlUpdateURI(String target, String replacement, String graph) throws ParseException {
@@ -147,7 +157,8 @@ public class RenameTool {
 	 * 
 	 * @param target
 	 * @param replacement
-	 * @return
+	 * @param graph
+	 * @return sparql update request
 	 * @throws ParseException
 	 */
 	private static UpdateRequest buildSparqlUpdateString(String target, String replacement, String graph) {
@@ -208,7 +219,7 @@ public class RenameTool {
 		// Build WHERE statement of the form:
 		// String strWhere = "WHERE {" +
 		//		  "?s ?p ?o ." +
-		//		  "BIND( regex(str(?p), target) AS ?matchP ) ." +
+		//		  "BIND( regex(str(?s), target) AS ?matchS ) ." +
 		//		  "BIND( regex(str(?p), target) AS ?matchP ) ." +
 		//		  "BIND( regex(str(?o), target) AS ?matchO ) ." +
 		//		  "FILTER(?matchS || ?matchP || ?matchO) ." +

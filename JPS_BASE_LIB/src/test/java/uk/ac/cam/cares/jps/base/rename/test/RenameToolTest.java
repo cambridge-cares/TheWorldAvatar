@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.junit.Test;
 
-import uk.ac.cam.cares.jps.base.rename.RenameTool;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.tools.RenameTool;
 
 public class RenameToolTest {
 
@@ -31,7 +32,8 @@ public class RenameToolTest {
 			replacement = "http://www.w3.org/2008/05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, target, replacement);
+		KnowledgeBaseClient kbClient = null;
+		RenameTool.renameURI(kbClient, target, replacement, null);
 		
 		// test using query
 		fail("Not yet implemented");
@@ -54,7 +56,8 @@ public class RenameToolTest {
 			replacement = "05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, target, replacement);
+		KnowledgeBaseClient kbClient = null;
+		RenameTool.renameURI(kbClient, target, replacement, null);
 		
 		// test using query
 		fail("Not yet implemented");
@@ -77,7 +80,8 @@ public class RenameToolTest {
 			replacement = "http://www.w3.org/2008/05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, target, replacement);
+		KnowledgeBaseClient kbClient = null;
+		RenameTool.renameURI(kbClient, target, replacement, null);
 
 		// test using query
 		fail("Not yet implemented");	
@@ -100,7 +104,8 @@ public class RenameToolTest {
 			replacement = "http://www.w3.org/2008/05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, target, replacement);
+		KnowledgeBaseClient kbClient = null;
+		RenameTool.renameURI(kbClient, target, replacement, null);
 		
 		// test using query
 		fail("Not yet implemented");
@@ -123,7 +128,8 @@ public class RenameToolTest {
 			replacement = "http://www.w3.org/2008/05/skos#altLabel";
 		}
 		
-		RenameTool.renameURI(dataSetURL, target, replacement);
+		KnowledgeBaseClient kbClient = null;
+		RenameTool.renameURI(kbClient, target, replacement, null);
 		 
 		// test using query
 		fail("Not yet implemented");
