@@ -159,7 +159,7 @@ public class DataDownloadAgent extends HttpServlet {
 				String result = g.toJson(DataDownload
 						.retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(
 								jsonString.split(",")));
-
+				logger.info(result);
 				response.setContentType("application/json");
 				response.getWriter().write(result);
 			} catch (Exception e) {
