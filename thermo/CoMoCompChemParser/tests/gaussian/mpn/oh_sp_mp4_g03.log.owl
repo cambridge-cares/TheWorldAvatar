@@ -8,7 +8,7 @@
 <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#> a owl:Ontology ;
     owl:imports <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl> .
 
-<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#oh_sp_mp4_g03> a ontocompchem:G16,
+<http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#oh_sp_mp4_g03> a ontocompchem:G03,
         owl:Thing ;
     gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_geometry_optimization_H1O1_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_geometry_type_H1O1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1>,

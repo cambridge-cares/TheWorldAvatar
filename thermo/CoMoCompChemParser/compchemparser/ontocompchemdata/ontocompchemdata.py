@@ -224,6 +224,9 @@ class OntoCompChemData:
         if program_version.startswith("2009") :
              ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G09))
 
+        elif program_version.startswith("2003"):
+             ontocompchem_graph.add((URIRef(ontology_base_uri + file_name), RDF.type, ontocompchem_namespace.G03))
+
         else:
              ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G16))
 
