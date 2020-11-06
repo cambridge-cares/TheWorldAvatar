@@ -5,194 +5,254 @@
 @prefix unit: <http://data.nasa.gov/qudt/owl/unit#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#> a owl:Ontology ;
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#> a owl:Ontology ;
     owl:imports <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl> .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#h2o_opt_p_g09> a ontocompchem:G09,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#h2o_opt_p_g09> a ontocompchem:G09,
         owl:Thing ;
-    gc:isCalculationOn <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_geometry_optimization_H2O1_1>,
-        <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_geometry_type_H2O1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1>,
-        <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_rotational_constants_H2O1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1>,
-        <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_scf_energy_H2O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> ;
-    ontocompchem:hasEnvironment <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#job_module_has_environment_module_H2O1_1> ;
-    ontocompchem:hasInitialization <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#job_module_has_initilization_module_H2O1_1> .
+    gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_geometry_optimization_H2O1_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_geometry_type_H2O1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_electronic_energy_H2O1_7bdc9c28-f33d-359c-a265-7ccc679804af_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_minus_one_electronic_energy_H2O1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_minus_two_electronic_energy_H2O1_227a9315-b21e-3c18-8589-9ed236d5f00a_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_electronic_energy_H2O1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_plus_one_electronic_energy_H2O1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_plus_two_electronic_energy_H2O1_422306b5-3f92-37fb-b83f-636dbe097c5b_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_rotational_constants_H2O1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_scf_energy_H2O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> ;
+    ontocompchem:hasEnvironment <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#job_module_has_environment_module_H2O1_1> ;
+    ontocompchem:hasInitialization <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#job_module_has_initilization_module_H2O1_1> .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log> a ontocompchem:OutputSource,
+<http://theworldavatar.com/data/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log> a ontocompchem:OutputSource,
         owl:Thing .
 
 <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl> a ontocompchem:OutputSource,
         owl:Thing .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_geometry_optimization_H2O1_1> a gc:GeometryOptimization,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_geometry_optimization_H2O1_1> a gc:GeometryOptimization,
         owl:Thing ;
-    gc:hasMolecule <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_molecule_H2O1_1> .
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_molecule_H2O1_1> .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_geometry_type_H2O1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1> a ontocompchem:GeometryType,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_geometry_type_H2O1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1> a ontocompchem:GeometryType,
         owl:Thing ;
     ontocompchem:hasGeometryType "nonlinear" .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
-    gc:hasAtomCoordinateX <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasMass <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
-    gc:hasAtomCoordinateX <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasMass <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
-    gc:hasAtomCoordinateX <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasMass <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:O .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue -1.165511e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 3.48322e-01 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_x3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue -4.01791e-01 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue -8.4079e-01 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue -8.58139e-01 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_y3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue -2.55822e-01 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 0e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 0e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_coordinate_z3_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 0e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Dalton ;
     gc:hasValue 1.007825e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Dalton ;
     gc:hasValue 1.007825e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_mass_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Dalton ;
     gc:hasValue 1.599491e+01 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_molecule_H2O1_1> a gc:Molecule,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_molecule_H2O1_1> a gc:Molecule,
         owl:Thing ;
-    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
-        <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
-        <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasFormalCharge <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_molecule_formal_charge_H2O1_1> ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_atom_H2O1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasFormalCharge <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_molecule_formal_charge_H2O1_1> ;
     ontocompchem:hasSpinMultiplicity "1"^^xsd:string .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_molecule_formal_charge_H2O1_1> a gc:IntegerValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_has_molecule_formal_charge_H2O1_1> a gc:IntegerValue,
         owl:Thing ;
     gc:hasUnit gc:atomicUnit ;
     gc:hasValue 0 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_rotational_constants_H2O1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1> a ontocompchem:RotationalConstants,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_electronic_energy_H2O1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> a ontocompchem:HomoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_electronic_energy_value_H2O1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_electronic_energy_value_H2O1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -2.9943e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_minus_one_electronic_energy_H2O1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> a ontocompchem:HomoMinusOneEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_minus_one_electronic_energy_value_H2O1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_minus_one_electronic_energy_value_H2O1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -3.7654e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_minus_two_electronic_energy_H2O1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> a ontocompchem:HomoMinusTwoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_minus_two_electronic_energy_value_H2O1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_homo_minus_two_electronic_energy_value_H2O1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -5.2152e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_electronic_energy_H2O1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> a ontocompchem:LumoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_electronic_energy_value_H2O1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_electronic_energy_value_H2O1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 2.861e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_plus_one_electronic_energy_H2O1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> a ontocompchem:LumoPlusOneEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_plus_one_electronic_energy_value_H2O1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_plus_one_electronic_energy_value_H2O1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 1.0392e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_plus_two_electronic_energy_H2O1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> a ontocompchem:LumoPlusTwoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_plus_two_electronic_energy_value_H2O1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_lumo_plus_two_electronic_energy_value_H2O1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 3.7817e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_rotational_constants_H2O1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1> a ontocompchem:RotationalConstants,
         owl:Thing ;
     gc:hasUnit unit:GigaHertz ;
     ontocompchem:hasRotationalConstants "282.98495340 437.57181060 801.01401040"^^xsd:string ;
     ontocompchem:hasRotationalConstantsCount "3"^^xsd:string .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_scf_energy_H2O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a ontocompchem:ScfEnergy,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_scf_energy_H2O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a ontocompchem:ScfEnergy,
         owl:Thing ;
-    gc:hasElectronicEnergy <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_scf_energy_value_H2O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> .
+    gc:hasElectronicEnergy <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_scf_energy_value_H2O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_scf_energy_value_H2O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a gc:FloatValue,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#finalization_module_scf_energy_value_H2O1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Hartree ;
     gc:hasValue -7.644745e+01 .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#has_atom_H2O1_H2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#has_atom_H2O1_H2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#has_atom_H2O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#has_atom_H2O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_basis_set_parameter_H2O1_1> a gc:BasisSet,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_basis_set_parameter_H2O1_1> a gc:BasisSet,
         owl:Thing ;
     gc:hasBasisSet "6-311G(d,p)" .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_level_of_theory_parameter_H2O1_1> a gc:MethodologyFeature,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_level_of_theory_parameter_H2O1_1> a gc:MethodologyFeature,
         ontocompchem:LevelOfTheory,
         owl:Thing ;
     ontocompchem:hasLevelOfTheory "RB3LYP/6-311G(d,p)" .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_H2O1_H2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_H2O1_H2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
         owl:Thing ;
-    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#has_atom_H2O1_H2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#has_atom_H2O1_H2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
     gc:hasNumberOfAtoms "2"^^xsd:string .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_H2O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_H2O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
         owl:Thing ;
-    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#has_atom_H2O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#has_atom_H2O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
     gc:hasNumberOfAtoms "1"^^xsd:string .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_property_H2O1_1> a gc:MoleculeProperty,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_property_H2O1_1> a gc:MoleculeProperty,
         owl:Thing ;
-    gc:hasMolecule <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_H2O1_H2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
-        <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_H2O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_H2O1_H2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_H2O1_O1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
     gc:hasName "H2O1" .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#job_module_has_environment_module_H2O1_1> a gc:SourcePackage,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#job_module_has_environment_module_H2O1_1> a gc:SourcePackage,
         owl:Thing ;
-    gc:hasOutputFile <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log>,
+    gc:hasOutputFile <http://theworldavatar.com/data/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log>,
         <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl> ;
     ontocompchem:hasProgram "Gaussian"^^xsd:string ;
     ontocompchem:hasProgramVersion "2009+D.01"^^xsd:string ;
     ontocompchem:hasRunDate "Fri Jul 17 17:50:18 2020"^^xsd:string .
 
-<http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#job_module_has_initilization_module_H2O1_1> a ontocompchem:InitializationModule,
+<http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#job_module_has_initilization_module_H2O1_1> a ontocompchem:InitializationModule,
         owl:Thing ;
-    gc:hasMoleculeProperty <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_property_H2O1_1> ;
-    gc:hasParameter <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_basis_set_parameter_H2O1_1>,
-        <http://theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_level_of_theory_parameter_H2O1_1> .
+    gc:hasMoleculeProperty <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_molecule_property_H2O1_1> ;
+    gc:hasParameter <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_basis_set_parameter_H2O1_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/h2o_opt_p_g09/h2o_opt_p_g09.log.owl#initialization_module_has_level_of_theory_parameter_H2O1_1> .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#O> a table:Element,
+table:O a table:Element,
         owl:Thing .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#H> a table:Element,
+table:H a table:Element,
         owl:Thing .
 

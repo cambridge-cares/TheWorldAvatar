@@ -28,6 +28,8 @@ Test_suite1 = {
                'g2': ['co2_g2_g09.log', 'co2_g2mp2_g09.log'],
                'linked': ['co2_linked_g09.log'],
                'cas': ['co2_cas_g09.log', 'co2_casmp2.log'],
+               'cbs-4m': ['co2_cbs4m_g09.log'],
+               'cbs-apno': ['co2_cbsapno_g09.log'],
                'dft': ['TEOS_ub971_6311+gdp.log','co2_freq_g09.log','co2_sp_dft_g09.log','co2_opt_freq_dft_p_g09.log','co2_opt_freq_dft_t_g09.log','h_sp_n_g09.log'],
                'ccsd': ['co2_ccsd_g09.log','co2_qci_g09.log'],
                'ci': ['co2_cis.log'],

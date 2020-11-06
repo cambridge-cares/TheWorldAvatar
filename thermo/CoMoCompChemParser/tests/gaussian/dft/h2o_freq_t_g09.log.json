@@ -14,6 +14,7 @@
         1.00783,
         15.999491
     ],
+    "Atomic mass unit": "atomic",
     "Method": "RB3LYP",
     "Basis set": "6-311G(d,p)",
     "Spin multiplicity": 1,
@@ -54,6 +55,12 @@
     "Frequencies unit": "cm^-1",
     "Electronic energy": -76.4474479921,
     "Electronic and ZPE energy": -76.426136,
+    "HOMO energy": -0.29943,
+    "HOMO-1 energy": -0.37654,
+    "HOMO-2 energy": -0.52152,
+    "LUMO energy": 0.02861,
+    "LUMO+1 energy": 0.10392,
+    "LUMO+2 energy": 0.37816,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
     "Run date": "Fri Jul 17 18:02:18 2020"
