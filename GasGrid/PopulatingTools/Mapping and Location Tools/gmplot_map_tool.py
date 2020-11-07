@@ -75,7 +75,7 @@ def map_creation():
 
 
 
-    gmap.draw('PopulatingTools\Mapping and Location Tools\map.html')
+    gmap.draw('PopulatingTools\Mapping and Location Tools\gmplot_map.html')
     return 
 
 map_creation()
