@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.rename.test;
+package uk.ac.cam.cares.jps.base.tools.test;
 
 import static org.junit.Assert.*;
 

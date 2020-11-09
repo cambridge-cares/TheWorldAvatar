@@ -28,10 +28,6 @@ import org.apache.jena.arq.querybuilder.ExprFactory;
  */
 public class RenameTool {
 	
-	//TODO: perform only execute update here, loading and finishing should be performed elsewhere e.g. calling method
-	//		the rename method should only check that the kbclient object is valid i.e. has a connection/model loaded.
-	//TODO (maybe): restrict fragment rename to before/after hash
-	
 	/**
 	 * Replaces target URI fragment.
 	 * 
