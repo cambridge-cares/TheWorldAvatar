@@ -3,10 +3,14 @@ package uk.ac.cam.cares.jps.base.tools.test;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
 import org.apache.jena.update.UpdateRequest;
@@ -22,32 +26,78 @@ public class RenameToolTest {
 
 	private RenameTool renameTool;
 
+	private String sparqlQuery = "SELECT ?s  ?p  ?o" +
+			"WHERE\n" +  
+			"  { ?s  ?p  ?o \n" + 
+			"      BIND(<http://www.w3.org/2008/05/skos#replacement> AS ?targetURI)\n" +  
+			"      FILTER ( ( ?s = ?targetURI ) || ( ?p = ?targetURI ) || ( ?o = ?targetURI ) )\n" + 
+			"  }\n";
+	
+	private String expectedQueryResult = "[{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_4\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_9\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_10\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_2\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_7\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_5\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_3\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_8\"},"+
+			"{\"p\":\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\",\"s\":\"http://www.w3.org/2008/05/skos#replacement\"},"+
+			"{\"p\":\"http://www.w3.org/2000/01/rdf-schema#subPropertyOf\",\"s\":\"http://www.w3.org/2008/05/skos#replacement\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_1\"},"+
+			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_6\"}]";
+	
 	// temporary folder for testing
 	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
+	private TemporaryFolder tempFolder = new TemporaryFolder();
 	
+	//Test renameURI on owl file
 	@Test
-	public void testRenameURI() {
+	public void testRenameURI() throws URISyntaxException, SQLException, ParseException, IOException {
 		
-		fail("Test not created");
+		Path testFilePath = Paths.get(this.getClass().getResource("/ToolsTest/species.owl").toURI());
+		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/species.owl");
+		
+		String target = "http://www.w3.org/2008/05/skos#altLabel";
+		String replacement = "http://www.w3.org/2008/05/skos#replacement";
+		
+		//copy species to temporary folder
+		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+		
+		//create kbClient
+		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
+		
+		//perform update
+		RenameTool.renameURI(kbClient, target, replacement);
+		
+		//select query to check result
+		String result = kbClient.execute(sparqlQuery);
+		
+		assertEquals(expectedQueryResult, result);
 	}
 	
+	//Test renameURIFragment on owl file
 	@Test
-	public void testRenameURIFragment() throws URISyntaxException, SQLException, ParseException {
+	public void testRenameURIFragment() throws URISyntaxException, SQLException, ParseException, IOException {
+				
+		Path testFilePath = Paths.get(this.getClass().getResource("/ToolsTest/species.owl").toURI());
+		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/species.owl");
 		
-		fail("Test not created");
+		String target = "altLabel";
+		String replacement = "replacement";
 		
-		String testFilePath = Paths.get(this.getClass().getResource("/ToolsTest/species.owl").toURI()).toFile().getPath();
-		String tempFolderPath = tempFolder.getRoot().toString();
+		//copy species to temporary folder
+		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
-		String target = "/test/target";
-		String replacement = "/test/replacement";
-			
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient();
-		//TODO setup filebasedkbclient
+		//create kbClient
+		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
+		//perform update
 		RenameTool.renameURIFragment(kbClient, target, replacement);
 		
+		//select query to check result
+		String result = kbClient.execute(sparqlQuery);
+		
+		assertEquals(expectedQueryResult, result);
 	}
 	
 	// Test sparql builder. Update to replace URI.
