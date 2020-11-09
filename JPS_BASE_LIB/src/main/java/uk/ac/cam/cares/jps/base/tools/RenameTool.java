@@ -33,11 +33,12 @@ public class RenameTool {
 	//TODO (maybe): restrict fragment rename to before/after hash
 	
 	/**
-	 * Renames a target URI fragment with replacement
+	 * Replaces target URI fragment.
 	 * 
-	 * @param KnowledgeBaseClient object
+	 * @param KnowledgeBaseClient
 	 * @param target string
 	 * @param replacement string
+	 * @param graph
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
@@ -51,11 +52,25 @@ public class RenameTool {
 	}
 	
 	/**
-	 * Renames a target URI with replacement
+	 * Replaces target URI fragment in default graph.
 	 * 
-	 * @param KnowledgeBaseClient object
+	 * @param KnowledgeBaseClient
 	 * @param target string
 	 * @param replacement string
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
+	public static void renameURIFragment(KnowledgeBaseClient kbClient, String target, String replacement) throws SQLException, ParseException {
+		renameURIFragment(kbClient, target, replacement, null);
+	}
+	
+	/**
+	 * Replaces target URI.
+	 * 
+	 * @param KnowledgeBaseClient
+	 * @param target string
+	 * @param replacement string
+	 * @param graph
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
@@ -69,8 +84,21 @@ public class RenameTool {
 	}
 	
 	/**
+	 * Replaces target URI in default graph.
+	 * 
+	 * @param KnowledgeBaseClient
+	 * @param target string
+	 * @param replacement string
+	 * @throws SQLException
+	 * @throws ParseException
+	 */
+	public static void renameURI(KnowledgeBaseClient kbClient, String target, String replacement) throws SQLException, ParseException {
+		renameURI(kbClient, target, replacement, null);
+	}
+	
+	/**
 	 * Builds sparql update using Jena update builder
-	 * target and replacement are URIs 
+	 * target and replacement are URIs.
 	 * 
 	 * @param target
 	 * @param replacement
@@ -153,7 +181,7 @@ public class RenameTool {
 	
 	/**
 	 * Builds sparql update using Jena update builder
-	 * target and replacement are strings
+	 * target and replacement are strings.
 	 * 
 	 * @param target
 	 * @param replacement
