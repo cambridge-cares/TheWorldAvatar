@@ -33,6 +33,7 @@ RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckod
 RUN tar -xvzf geckodriver*
 RUN chmod +x geckodriver
 RUN export PATH=$PATH:.
+RUN apt update
 RUN apt install firefox -y
 RUN cp geckodriver /usr/local/bin
 ADD start_flask.sh .
@@ -40,7 +41,7 @@ ADD start_flask.sh .
 ADD install_nltk.py .
 RUN python install_nltk.py
 ADD flask /etc/init.d/
-
+RUN apt update
 RUN apt install dos2unix -y
 RUN dos2unix /etc/init.d/flask
 RUN chmod +x /etc/init.d/flask
