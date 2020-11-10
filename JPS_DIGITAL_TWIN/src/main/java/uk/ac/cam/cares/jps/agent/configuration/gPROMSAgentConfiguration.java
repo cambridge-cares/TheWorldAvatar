@@ -5,9 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 /**
- * gPROMS Agent developed for setting-up and running gPROMS chemical network on HPC.
- * The input files for gPROMS execution should be placed in user.home//input folder
- * @author Aravind Devanand (aravind@u.nus.edu)
+ * gPROMSAgent configuration for SLURM JOB
  *
  */
 @Configuration
