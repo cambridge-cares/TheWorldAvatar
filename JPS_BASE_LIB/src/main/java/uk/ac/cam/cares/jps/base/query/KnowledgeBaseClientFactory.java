@@ -10,30 +10,40 @@ public class KnowledgeBaseClientFactory {
 		if(isRemote(url)) {
 			return new RemoteKnowledgeBaseClient(url);
 		} else {
-			return new FileBasedKnowledgeBaseClientRDFConnection(url);
+			return new FileBasedKnowledgeBaseClient(url);
 		}
 	}
 	
 	public static KnowledgeBaseClient create(String queryEndpoint, String updateEndpoint) {
 		
-		if(isRemote(queryEndpoint) && isRemote(queryEndpoint)) {
+		if(isRemote(queryEndpoint) && isRemote(updateEndpoint)) {
 			return new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
 		} else {
-			return new FileBasedKnowledgeBaseClientRDFConnection(queryEndpoint);
+			return new FileBasedKnowledgeBaseClient(queryEndpoint);
 		}
 	}
 	
 	public static KnowledgeBaseClient create(String queryEndpoint, String updateEndpoint, String query) {
 		
-		if(isRemote(queryEndpoint) && isRemote(queryEndpoint)) {
+		if(isRemote(queryEndpoint) && isRemote(updateEndpoint)) {
 			return new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, query);
 		} else {
-			return new FileBasedKnowledgeBaseClientRDFConnection(queryEndpoint, query);
+			if(queryEndpoint == null) {
+				return new FileBasedKnowledgeBaseClient(updateEndpoint, query);
+				//return new FileBasedKnowledgeBaseClientONTAPI(updateEndpoint, query);
+			}else {
+				return new FileBasedKnowledgeBaseClient(queryEndpoint, query);
+				//return new FileBasedKnowledgeBaseClientONTAPI(queryEndpoint, query);
+			}
 		}
 	}
 	
 	
-	private static boolean isRemote(String url) { 
-		return url.startsWith("http:");
+	private static boolean isRemote(String url) {
+		if (url == null) {
+			return false;
+		}else {
+			return url.startsWith("http:");
+		}
 	}
 }

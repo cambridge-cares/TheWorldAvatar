@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
 import org.apache.jena.ontology.OntModel;
@@ -18,139 +17,62 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
-public abstract class KnowledgeBaseClient implements KnowledgeBaseClientInterface {
+/**
+ * Abstract Knowledge Base Client class that declares methods for performing SPARQL 
+ * queries and updates on triple stores.
+ * 
+ * If the old methods are no longer needed this class could be converted to an interface.
+ *  
+ * @author Casper Lindberg
+ *
+ */
+public abstract class KnowledgeBaseClient{
+	
 	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
-	// private static KnowledgeBaseClient instance = null;
 		
-	protected String query;
-	
-	/*
-	 * 
-	private static synchronized KnowledgeBaseClient getInstance() {
-		if (instance == null) {
-			instance = new KnowledgeBaseClient();
-		}
-		return instance;
-	}
-	*/
-	
 	/**
 	 * Default constructor
 	 */
 	public KnowledgeBaseClient() {}
+		
+	// 
 	
-	/**
-	 * Constructor
-	 * 
-	 * @param query
-	 */
-	public KnowledgeBaseClient(String query) {
-
-			this.query = query;
-	}
+	// SPARQL Query methods
 	
+	public abstract JSONArray executeQuery(String query) throws SQLException;	
 	
-	public void load() {
-		// do nothing
-	}
-	
-	public void finish() {
-		// do nothing
-	}
-	
-	/**
-	 * Execute sparql query using the query variable
-	 * 
-	 * @return
-	 * @throws SQLException
-	 */
 	public abstract JSONArray executeQuery() throws SQLException;
-
-	/**
-	 * Execute sparql query
-	 * 
-	 * @param query
-	 * @return
-	 * @throws SQLException
-	 */
-	public abstract JSONArray executeQuery(String query) throws SQLException;
 	
-	/**
-	 * Execute sparql query using the query variable
-	 * 
-	 * @return JSONArray as String 
-	 * @throws SQLException
-	 */
-	public String execute() throws SQLException{
-		return execute(this.query);
-	}
+	public abstract String execute() throws SQLException;
 	
-	/**
-	 * Excute sparql query
-	 * 
-	 * @param sparql
-	 * @return JSONArray as String
-	 * @throws SQLException
-	 */
-	public String execute(String query) throws SQLException{
-		JSONArray result = executeQuery(query);
-		if(result==null){
-			throw new SQLException();
-		}else{
-			return result.toString();
-		}
-	}
+	public abstract String execute(String sparql) throws SQLException;
 	
-	/**
-	 * Execute sparql update
-	 * 
-	 * @return
-	 * @throws SQLException
-	 */
+	// SPARQL update methods
+	
 	public abstract int executeUpdate() throws SQLException;
 	
-	/**
-	 * Execute sparql update using the query variable
-	 * 
-	 * @param update
-	 * @return
-	 * @throws SQLException
-	 */
 	public abstract int executeUpdate(String update) throws SQLException;
 	
-	/**
-	 * Returns the available query.
-	 * 
-	 * @return
-	 */
-	public String getQuery() {
-		return query;
-	}
+	public abstract int executeUpdate(UpdateRequest update) throws SQLException;
+	
+	// Load and write methods
+	
+	public abstract void load();
+	
+	public abstract void end();
+	
+	// Variable access
+	
+	public abstract String setQuery(String query);
 
-	/**
-	 * Sets a query if provided.
-	 * 
-	 * @param query
-	 * @return
-	 */
-	public String setQuery(String query) {
-		this.query = query;
-		return this.query;
-	}
+	public abstract String getQuery();
 	
-	
-	///////////////////////////////////	
-	// necessary?
-	public void close() throws IOException {
-		//do nothing
-	}
-	
-	// csl: deprecated methods
+	////*********************************
+	//// CSL: deprecated methods.  
 	
 	/**
 	 * https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-put<br>

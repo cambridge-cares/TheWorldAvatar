@@ -7,6 +7,7 @@ import java.sql.Statement;
 
 import org.apache.jena.jdbc.JenaDriver;
 import org.apache.jena.jdbc.remote.RemoteEndpointDriver;
+import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,14 +35,19 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
  * @author Feroz Farazi (msff2@cam.ac.uk), Casper Lindberg
  *
  */
-public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements KnowledgeBaseClientInterface {
+public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 
 	private static final String HTTP_PROTOCOL_PREFIX = "http:";
 
 	private String queryEndpoint;
 	private String updateEndpoint;
+	private String query;
 	
-	/*
+	///////////////////////////
+	// Constructors
+	///////////////////////////
+	
+	/**
 	 * The default constructor.
 	 */
 	public RemoteKnowledgeBaseClient(){
@@ -80,50 +86,169 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 	 * @param query
 	 */
 	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query){
-		super(query); // query variable in super class
+		this.query = query; // query variable in super class
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
 	
+	///////////////////////////
+	// Read and write methods
+	///////////////////////////
+
+	public void load() {
+		// do nothing
+		// connection established during query/update execution
+	}
+	
+	public void end() {
+		// do nothing
+	}
+		
+	///////////////////////////
+	// Read and write methods
+	///////////////////////////
+
 	/**
-	 * Generates the URL of the remote data repository's EndPoint either to<p>
-	 * perform a data retrieval or an update query.  
+	 * Returns the available query.
 	 * 
 	 * @return
 	 */
-	public String getConnectionUrl() {
-		StringBuilder sb = new StringBuilder();
-		boolean queryFlag = false;
-		sb.append(JenaDriver.DRIVER_PREFIX);
-		sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
-		if (this.queryEndpoint != null) {
-			queryFlag = true;
-			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
-		}
-		if (this.updateEndpoint != null) {
-			if(queryFlag){
-				sb.append("&");
-			}
-			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
-		}
-		return sb.toString();
+	public String getQuery() {
+		return query;
 	}
 
 	/**
-	 * Puts the type of an endpoint (e.g. query and update), equal to symbol<p>
-	 * and end point URL in a string and returns the string.
+	 * Sets a query if provided.
 	 * 
-	 * @param endpointType
-	 * @param endpointURL
+	 * @param query
 	 * @return
 	 */
-	private String generateEndpointProperty(String endpointType, String endpointURL){
-		StringBuilder sb = new StringBuilder();
-		sb.append(endpointType);
-		sb.append("=");
-		sb.append(endpointURL);
-		return sb.toString();
-	}	
+	public String setQuery(String query) {
+		this.query = query;
+		return this.query;
+	}
+	
+	/**
+	 * Can return the URL of the query EndPoint.  
+	 * 
+	 * @return
+	 */
+	public String getQueryEndpoint() {
+		return queryEndpoint;
+	}
+
+	/**
+	 * Sets the URL of the query EndPoint if provided. 
+	 * 
+	 * @param queryEndpoint
+	 * @return
+	 */
+	public String setQueryEndpoint(String queryEndpoint) {
+		this.queryEndpoint = queryEndpoint;
+		return this.queryEndpoint;
+	}
+	
+	/**
+	 * Returns the URL of the update EndPoint if available.
+	 * 
+	 * @return
+	 */
+	public String getUpdateEndpoint() {
+		return updateEndpoint;
+	}
+	
+	/**
+	 * Set the URL of the update EndPoint if provided.
+	 * 
+	 * @param updateEndpoint
+	 * @return
+	 */
+	public String setUpdateEndpoint(String updateEndpoint) {
+		this.updateEndpoint = updateEndpoint;
+		return this.updateEndpoint;
+	}
+	
+	///////////////////////////
+	// Sparql query and update
+	///////////////////////////
+	
+	/**
+	 * Executes the update operation that is provided through the constructors or setter<p>
+	 * method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public int executeUpdate() throws SQLException{
+		String connectionUrl = getConnectionUrl();
+		if(connectionUrl.isEmpty()){
+			throw new SQLException("KnowledgeBaseClient: connection URL for the update operation is empty.");
+		}
+		if(isConnectionUpdateUrlValid(connectionUrl)){
+			return executeUpdate(this.query);
+		}else{
+			throw new SQLException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
+		}
+	}
+	
+	/**
+	 * Executes the update operation supplied by the calling method and returns results.
+	 * 
+	 * @param update as UpdateRequest
+	 * @return
+	 */
+	@Override
+	public int executeUpdate(UpdateRequest update) throws SQLException {
+		return executeUpdate(update.toString());
+	}
+	
+	/**
+	 * Executes the update operation supplied by the calling method and returns results.
+	 * 
+	 * @param query
+	 * @return
+	 */
+	@Override
+	public int executeUpdate(String query) throws SQLException {
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			RemoteEndpointDriver.register();
+			System.out.println(getConnectionUrl());
+			conn = DriverManager.getConnection(getConnectionUrl());
+			stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+			System.out.println(query);
+			return stmt.executeUpdate(query);
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
+		}
+	}
+	
+	/**
+	 * Execute sparql query using the query variable
+	 * 
+	 * @return JSONArray as String 
+	 * @throws SQLException
+	 */
+	public String execute() throws SQLException{
+		return execute(this.query);
+	}
+	
+	/**
+	 * Excute sparql query
+	 * 
+	 * @param sparql
+	 * @return JSONArray as String
+	 * @throws SQLException
+	 */
+	public String execute(String query) throws SQLException{
+		JSONArray result = executeQuery(query);
+		if(result==null){
+			throw new SQLException();
+		}else{
+			return result.toString();
+		}
+	}
 	
 	/**
 	 * Executes the query that is provided through the constructors or setter<p>
@@ -171,45 +296,44 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 	}
 	
 	/**
-	 * Executes the update operation that is provided through the constructors or setter<p>
-	 * method.
+	 * Generates the URL of the remote data repository's EndPoint either to<p>
+	 * perform a data retrieval or an update query.  
 	 * 
 	 * @return
 	 */
-	@Override
-	public int executeUpdate() throws SQLException{
-		String connectionUrl = getConnectionUrl();
-		if(connectionUrl.isEmpty()){
-			throw new SQLException("KnowledgeBaseClient: connection URL for the update operation is empty.");
+	public String getConnectionUrl() {
+		StringBuilder sb = new StringBuilder();
+		boolean queryFlag = false;
+		sb.append(JenaDriver.DRIVER_PREFIX);
+		sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
+		if (this.queryEndpoint != null) {
+			queryFlag = true;
+			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
 		}
-		if(isConnectionUpdateUrlValid(connectionUrl)){
-			return executeUpdate(this.query);
-		}else{
-			throw new SQLException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
+		if (this.updateEndpoint != null) {
+			if(queryFlag){
+				sb.append("&");
+			}
+			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
 		}
+		return sb.toString();
 	}
-	
+
 	/**
-	 * Executes the update operation supplied by the calling method and returns results.
+	 * Puts the type of an endpoint (e.g. query and update), equal to symbol<p>
+	 * and end point URL in a string and returns the string.
 	 * 
-	 * @param query
+	 * @param endpointType
+	 * @param endpointURL
 	 * @return
 	 */
-	@Override
-	public int executeUpdate(String query) throws SQLException {
-		Connection conn = null;
-		Statement stmt = null;
-		try {
-			RemoteEndpointDriver.register();
-			System.out.println(getConnectionUrl());
-			conn = DriverManager.getConnection(getConnectionUrl());
-			stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-			System.out.println(query);
-			return stmt.executeUpdate(query);
-		} catch (SQLException e) {
-			throw new SQLException(e.getMessage());
-		}
-	}
+	private String generateEndpointProperty(String endpointType, String endpointURL){
+		StringBuilder sb = new StringBuilder();
+		sb.append(endpointType);
+		sb.append("=");
+		sb.append(endpointURL);
+		return sb.toString();
+	}	
 	
 	/**
 	 * Converts query results into JSON.
@@ -314,45 +438,4 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient implements Kn
 		}
 		return true;
 	}
-	
-	/**
-	 * Can return the URL of the query EndPoint.  
-	 * 
-	 * @return
-	 */
-	public String getQueryEndpoint() {
-		return queryEndpoint;
-	}
-
-	/**
-	 * Sets the URL of the query EndPoint if provided. 
-	 * 
-	 * @param queryEndpoint
-	 * @return
-	 */
-	public String setQueryEndpoint(String queryEndpoint) {
-		this.queryEndpoint = queryEndpoint;
-		return this.queryEndpoint;
-	}
-	
-	/**
-	 * Returns the URL of the update EndPoint if available.
-	 * 
-	 * @return
-	 */
-	public String getUpdateEndpoint() {
-		return updateEndpoint;
-	}
-	
-	/**
-	 * Set the URL of the update EndPoint if provided.
-	 * 
-	 * @param updateEndpoint
-	 * @return
-	 */
-	public String setUpdateEndpoint(String updateEndpoint) {
-		this.updateEndpoint = updateEndpoint;
-		return this.updateEndpoint;
-	}
-
 }
