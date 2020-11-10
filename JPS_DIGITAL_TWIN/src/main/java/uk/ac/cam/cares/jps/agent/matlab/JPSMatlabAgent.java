@@ -8,24 +8,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.json.JSONObject;
-
-import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentConfiguration;
-import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentProperty;
-import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-
 
 /**
  *Matlab Agent developed for setting-up and running electrical network
@@ -59,7 +47,7 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 			JSONObject jo = AgentCaller.readJsonParameter(request);
 			String current = System.getProperty("user.home");
 			String pathToInputFile = current + "\\matlab\\matlab.csv";
-			
+			String pathToSettingFile = current + "\\input\\Settings.input";			
 			// Appending reactive power value on the Pump_power CSV file
 			BufferedReader csvReader = null;
 			try {
@@ -135,8 +123,50 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 			//Delete the temporary file
 		    File tempFile = new File(pathToInputFile);
 			tempFile.delete();
+			//Enter starting line here
+			int startline=69;
+			//Enter number of lines here.
+			int numlines=4;
+			JPSMatlabAgent now=new JPSMatlabAgent();
+			now.delete(pathToSettingFile,startline,numlines);
 			return jo;
+
 		}
+	
+	void delete(String filename, int startline, int numlines)
+	{
+		try
+		{
+			BufferedReader br=new BufferedReader(new FileReader(filename));
+ 
+			//String buffer to store contents of the file
+			StringBuffer sb=new StringBuffer("");
+ 
+			//Keep track of the line number
+			int linenumber=1;
+			String line;
+ 
+			while((line=br.readLine())!=null)
+			{
+				//Store each valid line in the string buffer
+				if(linenumber<startline||linenumber>=startline+numlines)
+					sb.append(line+"\n");
+				linenumber++;
+			}
+			if(startline+numlines>linenumber)
+				System.out.println("End of file reached.");
+			br.close();
+ 
+			FileWriter fw=new FileWriter(new File(filename));
+			//Write entire string buffer into the file
+			fw.write(sb.toString());
+			fw.close();
+		}
+		catch (Exception e)
+		{
+			System.out.println("Something went horribly wrong: "+e.getMessage());
+		}
+	}
 
 
 }

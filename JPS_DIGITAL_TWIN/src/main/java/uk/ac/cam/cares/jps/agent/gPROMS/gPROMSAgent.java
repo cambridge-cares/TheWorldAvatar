@@ -1,53 +1,35 @@
 package uk.ac.cam.cares.jps.agent.gPROMS;
 
 import java.io.File;
-
 import javax.servlet.annotation.WebServlet;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.io.ByteArrayOutputStream;
-import java.io.FileWriter; 
-
 import javax.servlet.ServletException;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
-import org.apache.commons.io.FileUtils;
-
 import org.json.JSONObject;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
-
 import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentProperty;
 import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
@@ -56,6 +38,7 @@ import uk.ac.cam.cares.jps.agent.utils.ZipUtility;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
@@ -63,16 +46,14 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.agent.matlab.*;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.ModelFactory;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import au.com.bytecode.opencsv.CSVWriter;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+
+
 
 
 /**
@@ -100,6 +81,7 @@ public class gPROMSAgent extends JPSAgent {
 	public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
 	public static final String JOB_STATISTICS_PATH = "/job/statistics";
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
+	public static final String TEMP = "?Temp";
 	
 	
 	// Create a temporary folder in the user's home location
@@ -548,123 +530,51 @@ public class gPROMSAgent extends JPSAgent {
 		
 //Preparation of settings.input file
 //Extracting required variables from owl files
-			System.out.println(System.getProperty("user.dir"));
-		   String filePath = System.getProperty("user.home")+"\\input\\debutaniser_section.owl";
+			String filePath = System.getProperty("user.home") + "\\input\\debutaniser_section.owl";
+			String outputFilePath = System.getProperty("user.home") + "\\input\\Settings.input";
 
-			OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+			SelectBuilder sb = new SelectBuilder().addPrefix("process",
+					"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#")
+					.addPrefix("system", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+					.addPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#").addVar(TEMP)
+//				    .addWhere("?s", "?p", "?o");
+					.addWhere("?x", "rdf:type", "system:ScalarValue").addWhere("?x", "system:value", TEMP);
+			System.out.println(sb.toString());
 
-			try {
-			    File file = new File(filePath);
-			    FileInputStream reader = new FileInputStream(file);
-			    model.read(reader,null);     //load the ontology model
-			} catch (Exception e) {
-			    e.printStackTrace();
+			OntModel model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
+			InputStream is;
+			is = new FileInputStream(filePath);
+			model.read(is, null);
+			ResultSet resultSet = JenaHelper.query(model, sb.buildString());
+			List<Float> resultList = new ArrayList<Float>();
+			
+			for (; resultSet.hasNext();) {
+				QuerySolution solution = resultSet.nextSolution();
+				System.out.println(solution.getLiteral(TEMP).getFloat());
+				resultList.add(solution.getLiteral(TEMP).getFloat());
 			}
-
-			String TempQuery =
-					"PREFIX process:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#>\r\n" +
-					"PREFIX system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" +
-					"\r \n"+
-					"SELECT ?Temp\n"+
-					"WHERE {\n "+
-					"?x a  system:ScalarValue  .\n" + 
-					"?x system:value ?Temp .\n"+
-					"}" ;
 			
-			Query queryt = QueryFactory.create(TempQuery);
-			QueryExecution qet = QueryExecutionFactory.create(queryt, model);
-			ResultSet results = qet.execSelect();
-			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();	
-			ResultSetFormatter.outputAsCSV(byteArrayOutputStream,results);
-			String s=byteArrayOutputStream.toString();
-			String[] sa= s.split("\\r?\\n");
+			try
+			{   
+			    FileWriter fw = new FileWriter(outputFilePath,true); //the true will append the new data
+			    
+			    for(int i =0; i< resultList.size();i++) {
+			    	if(i==0) {
+				  	fw.write("Feed_T\n");
+				  	fw.write(resultList.get(i).toString());
+			        }
+			    	if(i==1) {
+			    		fw.write("\nFeed_P\n");
+			    		fw.write(resultList.get(i).toString());
+			    	}
+			    }			 
+			    fw.close();
+			}
+			catch(IOException ioe)
+			{
+			    System.err.println("IOException: " + ioe.getMessage());
+			}
 			
-//Once the file is created, data has to be written to it
-		  try {
-			  String input = System.getProperty("user.home")+"\\input\\Settings.input";
-		      FileWriter myWriter = new FileWriter(input);
-		      myWriter.write("Feed__T \n");
-		      myWriter.write(sa[1]);
-		      myWriter.write("\n");
-		      myWriter.write("Feed__P\n");
-		      myWriter.write(sa[2]);
-		      myWriter.write("\nFeed__molar_fraction(\"PROPANE\")\r\n" + 
-		      		"0.4\r\n" + 
-		      		"Feed__molar_fraction(\"ISOBUTANE\")\r\n" + 
-		      		".6\r\n" + 
-		      		"Feed_pump__Mechanical efficiency\r\n" + 
-		      		"85\r\n" + 
-		      		"Feed_heater__Outlet Temperature\r\n" + 
-		      		"330\r\n" + 
-		      		"Column__column_diameter\r\n" + 
-		      		"5.91\r\n" + 
-		      		"Column__plate_efficiency\r\n" + 
-		      		"80\r\n" + 
-		      		"Column__plate_spacing\r\n" + 
-		      		".61\r\n" + 
-		      		"Column__no_stages_actual\r\n" + 
-		      		"32\r\n" + 
-		      		"Pressure_controller__K_c\r\n" + 
-		      		"20\r\n" + 
-		      		"Pressure_controller__tau_I\r\n" + 
-		      		"12\r\n" + 
-		      		"Pressure_controller__target_value\r\n" + 
-		      		"14.173193\r\n" + 
-		      		"Temeprature_controller__K_c\r\n" + 
-		      		"2\r\n" + 
-		      		"Temeprature_controller__tau_I\r\n" + 
-		      		"1\r\n" + 
-		      		"Temeprature_controller__target_value\r\n" + 
-		      		"332.2859\r\n" + 
-		      		"Reboiler_level_controller__K_c\r\n" + 
-		      		"1\r\n" + 
-		      		"Reboiler_level_controller__tau_I\r\n" + 
-		      		"20\r\n" + 
-		      		"Reboiler_level_controller__target_value\r\n" + 
-		      		"0.625\r\n" + 
-		      		"Condenser_level_controller__K_c\r\n" + 
-		      		"1\r\n" + 
-		      		"Condenser_level_controller__tau_I\r\n" + 
-		      		"20\r\n" + 
-		      		"Condenser_level_controller__target_value\r\n" + 
-		      		".245\r\n" + 
-		      		"Distilate__Pressure\r\n" + 
-		      		"12\r\n" + 
-		      		"Bottoms__Pressure\r\n" + 
-		      		"12\r\n" + 
-		      		"step1__initial_value\r\n" + 
-		      		"52\r\n" + 
-		      		"step1__final_value\r\n" + 
-		      		"54.5\r\n" + 
-		      		"step1__step_time\r\n" + 
-		      		"50\r\n" + 
-		      		"step2__initial_value\r\n" + 
-		      		"0\r\n" + 
-		      		"step2__Final_value\r\n" + 
-		      		"2.5\r\n" + 
-		      		"step2__step_time\r\n" + 
-		      		"550\r\n" + 
-		      		"step3__initial_value\r\n" + 
-		      		"0\r\n" + 
-		      		"step3__final_value\r\n" + 
-		      		"2.5\r\n" + 
-		      		"step3__step_time\r\n" + 
-		      		"650\r\n" + 
-		      		"step4__initial_value\r\n" + 
-		      		"0\r\n" + 
-		      		"step4__final_value\r\n" + 
-		      		"2.5\r\n" + 
-		      		"step4__step_time\r\n" + 
-		      		"750");
-		      
-		      myWriter.close();
-		      System.out.println("Successfully wrote to the file.");
-		    } catch (IOException e) {
-		      System.out.println("An error occurred.");
-		      e.printStackTrace();
-		    }
-	
-		
 		// Compress all files in the temporary directory into a ZIP
 		Path zipFile = Paths.get(System.getProperty("user.home")+"\\input.zip");
 		// Create a temporary folder in the user's home location

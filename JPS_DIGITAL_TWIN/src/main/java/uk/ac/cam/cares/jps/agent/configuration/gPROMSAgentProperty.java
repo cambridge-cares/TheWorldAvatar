@@ -4,7 +4,10 @@ package uk.ac.cam.cares.jps.agent.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-
+/**
+ * gPROMSAgent property file.
+ *
+ */
 @Configuration
 @PropertySource("classpath:gPROMS-agent.properties")
 public class gPROMSAgentProperty {

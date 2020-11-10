@@ -236,9 +236,26 @@
 		  <artifactId>matlabcontrol</artifactId>
 		  <version>4.1.0</version>
 		  </dependency>
+		  
+		  <!-- https://mvnrepository.com/artifact/org.apache.jena/apache-jena-libs -->
+<dependency>
+	<groupId>org.apache.jena</groupId>
+	<artifactId>jena-querybuilder</artifactId>
+	<version>3.11.0</version>
+</dependency>
 
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-arq -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-arq</artifactId>
+    <version>3.16.0</version>
+</dependency>
 
-
+<dependency>
+	<groupId>org.apache.jena</groupId>
+	<artifactId>jena-tdb</artifactId>
+	<version>3.3.0</version>
+</dependency>
 
 	</dependencies>
 
