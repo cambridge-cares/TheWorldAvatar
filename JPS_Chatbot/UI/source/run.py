@@ -22,7 +22,7 @@ def send_js(path):
     return send_from_directory('static',path)
 
 
-@app.route('/query')
+@app.route('/chemistry_chatbot/query')
 def make_query():
     try:
         question = request.args.get('question')
@@ -34,7 +34,7 @@ def make_query():
     except:
         return 'Nothing'
 
-@app.route('/query_wolfram')
+@app.route('/chemistry_chatbot/query_wolfram')
 def make_query_wolfram():
     socketio.emit('coordinate_agent', 'Querying the wolfram alpha engine')
     question = request.args.get('question').strip()
@@ -47,7 +47,7 @@ def make_query_wolfram():
     return json.dumps(result)
 
 
-@app.route('/query_google')
+@app.route('/chemistry_chatbot/query_google')
 def make_query_google():
     socketio.emit('coordinate_agent', 'Querying the Google engine')
     question = request.args.get('question').strip()
