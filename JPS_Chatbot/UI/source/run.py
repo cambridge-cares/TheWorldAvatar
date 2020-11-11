@@ -7,7 +7,7 @@ import sys, os
 from pprint import pprint
 
 from flask import Flask, request
-from flask import render_template
+from flask import render_template, send_from_directory
 from flask_socketio import SocketIO, send, emit
 from functools import lru_cache
 sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
@@ -15,6 +15,11 @@ sys.path.append('/source')
 app = Flask(__name__)
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
+
+@app.route('/chemistry_chatbot/static/<path:path>')
+def send_js(path):
+    print('getting request from client')
+    return send_from_directory('static',path)
 
 
 @app.route('/query')
