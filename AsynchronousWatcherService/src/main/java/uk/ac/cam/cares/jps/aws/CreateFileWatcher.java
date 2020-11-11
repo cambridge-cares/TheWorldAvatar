@@ -68,7 +68,8 @@ public class CreateFileWatcher extends Thread implements Watcher {
                     if (kind == StandardWatchEventKinds.OVERFLOW) {
                         Thread.yield();
                         continue;
-                    } else if (kind == java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
+                    } else if ((kind == StandardWatchEventKinds.ENTRY_CREATE ||
+                            kind == StandardWatchEventKinds.ENTRY_MODIFY)
                             && filename.toString().equals(file.getName())) {
                         doOnChange();
                     }
