@@ -390,7 +390,7 @@ public class DFTAgent extends JPSAgent{
 		List<String> thermoModelTriples = new ArrayList<>();
 		for (int i = 0; i < thermoModels.size(); i++) {
 			thermoModelTriples.add(JsonPath.read(jsonString, "$.results.bindings[" + i + "].thermoModel.value")
-					.toString().concat(" ").concat("http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCoefficientValues").concat(" ")
+					.toString().concat(" ").concat("http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasCoefficientValues").concat(" ")
 					.concat(JsonPath.read(jsonString, "$.results.bindings[" + i + "].coeffValues.value").toString()));
 		}
 		Collections.sort(thermoModelTriples);
