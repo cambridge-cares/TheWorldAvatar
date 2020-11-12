@@ -147,103 +147,103 @@
 		    
 		    <!--  edited date: 2019-02-04  -->
 		    <xsl:if test="$formula_name='Ar 1 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_10"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/3139f0f9-a6f1-3316-95ed-e19b34e6178c.owl#3139f0f9-a6f1-3316-95ed-e19b34e6178c"/>
 		    </xsl:if>
 
             <xsl:if test="$formula_name='H 1 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_6"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/d6dd484b-6ca4-3177-aae4-6733e5d992f4.owl#d6dd484b-6ca4-3177-aae4-6733e5d992f4"/>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 2 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_9"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ae979084-0339-3257-bddf-7c6c96c052c6.owl#ae979084-0339-3257-bddf-7c6c96c052c6"/>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 2 O 1 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_7"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/43305210-1396-3bd7-947f-b7b7a70fb3bb.owl#43305210-1396-3bd7-947f-b7b7a70fb3bb"/>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 2 O 2 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_8"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/be8dc5d0-27f3-33ea-8dc3-070d42b783e6.owl#be8dc5d0-27f3-33ea-8dc3-070d42b783e6"/>
 		    </xsl:if>
 
 	        <xsl:if test="$formula_name='H 1 O 2 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_5"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ca14261f-ed08-3de9-b8f6-8f3d971707a0.owl#ca14261f-ed08-3de9-b8f6-8f3d971707a0"/>
 		    </xsl:if>		    
 		    
 		    <xsl:if test="$formula_name='N 2 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_4"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/5b2060c3-bef2-3597-8e1d-65fed4f6e73c.owl#5b2060c3-bef2-3597-8e1d-65fed4f6e73c"/>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='O 1 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_2"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/13eb3e3c-6c45-3f36-a392-335f1a73669b.owl#13eb3e3c-6c45-3f36-a392-335f1a73669b"/>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='O 2 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_3"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/de1c9423-e25a-3bda-81fc-bfe7ed28367a.owl#de1c9423-e25a-3bda-81fc-bfe7ed28367a"/>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 1 O 1 '">
-		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_1"/>
+		    <compchemkb:hasUniqueSpecies rdf:resource="http://www.theworldavatar.com/kb/ontospecies/e1048bec-e334-3d32-9f1c-718fb49e611b.owl#e1048bec-e334-3d32-9f1c-718fb49e611b"/>
 		    </xsl:if>
 		    
 		    </owl:NamedIndividual>
 		    
 		    <xsl:if test="$formula_name='Ar 1 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_10">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/3139f0f9-a6f1-3316-95ed-e19b34e6178c.owl#3139f0f9-a6f1-3316-95ed-e19b34e6178c">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 1 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_6">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/d6dd484b-6ca4-3177-aae4-6733e5d992f4.owl#d6dd484b-6ca4-3177-aae4-6733e5d992f4">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 2 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_9">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/ae979084-0339-3257-bddf-7c6c96c052c6.owl#ae979084-0339-3257-bddf-7c6c96c052c6">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 2 O 1 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_7">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/43305210-1396-3bd7-947f-b7b7a70fb3bb.owl#43305210-1396-3bd7-947f-b7b7a70fb3bb">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 2 O 2 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_8">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/be8dc5d0-27f3-33ea-8dc3-070d42b783e6.owl#be8dc5d0-27f3-33ea-8dc3-070d42b783e6">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 1 O 2 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_5">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/ca14261f-ed08-3de9-b8f6-8f3d971707a0.owl#ca14261f-ed08-3de9-b8f6-8f3d971707a0">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='N 2 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_4">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/5b2060c3-bef2-3597-8e1d-65fed4f6e73c.owl#5b2060c3-bef2-3597-8e1d-65fed4f6e73c">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='O 1 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_2">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/13eb3e3c-6c45-3f36-a392-335f1a73669b.owl#13eb3e3c-6c45-3f36-a392-335f1a73669b">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='O 2 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_3">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/de1c9423-e25a-3bda-81fc-bfe7ed28367a.owl#de1c9423-e25a-3bda-81fc-bfe7ed28367a">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>
 		    
 		    <xsl:if test="$formula_name='H 1 O 1 '">
-		    <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/kb/species.owl#species_1">
+		    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontospecies/e1048bec-e334-3d32-9f1c-718fb49e611b.owl#e1048bec-e334-3d32-9f1c-718fb49e611b">
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
 			</owl:NamedIndividual>
 		    </xsl:if>

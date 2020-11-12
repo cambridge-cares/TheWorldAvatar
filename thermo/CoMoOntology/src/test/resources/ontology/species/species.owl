@@ -5,9 +5,9 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:skos="http://www.w3.org/2008/05/skos#"
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns="http://www.theworldavatar.com/kb/species/species.owl#"
+    xmlns="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-  xml:base="http://www.theworldavatar.com/kb/species/species.owl">
+  xml:base="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl">
   <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/identifier"/>
   <owl:Thing rdf:ID="species_10">
     <skos:altLabel>Ar</skos:altLabel>
