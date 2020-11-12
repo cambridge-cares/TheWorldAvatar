@@ -52,7 +52,7 @@ import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 				.operation(null, "http://www.theworldavatar.com/Composite_Service_ODsMpRv")
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+				.input("http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism", "reactionmechanism")
 				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
 				.build();

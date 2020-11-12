@@ -206,7 +206,7 @@ public class SRMAgent extends HttpServlet  {
 		    //First, query from ontokin to get the specific reaction mechanism in the format of owl file iri  
 			try {
 				String mechanismquery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " 
-						+ "PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#> "
+						+ "PREFIX ontochem: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
 						+ "SELECT ?x "
 						+ "WHERE {?x  rdf:type  ontochem:ReactionMechanism ." 
 						+ "}";

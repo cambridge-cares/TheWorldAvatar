@@ -42,9 +42,9 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
  * Note that this is for the namespace called "kb". If you have a different namespace,<p>
  * e.g, "ontokin", replace "kb" with "ontokin" in the above URL<p>
  * <p>
- * RDF4J query end point URL: http://localhost:8080/rdf4j-server/repositories/ontospecieskb
+ * RDF4J query end point URL: http://localhost:8080/rdf4j-server/repositories/ontospecies
  * <p>
- * Note that this is for the repository called ontospecieskb.<p>
+ * Note that this is for the repository called ontospecies.<p>
  * <p>
  * Namespace in Blazegraph and repository in RDF4J refer to the same thing.
  * 

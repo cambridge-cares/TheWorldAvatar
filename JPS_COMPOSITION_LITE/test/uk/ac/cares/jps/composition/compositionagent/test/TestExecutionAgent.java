@@ -78,7 +78,7 @@ public class TestExecutionAgent {
 				+ "            \"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\": \"region\"\r\n"
 				+ "        },\r\n"
 				+ "        \"http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service\": {\r\n"
-				+ "            \"https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism\": \"reactionmechanism\",\r\n"
+				+ "            \"http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism\": \"reactionmechanism\",\r\n"
 				+ "            \"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant\": \"plant\",\r\n"
 				+ "            \"http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType\": \"region\"\r\n"
 				+ "        }\r\n" + "    },\r\n" + "    \"output_mapping\": {\r\n"
