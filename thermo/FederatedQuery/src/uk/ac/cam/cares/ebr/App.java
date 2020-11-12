@@ -19,8 +19,8 @@ import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
 
 public class App {
 	
-	static String localhostUrlOntoSpecies = "http://localhost:8080/rdf4j-server/repositories/ontospecieskb";
-	static String claudiusUrlOntoCompChem = "http://theworldavatar.com/rdf4j-server/repositories/ontocompchem"; //http://localhost:8080/rdf4j-server/repositories/ontocompchem http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb
+	static String localhostUrlOntoSpecies = "http://localhost:8080/rdf4j-server/repositories/ontospecies";
+	static String claudiusUrlOntoCompChem = "http://theworldavatar.com/rdf4j-server/repositories/ontocompchem"; //http://localhost:8080/rdf4j-server/repositories/ontocompchem http://theworldavatar.com/rdf4j-server/repositories/ontospecies
 	static String csvFilePath = "C:\\Users\\NK\\Documents\\species_test_8.csv";
 	
 	static FederatedQuery fq = new FederatedQuery();
@@ -32,12 +32,12 @@ public class App {
      /**
       * 
       * @author NK510 (caresssd@hermes.cam.ac.uk)
-      * Uploads owl files into ontospecieskb repository stored on localhost and generates context in rdf4j repository.
+      * Uploads owl files into ontospecies repository stored on localhost and generates context in rdf4j repository.
       * 
       * 
       */
 
-	repositoryManager.getUploadOwlFiles("http://localhost:8080/rdf4j-server/repositories/ontospecieskb", "C:\\Users\\NK\\Documents\\species-abox-feroz\\owl-Feroz\\missing-21-species\\owl\\53130-19-1", "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#");
+	repositoryManager.getUploadOwlFiles("http://localhost:8080/rdf4j-server/repositories/ontospecies", "C:\\Users\\NK\\Documents\\species-abox-feroz\\owl-Feroz\\missing-21-species\\owl\\53130-19-1", "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#");
 	
      /**
       * 

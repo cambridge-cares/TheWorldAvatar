@@ -25,7 +25,7 @@ public class FederatedQuery {
 	/**
 	 * 
 	 * @param ontocompchemServerUrl the ontocomcphem server url
-	 * @param ontospecieskbServerUrl the ontospecieskb server url
+	 * @param ontospecieskbServerUrl the ontospecies server url on the remote repository
 	 * @param ontospeciesServerUrls  the ontospecies server url
 	 * @param query the query string
 	 * @return linked list of species beans that include level of theory, ontocompchem iri, ontospecies iri.
@@ -38,7 +38,7 @@ public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontoc
 		/**
 		 * 
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * Federated query via three repositories: Claudius ontocompchem and ontospecieskb, and localhost ontospecies
+		 * Federated query via three repositories: Claudius ontocompchem and ontospecies, and localhost ontospecies
 		 *  
 		 */
 		
@@ -51,7 +51,7 @@ public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontoc
 		/**
 		 * 
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * Returns a result of federated sparql query via ontospecieskb repositories stored on local host and on Claudius server.
+		 * Returns a result of federated sparql query via ontospecies repositories stored on local host and on Claudius server.
 		 * 
 		 */
 		
