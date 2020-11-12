@@ -10,7 +10,7 @@
               <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__HydrogenAgent.owl#MessagePart_5a6a6b1b-a867-4497-82b6-61de1da1019b">
                 <msm:hasName>elementmetadata</msm:hasName>
                 <msm:isArray>false</msm:isArray>
-                <msm:hasType>http://theworldavatar.com/kb/ontokin/ontokin.owl#ElementMetadata</msm:hasType>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementMetadata</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
           </msm:MessageContent>

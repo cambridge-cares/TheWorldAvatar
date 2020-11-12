@@ -204,7 +204,7 @@ public class KnowledgeBaseClientTest {
 	 * @return
 	 */
 	private static String formMechanismCountQuery(){
-		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
 			query = query.concat("SELECT (COUNT(?x) AS ?count)\n");
 			query = query.concat("WHERE\n");
@@ -220,7 +220,7 @@ public class KnowledgeBaseClientTest {
 	 * @return
 	 */
 	private static String formMechanismIRIsQuery(){
-		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
 			query = query.concat("SELECT ?x ?y ?z \n");
 			query = query.concat("WHERE\n");
@@ -231,14 +231,14 @@ public class KnowledgeBaseClientTest {
 	}
 	
 	private static String formInsertQuery(){
-		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
 			query = query.concat("INSERT DATA { <http://www.theworldavatar.com/kb/ontokin/POLIMI_H2CO_1412.owl#ArrheniusCoefficient_182161099217501> ontokin:hasTemperatureExponent \"-0.7\" }");
 			return query;
 	}
 	
 	private static String formTempExponentQuery(){
-		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
 			query = query.concat("SELECT ?tempExponent\n");
 			query = query.concat("WHERE\n");
@@ -249,7 +249,7 @@ public class KnowledgeBaseClientTest {
 	}
 	
 	private static String formDeleteQuery(){
-		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
 			query = query.concat("DELETE DATA { <http://www.theworldavatar.com/kb/ontokin/POLIMI_H2CO_1412.owl#ArrheniusCoefficient_182161099217501> ontokin:hasTemperatureExponent \"-0.7\" }");
 			return query;
