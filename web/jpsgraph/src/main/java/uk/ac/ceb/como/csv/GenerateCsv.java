@@ -52,7 +52,7 @@ public class GenerateCsv {
 	 */
 	private static String ontocompchemkb = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem";
 	private static String ontokinkb = "http://www.theworldavatar.com/rdf4j-server/repositories/ontokin";
-	private static String ontospecieskb = "http://www.theworldavatar.com/rdf4j-server/repositories/ontospecieskb";
+	private static String ontospecieskb = "http://www.theworldavatar.com/rdf4j-server/repositories/ontospecies";
 
 	private static int count = 0;
 
