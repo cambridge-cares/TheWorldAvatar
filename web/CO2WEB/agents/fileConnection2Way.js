@@ -42,7 +42,7 @@ PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/syst
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
              PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
              PREFIX ontochem: 
-<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
     select ?parent  ?uri
     where {
 	{?parent  system:hasSubsystem ?uri;}    
@@ -55,7 +55,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 queryStr2:`
              PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
              PREFIX ontochem: 
-<https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
              SELECT ?uri
              WHERE {
                     { ?uri rdf:type ontochem:ReactionMechanism .}

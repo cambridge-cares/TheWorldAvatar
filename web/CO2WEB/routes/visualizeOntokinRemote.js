@@ -25,7 +25,7 @@ SELECT distinct ?uri ?label
 let opts2 = {useSharp:true, topnode:topNode,viewName:'visualizeExUpdate',supQuery:
         `
  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
 PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> 
 
 SELECT distinct  ?uri 

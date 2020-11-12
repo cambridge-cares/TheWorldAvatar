@@ -38,7 +38,7 @@ public class QueryString {
 				+ "SELECT (count(?g) AS ?sum) "
 				+ "WHERE { "
 				+ "?g rdf:type ?type . "
-				+ "FILTER((str(?type)='http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species') || (str(?type)='http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Species')) . "
+				+ "FILTER((str(?type)='http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species') || (str(?type)='http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species')) . "
 				+ "}"; 	
 				
 
@@ -51,7 +51,7 @@ public class QueryString {
  public static String getNumberOfReactionMechanisms() {
 	 
 	 String query ="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-	 		+ "PREFIX ontokin: <http://theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
 	 		+ "SELECT (count(?s) as ?sum) "
 	 		+ "WHERE { "
 	 		+ "?s rdf:type ontokin:ReactionMechanism ."
@@ -67,8 +67,8 @@ public class QueryString {
  public static String getNumberOfSpeciesInOntoKin() {
 	 
 	 String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
-	 		+ "PREFIX ontokin1: <http://theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
+	 		+ "PREFIX ontokin1: <http://theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
 	 		+ "SELECT (count(?speciesIRI) as ?sum) "
 	 		+ "WHERE { "
 	 		+ "{"
@@ -138,7 +138,7 @@ public class QueryString {
  public static String getCabronHydrogenSpeciesInOntoKin() {
 	 
 	 String query = "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
 	 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
 	 		+ "SELECT (count(?o) as ?sum) "
 	 		+ "WHERE { "
@@ -157,7 +157,7 @@ public class QueryString {
  public static String getCabronHydrogenOxygenSpeciesInOntoKin() {
 	 
 	 String query = "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
 	 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
 	 		+ "SELECT (count(?o) as ?sum) "
 	 		+ "WHERE { "
@@ -177,7 +177,7 @@ public class QueryString {
  public static String getNumberNitrogenSpeciesInOntoKin() {
 	 
 	 String query ="PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>  "
-	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
 	 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
 	 		+ "SELECT (count(?o) as ?sum) "
 	 		+ "WHERE { "
@@ -303,8 +303,8 @@ public class QueryString {
  public static String getSpeciesIRIFromOntoKin() {
 	 
 	 String query= "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-		 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
-		 		+ "PREFIX ontokin1: <http://theworldavatar.com/kb/ontokin/ontokin.owl#> "
+		 		+ "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
+		 		+ "PREFIX ontokin1: <http://theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
 		 		+ "SELECT ?s "
 		 		+ "WHERE { "
 		 		+ "{"
