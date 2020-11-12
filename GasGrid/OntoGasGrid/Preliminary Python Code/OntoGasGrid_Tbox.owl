@@ -1,0 +1,177 @@
+@prefix ns1: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://theworldavatar.com/coastal-terminal> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/intake> .
+
+<https://theworldavatar.com/hasButaneVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> ;
+    rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
+
+<https://theworldavatar.com/hasCapacity> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/storage> .
+
+<https://theworldavatar.com/hasCarbonDioxideVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> ;
+    rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
+
+<https://theworldavatar.com/hasCompressionRatio> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station> .
+
+<https://theworldavatar.com/hasDemand> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/offtake> .
+
+<https://theworldavatar.com/hasDiameter> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasEfficiency> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station> .
+
+<https://theworldavatar.com/hasEndLatitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasEndLongitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasEthaneVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> ;
+    rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
+
+<https://theworldavatar.com/hasHeliumVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> ;
+    rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
+
+<https://theworldavatar.com/hasHydrogenVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> ;
+    rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
+
+<https://theworldavatar.com/hasInput> a ns1:ObjectProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/pipe>,
+        <https://theworldavatar.com/storage> ;
+    ns1:inverseOf <https://theworldavatar.com/isInputOf> .
+
+<https://theworldavatar.com/hasLatitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/storage> .
+
+<https://theworldavatar.com/hasLength> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasLongitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/storage> .
+
+<https://theworldavatar.com/hasMaxHydrogenPercentage> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/offtake> .
+
+<https://theworldavatar.com/hasMethaneVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> ;
+    rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
+
+<https://theworldavatar.com/hasNitrogenVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> ;
+    rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
+
+<https://theworldavatar.com/hasOutput> a ns1:ObjectProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/pipe>,
+        <https://theworldavatar.com/storage> ;
+    ns1:inverseOf <https://theworldavatar.com/isOutputOf> .
+
+<https://theworldavatar.com/hasPressureDrop> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasPropaneVolume> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> ;
+    rdfs:subPropertyOf <https://theworldavatar.com/hasComposition> .
+
+<https://theworldavatar.com/hasStartLatitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasStartLongitude> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasStartPressure> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/pipe> .
+
+<https://theworldavatar.com/hasSupply> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/intake> .
+
+<https://theworldavatar.com/hasTemperature,hasWobbeIndex> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> .
+
+<https://theworldavatar.com/hasWithin> a ns1:ObjectProperty ;
+    rdf:Property <https://theworldavatar.com/within_conditions> ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/pipe>,
+        <https://theworldavatar.com/storage> ;
+    rdfs:range <https://theworldavatar.com/within_conditions> .
+
+<https://theworldavatar.com/hp-storage> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/storage> .
+
+<https://theworldavatar.com/international-export> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/offtake> .
+
+<https://theworldavatar.com/lng-import> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/intake> .
+
+<https://theworldavatar.com/lng-storage> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/storage> .
+
+<https://theworldavatar.com/local-distribution> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/offtake> .
+
+<https://theworldavatar.com/onshore-field> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/intake> .
+
+<https://theworldavatar.com/pipeline-import> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/intake> .
+
+<https://theworldavatar.com/power-station> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/offtake> .
+
+<https://theworldavatar.com/salt-cavity> a ns1:Class ;
+    rdfs:subClassOf <https://theworldavatar.com/storage> .
+
+<https://theworldavatar.com/isInputOf> a ns1:ObjectProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/pipe>,
+        <https://theworldavatar.com/storage> .
+
+<https://theworldavatar.com/isOutputOf> a ns1:ObjectProperty ;
+    rdfs:domain <https://theworldavatar.com/compression-station>,
+        <https://theworldavatar.com/intake>,
+        <https://theworldavatar.com/offtake>,
+        <https://theworldavatar.com/pipe>,
+        <https://theworldavatar.com/storage> .
+
+<https://theworldavatar.com/hasComposition> a ns1:DatatypeProperty ;
+    rdfs:domain <https://theworldavatar.com/within_conditions> .
+
+<https://theworldavatar.com/compression-station> a ns1:Class .
+
+<https://theworldavatar.com/storage> a ns1:Class .
+
+<https://theworldavatar.com/intake> a ns1:Class .
+
+<https://theworldavatar.com/offtake> a ns1:Class .
+
+<https://theworldavatar.com/within_conditions> a ns1:Class .
+
+<https://theworldavatar.com/pipe> a ns1:Class .
+
