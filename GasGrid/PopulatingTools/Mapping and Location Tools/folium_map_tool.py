@@ -56,5 +56,8 @@ for j in location_index:
     overall_location = np.append(overall_location,class_location,axis=0)
 overall_location = overall_location[1:,:]
 
+NTS = 'PopulatingTools\Mapping and Location Tools\pipenetwork.geojson'
+NTS_layer = folium.GeoJson(NTS).add_to(m)
+folium.LayerControl().add_to(m)
 
-m.save(r'PopulatingTools\Mapping and Location Tools\standard_test_map.html')
+m.save(r'PopulatingTools\Mapping and Location Tools\folium_map.html')
