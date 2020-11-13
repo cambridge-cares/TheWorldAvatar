@@ -71,7 +71,14 @@ public abstract class KnowledgeBaseClient{
 
 	public abstract String getQuery();
 	
-	////*********************************
+	public abstract String setUpdateEndpoint(String updateEndpoint);
+	
+	public abstract String getQueryEndpoint();
+	
+	public abstract String setQueryEndpoint(String queryEndpoint);
+	
+	public abstract String getUpdateEndpoint();
+	
 	//// CSL: deprecated methods.  
 	
 	/**

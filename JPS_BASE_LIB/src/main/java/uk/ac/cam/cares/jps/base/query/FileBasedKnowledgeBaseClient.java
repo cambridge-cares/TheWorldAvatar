@@ -204,6 +204,42 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		return query;
 	}	
 	
+	/**
+	 * Sets filePath. Query and and update file paths are the same.
+	 * @param updateEndpoint
+	 */
+	@Override 
+	public String setUpdateEndpoint(String updateEndpoint) {
+		this.filePath = updateEndpoint;
+		return filePath;
+	}
+	
+	/**
+	 * Return the file path. Query and update file paths are the same.
+	 */
+	@Override
+	public String getUpdateEndpoint() {
+		return filePath;
+	}
+	
+	/**
+	 * Sets filePath. Query and and update file paths are the same.
+	 * @param queryEndpoint
+	 */
+	@Override 
+	public String setQueryEndpoint(String queryEndpoint) {
+		this.filePath = queryEndpoint;
+		return filePath;
+	}
+	
+	/**
+	 * Return the file path. Query and update file paths are the same.
+	 */
+	@Override
+	public String getQueryEndpoint() {
+		return filePath;
+	}
+	
 	//// 
 	
 	/**
@@ -226,6 +262,13 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	// Sparql query and update
 	///////////////////////////
 	
+	/**
+	 * Executes the update operation using update supplied
+	 * through constructor or setter methods
+	 * 
+	 * @param update as String
+	 * @return
+	 */
 	@Override
 	public int executeUpdate() {
 		return executeUpdate(this.query);
