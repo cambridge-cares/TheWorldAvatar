@@ -22,21 +22,8 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 /**
- * This class allows to establish a connection with remote knowledge repositories<p>
- * to perform SPARQL query and update operations. It supports many triple stores<p>
- * such as Blazegraph and RDF4J. It requires to set the end point URL for the<p>
- * intended type of operation. See some example end point URLS:<p>
- * <p>
- * Blazegraph query end point URL: http://localhost:8080/blazegraph/namespace/kb/sparql
- * <p>
- * Note that this is for the namespace called "kb". If you have a different namespace,<p>
- * e.g, "ontokin", replace "kb" with "ontokin" in the above URL<p>
- * <p>
- * RDF4J query end point URL: http://localhost:8080/rdf4j-server/repositories/ontospecies
- * <p>
- * Note that this is for the repository called ontospecies.<p>
- * <p>
- * Namespace in Blazegraph and repository in RDF4J refer to the same thing.
+ * Abstract Knowledge Base Client class that declares methods for performing SPARQL 
+ * queries and updates on triple stores.
  * 
  * If the old methods are no longer needed this class could be converted to an interface.
  *  
