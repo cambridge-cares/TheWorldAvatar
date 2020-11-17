@@ -291,7 +291,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			} finally {
 				conn.end();
 			}
-			return 0; //TODO: return a useful integer?
+			return 0; //return a useful integer?
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
 		}
@@ -314,7 +314,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			}finally {
 				conn.end();
 			}
-			return 0; //TODO: return a useful integer?
+			return 0; //return a useful integer?
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
 		}
@@ -388,7 +388,6 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		}
 	}
 	
-	// TODO: test this
 	/**
 	 * Convert query results to JSONArray.
 	 * @param resultSet
