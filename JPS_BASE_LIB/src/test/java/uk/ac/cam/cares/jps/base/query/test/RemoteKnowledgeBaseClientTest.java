@@ -11,8 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
-
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 
 /**
  * This class covers both unit tests and regression tests on KnowledgeBaseClient,<p>
@@ -22,7 +21,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class KnowledgeBaseClientTest {
+public class RemoteKnowledgeBaseClientTest {
 
 	String queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 	String updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
@@ -36,7 +35,7 @@ public class KnowledgeBaseClientTest {
 	 */
 	@Test
 	public void queryEndpointSetupTest() throws SQLException{
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint);
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
 	}
@@ -50,7 +49,7 @@ public class KnowledgeBaseClientTest {
 	 */
 	@Test
 	public void queryAndUpdateEndpointsSetupTest() throws SQLException{
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertEquals(updateEndpoint, kbClient.getQueryEndpoint());
@@ -66,7 +65,7 @@ public class KnowledgeBaseClientTest {
 	 */
 	@Test
 	public void endpointsAndQuerySetupTest() throws SQLException{
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismCountQuery());
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismCountQuery());
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -75,7 +74,7 @@ public class KnowledgeBaseClientTest {
 		assertEquals(formMechanismCountQuery(), kbClient.getQuery());
 		queryEndpoint = "/test/Query/Endpoint";
 		updateEndpoint = "/test/Update/Endpoint";
-		kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismIRIsQuery());
+		kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismIRIsQuery());
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -84,7 +83,7 @@ public class KnowledgeBaseClientTest {
 		assertEquals(formMechanismIRIsQuery(), kbClient.getQuery());
 		queryEndpoint = "/extended/Test/QueryEndpoint";
 		updateEndpoint = "/extended/Test/UpdateEndpoint";
-		kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint, formInsertQuery());
+		kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formInsertQuery());
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -102,7 +101,7 @@ public class KnowledgeBaseClientTest {
 	@Test
 	public void connectionURLForQueryEndpointTest() throws SQLException{
 		queryEndpoint = "http://localhost:8080/test";
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint);
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint);
 		System.out.println(
 				"\nTesting if the URL to connect to an endpoint for performing a query operation is set as expected.");
 		assertNotNull(kbClient.getConnectionUrl());
@@ -122,7 +121,7 @@ public class KnowledgeBaseClientTest {
 	public void connectionURLForQueryAndInsertEndpointsTest() throws SQLException{
 		queryEndpoint = "http://localhost:8080/test";
 		updateEndpoint = "http://localhost:8080/test";
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
 		System.out.println(
 				"\nTesting if the URL to connect to an endpoint for performing an insert operation is set as expected.");
@@ -142,7 +141,7 @@ public class KnowledgeBaseClientTest {
 	public void connectionURLForQueryAndDeleteEndpointsTest() throws SQLException {
 		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
 		System.out.println(
 				"\nTesting if the URL to connect to an endpoint for performing a delete query is set as expected.");
@@ -162,7 +161,7 @@ public class KnowledgeBaseClientTest {
 	 */
 	@Test
 	public void performMechanismCountQueryTest() throws SQLException{
-		KnowledgeBaseClient kbClient = mock(KnowledgeBaseClient.class);
+		RemoteKnowledgeBaseClient kbClient = mock(RemoteKnowledgeBaseClient.class);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("count", "1");
