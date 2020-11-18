@@ -1,0 +1,1614 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://localhost:8080/kb/ontoengine.owl#"
+     xml:base="http://localhost:8080/kb/ontoengine.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://localhost:8080/kb/ontoengine.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasAirMassFlowRate -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasAirMassFlowRate">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#AirMassFlowRate"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasBMEP -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBMEP">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#BMEP"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasBSFC -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBSFC">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#BSFC"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasBore -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBore">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Bore"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasBowlDepth -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBowlDepth">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#BowlDepth"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasBowlRadius -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBowlRadius">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#BowlRadius"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCO -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCO">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CO"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCase -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCase">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCaseEmissions -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCaseEmissions">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CaseEmissions"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCaseEngine -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCaseEngine">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CaseEngine"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCaseMetadata -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCaseMetadata">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CaseMetadata"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCaseProfile -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCaseProfile">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CaseProfile"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasConRodLength -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasConRodLength">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ConRodLength"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCylinder -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCylinder">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasDate -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasDate">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Date"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasDischargeCoeffProfile -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasDischargeCoeffProfile">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#DischargeCoeffProfile"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasDisplacement -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasDisplacement">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Displacement"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasElapsedTime -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasElapsedTime">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ElapsedTime"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasEmissions -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasEmissions">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasEngine -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasEngine">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasEventHeight -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasEventHeight">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#EventHeight"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasExhaustManifold -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasExhaustManifold">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasExhaustValve -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasExhaustValve">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasFuel -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasFuel">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasHC -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasHC">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#HC"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasIMEP -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasIMEP">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#IMEP"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasISFC -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasISFC">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ISFC"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjDuration -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjDuration">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjDuration"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjDwell -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjDwell">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjDwell"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjEOI -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjEOI">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjEOI"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjFuel -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjFuel">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjFuel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjPressure -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjPressure">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjPressure"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjProfile -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjProfile">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjProfile"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjQuantity -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjQuantity">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjQuantity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjSOI -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjSOI">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjSOI"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjector -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjector">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasIntakeManifold -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasIntakeManifold">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasIntakeValve -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasIntakeValve">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasLiftProfile -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasLiftProfile">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#LiftProfile"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasMainInjection -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasMainInjection">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#MainInjection"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasManifoldPressure -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasManifoldPressure">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ManifoldPressure"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasManifoldTemperature -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasManifoldTemperature">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ManifoldTemperature"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasMetadata -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasMetadata">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasNOx -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNOx">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#NOx"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasPM -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPM">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PM"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasPMCarbon -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPMCarbon">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PMCarbon"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasPN -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPN">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PN"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasParticleSizeDistribution -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasParticleSizeDistribution">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ParticleSizeDistribution"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasPilotInjection -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPilotInjection">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PilotInjection"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasPostInjection -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPostInjection">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PostInjection"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfile -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfile">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasRawWetCO -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRawWetCO">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#RawWetCO"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasRawWetHC -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRawWetHC">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#RawWetHC"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasRawWetNOx -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRawWetNOx">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#RawWetNOx"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasSpeed -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasSpeed">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Speed"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasStartTime -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasStartTime">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#StartTime"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasStroke -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasStroke">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Stroke"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasTorque -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasTorque">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Torque"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasTotFuelVolDelivDyno -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasTotFuelVolDelivDyno">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivDyno"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasTotFuelVolDelivECM -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasTotFuelVolDelivECM">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivECM"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasValveArea -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValveArea">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ValveArea"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasValveClosing -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValveClosing">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ValveClosing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasValveDiameter -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValveDiameter">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ValveDiameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasValveOpening -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValveOpening">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ValveOpening"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasWristPinOffset -->
+
+
+    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasWristPinOffset">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#WristPinOffset"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasAFRstoich -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasAFRstoich">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCompressionRatio -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCompressionRatio">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasConeHalfAngle -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasConeHalfAngle">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCopyright -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCopyright">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasCtoHRatio -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCtoHRatio">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasDescription -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasDescription">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasExtEGRMassFrac -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasExtEGRMassFrac">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasFreshFuelAirEquivRatio -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasFreshFuelAirEquivRatio">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasFuelAirEquivRatio -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasFuelAirEquivRatio">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasFuelName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasFuelName">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasID">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasIntEGRMassFrac -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasIntEGRMassFrac">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasMON -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasMON">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasNOxCorrectionFactor -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNOxCorrectionFactor">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasName">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasNozzleDiameter -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNozzleDiameter">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasNumCylinder -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNumCylinder">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasNumNozzles -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNumNozzles">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasNumStrokes -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNumStrokes">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasNumValves -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNumValves">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasOperatingMode -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasOperatingMode">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileData -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileData">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileDepUnit -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileDepUnit">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileDepVar -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileDepVar">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileIndepUnit -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileIndepUnit">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileIndepVar -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileIndepVar">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasRON -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRON">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasRecordID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRecordID">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasReference -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasReference">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasSequenceNo -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasSequenceNo">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasStudyType -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasStudyType">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasUnit -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasUnit">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#hasValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValue">
+        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#AirMassFlowRate -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#AirMassFlowRate">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#BMEP -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#BMEP">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#BSFC -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#BSFC">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Bore -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Bore">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#BowlDepth -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#BowlDepth">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#BowlRadius -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#BowlRadius">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#CO -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CO">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Case -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Case"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#CaseEmissions -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CaseEmissions">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#CaseEngine -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CaseEngine">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#CaseMetadata -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CaseMetadata">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#CaseProfile -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CaseProfile">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ConRodLength -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ConRodLength">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Cylinder -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Date -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Date"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#DischargeCoeffProfile -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#DischargeCoeffProfile">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Displacement -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Displacement">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ElapsedTime -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ElapsedTime">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Time"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Emissions -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Engine -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#EngineExperiment -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#EventHeight -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#EventHeight">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Fuel -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#HC -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#HC">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#IMEP -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#IMEP">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ISFC -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ISFC">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#InjDuration -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjDuration">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#InjDwell -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjDwell">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#InjEOI -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjEOI">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#InjFuel -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjFuel">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#InjPressure -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjPressure">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#InjProfile -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjProfile">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#InjQuantity -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjQuantity">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#InjSOI -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjSOI">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Injection -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Injector -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#LiftProfile -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#LiftProfile">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#MainInjection -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#MainInjection">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Manifold -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ManifoldPressure -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ManifoldPressure">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ManifoldTemperature -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ManifoldTemperature">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Metadata -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#NOx -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#NOx">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#PM -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PM">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#PMCarbon -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PMCarbon">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#PN -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PN">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ParticleSizeDistribution -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ParticleSizeDistribution">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#PilotInjection -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PilotInjection">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#PostInjection -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PostInjection">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Profile -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#RawWetCO -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#RawWetCO">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#RawWetHC -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#RawWetHC">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#RawWetNOx -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#RawWetNOx">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Speed -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Speed">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#StartTime -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#StartTime">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Time"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Stroke -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Stroke">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Time -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Time"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Torque -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Torque">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivDyno -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivDyno">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivECM -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivECM">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#Valve -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ValveArea -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ValveArea">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ValveClosing -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ValveClosing">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ValveDiameter -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ValveDiameter">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#ValveOpening -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ValveOpening">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://localhost:8080/kb/ontoengine.owl#WristPinOffset -->
+
+
+    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#WristPinOffset">
+        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
