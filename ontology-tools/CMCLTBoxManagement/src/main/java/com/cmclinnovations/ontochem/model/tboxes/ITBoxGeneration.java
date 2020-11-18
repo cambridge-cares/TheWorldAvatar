@@ -7,7 +7,6 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
 import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
 
-
 /**
  * This provides interface to the following methods:</br>
  * 1. generateClass</br>
@@ -27,7 +26,7 @@ public interface ITBoxGeneration {
 	 * 
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
-	 * @throws OntoException
+	 * @throws TBoxManagementException
 	 * @throws OWLOntologyCreationException
 	 * @throws OWLOntologyStorageException
 	 */
@@ -39,7 +38,7 @@ public interface ITBoxGeneration {
 	 * @param targetName
 	 * @param relation
 	 * @throws IOException
-	 * @throws OntoException
+	 * @throws TBoxManagementException
 	 */
 	public void generateClass(String className, String targetName, String relation) throws IOException, TBoxManagementException;
 	/**
@@ -49,7 +48,7 @@ public interface ITBoxGeneration {
 	 * @param domain
 	 * @param range
 	 * @throws IOException
-	 * @throws OntoException
+	 * @throws TBoxManagementException
 	 */
 	public void generateDataProperty(String propertyName, String domain, String range) throws IOException, TBoxManagementException;
 	/**
@@ -60,7 +59,7 @@ public interface ITBoxGeneration {
 	 * @param range
 	 * @param quantifier
 	 * @throws IOException
-	 * @throws OntoException
+	 * @throws TBoxManagementException
 	 */
 	public void generateObjectProperty(String propertyName, String domain, String range, String quantifier) throws IOException, TBoxManagementException;
 }

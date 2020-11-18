@@ -32,11 +32,13 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.cmclinnovations.ontochem.model.configuration.TBoxConfiguration;
+import com.cmclinnovations.ontochem.model.configuration.OntoChemKB;
 import com.cmclinnovations.ontochem.model.configuration.OntoKinVocabulary;
 import com.cmclinnovations.ontochem.model.configuration.SpringConfiguration;
+import com.cmclinnovations.ontochem.model.configuration.TBoxConfiguration;
+import com.cmclinnovations.ontochem.model.exception.OntoException;
 import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
-import com.cmclinnovations.ontochem.model.utils.TBoxManagementUtils;
+import com.cmclinnovations.ontochem.model.utils.CtmlConverterUtils;
 
 /**
  * This class implemented the methods that were provided in the ITBoxmanagement</br> 
@@ -67,7 +69,7 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param relation
 	 * @throws TBoxManagementException
 	 */
-	public void createOWLClass(String className, String targetName, String relation) throws TBoxManagementException{
+	public void createOWLClass(String className, String targetName, String relation) throws TBoxManagementException, TBoxManagementException{
 		// Checks if the class name is null or empty
 		checkClassName(className);
 		// Creates the child class.
@@ -664,7 +666,7 @@ public class TBoxManagement implements ITBoxManagement{
 					classInOwl = dataFactory.getOWLClass(classLabel.replace(" ", ""));
 				} else {
 					classInOwl = dataFactory.getOWLClass(
-							ontoChemKB.getOntoKinKbTBoxIri().concat("#").concat(classLabel.replace(" ", "")));
+							ontoChemKB.gettBoxIri().concat("#").concat(classLabel.replace(" ", "")));
 				}
 			}
 		}
@@ -684,7 +686,7 @@ public class TBoxManagement implements ITBoxManagement{
 			return dataFactory.getOWLDataProperty(propertyLabel.replace(" ", ""));
 		}
 		return dataFactory.getOWLDataProperty(
-				ontoChemKB.getOntoKinKbTBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+				ontoChemKB.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
 	}
 	
 	/**
@@ -700,7 +702,7 @@ public class TBoxManagement implements ITBoxManagement{
 			return dataFactory.getOWLObjectProperty(propertyLabel.replace(" ", ""));
 		}
 		return dataFactory.getOWLObjectProperty(
-				ontoChemKB.getOntoKinKbTBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+				ontoChemKB.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
 	}
 	
 	/**
@@ -747,10 +749,10 @@ public class TBoxManagement implements ITBoxManagement{
 			appConfigOntoKin = applicationContext.getBean(OntoKinVocabulary.class);
 		}
 		if (ontoChemKB == null) {
-			ontoChemKB = applicationContext.getBean(OntoChemKB.class);
+			ontoChemKB = applicationContext.getBean(TBoxConfiguration.class);
 		}
 		if(ontologyIRI==null){
-			ontologyIRI = IRI.create(ontoChemKB.getOntoKinKbTBoxIri());
+			ontologyIRI = IRI.create(ontoChemKB.gettBoxIri());
 		}
 		ontology = manager.createOntology(ontologyIRI);
 		if (ontology == null) {
@@ -760,17 +762,17 @@ public class TBoxManagement implements ITBoxManagement{
 	}
 	
 	/**
-	 * Saves an ontology created for codifying a chemical mechanism.
+	 * Saves the generated ontology.
 	 */
 	public void saveOntology(String owlFilePath) throws OWLOntologyStorageException {
 		try {
 			File file = new File(
-					ontoChemKB.getOntoChemOntolgyFilePath().concat(ontoChemKB.getOntoChemOntolgyFileName()));
+					ontoChemKB.getOntolgyFilePath().concat(ontoChemKB.getOntolgyFileName()));
 			// Adding metadata to the ontology.
 			representOntologyMetadata();
 			manager.saveOntology(ontology, manager.getOntologyFormat(ontology), IRI.create(file.toURI()));
 			logger.info("The OntoChem TBox has been saved under the path "
-					+ ontoChemKB.getOntoChemOntolgyFilePath().concat(ontoChemKB.getOntoChemOntolgyFileName()));
+					+ ontoChemKB.getOntolgyFilePath().concat(ontoChemKB.getOntolgyFileName()));
 		} catch (OWLOntologyStorageException e) {
 			logger.error("The ontology could not be saved.");
 			e.printStackTrace();
@@ -851,13 +853,17 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void representCommitHash() throws TBoxManagementException{
-		String commitHash = TBoxManagementUtils.gitCommitHash();
+		try{
+		String commitHash = CtmlConverterUtils.gitCommitHash();
 		if (commitHash != null && !commitHash.isEmpty()) {
 			OWLLiteral commitHashValue = dataFactory.getOWLLiteral(commitHash);
 			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(ontoChemKB
-					.getOntoKinKbTBoxIri().concat("#").concat(appConfigOntoKin.getCompChemGitCommitHash())));
+					.gettBoxIri().concat("#").concat(appConfigOntoKin.getCompChemGitCommitHash())));
 			OWLAnnotation commitAttributeWithValue = dataFactory.getOWLAnnotation(commit, commitHashValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commitAttributeWithValue));
+		}
+		}catch(OntoException e){
+			throw new TBoxManagementException(e.getMessage());
 		}
 	}
 	
@@ -870,7 +876,7 @@ public class TBoxManagement implements ITBoxManagement{
 		String version = appConfigOntoKin.getAnnotationPropertyValueOfVersion();
 		if (version != null && !version.isEmpty()) {
 			OWLLiteral versionValue = dataFactory.getOWLLiteral(version);
-			OWLAnnotationProperty versionProperty = dataFactory.getOWLAnnotationProperty(TBoxManagementUtils.OWL_URL.concat(TBoxManagementUtils.OWL_VERSIONINFO));
+			OWLAnnotationProperty versionProperty = dataFactory.getOWLAnnotationProperty(CtmlConverterUtils.OWL_URL.concat(CtmlConverterUtils.OWL_VERSIONINFO));
 			OWLAnnotation versionAttributeWithValue = dataFactory.getOWLAnnotation(versionProperty, versionValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, versionAttributeWithValue));
 		}

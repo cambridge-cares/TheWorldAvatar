@@ -12,8 +12,8 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.slf4j.Logger;
 
 import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
-import com.cmclinnovations.ontochem.model.utils.TBoxManagementUtils;
-import com.cmclinnovations.ontochem.model.utils.TBoxDialogs;
+import com.cmclinnovations.ontochem.model.utils.CtmlConverterUtils;
+import com.cmclinnovations.ontochem.model.utils.Dialogs;
 
 /**
  * This class implemented the methods that were provided in the ITBoxGeneration</br> 
@@ -36,10 +36,10 @@ import com.cmclinnovations.ontochem.model.utils.TBoxDialogs;
 	
 	
 	public static void main(String[] args) {
-		File folder = TBoxDialogs.selectFileDialog(new File(System.getProperty("user.home")), new FileFilter[]{new ExtensionFileFilter("Comma-separated Value", "csv")}, false);
+		File folder = Dialogs.selectFileDialog(new File(System.getProperty("user.home")), new FileFilter[]{new ExtensionFileFilter("Comma-separated Value", "csv")}, false);
 		if (folder == null) {
 		} else if (!folder.exists()) {
-			TBoxDialogs.showErrorDialog("Selected folder does not exist.", "Read");
+			Dialogs.showErrorDialog("Selected folder does not exist.", "Read");
 		} else{
 			owlFilePath = folder.getAbsolutePath().replace(".csv", ".owl");
 			ITBoxGeneration iTBoxGeneration = new TBoxGeneration();
