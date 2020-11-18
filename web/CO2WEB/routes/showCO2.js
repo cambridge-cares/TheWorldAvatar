@@ -6,12 +6,7 @@ const co2Add = require('../agents/CO2Aggregation');
 
 
 
-
-
-
 router.get('/', function (req, res, next) {
-
-
     co2Add(function (err, result) {
         if(err){
 			console.log("co2ADD Module err: "+err);
@@ -21,9 +16,6 @@ router.get('/', function (req, res, next) {
 
         res.render('co2', { co2Value: result }); //render the view with this value
     })
-
-
-
 
 });
 

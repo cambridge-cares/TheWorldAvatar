@@ -37,7 +37,7 @@ config.ontochemNode= config.crebase + '/query';
 config.ontokinNode= config.ontokinbase + '/query';
 config.ontokinRemoteNode = "http://theworldavatar.com/rdf4j-server/repositories/ontokin"
 config.ontocompchemRemoteNode = "http://theworldavatar.com/rdf4j-server/repositories/ontocompchem"
-config.ontospeciesRemoteNode = "http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb"
+config.ontospeciesRemoteNode = "http://theworldavatar.com/rdf4j-server/repositories/ontospecies"
 //TODO: this later should be wrapped in owl file
 config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_trim.py")
 config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")

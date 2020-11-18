@@ -15,6 +15,7 @@ const path = require('path')
 var chokidar = require('chokidar');
 var fsre = require('fs-readdir-recursive')
 const changeInformer = require('./groupChangeWatcher')
+var LiteralData = require('../agents/GetLiteralData');
 
 class Ev extends EventEmitter {}
 
@@ -48,7 +49,7 @@ function setBMSWatcher() {
         sendData: function (dataSwitch) {
             let withChangeData = {};
             let changedFilenames  ={uri:this.uri, filename : this.filename};
-    
+            let self = this;
             function getDataP() {
                 return new Promise(function (resolve, reject) {
             
