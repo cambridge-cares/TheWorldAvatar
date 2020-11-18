@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
-import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
+import com.cmclinnovations.ontochem.model.exception.OntoException;
 
 /**
  * This provides interface to the following methods:</br>
@@ -26,20 +26,21 @@ public interface ITBoxGeneration {
 	 * 
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws OntoException
 	 * @throws OWLOntologyCreationException
 	 * @throws OWLOntologyStorageException
 	 */
-	public void readTBoxTemplate(String csvFileNamePlusPath) throws IOException, TBoxManagementException, OWLOntologyCreationException, OWLOntologyStorageException;
+	public void readTBoxTemplate(String csvFileNamePlusPath) throws IOException, OntoException, OWLOntologyCreationException, OWLOntologyStorageException;
 	/**
 	 * Generates an ontology class.
 	 * 
 	 * @param className
-	 * @param parentName
+	 * @param targetName
+	 * @param relation
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws OntoException
 	 */
-	public void generateClass(String className, String parentName) throws IOException, TBoxManagementException;
+	public void generateClass(String className, String targetName, String relation) throws IOException, OntoException;
 	/**
 	 * Generates an ontology data property.
 	 * 
@@ -47,17 +48,18 @@ public interface ITBoxGeneration {
 	 * @param domain
 	 * @param range
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws OntoException
 	 */
-	public void generateDataProperty(String propertyName, String domain, String range) throws IOException, TBoxManagementException;
+	public void generateDataProperty(String propertyName, String domain, String range) throws IOException, OntoException;
 	/**
 	 * Generates an ontology object property.
 	 * 
 	 * @param propertyName
 	 * @param domain
 	 * @param range
+	 * @param quantifier
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws OntoException
 	 */
-	public void generateObjectProperty(String propertyName, String domain, String range) throws IOException, TBoxManagementException;
+	public void generateObjectProperty(String propertyName, String domain, String range, String quantifier) throws IOException, OntoException;
 }
