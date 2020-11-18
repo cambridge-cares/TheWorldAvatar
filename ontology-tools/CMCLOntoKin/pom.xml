@@ -1,0 +1,228 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.cmclinnovations</groupId>
+    <artifactId>CMCLOntoKin</artifactId>
+    <version>0.0.1</version>
+    <packaging>jar</packaging>
+    <name>CMCLOntoKin</name>
+
+    <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<rdf4j.version>2.0</rdf4j.version>
+    </properties>
+  
+    <!-- Snapshot repository location to push to (note the ID should match a server ID in your ~/.m2/settings.xml) -->
+    <distributionManagement>
+	<snapshotRepository>
+	    <id>all-cmcl-products</id>
+	    <url>http://bradman.cmclinnovations.com:8081/nexus/content/repositories/mech-viewer-snap/</url>
+	</snapshotRepository>
+	<repository>
+	    <id>all-cmcl-products</id>
+	    <url>http://bradman.cmclinnovations.com:8081/nexus/content/repositories/mech-viewer-rel/</url>
+	</repository>
+    </distributionManagement>
+
+    <dependencies>
+	<!-- https://mvnrepository.com/artifact/net.sourceforge.owlapi/jfact -->
+	<dependency>
+	    <groupId>net.sourceforge.owlapi</groupId>
+	    <artifactId>jfact</artifactId>
+	    <version>4.0.0</version>
+	</dependency>
+	<dependency>
+	    <groupId>jfree</groupId>
+	    <artifactId>jfreechart</artifactId>
+	    <version>1.0.13</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.apache.maven</groupId>
+	    <artifactId>maven-plugin-api</artifactId>
+	    <version>2.0</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.apache.maven.plugin-tools</groupId>
+	    <artifactId>maven-plugin-annotations</artifactId>
+	    <version>3.2</version>
+	    <scope>provided</scope>
+	</dependency>
+	<dependency>
+	    <groupId>org.codehaus.plexus</groupId>
+	    <artifactId>plexus-utils</artifactId>
+	    <version>3.0.8</version>
+	</dependency>
+	<dependency>
+	    <groupId>junit</groupId>
+	    <artifactId>junit</artifactId>
+	    <version>4.8.2</version>
+	    <scope>test</scope>
+	</dependency>
+
+	<!-- https://mvnrepository.com/artifact/com.hp.hpl.jena/jena -->
+	<dependency>
+	    <groupId>com.hp.hpl.jena</groupId>
+	    <artifactId>jena</artifactId>
+	    <version>2.6.4</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>slf4j-api</artifactId>
+	    <version>1.7.5</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>slf4j-log4j12</artifactId>
+	    <version>1.7.5</version>
+	</dependency>
+
+	<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+	<!--<dependency>
+	<groupId>log4j</groupId>
+	<artifactId>log4j</artifactId>
+	<version>1.2.17</version>
+	</dependency>
+	-->
+
+	<!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+	<!--<dependency>
+	<groupId>commons-logging</groupId>
+	<artifactId>commons-logging</artifactId>
+	<version>1.1.1</version>
+	</dependency> -->
+
+	<!-- https://mvnrepository.com/artifact/de.derivo/sparqldl-api -->
+	
+	<!-- https://mvnrepository.com/artifact/edu.stanford.protege/de-derivo-sparqldlapi -->
+	
+	<dependency>
+	    <groupId>edu.stanford.protege</groupId>
+	    <artifactId>de-derivo-sparqldlapi</artifactId>
+	    <version>2.0.0</version>
+	</dependency>
+		
+	<dependency>
+	    <groupId>net.sourceforge.owlapi</groupId>
+	    <artifactId>owlapi-distribution</artifactId>
+	    <version>5.1.0</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-context</artifactId>
+	    <version>5.0.4.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.eclipse.persistence</groupId>
+	    <artifactId>eclipselink</artifactId>
+	    <version>2.5.2</version>
+	    <exclusions>
+		<exclusion>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>commonj.sdo</artifactId>
+		</exclusion>
+	    </exclusions>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
+	<dependency>
+	    <groupId>javax.json</groupId>
+	    <artifactId>javax.json-api</artifactId>
+	    <version>1.1.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.glassfish</groupId>
+	    <artifactId>javax.json</artifactId>
+	    <version>1.1.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.eclipse.rdf4j</groupId>
+	    <artifactId>rdf4j-runtime</artifactId>
+	    <version>${rdf4j.version}</version>
+	</dependency>
+
+	<!-- https://mvnrepository.com/artifact/org.openrdf.sesame/sesame-model -->
+	<dependency>
+	    <groupId>org.openrdf.sesame</groupId>
+	    <artifactId>sesame-model</artifactId>
+	    <version>4.1.2</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+	<dependency>
+	    <groupId>commons-validator</groupId>
+	    <artifactId>commons-validator</artifactId>
+	    <version>1.5.0</version>
+	</dependency>
+	<dependency>
+	    <groupId>javax.xml.bind</groupId>
+	    <artifactId>jaxb-api</artifactId>
+	    <version>2.1</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+	<dependency>
+		<groupId>com.opencsv</groupId>
+		<artifactId>opencsv</artifactId>
+		<version>4.0</version>
+	</dependency>	
+    </dependencies>
+
+    <build>
+	<plugins>
+	    <!-- Compiles source code -->
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.3</version>
+		<configuration>     
+		    <arg>-verbose</arg>
+		    <arg>-Xlint:all,-options,-path, unchecked</arg>
+		    <source>1.7</source>
+		    <target>1.7</target>
+		    <showDeprecation>true</showDeprecation>
+		</configuration>
+	    </plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+	    <!--       <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-plugin-plugin</artifactId>
+	      <version>3.2</version>
+	      <configuration>
+		<goalPrefix>CMCLOntoKin</goalPrefix>
+		<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+	      </configuration>
+	      <executions>
+		<execution>
+		  <id>mojo-descriptor</id>
+		  <goals>
+		    <goal>descriptor</goal>
+		  </goals>
+		</execution>
+		<execution>
+		  <id>help-goal</id>
+		  <goals>
+		    <goal>helpmojo</goal>
+		  </goals>
+		</execution>
+	      </executions>
+	    </plugin> -->
+	</plugins>
+    </build>
+</project>

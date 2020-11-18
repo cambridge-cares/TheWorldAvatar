@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
-import com.cmclinnovations.ontochem.model.exception.OntoException;
+import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
 
 /**
  * This provides interface to the following methods:</br>
@@ -23,7 +23,7 @@ public interface ITBoxManagement {
 	 * @throws OntoException
 	 * @throws OWLOntologyCreationException
 	 */
-	public void init() throws OntoException, OWLOntologyCreationException;
+	public void init() throws TBoxManagementException, OWLOntologyCreationException;
 	/**
 	 * Saves the generated OWL file under the path species by user in the </br>
 	 * kb.ontochem.management.properties.
@@ -41,7 +41,7 @@ public interface ITBoxManagement {
 	 * @throws OntoException
 	 * @throws OntoException
 	 */
-	public void createOWLClass(String className, String targetName, String relation) throws OntoException, OntoException;
+	public void createOWLClass(String className, String targetName, String relation) throws TBoxManagementException;
 	/**
 	 * Creates an ontology data property.
 	 * 
@@ -50,7 +50,7 @@ public interface ITBoxManagement {
 	 * @param range
 	 * @throws OntoException
 	 */
-	public void createOWLDataProperty(String propertyName, String domain, String range) throws OntoException;
+	public void createOWLDataProperty(String propertyName, String domain, String range) throws TBoxManagementException;
 	/**
 	 * Creates an ontology object property.
 	 * 
@@ -60,7 +60,7 @@ public interface ITBoxManagement {
 	 * @param quantifier
 	 * @throws OntoException
 	 */
-	public void createOWLObjectProperty(String propertyName, String domain, String range, String quantifier) throws OntoException;
+	public void createOWLObjectProperty(String propertyName, String domain, String range, String quantifier) throws TBoxManagementException;
 	
 	/**
 	 * Adds the definition as a comment to the OWL class.
@@ -69,7 +69,7 @@ public interface ITBoxManagement {
 	 * @param definition
 	 * @throws OntoException
 	 */
-	public void addDefinitionToOWLClass(String className, String definition) throws OntoException;
+	public void addDefinitionToOWLClass(String className, String definition) throws TBoxManagementException;
 	
 	/**
 	 * Adds the definition of the current object property.
@@ -78,7 +78,7 @@ public interface ITBoxManagement {
 	 * @param definition
 	 * @throws OntoException
 	 */
-	public void addDefinitionToObjectProperty(String property, String definition) throws OntoException;
+	public void addDefinitionToObjectProperty(String property, String definition) throws TBoxManagementException;
 	
 	/**
 	 * Adds the definition of the current data property.
@@ -87,7 +87,7 @@ public interface ITBoxManagement {
 	 * @param definition
 	 * @throws OntoException
 	 */
-	public void addDefinitionToDataProperty(String property, String definition) throws OntoException;	
+	public void addDefinitionToDataProperty(String property, String definition) throws TBoxManagementException;	
 
 	/**
 	 * Adds the definedBy annotation property to the current OWL class.
@@ -96,7 +96,7 @@ public interface ITBoxManagement {
 	 * @param url
 	 * @throws OntoException
 	 */
-	public void addDefinedByToClass(String className, String url) throws OntoException;
+	public void addDefinedByToClass(String className, String url) throws TBoxManagementException;
 	
 	/**
 	 * Adds the definedBy annotation property to the current object property.
@@ -105,7 +105,7 @@ public interface ITBoxManagement {
 	 * @param url
 	 * @throws OntoException
 	 */
-	public void addDefinedByToObjectProperty(String property, String url) throws OntoException;
+	public void addDefinedByToObjectProperty(String property, String url) throws TBoxManagementException;
 	
 	/**
 	 * Adds the definedBy annotation property to the current data property.
@@ -114,7 +114,7 @@ public interface ITBoxManagement {
 	 * @param url
 	 * @throws OntoException
 	 */
-	public void addDefinedByToDataProperty(String property, String url) throws OntoException;
+	public void addDefinedByToDataProperty(String property, String url) throws TBoxManagementException;
 	
 	/**
 	 * 
@@ -132,5 +132,5 @@ public interface ITBoxManagement {
 	 * @param range
 	 * @throws OntoException
 	 */
-	public void addLogicalFormulaToObjectProperty(String property, String quantifier, String domain, String range) throws OntoException;
+	public void addLogicalFormulaToObjectProperty(String property, String quantifier, String domain, String range) throws TBoxManagementException;
 }

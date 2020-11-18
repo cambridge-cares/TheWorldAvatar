@@ -5,7 +5,8 @@ import java.io.IOException;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
-import com.cmclinnovations.ontochem.model.exception.OntoException;
+import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
+
 
 /**
  * This provides interface to the following methods:</br>
@@ -30,7 +31,7 @@ public interface ITBoxGeneration {
 	 * @throws OWLOntologyCreationException
 	 * @throws OWLOntologyStorageException
 	 */
-	public void readTBoxTemplate(String csvFileNamePlusPath) throws IOException, OntoException, OWLOntologyCreationException, OWLOntologyStorageException;
+	public void readTBoxTemplate(String csvFileNamePlusPath) throws IOException, TBoxManagementException, OWLOntologyCreationException, OWLOntologyStorageException;
 	/**
 	 * Generates an ontology class.
 	 * 
@@ -40,7 +41,7 @@ public interface ITBoxGeneration {
 	 * @throws IOException
 	 * @throws OntoException
 	 */
-	public void generateClass(String className, String targetName, String relation) throws IOException, OntoException;
+	public void generateClass(String className, String targetName, String relation) throws IOException, TBoxManagementException;
 	/**
 	 * Generates an ontology data property.
 	 * 
@@ -50,7 +51,7 @@ public interface ITBoxGeneration {
 	 * @throws IOException
 	 * @throws OntoException
 	 */
-	public void generateDataProperty(String propertyName, String domain, String range) throws IOException, OntoException;
+	public void generateDataProperty(String propertyName, String domain, String range) throws IOException, TBoxManagementException;
 	/**
 	 * Generates an ontology object property.
 	 * 
@@ -61,5 +62,5 @@ public interface ITBoxGeneration {
 	 * @throws IOException
 	 * @throws OntoException
 	 */
-	public void generateObjectProperty(String propertyName, String domain, String range, String quantifier) throws IOException, OntoException;
+	public void generateObjectProperty(String propertyName, String domain, String range, String quantifier) throws IOException, TBoxManagementException;
 }
