@@ -12,7 +12,7 @@ let opts = {useSharp:true, topnode:topNode,viewName:'visualizeExUpdate',supQuery
 
     `
  PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> 
+PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
 
 
 SELECT distinct ?uri ?label
@@ -94,7 +94,6 @@ router.get('/links', function(req, res, next) {
 });
 router.post('/linksingle', function(req, res, next) {
     console.log('body')
-    console.log(req.body)
     let body = JSON.parse(req.body)
     let supQuery = 'query' in body?body['query']:null;
     let topnode = topNode;
@@ -122,17 +121,3 @@ router.post('/linksingle', function(req, res, next) {
 module.exports = router;
 
 
-
-
-let q = `
-PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> 
-
-SELECT distinct  ?uri
-    WHERE {{
-?s ontocompchem:hasUniqueSpecies  ?uri
-    }}`
-
-let optst = {useSharp:true, topnode:topNode,viewName:'visualizeExUpdate', supQuery:q}
-connectionsReader.processSingle(opts).then((resultst)=> {
-console.log(resultst)
-})

@@ -58,7 +58,7 @@ var visualizationRouterFactory = function (opts) {
             //res.setHeader('Content-Type', 'application/json');
             //res.json(results);//for testing
             //console.log(results)
-            let secondQuery = {useSharp:true, topnode:config.ontocompchemNode,supQuery:opts.supQuery};
+            let secondQuery = {level:1,useSharp:true, topnode:config.ontocompchemNode,supQuery:opts.supQuery};
             console.log(opts.supQuery)
             connectionsReader.processSingle(secondQuery).then((results2)=> {
                 console.log('secondary result')
