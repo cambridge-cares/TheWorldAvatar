@@ -1,0 +1,317 @@
+package uk.ac.cam.cares.jps.dispersion.sensorsparql;
+
+import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+
+import java.sql.SQLException;
+import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.Update;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.http.HTTPRepository;
+import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
+import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.json.JSONArray;
+
+import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
+
+import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+
+public class SensorSparql {
+    // weather station properties
+    public static final String cloud = "OutsideAirCloudCover";
+    public static final String precipitation = "OutsideAirPrecipitation";
+    public static final String pressure = "OutsideAirPressure";
+    public static final String temperature = "OutsideAirTemperature";
+    public static final String humidity = "OutsideAirRelativeHumidity";
+    public static final String windspeed = "OutsideWindSpeed";
+    public static final String winddirection = "OutsideWindDirection";
+
+    // air quality properties
+    public static final String CO2 = "OutsideCO2Concentration";
+    public static final String CO = "OutsideCOConcentration";
+    public static final String HC = "OutsideHCConcentration";
+    public static final String NO2 = "OutsideNO2Concentration";
+    public static final String NO = "OutsideNOConcentration";
+    public static final String NOx =  "OutsideNOxConcentration";
+    public static final String O3 = "OutsideO3Concentration";
+    public static final String PM1 = "OutsidePM1Concentration";
+    public static final String PM25 = "OutsidePM25Concentration";
+    public static final String PM10 = "OutsidePM10Concentration";
+    public static final String SO2 = "OutsideSO2Concentration";
+
+    // prefixes for SPARQL queries
+    private static Prefix p_weather = SparqlBuilder.prefix("weather",iri("http://www.theworldavatar.com/kb/weatherstations/"));
+    private static Prefix p_airquality = SparqlBuilder.prefix("airquality",iri("http://www.theworldavatar.com/kb/airqualitystations/"));
+    private static Prefix p_space_time_extended = SparqlBuilder.prefix("space_time_extended",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"));
+    private static Prefix p_space_time = SparqlBuilder.prefix("space_time",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"));
+    private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
+    private static Prefix p_SI_unit = SparqlBuilder.prefix("si_unit",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#"));
+    private static Prefix p_derived_SI_unit = SparqlBuilder.prefix("derived_SI_unit",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"));
+    private static Prefix p_ontosensor = SparqlBuilder.prefix("sensor",iri("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#"));
+    private static Prefix p_time = SparqlBuilder.prefix("time",iri("http://www.w3.org/2006/time#"));
+    private static Prefix p_coordsys = SparqlBuilder.prefix("coordsys",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"));
+    private static Prefix p_control = SparqlBuilder.prefix("control",iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#"));
+    private static Prefix p_instrument = SparqlBuilder.prefix("instrument", iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"));
+    
+    // IRI of units used
+    private static Iri unit_m = p_SI_unit.iri("m");
+    private static Iri unit_mm = p_derived_SI_unit.iri("mm");
+    private static Iri unit_degree = p_derived_SI_unit.iri("degree");
+    private static Iri unit_mbar = p_derived_SI_unit.iri("mBar");
+    private static Iri unit_celcius = p_derived_SI_unit.iri("Celsius");
+    private static Iri unit_ms = p_derived_SI_unit.iri("m_per_s");
+    private static Iri unit_fraction = p_derived_SI_unit.iri("fraction"); // made up, does not exist in ontology
+    private static Iri unit_percentage = p_derived_SI_unit.iri("percentage"); // made up, does not exist in ontology
+    private static Iri unit_ugm3 = p_derived_SI_unit.iri("ug_per_m.m.m");
+
+    private Prefix [] getOtherPrefix() {
+        Prefix [] prefixes = {p_space_time_extended,p_space_time,p_system,p_SI_unit,p_derived_SI_unit,p_ontosensor,p_time,p_coordsys,p_control,p_instrument};
+        return prefixes;
+    }
+
+    /**
+     * @param station_name
+     * @param xyz_coord = x y coordinates are in EPSG:4326, z is the height in m
+     * @param repo
+     * @throws SQLException 
+     */
+    public void createWeatherStation(String station_name, double [] xyz_coord, String repo) throws SQLException {
+        Iri weatherstation_iri = p_weather.iri(station_name);
+        Iri stationcoordinates_iri = p_weather.iri(station_name+"_coordinates");
+
+        TriplePattern weatherstation_tp = weatherstation_iri.isA(p_control.iri("MeasuringInstrument"))
+        		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
+        
+        TriplePattern [] coordinates_xyz = getCoordinatesXYZ_tp(p_weather,station_name,stationcoordinates_iri,xyz_coord);
+
+        TriplePattern [] combined_tp = {};
+        combined_tp = ArrayUtils.addAll(combined_tp, weatherstation_tp);
+        combined_tp = ArrayUtils.addAll(combined_tp, coordinates_xyz);
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,cloud,unit_percentage));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,precipitation,unit_mm));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,pressure,unit_mbar));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,temperature,unit_celcius));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,humidity,unit_fraction));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,windspeed,unit_ms));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,winddirection,unit_degree));
+        
+        Prefix [] prefix_list = {p_weather};
+        prefix_list = ArrayUtils.addAll(prefix_list, getOtherPrefix());
+        
+        ModifyQuery modify = Queries.MODIFY();
+        
+        modify.prefix(prefix_list).with(weatherstation_iri).insert(combined_tp).where();
+        performUpdate(repo, modify.getQueryString());
+    }
+
+    private TriplePattern [] getWeatherSensorTP(Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit) {
+        Iri sensor_iri = station_prefix.iri(station_name+"_sensor"+data);
+        Iri data_iri = station_prefix.iri(station_name+"_"+data);
+        Iri datavalue_iri = station_prefix.iri(station_name+"_v"+data);
+        Iri time_iri = station_prefix.iri(station_name+"_time"+data);
+        
+        TriplePattern station_tp = station_iri.has(p_system.iri("contains"),sensor_iri);
+        TriplePattern sensor_tp = sensor_iri.isA(p_instrument.iri("Q-Sensor")).andHas(p_ontosensor.iri("observes"),data_iri);
+        TriplePattern data_tp = data_iri.isA(p_ontosensor.iri(data)).andHas(p_system.iri("hasValue"),datavalue_iri);
+        
+        TriplePattern datavalue_tp = datavalue_iri.isA(p_system.iri("ScalarValue"))
+                .andHas(p_system.iri("numericalValue"), 0)
+                .andHas(p_system.iri("hasUnitOfMeasure"), unit)
+                .andHas(p_time.iri("hasTime"), time_iri);
+
+        TriplePattern datatime_tp = time_iri.isA(p_time.iri("Instant")).andHas(p_time.iri("inXSDDateTime"),0);
+        
+        TriplePattern [] combined_tp = {station_tp,sensor_tp,data_tp,datavalue_tp,datatime_tp};
+        return combined_tp;
+    }
+
+    public void createAirQualityStation(String station_name, double [] xyz_coord, String repo) throws SQLException {
+    	Iri airqualitystation_iri = p_airquality.iri(station_name);
+        Iri stationcoordinates_iri = p_airquality.iri(station_name+"_coordinates");
+
+        TriplePattern airqualitystation_tp = airqualitystation_iri.isA(p_control.iri("MeasuringInstrument"))
+        		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
+
+        TriplePattern [] coordinates_xyz = getCoordinatesXYZ_tp(p_airquality,station_name,stationcoordinates_iri,xyz_coord);
+        
+        TriplePattern [] combined_tp = {};
+        combined_tp = ArrayUtils.addAll(combined_tp, airqualitystation_tp);
+        combined_tp = ArrayUtils.addAll(combined_tp, coordinates_xyz);
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,CO2,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,CO,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,HC,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,NO2,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,NO,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,NOx,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,O3,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,PM1,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,PM25,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,PM10,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,SO2,unit_ugm3));
+        
+        Prefix [] prefix_list = {p_airquality};
+        prefix_list = ArrayUtils.addAll(prefix_list, getOtherPrefix());
+        
+        ModifyQuery modify = Queries.MODIFY();
+        modify.prefix(prefix_list).with(airqualitystation_iri).insert(combined_tp).where();
+        performUpdate(repo, modify.getQueryString());
+    }
+    
+    public TriplePattern [] getAirQualitySensorTP(Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit) {
+    	Iri sensor_iri = station_prefix.iri(station_name+"_sensor"+data);
+        Iri data_iri = station_prefix.iri(station_name+"_"+data);
+        Iri datavalue_iri = station_prefix.iri(station_name+"_v"+data);
+        Iri time_iri = station_prefix.iri(station_name+"_time"+data);
+        
+        TriplePattern station_tp = station_iri.has(p_system.iri("contains"),sensor_iri);
+        TriplePattern sensor_tp = sensor_iri.isA(p_instrument.iri("Q-Sensor")).andHas(p_ontosensor.iri("observes"),data_iri);
+        TriplePattern data_tp = data_iri.isA(p_ontosensor.iri(data)).andHas(p_system.iri("hasValue"),datavalue_iri);
+        
+        TriplePattern datavalue_tp = datavalue_iri.isA(p_system.iri("ScalarValue"))
+                .andHas(p_ontosensor.iri("scaledNumValue"), 0)
+                .andHas(p_ontosensor.iri("prescaledNumValue"), 0)
+                .andHas(p_system.iri("hasUnitOfMeasure"), unit)
+                .andHas(p_time.iri("hasTime"), time_iri);
+
+        TriplePattern protocol_tp;
+        TriplePattern state_tp;
+        if (data.contentEquals(PM1) || data.contentEquals(PM10) || data.contentEquals(PM25)) {
+        	protocol_tp = sensor_iri.has(p_ontosensor.iri("particleProtocolVersion"), "V3.0");
+        	state_tp = datavalue_iri.has(p_ontosensor.iri("particleState"),"OK");
+        } else {
+        	protocol_tp = sensor_iri.has(p_ontosensor.iri("gasProtocolVersion"), "V5.1");
+        	state_tp = datavalue_iri.has(p_ontosensor.iri("gasState"),"Reading");
+        }
+        
+        TriplePattern datatime_tp = time_iri.isA(p_time.iri("Instant")).andHas(p_time.iri("inXSDDateTime"),0);
+		
+		TriplePattern [] combined_tp = {station_tp,sensor_tp,data_tp,datavalue_tp,datatime_tp,protocol_tp,state_tp};
+        return combined_tp;
+    }
+
+    private TriplePattern [] getCoordinatesXYZ_tp(Prefix node_prefix,String node_name, Iri coordinates_iri, double [] coordinates_xyz) {
+        Iri xcoord = node_prefix.iri(node_name+"_xcoord");
+        Iri ycoord = node_prefix.iri(node_name+"_ycoord");
+        Iri zcoord = node_prefix.iri(node_name+"_zcoord");
+        Iri vxcoord = node_prefix.iri(node_name+"_vxcoord");
+        Iri vycoord = node_prefix.iri(node_name+"_vycoord");
+        Iri vzcoord = node_prefix.iri(node_name+"_vzcoord");
+
+        TriplePattern projected_gp = coordinates_iri.isA(p_space_time_extended.iri("ProjectedCoordinateSystem"))
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord)
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_z"),zcoord);
+
+        TriplePattern xcoord_tp = xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vxcoord);
+        TriplePattern ycoord_tp = ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vycoord);
+        TriplePattern zcoord_tp = zcoord.isA(p_space_time.iri("StraightCoordinate")).andHas(p_system.iri("hasValue"),vzcoord);
+
+        TriplePattern vxcoord_tp  = vxcoord.isA(p_coordsys.iri("CoordinateValue"))
+        		.andHas(p_system.iri("numericalValue"), coordinates_xyz[0]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
+        TriplePattern vycoord_tp = vycoord.isA(p_coordsys.iri("CoordinateValue"))
+                .andHas(p_system.iri("numericalValue"), coordinates_xyz[1]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
+        TriplePattern vzcoord_tp = vzcoord.isA(p_coordsys.iri("CoordinateValue"))
+                .andHas(p_system.iri("numericalValue"), coordinates_xyz[2]).andHas(p_system.iri("hasUnitOfMeasure"), unit_m);
+
+        TriplePattern [] coordinatesXYZ_tp = {projected_gp,xcoord_tp,ycoord_tp,zcoord_tp,vxcoord_tp,vycoord_tp,vzcoord_tp};
+        return coordinatesXYZ_tp;
+    }
+    
+    private GraphPattern getCoordinatesXYZ_gp(Variable [] coordinates_xyz) {
+    	Variable coord = SparqlBuilder.var("coord");
+        Variable xcoord = SparqlBuilder.var("xcoord");
+        Variable ycoord = SparqlBuilder.var("ycoord");
+        Variable zcoord = SparqlBuilder.var("zcoord");
+        Variable vxcoord = SparqlBuilder.var("vxcoord");
+        Variable vycoord = SparqlBuilder.var("vycoord");
+        Variable vzcoord = SparqlBuilder.var("vzcoord");
+
+        GraphPattern projected_gp = coord.isA(p_space_time_extended.iri("ProjectedCoordinateSystem"))
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord)
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_z"),zcoord);
+
+        GraphPattern coord_gp = GraphPatterns.and(xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vxcoord),
+        		ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vycoord),
+        		zcoord.isA(p_space_time.iri("StraightCoordinate")).andHas(p_system.iri("hasValue"),vzcoord));
+
+        GraphPattern vcoord_gp = GraphPatterns.and(
+        		vxcoord.isA(p_coordsys.iri("CoordinateValue"))
+        		.andHas(p_system.iri("numericalValue"), coordinates_xyz[0]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree),
+                vycoord.isA(p_coordsys.iri("CoordinateValue"))
+                .andHas(p_system.iri("numericalValue"), coordinates_xyz[1]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree),
+                vzcoord.isA(p_coordsys.iri("CoordinateValue"))
+                .andHas(p_system.iri("numericalValue"), coordinates_xyz[2]).andHas(p_system.iri("hasUnitOfMeasure"), unit_m));
+
+        GraphPattern coordinatesXYZ_gp = GraphPatterns.and(projected_gp,coord_gp,vcoord_gp);
+        return coordinatesXYZ_gp;
+    }
+    
+    public void queryCoordinates(String repo) {
+    	SelectQuery query = Queries.SELECT();
+    	Variable xvalue = SparqlBuilder.var("xvalue");
+    	Variable yvalue = SparqlBuilder.var("yvalue");
+    	Variable zvalue = SparqlBuilder.var("zvalue");
+    	Variable [] coordinates = {xvalue, yvalue, zvalue};
+    	
+    	GraphPattern querypattern = getCoordinatesXYZ_gp(coordinates);
+    	
+    	query.prefix(p_space_time_extended, p_space_time, p_system, p_coordsys,p_derived_SI_unit,p_SI_unit).select(coordinates).where(querypattern);
+    	
+    	System.out.println(query.getQueryString());
+    }
+
+    /**
+     * Delete a specific graph from an endpoint
+     * @param endpoint
+     * @param graph
+     * @throws SQLException
+     */
+    public void deleteGraph(String endpoint, String graph) throws SQLException {
+    	String update = "clear graph " + graph;
+    	performUpdate(endpoint, update);
+    }
+    
+    /**
+     * Delete everything in an endpoint
+     * @param endpoint
+     * @throws SQLException
+     */
+    public void clearEndpoint(String endpoint) throws SQLException {
+        String update = "clear all";
+        performUpdate(endpoint, update);
+    }
+    
+    private void performUpdate(String queryEndPoint, String query) throws SQLException {
+        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        kbClient.setUpdateEndpoint(queryEndPoint);
+        kbClient.setQuery(query);
+        System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
+    }
+    
+    private void sendUpdate_RDF4J(String repo, ModifyQuery modify) {
+        System.out.println(modify.getQueryString());
+        Repository rep = new HTTPRepository(repo);
+        RepositoryConnection con = rep.getConnection();
+        Update operation = con.prepareUpdate(QueryLanguage.SPARQL, modify.getQueryString());
+        operation.execute();
+    }
+    
+    private JSONArray performQuery(String queryEndPoint, SelectQuery query) throws SQLException {
+        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        kbClient.setQueryEndpoint(queryEndPoint);
+        kbClient.setQuery(query.getQueryString());
+        JSONArray result = kbClient.executeQuery();
+        System.out.println("kbClient.executeQuery():"+result);
+        return result;
+    }
+}
+
