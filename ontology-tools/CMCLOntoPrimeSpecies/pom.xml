@@ -109,4 +109,22 @@
     <version>2.5.0</version>
 </dependency>		
   </dependencies>
+  
+   <build>
+	<plugins>
+	    <!-- Compiles source code -->
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.3</version>
+		<configuration>     
+		    <arg>-verbose</arg>
+		    <arg>-Xlint:all,-options,-path, unchecked</arg>
+		    <source>1.7</source>
+		    <target>1.7</target>
+		    <showDeprecation>true</showDeprecation>
+		</configuration>
+	    </plugin>
+	</plugins>
+    </build>
 </project>
