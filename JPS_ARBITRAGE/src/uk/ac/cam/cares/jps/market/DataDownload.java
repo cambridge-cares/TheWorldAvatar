@@ -53,8 +53,8 @@ public class DataDownload {
 		String result = "";
 		do {
 			String path = AgentLocator.getCurrentJpsAppDirectory(new DataDownload());
-			
-			result = CommandHelper.executeSingleCommand( path, "python " + path + " " + source);
+			String command = "python " + path+ "/python/" +script + " " + source;
+			result = CommandHelper.executeSingleCommand( path, command);
 		} while (result.equals("retry"));
 		
 		return result;
@@ -181,11 +181,10 @@ public class DataDownload {
 			throws Exception {
 
 		String currency_download = new String(
-				"caresjpsarbitrage/exchange_rates.pyw");
-
-		String result = PythonHelper.callPython(
-				currency_download, "whatever",
-				new DataDownload());
+				"caresjpsarbitrage/exchange_rates.py");
+		String path = AgentLocator.getCurrentJpsAppDirectory(new DataDownload());
+		String command = "python " + path+ "/python/" +currency_download;
+		String result = CommandHelper.executeSingleCommand( path, command);
 		logger.info(result);
 
 		/**
@@ -217,7 +216,6 @@ public class DataDownload {
 		 */
 		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
 		
-		System.out.println("My filepath = " + filePath);
 		OntModel jenaOwlModel1 = ModelFactory.createOntologyModel();
 		jenaOwlModel1.read(filePath);
 
@@ -333,7 +331,6 @@ public class DataDownload {
 			addresses[i] = new String[] {
 					ONTO_PATH_ONTOCAPE + "#" + "numericalValue",
 					ONTO_PATH_KB_UTIL_EXRATES + "#" + headers[i] };
-			logger.info(addresses[i][1]);
 		}
 		
 	logger.info("My retreive prices function");
