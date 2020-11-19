@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 /**
  * This class allows to establish connection with remote knowledge repositories<p>
  * to perform SPARQL query and update operations. It supports many triple stores<p>
@@ -176,15 +178,15 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return
 	 */
 	@Override
-	public int executeUpdate() throws SQLException{
+	public int executeUpdate(){
 		String connectionUrl = getConnectionUrl();
 		if(connectionUrl.isEmpty()){
-			throw new SQLException("KnowledgeBaseClient: connection URL for the update operation is empty.");
+			throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is empty.");
 		}
 		if(isConnectionUpdateUrlValid(connectionUrl)){
 			return executeUpdate(this.query);
 		}else{
-			throw new SQLException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
+			throw new JPSRuntimeException("KnowledgeBaseClient: connection URL for the update operation is not valid.");
 		}
 	}
 	
@@ -195,7 +197,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return
 	 */
 	@Override
-	public int executeUpdate(UpdateRequest update) throws SQLException {
+	public int executeUpdate(UpdateRequest update) {
 		return executeUpdate(update.toString());
 	}
 	
@@ -206,7 +208,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return
 	 */
 	@Override
-	public int executeUpdate(String query) throws SQLException {
+	public int executeUpdate(String query) {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
@@ -217,7 +219,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 			System.out.println(query);
 			return stmt.executeUpdate(query);
 		} catch (SQLException e) {
-			throw new SQLException(e.getMessage());
+			throw new JPSRuntimeException(e.getMessage());
 		}
 	}
 	
@@ -227,7 +229,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return JSONArray as String 
 	 * @throws SQLException
 	 */
-	public String execute() throws SQLException{
+	public String execute(){
 		return execute(this.query);
 	}
 	
@@ -238,10 +240,10 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return JSONArray as String
 	 * @throws SQLException
 	 */
-	public String execute(String query) throws SQLException{
+	public String execute(String query){
 		JSONArray result = executeQuery(query);
 		if(result==null){
-			throw new SQLException();
+			throw new JPSRuntimeException("KnowledgeBaseClient: sparql query result is null.");
 		}else{
 			return result.toString();
 		}
@@ -254,15 +256,15 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return
 	 */
 	@Override
-	public JSONArray executeQuery() throws SQLException{
+	public JSONArray executeQuery(){
 		String connectionUrl = getConnectionUrl();
 		if(connectionUrl.isEmpty()){
-			throw new SQLException("KnowledgeBaseClient: the URL to connect to the endpoint is empty");
+			throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is empty");
 		}
 		if(isConnectionQueryUrlValid(connectionUrl)){
 			return executeQuery(this.query);
 		}else{
-			throw new SQLException("KnowledgeBaseClient: the URL to connect to the endpoint is not valid");
+			throw new JPSRuntimeException("KnowledgeBaseClient: the URL to connect to the endpoint is not valid");
 		}
 	}
 	
@@ -274,7 +276,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return
 	 */
 	@Override
-	public JSONArray executeQuery(String query) throws SQLException {
+	public JSONArray executeQuery(String query) {
 		JSONArray results = new JSONArray();
 		Connection conn = null;
 		Statement stmt = null;
@@ -287,7 +289,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 			java.sql.ResultSet rs = stmt.executeQuery(query);
 			results = convert(rs);
 		} catch (SQLException e) {
-			throw new SQLException(e.getMessage());
+			throw new JPSRuntimeException(e.getMessage());
 		}
 		return results;
 	}

@@ -43,21 +43,21 @@ public abstract class KnowledgeBaseClient{
 	
 	// SPARQL Query methods
 	
-	public abstract JSONArray executeQuery(String query) throws SQLException;	
+	public abstract JSONArray executeQuery(String query);	
 	
-	public abstract JSONArray executeQuery() throws SQLException;
+	public abstract JSONArray executeQuery();
 	
-	public abstract String execute() throws SQLException;
+	public abstract String execute();
 	
-	public abstract String execute(String sparql) throws SQLException;
+	public abstract String execute(String sparql);
 	
 	// SPARQL update methods
 	
-	public abstract int executeUpdate() throws SQLException;
+	public abstract int executeUpdate();
 	
-	public abstract int executeUpdate(String update) throws SQLException;
+	public abstract int executeUpdate(String update);
 	
-	public abstract int executeUpdate(UpdateRequest update) throws SQLException;
+	public abstract int executeUpdate(UpdateRequest update);
 	
 	// Load and write methods
 	
