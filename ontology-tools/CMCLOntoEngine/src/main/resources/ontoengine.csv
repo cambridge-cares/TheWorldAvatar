@@ -1,169 +1,167 @@
-Source,Type,Target,Relation,Domain,Range,Source definition,Definition language
-EngineExperiment,Class,,,,,This class refers to the root element. ,
-Metadata,Class,,,,,This class refers to metadata of the experiment. ,
-Engine,Class,,,,,This class refers to the engine configuration in the experiment. ,
-Profile,Class,,,,,This class refers to a profile that is used/generated in the experiment. ,
-Emissions,Class,,,,,This class refers to emissions measurements performed in the experiment. ,
-Case,Class,,,,,This class refers to a child case in the experiment. ,
-Manifold,Class,,,,,This class refers to a manifold within an engine. ,
-Fuel,Class,,,,,This class refers to a fuel used in the engine. ,
-Cylinder,Class,,,,,This class refers to a cylinder within an engine. ,
-Valve,Class,,,,,This class refers to a valve associated to a cylinder within an engine. ,
-Injector,Class,,,,,This class refers to a fuel injector in a cylinder. ,
-Injection,Class,,,,,This class refers to the process of fuel injection during an engine experiment. ,
-PilotInjection,Class,Injection,Is-a,,,This class refers to the pilot injection of fuel into the engine before the main injection. ,
-MainInjection,Class,Injection,Is-a,,,This class refers to the main injection of fuel into the engine. ,
-PostInjection,Class,Injection,Is-a,,,This class refers to the post injection of fuel into the engine. ,
-Date,Class,,,,,This class refers to the date that the experiment was carried out. ,
-Time,Class,,,,,This class refers to the time that the experiment was carried out. ,
-StartTime,Class,Time,Is-a,,,This class refers to the start time of an experiment. ,
-ElapsedTime,Class,Time,Is-a,,,This class refers to the elapsed time of an experiment. ,
-DimensionalisedQuantity,Class,,,,,This class refers to any dimensionalised quantity. ,
-Speed,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the rotational speed at which the crankshaft spins. ,
-Torque,Class,DimensionalisedQuantity,Is-a,,,This parameter quantifies the torque of the engine. ,
-IMEP,Class,DimensionalisedQuantity,Is-a,,,This parameter refers to indicated mean effective pressure. ,
-BMEP,Class,DimensionalisedQuantity,Is-a,,,This parameter refers to brake mean effective pressure. ,
-ISFC,Class,DimensionalisedQuantity,Is-a,,,This parameter refers to indicated specific fuel consumption. ,
-BSFC,Class,DimensionalisedQuantity,Is-a,,,This parameter refers to brake specific fuel consumption. ,
-TotFuelVolDelivDyno,Class,DimensionalisedQuantity,Is-a,,,This parameter refers to the total fuel volume delivery as measured by a dynamometer. ,
-TotFuelVolDelivECM,Class,DimensionalisedQuantity,Is-a,,,This parameter refers to the total fuel volume delivery as measured by an engine control module (ECM) sensor. ,
-ManifoldPressure,Class,DimensionalisedQuantity,Is-a,,,The parameter specifies the pressure in the manifold. ,
-ManifoldTemperature,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the temperature in the manifold. ,
-AirMassFlowRate,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the mass flow rate of air. ,
-ValveDiameter,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the diameter of the valve. ,
-ValveArea,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the area of the valve. ,
-EventHeight,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the valve lift at which an opening/closing event is deemed to occur. ,
-ValveOpening,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the timing of valve opening. ,
-ValveClosing,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the timing of valve closing. ,
-Bore,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the internal diameter of the cylindrical part of the engine cylinder. ,
-Stroke,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the travel distance of the piston along the cylinder in either direction. ,
-ConRodLength,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the length of the connecting rod. ,
-WristPinOffset,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the wrist pin offset. ,
-BowlDepth,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the depth of the piston bowl. ,
-BowlRadius,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the radius of the piston bowl. ,
-Displacement,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the volume inside the cylinder that is swept by the piston. ,
-InjPressure,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the injection pressure. ,
-InjQuantity,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the amount of the injected fuel. ,
-InjSOI,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the start of injection (SOI). ,
-InjEOI,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the end of injection (EOI). ,
-InjDuration,Class,DimensionalisedQuantity,Is-a,,,This parameter specifies the duration of the injection. ,
-InjDwell,Class,DimensionalisedQuantity,Is-a,,,"This parameter specifies the dwell time of the injection, which is time between the end of the current pulse and the start of the next one. ",
-RawWetNOx,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the combined engine-out concentration of NO and NO2 (wet). ,
-RawWetHC,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the concentration of engine-out HC (wet). ,
-RawWetCO,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the concentration of engine-out CO (wet). ,
-NOx,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the combined concentration of engine-out NO and NO2 (dry). ,
-HC,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the concentration of engine-out HC (dry). ,
-CO,Class,DimensionalisedQuantity,Is-a,,,This parameter measures the concentration of engine-out CO (dry) measurement. ,
-PM,Class,DimensionalisedQuantity,Is-a,,,This parameter indicates the total amount of particulate matter in the measurement. ,
-PMCarbon,Class,DimensionalisedQuantity,Is-a,,,This parameter indicates the carbonaceous part of the particulate matter measurement. ,
-PN,Class,DimensionalisedQuantity,Is-a,,,This parameter indicates the total number of particulates. ,
-LiftProfile,Class,Profile,Is-a,,,This class refers to the lift profile of the valve. ,
-DischargeCoeffProfile,Class,Profile,Is-a,,,This class refers to the valve discharge coefficient profile. ,
-InjProfile,Class,Profile,Is-a,,,This class refers to the injection profile. ,
-InjFuel,Class,Fuel,Is-a,,,This class refers to the injection fuel. ,
-CaseMetadata,Class,Metadata,Is-a,,,This class defines the metadata of a case. ,
-CaseEngine,Class,Engine,Is-a,,,This class defines the engine settings for a case. ,
-CaseProfile,Class,Profile,Is-a,,,This class defines a profile that is used/generated in a case. ,
-CaseEmissions,Class,Emissions,Is-a,,,This class defines the emissions measured in a case. ,
-ParticleSizeDistribution,Class,Profile,Is-a,,,This class refers to a measured particle size distribution. ,
-,,,,,,,
-hasMetadata,Object Property,,,EngineExperiment,Metadata,The object property that links the metadata to the engine experiment. ,
-hasEngine,Object Property,,,EngineExperiment,Engine,The object property that links the engine setup to the engine experiment. ,
-hasProfile,Object Property,,,EngineExperiment,Profile,The object property that links the profile to the engine experiment. ,
-hasEmissions,Object Property,,,EngineExperiment,Emissions,The object property that links the emissions to the engine experiment. ,
-hasCase,Object Property,,,EngineExperiment,Case,The object property that links the child case to its parent engine experiment. ,
-hasDate,Object Property,,,Metadata,Date,The object property that records the date the experiment was carried out. ,
-hasStartTime,Object Property,,,Metadata,StartTime,The object property that records the start-time of the experiment. ,
-hasElapsedTime,Object Property,,,Metadata,ElapsedTime,The object property that records the duration of the experiment. ,
-hasIntakeManifold,Object Property,,,Engine,Manifold,The object property that specifies the intake manifold of the engine. ,
-hasExhaustManifold,Object Property,,,Engine,Manifold,The object property that specifies the exhaust manifold of the engine. ,
-hasCylinder,Object Property,,,Engine,Cylinder,The object property that specifies a cylinder of the engine. ,
-hasSpeed,Object Property,,,Engine,Speed,The object property that indicates the speed of the engine. ,
-hasTorque,Object Property,,,Engine,Torque,The object property that indicates the torque of the engine. ,
-hasIMEP,Object Property,,,Engine,IMEP,The object property that indicates the indicated mean effective pressure of the engine. ,
-hasBMEP,Object Property,,,Engine,BMEP,The object property that indicates the brake mean effective pressure of the engine. ,
-hasISFC,Object Property,,,Engine,ISFC,The object property that indicates the indicated specific fuel consumption of the  engine. ,
-hasBSFC,Object Property,,,Engine,BSFC,The object property that indicates the brake specific fuel consumption of the engine. ,
-hasTotFuelVolDelivDyno,Object Property,,,Engine,TotFuelVolDelivDyno,The object property that indicates the total fuel volume delivery as measured by  a dynamometer. ,
-hasTotFuelVolDelivECM,Object Property,,,Engine,TotFuelVolDelivECM,The object property that indicates the total fuel volume delivery as measured by an ECM sensor. ,
-hasPilotInjection,Object Property,,,Injector,PilotInjection,The object property that specifies the pilot injection of fuel. ,
-hasMainInjection,Object Property,,,Injector,MainInjection,The object property that specifies the main injection of fuel. ,
-hasPostInjection,Object Property,,,Injector,PostInjection,The object property that specifies the post injection of fuel. ,
-hasManifoldPressure,Object Property,,,Manifold,ManifoldPressure,The object property that specifies the pressure in the manifold. ,
-hasManifoldTemperature,Object Property,,,Manifold,ManifoldTemperature,The object property that specifies the temperature in the manifold. ,
-hasAirMassFlowRate,Object Property,,,Manifold,AirMassFlowRate,The object property that specifies the air mass flow rate. ,
-hasFuel,Object Property,,,Manifold,Fuel,The object property that links a fuel with a manifold. ,
-hasValveDiameter,Object Property,,,Valve,ValveDiameter,The object property that specifies the diameter of the valve. ,
-hasValveArea,Object Property,,,Valve,ValveArea,The object property that specifies the area of the valve. ,
-hasEventHeight,Object Property,,,Valve,EventHeight,The object property that specifies the event height of the valve. ,
-hasValveOpening,Object Property,,,Valve,ValveOpening,The object property that specifies the opening timing of the valve. ,
-hasValveClosing,Object Property,,,Valve,ValveClosing,The object property that specifies the closing timing of the valve. ,
-hasLiftProfile,Object Property,,,Valve,LiftProfile,The object property that describes the lift profile of the valve. ,
-hasDischargeCoeffProfile,Object Property,,,Valve,DischargeCoeffProfile,The object property that describes the discharge coefficient profile of the valve. ,
-hasIntakeValve,Object Property,,,Cylinder,Valve,The object property that specifies an intake valve of a cylinder. ,
-hasExhaustValve,Object Property,,,Cylinder,Valve,The object property that specifies an exhaust value of a cylinder. ,
-hasBore,Object Property,,,Cylinder,Bore,The object property that describes the bore of cylinder. ,
-hasStroke,Object Property,,,Cylinder,Stroke,The object property that describes the stroke of cylinder. ,
-hasConRodLength,Object Property,,,Cylinder,ConRodLength,The object property that describes the length of the connecting rod. ,
-hasWristPinOffset,Object Property,,,Cylinder,WristPinOffset,The object property that describes the wrist pin offset. ,
-hasBowlDepth,Object Property,,,Cylinder,BowlDepth,The object property that describes the depth of the piston bowl. ,
-hasBowlRadius,Object Property,,,Cylinder,BowlRadius,The object property that describes the radius of the piston bowl. ,
-hasDisplacement,Object Property,,,Cylinder,Displacement,The object property that describes the displacement volume of a cylinder. ,
-hasInjector,Object Property,,,Cylinder,Injector,The object property that specifies the fuel injector of a cylinder. ,
-hasInjPressure,Object Property,,,Injection,InjPressure,The object property that specifies the pressure at which the fuel is injected. ,
-hasInjQuantity,Object Property,,,Injection,InjQuantity,The object property that specifies the quantity of the injection. ,
-hasInjSOI,Object Property,,,Injection,InjSOI,The object property that specifies the start of injection. ,
-hasInjEOI,Object Property,,,Injection,InjEOI,The object property that specifies the end of injection. ,
-hasInjDuration,Object Property,,,Injection,InjDuration,The object property that specifies the duration of injection. ,
-hasInjDwell,Object Property,,,Injection,InjDwell,The object property that specifies the time between the end of an injection and the start of the next one. ,
-hasInjProfile,Object Property,,,Injection,InjProfile,The object property that specifies the profile of injection. ,
-hasInjFuel,Object Property,,,Injection,InjFuel,The object property that specifies the fuel of injection. ,
-hasRawWetNOx,Object Property,,,Emissions,RawWetNOx,The object property that specifies the wet measurement of the combined concentration of NO and NO2. ,
-hasRawWetHC,Object Property,,,Emissions,RawWetHC,The object property that specifies the wet measurement of HC. ,
-hasRawWetCO,Object Property,,,Emissions,RawWetCO,The object property that specifies the wet measurement of CO. ,
-hasNOx,Object Property,,,Emissions,NOx,The object property that specifies the dry measurement of the combined concentration of NO and NO2. ,
-hasHC,Object Property,,,Emissions,HC,The object property that specifies the dry measurement of HC. ,
-hasCO,Object Property,,,Emissions,CO,The object property that specifies the dry measurement of CO. ,
-hasPM,Object Property,,,Emissions,PM,The object property that specifies the measurement of total particulate matter. ,
-hasPMCarbon,Object Property,,,Emissions,PMCarbon,The object property that specifies the measurement of carbonaceous particulate matter. ,
-hasPN,Object Property,,,Emissions,PN,The object property that specifies the measurement of total particulate number. ,
-hasParticleSizeDistribution,Object Property,,,Emissions,ParticleSizeDistribution,The object property that specifies a particle size distribution. ,
-hasCaseMetadata,Object Property,,,Case,CaseMetadata,The object property that specifies the metadata of a child case. ,
-hasCaseEngine,Object Property,,,Case,CaseEngine,The object property that specifies the engine settings of a child case. ,
-hasCaseProfile,Object Property,,,Case,CaseProfile,The object property that specifies the profile of a child case. ,
-hasCaseEmissions,Object Property,,,Case,CaseEmissions,The object property that specifies the emissions of a child case. ,
-,,,,,,,
-hasCopyright,Data Property,,,Metadata,String,The data property that states the copyright of the data associated with this experiment. ,
-hasID,Data Property,,,Metadata,String,The data property that labels the ID of the experiment. ,
-hasStudyType,Data Property,,,Metadata,String,The data property that specifies the type of the study that been carried out. This could be experimental or computational. ,
-hasSequenceNo,Data Property,,,Metadata,String,The data property that indicates the sequence number of the experiment that been carried out. ,
-hasRecordID,Data Property,,,Metadata,String,The data property that links the experiment to other records. ,
-hasName,Data Property,,,Metadata,String,The data property that records the name of the experiment. ,
-hasReference,Data Property,,,Metadata,String,The data property that records an arbitrary external reference. ,
-hasDescription,Data Property,,,Engine,String,The data property that describes engine or the experiment. ,
-hasOperatingMode,Data Property,,,Engine,String,"The data property that describes the engine operating mode, e.g. spark ignition or compression ignition. ",
-hasNumStrokes,Data Property,,,Engine,Int,The data property that indicates the number of strokes of the engine cycle. ,
-hasFuelAirEquivRatio,Data Property,,,Manifold,Float,The data property that measures the equivalence ratio between fuel and air of the initial mixture. ,
-hasFreshFuelAirEquivRatio,Data Property,,,Manifold,Float,The data property that measures the equivalence ratio of incoming fresh charge (not including external Exhaust Gas Recirculation). ,
-hasExtEGRMassFrac,Data Property,,,Manifold,Float,The data property that defines the mass fraction of the initial mixture in the cylinder which is meant to consist of externally recirculated exhaust gases. ,
-hasNumValves,Data Property,,,Valve,Int,The data property that indicates the number of valves. ,
-hasProfileIndepVar,Data Property,,,Profile,String,The data property that specifies the independent variable in the profile. ,
-hasProfileIndepUnit,Data Property,,,Profile,String,The data property that specifies the unit of independent variable in the profile. ,
-hasProfileDepVar,Data Property,,,Profile,String,The data property that specifies the dependent variable in the profile. ,
-hasProfileDepUnit,Data Property,,,Profile,String,The data property that specifies the unit of dependent variable in the profile. ,
-hasProfileData,Data Property,,,Profile,String,The data property that specifies the data stored in the profile. ,
-hasNumCylinder,Data Property,,,Cylinder,String,The data property that indicates the number of cylinders in an engine. ,
-hasCompressionRatio,Data Property,,,Cylinder,Float,The data property that indicates the ratio between the total volume swept by the piston divided by the total compressed volume with the piston at the top dead centre. ,
-hasIntEGRMassFrac,Data Property,,,Cylinder,Float,The data property that defines the mass fraction of the initial mixture in the cylinder which is meant to consist of trapped residual gases. ,
-hasNumNozzles,Data Property,,,Injector,Int,The data property that specifies the number of nozzle holes of an injector. ,
-hasNozzleDiameter,Data Property,,,Injector,Float,The data property that specifies the diameter of the nozzle holes of an injector. ,
-hasConeHalfAngle,Data Property,,,Injector,Float,The data property that specifies the half-angle of the spray cone of an injector. ,
-hasFuelName,Data Property,,,Fuel,String,The data property that indicates the name of the fuel. ,
-hasCtoHRatio,Data Property,,,Fuel,Float,The data property that indicates the ratio between carbon and hydrogen atoms in the empirical formula of a fuel. ,
-hasAFRstoich,Data Property,,,Fuel,Float,The data property that indicates the stoichiometric air-fuel ratio. ,
-hasRON,Data Property,,,Fuel,Float,The data property that indicates the Research Octane Number of a fuel. ,
-hasMON,Data Property,,,Fuel,Float,The data property that indicates the Motor Octane Number of a fuel. ,
-hasNOxCorrectionFactor,Data Property,,,Emissions,Float,"The data property that indicates the correction factor for NOx emissions measurement, taking humidity, temperature, etc. into account. ",
-hasValue,Data Property,,,DimensionalisedQuantity,Float,The data property that specifies the value of dimensionalised quantity. ,
-hasUnit,Data Property,,,DimensionalisedQuantity,String,The data property that specifies the unit of dimensionalised quantity. ,
-http://www.w3.org/2004/02/skos/core#altLabel,Data Property,,,,String,,
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+EngineExperiment,Class,,,,,,This class refers to the root element. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Metadata,Class,,,,,,This class refers to metadata of the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Engine,Class,,,,,,This class refers to the engine configuration in the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Profile,Class,,,,,,This class refers to a profile that is used/generated in the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Emissions,Class,,,,,,This class refers to emissions measurements performed in the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Case,Class,,,,,,This class refers to a child case in the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Manifold,Class,,,,,,This class refers to a manifold within an engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Fuel,Class,,,,,,This class refers to a fuel used in the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Cylinder,Class,,,,,,This class refers to a cylinder within an engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Valve,Class,,,,,,This class refers to a valve associated to a cylinder within an engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Injector,Class,,,,,,This class refers to a fuel injector in a cylinder. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Injection,Class,,,,,,This class refers to the process of fuel injection during an engine experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+PilotInjection,Class,Injection,Is-a,,,,This class refers to the pilot injection of fuel into the engine before the main injection. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+MainInjection,Class,Injection,Is-a,,,,This class refers to the main injection of fuel into the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+PostInjection,Class,Injection,Is-a,,,,This class refers to the post injection of fuel into the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Date,Class,,,,,,This class refers to the date that the experiment was carried out. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Time,Class,,,,,,This class refers to the time that the experiment was carried out. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+StartTime,Class,Time,Is-a,,,,This class refers to the start time of an experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ElapsedTime,Class,Time,Is-a,,,,This class refers to the elapsed time of an experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+DimensionalisedQuantity,Class,,,,,,This class refers to any dimensionalised quantity. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Speed,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the rotational speed at which the crankshaft spins. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Torque,Class,DimensionalisedQuantity,Is-a,,,,This parameter quantifies the torque of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+IMEP,Class,DimensionalisedQuantity,Is-a,,,,This parameter refers to indicated mean effective pressure. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+BMEP,Class,DimensionalisedQuantity,Is-a,,,,This parameter refers to brake mean effective pressure. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ISFC,Class,DimensionalisedQuantity,Is-a,,,,This parameter refers to indicated specific fuel consumption. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+BSFC,Class,DimensionalisedQuantity,Is-a,,,,This parameter refers to brake specific fuel consumption. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+TotFuelVolDelivDyno,Class,DimensionalisedQuantity,Is-a,,,,This parameter refers to the total fuel volume delivery as measured by a dynamometer. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+TotFuelVolDelivECM,Class,DimensionalisedQuantity,Is-a,,,,This parameter refers to the total fuel volume delivery as measured by an engine control module (ECM) sensor. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ManifoldPressure,Class,DimensionalisedQuantity,Is-a,,,,The parameter specifies the pressure in the manifold. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ManifoldTemperature,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the temperature in the manifold. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+AirMassFlowRate,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the mass flow rate of air. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ValveDiameter,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the diameter of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ValveArea,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the area of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+EventHeight,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the valve lift at which an opening/closing event is deemed to occur. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ValveOpening,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the timing of valve opening. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ValveClosing,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the timing of valve closing. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Bore,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the internal diameter of the cylindrical part of the engine cylinder. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Stroke,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the travel distance of the piston along the cylinder in either direction. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ConRodLength,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the length of the connecting rod. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+WristPinOffset,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the wrist pin offset. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+BowlDepth,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the depth of the piston bowl. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+BowlRadius,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the radius of the piston bowl. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+Displacement,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the volume inside the cylinder that is swept by the piston. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+InjPressure,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the injection pressure. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+InjQuantity,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the amount of the injected fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+InjSOI,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the start of injection (SOI). ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+InjEOI,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the end of injection (EOI). ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+InjDuration,Class,DimensionalisedQuantity,Is-a,,,,This parameter specifies the duration of the injection. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+InjDwell,Class,DimensionalisedQuantity,Is-a,,,,"This parameter specifies the dwell time of the injection, which is time between the end of the current pulse and the start of the next one. ",http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+RawWetNOx,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the combined engine-out concentration of NO and NO2 (wet). ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+RawWetHC,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the concentration of engine-out HC (wet). ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+RawWetCO,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the concentration of engine-out CO (wet). ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+NOx,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the combined concentration of engine-out NO and NO2 (dry). ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+HC,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the concentration of engine-out HC (dry). ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+CO,Class,DimensionalisedQuantity,Is-a,,,,This parameter measures the concentration of engine-out CO (dry) measurement. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+PM,Class,DimensionalisedQuantity,Is-a,,,,This parameter indicates the total amount of particulate matter in the measurement. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+PMCarbon,Class,DimensionalisedQuantity,Is-a,,,,This parameter indicates the carbonaceous part of the particulate matter measurement. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+PN,Class,DimensionalisedQuantity,Is-a,,,,This parameter indicates the total number of particulates. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+LiftProfile,Class,Profile,Is-a,,,,This class refers to the lift profile of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+DischargeCoeffProfile,Class,Profile,Is-a,,,,This class refers to the valve discharge coefficient profile. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+InjProfile,Class,Profile,Is-a,,,,This class refers to the injection profile. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+InjFuel,Class,Fuel,Is-a,,,,This class refers to the injection fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+CaseMetadata,Class,Metadata,Is-a,,,,This class defines the metadata of a case. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+CaseEngine,Class,Engine,Is-a,,,,This class defines the engine settings for a case. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+CaseProfile,Class,Profile,Is-a,,,,This class defines a profile that is used/generated in a case. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+CaseEmissions,Class,Emissions,Is-a,,,,This class defines the emissions measured in a case. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+ParticleSizeDistribution,Class,Profile,Is-a,,,,This class refers to a measured particle size distribution. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasMetadata,Object Property,,,EngineExperiment,Metadata,,The object property that links the metadata to the engine experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasEngine,Object Property,,,EngineExperiment,Engine,,The object property that links the engine setup to the engine experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasProfile,Object Property,,,EngineExperiment,Profile,,The object property that links the profile to the engine experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasEmissions,Object Property,,,EngineExperiment,Emissions,,The object property that links the emissions to the engine experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCase,Object Property,,,EngineExperiment,Case,,The object property that links the child case to its parent engine experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasDate,Object Property,,,Metadata,Date,,The object property that records the date the experiment was carried out. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasStartTime,Object Property,,,Metadata,StartTime,,The object property that records the start-time of the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasElapsedTime,Object Property,,,Metadata,ElapsedTime,,The object property that records the duration of the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasIntakeManifold,Object Property,,,Engine,Manifold,,The object property that specifies the intake manifold of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasExhaustManifold,Object Property,,,Engine,Manifold,,The object property that specifies the exhaust manifold of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCylinder,Object Property,,,Engine,Cylinder,,The object property that specifies a cylinder of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasSpeed,Object Property,,,Engine,Speed,,The object property that indicates the speed of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasTorque,Object Property,,,Engine,Torque,,The object property that indicates the torque of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasIMEP,Object Property,,,Engine,IMEP,,The object property that indicates the indicated mean effective pressure of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasBMEP,Object Property,,,Engine,BMEP,,The object property that indicates the brake mean effective pressure of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasISFC,Object Property,,,Engine,ISFC,,The object property that indicates the indicated specific fuel consumption of the  engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasBSFC,Object Property,,,Engine,BSFC,,The object property that indicates the brake specific fuel consumption of the engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasTotFuelVolDelivDyno,Object Property,,,Engine,TotFuelVolDelivDyno,,The object property that indicates the total fuel volume delivery as measured by  a dynamometer. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasTotFuelVolDelivECM,Object Property,,,Engine,TotFuelVolDelivECM,,The object property that indicates the total fuel volume delivery as measured by an ECM sensor. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasPilotInjection,Object Property,,,Injector,PilotInjection,,The object property that specifies the pilot injection of fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasMainInjection,Object Property,,,Injector,MainInjection,,The object property that specifies the main injection of fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasPostInjection,Object Property,,,Injector,PostInjection,,The object property that specifies the post injection of fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasManifoldPressure,Object Property,,,Manifold,ManifoldPressure,,The object property that specifies the pressure in the manifold. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasManifoldTemperature,Object Property,,,Manifold,ManifoldTemperature,,The object property that specifies the temperature in the manifold. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasAirMassFlowRate,Object Property,,,Manifold,AirMassFlowRate,,The object property that specifies the air mass flow rate. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasFuel,Object Property,,,Manifold,Fuel,,The object property that links a fuel with a manifold. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasValveDiameter,Object Property,,,Valve,ValveDiameter,,The object property that specifies the diameter of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasValveArea,Object Property,,,Valve,ValveArea,,The object property that specifies the area of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasEventHeight,Object Property,,,Valve,EventHeight,,The object property that specifies the event height of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasValveOpening,Object Property,,,Valve,ValveOpening,,The object property that specifies the opening timing of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasValveClosing,Object Property,,,Valve,ValveClosing,,The object property that specifies the closing timing of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasLiftProfile,Object Property,,,Valve,LiftProfile,,The object property that describes the lift profile of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasDischargeCoeffProfile,Object Property,,,Valve,DischargeCoeffProfile,,The object property that describes the discharge coefficient profile of the valve. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasIntakeValve,Object Property,,,Cylinder,Valve,,The object property that specifies an intake valve of a cylinder. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasExhaustValve,Object Property,,,Cylinder,Valve,,The object property that specifies an exhaust value of a cylinder. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasBore,Object Property,,,Cylinder,Bore,,The object property that describes the bore of cylinder. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasStroke,Object Property,,,Cylinder,Stroke,,The object property that describes the stroke of cylinder. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasConRodLength,Object Property,,,Cylinder,ConRodLength,,The object property that describes the length of the connecting rod. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasWristPinOffset,Object Property,,,Cylinder,WristPinOffset,,The object property that describes the wrist pin offset. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasBowlDepth,Object Property,,,Cylinder,BowlDepth,,The object property that describes the depth of the piston bowl. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasBowlRadius,Object Property,,,Cylinder,BowlRadius,,The object property that describes the radius of the piston bowl. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasDisplacement,Object Property,,,Cylinder,Displacement,,The object property that describes the displacement volume of a cylinder. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjector,Object Property,,,Cylinder,Injector,,The object property that specifies the fuel injector of a cylinder. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjPressure,Object Property,,,Injection,InjPressure,,The object property that specifies the pressure at which the fuel is injected. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjQuantity,Object Property,,,Injection,InjQuantity,,The object property that specifies the quantity of the injection. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjSOI,Object Property,,,Injection,InjSOI,,The object property that specifies the start of injection. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjEOI,Object Property,,,Injection,InjEOI,,The object property that specifies the end of injection. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjDuration,Object Property,,,Injection,InjDuration,,The object property that specifies the duration of injection. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjDwell,Object Property,,,Injection,InjDwell,,The object property that specifies the time between the end of an injection and the start of the next one. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjProfile,Object Property,,,Injection,InjProfile,,The object property that specifies the profile of injection. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasInjFuel,Object Property,,,Injection,InjFuel,,The object property that specifies the fuel of injection. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasRawWetNOx,Object Property,,,Emissions,RawWetNOx,,The object property that specifies the wet measurement of the combined concentration of NO and NO2. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasRawWetHC,Object Property,,,Emissions,RawWetHC,,The object property that specifies the wet measurement of HC. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasRawWetCO,Object Property,,,Emissions,RawWetCO,,The object property that specifies the wet measurement of CO. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasNOx,Object Property,,,Emissions,NOx,,The object property that specifies the dry measurement of the combined concentration of NO and NO2. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasHC,Object Property,,,Emissions,HC,,The object property that specifies the dry measurement of HC. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCO,Object Property,,,Emissions,CO,,The object property that specifies the dry measurement of CO. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasPM,Object Property,,,Emissions,PM,,The object property that specifies the measurement of total particulate matter. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasPMCarbon,Object Property,,,Emissions,PMCarbon,,The object property that specifies the measurement of carbonaceous particulate matter. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasPN,Object Property,,,Emissions,PN,,The object property that specifies the measurement of total particulate number. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasParticleSizeDistribution,Object Property,,,Emissions,ParticleSizeDistribution,,The object property that specifies a particle size distribution. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCaseMetadata,Object Property,,,Case,CaseMetadata,,The object property that specifies the metadata of a child case. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCaseEngine,Object Property,,,Case,CaseEngine,,The object property that specifies the engine settings of a child case. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCaseProfile,Object Property,,,Case,CaseProfile,,The object property that specifies the profile of a child case. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCaseEmissions,Object Property,,,Case,CaseEmissions,,The object property that specifies the emissions of a child case. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCopyright,Data Property,,,Metadata,String,,The data property that states the copyright of the data associated with this experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasID,Data Property,,,Metadata,String,,The data property that labels the ID of the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasStudyType,Data Property,,,Metadata,String,,The data property that specifies the type of the study that been carried out. This could be experimental or computational. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasSequenceNo,Data Property,,,Metadata,String,,The data property that indicates the sequence number of the experiment that been carried out. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasRecordID,Data Property,,,Metadata,String,,The data property that links the experiment to other records. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasName,Data Property,,,Metadata,String,,The data property that records the name of the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasReference,Data Property,,,Metadata,String,,The data property that records an arbitrary external reference. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasDescription,Data Property,,,Engine,String,,The data property that describes engine or the experiment. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasOperatingMode,Data Property,,,Engine,String,,"The data property that describes the engine operating mode, e.g. spark ignition or compression ignition. ",http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasNumStrokes,Data Property,,,Engine,Int,,The data property that indicates the number of strokes of the engine cycle. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasFuelAirEquivRatio,Data Property,,,Manifold,Float,,The data property that measures the equivalence ratio between fuel and air of the initial mixture. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasFreshFuelAirEquivRatio,Data Property,,,Manifold,Float,,The data property that measures the equivalence ratio of incoming fresh charge (not including external Exhaust Gas Recirculation). ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasExtEGRMassFrac,Data Property,,,Manifold,Float,,The data property that defines the mass fraction of the initial mixture in the cylinder which is meant to consist of externally recirculated exhaust gases. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasNumValves,Data Property,,,Valve,Int,,The data property that indicates the number of valves. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasProfileIndepVar,Data Property,,,Profile,String,,The data property that specifies the independent variable in the profile. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasProfileIndepUnit,Data Property,,,Profile,String,,The data property that specifies the unit of independent variable in the profile. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasProfileDepVar,Data Property,,,Profile,String,,The data property that specifies the dependent variable in the profile. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasProfileDepUnit,Data Property,,,Profile,String,,The data property that specifies the unit of dependent variable in the profile. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasProfileData,Data Property,,,Profile,String,,The data property that specifies the data stored in the profile. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasNumCylinder,Data Property,,,Cylinder,String,,The data property that indicates the number of cylinders in an engine. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCompressionRatio,Data Property,,,Cylinder,Float,,The data property that indicates the ratio between the total volume swept by the piston divided by the total compressed volume with the piston at the top dead centre. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasIntEGRMassFrac,Data Property,,,Cylinder,Float,,The data property that defines the mass fraction of the initial mixture in the cylinder which is meant to consist of trapped residual gases. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasNumNozzles,Data Property,,,Injector,Int,,The data property that specifies the number of nozzle holes of an injector. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasNozzleDiameter,Data Property,,,Injector,Float,,The data property that specifies the diameter of the nozzle holes of an injector. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasConeHalfAngle,Data Property,,,Injector,Float,,The data property that specifies the half-angle of the spray cone of an injector. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasFuelName,Data Property,,,Fuel,String,,The data property that indicates the name of the fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasCtoHRatio,Data Property,,,Fuel,Float,,The data property that indicates the ratio between carbon and hydrogen atoms in the empirical formula of a fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasAFRstoich,Data Property,,,Fuel,Float,,The data property that indicates the stoichiometric air-fuel ratio. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasRON,Data Property,,,Fuel,Float,,The data property that indicates the Research Octane Number of a fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasMON,Data Property,,,Fuel,Float,,The data property that indicates the Motor Octane Number of a fuel. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasNOxCorrectionFactor,Data Property,,,Emissions,Float,,"The data property that indicates the correction factor for NOx emissions measurement, taking humidity, temperature, etc. into account. ",http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasValue,Data Property,,,DimensionalisedQuantity,Float,,The data property that specifies the value of dimensionalised quantity. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+hasUnit,Data Property,,,DimensionalisedQuantity,String,,The data property that specifies the unit of dimensionalised quantity. ,http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl
+http://www.w3.org/2004/02/skos/core#altLabel,Data Property,,,,String,,,

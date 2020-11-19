@@ -1,12 +1,19 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://localhost:8080/kb/ontoengine.owl#"
-     xml:base="http://localhost:8080/kb/ontoengine.owl"
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:OntoEngine="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://localhost:8080/kb/ontoengine.owl"/>
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 November 2020</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2486cbbc4fa3ccbb9902a00a66d640ac6e57d191</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoEngine is an ontology developed for representing internal combustion engine.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
     
 
 
@@ -22,652 +29,782 @@
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasAirMassFlowRate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasAirMassFlowRate -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasAirMassFlowRate">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#AirMassFlowRate"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasAirMassFlowRate">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AirMassFlowRate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the air mass flow rate. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasBMEP -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBMEP -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBMEP">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#BMEP"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBMEP">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BMEP"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that indicates the brake mean effective pressure of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasBSFC -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBSFC -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBSFC">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#BSFC"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBSFC">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BSFC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that indicates the brake specific fuel consumption of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasBore -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBore -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBore">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Bore"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBore">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Bore"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the bore of cylinder. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasBowlDepth -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBowlDepth -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBowlDepth">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#BowlDepth"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBowlDepth">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlDepth"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the depth of the piston bowl. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasBowlRadius -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBowlRadius -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasBowlRadius">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#BowlRadius"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasBowlRadius">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlRadius"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the radius of the piston bowl. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCO -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCO -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCO">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CO"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCO">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CO"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the dry measurement of CO. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCase -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCase -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCase">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCase">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Case"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that links the child case to its parent engine experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCaseEmissions -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCaseEmissions -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCaseEmissions">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CaseEmissions"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCaseEmissions">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Case"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseEmissions"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the emissions of a child case. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCaseEngine -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCaseEngine -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCaseEngine">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CaseEngine"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCaseEngine">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Case"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseEngine"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the engine settings of a child case. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCaseMetadata -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCaseMetadata -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCaseMetadata">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CaseMetadata"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCaseMetadata">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Case"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseMetadata"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the metadata of a child case. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCaseProfile -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCaseProfile -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCaseProfile">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Case"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#CaseProfile"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCaseProfile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Case"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseProfile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the profile of a child case. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasConRodLength -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasConRodLength -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasConRodLength">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ConRodLength"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasConRodLength">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ConRodLength"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the length of the connecting rod. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCylinder -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCylinder -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCylinder">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCylinder">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies a cylinder of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasDate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDate -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasDate">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Date"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDate">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Date"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that records the date the experiment was carried out. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasDischargeCoeffProfile -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDischargeCoeffProfile -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasDischargeCoeffProfile">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#DischargeCoeffProfile"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDischargeCoeffProfile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DischargeCoeffProfile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the discharge coefficient profile of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasDisplacement -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDisplacement -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasDisplacement">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Displacement"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDisplacement">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Displacement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the displacement volume of a cylinder. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasElapsedTime -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasElapsedTime -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasElapsedTime">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ElapsedTime"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasElapsedTime">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ElapsedTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that records the duration of the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasEmissions -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasEmissions -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasEmissions">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasEmissions">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that links the emissions to the engine experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasEngine -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasEngine -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasEngine">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasEngine">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that links the engine setup to the engine experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasEventHeight -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasEventHeight -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasEventHeight">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#EventHeight"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasEventHeight">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EventHeight"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the event height of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasExhaustManifold -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExhaustManifold -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasExhaustManifold">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExhaustManifold">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the exhaust manifold of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasExhaustValve -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExhaustValve -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasExhaustValve">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExhaustValve">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies an exhaust value of a cylinder. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasFuel -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFuel -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasFuel">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFuel">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that links a fuel with a manifold. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasHC -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasHC -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasHC">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#HC"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasHC">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#HC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the dry measurement of HC. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasIMEP -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIMEP -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasIMEP">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#IMEP"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIMEP">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IMEP"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that indicates the indicated mean effective pressure of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasISFC -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasISFC -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasISFC">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ISFC"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasISFC">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ISFC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that indicates the indicated specific fuel consumption of the  engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjDuration -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjDuration -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjDuration">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjDuration"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjDuration">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjDuration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the duration of injection. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjDwell -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjDwell -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjDwell">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjDwell"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjDwell">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjDwell"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the time between the end of an injection and the start of the next one. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjEOI -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjEOI -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjEOI">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjEOI"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjEOI">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjEOI"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the end of injection. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjFuel -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjFuel -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjFuel">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjFuel"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjFuel">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjFuel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the fuel of injection. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjPressure -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjPressure -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjPressure">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjPressure"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjPressure">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjPressure"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the pressure at which the fuel is injected. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjProfile -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjProfile -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjProfile">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjProfile"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjProfile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjProfile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the profile of injection. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjQuantity -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjQuantity -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjQuantity">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjQuantity"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjQuantity">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the quantity of the injection. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjSOI -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjSOI -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjSOI">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#InjSOI"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjSOI">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjSOI"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the start of injection. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasInjector -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjector -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasInjector">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasInjector">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the fuel injector of a cylinder. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasIntakeManifold -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeManifold -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasIntakeManifold">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeManifold">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the intake manifold of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasIntakeValve -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeValve -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasIntakeValve">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntakeValve">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies an intake valve of a cylinder. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasLiftProfile -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasLiftProfile -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasLiftProfile">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#LiftProfile"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasLiftProfile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#LiftProfile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the lift profile of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasMainInjection -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasMainInjection -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasMainInjection">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#MainInjection"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasMainInjection">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#MainInjection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the main injection of fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasManifoldPressure -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasManifoldPressure -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasManifoldPressure">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ManifoldPressure"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasManifoldPressure">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ManifoldPressure"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the pressure in the manifold. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasManifoldTemperature -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasManifoldTemperature -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasManifoldTemperature">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ManifoldTemperature"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasManifoldTemperature">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ManifoldTemperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the temperature in the manifold. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasMetadata -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasMetadata -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasMetadata">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasMetadata">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that links the metadata to the engine experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasNOx -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNOx -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNOx">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#NOx"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNOx">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#NOx"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the dry measurement of the combined concentration of NO and NO2. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasPM -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPM -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPM">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PM"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPM">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PM"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the measurement of total particulate matter. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasPMCarbon -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPMCarbon -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPMCarbon">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PMCarbon"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPMCarbon">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PMCarbon"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the measurement of carbonaceous particulate matter. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasPN -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPN -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPN">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PN"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPN">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PN"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the measurement of total particulate number. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasParticleSizeDistribution -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasParticleSizeDistribution -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasParticleSizeDistribution">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ParticleSizeDistribution"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasParticleSizeDistribution">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ParticleSizeDistribution"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies a particle size distribution. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasPilotInjection -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPilotInjection -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPilotInjection">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PilotInjection"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPilotInjection">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PilotInjection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the pilot injection of fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasPostInjection -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPostInjection -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasPostInjection">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#PostInjection"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasPostInjection">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PostInjection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the post injection of fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfile -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfile -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfile">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineExperiment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that links the profile to the engine experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasRawWetCO -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRawWetCO -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRawWetCO">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#RawWetCO"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRawWetCO">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetCO"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the wet measurement of CO. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasRawWetHC -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRawWetHC -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRawWetHC">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#RawWetHC"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRawWetHC">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetHC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the wet measurement of HC. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasRawWetNOx -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRawWetNOx -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRawWetNOx">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#RawWetNOx"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRawWetNOx">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetNOx"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the wet measurement of the combined concentration of NO and NO2. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasSpeed -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasSpeed -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasSpeed">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Speed"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasSpeed">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Speed"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that indicates the speed of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasStartTime -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStartTime -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasStartTime">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#StartTime"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStartTime">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#StartTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that records the start-time of the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasStroke -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStroke -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasStroke">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Stroke"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStroke">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Stroke"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the stroke of cylinder. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasTorque -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasTorque -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasTorque">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#Torque"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasTorque">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Torque"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that indicates the torque of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasTotFuelVolDelivDyno -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasTotFuelVolDelivDyno -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasTotFuelVolDelivDyno">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivDyno"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasTotFuelVolDelivDyno">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#TotFuelVolDelivDyno"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that indicates the total fuel volume delivery as measured by  a dynamometer. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasTotFuelVolDelivECM -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasTotFuelVolDelivECM -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasTotFuelVolDelivECM">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivECM"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasTotFuelVolDelivECM">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#TotFuelVolDelivECM"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that indicates the total fuel volume delivery as measured by an ECM sensor. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasValveArea -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValveArea -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValveArea">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ValveArea"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValveArea">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the area of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasValveClosing -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValveClosing -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValveClosing">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ValveClosing"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValveClosing">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveClosing"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the closing timing of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasValveDiameter -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValveDiameter -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValveDiameter">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ValveDiameter"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValveDiameter">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveDiameter"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the diameter of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasValveOpening -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValveOpening -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValveOpening">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#ValveOpening"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValveOpening">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveOpening"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that specifies the opening timing of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasWristPinOffset -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasWristPinOffset -->
 
 
-    <owl:ObjectProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasWristPinOffset">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-        <rdfs:range rdf:resource="http://localhost:8080/kb/ontoengine.owl#WristPinOffset"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasWristPinOffset">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#WristPinOffset"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The object property that describes the wrist pin offset. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
@@ -684,332 +821,398 @@
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasAFRstoich -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasAFRstoich -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasAFRstoich">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasAFRstoich">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the stoichiometric air-fuel ratio. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCompressionRatio -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCompressionRatio -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCompressionRatio">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCompressionRatio">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the ratio between the total volume swept by the piston divided by the total compressed volume with the piston at the top dead centre. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasConeHalfAngle -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasConeHalfAngle -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasConeHalfAngle">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasConeHalfAngle">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the half-angle of the spray cone of an injector. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCopyright -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCopyright -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCopyright">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCopyright">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that states the copyright of the data associated with this experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasCtoHRatio -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCtoHRatio -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasCtoHRatio">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasCtoHRatio">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the ratio between carbon and hydrogen atoms in the empirical formula of a fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasDescription -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDescription -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasDescription">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasDescription">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that describes engine or the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasExtEGRMassFrac -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExtEGRMassFrac -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasExtEGRMassFrac">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasExtEGRMassFrac">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that defines the mass fraction of the initial mixture in the cylinder which is meant to consist of externally recirculated exhaust gases. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasFreshFuelAirEquivRatio -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFreshFuelAirEquivRatio -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasFreshFuelAirEquivRatio">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFreshFuelAirEquivRatio">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that measures the equivalence ratio of incoming fresh charge (not including external Exhaust Gas Recirculation). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasFuelAirEquivRatio -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFuelAirEquivRatio -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasFuelAirEquivRatio">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFuelAirEquivRatio">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that measures the equivalence ratio between fuel and air of the initial mixture. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasFuelName -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFuelName -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasFuelName">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasFuelName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the name of the fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasID -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasID -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasID">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that labels the ID of the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasIntEGRMassFrac -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntEGRMassFrac -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasIntEGRMassFrac">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasIntEGRMassFrac">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that defines the mass fraction of the initial mixture in the cylinder which is meant to consist of trapped residual gases. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasMON -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasMON -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasMON">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasMON">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the Motor Octane Number of a fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasNOxCorrectionFactor -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNOxCorrectionFactor -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNOxCorrectionFactor">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNOxCorrectionFactor">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the correction factor for NOx emissions measurement, taking humidity, temperature, etc. into account. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasName -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasName -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasName">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that records the name of the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasNozzleDiameter -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNozzleDiameter -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNozzleDiameter">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNozzleDiameter">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the diameter of the nozzle holes of an injector. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasNumCylinder -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNumCylinder -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNumCylinder">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNumCylinder">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the number of cylinders in an engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasNumNozzles -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNumNozzles -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNumNozzles">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injector"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNumNozzles">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the number of nozzle holes of an injector. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasNumStrokes -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNumStrokes -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNumStrokes">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNumStrokes">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the number of strokes of the engine cycle. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasNumValves -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNumValves -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasNumValves">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Valve"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasNumValves">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the number of valves. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasOperatingMode -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasOperatingMode -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasOperatingMode">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasOperatingMode">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that describes the engine operating mode, e.g. spark ignition or compression ignition. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileData -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileData -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileData">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileData">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the data stored in the profile. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileDepUnit -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileDepUnit -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileDepUnit">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileDepUnit">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the unit of dependent variable in the profile. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileDepVar -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileDepVar -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileDepVar">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileDepVar">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the dependent variable in the profile. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileIndepUnit -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileIndepUnit -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileIndepUnit">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileIndepUnit">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the unit of independent variable in the profile. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasProfileIndepVar -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileIndepVar -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasProfileIndepVar">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasProfileIndepVar">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the independent variable in the profile. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasRON -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRON -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRON">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRON">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the Research Octane Number of a fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasRecordID -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRecordID -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasRecordID">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasRecordID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that links the experiment to other records. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasReference -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasReference -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasReference">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasReference">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that records an arbitrary external reference. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasSequenceNo -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasSequenceNo -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasSequenceNo">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasSequenceNo">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that indicates the sequence number of the experiment that been carried out. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasStudyType -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStudyType -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasStudyType">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasStudyType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the type of the study that been carried out. This could be experimental or computational. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasUnit -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasUnit -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasUnit">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasUnit">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the unit of dimensionalised quantity. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#hasValue -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValue -->
 
 
-    <owl:DatatypeProperty rdf:about="http://localhost:8080/kb/ontoengine.owl#hasValue">
-        <rdfs:domain rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#hasValue">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The data property that specifies the value of dimensionalised quantity. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
@@ -1035,575 +1238,724 @@
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#AirMassFlowRate -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AirMassFlowRate -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#AirMassFlowRate">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#AirMassFlowRate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the mass flow rate of air. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#BMEP -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BMEP -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#BMEP">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BMEP">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter refers to brake mean effective pressure. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#BSFC -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BSFC -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#BSFC">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BSFC">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter refers to brake specific fuel consumption. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Bore -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Bore -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Bore">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Bore">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the internal diameter of the cylindrical part of the engine cylinder. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#BowlDepth -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlDepth -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#BowlDepth">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlDepth">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the depth of the piston bowl. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#BowlRadius -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlRadius -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#BowlRadius">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#BowlRadius">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the radius of the piston bowl. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#CO -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CO -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CO">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CO">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the concentration of engine-out CO (dry) measurement. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Case -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Case -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Case"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#CaseEmissions -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CaseEmissions">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Case">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to a child case in the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#CaseEngine -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseEmissions -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CaseEngine">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Engine"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseEmissions">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class defines the emissions measured in a case. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#CaseMetadata -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseEngine -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CaseMetadata">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseEngine">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class defines the engine settings for a case. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#CaseProfile -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseMetadata -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#CaseProfile">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseMetadata">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class defines the metadata of a case. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#ConRodLength -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseProfile -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ConRodLength">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CaseProfile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class defines a profile that is used/generated in a case. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Cylinder -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ConRodLength -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Cylinder"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#Date -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Date"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#DischargeCoeffProfile -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#DischargeCoeffProfile">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ConRodLength">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the length of the connecting rod. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Displacement -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Displacement">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Cylinder">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to a cylinder within an engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#ElapsedTime -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Date -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ElapsedTime">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Time"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Date">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the date that the experiment was carried out. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Emissions -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Emissions"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#Engine -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Engine"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#EngineExperiment -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#EngineExperiment"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#EventHeight -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#EventHeight">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to any dimensionalised quantity. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Fuel -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DischargeCoeffProfile -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#HC -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#HC">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DischargeCoeffProfile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the valve discharge coefficient profile. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#IMEP -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Displacement -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#IMEP">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Displacement">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the volume inside the cylinder that is swept by the piston. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#ISFC -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ElapsedTime -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ISFC">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ElapsedTime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Time"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the elapsed time of an experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#InjDuration -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjDuration">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Emissions">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to emissions measurements performed in the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#InjDwell -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjDwell">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Engine">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the engine configuration in the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#InjEOI -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineExperiment -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjEOI">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EngineExperiment">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the root element. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#InjFuel -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EventHeight -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjFuel">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Fuel"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#EventHeight">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the valve lift at which an opening/closing event is deemed to occur. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#InjPressure -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjPressure">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to a fuel used in the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#InjProfile -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#HC -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjProfile">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#HC">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the concentration of engine-out HC (dry). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#InjQuantity -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IMEP -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjQuantity">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#IMEP">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter refers to indicated mean effective pressure. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#InjSOI -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ISFC -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#InjSOI">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ISFC">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter refers to indicated specific fuel consumption. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Injection -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjDuration -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Injection"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#Injector -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Injector"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#LiftProfile -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#LiftProfile">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjDuration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the duration of the injection. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#MainInjection -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjDwell -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#MainInjection">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjDwell">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the dwell time of the injection, which is time between the end of the current pulse and the start of the next one. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Manifold -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjEOI -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Manifold"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#ManifoldPressure -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ManifoldPressure">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjEOI">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the end of injection (EOI). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#ManifoldTemperature -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjFuel -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ManifoldTemperature">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjFuel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Fuel"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the injection fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Metadata -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjPressure -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Metadata"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#NOx -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#NOx">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjPressure">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the injection pressure. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#PM -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjProfile -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PM">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjProfile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the injection profile. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#PMCarbon -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjQuantity -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PMCarbon">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjQuantity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the amount of the injected fuel. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#PN -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjSOI -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PN">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#InjSOI">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the start of injection (SOI). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#ParticleSizeDistribution -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ParticleSizeDistribution">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Profile"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the process of fuel injection during an engine experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#PilotInjection -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PilotInjection">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injector">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to a fuel injector in a cylinder. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#PostInjection -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#LiftProfile -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#PostInjection">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Injection"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#LiftProfile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the lift profile of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Profile -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#MainInjection -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Profile"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#RawWetCO -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#RawWetCO">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#MainInjection">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the main injection of fuel into the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#RawWetHC -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#RawWetHC">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Manifold">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to a manifold within an engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#RawWetNOx -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ManifoldPressure -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#RawWetNOx">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ManifoldPressure">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The parameter specifies the pressure in the manifold. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Speed -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ManifoldTemperature -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Speed">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ManifoldTemperature">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the temperature in the manifold. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#StartTime -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#StartTime">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#Time"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Metadata">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to metadata of the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Stroke -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#NOx -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Stroke">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#NOx">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the combined concentration of engine-out NO and NO2 (dry). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Time -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PM -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Time"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#Torque -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Torque">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PM">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter indicates the total amount of particulate matter in the measurement. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivDyno -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PMCarbon -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivDyno">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PMCarbon">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter indicates the carbonaceous part of the particulate matter measurement. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivECM -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PN -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#TotFuelVolDelivECM">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PN">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter indicates the total number of particulates. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#Valve -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ParticleSizeDistribution -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#Valve"/>
-    
-
-
-    <!-- http://localhost:8080/kb/ontoengine.owl#ValveArea -->
-
-
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ValveArea">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ParticleSizeDistribution">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to a measured particle size distribution. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#ValveClosing -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PilotInjection -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ValveClosing">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PilotInjection">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the pilot injection of fuel into the engine before the main injection. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#ValveDiameter -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PostInjection -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ValveDiameter">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#PostInjection">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Injection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the post injection of fuel into the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#ValveOpening -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#ValveOpening">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Profile">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to a profile that is used/generated in the experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://localhost:8080/kb/ontoengine.owl#WristPinOffset -->
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetCO -->
 
 
-    <owl:Class rdf:about="http://localhost:8080/kb/ontoengine.owl#WristPinOffset">
-        <rdfs:subClassOf rdf:resource="http://localhost:8080/kb/ontoengine.owl#DimensionalisedQuantity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetCO">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the concentration of engine-out CO (wet). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetHC -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetHC">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the concentration of engine-out HC (wet). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetNOx -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#RawWetNOx">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the combined engine-out concentration of NO and NO2 (wet). </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Speed -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Speed">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the rotational speed at which the crankshaft spins. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#StartTime -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#StartTime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Time"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the start time of an experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Stroke -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Stroke">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the travel distance of the piston along the cylinder in either direction. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Time -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Time">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to the time that the experiment was carried out. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Torque -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Torque">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter quantifies the torque of the engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#TotFuelVolDelivDyno -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#TotFuelVolDelivDyno">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter refers to the total fuel volume delivery as measured by a dynamometer. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#TotFuelVolDelivECM -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#TotFuelVolDelivECM">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter refers to the total fuel volume delivery as measured by an engine control module (ECM) sensor. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#Valve">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This class refers to a valve associated to a cylinder within an engine. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveArea -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveArea">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the area of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveClosing -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveClosing">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the timing of valve closing. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveDiameter -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveDiameter">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter measures the diameter of the valve. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveOpening -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#ValveOpening">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the timing of valve opening. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#WristPinOffset -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#WristPinOffset">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#DimensionalisedQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This parameter specifies the wrist pin offset. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl</rdfs:isDefinedBy>
     </owl:Class>
 </rdf:RDF>
 
