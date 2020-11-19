@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.cmclinnovations.ontochem.model.configuration.OntoChemKB;
 import com.cmclinnovations.ontochem.model.configuration.OntoKinVocabulary;
 import com.cmclinnovations.ontochem.model.configuration.SpringConfiguration;
 import com.cmclinnovations.ontochem.model.configuration.TBoxConfiguration;

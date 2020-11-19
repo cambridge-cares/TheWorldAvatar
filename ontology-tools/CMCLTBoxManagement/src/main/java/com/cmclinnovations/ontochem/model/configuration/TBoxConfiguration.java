@@ -20,22 +20,22 @@ public class TBoxConfiguration {
 	@Value("${tbox.iri}")
 	private String tBoxIri;
 
-	@Value("${kb.root.directory}")
+	@Value("${tbox.management.kb.root.directory}")
 	private String kbRootDirectory;
 
-	@Value("${kb.url}")
+	@Value("${tbox.management.kb.url}")
 	private String kbURL;
 
-	@Value("${ontology.file.path}")
+	@Value("${tbox.management.ontology.file.path}")
 	private String ontolgyFilePath;
 	
-	@Value("${ontology.file.name}")
+	@Value("${tbox.management.ontology.file.name}")
 	private String ontolgyFileName;
 
-	@Value("${kb.file.path}")
+	@Value("${tbox.management.kb.file.path}")
 	private String kbFilePath;
 
-	@Value("${kb.file.name}")
+	@Value("${tbox.management.kb.file.name}")
 	private String kbFileName;
 
 	public String gettBoxIri() {
