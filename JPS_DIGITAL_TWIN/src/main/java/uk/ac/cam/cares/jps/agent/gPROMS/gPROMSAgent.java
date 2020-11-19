@@ -53,9 +53,6 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 
-
-
-
 /**
  * gPROMS Agent developed for setting-up and running gPROMS chemical network on HPC.
  * The input files for gPROMS execution should be placed in user.home//input folder
@@ -73,20 +70,15 @@ public class gPROMSAgent extends JPSAgent {
 	static SlurmJob slurmJob;
 	public static ApplicationContext applicationContextgPROMSAgent;
 	public static gPROMSAgentProperty gpROMSAgentProperty;
-
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
 	public static final String UNKNOWN_REQUEST = "The request is unknown to gPROMS Agent";
-
 	public static final String JOB_REQUEST_PATH = "/job/request";
 	public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
 	public static final String JOB_STATISTICS_PATH = "/job/statistics";
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
 	public static final String TEMP = "?Temp";
-	
-	
 	// Create a temporary folder in the user's home location
 	private Path temporaryDirectory = null;
-
 	public JSONObject produceStatistics(String input) throws IOException, gPROMSAgentException {
 		System.out.println("Received a request to send statistics.\n");
 		logger.info("Received a request to send statistics.\n");
@@ -96,7 +88,6 @@ public class gPROMSAgent extends JPSAgent {
 		initAgentProperty();
 		return jobSubmission.getStatistics(input);
 	}
-
 	@RequestMapping(value = gPROMSAgent.JOB_SHOW_STATISTICS_PATH, method = RequestMethod.GET)
 	@ResponseBody
 	public String showStatistics() throws IOException, gPROMSAgentException {
@@ -111,7 +102,6 @@ public class gPROMSAgent extends JPSAgent {
 	 *
 	 * @throws gPROMSAgentException
 	 */
-
 	public void init() throws ServletException {
 		logger.info("---------- gPROMS Simulation Agent has started ----------");
 		System.out.println("---------- gPROMS Simulation Agent has started ----------");
@@ -139,8 +129,6 @@ public class gPROMSAgent extends JPSAgent {
 		System.out.println("---------- gPROMS Simulation jobs are being monitored  ----------");
 
 	}
-
-
 	/**
 	 * Initialises the unique instance of the gpROMSAgentProperty class that<br>
 	 * reads all properties of gPROMSAgent from the kinetics-agent property
@@ -390,9 +378,6 @@ public class gPROMSAgent extends JPSAgent {
 			logger.error("gPROMSsAgent: IOException.".concat(e.getMessage()));
 			}
 	}
-
-	
-	
 	/**
 	 * Executes post-processing on the input job folder, returning true if the post-processing task returns
 	 * successfully.
@@ -457,22 +442,17 @@ public class gPROMSAgent extends JPSAgent {
         for (int j = 0; j < columnCount; j++)
         {
             values[i][j] = data[i][j];
-        
-        csvWriter.append(String.valueOf(values[i][j]));
-        csvWriter.append(",");
+            csvWriter.append(String.valueOf(values[i][j]));
+            csvWriter.append(",");
         }
-        csvWriter.append("\n");
-        
+        csvWriter.append("\n");    
     }
-
     csvWriter.flush();
     csvWriter.close();
     File dest = new File(System.getProperty("user.home")+"\\matlab\\matlab.csv");
     Files.copy(file.toPath(),dest.toPath());
     System.out.println("Copied matlab file to input folder");
 }
-	
-	
 	/**
 	 * Sets up a quantum job by creating the job folder and the following files</br>
 	 * under this folder:</br>
@@ -537,7 +517,6 @@ public class gPROMSAgent extends JPSAgent {
 					"http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#")
 					.addPrefix("system", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
 					.addPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#").addVar(TEMP)
-//				    .addWhere("?s", "?p", "?o");
 					.addWhere("?x", "rdf:type", "system:ScalarValue").addWhere("?x", "system:value", TEMP);
 			System.out.println(sb.toString());
 

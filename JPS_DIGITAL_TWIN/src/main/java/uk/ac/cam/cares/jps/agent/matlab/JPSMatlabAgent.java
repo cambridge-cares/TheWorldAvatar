@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 /**
  *Matlab Agent developed for setting-up and running electrical network
@@ -21,7 +21,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
  * @author Gourab Karmakar (gourab.karmakar@cares.cam.ac.uk)
  */
 @WebServlet("/JPSMatlabAgent")
-public class JPSMatlabAgent extends JPSHttpServlet {
+public class JPSMatlabAgent extends JPSAgent {
 	private static final long serialVersionUID = 1L;
        
     /**
@@ -43,7 +43,7 @@ public class JPSMatlabAgent extends JPSHttpServlet {
 	 */
     
 	@Override
-	   	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	   	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 			JSONObject jo = AgentCaller.readJsonParameter(request);
 			String current = System.getProperty("user.home");
 			String pathToInputFile = current + "\\matlab\\matlab.csv";
