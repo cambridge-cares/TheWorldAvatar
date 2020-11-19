@@ -108,13 +108,8 @@ public class SparqlOverHttpService {
 			}
 			kbClient.setUpdateEndpoint(sparqlServiceURIForUpdate);
 			kbClient.setQuery(messageBody);
-			try {
-				int response = kbClient.executeUpdate();
-				return ""+response;
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			int response = kbClient.executeUpdate();
+			return ""+response;
 		}
 		else {
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
@@ -187,17 +182,14 @@ public class SparqlOverHttpService {
 			}
 			kbClient.setQueryEndpoint(sparqlServiceURIForQuery);
 			kbClient.setQuery(sparqlQuery);
-			try {
-				JSONArray jsonArray = kbClient.executeQuery();
-				if(jsonArray!=null){
-					return CDL.toString(jsonArray);
-				}else{
-					return null;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+			JSONArray jsonArray = kbClient.executeQuery();
+			if(jsonArray!=null){
+				return CDL.toString(jsonArray);
+			}else{
+				return null;
 			}
+
 		}else {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
 		}

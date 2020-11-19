@@ -327,7 +327,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @throws SQLException
 	 */
 	@Override
-	public String execute() throws SQLException{
+	public String execute(){
 		return execute(this.query);
 	}
 	
@@ -339,10 +339,10 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @throws SQLException
 	 */
 	@Override
-	public String execute(String query) throws SQLException{
+	public String execute(String query){
 		JSONArray result = executeQuery(query);
 		if(result==null){
-			throw new SQLException();
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: sparql query result is null.");
 		}else{
 			return result.toString();
 		}
