@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.ship.shipdata;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
-import java.sql.SQLException;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
@@ -41,8 +40,7 @@ public class ShipSparql {
     private static Iri unit_m = p_SI_unit.iri("m");
 
     /**
-     * Creates a ship instance on ship_endpoint, this needs to on Blazegraph because the APIs used in 
-     * KnowledgeBaseClient does not work with RDF4J. Blazegraph is also much faster
+     * Creates a ship instance on ship_endpoint, Blazegraph is highly recommended because of its performance
      * @param i
      * @param mmsi
      * @param type
@@ -77,7 +75,7 @@ public class ShipSparql {
         Iri vbeam_iri = p_ship.iri(ship_name+"_vShipBeam");
 
         Iri time_iri = p_ship.iri(ship_name+"_time");
-        
+
         Iri coordinates_iri = p_ship.iri(ship_name+"_coordinates");
         Iri xcoord = p_ship.iri(ship_name+"_xcoord");
         Iri ycoord = p_ship.iri(ship_name+"_ycoord");
@@ -131,8 +129,8 @@ public class ShipSparql {
 
         Prefix [] prefix_list = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_time,p_SI_unit};
         ModifyQuery modify = Queries.MODIFY();
-        modify.prefix(prefix_list).with(ship_iri).insert(combined_tp).where();
-        
+        modify.prefix(prefix_list).insert(combined_tp).where();
+
         performUpdate(ship_endpoint, modify.getQueryString());
     }
 
@@ -167,23 +165,29 @@ public class ShipSparql {
         Variable xcoord = query.var();Variable ycoord = query.var();
         Variable vxcoord = query.var();Variable vycoord = query.var();
 
-        // minimum patterns to match for each quantity we want to query
-        GraphPattern mmsi_gp = GraphPatterns.and(mmsi.isA(p_ship.iri("MMSI")).andHas(p_system.iri("hasValue"), vmmsi),
+        GraphPattern ship_gp = GraphPatterns.and(ship.has(p_ship.iri("hasMMSI"),mmsi).andHas(p_ship.iri("hasShipType"),shiptype)
+                .andHas(p_ship.iri("hasSOG"),speed).andHas(p_ship.iri("hasCOG"), course)
+                .andHas(p_system.iri("hasDimension"),length).andHas(p_system.iri("hasDimension"),beam)
+                .andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),coord));
+        
+        // patterns to match for each quantity we want to query
+        GraphPattern mmsi_gp = GraphPatterns.and(mmsi.has(p_system.iri("hasValue"), vmmsi),
                 vmmsi.has(p_system.iri("numericalValue"), mmsi_value));
 
-        GraphPattern type_gp = GraphPatterns.and(shiptype.isA(p_ship.iri("ShipType")).andHas(p_system.iri("hasValue"), vshiptype),
+        GraphPattern type_gp = GraphPatterns.and(shiptype.has(p_system.iri("hasValue"), vshiptype),
                 vshiptype.has(p_system.iri("Value"),type));
 
+        // because ShipLength and ShipBeam both use hasDimension, isA ShipLength and isA ShipBeam are necessary here
         GraphPattern length_gp = GraphPatterns.and(length.isA(p_ship.iri("ShipLength")).andHas(p_system.iri("hasValue"),vlength),
                 vlength.has(p_system.iri("QuantitativeValue"), al));
 
         GraphPattern beam_gp = GraphPatterns.and(beam.isA(p_ship.iri("ShipBeam")).andHas(p_system.iri("hasValue"),vbeam),
                 vbeam.has(p_system.iri("QuantitativeValue"), aw));
 
-        GraphPattern speed_gp = GraphPatterns.and(speed.isA(p_ship.iri("SpeedOverGround")).andHas(p_system.iri("hasValue"), vspeed),
+        GraphPattern speed_gp = GraphPatterns.and(speed.has(p_system.iri("hasValue"), vspeed),
                 vspeed.has(p_system.iri("numericalValue"), ss));
         
-        GraphPattern course_gp = GraphPatterns.and(course.isA(p_ship.iri("CourseOverGround")).andHas(p_system.iri("hasValue"), vcourse),
+        GraphPattern course_gp = GraphPatterns.and(course.has(p_system.iri("hasValue"), vcourse),
                 vcourse.has(p_system.iri("numericalValue"), cu));
 
         GraphPattern coordinates_gp = GraphPatterns.and(coord.has(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
@@ -200,8 +204,8 @@ public class ShipSparql {
         Expression<?> yconstraint = Expressions.and(Expressions.lt(lat, sc.getUppery()),Expressions.gt(lat, sc.getLowery()));
         Expression<?> overallconstraint = Expressions.and(xconstraint,yconstraint);
 
-        GraphPatternNotTriples querypattern = GraphPatterns.and(mmsi_gp,type_gp,length_gp,beam_gp,speed_gp,course_gp,coordinates_gp).from(ship).
-                filter(overallconstraint);
+        GraphPatternNotTriples querypattern = GraphPatterns.and(ship_gp,mmsi_gp,type_gp,length_gp,beam_gp,speed_gp,course_gp,coordinates_gp)
+                .filter(overallconstraint);
 
         // prioritise ships that are moving and the large ones
         OrderCondition speedDesc = SparqlBuilder.desc(ss);
@@ -220,25 +224,15 @@ public class ShipSparql {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setUpdateEndpoint(queryEndPoint);
         kbClient.setQuery(query);
-        try {
-            System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+        System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
     }
 
     private JSONArray performQuery(String queryEndPoint, String query) {
-    	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setQueryEndpoint(queryEndPoint);
         kbClient.setQuery(query);
         JSONArray result = null;
-        try {
-            result = kbClient.executeQuery(); 
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+        result = kbClient.executeQuery(); 
         return result;
     }
 
