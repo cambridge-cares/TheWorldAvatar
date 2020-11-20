@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 
 /**
@@ -150,6 +151,52 @@ public class RemoteKnowledgeBaseClientTest {
 		System.out.println("Expected connection URL      :"
 				+ "jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint)
 				+ "\n matched with the actual one :" + kbClient.getConnectionUrl());
+	}
+	
+	/**
+	 * Verifies the validity of both the query URL and update URL.<br>
+	 * For example, standard protocols for URL, i.e. http and https are supported.  
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void connectionHttpURLTest() throws SQLException{
+		// Tests the query endpoint
+		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		assertTrue(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
+		queryEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		assertTrue(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
+		queryEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		assertFalse(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
+		// Tests the update endpoint with the update URL only 
+		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient.setUpdateEndpoint(updateEndpoint);
+		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		updateEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient.setUpdateEndpoint(updateEndpoint);
+		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		updateEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient.setUpdateEndpoint(updateEndpoint);
+		assertFalse(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		// Tests the update endpoint with both the query URL and update URL
+		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		queryEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		updateEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		queryEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		updateEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertFalse(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
 	}
 	
 	/**
