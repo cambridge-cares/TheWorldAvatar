@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
@@ -15,21 +16,26 @@ public class ShipSparqlTest {
     /**
      * If you want to create new ship instances, replace csvPath with the following:
      * AgentLocator.getPathToWorkingDir(this) + "/ship_latest_consolidated.csv"
-     * The reason that this test is written to *not* run out of the box is to prevent people from uploading
-     * duplicate triples to the CMCL ship triple-store. Unlike RDF4J, Blazegraph does not check whether a triple 
-     * already exists in the endpoint and proceeds to add them in anyway.
+     * The reason that this test is written to *not* run out of the box is to prevent people from
+     * resetting the ship triple-store.
      * After changing the csvPath, make sure you change the ship_endpoint in ShipSparql to an endpoint that
      * you want to run this test.
+     * This script might go into an infinite loop if you have not set things up correctly because of the
+     * while - try - catch loop at the end, it's done like that because sometimes the connection to the 
+     * endpoint fails for no apparent reason. 
+     * Comment it out first and test if it runs before using it to upload tons of ship data.
+     * @throws InterruptedException 
      */
     @Test
-    public void testCreateShip () {
+    public void testCreateShip () throws InterruptedException {
         String csvPath = "D:\\JPS\\data\\ship data\\ship_latest_consolidated.csv";
         String csvFile=new QueryBroker().readFileLocal(csvPath);
         List<String[]> csv_array = MatrixConverter.fromCsvToArray(csvFile);
         int mmsi, al, aw, ts, tst; double ss, cu, lat, lon; String type;
         ShipSparql sparql = new ShipSparql();
-
+        boolean success;
         for (int i = 1; i < csv_array.size(); i++) {
+        	success = false;
             mmsi = Integer.parseInt(csv_array.get(i)[0]);
             type = csv_array.get(i)[1];
             al = Integer.parseInt(csv_array.get(i)[2]);
@@ -52,10 +58,17 @@ public class ShipSparqlTest {
                 tst = -1;
             }
 
-            if (ts > tst) {
-                sparql.createShip(i,mmsi,type,al,aw,ss,cu,lat,lon,ts);
-            } else {
-                sparql.createShip(i,mmsi,type,al,aw,ss,cu,lat,lon,tst);
+            while (!success) {
+            	try {
+            		if (ts > tst) {
+                        sparql.createShip(i,mmsi,type,al,aw,ss,cu,lat,lon,ts);
+                    } else {
+                        sparql.createShip(i,mmsi,type,al,aw,ss,cu,lat,lon,tst);
+                    }
+            		success = true;
+            	} catch (JPSRuntimeException e) {
+            		Thread.sleep(1000);
+            	}
             }
         }
     }
