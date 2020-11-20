@@ -212,7 +212,7 @@ public class ShipSparql {
         OrderCondition alDesc = SparqlBuilder.desc(al);
         OrderCondition awDesc = SparqlBuilder.desc(aw);
 
-        query.prefix(p_ship,p_space_time_extended, p_system).select(ship,mmsi_value,type,al,aw,ss,cu,lon,lat).where(querypattern)
+        query.prefix(p_ship,p_space_time_extended, p_system).select(mmsi_value,type,al,aw,ss,cu,lon,lat).where(querypattern)
         .orderBy(speedDesc).orderBy(alDesc).orderBy(awDesc).limit(300);
 
         JSONArray result = performQuery(ship_endpoint,query.getQueryString());
