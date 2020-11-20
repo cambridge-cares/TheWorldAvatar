@@ -99,7 +99,7 @@ public class SparqlOverHttpService {
 			messageBody = "update=" + messageBody;
 			//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
-			kbClient = new KnowledgeBaseClient();
+			kbClient = new RemoteKnowledgeBaseClient();
 			if(sparqlServiceURIForUpdate==null){
 				throw new SQLException("SparqlOverHttpService: SPARQL service URI for update is null. Provide a valid URI.");
 			}
@@ -108,13 +108,8 @@ public class SparqlOverHttpService {
 			}
 			kbClient.setUpdateEndpoint(sparqlServiceURIForUpdate);
 			kbClient.setQuery(messageBody);
-			try {
-				int response = kbClient.executeUpdate();
-				return ""+response;
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			int response = kbClient.executeUpdate();
+			return ""+response;
 		}
 		else {
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
@@ -178,7 +173,7 @@ public class SparqlOverHttpService {
 		if (RDFStoreType.RDF4J.equals(type)) {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
-			kbClient = new KnowledgeBaseClient();
+			kbClient = new RemoteKnowledgeBaseClient();
 			if(sparqlServiceURIForQuery == null){
 				throw new SQLException("SparqlOverHttpService: SPARQL service URI for query is null. Provide a valid URI.");
 			}
@@ -187,17 +182,14 @@ public class SparqlOverHttpService {
 			}
 			kbClient.setQueryEndpoint(sparqlServiceURIForQuery);
 			kbClient.setQuery(sparqlQuery);
-			try {
-				JSONArray jsonArray = kbClient.executeQuery();
-				if(jsonArray!=null){
-					return CDL.toString(jsonArray);
-				}else{
-					return null;
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+			JSONArray jsonArray = kbClient.executeQuery();
+			if(jsonArray!=null){
+				return CDL.toString(jsonArray);
+			}else{
+				return null;
 			}
+
 		}else {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
 		}

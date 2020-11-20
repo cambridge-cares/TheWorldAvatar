@@ -54,7 +54,7 @@
 			<version>5.7.0</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
@@ -117,6 +117,18 @@
     <artifactId>jena-arq</artifactId>
     <version>3.16.0</version>
 </dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-querybuilder -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-querybuilder</artifactId>
+    <version>3.16.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-rdfconnection -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-rdfconnection</artifactId>
+    <version>3.16.0</version>
+</dependency>
 
 
 <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-shaded-guava -->
@@ -145,6 +157,12 @@
 			<version>2.1.5</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-jdbc-driver-mem -->
+	<dependency>
+	    <groupId>org.apache.jena</groupId>
+	    <artifactId>jena-jdbc-driver-mem</artifactId>
+	    <version>3.16.0</version>
+	</dependency>
 <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-jdbc-core -->
 <dependency>
     <groupId>org.apache.jena</groupId>
@@ -171,12 +189,18 @@
     <version>3.5.7</version>
     <scope>test</scope>
 </dependency>
+		<!--  https://github.com/owlcs/ont-api/wiki/Maven -->
+		<dependency>
+   			<groupId>com.github.owlcs</groupId>
+    		<artifactId>ontapi</artifactId>
+    		<version>2.0.0</version>
+		</dependency> 
 <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
 <dependency>
     <groupId>commons-codec</groupId>
     <artifactId>commons-codec</artifactId>
     <version>1.15</version>
 </dependency>
-
 	</dependencies>
+
 </project>
