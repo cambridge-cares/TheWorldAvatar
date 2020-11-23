@@ -542,7 +542,10 @@ owlProcessor.getType = function (root) {
    owlProcessor.convertCoordinate = function (GPSLong, GPSLat, google2Owl) {
    function parseValue(vstr){
    var pat = /\d+\.?\d+/;
-var parsed =vstr.match(pat)[0];
+var parsed =vstr.match(pat);
+if(!parsed){
+  return NaN;
+}
 return parseFloat(parsed);
    }
 //https://github.com/proj4js/proj4js

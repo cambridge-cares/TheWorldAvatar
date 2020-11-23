@@ -20,11 +20,13 @@
     "express": "^4.16.3",
     "fs-readdir-recursive": "^1.1.0",
     "is-string": "^1.0.4",
+    "java": "^0.12.1",
     "libxmljs": "^0.19.7",
     "log4js": "^3.0.6",
     "mocha": "^3.2.0",
     "morgan": "^1.9.1",
     "nock": "^9.0.13",
+    "node-gyp": "^0.12.0",
     "node-xml-stream": "^1.0.2",
     "proj4": "^2.4.3",
     "pug": "^2.0.0-beta11",
@@ -38,8 +40,7 @@
     "serve-favicon": "^2.5.0",
     "socket.io": "^2.1.1",
     "string-to-stream": "^3.0.1",
-    "uuid": "^8.3.0",
-    "node-gyp": "0.12.0"
+    "uuid": "^8.3.0"
   },
   "configurations": [
     {
