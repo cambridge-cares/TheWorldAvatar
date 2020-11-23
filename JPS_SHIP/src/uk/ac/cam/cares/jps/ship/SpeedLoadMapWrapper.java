@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.SystemUtils;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -22,8 +25,8 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 @WebServlet("/SLMAgent")
 public class SpeedLoadMapWrapper extends HttpServlet {
 	private static final String slmDir = "\\python\\ADMS-speed-load-map";
-	private static final String slmPython = "\\env\\Scripts\\python.exe";
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
+	private static final Path slmPython = SystemUtils.IS_OS_LINUX ? Paths.get("env","bin","python") : Paths.get("env","Scripts","python.exe");
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
