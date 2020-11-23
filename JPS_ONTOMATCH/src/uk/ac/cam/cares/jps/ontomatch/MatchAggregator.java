@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import io.herrmann.generator.Generator;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -47,6 +50,7 @@ import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.ontomatch.alignment.AlignmentIOHelper;
 import uk.ac.cam.cares.jps.ontomatch.alignment.Measurement;
 import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
+import uk.ac.cam.cares.jps.ontomatch.streamRDFs.AlignmentGenerator;
 
 /***
  * 
@@ -63,18 +67,19 @@ import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 public class MatchAggregator extends JPSAgent {
 
 	private static final long serialVersionUID = -1142445270131640156L;
+	protected int BATCH_SIZE = 100;
 	protected String srcOnto, tgtOnto;
 	protected String thisAlignmentIRI;
-	protected List<List> matchScoreLists = new ArrayList<List>();
-	protected List<Map> finalScoreList = new ArrayList<Map>();
+	public List<Map> batchScoreList = new ArrayList<Map>();
 	protected List<Double> weights = new ArrayList<Double>();
 	protected double threshold;
 	protected List<AGGREGATE_CHOICE> choices = new ArrayList<AGGREGATE_CHOICE>();
 	protected String classAlignmentIRI;
 	protected double pFactor, sameClassThreshold;
+	protected List<Generator> MatcherResultGenerators = new ArrayList<Generator>();
 
 	/*** types of optional steps in aggregator **/
-	public enum AGGREGATE_CHOICE {
+	 enum AGGREGATE_CHOICE {
 		PENALIZING, CARDINALITY
 	}
 
@@ -96,7 +101,8 @@ public class MatchAggregator extends JPSAgent {
 			JSONArray jalignments = jo.getJSONArray("alignments");
 			for (int i = 0; i < jalignments.length(); i++) {
 				String aIRI = jalignments.getString(i);
-				getAlignmentList(aIRI);
+				System.out.println(aIRI);
+				MatcherResultGenerators.add(getAlignmentListAsStream(aIRI));
 			}
 			/** get optional steps chosen by caller agent ****/
 			if (jo.has("choices")) {
@@ -114,7 +120,7 @@ public class MatchAggregator extends JPSAgent {
 		/*** reading params for optional step, if any ****/
 		try {
 			classAlignmentIRI = jo.getString("classAlign");
-			pFactor = jo.getInt("pFactor");
+			pFactor = jo.getDouble("pFactor");
 			sameClassThreshold = jo.getInt("sameClassThreshold");
 		} catch (Exception e) {
 			// do nothing as these are optional params
@@ -123,9 +129,11 @@ public class MatchAggregator extends JPSAgent {
 		/*** execute aggregating procedure ****/
 		try {
 			// run aggregation according to choices of steps
-			handleChoice();
+			AlignmentIOHelper.writeAlignmentFileHeader(srcOnto, tgtOnto, thisAlignmentIRI);
+			handleChoiceWithBatch();
 			// write result to KG
-			AlignmentIOHelper.writeAlignment2File(finalScoreList, srcOnto, tgtOnto, thisAlignmentIRI);
+			AlignmentIOHelper.writeAlignment2File(batchScoreList, srcOnto, tgtOnto,
+			 thisAlignmentIRI);
 			String successFlag = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SUCCESS_FLAG);
 			resultObj.put(successFlag, true);
 		} catch (Exception e) {
@@ -139,72 +147,99 @@ public class MatchAggregator extends JPSAgent {
 	 * 
 	 * @throws Exception
 	 */
-	public void handleChoice() throws Exception {
+	public void handleChoiceWithBatch() throws Exception {
 		/***** weighted sum **************/
-		weighting();
+		int matcherNum = MatcherResultGenerators.size();
+		Iterator[] scoreIters = new Iterator[matcherNum];
+		// initiate generators
+		for (int i = 0; i < matcherNum; i++) {
+			scoreIters[i] = MatcherResultGenerators.get(i).iterator();
+		}
+
+		// loop thru triples and update aggregated alignment file batch by batch
+		while (scoreIters[0].hasNext()) {
+			if (batchScoreList.size() == BATCH_SIZE) {// write and reset batch score list
+				AlignmentIOHelper.updateAlignmentFile(thisAlignmentIRI, batchScoreList);
+				batchScoreList.clear();
+			}
+			weightingWithGenerator(scoreIters, threshold);
+		}
+		//process remaining items in buffer
+		if (batchScoreList.size()>0) {
+			AlignmentIOHelper.updateAlignmentFile(thisAlignmentIRI, batchScoreList);
+		    batchScoreList.clear();
+		}
+		
+		// read the result
+		batchScoreList = AlignmentIOHelper.readAlignmentFileAsMapList(thisAlignmentIRI);
 		/******** cardinality filtering(optional) ****************/
 		if (choices != null && choices.contains(AGGREGATE_CHOICE.CARDINALITY)) {
-			one2oneCardinalityFiltering();
+			one2oneCardinalityFiltering( AlignmentIOHelper.IRI2local(thisAlignmentIRI));
 		}
 		/******** class penalizing filtering(optional) ****************/
 		if (choices != null && choices.contains(AGGREGATE_CHOICE.PENALIZING)) {
-			penalizing(classAlignmentIRI, sameClassThreshold, pFactor);
+			 penalizing(classAlignmentIRI, sameClassThreshold, pFactor);
 		}
 		/******** filtering by measure value ****************/
+	     filtering(threshold);
 
-		filtering(threshold);
 	}
 
-	/***
-	 * read alignment from KG and store
-	 * 
-	 * @param iriOfAlignmentFile
-	 * @throws ParseException 
-	 */
-	public void getAlignmentList(String iriOfAlignmentFile) throws ParseException {
-		List<String[]> resultListfromquery = AlignmentIOHelper.readAlignmentFileAsList(iriOfAlignmentFile);
-		resultListfromquery = sortAlignmentListByEntityName(resultListfromquery);
-		matchScoreLists.add(resultListfromquery);
+	public Generator<String[]> getAlignmentListAsStream(String IRI) {
+		Generator<String[]> myGenerator = AlignmentGenerator.getGenerator(IRI);
+		return myGenerator;
 	}
 
 	public List<String[]> sortAlignmentListByEntityName(List<String[]> list) {
 		List<Measurement> sortList = new ArrayList<Measurement>();
-		for(String[] item:list) {
+		for (String[] item : list) {
 			sortList.add(new Measurement(item));
 		}
-		sortList.sort((o1,o2) -> o1.getIdentity().compareTo(o2.getIdentity()));
-		//get original list
+		sortList.sort((o1, o2) -> o1.getIdentity().compareTo(o2.getIdentity()));
+		// get original list
 		List<String[]> sorted = new ArrayList<String[]>();
-		for(Measurement item:sortList) {
+		for (Measurement item : sortList) {
 			sorted.add(item.getFields());
 		}
 		return sorted;
 	}
-	/***
-	 * weighted sum
-	 */
-	protected void weighting() {
-		//TODO:add sorting here
-		int matcherNum = matchScoreLists.size();
-		int elementNum = matchScoreLists.get(0).size();
-		for (int idxMatcher = 0; idxMatcher < matcherNum; idxMatcher++) {
-			List aScoreList = matchScoreLists.get(idxMatcher);
-			double myWeight = weights.get(idxMatcher);
-			for (int idxElement = 0; idxElement < elementNum; idxElement++) {
-				String[] myscore = (String[]) aScoreList.get(idxElement);
-				if (idxElement >= finalScoreList.size()) {// index not exists, initiates
-					Map<String, Object> acell = new HashMap<>();
-					acell.put("entity1", myscore[0]);
-					acell.put("entity2", myscore[1]);
-					acell.put("measure", Double.parseDouble(myscore[2]) * myWeight);
-					finalScoreList.add(acell);
-				} else {// index exists, update measure
-					Map mcell = finalScoreList.get(idxElement);
-					mcell.put("measure", (double) mcell.get("measure") + Double.parseDouble(myscore[2]) * myWeight);
-				}
+
+
+	public double getDoubleSparqlResult(String valueString) {
+		try {
+			double value = Double.parseDouble(valueString);
+			return value;
+		} catch (NumberFormatException e) {
+			Pattern pattern = Pattern.compile("\"([0-9\\.]+)\"\\^\\^http:\\/\\/www.w3.org\\/2001\\/XMLSchema#float");
+			Matcher m = pattern.matcher(valueString);
+			if (m.find()) {
 			}
+			return Double.parseDouble(m.group(1));
 		}
 	}
+
+	protected void weightingWithGenerator(Iterator[] scoreIters, double threshold) {
+		Map<String, Object> acell = new HashMap<>();
+		String[] values = (String[]) scoreIters[0].next();
+		acell.put("entity1", values[0]);
+		acell.put("entity2", values[1]);
+		double measure = weights.get(0) * getDoubleSparqlResult(values[2]);
+		for (int idxMatcher = 1; idxMatcher < scoreIters.length; idxMatcher++) {
+			String[] scoreValues = (String[]) scoreIters[idxMatcher].next();
+			if (!scoreValues[0].equals(values[0]) || !scoreValues[1].contentEquals(values[1])) {
+				System.out.println("err sequence");
+				System.out.println(values[0]);
+				System.out.println(values[1]);
+
+			}
+			measure += weights.get(idxMatcher) * getDoubleSparqlResult(scoreValues[2]);
+		}
+		acell.put("measure", measure);
+		if (measure >= threshold) {
+			batchScoreList.add(acell);
+		}
+	}
+
 
 	/***
 	 * filtering by measure
@@ -212,9 +247,9 @@ public class MatchAggregator extends JPSAgent {
 	 * @param threshold of measure, smaller than this will be discard
 	 */
 	protected void filtering(double threshold) {// remove cellmaps with measure<threshold
-		int elementNum = finalScoreList.size();
+		int elementNum = batchScoreList.size();
 		// loop thru cells to filter out based on measurement
-		Iterator<Map> it = finalScoreList.iterator();
+		Iterator<Map> it = batchScoreList.iterator();
 		while (it.hasNext()) {
 			Map mcell = it.next();
 			// Do something
@@ -236,20 +271,21 @@ public class MatchAggregator extends JPSAgent {
 	 *                           current measure score multiply this factor
 	 * @throws Exception
 	 */
-	protected void penalizing(String classAlignmentIRI, double sameClassThreshold, double pFactor) throws Exception {
+	public void penalizing(String classAlignmentIRI, double sameClassThreshold, double pFactor) throws Exception {
 		OntModel srcModel = ModelFactory.createOntologyModel();
 		srcModel.read(srcOnto);
 		OntModel tgtModel = ModelFactory.createOntologyModel();
 		tgtModel.read(tgtOnto);
-		Map ICMap1 = constructICMap(srcModel, srcOnto);
-		Map ICMap2 = constructICMap(tgtModel, tgtOnto);
-		int elementNum = finalScoreList.size();
+		Map ICMap1 = constructICMap(srcModel);
+		Map ICMap2 = constructICMap(tgtModel);
+		int elementNum = batchScoreList.size();
+		JSONArray joca = AlignmentIOHelper.readAlignmentFileAsJSONArray(classAlignmentIRI, sameClassThreshold);
+		List classAlign = AlignmentIOHelper.Json2ScoreList(joca);
 		for (int idxElement = 0; idxElement < elementNum; idxElement++) {
-			Map mcell = finalScoreList.get(idxElement);
+			Map mcell = batchScoreList.get(idxElement);
 			String indi1 = (String) mcell.get("entity1");
 			String indi2 = (String) mcell.get("entity2");
-			JSONArray joca = AlignmentIOHelper.readAlignmentFileAsJSONArray(classAlignmentIRI, sameClassThreshold);
-			List classAlign = AlignmentIOHelper.Json2ScoreList(joca);
+
 			if (!sameClass(classAlign, ICMap1, ICMap2, indi1, indi2)) {// does not belong to same class
 				mcell.put("measure", (double) mcell.get("measure") * pFactor);// penalize
 			}
@@ -269,9 +305,12 @@ public class MatchAggregator extends JPSAgent {
 	 * @return boolean belongs to equivalent class or not
 	 */
 	protected boolean sameClass(List<Map> classAlign, Map icmap1, Map icmap2, String indiIri1, String indiIri2) {
-		String class1 = (String) icmap1.get(indiIri1);
-		String class2 = (String) icmap1.get(indiIri2);
-		if (sameClass(classAlign, class1, class2)) {
+		List classt1 = (List) icmap1.get(indiIri1);
+		List classt2 = (List) icmap2.get(indiIri2);
+		if(classt1 == null || classt2 ==null || classt1.size()==0 ||classt2.size()==0) {
+			return false;
+		}
+		if (sameClass(classAlign, classt1, classt2)) {
 			return true;
 		} else {
 			return false;
@@ -283,17 +322,19 @@ public class MatchAggregator extends JPSAgent {
 	 * Determine if two classes from two T-Boxs are equivalent
 	 * 
 	 * @param classAlign List of the class aligned pairs
-	 * @param classIRI1  IRI of class1
-	 * @param classIRI2  IRI of class2
+	 * @param class1  IRI of class1
+	 * @param class2  IRI of class2
 	 * @return boolean same class or not
 	 */
-	protected boolean sameClass(List<Map> classAlign, String classIRI1, String classIRI2) {
-		for (Map map : classAlign) {
-			String mapped1 = (String) map.get("entity1");
-			String mapped2 = (String) map.get("entity2");
+	
+	protected boolean sameClass(List<Map> classAlign, List<String> classtree1, List<String> classtree2) {
 
-			if (mapped1.equals(classIRI1) && mapped2.equals(classIRI2)
-					|| (mapped1.equals(classIRI2) && mapped2.equals(classIRI1))) {
+		for (Map matchedPair : classAlign) {
+			String matchedClass1 = (String) matchedPair.get("entity1");
+			String matchedClass2= (String) matchedPair.get("entity2");
+            
+			if (classtree1.contains(matchedClass1) && classtree2.contains(matchedClass2)
+					) {
 				return true;
 			}
 		}
@@ -304,19 +345,32 @@ public class MatchAggregator extends JPSAgent {
 	 * Construct a Individual-class map by querying a ontology model
 	 * 
 	 * @param model        jena model of the ontology
-	 * @param ontologyIRI, IRI of the ontology
 	 * @return
 	 */
-	protected Map constructICMap(OntModel model, String ontologyIRI) {
+	public Map constructICMap(OntModel model) {
 		Map ICMap = new HashMap();
 		ExtendedIterator classes = model.listClasses();
 		while (classes.hasNext()) {
 			OntClass thisClass = (OntClass) classes.next();
+			if(thisClass.getURI()==null || thisClass.isProperty()||thisClass.getURI().contentEquals("http://www.w3.org/2002/07/owl#Thing")) {
+				continue;
+			}
 			ExtendedIterator instances = thisClass.listInstances();
 			while (instances.hasNext()) {
 				Individual thisInstance = (Individual) instances.next();
-				ICMap.put(thisInstance.toString(), thisClass.toString());
-			}
+				
+				if(ICMap.get(thisInstance.getURI())==null) {
+					List classl = new ArrayList<String>();
+					classl.add(thisClass.getURI());
+					ICMap.put(thisInstance.getURI(), classl);
+
+				} else {
+				List classl  = (List) ICMap.get((thisInstance.getURI()));
+				classl.add(thisClass.getURI());
+				ICMap.put(thisInstance.getURI(), classl);
+
+				}
+				}
 		}
 		return ICMap;
 	}
@@ -326,22 +380,27 @@ public class MatchAggregator extends JPSAgent {
 	 * 
 	 * @throws IOException
 	 */
-	protected void one2oneCardinalityFiltering() throws IOException {
+	public void one2oneCardinalityFiltering(String alignmentFileAddr) throws IOException {
 		// need to call the python for now
 		// input: map rendered as json
-		String tmpAddress = OntomatchProperties.getInstance().getProperty(OntomatchProperties.CARDINALITYFILTERING_TMP_ALIGNMENT_PATH);
-		 AlignmentIOHelper.writeAlignment2File(finalScoreList, srcOnto, tgtOnto, tmpAddress);
-		String[] paras = {srcOnto, tgtOnto, tmpAddress};
+		//String tmpAddress = OntomatchProperties.getInstance()
+		//		.getProperty(OntomatchProperties.CARDINALITYFILTERING_TMP_ALIGNMENT_PATH);
+		String[] paras = {  alignmentFileAddr };
 		String pyName = OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_ONETOONECARDI);
 		String[] results = AsyncPythonHelper.callPython(pyName, paras, MatchAggregator.class);
+		System.out.println(results[0]);
+		System.out.println(results[0]);
+
 		JSONArray scoreListNew = new JSONArray(results[0]);
-		finalScoreList = AlignmentIOHelper.Json2ScoreList(scoreListNew);
+		batchScoreList = AlignmentIOHelper.Json2ScoreList(scoreListNew);
 	}
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (requestParams.isEmpty()||!requestParams.has("threshold")||!requestParams.has("srcOnto")||!requestParams.has("tgtOnto")||!requestParams.has("alignments")||!requestParams.has("addr")) {
-            throw new BadRequestException();
-        }
-        return true;
-    }
+
+	@Override
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (requestParams.isEmpty() || !requestParams.has("threshold") || !requestParams.has("srcOnto")
+				|| !requestParams.has("tgtOnto") || !requestParams.has("alignments") || !requestParams.has("addr")) {
+			throw new BadRequestException();
+		}
+		return true;
+	}
 }

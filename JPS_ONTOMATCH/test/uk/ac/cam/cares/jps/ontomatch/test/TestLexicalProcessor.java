@@ -32,7 +32,7 @@ public class TestLexicalProcessor extends Mockito{
 
 //	    	String stubIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
 //	        String stubAddress = "D:/workwork/ontoMatchFiles/targetOntology.pkl";
-String stubIRI = "D:/workwork/ontoMatchFiles/tmpdbpT.owl"; 
+String stubIRI = "D:/workwork/ontoMatchFiles/tmpdbpAllT.owl"; 
 String stubAddress = "D:/workwork/ontoMatchFiles/individualdbp.pkl";
 
 	        JSONObject jo  = new JSONObject();

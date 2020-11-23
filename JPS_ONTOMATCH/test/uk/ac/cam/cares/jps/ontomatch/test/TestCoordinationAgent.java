@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,12 +30,12 @@ import uk.ac.cam.cares.jps.ontomatch.ElementMatcher;
 
 public class TestCoordinationAgent extends Mockito{
  
-	@Ignore
+	
 	@Test
 	public void testLoadTBox() {
 		CoordinationAgent a =new CoordinationAgent();
-		String from = "D:/workwork/ontoMatchFiles/tmpdbp.owl";
-		String to = "D:/workwork/ontoMatchFiles/tmpdbpT.owl";
+		String from = "D:/workwork/ontoMatchFiles/tmpdbpAll.owl";
+		String to = "D:/workwork/ontoMatchFiles/tmpdbpAllT.owl";
 		String t = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
 		try {
 			a.loadTBOX(from, t, to);
@@ -52,7 +53,7 @@ public class TestCoordinationAgent extends Mockito{
         try {
 			List[] maps = a.retrieveClassAlignmentMap(aIRI);
 			System.out.println(maps[0]);
-		} catch (ParseException e) {
+		} catch (ParseException | FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
@@ -76,14 +77,15 @@ public class TestCoordinationAgent extends Mockito{
 
 		
 	}
-	
-    @Ignore
+
+
+	@Ignore
 	@Test 
 	public void testRetrieveTriplesRemote() {
 		String ep = "http://dbpedia.org/sparql";
 		CoordinationAgent a =new CoordinationAgent();
 		String targetClassIRI = "http://dbpedia.org/ontology/PowerStation" ;
-		String saveIRI =  "http://www.theworldavatar.com/tmpdbp.owl";
+		String saveIRI =  "http://www.theworldavatar.com/tmpdbpAll.owl";
 		String tIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
 		List IRIs = new ArrayList<String>();
 		IRIs.add(targetClassIRI);
@@ -96,6 +98,7 @@ public class TestCoordinationAgent extends Mockito{
 	    
 	}
 
+	@Ignore  
     @Test
     public void testIndiCoordi() {
         HttpServletRequest request = mock(HttpServletRequest.class);       

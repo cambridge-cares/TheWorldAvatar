@@ -2,6 +2,8 @@ from operator import *
 from rdflib import *
 import sys
 import json
+from otsrdflib import OrderedTurtleSerializer
+
 class Alignment(object):
     def __init__(self, arr = []):
         self.map =  self.sortById(arr)
@@ -139,6 +141,7 @@ class Alignment(object):
     def id2Entity(self, onto1, onto2, entityListName = "entities"):
         pairList = []
         for id1, id2, p in self.map:
+            #print("{} {}".format(id1,id2))
             srcE = getattr(onto1, entityListName)[id1]
             tgtE = getattr(onto2, entityListName)[id2]
             # srcType = self.srcOnto.types[id1]
@@ -190,30 +193,40 @@ class Alignment(object):
         g.add((onto1, A.location, Literal(onto1IRI)))
         g.add((onto2, RDF.type, A.ontology))
         g.add((onto2, A.location, Literal(onto2IRI)))
-        #add map
+        #sorting
+        self.map = sorted(self.map, key=itemgetter(0,1))
+        count = 0
         for triple in self.map:
             #print(t3)
-            o = BNode()
+            count = count+1
+            nodeName = addr+"#cell"+str(count)
+            o = URIRef(nodeName)
             g.add((o, RDF.type, A.Cell))
             if onto1 in triple[0]:
                 g.add((o, A.entity1, Literal(triple[0])))
                 g.add((o, A.entity2, Literal(triple[1])))
             else:
-                g.add((o, A.entity1, Literal(onto1IRI+'#'+triple[0])))
-                g.add((o, A.entity2, Literal(onto2IRI+'#'+triple[1])))
+                g.add((o, A.entity1, Literal(triple[0])))
+                g.add((o, A.entity2, Literal(triple[1])))
             g.add((o, A.measure, Literal(triple[2], datatype=XSD.float)))
             g.add((o, A.relation, Literal('=')))
             g.add((aNode,A.map, o))
-        g.serialize(destination=addr, format='xml')
+        #g.serialize(destination=addr, format='nt')
+        out = open(addr, 'wb')
+        serializer = OrderedTurtleSerializer(g)
+        serializer.serialize(out)
 
     def renderJSON(self, onto1, onto2):
-        jo = {}
+        ja = []
         #todo: confirm format is correct
         for triple in self.map:
+            jo = {}
             jo['entity1'] = triple[0]
             jo['entity2'] = triple[1]
             jo['measure'] = triple[2]
-        jostr = json.dumps(jo)
+            ja.append(jo)
+        jostr = json.dumps(ja)
+
         return jostr
 
 

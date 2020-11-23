@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -43,6 +44,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.resultset.RDFOutput;
+import org.apache.jena.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -187,7 +189,7 @@ public class CoordinationAgent extends JPSAgent {
 		return result;
 	}
 
-	public List[] retrieveClassAlignmentMap(String aIRI) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
+	public List[] retrieveClassAlignmentMap(String aIRI) throws org.apache.jena.sparql.lang.sparql_11.ParseException, FileNotFoundException {
 		List<String[]> alignment = AlignmentIOHelper.readAlignmentFileAsList(aIRI);
 		Set<String> onto1TargetClasses = new HashSet<String>();
 		Set<String> onto2TargetClasses = new HashSet<String>();
@@ -348,33 +350,39 @@ public class CoordinationAgent extends JPSAgent {
 	public void queryPotentialInstanceAndSave(List<String> targetClassIRIs, String ep, String tboxIRI, Boolean isRemote,
 			String saveIRI) throws IOException {
 		// use targetClassIRI to execute remote query to remoteEP
-		String resultBody;
 		String addr = ResourcePathConverter.convertToLocalPath(saveIRI);
 		Model model = ModelFactory.createDefaultModel();
 
-		for (String IRI : targetClassIRIs) {
-			String sparql = "SELECT DISTINCT * WHERE {?s a <" + IRI + ">. " + " ?s ?p ?o."
+		for (String targetclassIRI : targetClassIRIs) {
+			String sparql = "SELECT DISTINCT * WHERE {?s a <" + targetclassIRI + ">. "
 					 + "}";
-			/** query either remotely or locally */
-
-			JSONObject params = new JSONObject();
-			params.put("format", "json");
-			params.put("query", sparql);
-			resultBody = Http.execute(Http.get(ep, "application/json", sparql));
-
-			InputStream targetStream = new ByteArrayInputStream(resultBody.getBytes());
-			ResultSet resultSet = ResultSetFactory.fromJSON(targetStream);
-			List<QuerySolution> rlist = ResultSetFormatter.toList(resultSet);
-			List<String> newLevelS = new ArrayList<String>();
-
+			List<QuerySolution> rlist = queryOnce(ep, sparql);
 			for (QuerySolution triple : rlist) {
 				String sIRI = triple.getResource("s").getURI();
+				if(!validateURL(sIRI)) {
+					continue;
+				}
 				Resource s = model.createResource(sIRI);
-				Property p = model.createProperty(triple.getResource("p").toString());
-				RDFNode o = triple.get("o");
-				s.addProperty(p, o);
-				if (o.isResource()) {
-					newLevelS.add(o.asResource().getURI());
+				String sparqlAttr = "SELECT DISTINCT * WHERE {<"+sIRI+"> ?p ?o. "
+						 + "}";
+				List<QuerySolution> attrs = queryOnce(ep, sparqlAttr);
+				for (QuerySolution attr : attrs) {
+					String pIRI= attr.getResource("p").toString();
+					Property p = model.createProperty(pIRI);
+					RDFNode o = attr.get("o");
+					Boolean validated = true;
+						if(!validateURL(pIRI)) {
+							validated = false;
+						} else if(o.isResource()) {
+							if(o.asResource().getURI()!=null &&!validateURL(o.asResource().getURI())) {
+								validated = false;
+							}
+						}
+					if(validated) {
+						s.addProperty(p,o);
+					}
+						
+					
 				}
 			}
 		}
@@ -382,46 +390,22 @@ public class CoordinationAgent extends JPSAgent {
 		model.write(w);
 	}
 
-	public void queryRecurInit(String ep, List<String> IRIs, Model model, int level) {
-		List<String> newLevelS = queryOneLevel(ep, IRIs, model);
-		do {
-			level = level - 1;
-			System.out.println(level);
-			List<String> newnewLevelS = queryOneLevel(ep, newLevelS, model);
-			newLevelS = newnewLevelS;
-		} while (level > 0);
-	}
-
-	public List<String> queryOneLevel(String ep, List<String> IRIs, Model model) {
-		List<String> newS = new ArrayList<String>();
-		for (String IRI : IRIs) {
-			List<String> result = queryOnce(ep, IRI, model);
-			newS.addAll(result);
+	protected boolean validateURL (String url)  {
+		if(url.contains("%")) {
+			return false;
 		}
-		return newS;
+		UrlValidator validator = new UrlValidator();
+		return validator.isValid(url);
 	}
 
-	public List<String> queryOnce(String ep, String sIRI, Model model) {
-		String sparql = "SELECT DISTINCT * WHERE {" + " <" + sIRI + "> ?p ?o." + "}";
-		JSONObject params = new JSONObject();
-		params.put("format", "json");
-		params.put("query", sparql);
-		String resultBody = Http.execute(Http.get(ep, "application/json", sparql));
+	public List<QuerySolution> queryOnce(String ep, String queryStr) {
+	
+		String resultBody = Http.execute(Http.get(ep, "application/json", queryStr));
 
 		InputStream targetStream = new ByteArrayInputStream(resultBody.getBytes());
 		ResultSet resultSet = ResultSetFactory.fromJSON(targetStream);
 		List<QuerySolution> rlist = ResultSetFormatter.toList(resultSet);
-		List<String> IRIs = new ArrayList();
-		for (QuerySolution triple : rlist) {
-			Resource s = model.createResource(sIRI);
-			Property p = model.createProperty(triple.getResource("p").toString());
-			RDFNode o = triple.get("o");
-			s.addProperty(p, o);
-			if (o.isResource()) {
-				IRIs.add(o.asResource().getURI());
-			}
-		}
-		return IRIs;
+		return rlist;
 	}
 
 	/***

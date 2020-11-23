@@ -17,6 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Ignore;
@@ -31,19 +33,17 @@ public class TestMatchAggregator extends Mockito {
 
 	class MatchAggregator4Test extends MatchAggregator {
 
-		@Ignore
-		@Test
 		public void testPenalizing(String classAlignmentIRI, double sameClassThreshold, double pFactor)
 				throws Exception {
 			super.penalizing(classAlignmentIRI, sameClassThreshold, pFactor);
 		}
 
 		public List<Map> checkFinalScoreList() {
-			return super.finalScoreList;
+			return super.batchScoreList;
 		}
 
 		public void setFinalScoreList(List<Map> list) {
-			super.finalScoreList = list;
+			super.batchScoreList = list;
 		}
 
 		public void setSrcTgt(String srcOnto, String tgtOnto) {
@@ -52,6 +52,16 @@ public class TestMatchAggregator extends Mockito {
 		}
 	}
 
+	@Ignore
+	@Test
+	public void testParseValue() {
+		String valuestr = "\"0.587\"^^http://www.w3.org/2001/XMLSchema#float";
+				
+		MatchAggregator4Test m = new MatchAggregator4Test();
+		double v = m.getDoubleSparqlResult(valuestr);
+		System.out.println(v);
+
+	}
 	@Ignore
 	@Test
 	public void checkListSorting() {
@@ -138,31 +148,40 @@ public class TestMatchAggregator extends Mockito {
 		assertTrue(result.has("success"));
 
 	}
+	
 	@Test
 	public void testAggregateIndi() {
-		double threshold = 0.6;
+		double threshold = 0.5;
 		List<Double> weights = new ArrayList<Double>();
-		weights.add(0.6);
-		weights.add(0.3);
+		weights.add(0.5);
+		weights.add(0.4);
 		weights.add(0.1);
 
-		String onto1 = "D:/workwork/testFiles/ontoMatchFiles/tmpdbp.owl",
-				onto2 = "D:/workwork/testFiles/ontoMatchFiles/jpspp.rdf";
+		String onto1 = "D:/workwork/ontoMatchFiles/tmpdbpAllT.owl",
+				onto2 = "D:/workwork/ontoMatchFiles/jpsppcombine.rdf";
 		List<String> stubAlignments = new ArrayList<String>();
-		stubAlignments.add("file:///D:/workwork/ontoMatchFiles/PPDBSTRINGINDI.owl");
-		stubAlignments.add( "file:///D:/workwork/ontoMatchFiles/PPDBWORDINDI.owl" );
-		stubAlignments.add( "file:///D:/workwork/ontoMatchFiles/PPDBVALUEINDI.owl" );
+		stubAlignments.add("D:/workwork/ontoMatchFiles/PPDBSTRINGINDI.ttl");
+		stubAlignments.add( "D:/workwork/ontoMatchFiles/PPDBWORDINDI.ttl" );
+		stubAlignments.add( "D:/workwork/ontoMatchFiles/PPDBVALUEINDI.ttl" );
 
 
-		String addr = "http://www.theworldavatar.com/powerplantsAlignment.owl";
-
+		String addr = "http://www.theworldavatar.com/powerplantsAlignmentAll1019.owl";
+		List<String> choices = new ArrayList<String>();
+         choices.add("PENALIZING");
+         choices.add("CARDINALITY");
 		JSONObject jo = new JSONObject();
-		jo.put("threshold", 0.6);
+		jo.put("threshold", 0.55);
 		jo.put("srcOnto", onto1);
 		jo.put("tgtOnto", onto2);
 		jo.put("addr", addr);
 		jo.put("weights", weights);
 		jo.put("alignments", stubAlignments);
+		jo.put("choices", choices);
+		jo.put("classAlign", "D:/workwork/ontoMatchFiles/finalTestAggregaotr.owl");
+		jo.put("pFactor", 0.5);
+		jo.put("sameClassThreshold", 0.6);
+
+		
 		Reader inputString = new StringReader(jo.toString());
 		BufferedReader reader = new BufferedReader(inputString);
 
@@ -259,4 +278,51 @@ public class TestMatchAggregator extends Mockito {
 		assertTrue(result.has("success"));
 
 	}
+	
+	@Ignore
+	@Test
+	public void testCardinalityFiltering() {
+		String onto1 = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl",
+				onto2 = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
+		String thisAlignmentIRI = "C:/Users/morta/WebstormProjects/MatchAgentVisual/public/powerplantsAlignmentAll1004.owl";
+		try {
+			
+			MatchAggregator m = new MatchAggregator();
+			m.one2oneCardinalityFiltering(thisAlignmentIRI);
+			for(Map i : m.batchScoreList) {
+				System.out.println(m.toString());
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	@Ignore
+	@Test
+	public void testPenalizing() throws Exception {
+		String srcOnto = "D:/workwork/ontoMatchFiles/tmpdbpAllT.owl";
+		String tgtOnto = "D:/workwork/ontoMatchFiles/jpsppcombine.rdf";
+		MatchAggregator4Test m = new MatchAggregator4Test();
+		List<Map> test = new ArrayList<Map>();
+		HashMap line1 = new HashMap();
+		line1.put("entity1","http://dbpedia.org/resource/Schwarze_Pumpe_power_station");
+		line1.put("entity2","http://www.theworldavatar.com/kb/powerplants/Schwarze_Pumpe_Coal_Power_Plant_Germany.owl#Schwarze_Pumpe_Coal_Power_Plant_Germany");
+		line1.put("measure", 0.7);
+		HashMap line2 = new HashMap();
+		line2.put("entity1","controlgroup1");
+		line2.put("entity2","controlgroup2");
+		line2.put("measure", 0.7);
+        test.add(line1);
+        test.add(line2);
+		m.setFinalScoreList(test);
+		m.setSrcTgt(srcOnto, tgtOnto);
+		m.penalizing("D:/workwork/ontoMatchFiles/finalTestAggregaotr.owl", 0.6, 0.1);
+         List<Map> result = m.checkFinalScoreList();
+		System.out.println("end");
+		
+	}
+	
 }

@@ -30,15 +30,15 @@ class PlusImport():
         os.remove(self.name)
 
 if __name__ == "__main__":
-    #ontologyIRI = sys.argv[1]
-    #tIRI = sys.argv[2]
-    #saveIRI = sys.argv[3]
+    ontologyIRI = sys.argv[1]
+    tIRI = sys.argv[2]
+    saveIRI = sys.argv[3]
     #ontologyIRI = "D:/workwork/ontoMatchFiles/jpspp.rdf"
     #saveIRI = "D:/workwork/ontoMatchFiles/jpsppcombine.rdf"
 
-    ontologyIRI = "D:/workwork/ontoMatchFiles/tmpdbp.owl"
-    saveIRI = "D:/workwork/ontoMatchFiles/tmpdbpT.owl"
-    tIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl"
+    #ontologyIRI = "D:/workwork/ontoMatchFiles/tmpdbp.owl"
+    #saveIRI = "D:/workwork/ontoMatchFiles/tmpdbpT.owl"
+    #tIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl"
     #load all imports recursively
     ontoObject = Ontology(tIRI)
     imports =ontoObject.imports

@@ -26,7 +26,7 @@ public class TestAlignmentReader extends Mockito {
 	public void testAlignmentReader() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		// TODO:later make this suitable for another set up
-		String alignmentFileIRI = "http://localhost:3000/finalTestAggregaotr.owl";
+		String alignmentFileIRI = "D:\\workwork\\ontoMatchFiles\\finalTestAggregaotr.owl";
 		JSONObject jo = new JSONObject();
 		jo.put("alignmentIRI", alignmentFileIRI);
 		jo.put("threshold", 0.0);

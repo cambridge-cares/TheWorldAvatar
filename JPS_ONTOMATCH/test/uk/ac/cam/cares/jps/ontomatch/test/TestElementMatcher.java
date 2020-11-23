@@ -26,14 +26,14 @@ import uk.ac.cam.cares.jps.ontomatch.ElementMatcher.MATCHING_TYPE;
 
 public class TestElementMatcher extends Mockito{
 
-    
+   
     @Test 
     public void testValueMatcher() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
         HttpServletResponse response = mock(HttpServletResponse.class);
 		String type = "VALUE";
 		String mt = "INDIVIDUAL";
-		String stubSavePath = "file:///D:/workwork/ontoMatchFiles/PPDBVALUEINDI.owl";
+		String stubSavePath = "D:/workwork/ontoMatchFiles/PPDBVALUEINDI.ttl";
 		//TODO: substitute with actual tmp file please
 		String stubTgt = "D:/workwork/ontoMatchFiles/jpspp.rdf";
 		String stubSrc = "D:/workwork/ontoMatchFiles/tmpdbp.owl";
@@ -60,16 +60,19 @@ public class TestElementMatcher extends Mockito{
 
     }
 
+    @Ignore
     @Test
     public void testStringMatcher() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
         HttpServletResponse response = mock(HttpServletResponse.class);
 		String type = "I_STRING";
 		String mt = "INDIVIDUAL";
-		String stubSavePath = "file:///D:/workwork/ontoMatchFiles/PPDBSTRINGINDI.owl";
+		String stubSavePath = "D:/workwork/ontoMatchFiles/PPDBSTRINGINDI.ttl";
 		String stubTgt = "D:/workwork/ontoMatchFiles/jpspp.rdf";
 		String stubSrc = "D:/workwork/ontoMatchFiles/tmpdbp.owl";
-        JSONObject jo  = new JSONObject();
+		//String stubTgt = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
+		//String stubSrc = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
+		JSONObject jo  = new JSONObject();
         jo.put("alignmentFileAddress", stubSavePath);
         jo.put("targetOntoIRI", stubTgt);
         jo.put("sourceOntoIRI", stubSrc);
@@ -89,16 +92,19 @@ public class TestElementMatcher extends Mockito{
         assertTrue(result.has("success"));
     }
 	
+    @Ignore
     @Test
     public void testWordMatcher() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
         HttpServletResponse response = mock(HttpServletResponse.class);
 		String type = "I_WORD";
 		String mt = "INDIVIDUAL";
-		String stubSavePath = "file:///D:/workwork/ontoMatchFiles/PPDBWORDINDI.owl";
+		String stubSavePath = "D:/workwork/ontoMatchFiles/PPDBWORDINDI.ttl";
 		String stubTgt = "D:/workwork/ontoMatchFiles/jpspp.rdf";
 		String stubSrc = "D:/workwork/ontoMatchFiles/tmpdbp.owl";
-        JSONObject jo  = new JSONObject();
+		//String stubTgt = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
+		//String stubSrc = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
+		JSONObject jo  = new JSONObject();
         jo.put("alignmentFileAddress", stubSavePath);
         jo.put("targetOntoIRI", stubTgt);
         jo.put("sourceOntoIRI", stubSrc);

@@ -21,5 +21,11 @@ public class AlignmentNamespace {
 	public static final String LOCATION = PREFIX+":location";
 	public static final String CELL = PREFIX+":Cell";
 	public static final String EQUAL_RELATION ="\"=\"";
-	
+	public static final String map = PREFIX+":map";
+
+	public static final String fullIRI(String shortname) {
+		String[] namearr = shortname.split(":");
+		return IRI+namearr[1];
+		
+	}
 }
