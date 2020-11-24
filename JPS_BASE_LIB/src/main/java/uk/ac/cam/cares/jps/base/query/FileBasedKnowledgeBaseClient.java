@@ -59,7 +59,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		init();
 		load();
 	}
-		
+
 	/**
 	 * Constructor loads the file and set the sparql query/update.
 	 * @param filePath
@@ -114,7 +114,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			
 			//Set file output language to input language
 			langOut = RDFLanguages.filenameToLang(filePath);
-			System.out.println("File language is" + langOut);
+			System.out.println("File language is: " + langOut);
 			
 			conn.load(filePath);
 		} else {
@@ -172,6 +172,13 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+	}
+	
+	/**
+	 * Get filePath variable
+	 */
+	public String getFilePath() {
+		return filePath;
 	}
 	
 	/**
@@ -255,7 +262,12 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return
 	 */
 	public boolean isEmpty() {
-		return dataset.isEmpty();
+		
+		if(!isConnected()) {
+			return true;
+		}else {
+			return dataset.isEmpty();
+		}
 	}
 	
 	///////////////////////////
