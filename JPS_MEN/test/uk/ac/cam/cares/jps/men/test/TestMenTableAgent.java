@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.men.MenTableAgent;
 
 
 
@@ -101,5 +102,23 @@ public class TestMenTableAgent extends TestCase {
 		System.out.println(resultAsString);
 		
 		System.out.println("it is connected");
+	}
+	/** validate input for TableAgent test
+	 * 
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public void testValidInput() throws IOException, URISyntaxException {
+		JSONObject jo = new JSONObject();
+		jo.put("CarbonTax", getCarbonTax());
+		jo.put("InterestFactor", getInterestFactor());JSONArray annualCostFactor = new JSONArray();
+		for (String current : getAnnualCostFactor()) {
+			annualCostFactor.put(current);
+		}
+		jo.put("AnnualCostFactor", annualCostFactor);
+		jo.put("InternationalMarketPriceFactor", getInternationalMarketPriceFactor());
+		jo.put("InternationalMarketLowestPriceApplied", getInternationalMarketLowestPrice());
+		boolean tableBool = new MenTableAgent().validateInput(jo);
+		assertTrue(tableBool);
 	}
 }

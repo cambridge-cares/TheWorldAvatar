@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.query;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.sql.SQLException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -12,6 +13,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.CDL;
+import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
@@ -29,6 +32,9 @@ public class SparqlOverHttpService {
 	private RDFStoreType type = RDFStoreType.FUSEKI;
 	private String sparqlServiceURIForQuery = null;
 	private String sparqlServiceURIForUpdate = null;
+	
+	// Declared the kbClient variable
+	private KnowledgeBaseClient kbClient;
 	
 	public SparqlOverHttpService(String datasetUrl) {
 		
@@ -74,7 +80,15 @@ public class SparqlOverHttpService {
 		return b.toString();
 	}
 	
-	public String executePost(String messageBody) {
+	/**
+	 * A method developed for performing update operations on different<br>
+	 * types of triple stores including Blazegraph.
+	 * 
+	 * @param messageBody
+	 * @return
+	 * @throws SQLException
+	 */
+	public String executePost(String messageBody) throws SQLException{
 
 		URI uri = AgentCaller.createURI(sparqlServiceURIForUpdate);
 		HttpPost request = new HttpPost(uri);
@@ -84,7 +98,20 @@ public class SparqlOverHttpService {
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
 			messageBody = "update=" + messageBody;
 			//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
-		} else {
+		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
+			kbClient = new RemoteKnowledgeBaseClient();
+			if(sparqlServiceURIForUpdate==null){
+				throw new SQLException("SparqlOverHttpService: SPARQL service URI for update is null. Provide a valid URI.");
+			}
+			if(sparqlServiceURIForUpdate.isEmpty()){
+				throw new SQLException("SparqlOverHttpService: SPARQL service URI for update is emptry. Provide a valid URI.");
+			}
+			kbClient.setUpdateEndpoint(sparqlServiceURIForUpdate);
+			kbClient.setQuery(messageBody);
+			int response = kbClient.executeUpdate();
+			return ""+response;
+		}
+		else {
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
 		}
 		
@@ -132,12 +159,38 @@ public class SparqlOverHttpService {
 		return responseBody;
 	}
 	
-	public String executeGet(String sparqlQuery) {
+	/**
+	 * A method developed for forwarding query to different triples stores<br>
+	 * including Blazegraph.
+	 * 
+	 * @param sparqlQuery
+	 * @return
+	 * @throws SQLException
+	 */
+	public String executeGet(String sparqlQuery) throws SQLException{
 
 		URI uri = null;
 		if (RDFStoreType.RDF4J.equals(type)) {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
-		} else {
+		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
+			kbClient = new RemoteKnowledgeBaseClient();
+			if(sparqlServiceURIForQuery == null){
+				throw new SQLException("SparqlOverHttpService: SPARQL service URI for query is null. Provide a valid URI.");
+			}
+			if(sparqlServiceURIForQuery.isEmpty()){
+				throw new SQLException("SparqlOverHttpService: SPARQL service URI for query is empty. Provide a valid URI.");
+			}
+			kbClient.setQueryEndpoint(sparqlServiceURIForQuery);
+			kbClient.setQuery(sparqlQuery);
+
+			JSONArray jsonArray = kbClient.executeQuery();
+			if(jsonArray!=null){
+				return CDL.toString(jsonArray);
+			}else{
+				return null;
+			}
+
+		}else {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
 		}
 		HttpGet request = new HttpGet(uri);

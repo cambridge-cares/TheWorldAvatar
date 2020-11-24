@@ -69,6 +69,13 @@
 !***  Module module_uect_io declares variables and parameters
 !***  for input/output interfaces of UECT.
 !***  Module contains all routines for reading and writing files
+
+!!!!!!!
+!!!  modified by Kang @ Jan. 22, 2020 @ Cambridge CARES for moving point source (circular or straight line) and building parameters, and emission rate calculation
+!!! a, add 5 more columns for moving points:  vec (m/s), direction (0-360), circ_ang (>0, clockwise, <0, counter-colockwise, =0, striaght line), t_start_moving(s),t_stop_moving(s). 
+!!! b, read the building height and width from input excel file (2 more columns), intead of default definition in "emission_point.for"
+!!! will read into "in_array_pse(:,7-13)". So for emission indicator, it needs be adding 7. 
+!!! other varibles: new_array_pse(:,7-13), out_params_pse() 
 !***********************************************************************
 
       implicit none
@@ -142,7 +149,15 @@
       character(len=60)   :: enddate
 
 ! columns in input files (excl. SNAP)
-      integer, parameter  :: colp = 13
+
+!!!!!===========================================
+!!!! for moving point source by Kang @ CARES
+!!! orig:       integer, parameter  :: colp = 13
+!!!
+      integer, parameter  :: colp = 20  
+ !!! add 4 more columns for moving points:  vec (m/s), direction (0-360),  circ_ang (>0, clockwise, <0, counter-colockwise, =0, striaght line), t_start_moving(s),t_stop_moving(s) 
+ !!!and 2 more columns for building height and width. will read into in_array_pse(:,7-12).
+!!!!===============================================
       integer, parameter  :: coll = 13
       integer, parameter  :: cola = 13
 

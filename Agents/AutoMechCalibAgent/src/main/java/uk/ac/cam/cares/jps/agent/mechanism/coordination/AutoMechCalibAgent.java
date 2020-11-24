@@ -63,6 +63,18 @@ public class AutoMechCalibAgent extends JPSAgent {
 	public static final String NO_PATH_RETURN_AGENT_CALLER = "The job requested by AutoMechCalibAgent is not correctly set";
 	public static final String MULTI_PATH_RETURN_AGENT_CALLER = "The job requested by AutoMechCalibAgent returned more than one response";
 	
+	public static void main(String[] args) {
+		AutoMechCalibAgent test = new AutoMechCalibAgent();
+		test.initAgentProperty();
+		try {
+			test.init();
+		} catch (ServletException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	/**
 	 * Receives requests that match with the URL patterns listed in the<br>
 	 * annotations of this class. 
@@ -361,6 +373,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 					return false;
 				} else if (isJobMechCalib(jobFolder)) {
 					String updatedMechIRI = retrieveMechCalibOutput(jobFolder, statusFile); // TODO return this value to user
+					System.out.println(updatedMechIRI);
 					updateJobStatus(jobFolder);
 					updateJobOutputStatus(jobFolder);
 					return true;
@@ -554,7 +567,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 		if (!updatedMech.exists()) {
 			throw new JPSRuntimeException("The calibrated mechanism is not found");
 		}
-		OntoKinKG ontokinkg = new OntoKinKG();
+		OntoKinKG ontokinkg = new OntoKinKG(autoMechCalibAgentProperty);
 		String mechanismOwl = Property.RDF4J_ONTOKIN_KB_URL.getPropertyName().concat(mechId).concat(Property.AGENT_MECH_CALIB_UPDATED_MECH_SUFFIX);
 		return ontokinkg.queryMechanismIRI(mechanismOwl);
 	}

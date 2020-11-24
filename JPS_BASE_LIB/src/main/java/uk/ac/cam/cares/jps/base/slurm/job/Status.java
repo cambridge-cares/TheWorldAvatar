@@ -36,6 +36,7 @@ public enum Status {
 	JOB_SETUP_ERROR("The requested job could not be set up, therefore, resubmit the job."),
 	JOB_LOG_MSG_ERROR_TERMINATION("error termination"),
 	JOB_LOG_MSG_NORMAL_TERMINATION("normal termination"),
+	JOB_OUTPUT_FILE_EXIST_MESSAGE("The file exist."),
 	JOB_SQUEUE_STATUS_COMPLETED("CD"),
 	JOB_SQUEUE_STATUS_COMPLETING("CG"),
 	JOB_SQUEUE_STATUS_FAILED("F"),

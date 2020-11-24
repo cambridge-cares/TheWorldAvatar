@@ -21,6 +21,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 
+import uk.ac.cam.cares.jps.agent.configuration.DispersionAgentConfiguration;
+import uk.ac.cam.cares.jps.agent.configuration.DispersionAgentProperty;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
@@ -36,14 +38,11 @@ import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
 
 @Controller
-///@WebServlet("/DispersionModellingAgent")
 @WebServlet(urlPatterns = {"/episode/dispersion","/adms/dispersion","/job/show/statistics"})
 public class DispersionModellingAgent extends JPSHttpServlet {
 	
@@ -63,9 +62,13 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 	public static final String STATISTIC_PATH = "/job/show/statistics";
 	public static final String EX_UNKNOWN_DMAGENT = "Unknown Dispersion Modelling Agent Requested";
 
-	static JobSubmission jobSubmission;
-	public static SlurmJobProperty slurmJobProperty;
-	public static ApplicationContext applicationContext;
+	public static final String FILE_NAME_3D_MAIN_CONC_DATA = "3D_instantanous_mainconc_center.dat";
+	public static final String FILE_NAME_ICM_HOUR = "icmhour.nc";
+	public static final String FILE_NAME_PLUME_SEGMENT = "plume_segments.dat";
+	
+	public static JobSubmission jobSubmission;
+	public static ApplicationContext applicationContextDispersionAgent;
+	public static DispersionAgentProperty dispersionAgentProperty;
 	private File jobSpace;
 	
 	@Override
@@ -84,17 +87,13 @@ public class DispersionModellingAgent extends JPSHttpServlet {
         System.out.println("---------- Dispersion Modelling Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         DispersionModellingAgent episodeAgent = new DispersionModellingAgent();
-		// initialising classes to read properties from the slurm-job.properites file
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-			logger.info("slurmjobproperty="+slurmJobProperty.toString());
-		}
-        // Here, the delay before the job scheduler starts and the interval
-        // between two consecutive executions of the scheduler are specified
-		// based on the information provided in the slurm-job.properties file.
+		// initialising classes to read properties from the dispersion-agent.properites file
+        initAgentProperty();
+		// In the following method call, the parameter getAgentInitialDelay-<br>
+		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
+		// the job scheduler starts and getAgentPeriodicActionInterval<br>
+		// refers to the interval between two consecutive executions of<br>
+		// the scheduler.
 		executorService.scheduleAtFixedRate(() -> {
 			try {
 				episodeAgent.monitorJobs();
@@ -102,12 +101,57 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}, slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(),
-				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("---------- simulation jobs are being monitored  ----------");
-        System.out.println("---------- simulation jobs are being monitored  ----------");
+		}, dispersionAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
+				dispersionAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+		logger.info("---------- Dispersion of pollutant simulation jobs are being monitored  ----------");
+        System.out.println("---------- Dispersion of pollutant simulation jobs are being monitored  ----------");
        	
 	}
+    
+	/**
+	 * Initialises the unique instance of the DispersionAgentProperty class that<br>
+	 * reads all properties of DispersionAgent from the dispersion-agent property file.<br>
+	 * 
+	 * Initialises the unique instance of the SlurmJobProperty class and<br>
+	 * sets all properties by reading them from the dispersion-agent property file<br>
+	 * through the DispersionModellingAgent class.
+	 */
+	public void initAgentProperty() {
+		// initialising classes to read properties from the dft-agent.properites
+		// file
+		if (applicationContextDispersionAgent == null) {
+			applicationContextDispersionAgent = new AnnotationConfigApplicationContext(DispersionAgentConfiguration.class);
+		}
+		if (dispersionAgentProperty == null) {
+			dispersionAgentProperty = applicationContextDispersionAgent.getBean(DispersionAgentProperty.class);
+		}
+		if (jobSubmission == null) {
+			jobSubmission = new JobSubmission(dispersionAgentProperty.getAgentClass(), dispersionAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(dispersionAgentProperty.getHpcServerLoginUserName());
+			jobSubmission.slurmJobProperty
+					.setHpcServerLoginUserPassword(dispersionAgentProperty.getHpcServerLoginUserPassword());
+			jobSubmission.slurmJobProperty.setAgentClass(dispersionAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty
+					.setAgentCompletedJobsSpacePrefix(dispersionAgentProperty.getAgentCompletedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty
+					.setAgentFailedJobsSpacePrefix(dispersionAgentProperty.getAgentFailedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setHpcAddress(dispersionAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setInputFileName(dispersionAgentProperty.getInputFileName());
+			jobSubmission.slurmJobProperty.setInputFileExtension(dispersionAgentProperty.getInputFileExtension());
+			jobSubmission.slurmJobProperty.setOutputFileName(dispersionAgentProperty.getOutputFileName());
+			jobSubmission.slurmJobProperty.setOutputFileExtension(dispersionAgentProperty.getOutputFileExtension());
+			jobSubmission.slurmJobProperty.setJsonInputFileName(dispersionAgentProperty.getJsonInputFileName());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(dispersionAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setSlurmScriptFileName(dispersionAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setExecutableFile(dispersionAgentProperty.getExecutableFile());
+			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(dispersionAgentProperty.getMaxNumberOfHPCJobs());
+			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(
+					dispersionAgentProperty.getAgentInitialDelayToStartJobMonitoring());
+			jobSubmission.slurmJobProperty
+					.setAgentPeriodicActionInterval(dispersionAgentProperty.getAgentPeriodicActionInterval());
+		}
+	}
+
     
     @Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -204,31 +248,16 @@ public class DispersionModellingAgent extends JPSHttpServlet {
      * @throws SlurmJobException
      */
 	private void monitorJobs() throws SlurmJobException{
-		System.out.println("monitor job starts");
 		if(jobSubmission==null){
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
+			jobSubmission = new JobSubmission(dispersionAgentProperty.getAgentClass(), dispersionAgentProperty.getHpcAddress());
 		}
 		jobSubmission.monitorJobs();
-		System.out.println("calling process output");
-		
 		processOutputs();
 	}
 	
 	public void processOutputs() {
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-			logger.info("slurmjobproperty="+slurmJobProperty.toString());
-		}
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
-		
+		initAgentProperty();
 		jobSpace = jobSubmission.getWorkspaceDirectory();
-		logger.info("getting jobspace= "+jobSpace.getAbsolutePath());
-		System.out.println("getting jobspace= "+jobSpace.getAbsolutePath());
 		try {
 			if (jobSpace.isDirectory()) {
 				File[] jobFolders = jobSpace.listFiles();
@@ -238,27 +267,31 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 						File outputFolder= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
 						String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
 						File outputFile= new File(zipFilePath);
-						if(annotateOutputs(jobFolder, zipFilePath, outputFile)) {
+						if(!outputFile.isFile() || !outputFile.exists()){
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+							continue;
+						}
+						// Unzip the output zip file.
+						FileUtil.unzip(zipFilePath, outputFolder.getAbsolutePath());
+						// Opens the main concentration file.
+						File file = new File(outputFolder.getAbsolutePath().concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
+						// Checks the existence of the main concentration file.
+						if(!file.exists()){
+							// If the main concentration file does not exist,
+							// the job status is marked with error termination.   
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+							continue;							
+						}
+						if(annotateOutputs(jobFolder, zipFilePath)) {
 							logger.info("DispersionModellingAgent: Annotation has been completed.");
 							System.out.println("Annotation has been completed.");
 							PostProcessing.updateJobOutputStatus(jobFolder);
-						} else{
+						} else {
 							logger.error("DispersionModellingAgent: Annotation has not been completed.");
 							System.out.println("Annotation has not been completed.");
-							boolean outputexist=outputFolder.exists();
-							int outputcontentexist=outputFolder.list().length;
-							boolean concfileexist=isConcentrationFileAvailable(jobFolder);
-							boolean concfilecomplete=isConcentrationFileComplete(jobFolder);
-							if(!(outputexist
-									&& outputcontentexist!=0
-									&& concfileexist
-									&& concfilecomplete)) {
-								//edit the status file to be error termination
-								System.out.println("Status completed but don't have the expected output.");
-								Utils.modifyStatus(jobFolder.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
-							} else{
-								PostProcessing.updateJobOutputStatus(jobFolder);
-							}
+							// Edit the status file to be error termination
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(),
+									Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
 						}
 					}
 				}
@@ -272,47 +305,20 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		}
 	}
 	
-	private boolean isConcentrationFileAvailable(File jobFolder) {
-		File outputconc = new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output")
-				.concat(File.separator).concat("3D_instantanous_mainconc_center.dat"));
-		if (outputconc.exists()) {
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean isConcentrationFileComplete(File jobFolder) {
-		File outputconc = new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output")
-				.concat(File.separator).concat("3D_instantanous_mainconc_center.dat"));
-		try {
-			String fileContext = FileUtils.readFileToString(outputconc);
-			if(fileContext.isEmpty()) {
-				return false;
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return true;
-	}
-    
-    /**
+	/**
      * Updates weather and air quality data and meta data in the JPS<br>
      * knowledge-graph.   
-     * 
-     * @param jobFolder
-     * @return
-     * @throws SlurmJobException
-     */
-	private boolean annotateOutputs(File jobFolder, String zipFilePath, File out) throws SlurmJobException {
+	 * 
+	 * @param jobFolder
+	 * @param zipFilePath
+	 * @return
+	 * @throws SlurmJobException
+	 */
+	private boolean annotateOutputs(File jobFolder, String zipFilePath) throws SlurmJobException {
 		try {
-		System.out.println("annotate output started");
-		if(out.isFile()) {
+			System.out.println("Annotating output has been started");
 			String directory = jobFolder.getAbsolutePath() + "/input.json";
 			String destDir = jobFolder.getAbsolutePath() + "/output";
-
-			FileUtil.unzip(zipFilePath, destDir);
 			File json = new File(directory);
 			String content = FileUtils.readFileToString(json);
 			JSONObject jo = new JSONObject(content);
@@ -320,50 +326,48 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			String agent = jo.getString("agent");
 			String datapath = jo.getString("datapath");
 			String time = jo.getString("expectedtime");
-			if(!jo.has("airStationIRI")) {
-					if (cityIRI.toLowerCase().contains("singapore")) {
-						jo.put("airStationIRI",
-								"http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002");
-					} else if (cityIRI.toLowerCase().contains("kong")) {
-						jo.put("airStationIRI",
-								"http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
-					}
+			if (!jo.has("airStationIRI")) {
+				if (cityIRI.toLowerCase().contains("singapore")) {
+					jo.put("airStationIRI",
+							"http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002");
+				} else if (cityIRI.toLowerCase().contains("kong")) {
+					jo.put("airStationIRI",
+							"http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+				}
 			}
-			
-	    	File file = new File(destDir+"/3D_instantanous_mainconc_center.dat");
-			String destinationUrl = datapath + "/3D_instantanous_mainconc_center.dat";
-			
-	    	File file2 = new File(destDir+"/icmhour.nc");
-			String destinationUrl2 = datapath + "/icmhour.nc";
-			File file2des=new File(destinationUrl2);
+
+			File file = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
+			String destinationUrl = datapath + "/"+ FILE_NAME_3D_MAIN_CONC_DATA;
+
+			File file2 = new File(destDir + "/"+ FILE_NAME_ICM_HOUR);
+			String destinationUrl2 = datapath + "/"+ FILE_NAME_ICM_HOUR;
+			File file2des = new File(destinationUrl2);
 			FileUtils.copyFile(file2, file2des);
-			
-	    	File file3 = new File(destDir+"/plume_segments.dat");
-			String destinationUrl3 = datapath + "/plume_segments.dat";
-			File file3des=new File(destinationUrl3);
+
+			File file3 = new File(destDir + "/"+ FILE_NAME_PLUME_SEGMENT);
+			String destinationUrl3 = datapath + "/"+ FILE_NAME_PLUME_SEGMENT;
+			File file3des = new File(destinationUrl3);
 			FileUtils.copyFile(file3, file3des);
 
-			new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
-			//new QueryBroker().putLocal(destinationUrl2, file2); //put to scenario folder
-			//new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
+			new QueryBroker().putLocal(destinationUrl, file); // put to scenario
+																// folder
+			// new QueryBroker().putLocal(destinationUrl2, file2); //put to
+			// scenario folder
+			// new QueryBroker().putLocal(destinationUrl3, file3); //put to
+			// scenario folder
 			List<String> topics = new ArrayList<String>();
-	    	topics.add(cityIRI);
-	    	System.out.println("metadata annotation started");
-	    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics, time); //annotate
-	    	System.out.println("metadata annotation finished");
-	    	String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation",
-					jo.toString());
-	    	
+			topics.add(cityIRI);
+			System.out.println("metadata annotation started");
+			MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics, time); // annotate
+			System.out.println("metadata annotation finished");
+			String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());
 			String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
-		}else{
-			return false;
-		}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.error("DispersionModellingAgent: Output Annotating Task could not finish");
 			System.out.println("DispersionModellingAgent: Output Annotating Task could not finish");
 			e.printStackTrace();
-			throw new SlurmJobException(e.getMessage());
+			return false;
 		}
 		return true;
 	}

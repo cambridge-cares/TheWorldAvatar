@@ -28,7 +28,7 @@
               <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__ADMSCoord4SC.owl#MessagePart_e182105d-ebfa-4568-8650-364fb70606dd">
                 <msm:hasName>reactionmechanism</msm:hasName>
                 <msm:isArray>false</msm:isArray>
-                <msm:hasType>https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism</msm:hasType>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>

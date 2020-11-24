@@ -1,8 +1,17 @@
 package uk.ac.cam.cares.jps.blazegraph;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOError;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.openrdf.model.Statement;
@@ -19,6 +28,7 @@ import com.bigdata.rdf.sail.webapp.client.RemoteRepository.AddOp;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**
  * This class has been designed and developed to enable performing CRUD<br>
@@ -36,6 +46,12 @@ public class KnowledgeRepository {
 	private String ontologyFilePath;
 	private String ontologyDirectory;
 	private String query;
+	
+	/**
+	 * Declared to return the list of files produced by the getDirectoryFiles()<p>
+	 * method.
+	 */
+	private List<File> files = new ArrayList<>();
 	
 	/**
 	 * The default constructor.
@@ -153,6 +169,26 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public void uploadOntologies() throws Exception{
+		String importedFileLog = "imported-file.log";
+		String importErrorDetailedLog = "import-error-detailed.log";
+		String nonRdfOrOwlFileLog = "non-rdf-or-owl-file.log";
+		FileWriter fWDetailedLog = new FileWriter(importErrorDetailedLog, true);
+		BufferedWriter bWDetailedLog = new BufferedWriter(fWDetailedLog);
+		FileWriter fW = new FileWriter(importedFileLog, true);
+		BufferedWriter bWImported = new BufferedWriter(fW);
+		FileWriter fWNonRdfOrOwlFile = new FileWriter(nonRdfOrOwlFileLog, true);
+		BufferedWriter bWNonRdfOrOwlFile = new BufferedWriter(fWNonRdfOrOwlFile);
+		// Reading the list of already imported files to avoid re-importing them.
+		BufferedReader br = FileUtil.openSourceFile(importedFileLog);
+		List<String> listOfImportedFiles = new ArrayList<>();
+		String line = "";
+		while((line=br.readLine())!=null){
+			listOfImportedFiles.add(line.trim());
+		}
+		br.close();
+		System.out.println("No of already imported files: "+listOfImportedFiles.size());
+		int n_of_problematic_abox = 0;
+		int non_ref_owl_file = 0;
 		try{
 			checkRepositoryDataAvailability(this.endPointURL, this.repositoryName);
 			checkOntologyDiretoryAvailability(this.ontologyDirectory);
@@ -162,13 +198,80 @@ public class KnowledgeRepository {
 		File dir = new File(this.ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
-			for(File file:dir.listFiles()){
+			FileUtil fileUtil = new FileUtil();
+			List<File> files = fileUtil.getDirectoryFiles(dir, Arrays.asList(".owl",".rdf"));
+			System.out.println("Total number of files to upload: "+files.size());
+			if(files==null){
+				return;
+			}
+			for(File file:files){
 				if(file.isFile()){
-					uploadOntology(this.endPointURL, this.repositoryName, file.getAbsolutePath());
+					if(listOfImportedFiles.contains(file.getAbsolutePath())){
+						System.out.println("Already imported file: "+file.getAbsolutePath()+", so skipping.");
+						continue;
+					}
+					try{
+						if(isOwlOrRdf(file.getAbsolutePath())){
+							uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
+							bWImported.write(file.getAbsolutePath()+"\n");
+						}else{
+							bWNonRdfOrOwlFile.write("["+ ++non_ref_owl_file + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
+							System.out.println("["+ non_ref_owl_file + "] File "+file.getName()+" is not imported as it is not in OWL or RDF format.");
+							continue;
+						}
 					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
+					if(i%1000 == 0){
+						TimeUnit.SECONDS.sleep(5);
+					}
+					}catch(Exception e){
+						bWDetailedLog.write("["+ ++n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
+						System.out.println("["+ n_of_problematic_abox + "] File "+file.getName()+" could not be imported due to " + e.getMessage());
+						System.out.println("Now the tool will stop. Run it again to finish the import.");
+						TimeUnit.MILLISECONDS.sleep(500);
+						bWDetailedLog.close();
+						bWImported.close();
+						bWNonRdfOrOwlFile.close();
+						System.exit(0);
+					}
 				}
 			}
 		}
+		bWImported.close();
+		bWNonRdfOrOwlFile.close();
+	}
+	
+	/**
+	 * Verifies if the current file is an OWL or RDF file.
+	 * 
+	 * @param path the path to an OWL or RDF file
+	 * @return
+	 */
+	public boolean isOwlOrRdf(String path) throws IOException{
+		BufferedReader br = FileUtil.openSourceFile(path);
+		String line;
+		String xmlDeclaration = "^<\\?xml.*?\\?>";
+		String rdfStartingTag = "^<rdf:RDF.*?";
+		String rdfClosingTag = "^</rdf:RDF>";
+		boolean isXmlDeclarationAppears = false;
+		boolean isRdfStartingTagAppears = false;
+		boolean isRdfClosingTagAppears = false;
+		
+		while((line=br.readLine())!=null){
+			if(line.trim().matches(xmlDeclaration)){
+				isXmlDeclarationAppears = true;
+			}
+			if(line.trim().matches(rdfStartingTag)){
+				isRdfStartingTagAppears = true;
+			}
+			if(line.trim().matches(rdfClosingTag)){
+				isRdfClosingTagAppears = true;
+			}
+		}
+		
+		if(isXmlDeclarationAppears && isRdfStartingTagAppears && isRdfClosingTagAppears){
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -274,17 +377,23 @@ public class KnowledgeRepository {
 		}catch(Exception e){
 			throw new Exception(e.getMessage());
 		}
-		RemoteRepository repository = getRepository(endPointURL, repositoryName, RDFStoreType.BLAZEGRAPH);
-		if (repository != null) {
-			final InputStream is = new FileInputStream(new File(ontologyFilePath));
-			try {
-				repository.add(new AddOp(is, RDFFormat.forMIMEType("application/xml")));
-			} finally {
-				is.close();
+		try {
+			RemoteRepository repository = getRepository(endPointURL, repositoryName, RDFStoreType.BLAZEGRAPH);
+			if (repository != null) {
+				final InputStream is = new FileInputStream(new File(ontologyFilePath));
+				try {
+					repository.add(new AddOp(is, RDFFormat.forMIMEType("application/xml")));
+				} finally {
+					is.close();
+				}
+			} else {
+				log.info("The following repository does not exist: " + endPointURL + repositoryName);
+				log.info("Create a repository with this name and try again.");
 			}
-		} else {
-			log.info("The following repository does not exist: " + endPointURL + repositoryName);
-			log.info("Create a repository with this name and try again.");
+		} catch (Exception e) {
+			System.out.println("UploadOntology:" + e.getMessage());
+			System.out.println("UploadOntology: uploading the file " + ontologyFilePath);
+			throw new Exception(e.getMessage());
 		}
 	}
 	
@@ -310,7 +419,13 @@ public class KnowledgeRepository {
 		File dir = new File(ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
-			for(File file:dir.listFiles()){
+			FileUtil fileUtil = new FileUtil();
+			List<File> files = fileUtil.getDirectoryFiles(dir, Arrays.asList(".owl",".rdf"));
+			System.out.println("Total number of files to upload: "+files.size());
+			if(files==null){
+				return;
+			}
+			for(File file:files){
 				if(file.isFile()){
 					uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
 					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
@@ -514,21 +629,21 @@ public class KnowledgeRepository {
 	 */
 	private void checkRepositoryDataAvailability(String endPointURL, String repositoryName)
 			throws Exception {
-		if (this.endPointURL == null) {
+		if (endPointURL == null) {
 			throw new Exception("The value of endPointURL is null.");
 		}
-		if (this.endPointURL.trim().isEmpty()) {
+		if (endPointURL.trim().isEmpty()) {
 			throw new Exception("The value of endPointURL is empty.");
 		}
-		if (this.repositoryName == null) {
+		if (repositoryName == null) {
 			throw new Exception("The value of repositoryName is null.");
 		}
-		if (this.repositoryName.isEmpty()) {
+		if (repositoryName.isEmpty()) {
 			throw new Exception("The value of repositoryName is emptry.");
 		}
-		if (this.storeType == null) {
-			throw new Exception("The value of storeType is null.");
-		}
+//		if (this.storeType == null) {
+//			throw new Exception("The value of storeType is null.");
+//		}
 	}
 	
 	/**
@@ -539,7 +654,7 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	private void checkStoreTypeDataAvailability(RDFStoreType storeType) throws Exception {
-		if (this.storeType == null) {
+		if (storeType == null) {
 			throw new Exception("The value of storeType is null.");
 		}
 	}
@@ -552,10 +667,10 @@ public class KnowledgeRepository {
 	 */
 	private void checkOntologyUploadDataAvailability(String ontologyFilePath)
 			throws Exception {
-		if (this.ontologyFilePath == null) {
+		if (ontologyFilePath == null) {
 			throw new Exception("The value of ontologyFilePath is null.");
 		}
-		if (this.ontologyFilePath == null) {
+		if (ontologyFilePath == null) {
 			throw new Exception("The value of ontologyFilePath is empty.");
 		}
 	}
@@ -568,10 +683,10 @@ public class KnowledgeRepository {
 	 */
 	private void checkOntologyDiretoryAvailability(String ontologyDirectory)
 			throws Exception {
-		if (this.ontologyDirectory == null) {
+		if (ontologyDirectory == null) {
 			throw new Exception("The value of ontologyDirectory is null.");
 		}
-		if (this.ontologyDirectory == null) {
+		if (ontologyDirectory == null) {
 			throw new Exception("The value of ontologyDirectory is empty.");
 		}
 	}
@@ -584,11 +699,47 @@ public class KnowledgeRepository {
 	 */
 	private void checkQueryAvailability(String query)
 			throws Exception {
-		if (this.query == null) {
+		if (query == null) {
 			throw new Exception("The value of query is null.");
 		}
-		if (this.query == null) {
+		if (query == null) {
 			throw new Exception("The value of query is empty.");
+		}
+	}
+	
+	/**
+	 * The main method of the class developed to import ontologies (both TBox<p>
+	 * and ABox)
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args){
+		if(args.length>=3){
+			if(args[0].isEmpty()){
+				System.out.println("The first argument is empty. Provide an Endpoint URL like 'http://localhost:8080/blazegraph'");
+				System.exit(0);
+			}
+			if(args[1].isEmpty()){
+				System.out.println("The second argument is empty. Provide a repository name like 'ontokin'");
+				System.exit(0);
+			}
+			if(args[2].isEmpty()){
+				System.out.println("The third argument is empty. Provide the path to the directory where ontologies reside like C:/data/kb");
+				System.exit(0);
+			}
+			KnowledgeRepository kr = new KnowledgeRepository();
+			kr.endPointURL = args[0];
+			kr.repositoryName = args[1];
+			kr.ontologyDirectory = args[2];
+			try{
+				kr.uploadOntologies();
+				System.exit(0);
+			}catch(Exception e){
+				System.out.println(e.getMessage());
+			}
+		}else{
+			System.out.println("For uploading ontologies from a directory provide the URL of Endpoint, name of repository and absolute path of the ontology directory as follows:");
+			System.out.println("http://localhost:8080/blazegraph ontokin C:/data/kb");
 		}
 	}
 }
