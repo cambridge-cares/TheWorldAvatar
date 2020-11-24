@@ -92,6 +92,8 @@ public class CoordinationAgent extends JPSAgent {
 		Double[] weights = { 0.1, 0.2, 0.3 };
 		String[] choices = null;
 		String[] matchers = new String[3];
+		Double sameClassThrehold = null, pFactor=null;
+		String classAlign = null;
 
 		/** get caller parameters and set component agent parameter *******/
 		try {
@@ -130,6 +132,14 @@ public class CoordinationAgent extends JPSAgent {
 			// do nothing
 		}
 
+		try {/** get extra parameter if exists ***/
+			classAlign = jo.getString("classAlignment");
+			pFactor = jo.getDouble("pFactor");
+			sameClassThrehold = jo.getDouble("sameClassThrehold");
+
+		} catch (Exception e) {
+			// do nothing
+		}
 		/** set matchers to call - matching type specific ***/
 		if (MATCHING_TYPE.valueOf(type) == MATCHING_TYPE.TERM) {
 			/*********************
@@ -142,7 +152,6 @@ public class CoordinationAgent extends JPSAgent {
 			/*********************
 			 * CASE: INDIVIDUAL MATCHING
 			 ********************************/
-			String classAlignmentIRI = jo.getString("classAlignment");
 			String sourceTBOX = jo.getString("sourceTBOX");
 			String targetTBOX = jo.getString("targetTBOX");
 
@@ -156,8 +165,9 @@ public class CoordinationAgent extends JPSAgent {
 			// };
 			URI uri;
 			try {
-				List[] targetClasses = retrieveClassAlignmentMap(classAlignmentIRI);
-				queryPotentialInstanceAndSave(targetClasses[1], sIRI, sIRI, true, getTempPath(sIRI));
+				String localDBAddr = AlignmentIOHelper.IRI2local(classAlign);
+				List[] targetClasses = retrieveClassAlignmentMap(localDBAddr);
+				queryPotentialInstanceAndSave(targetClasses[0], sIRI, sIRI, true, getTempPath(sIRI));
 				System.out.println("save to: " + getTempPath(tIRI));
 				String StmpPath  =getTempPath(sIRI);
 				loadTBOX(StmpPath,sourceTBOX, StmpPath);
@@ -166,7 +176,6 @@ public class CoordinationAgent extends JPSAgent {
 				loadTBOX(tIRI,targetTBOX, TtmpPath);
 				tIRI = TtmpPath;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -179,9 +188,9 @@ public class CoordinationAgent extends JPSAgent {
 			callLexicalProcessor(sIRI);
 			callLexicalProcessor(tIRI);
 			/** call matching agents */
-			String[] tmpAlignments = callMatchingAgents(sIRI, tIRI, type, matchers, modelPath, dictPath);
+			List tmpAlignments = callMatchingAgents(sIRI, tIRI, type, matchers, modelPath, dictPath);
 			/** call aggregation agent, which saves the alignment result to KG **/
-			callAggregationAgents(weights, tmpAlignments, choices, threshold, sIRI, tIRI, alignmentIRI);
+			callAggregationAgents(weights, tmpAlignments, choices, threshold, sIRI, tIRI, alignmentIRI,classAlign,pFactor, sameClassThrehold);
 			result.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -202,7 +211,7 @@ public class CoordinationAgent extends JPSAgent {
 		List[] targetClasses = new List[2];
 		targetClasses[0] = new ArrayList<String>(onto1TargetClasses);
 		;
-		targetClasses[1] = new ArrayList<String>(onto1TargetClasses);
+		targetClasses[1] = new ArrayList<String>(onto2TargetClasses);
 		return targetClasses;
 	}
 
@@ -243,15 +252,15 @@ public class CoordinationAgent extends JPSAgent {
 	 * @throws JSONException
 	 * @throws ParseException
 	 */
-	protected String[] callMatchingAgents(String sOnto, String tOnto, String matchingType, String[] matchers,
+	protected List<String> callMatchingAgents(String sOnto, String tOnto, String matchingType, String[] matchers,
 			String modelPath, String dictPath) throws JSONException, ParseException {
 		// call each matcher
-		String[] names = new String[matchers.length];
+	List names = new ArrayList<String>();
 		for (int i = 0; i < matchers.length; i++) {
 			JSONObject requestParams = new JSONObject();
 			// create names for each 2bgenerate alignment file
 			String name = getAlignmentFileName(tOnto, sOnto, matchers[i]);
-			names[i] = name;
+			names.add(name);
 			requestParams.put("alignmentFileAddress", name);
 			// handle special case: domain
 			requestParams.put("matcherType", matchers[i]);
@@ -302,8 +311,8 @@ public class CoordinationAgent extends JPSAgent {
 	 * @param tgtOnto
 	 * @param addr
 	 */
-	protected void callAggregationAgents(Double[] weights, String[] alignmentIRIs2Aggr, String[] choices,
-			double threshold, String srcOnto, String tgtOnto, String addr) {
+	protected void callAggregationAgents(Double[] weights, List alignmentIRIs2Aggr, String[] choices,
+			double threshold, String srcOnto, String tgtOnto, String addr, String classAlign, Double pfactor, Double sameClassThreshold) {
 		JSONObject requestParams = new JSONObject();
 		requestParams.put("weights", weights);
 		requestParams.put("alignments", alignmentIRIs2Aggr);
@@ -315,7 +324,15 @@ public class CoordinationAgent extends JPSAgent {
 		if (choices != null) {
 			requestParams.put("choices", choices);
 		}
-
+		if(classAlign!=null) {
+			requestParams.put("classAlign", classAlign);
+		}
+		if(pfactor!=null) {
+			requestParams.put("pfactor", pfactor);
+		}
+		if(sameClassThreshold!=null) {
+			requestParams.put("sameClassThreshold", sameClassThreshold);
+		}		
 		AgentCaller.executeGetWithJsonParameter("/JPS_ONTOMATCH/matchAggregator", requestParams.toString());
 	}
 

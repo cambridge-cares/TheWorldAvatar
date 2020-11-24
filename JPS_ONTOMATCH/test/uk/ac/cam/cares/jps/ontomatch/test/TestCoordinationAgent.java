@@ -30,7 +30,7 @@ import uk.ac.cam.cares.jps.ontomatch.ElementMatcher;
 
 public class TestCoordinationAgent extends Mockito{
  
-	
+	@Ignore
 	@Test
 	public void testLoadTBox() {
 		CoordinationAgent a =new CoordinationAgent();
@@ -98,7 +98,7 @@ public class TestCoordinationAgent extends Mockito{
 	    
 	}
 
-	@Ignore  
+	  
     @Test
     public void testIndiCoordi() {
         HttpServletRequest request = mock(HttpServletRequest.class);       
@@ -106,13 +106,13 @@ public class TestCoordinationAgent extends Mockito{
         System.out.println("test coordi");
 
 		String mt = "INDIVIDUAL";
-		String stubSavePath = "http://www.theworldavatar.com/finalPowerPlants.owl";
+		String stubSavePath = "http://www.theworldavatar.com/finalPowerPlants1123.owl";
 		//TODO: substitute with actual tmp file please
 		String stubTBOXTarget = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
 		String stubTBOX= "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
 		String stubTgt="D:/workwork/testFiles/ontologies/jpspp.rdf";
 		String stubEP= "http://dbpedia.org/sparql";
-		String classAlign = "http://localhost:3000/finalTestAggregaotr.owl";
+		String classAlign = "http://www.theworldavatar.com/finalTestAggregaotr.owl";
 		List<Double> weights = new ArrayList<Double>();
 		weights.add(0.6);
 		weights.add(0.3);
@@ -122,11 +122,13 @@ public class TestCoordinationAgent extends Mockito{
         jo.put("sourceIRI", stubEP);
         jo.put("targetIRI", stubTgt);
         jo.put("matchingType", mt);
-        jo.put("threshold", 0.6);
+        jo.put("threshold", 0.55);
         jo.put("weights", weights);
         jo.put("classAlignment", classAlign);
         jo.put("sourceTBOX", stubTBOX);
         jo.put("targetTBOX", stubTBOXTarget);
+        jo.put("pFactor", 0.6);
+        jo.put("sameClassThrehold", 0.6);
 
 
 		CoordinationAgent a =new CoordinationAgent();
