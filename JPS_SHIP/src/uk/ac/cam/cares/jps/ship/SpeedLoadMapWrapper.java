@@ -24,7 +24,7 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 @WebServlet("/SLMAgent")
 public class SpeedLoadMapWrapper extends HttpServlet {
-	private static final String slmDir = "\\python\\ADMS-speed-load-map";
+	private static final String slmDir = "\\python\\ADMS-speed-load-map\\";
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
 	private static final Path slmPython = SystemUtils.IS_OS_LINUX ? Paths.get("env","bin","python") : Paths.get("env","Scripts","python.exe");
 	
