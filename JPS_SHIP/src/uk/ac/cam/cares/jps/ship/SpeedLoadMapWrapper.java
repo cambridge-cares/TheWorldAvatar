@@ -24,21 +24,20 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 @WebServlet("/SLMAgent")
 public class SpeedLoadMapWrapper extends HttpServlet {
-	private static final String slmDir = "\\python\\ADMS-speed-load-map\\";
+	private static final Path slmDir = Paths.get("python","ADMS-speed-load-map");
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
 	private static final Path slmPython = SystemUtils.IS_OS_LINUX ? Paths.get("env","bin","python") : Paths.get("env","Scripts","python.exe");
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
-		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
-		String pythonExec = smlWorkingDir + slmPython;
-
+		Path slmWorkingDir =  Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), slmDir.toString());
+        Path pythonExec = Paths.get(slmWorkingDir.toString(),slmPython.toString());
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(pythonExec);
+		args.add(pythonExec.toString());
         args.add(slmScript);
 		args.add(inputs);
 
-		return CommandHelper.executeCommands(smlWorkingDir, args);
+		return CommandHelper.executeCommands(slmWorkingDir.toString(), args);
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
