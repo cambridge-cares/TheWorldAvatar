@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.ontomatch;
+package uk.ac.cam.cares.jps.paramsValidator;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
@@ -11,15 +11,31 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.ontomatch.ElementMatcher;
 import uk.ac.cam.cares.jps.ontomatch.ElementMatcher.MATCHERTYPE;
 import uk.ac.cam.cares.jps.ontomatch.ElementMatcher.MATCHING_TYPE;
 
+/**
+ * validator for a map of custom types
+ * 
+ * @author morta
+ *
+ */
 public class ParamsValidateHelper {
 
 	public enum CUSTOMVALUETYPE {
-		URL, PATH, WEIGHTS, MATCHING_TYPE, MATCHERTYPE, THRESHOLD
+		URL, PATH, WEIGHTS, MATCHING_TYPE, MATCHERTYPE, THRESHOLD, PATHLIST
 	}
 
+	/****
+	 * Validate each param in a hashmap<name, CustomValueType>
+	 * 
+	 * @param <K>
+	 * @param <V>
+	 * @param obj
+	 * @param keyTypeMap
+	 * @return
+	 */
 	public static <K, V> boolean validateALLParams(JSONObject obj, Map<String, CUSTOMVALUETYPE> keyTypeMap) {
 		for (Map.Entry<String, CUSTOMVALUETYPE> entry : keyTypeMap.entrySet()) {
 			String paramName = entry.getKey();
@@ -31,6 +47,14 @@ public class ParamsValidateHelper {
 		return true;
 	}
 
+	/**
+	 * validate single param by its type
+	 * 
+	 * @param obj
+	 * @param name
+	 * @param ctype
+	 * @return
+	 */
 	public static boolean validateSingleParamByType(JSONObject obj, String name, CUSTOMVALUETYPE ctype) {
 		switch (ctype) {
 		case URL:
@@ -48,7 +72,7 @@ public class ParamsValidateHelper {
 			} catch (Exception ex) {
 				return false;
 			}
-		case WEIGHTS:	
+		case WEIGHTS:
 			try {
 				JSONArray jweight = obj.getJSONArray(name);
 				List<Double> lweight = new ArrayList<Double>();
@@ -61,7 +85,7 @@ public class ParamsValidateHelper {
 			} catch (Exception ex) {
 				return false;
 			}
-			
+
 		case MATCHING_TYPE:
 			try {
 				String value = obj.getString(name);
@@ -69,7 +93,7 @@ public class ParamsValidateHelper {
 			} catch (Exception ex) {
 				return false;
 			}
-			
+
 		case MATCHERTYPE:
 			try {
 				String value = obj.getString(name);
@@ -77,11 +101,19 @@ public class ParamsValidateHelper {
 			} catch (Exception ex) {
 				return false;
 			}
-			
+
 		case THRESHOLD:
 			try {
 				double value = obj.getDouble(name);
 				return isValidThreshold(value);
+			} catch (Exception ex) {
+				return false;
+			}
+
+		case PATHLIST:
+			try {
+				JSONArray pathlist = obj.getJSONArray(name);
+				return isValidPathList(pathlist);
 			} catch (Exception ex) {
 				return false;
 			}
@@ -91,6 +123,28 @@ public class ParamsValidateHelper {
 
 	}
 
+	/**
+	 * validate a list of path
+	 * 
+	 * @param plist
+	 * @return
+	 */
+	public static boolean isValidPathList(JSONArray plist) {
+		for (int i = 0; i < plist.length(); i++) {
+			String aPath = plist.getString(i);
+			if (!isValidFilePath(aPath)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * validate a url
+	 * 
+	 * @param url
+	 * @return
+	 */
 	public static boolean isValidUrl(String url) {
 		String[] schemes = { "http", "https" };
 		UrlValidator urlValidator = new UrlValidator(schemes);
@@ -101,7 +155,12 @@ public class ParamsValidateHelper {
 		}
 	}
 
-	// TODO
+	/***
+	 * validate a addr path
+	 * 
+	 * @param path
+	 * @return
+	 */
 	public static boolean isValidFilePath(String path) {
 		try {
 			Paths.get(path);
@@ -111,6 +170,12 @@ public class ParamsValidateHelper {
 		return true;
 	}
 
+	/**
+	 * validate a enum value: MATCHINGTYPE
+	 * 
+	 * @param mtstr
+	 * @return
+	 */
 	public static boolean isValidMatchingType(String mtstr) {
 		try {
 			MATCHING_TYPE.valueOf(mtstr);
@@ -120,6 +185,12 @@ public class ParamsValidateHelper {
 		return false;
 	}
 
+	/**
+	 * validate a enum value: MATCHER_TYPE
+	 * 
+	 * @param mtstr
+	 * @return
+	 */
 	public static boolean isValidMatcherType(String mstr) {
 		try {
 			MATCHERTYPE.valueOf(mstr);
@@ -129,6 +200,12 @@ public class ParamsValidateHelper {
 		return false;
 	}
 
+	/**
+	 * validate an array of weight factor
+	 * 
+	 * @param weights
+	 * @return
+	 */
 	public static boolean isValidWeights(Double[] weights) {
 		DoubleValidator db = new DoubleValidator();
 		double sum = 0;
@@ -144,6 +221,12 @@ public class ParamsValidateHelper {
 		return true;
 	}
 
+	/**
+	 * validate a threshold value [0,1]
+	 * 
+	 * @param t
+	 * @return
+	 */
 	public static boolean isValidThreshold(double t) {
 		DoubleValidator db = new DoubleValidator();
 		if (!db.isInRange(t, 0, 1)) {

@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.ontomatch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -15,6 +17,8 @@ import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 
 /***
  * 
@@ -58,12 +62,16 @@ public class GetTrainingDocsAgent extends JPSAgent {
 		}
 		return result;
 	}
+
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 		if (requestParams.isEmpty() || !requestParams.has("savePath")) {
 			throw new BadRequestException();
 		}
-		return true;
+		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
+		paramTypes.put("savePath", CUSTOMVALUETYPE.PATH);
+		return ParamsValidateHelper.validateALLParams(requestParams, paramTypes);
+
 	}
 
 }

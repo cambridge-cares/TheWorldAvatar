@@ -19,7 +19,6 @@ import uk.ac.cam.cares.jps.ontomatch.alignment.AlignmentIOHelper;
 public class TestAlignmentIOHelper extends TestCase {
 
 
-    @Ignore	
 	@Test
 	public void testWrite2KB() {
 		List<Map> testAlignment = new ArrayList<Map>();

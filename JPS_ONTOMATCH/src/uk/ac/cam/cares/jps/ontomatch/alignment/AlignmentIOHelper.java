@@ -38,12 +38,14 @@ import org.apache.jena.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import io.herrmann.generator.Generator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
-import uk.ac.cam.cares.jps.ontomatch.streamRDFs.StreamAlignment;
+import uk.ac.cam.cares.jps.ontomatch.streamRDFs.AlignmentGenerator;
+import uk.ac.cam.cares.jps.ontomatch.streamRDFs.StreamAlignmentHandler;
 
 /**
  * Helper class that contains: Input and output methods to render
@@ -70,48 +72,63 @@ public class AlignmentIOHelper {
 		return "?" + varname;
 	}
 
-	public static List<Map> readAlignmentFileAsMapList(String iriOfAlignmentFile) throws ParseException, FileNotFoundException {
-		List<Map> resultListfromquery = new ArrayList<Map>();
-	
-		ResultSet resultSet = queryForAlignment(IRI2local(iriOfAlignmentFile), 0.0);
-		Iterator<Map> iter = new ResultSetMapIterator(resultSet,
-				new QuerySolutionToMapAdapter() {
-					@Override
-					public Iterator<Map> adapt(QuerySolution qs) {
-						List<Map> list = new ArrayList<Map>();
-						String sIRI = qs.get(VAR_E1).toString();
-						String p = qs.get(VAR_E2).toString();
-						double o =  qs.getLiteral(VAR_M).getDouble();
-						Map acell = new HashMap();
-						acell.put(VAR_E1, sIRI);
-						acell.put(VAR_E2, p);
-						acell.put(VAR_M, o);
-						list.add(acell);
-						return list.iterator();
-					}
-				});
-
-		iter.forEachRemaining(resultListfromquery::add);
-
-	return resultListfromquery;	}
-	
-	/**
-	 * get the list of alignment as string array given alignmentfile iri
+	/***
+	 * get the list of alignment as hashmap list given alignment file iri
 	 * 
 	 * @param iriOfAlignmentFile
 	 * @return
 	 * @throws ParseException
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
-	public static List<String[]> readAlignmentFileAsList(String iriOfAlignmentFile) throws ParseException, FileNotFoundException {
+	public static List<Map> readAlignmentFileAsMapList(String iriOfAlignmentFile)
+			throws ParseException, FileNotFoundException {
+		List<Map> resultListfromquery = new ArrayList<Map>();
+
+		ResultSet resultSet = queryForAlignment(IRI2local(iriOfAlignmentFile), 0.0);
+		Iterator<Map> iter = new ResultSetMapIterator(resultSet, new QuerySolutionToMapAdapter() {
+			@Override
+			public Iterator<Map> adapt(QuerySolution qs) {
+				List<Map> list = new ArrayList<Map>();
+				String sIRI = qs.get(VAR_E1).toString();
+				String p = qs.get(VAR_E2).toString();
+				double o = qs.getLiteral(VAR_M).getDouble();
+				Map acell = new HashMap();
+				acell.put(VAR_E1, sIRI);
+				acell.put(VAR_E2, p);
+				acell.put(VAR_M, o);
+				list.add(acell);
+				return list.iterator();
+			}
+		});
+
+		iter.forEachRemaining(resultListfromquery::add);
+
+		return resultListfromquery;
+	}
+
+	/**
+	 * get the list of alignment as string array given alignment file iri
+	 * 
+	 * @param iriOfAlignmentFile
+	 * @return
+	 * @throws ParseException
+	 * @throws FileNotFoundException
+	 */
+	public static List<String[]> readAlignmentFileAsList(String iriOfAlignmentFile)
+			throws ParseException, FileNotFoundException {
 		return readAlignmentFileAsList(iriOfAlignmentFile, 0.0);
 	}
 
-
+	/**
+	 * helper function: convert a IRI to local addr
+	 * 
+	 * @param IRI
+	 * @return
+	 */
 	public static String IRI2local(String IRI) {
-		String IRIdomain =   OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL)+'/';
-		String localkbpath =   OntomatchProperties.getInstance().getProperty(OntomatchProperties.OM_KB_PATH);
-       return IRI.replace( IRIdomain,localkbpath);
+		String IRIdomain = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL) + '/';
+		String localkbpath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.OM_KB_PATH);
+		return IRI.replace(IRIdomain, localkbpath);
 	}
 
 	/**
@@ -122,32 +139,40 @@ public class AlignmentIOHelper {
 	 * @param threshold
 	 * @return
 	 * @throws ParseException
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
 	public static List<String[]> readAlignmentFileAsList(String iriOfAlignmentFile, double threshold)
 			throws ParseException, FileNotFoundException {
 		List<String[]> resultListfromquery = new ArrayList<String[]>();
-	
-			ResultSet resultSet = queryForAlignment(iriOfAlignmentFile, threshold);
-			Iterator<String[]> iter = new ResultSetStringArrayIterator(resultSet,
-					new QuerySolutionToStringArrayAdapter() {
-						@Override
-						public Iterator<String[]> adapt(QuerySolution qs) {
-							List<String[]> list = new ArrayList<String[]>();
-							String sIRI = qs.get(VAR_E1).toString();
-							String p = qs.get(VAR_E2).toString();
-							String o = qs.getLiteral(VAR_M).getValue().toString();
-							String[] values = { sIRI, p, o };
-							list.add(values);
-							return list.iterator();
-						}
-					});
 
-			iter.forEachRemaining(resultListfromquery::add);
+		ResultSet resultSet = queryForAlignment(iriOfAlignmentFile, threshold);
+		Iterator<String[]> iter = new ResultSetStringArrayIterator(resultSet, new QuerySolutionToStringArrayAdapter() {
+			@Override
+			public Iterator<String[]> adapt(QuerySolution qs) {
+				List<String[]> list = new ArrayList<String[]>();
+				String sIRI = qs.get(VAR_E1).toString();
+				String p = qs.get(VAR_E2).toString();
+				String o = qs.getLiteral(VAR_M).getValue().toString();
+				String[] values = { sIRI, p, o };
+				list.add(values);
+				return list.iterator();
+			}
+		});
+
+		iter.forEachRemaining(resultListfromquery::add);
 
 		return resultListfromquery;
 	}
 
+	/***
+	 * helper function: query alignment file to extract a resultset
+	 * 
+	 * @param iriOfAlignmentFile
+	 * @param threshold
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws ParseException
+	 */
 	public static ResultSet queryForAlignment(String iriOfAlignmentFile, double threshold)
 			throws FileNotFoundException, ParseException {
 		SelectBuilder q = new SelectBuilder();
@@ -257,6 +282,13 @@ public class AlignmentIOHelper {
 		updateAlignmentFile(aIRI, alignment);
 	}
 
+	/***
+	 * write a new alignment file with header(information of ontologies to match)
+	 * 
+	 * @param onto1
+	 * @param onto2
+	 * @param aIRI
+	 */
 	public static void writeAlignmentFileHeader(String onto1, String onto2, String aIRI) {
 		String addr = ResourcePathConverter.convertToLocalPath(aIRI);
 		try {
@@ -320,6 +352,13 @@ public class AlignmentIOHelper {
 		return q.buildRequest().toString();
 	}
 
+	/**
+	 * construct the sparql update string of one alignment cell
+	 * 
+	 * @param match
+	 * @param nodeIRI
+	 * @return
+	 */
 	private static String getCellUpdateStr(String[] match, String nodeIRI) {
 		String entity1 = (String) match[0];
 		String entity2 = (String) match[1];
@@ -339,4 +378,16 @@ public class AlignmentIOHelper {
 				.addInsert(node, AlignmentNamespace.RELATION, AlignmentNamespace.EQUAL_RELATION);
 		return q.buildRequest().toString();
 	}
+
+	/**
+	 * Stream reading Alignment Owl file
+	 * 
+	 * @param IRI
+	 * @return
+	 */
+	public static Generator<String[]> getAlignmentListAsStream(String IRI) {
+		Generator<String[]> myGenerator = AlignmentGenerator.getGenerator(IRI);
+		return myGenerator;
+	}
+
 }

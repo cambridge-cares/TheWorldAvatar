@@ -51,6 +51,8 @@ import uk.ac.cam.cares.jps.ontomatch.alignment.AlignmentIOHelper;
 import uk.ac.cam.cares.jps.ontomatch.alignment.Measurement;
 import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
 import uk.ac.cam.cares.jps.ontomatch.streamRDFs.AlignmentGenerator;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 
 /***
  * 
@@ -83,6 +85,7 @@ public class MatchAggregator extends JPSAgent {
 		PENALIZING, CARDINALITY
 	}
 
+	 @Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = requestParams;
 
@@ -102,7 +105,7 @@ public class MatchAggregator extends JPSAgent {
 			for (int i = 0; i < jalignments.length(); i++) {
 				String aIRI = jalignments.getString(i);
 				System.out.println(aIRI);
-				MatcherResultGenerators.add(getAlignmentListAsStream(aIRI));
+				MatcherResultGenerators.add(AlignmentIOHelper.getAlignmentListAsStream(aIRI));
 			}
 			/** get optional steps chosen by caller agent ****/
 			if (jo.has("choices")) {
@@ -143,8 +146,7 @@ public class MatchAggregator extends JPSAgent {
 	}
 
 	/***
-	 * run aggregation according to choices of steps
-	 * 
+	 * run aggregation according to choices of steps by BATCH
 	 * @throws Exception
 	 */
 	public void handleChoiceWithBatch() throws Exception {
@@ -185,26 +187,13 @@ public class MatchAggregator extends JPSAgent {
 
 	}
 
-	public Generator<String[]> getAlignmentListAsStream(String IRI) {
-		Generator<String[]> myGenerator = AlignmentGenerator.getGenerator(IRI);
-		return myGenerator;
-	}
-
-	public List<String[]> sortAlignmentListByEntityName(List<String[]> list) {
-		List<Measurement> sortList = new ArrayList<Measurement>();
-		for (String[] item : list) {
-			sortList.add(new Measurement(item));
-		}
-		sortList.sort((o1, o2) -> o1.getIdentity().compareTo(o2.getIdentity()));
-		// get original list
-		List<String[]> sorted = new ArrayList<String[]>();
-		for (Measurement item : sortList) {
-			sorted.add(item.getFields());
-		}
-		return sorted;
-	}
 
 
+	/**
+	 * extract double value from rdf style value definition
+	 * @param valueString
+	 * @return
+	 */
 	public double getDoubleSparqlResult(String valueString) {
 		try {
 			double value = Double.parseDouble(valueString);
@@ -218,6 +207,11 @@ public class MatchAggregator extends JPSAgent {
 		}
 	}
 
+	/***
+	 * weighting by looping matcher value generator
+	 * @param scoreIters
+	 * @param threshold
+	 */
 	protected void weightingWithGenerator(Iterator[] scoreIters, double threshold) {
 		Map<String, Object> acell = new HashMap<>();
 		String[] values = (String[]) scoreIters[0].next();
@@ -398,9 +392,30 @@ public class MatchAggregator extends JPSAgent {
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 		if (requestParams.isEmpty() || !requestParams.has("threshold") || !requestParams.has("srcOnto")
-				|| !requestParams.has("tgtOnto") || !requestParams.has("alignments") || !requestParams.has("addr")) {
+				|| !requestParams.has("tgtOnto") || !requestParams.has("alignments") || !requestParams.has("addr")|| !requestParams.has("weights")) {
 			throw new BadRequestException();
 		}
-		return true;
-	}
+		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
+	     paramTypes.put("threshold",CUSTOMVALUETYPE.THRESHOLD);
+	     paramTypes.put("srcOnto",CUSTOMVALUETYPE.PATH);
+	     paramTypes.put("tgtOnto",CUSTOMVALUETYPE.PATH);
+	     paramTypes.put("alignments",CUSTOMVALUETYPE.PATHLIST);
+	     paramTypes.put("addr",CUSTOMVALUETYPE.URL);
+	     paramTypes.put("weights",CUSTOMVALUETYPE.WEIGHTS);
+			if (requestParams.has("classAlignment")) {
+				paramTypes.put("classAlignment", CUSTOMVALUETYPE.URL);
+			}
+			if (requestParams.has("pFactor")) {
+				paramTypes.put("pFactor", CUSTOMVALUETYPE.THRESHOLD);
+			}
+			if (requestParams.has("sameClassThrehold")) {
+				paramTypes.put("sameClassThrehold", CUSTOMVALUETYPE.THRESHOLD);
+			}
+			if (requestParams.has("modelAddress")) {
+				paramTypes.put("modelAddress", CUSTOMVALUETYPE.PATH);
+			}
+			if (requestParams.has("dictAddress")) {
+				paramTypes.put("dictAddress", CUSTOMVALUETYPE.PATH);
+			}
+	     return ParamsValidateHelper.validateALLParams(requestParams, paramTypes);	}
 }

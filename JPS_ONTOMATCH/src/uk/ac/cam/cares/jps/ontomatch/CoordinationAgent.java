@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,8 @@ import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.ontomatch.ElementMatcher.MATCHING_TYPE;
 import uk.ac.cam.cares.jps.ontomatch.alignment.AlignmentIOHelper;
 import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 
 /**
  * Coordination agent that runs each component agent to run a process of
@@ -92,7 +95,7 @@ public class CoordinationAgent extends JPSAgent {
 		Double[] weights = { 0.1, 0.2, 0.3 };
 		String[] choices = null;
 		String[] matchers = new String[3];
-		Double sameClassThrehold = null, pFactor=null;
+		Double sameClassThrehold = null, pFactor = null;
 		String classAlign = null;
 
 		/** get caller parameters and set component agent parameter *******/
@@ -165,32 +168,31 @@ public class CoordinationAgent extends JPSAgent {
 			// };
 			URI uri;
 			try {
-				String localDBAddr = AlignmentIOHelper.IRI2local(classAlign);
+				String localDBAddr = ResourcePathConverter.convertToLocalPath(classAlign);
 				List[] targetClasses = retrieveClassAlignmentMap(localDBAddr);
 				queryPotentialInstanceAndSave(targetClasses[0], sIRI, sIRI, true, getTempPath(sIRI));
 				System.out.println("save to: " + getTempPath(tIRI));
-				String StmpPath  =getTempPath(sIRI);
-				loadTBOX(StmpPath,sourceTBOX, StmpPath);
-			     sIRI = StmpPath;
-			   String TtmpPath =   getTempPath(tIRI);
-				loadTBOX(tIRI,targetTBOX, TtmpPath);
+				String StmpPath = getTempPath(sIRI);
+				loadTBOX(StmpPath, sourceTBOX, StmpPath);
+				sIRI = StmpPath;
+				String TtmpPath = getTempPath(tIRI);
+				loadTBOX(tIRI, targetTBOX, TtmpPath);
 				tIRI = TtmpPath;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 
 		JSONObject result = new JSONObject();
 		try {
-			// TODO: err handling
 			/** call lexical processor ***/
 			callLexicalProcessor(sIRI);
 			callLexicalProcessor(tIRI);
 			/** call matching agents */
 			List tmpAlignments = callMatchingAgents(sIRI, tIRI, type, matchers, modelPath, dictPath);
 			/** call aggregation agent, which saves the alignment result to KG **/
-			callAggregationAgents(weights, tmpAlignments, choices, threshold, sIRI, tIRI, alignmentIRI,classAlign,pFactor, sameClassThrehold);
+			callAggregationAgents(weights, tmpAlignments, choices, threshold, sIRI, tIRI, alignmentIRI, classAlign,
+					pFactor, sameClassThrehold);
 			result.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -198,7 +200,15 @@ public class CoordinationAgent extends JPSAgent {
 		return result;
 	}
 
-	public List[] retrieveClassAlignmentMap(String aIRI) throws org.apache.jena.sparql.lang.sparql_11.ParseException, FileNotFoundException {
+	/****
+	 * retrieve the class alignment entities two arraylists 
+	 * @param aIRI
+	 * @return
+	 * @throws org.apache.jena.sparql.lang.sparql_11.ParseException
+	 * @throws FileNotFoundException
+	 */
+	public List[] retrieveClassAlignmentMap(String aIRI)
+			throws org.apache.jena.sparql.lang.sparql_11.ParseException, FileNotFoundException {
 		List<String[]> alignment = AlignmentIOHelper.readAlignmentFileAsList(aIRI);
 		Set<String> onto1TargetClasses = new HashSet<String>();
 		Set<String> onto2TargetClasses = new HashSet<String>();
@@ -219,7 +229,7 @@ public class CoordinationAgent extends JPSAgent {
 		URI uri = new URI(tIRI);
 		String[] segments = uri.getPath().split("/");
 		String name = segments[segments.length - 1] + "pt.owl";// TODO: proper format this
-																								// name
+																// name
 		String nameWpath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.OM_KB_URL) + "/" + name;
 		return nameWpath;
 	}
@@ -255,7 +265,7 @@ public class CoordinationAgent extends JPSAgent {
 	protected List<String> callMatchingAgents(String sOnto, String tOnto, String matchingType, String[] matchers,
 			String modelPath, String dictPath) throws JSONException, ParseException {
 		// call each matcher
-	List names = new ArrayList<String>();
+		List names = new ArrayList<String>();
 		for (int i = 0; i < matchers.length; i++) {
 			JSONObject requestParams = new JSONObject();
 			// create names for each 2bgenerate alignment file
@@ -311,8 +321,8 @@ public class CoordinationAgent extends JPSAgent {
 	 * @param tgtOnto
 	 * @param addr
 	 */
-	protected void callAggregationAgents(Double[] weights, List alignmentIRIs2Aggr, String[] choices,
-			double threshold, String srcOnto, String tgtOnto, String addr, String classAlign, Double pfactor, Double sameClassThreshold) {
+	protected void callAggregationAgents(Double[] weights, List alignmentIRIs2Aggr, String[] choices, double threshold,
+			String srcOnto, String tgtOnto, String addr, String classAlign, Double pfactor, Double sameClassThreshold) {
 		JSONObject requestParams = new JSONObject();
 		requestParams.put("weights", weights);
 		requestParams.put("alignments", alignmentIRIs2Aggr);
@@ -324,15 +334,15 @@ public class CoordinationAgent extends JPSAgent {
 		if (choices != null) {
 			requestParams.put("choices", choices);
 		}
-		if(classAlign!=null) {
+		if (classAlign != null) {
 			requestParams.put("classAlign", classAlign);
 		}
-		if(pfactor!=null) {
+		if (pfactor != null) {
 			requestParams.put("pfactor", pfactor);
 		}
-		if(sameClassThreshold!=null) {
+		if (sameClassThreshold != null) {
 			requestParams.put("sameClassThreshold", sameClassThreshold);
-		}		
+		}
 		AgentCaller.executeGetWithJsonParameter("/JPS_ONTOMATCH/matchAggregator", requestParams.toString());
 	}
 
@@ -363,7 +373,6 @@ public class CoordinationAgent extends JPSAgent {
 	 * @param saveIRI
 	 * @throws IOException
 	 */
-	// TODO: clean this and test
 	public void queryPotentialInstanceAndSave(List<String> targetClassIRIs, String ep, String tboxIRI, Boolean isRemote,
 			String saveIRI) throws IOException {
 		// use targetClassIRI to execute remote query to remoteEP
@@ -371,35 +380,32 @@ public class CoordinationAgent extends JPSAgent {
 		Model model = ModelFactory.createDefaultModel();
 
 		for (String targetclassIRI : targetClassIRIs) {
-			String sparql = "SELECT DISTINCT * WHERE {?s a <" + targetclassIRI + ">. "
-					 + "}";
+			String sparql = "SELECT DISTINCT * WHERE {?s a <" + targetclassIRI + ">. " + "}";
 			List<QuerySolution> rlist = queryOnce(ep, sparql);
 			for (QuerySolution triple : rlist) {
 				String sIRI = triple.getResource("s").getURI();
-				if(!validateURL(sIRI)) {
+				if (!validateURL(sIRI)) {
 					continue;
 				}
 				Resource s = model.createResource(sIRI);
-				String sparqlAttr = "SELECT DISTINCT * WHERE {<"+sIRI+"> ?p ?o. "
-						 + "}";
+				String sparqlAttr = "SELECT DISTINCT * WHERE {<" + sIRI + "> ?p ?o. " + "}";
 				List<QuerySolution> attrs = queryOnce(ep, sparqlAttr);
 				for (QuerySolution attr : attrs) {
-					String pIRI= attr.getResource("p").toString();
+					String pIRI = attr.getResource("p").toString();
 					Property p = model.createProperty(pIRI);
 					RDFNode o = attr.get("o");
 					Boolean validated = true;
-						if(!validateURL(pIRI)) {
+					if (!validateURL(pIRI)) {
+						validated = false;
+					} else if (o.isResource()) {
+						if (o.asResource().getURI() != null && !validateURL(o.asResource().getURI())) {
 							validated = false;
-						} else if(o.isResource()) {
-							if(o.asResource().getURI()!=null &&!validateURL(o.asResource().getURI())) {
-								validated = false;
-							}
 						}
-					if(validated) {
-						s.addProperty(p,o);
 					}
-						
-					
+					if (validated) {
+						s.addProperty(p, o);
+					}
+
 				}
 			}
 		}
@@ -407,16 +413,27 @@ public class CoordinationAgent extends JPSAgent {
 		model.write(w);
 	}
 
-	protected boolean validateURL (String url)  {
-		if(url.contains("%")) {
+	/***
+	 * Helper function: validate URL
+	 * @param url
+	 * @return
+	 */
+	protected boolean validateURL(String url) {
+		if (url.contains("%")) {
 			return false;
 		}
 		UrlValidator validator = new UrlValidator();
 		return validator.isValid(url);
 	}
 
+	/***
+	 * Get list of query solution on an ep with a queryStr
+	 * @param ep
+	 * @param queryStr
+	 * @return
+	 */
 	public List<QuerySolution> queryOnce(String ep, String queryStr) {
-	
+
 		String resultBody = Http.execute(Http.get(ep, "application/json", queryStr));
 
 		InputStream targetStream = new ByteArrayInputStream(resultBody.getBytes());
@@ -475,10 +492,7 @@ public class CoordinationAgent extends JPSAgent {
 		model.write(writer);
 	}
 
-	protected String getTripleUpdateStr(String s, String p, String o) {
-		String sparql = "INSERT DATA{\r\n" + "  <" + s + ">" + "  <" + p + "<" + o + ">.}";
-		return sparql;
-	}
+
 
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
@@ -487,6 +501,29 @@ public class CoordinationAgent extends JPSAgent {
 				|| !requestParams.has("matchingType") || !requestParams.has("weights")) {
 			throw new BadRequestException();
 		}
-		return true;
+
+		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
+		paramTypes.put("aIRI", CUSTOMVALUETYPE.URL);
+		paramTypes.put("threshold", CUSTOMVALUETYPE.THRESHOLD);
+		paramTypes.put("sourceIRI", CUSTOMVALUETYPE.PATH);
+		paramTypes.put("targetIRI", CUSTOMVALUETYPE.PATH);
+		paramTypes.put("matchingType", CUSTOMVALUETYPE.MATCHING_TYPE);
+		paramTypes.put("weights", CUSTOMVALUETYPE.WEIGHTS);
+		if (requestParams.has("classAlignment")) {
+			paramTypes.put("classAlignment", CUSTOMVALUETYPE.URL);
+		}
+		if (requestParams.has("pFactor")) {
+			paramTypes.put("pFactor", CUSTOMVALUETYPE.THRESHOLD);
+		}
+		if (requestParams.has("sameClassThrehold")) {
+			paramTypes.put("sameClassThrehold", CUSTOMVALUETYPE.THRESHOLD);
+		}
+		if (requestParams.has("modelAddress")) {
+			paramTypes.put("modelAddress", CUSTOMVALUETYPE.PATH);
+		}
+		if (requestParams.has("dictAddress")) {
+			paramTypes.put("dictAddress", CUSTOMVALUETYPE.PATH);
+		}
+		return ParamsValidateHelper.validateALLParams(requestParams, paramTypes);
 	}
 }

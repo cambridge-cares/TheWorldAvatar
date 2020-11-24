@@ -60,7 +60,6 @@ public class TestElementMatcher extends Mockito{
 
     }
 
-    @Ignore
     @Test
     public void testStringMatcher() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
@@ -92,7 +91,6 @@ public class TestElementMatcher extends Mockito{
         assertTrue(result.has("success"));
     }
 	
-    @Ignore
     @Test
     public void testWordMatcher() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
@@ -122,7 +120,6 @@ public class TestElementMatcher extends Mockito{
         assertTrue(result.has("success"));
     }
 
-        @Ignore
 	    @Test
 	    public void testDomainMatcher() throws Exception {
 	        HttpServletRequest request = mock(HttpServletRequest.class);       

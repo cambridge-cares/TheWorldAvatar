@@ -24,8 +24,9 @@ import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
-import uk.ac.cam.cares.jps.ontomatch.ParamsValidateHelper.CUSTOMVALUETYPE;
 import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 
 /***
  * Agent that lexically process an ontology and save it in an pkl file A

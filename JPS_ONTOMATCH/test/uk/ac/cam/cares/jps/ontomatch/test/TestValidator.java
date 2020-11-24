@@ -8,8 +8,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.ontomatch.ParamsValidateHelper;
-import uk.ac.cam.cares.jps.ontomatch.ParamsValidateHelper.CUSTOMVALUETYPE;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 
 public class TestValidator extends TestCase {
 	

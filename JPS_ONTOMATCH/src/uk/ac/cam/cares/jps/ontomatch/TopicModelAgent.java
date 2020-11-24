@@ -3,10 +3,13 @@ package uk.ac.cam.cares.jps.ontomatch;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -24,6 +27,8 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 
 /***
  * 
@@ -31,7 +36,7 @@ import uk.ac.cam.cares.jps.ontomatch.properties.OntomatchProperties;
  * 
  * @author shaocong zhang
  * @version 1.0
- * @since 2020-09-08
+ * @since 2020-11-25
  */
 @WebServlet(urlPatterns = { "/topicModelAgent" })
 public class TopicModelAgent extends JPSAgent{
@@ -101,6 +106,20 @@ public class TopicModelAgent extends JPSAgent{
 		}
 		return addr;
 	}
+	
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+
+        if (requestParams.isEmpty()||!requestParams.has("modelLocation")||!requestParams.has("dictionaryLocation")||!requestParams.has("corpusLocation")) {
+            throw new BadRequestException();
+        }
+		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
+	     paramTypes.put("modelLocation",CUSTOMVALUETYPE.PATH);
+	     paramTypes.put("dictionaryLocation",CUSTOMVALUETYPE.PATH);
+	     paramTypes.put("corpusLocation",CUSTOMVALUETYPE.PATH);
+
+	     return ParamsValidateHelper.validateALLParams(requestParams, paramTypes);
+    }	
 	
 }
 

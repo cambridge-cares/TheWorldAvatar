@@ -6,7 +6,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,8 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 
 
 /**
@@ -36,7 +40,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
  * Output to KG: owl:sameAs triples
  * @author shaocong zhang
  * @version 1.0
- * @since 2020-09-08
+ * @since 2020-11-25
  */
 @WebServlet(urlPatterns = { "/dataLinker" })
 public class DataLinker extends JPSAgent {
@@ -147,7 +151,10 @@ public class DataLinker extends JPSAgent {
 		if (requestParams.isEmpty() || !requestParams.has("alignmentIRI")) {
 			throw new BadRequestException();
 		}
-		return true;
+		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
+	     paramTypes.put("alignmentIRI",CUSTOMVALUETYPE.URL);
+	     paramTypes.put("threshold",CUSTOMVALUETYPE.THRESHOLD);
+	     return ParamsValidateHelper.validateALLParams(requestParams, paramTypes);
 	}
 
 }

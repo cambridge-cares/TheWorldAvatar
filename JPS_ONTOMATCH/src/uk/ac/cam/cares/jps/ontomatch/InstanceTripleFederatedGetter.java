@@ -3,7 +3,9 @@ package uk.ac.cam.cares.jps.ontomatch;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,19 +24,20 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper;
+import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 
 /**
- * Agent gets related triples to an entity across JPS and DBP. For Visualization/View only.
- * Input from KG: related triples to an entity 
+ * Agent gets related triples to an entity across JPS and DBP. For
+ * Visualization/View only. Input from KG: related triples to an entity
+ * 
  * @author shaocong zhang
  * @version 1.0
  * @since 2020-09-08
  */
 
 @WebServlet(urlPatterns = { "/federatedAttrs" })
-public class InstanceTripleFederatedGetter extends JPSAgent{
-
+public class InstanceTripleFederatedGetter extends JPSAgent {
 
 	private static final long serialVersionUID = 7607478466081757161L;
 
@@ -44,11 +47,12 @@ public class InstanceTripleFederatedGetter extends JPSAgent{
 		String entityIRI = null;
 		try {
 			entityIRI = jo.getString("entityIRI");
-			logger.info("InstanceTripleFederatedGetter:QUERY FOR ENTITY: "+entityIRI);
+			logger.info("InstanceTripleFederatedGetter:QUERY FOR ENTITY: " + entityIRI);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
-	    //String stubIRI = "http://www.theworldavatar.com/kb/powerplants/Altbach_Coal_Power_Plant_Germany.owl#Altbach_Coal_Power_Plant_Germany";
+		// String stubIRI =
+		// "http://www.theworldavatar.com/kb/powerplants/Altbach_Coal_Power_Plant_Germany.owl#Altbach_Coal_Power_Plant_Germany";
 		JSONArray resArr = performFederatedQuery(entityIRI);
 		JSONObject result = new JSONObject();
 		int tripleNumber = resArr.length();
@@ -63,31 +67,22 @@ public class InstanceTripleFederatedGetter extends JPSAgent{
 
 	}
 
-
-
-
-	
 	/***
 	 * query KG for related triples of entity then return as JSONArray
+	 * 
 	 * @param iri of entity
 	 * @return
 	 */
 	public JSONArray performFederatedQuery(String iri) {
-		String queryStrRemote = "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
-				+ "SELECT distinct ?p ?o " 
-				+ "WHERE {<"+iri+"> owl:sameAs ?dbiri."
-				+ " SERVICE <http://dbpedia.org/sparql> "  
-				+" {?dbiri ?p ?o.}"
-				+"}";
+		String queryStrRemote = "PREFIX owl: <http://www.w3.org/2002/07/owl#> " + "SELECT distinct ?p ?o " + "WHERE {<"
+				+ iri + "> owl:sameAs ?dbiri." + " SERVICE <http://dbpedia.org/sparql> " + " {?dbiri ?p ?o.}" + "}";
 		System.out.println(queryStrRemote);
-		
-		String queryStrLocal = "SELECT distinct ?p ?o "+
-				"WHERE {<"+iri+"> ?p ?o."+
-				"}";
+
+		String queryStrLocal = "SELECT distinct ?p ?o " + "WHERE {<" + iri + "> ?p ?o." + "}";
 
 		JSONArray resArr = new JSONArray();
 		try {
-			OntModel model = JenaHelper.createModel(convertIRI(iri,false));
+			OntModel model = JenaHelper.createModel(convertIRI(iri, false));
 			ResultSet resultSetRemote = JenaHelper.query(model, queryStrRemote);
 			ResultSet resultSetLocal = JenaHelper.query(model, queryStrLocal);
 
@@ -98,41 +93,40 @@ public class InstanceTripleFederatedGetter extends JPSAgent{
 			List<String[]> remoteListfromquery = JenaResultSetFormatter.convertToListofStringArrays(resultR, keys);
 			List<String[]> combined = new ArrayList<String[]>(localListfromquery);
 			combined.addAll(remoteListfromquery);
-			for(String[] paras:combined) {
+			for (String[] paras : combined) {
 				JSONObject resObj = new JSONObject();
-				for(int idx = 0; idx<keys.length; idx++) {
+				for (int idx = 0; idx < keys.length; idx++) {
 					resObj.put(keys[idx], paras[idx]);
 				}
 				resArr.put(resObj);
 			}
-		}
-		catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsString = sw.toString();
+		} catch (Exception e) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			String exceptionAsString = sw.toString();
 			logger.error(exceptionAsString);
 		}
 		return resArr;
 
 	}
-		
+
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 		if (requestParams.isEmpty() || !requestParams.has("entityIRI")) {
 			throw new BadRequestException();
 		}
-		return true;
+		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
+		paramTypes.put("entityIRI", CUSTOMVALUETYPE.URL);
+		return ParamsValidateHelper.validateALLParams(requestParams, paramTypes);
 	}
-	
 
-	
-	/**only neeeded for local testing**/
-    public String convertIRI(String iri, boolean local2IRI) {
-    	if (local2IRI == true) {
-    	return iri.replace("localhost:3000", "www.theworldavatar.com");
-    	}else{
-    		return iri.replace("www.theworldavatar.com","localhost:3000");
-    	}}
-    
-    
+	/** only neeeded for local testing **/
+	public String convertIRI(String iri, boolean local2IRI) {
+		if (local2IRI == true) {
+			return iri.replace("localhost:3000", "www.theworldavatar.com");
+		} else {
+			return iri.replace("www.theworldavatar.com", "localhost:3000");
+		}
+	}
+
 }
