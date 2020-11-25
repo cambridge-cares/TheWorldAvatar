@@ -41,7 +41,7 @@ public class RenameTool {
 	public static void renameURIFragment(KnowledgeBaseClient kbClient, String target, String replacement, String graph) throws SQLException, ParseException {
 		
 		// Get sparql update as String 
-		String sparql = buildSparqlUpdateString(target, replacement, graph).toString();
+		UpdateRequest sparql = buildSparqlUpdateString(target, replacement, graph);
 		
 		// create KBClient and perform update
 		kbClient.executeUpdate(sparql);
@@ -73,7 +73,7 @@ public class RenameTool {
 	public static void renameURI(KnowledgeBaseClient kbClient, String target, String replacement, String graph) throws SQLException, ParseException {
 		
 		// Get sparql update as String 
-		String sparql = buildSparqlUpdateURI(target, replacement, graph).toString();
+		UpdateRequest sparql = buildSparqlUpdateURI(target, replacement, graph);
 		
 		// create KBClient and perform update
 		kbClient.executeUpdate(sparql);
