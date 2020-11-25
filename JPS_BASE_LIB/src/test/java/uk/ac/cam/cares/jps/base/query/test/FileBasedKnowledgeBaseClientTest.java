@@ -13,7 +13,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.riot.Lang;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.apache.jena.update.UpdateRequest;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,25 +40,32 @@ public class FileBasedKnowledgeBaseClientTest {
 	private String filePath;
 	private String filePathNQ;
 	
-	private String testQuery = "SELECT ?p ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> ?p ?o.}";
+	private String testQuery = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 	
-	//copy test resources into temporary folder
+	/**
+	 * Copy test resources into temporary folder 
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
 	@Before
 	public void setup() throws URISyntaxException, IOException {
 		
-		//get test owl file
-		Path testResourcePath = Paths.get(this.getClass().getResource("/KBClientTest/species.owl").toURI());
-		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/species.owl");		
+		// Test owl file
+		Path testResourcePath = Paths.get(this.getClass().getResource("/KBClientTest/species.rdf").toURI());
+		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/species.rdf");		
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();
 		
-		//get test NQ file
+		// Test NQ file
 		Path testResourcePathNQ = Paths.get(this.getClass().getResource("/KBClientTest/species.nq").toURI());
 		Path tempFilePathNQ = Paths.get(tempFolder.getRoot().toString() + "/species.nq");
 		Files.copy(testResourcePathNQ, tempFilePathNQ, StandardCopyOption.REPLACE_EXISTING);
 		filePathNQ = tempFilePathNQ.toString();
 	}
 	
+	/**
+	 * Test constructor with file path provided
+	 */
 	@Test
 	public void testConstructorWithFilePath() {
 		
@@ -62,12 +76,18 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertFalse(kbClient.isEmpty());
 	}
 	
+	/**
+	 * Test constructor with bad file path
+	 */
 	@Test(expected = JPSRuntimeException.class)
 	public void testConstructorWithBadFilePath() {
 		
 		kbClient = new FileBasedKnowledgeBaseClient("Example/does/not/exist");
 	}
 	
+	/**
+	 * Test constructor with file path and query string
+	 */
 	@Test 
 	public void testConstructorWithFilePathAndQuery() {
 				
@@ -78,6 +98,15 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertFalse(kbClient.isEmpty());
 	}
 	
+	/**
+	 * Test initialisation of Dataset and RDFConnection
+	 * 
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 */
 	@Test
 	public void testInit() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		
@@ -94,6 +123,9 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertTrue(kbClient.isEmpty());
 	}
 	
+	/**
+	 * Load a model
+	 */
 	@Test
 	public void testLoadFile() {
 	
@@ -106,6 +138,9 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertFalse(kbClient.isEmpty());
 	}
 	
+	/**
+	 * Test exception thrown by giving bad file path to load
+	 */
 	@Test(expected = JPSRuntimeException.class)
 	public void testLoadBadFile() {
 	
@@ -113,6 +148,9 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient.load("Example/does/not/exist");
 	}
 	
+	/**
+	 * Load model
+	 */
 	@Test
 	public void testLoad() {
 		
@@ -125,6 +163,9 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertFalse(kbClient.isEmpty());
 	}
 
+	/**
+	 * Test exception when calling load without specifying a path
+	 */
 	@Test(expected = JPSRuntimeException.class)
 	public void testLoadNoFile() {
 		
@@ -132,6 +173,10 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient.load();
 	}
 	
+	/**
+	 * Test write to file
+	 * @throws IOException
+	 */
 	@Test
 	public void testWriteToFileDefault() throws IOException {
 		
@@ -151,10 +196,12 @@ public class FileBasedKnowledgeBaseClientTest {
 		//write file
 		kbClient.writeToFile();
 		assertTrue(file.exists());
-		
-		//TODO: check contents
 	}
 	
+	/**
+	 * Test writing to new file
+	 * @throws IOException
+	 */
 	@Test
 	public void testWriteToFile() throws IOException {
 		
@@ -170,10 +217,11 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		File file = new File(newFilePath);
 		assertTrue(file.exists());
-		
-		//TODO: check contents
 	} 
 	
+	/**
+	 * Test end. Should write to file and then close resources
+	 */
 	@Test
 	public void testEnd() {
 		
@@ -182,7 +230,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());		
 
-		//change output path to check if file is written
+		//Change output path to check if file is written
 		String newFilePath = Paths.get(tempFolder.getRoot().toString() + "/newfile.owl").toString();
 		kbClient.setFilePath(newFilePath);
 		
@@ -194,6 +242,14 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertTrue(file.exists());
 	}
 	
+	/**
+	 * Set and get file path variable
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 */
 	@Test
 	public void testSetGetFilePath() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 	
@@ -211,7 +267,14 @@ public class FileBasedKnowledgeBaseClientTest {
 	    assertEquals(filePath, kbClient.getFilePath());
 	}
 
-	//Query endpoint should set the filePath variable
+	/**
+	 * Set and get Query endpoint should set and get the filePath variable
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 */
 	@Test
 	public void testSetGetQueryEndpoint() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 	
@@ -229,7 +292,14 @@ public class FileBasedKnowledgeBaseClientTest {
 	    assertEquals(filePath, kbClient.getQueryEndpoint());
 	}
 	
-	//Query endpoint should set the filePath variable
+	/**
+	 * Set and get Update endpoint should set and get the filePath variable
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 */
 	@Test 
 	public void testSetGetUpdateEndpoint() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 
@@ -247,6 +317,14 @@ public class FileBasedKnowledgeBaseClientTest {
 	    assertEquals(filePath, kbClient.getUpdateEndpoint());
 	}
 	
+	/**
+	 * Set and get the query string
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 */
 	@Test
 	public void testSetGetQuery() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
@@ -264,6 +342,14 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertEquals(testQuery, kbClient.getQuery());
 	}
 	
+	/**
+	 * Set a new serialisation language for output
+	 * 
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 */
 	@Test
 	public void testSetOutputLang() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
@@ -284,6 +370,15 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	//Test with different file type
+	/**
+	 * Test load and write with different serialisation language. 
+	 * langOut variable should be updated during load.
+	 * 
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
 	@Test
 	public void testOutputLang() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 	
@@ -298,54 +393,164 @@ public class FileBasedKnowledgeBaseClientTest {
 	    
 	    Lang fieldValue = (Lang) field.get(kbClient);
 	    
-	    assertEquals(Lang.NQ, fieldValue);
+	    assertEquals(Lang.NQ, fieldValue); 
 	}
 
-	
-	/*
+	/**
+	 * Test Sparql update
+	 * 
+	 * @throws ParseException
+	 */
 	@Test
-	public void testExecuteUpdate() {
+	public void testExecuteUpdate() throws ParseException {
+
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePath);
+
+		String result = kbClient.execute(testQuery);
+		assertEquals("[{\"o\":\"OH\"}]", result);
 		
-	}
-	
-	@Test
-	public void testExecuteUpdateString() {
-
-	}
-
-	@Test
-	public void testExecuteUpdateUpdateRequest () {
+		//perform update
+		String testUpdate = getUpdateRequest().toString();
+		kbClient.setQuery(testUpdate);
+		kbClient.executeUpdate();
 		
+		result = kbClient.execute(testQuery);
+		assertEquals("[{\"o\":\"TEST\"}]", result);
 	}
 	
+	/**
+	 * Test Sparql Update with String
+	 * @throws ParseException
+	 */
+	@Test
+	public void testExecuteUpdateWithStringArgument() throws ParseException {
+
+
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePath);
+
+		String result = kbClient.execute(testQuery);
+		assertEquals("[{\"o\":\"OH\"}]", result);
+		
+		//perform update
+		kbClient.executeUpdate(getUpdateRequest().toString());
+		
+		result = kbClient.execute(testQuery);
+		assertEquals("[{\"o\":\"TEST\"}]", result);
+	}
+
+	/**
+	 * Test Sparql Update with UpdateRequest 
+	 * @throws ParseException
+	 */
+	@Test
+	public void testExecuteUpdateWithUpdateRequestArgument() throws ParseException {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePath);
+
+		String result = kbClient.execute(testQuery);
+		assertEquals("[{\"o\":\"OH\"}]", result);
+		
+		//perform update
+		kbClient.executeUpdate(getUpdateRequest());
+		
+		result = kbClient.execute(testQuery);
+		assertEquals("[{\"o\":\"TEST\"}]", result);
+	}
+	
+	/**
+	 * Test Sparql query. Should return result as String.
+	 */
 	@Test
 	public void testExecute() {
-	
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePath);
+		kbClient.setQuery(testQuery);
+		
+		String result = kbClient.execute();
+		
+		String expectedQueryResult = "[{\"o\":\"OH\"}]";
+		
+		assertEquals(expectedQueryResult, result);
 	}
 	
+	/**
+	 * Test Sparql query with String. Should return result as String.
+	 */
 	@Test
-	public void testExecuteString () {
+	public void testExecuteWithArgument() {
 		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePath);
+		
+		String result = kbClient.execute(testQuery);
+		
+		String expectedQueryResult = "[{\"o\":\"OH\"}]";
+		
+		assertEquals(expectedQueryResult, result);
 	}
 	
+	/**
+	 * Test Sparql query. Should return result as JSONArray.
+	 * @throws JSONException
+	 */
 	@Test
-	public void testExecuteQueryString () {
+	public void testExecuteQuery() throws JSONException {
+		 
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePath);
+		kbClient.setQuery(testQuery);
 		
+		JSONArray result = kbClient.executeQuery();		
+		JSONObject jo = result.getJSONObject(0); 
+		
+		assertEquals("OH", jo.get("o").toString());
+	}
+	
+	/**
+	 * Test Sparql query with String. Should return result as JSONArray.
+	 * @throws JSONException
+	 */
+	@Test
+	public void testExecuteQueryWithArgument () {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePath);
+		
+		JSONArray result = kbClient.executeQuery(testQuery);
+		JSONObject jo = result.getJSONObject(0); 
+		
+		assertEquals("OH", jo.get("o").toString());
 	}	
 	
-	@Test
-	public void testExecuteQuery() {
+	/**
+	 * Returns the test Sparql update.
+	 * 
+	 * @return UpdateRequest
+	 * @throws ParseException
+	 */
+	private static UpdateRequest getUpdateRequest() throws ParseException {
 		
-	}
-	
-	@Test
-	public void testPerfromExecuteQuery() {
+		//DELETE {?s ?p ?o} 
+		//INSERT {?s ?p \"TEST\" } 
+		//WHERE {?s ?p ?o.
+		//		 FILTER(?s = <http://www.theworldavatar.com/kb/species/species.owl#species_1> && ?p = <http://www.w3.org/2008/05/skos#altLabel>)}
 		
-	}
-
-	@Test
-	public void testConvert() {
+		WhereBuilder where = new WhereBuilder()
+				.addWhere("?s", "?p", "?o")
+				.addFilter("?s = <http://www.theworldavatar.com/kb/species/species.owl#species_1> && ?p = <http://www.w3.org/2008/05/skos#altLabel>");
+				
+		// Build update
+		UpdateBuilder builder = new UpdateBuilder();
+				
+		// Add where 
+		builder.addInsert("?s", "?p", "TEST")
+			.addDelete("?s", "?p", "?o")
+			.addWhere(where);
 		
+		return builder.buildRequest();
 	}
-	*/
 }

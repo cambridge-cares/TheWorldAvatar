@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:owl="http://www.w3.org/2002/07/owl#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	xmlns:fn="http://www.w3.org/2005/xpath-functions#"
+	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:sesame="http://www.openrdf.org/schema/sesame#"
+	xmlns:rdf4j="http://rdf4j.org/schema/rdf4j#">
+
+<rdf:Description rdf:about="http://purl.org/dc/elements/1.1/identifier">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_1">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_1</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">OH</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.w3.org/2008/05/skos#altLabel">
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AnnotationProperty"/>
+	<rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#label"/>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_10">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_10</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">Ar</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_2">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_2</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">O</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_3">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_3</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">O2</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_4">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_4</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">N2</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_5">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_5</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">HO2</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_6">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_6</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">H</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_7">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_7</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">H2O</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_8">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_8</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">H2O2</altLabel>
+</rdf:Description>
+
+<rdf:Description rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_9">
+	<identifier xmlns="http://purl.org/dc/elements/1.1/">species_9</identifier>
+	<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<altLabel xmlns="http://www.w3.org/2008/05/skos#">H2</altLabel>
+</rdf:Description>
+
+</rdf:RDF>
