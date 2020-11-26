@@ -106,12 +106,8 @@ public class ResidentialAgent extends JPSHttpServlet {
 		//per equipment, per user, extract high, low and actual value 
 		Collections.rotate(lst, -h);
 		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j7:<http://www.w3.org/2006/time#> "
 				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "SELECT ?entity ?Pmaxval ?Pminval ?unwillval ?Pactval ?hourval " + "WHERE "
+				+ "SELECT ?entity ?Pmaxval ?Pminval ?unwillval " + "WHERE "
 				+ "{ ?entity a j6:Electronics ." + "?entity j9:hasActivePowerAbsorbed ?Pmax ."
 				+ "?Pmax a j9:MaximumActivePower ." + " ?Pmax   j2:hasValue ?vPmax ."
 				+ " ?vPmax   j2:numericalValue ?Pmaxval ."
@@ -122,11 +118,8 @@ public class ResidentialAgent extends JPSHttpServlet {
 				+ "?entity j9:hasActivePowerAbsorbed ?Pmin ." + "?Pmin a j9:MinimumActivePower ."
 				+ " ?Pmin   j2:hasValue ?vPmin ." + " ?vPmin   j2:numericalValue ?Pminval ."
 
-				+ "?entity j9:hasActivePowerAbsorbed ?Pact ." + "?Pact a j9:AbsorbedActivePower ."
-				+ " ?Pact   j2:hasValue ?vPact ." + " ?vPact   j2:numericalValue ?Pactval ."
-				+ " ?vPact   j7:hasTime ?proptime ." + "?proptime j7:hour ?hourval ."
 
-				+ "}" + "ORDER BY ASC(?hourval)";
+				+ "}";
 		List<String[]> subList =  new ArrayList<String[]>();
 		OntModel model2 = DESAgentNew.readModelGreedyForUser(iriOfTypeUser);
 		ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);

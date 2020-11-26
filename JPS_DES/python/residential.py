@@ -266,8 +266,8 @@ if __name__ == "__main__":
     high1 = np.array([3.9, 3.0, 3.1, 0.2, 0.1, 0.17, 0.32, 0.65, 0.45, 0.725, 0.95])
 
     unwill1 = np.array([0.5, 0.5, 0.6, 1.0, 0.7, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-
-    bcap1 = 6
+    #read bcap from csv
+    bcap1 = pd.read_csv('bcap.csv', header = None).iloc[0, 1]
     cd = 0.003
     Nr = 60
     print(residential(np.zeros(24), np.zeros(24), household_below, household_above, flex1,
