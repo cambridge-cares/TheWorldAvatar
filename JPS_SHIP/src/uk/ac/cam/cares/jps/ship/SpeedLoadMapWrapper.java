@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
@@ -29,11 +31,18 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
 		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
 		String pythonExec = smlWorkingDir + slmPython;
-
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(pythonExec);
-        args.add(slmScript);
-		args.add(inputs);
+
+		if (CommandHelper.isWindows()) {
+			args.add(pythonExec);
+	        args.add(slmScript);
+			args.add(inputs);
+		} else {
+			smlWorkingDir = AgentLocator.getCurrentJpsAppDirectory(this) +  slmDir.replace("\\", "/");
+			args.add(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR));
+			args.add(slmScript);
+			args.add(inputs);
+		}
 
 		return CommandHelper.executeCommands(smlWorkingDir, args);
 	}
@@ -66,7 +75,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 	private JSONObject crankUpRealShipModel(String type, String newjsonfile) {
 		JSONObject json = new JSONObject(newjsonfile);
 		
-		// these scaling factors are purely to make the results fall within the reasonable range
+		
 		for(int gas=0;gas<json.getJSONArray("pollutants").length();gas++) {
 			JSONObject pollutantmass=json.getJSONArray("pollutants").getJSONObject(gas);
 			Double oldvaluemixmass= pollutantmass.getDouble("value");

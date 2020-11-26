@@ -181,7 +181,7 @@ public class DataDownload {
 			throws Exception {
 
 		String currency_download = new String(
-				"caresjpsarbitrage/exchange_rates.py");
+				"caresjpsarbitrage/exchange_rates.pyw");
 		String path = AgentLocator.getCurrentJpsAppDirectory(new DataDownload());
 		String command = "python " + path+ "/python/" +currency_download;
 		String result = CommandHelper.executeSingleCommand( path, command);

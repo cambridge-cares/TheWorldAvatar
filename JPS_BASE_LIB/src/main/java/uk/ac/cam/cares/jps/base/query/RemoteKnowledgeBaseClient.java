@@ -36,7 +36,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  */
 public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 
-	private static final String HTTP_PROTOCOL_PREFIX = "http:";
+	private static final String HTTP_PROTOCOL= "http:";
+	private static final String HTTPS_PROTOCOL = "https:";
 
 	private String queryEndpoint;
 	private String updateEndpoint;
@@ -395,14 +396,13 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return
 	 */
 	public boolean isConnectionQueryUrlValid(String connectionUrl){
-		if (!connectionUrl.startsWith(JenaDriver.DRIVER_PREFIX
-				.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
-				.concat(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT)
-				.concat("=")
-				.concat(HTTP_PROTOCOL_PREFIX))) {
-			return false;
+		if (connectionUrl.startsWith(getQueryEndpointConnectionPrfixes()
+				.concat(HTTP_PROTOCOL)) 
+				|| connectionUrl.startsWith(getQueryEndpointConnectionPrfixes()
+						.concat(HTTPS_PROTOCOL))) {
+			return isConnectionUrlValid(connectionUrl);
 		}
-		return isConnectionUrlValid(connectionUrl);
+		return false;
 	}
 	
 	/**
@@ -414,19 +414,38 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * a connection with the remote repository to perform an update operation<p>
 	 * @return
 	 */
-	private boolean isConnectionUpdateUrlValid(String connectionUrl){
-		if (!(isConnectionQueryUrlValid(connectionUrl) || connectionUrl.startsWith(JenaDriver.DRIVER_PREFIX
-						.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
-						.concat(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT)
-						.concat("=")
-						.concat(HTTP_PROTOCOL_PREFIX)))) {
-			return false;
+	public boolean isConnectionUpdateUrlValid(String connectionUrl) {
+		// One might set both the query and update endpoint URLs, but calls
+		// the executeUpdate() method. This is why it is crucial to check
+		// if the provided update URL is correctly encoded.
+		if (isConnectionQueryUrlValid(connectionUrl)) {
+			if (connectionUrl.contains(getUpdateEndpointConnectionParameter().concat(HTTP_PROTOCOL))
+					|| connectionUrl.contains(
+							getUpdateEndpointConnectionParameter().concat(HTTPS_PROTOCOL))) {
+				return true;
+			}
 		}
-		return isConnectionUrlValid(connectionUrl);
+		if (connectionUrl.startsWith(getUpdateEndpointConnectionPrefixes().concat(HTTP_PROTOCOL))
+				|| connectionUrl
+						.startsWith(getUpdateEndpointConnectionPrefixes().concat(HTTPS_PROTOCOL))) {
+			return isConnectionUrlValid(connectionUrl);
+		}
+		return false;
 	}
 	
+	/**
+	 * Checks the validity of a connection URL.
+	 * 
+	 * @param connectionUrl
+	 * @return
+	 */
 	private boolean isConnectionUrlValid(String connectionUrl){
-		String[] tokens = connectionUrl.split(HTTP_PROTOCOL_PREFIX);
+		String[] tokens = new String[]{""};
+		if(connectionUrl.contains(HTTP_PROTOCOL)){
+			tokens = connectionUrl.split(HTTP_PROTOCOL);			
+		} else if(connectionUrl.contains(HTTPS_PROTOCOL)){
+			tokens = connectionUrl.split(HTTPS_PROTOCOL);
+		}
 		for(String token: tokens){
 			if(token.isEmpty()){
 				return false;
@@ -437,4 +456,39 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 		}
 		return true;
 	}
+	
+	/**
+	 * Returns the connection prefix and query endpoint parameter literals concatenated.
+	 * 
+	 * @return
+	 */
+	private String getQueryEndpointConnectionPrfixes(){
+		return JenaDriver.DRIVER_PREFIX
+				.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
+				.concat(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT)
+				.concat("=");
+	}
+	
+	/**
+	 * Returns the connection prefix and update endpoint parameter literals concatenated.
+	 * 
+	 * @return
+	 */
+	private String getUpdateEndpointConnectionPrefixes(){
+		return JenaDriver.DRIVER_PREFIX
+				.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
+				.concat(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT)
+				.concat("=");
+	}
+	
+	/**
+	 * Returns the update endpoint parameter.
+	 * 
+	 * @return
+	 */
+	private String getUpdateEndpointConnectionParameter(){
+		return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
+				.concat("=");
+	}
+
 }
