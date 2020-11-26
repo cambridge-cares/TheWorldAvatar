@@ -53,7 +53,7 @@ public class RenameToolTest {
 	
 	//Test renameURI on owl file
 	@Test
-	public void testRenameURI() throws URISyntaxException, SQLException, ParseException, IOException {
+	public void testRenameURI() throws URISyntaxException, ParseException, IOException {
 		
 		Path testFilePath = Paths.get(this.getClass().getResource("/ToolsTest/species.owl").toURI());
 		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/species.owl");
