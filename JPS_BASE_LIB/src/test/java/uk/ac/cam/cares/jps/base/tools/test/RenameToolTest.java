@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
 import java.util.Iterator;
 
 import org.apache.jena.update.UpdateRequest;
@@ -26,6 +25,12 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.tools.RenameTool;
 
+/**
+ * JUnit tests for RenameTool
+ * 
+ * @author Casper Lindberg
+ *
+ */
 public class RenameToolTest {
 
 	private RenameTool renameTool;
@@ -48,7 +53,13 @@ public class RenameToolTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	
-	//Test renameURI on owl file
+	/**
+	 * Test renameURI on an owl file. 
+	 * 
+	 * @throws URISyntaxException
+	 * @throws ParseException
+	 * @throws IOException
+	 */
 	@Test
 	public void testRenameURI() throws URISyntaxException, ParseException, IOException {
 		
@@ -58,7 +69,7 @@ public class RenameToolTest {
 		String target = "http://www.w3.org/2008/05/skos#altLabel";
 		String replacement = "http://www.w3.org/2008/05/skos#replacement";
 		
-		//copy species to temporary folder
+		//copy species.owl to temporary folder
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
@@ -70,7 +81,7 @@ public class RenameToolTest {
 		//select query to check result: predicate renamed
 		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
 		
-		//Check result
+		//check result
 		Iterator<Object> iteratorP = resultP.iterator();
 		while(iteratorP.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -81,7 +92,7 @@ public class RenameToolTest {
 		//select query to check result: subject renamed
 		JSONArray resultS = kbClient.executeQuery(sparqlQueryS);
 		
-		//Check result
+		//check result
 		Iterator<Object> iteratorS = resultS.iterator();
 		while(iteratorS.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -90,7 +101,13 @@ public class RenameToolTest {
 		}
 	}
 	
-	//Test renameURIFragment on owl file
+	/**
+	 * Test renameURIFragment on an owl file. 
+	 * 
+	 * @throws URISyntaxException
+	 * @throws ParseException
+	 * @throws IOException
+	 */
 	@Test
 	public void testRenameURIFragment() throws URISyntaxException, ParseException, IOException {
 				
@@ -112,7 +129,7 @@ public class RenameToolTest {
 		//select query to check result: predicate renamed
 		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
 		
-		//Check result
+		//check result
 		Iterator<Object> iteratorP = resultP.iterator();
 		while(iteratorP.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -123,7 +140,7 @@ public class RenameToolTest {
 		//select query to check result: subject renamed
 		JSONArray resultS = kbClient.executeQuery(sparqlQueryS);
 		
-		//Check result
+		//check result
 		Iterator<Object> iteratorS = resultS.iterator();
 		while(iteratorS.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -132,7 +149,15 @@ public class RenameToolTest {
 		}
 	}
 	
-	// Test sparql builder. Update to replace URI.
+	/**
+	 * Test sparql update builder. Build sparql update to replace URI in named graph.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testBuildSparqlUpdateURI() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -158,7 +183,7 @@ public class RenameToolTest {
 		"      }\n" +
 		"  }\n";
 		
-		// access private member
+		// access private method
 		renameTool = new RenameTool();
 		assertNotNull(renameTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class, String.class, String.class));
 		Method buildSparqlUpdateURI = renameTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class, String.class, String.class);
@@ -171,7 +196,15 @@ public class RenameToolTest {
 		assertEquals(expected, strSparql);
 	}
 	
-	// Test sparql builder. Update to replace URI in default graph.
+	/**
+	 * Test sparql update builder. Build sparql update to replace URI in default graph.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testBuildSparqlUpdateURIDefaultGraph() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -191,7 +224,7 @@ public class RenameToolTest {
 		"    BIND(if(( ?o = ?targetURI ), ?replacementURI, ?o) AS ?newO)\n" +
 		"  }\n";
 		
-		// access private member
+		// access private method
 		renameTool = new RenameTool();
 		assertNotNull(renameTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class, String.class, String.class));
 		Method buildSparqlUpdateURI = renameTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class, String.class, String.class);
@@ -204,7 +237,15 @@ public class RenameToolTest {
 		assertEquals(expected, strSparql);
 	}
 	
-	// Test sparql builder. Update to replace URI fragment.
+	/**
+	 * Test sparql update builder. Builds sparql update to replace URI fragment in named graph.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testBuildSparqlUpdateString() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -231,7 +272,7 @@ public class RenameToolTest {
 		"      }\n" +
 		"  }\n";
 		
-		// access private member
+		// access private method
 		renameTool = new RenameTool();
 		assertNotNull(renameTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class, String.class, String.class));
 		Method buildSparqlUpdateString = renameTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class, String.class, String.class);
@@ -244,7 +285,15 @@ public class RenameToolTest {
 		assertEquals(expected, strSparql);
 	}
 	
-	// Test sparql builder. Update to replace URI fragment.
+	/**
+	 * Test sparql update builder. Builds sparql update to replace URI fragment in default graph.
+	 * 
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	@Test
 	public void testBuildSparqlUpdateStringDefaultGraph() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		
@@ -265,7 +314,7 @@ public class RenameToolTest {
 		"    BIND(if(?matchO, uri(replace(str(?o), \"/test/target\", \"/test/replacement\")), ?o) AS ?newO)\n" +
 		"  }\n";
 		
-		// access private member
+		// access private method
 		renameTool = new RenameTool();
 		assertNotNull(renameTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class, String.class, String.class));
 		Method buildSparqlUpdateString = renameTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class, String.class, String.class);
