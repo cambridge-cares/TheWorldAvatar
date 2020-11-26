@@ -42,6 +42,9 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	private String queryEndpoint;
 	private String updateEndpoint;
 	private String query;
+	// Authentication properties
+	private String user;
+	private String password;
 	
 	///////////////////////////
 	// Constructors
@@ -77,15 +80,42 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
+	 * A constructor defined to initialise the query EndPoint URL, user name and password.
+	 * 
+	 * @param queryEndpoint
+	 * @param user
+	 * @param password
+	 */
+	public RemoteKnowledgeBaseClient(String queryEndpoint, String user, String password){
+		this.queryEndpoint = queryEndpoint;
+	}
+	
+	/**
 	 * A constructor defined to initialise the query EndPoint URL, update<p>
-	 * EndPoint URL and a set of graphs to send a data retrieval or update<p>
-	 * query.    
+	 * EndPoint URL, user name and password.    
+	 * 
+	 * @param queryEndpoint
+	 * @param updateEndpoint
+	 * @param user
+	 * @param password
+	 */
+	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String user, String password){
+		this.queryEndpoint = queryEndpoint;
+		this.updateEndpoint = updateEndpoint;
+	}
+	
+	/**
+	 * A constructor defined to initialise the query EndPoint URL, update<p>
+	 * EndPoint URL, user name and password and a data retrieval or update<p>
+	 * query.
 	 * 
 	 * @param queryEndpoint
 	 * @param updateEndpoint
 	 * @param query
+	 * @param user
+	 * @param password 
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query){
+	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query, String user, String password){
 		this.query = query; // query variable in super class
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
@@ -166,6 +196,42 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	public String setUpdateEndpoint(String updateEndpoint) {
 		this.updateEndpoint = updateEndpoint;
 		return this.updateEndpoint;
+	}
+	
+	/**
+	 * Returns the user name to access the current EndPoint.
+	 * 
+	 * @return
+	 */
+	public String getUser() {
+		return user;
+	}
+
+	/**
+	 * Sets the user name to access the current EndPoint.
+	 * 
+	 * @param user
+	 */
+	public void setUser(String user) {
+		this.user = user;
+	}
+	
+	/**
+	 * Returns the user password to access the current EndPoint.
+	 * 
+	 * @return
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * Sets the user password to access the current EndPoint.
+	 * 
+	 * @param password
+	 */
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 	///////////////////////////
