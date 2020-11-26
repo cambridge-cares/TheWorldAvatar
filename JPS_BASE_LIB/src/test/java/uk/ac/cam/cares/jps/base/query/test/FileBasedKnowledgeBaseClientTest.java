@@ -29,6 +29,12 @@ import org.junit.rules.TemporaryFolder;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 
+/**
+ * JUnit tests for FileBasedKnowledgeClient
+ * 
+ * @author Casper Lindberg
+ *
+ */
 public class FileBasedKnowledgeBaseClientTest {
 
 	private FileBasedKnowledgeBaseClient kbClient;
