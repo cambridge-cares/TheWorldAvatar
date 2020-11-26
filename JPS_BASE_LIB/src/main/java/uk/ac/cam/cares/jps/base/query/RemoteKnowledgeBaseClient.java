@@ -43,7 +43,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	private String updateEndpoint;
 	private String query;
 	// Authentication properties
-	private String user;
+	private String userName;
 	private String password;
 	
 	///////////////////////////
@@ -204,16 +204,16 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return
 	 */
 	public String getUser() {
-		return user;
+		return userName;
 	}
 
 	/**
 	 * Sets the user name to access the current EndPoint.
 	 * 
-	 * @param user
+	 * @param userName
 	 */
-	public void setUser(String user) {
-		this.user = user;
+	public void setUser(String userName) {
+		this.userName = userName;
 	}
 	
 	/**
@@ -362,14 +362,16 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Generates the URL of the remote data repository's EndPoint either to<p>
-	 * perform a data retrieval or an update query.  
+	 * Generates the URL of the remote data repository's EndPoint, which<br>
+	 * might require authentication either to perform a data retrieval or<br>
+	 * an update query.  
 	 * 
 	 * @return
 	 */
 	public String getConnectionUrl() {
 		StringBuilder sb = new StringBuilder();
 		boolean queryFlag = false;
+		boolean updateFlag = false;
 		sb.append(JenaDriver.DRIVER_PREFIX);
 		sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
 		if (this.queryEndpoint != null) {
@@ -377,10 +379,23 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
 		}
 		if (this.updateEndpoint != null) {
+			updateFlag = true;
 			if(queryFlag){
 				sb.append("&");
 			}
 			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
+		}
+		if (this.userName != null) {
+			if(queryFlag || updateFlag){
+				sb.append("&");
+			}
+			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_USERNAME, this.userName));
+		}
+		if (this.password != null) {
+			if(queryFlag || updateFlag){
+				sb.append("&");
+			}
+			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, this.password));
 		}
 		return sb.toString();
 	}
