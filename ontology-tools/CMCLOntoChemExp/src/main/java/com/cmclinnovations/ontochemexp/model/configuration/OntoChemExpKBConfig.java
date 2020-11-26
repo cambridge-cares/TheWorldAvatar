@@ -48,6 +48,8 @@ public class OntoChemExpKBConfig {
 	@Value("${ontochemexp.namespace}")
 	private String ontoChemNamespace;	
 	
+	@Value("${ontochemexp.kb.file.head.comment}")
+	private String ontoChemExpHeadComment;
 	
 	
 	public String getOntoChemNamespace() {
@@ -132,5 +134,13 @@ public class OntoChemExpKBConfig {
 
 	public void setOntoChemExpKBFileName(String ontoChemExpKBFileName) {
 		this.ontoChemExpKBFileName = ontoChemExpKBFileName;
+	}
+	
+	public String getOntoChemExpHeadComment() {
+		return ontoChemExpHeadComment;
+	}
+
+	public void setOntoChemExpHeadComment(String ontoChemExpHeadComment) {
+		this.ontoChemExpHeadComment = ontoChemExpHeadComment;
 	}
 }

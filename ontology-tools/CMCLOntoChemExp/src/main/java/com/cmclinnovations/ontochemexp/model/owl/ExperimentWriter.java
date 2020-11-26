@@ -1,5 +1,6 @@
 package com.cmclinnovations.ontochemexp.model.owl;
 
+import org.semanticweb.owlapi.model.IRI;
 import org.xml.sax.SAXException;
 import com.cmclinnovations.ontochemexp.model.converter.prime.PrimeConverter;
 import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
@@ -38,6 +39,7 @@ public class ExperimentWriter extends PrimeConverter implements IExperimentWrite
 				// experiment being parsed.
 				createExperiment();
 				addAllAttributes();
+				addHeadComment();
 				needsToCreateExperiment = false;
 			}
 			experimentParseStatus.setExperiment(false);
@@ -97,6 +99,16 @@ public class ExperimentWriter extends PrimeConverter implements IExperimentWrite
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private void addHeadComment() {
+		try {
+			IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_COMMENT));
+			iABoxManagement.addProperty("Experiment"+UNDERSCORE+experimentInstanceId, 
+					dataPropertyIRI, ontoChemExpKB.getOntoChemExpHeadComment(), STRING);
+		} catch (ABoxManagementException e) {
+			e.printStackTrace();
 		}
 	}
 }
