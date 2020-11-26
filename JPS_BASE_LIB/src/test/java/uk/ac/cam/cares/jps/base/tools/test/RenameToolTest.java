@@ -12,8 +12,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 import org.apache.jena.update.UpdateRequest;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,26 +29,20 @@ import uk.ac.cam.cares.jps.base.tools.RenameTool;
 public class RenameToolTest {
 
 	private RenameTool renameTool;
-
-	private String sparqlQuery = "SELECT ?s  ?p  ?o" +
+	
+	private String sparqlQueryP = "SELECT ?s  ?p  ?o" +
 			"WHERE\n" +  
 			"  { ?s  ?p  ?o \n" + 
 			"      BIND(<http://www.w3.org/2008/05/skos#replacement> AS ?targetURI)\n" +  
-			"      FILTER ( ( ?s = ?targetURI ) || ( ?p = ?targetURI ) || ( ?o = ?targetURI ) )\n" + 
+			"      FILTER ( ?p = ?targetURI )\n" + 
 			"  }\n";
 	
-	private String expectedQueryResult = "[{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_4\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_9\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_10\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_2\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_7\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_5\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_3\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_8\"},"+
-			"{\"p\":\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\",\"s\":\"http://www.w3.org/2008/05/skos#replacement\"},"+
-			"{\"p\":\"http://www.w3.org/2000/01/rdf-schema#subPropertyOf\",\"s\":\"http://www.w3.org/2008/05/skos#replacement\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_1\"},"+
-			"{\"p\":\"http://www.w3.org/2008/05/skos#replacement\",\"s\":\"http://www.theworldavatar.com/kb/species/species.owl#species_6\"}]";
+	private String sparqlQueryS = "SELECT ?s  ?p  ?o" +
+			"WHERE\n" +  
+			"  { ?s  ?p  ?o \n" + 
+			"      BIND(<http://www.w3.org/2008/05/skos#replacement> AS ?targetURI)\n" +  
+			"      FILTER ( ?s = ?targetURI )\n" + 
+			"  }\n";
 	
 	// temporary folder for testing
 	@Rule
@@ -70,15 +67,32 @@ public class RenameToolTest {
 		//perform update
 		RenameTool.renameURI(kbClient, target, replacement);
 		
-		//select query to check result
-		String result = kbClient.execute(sparqlQuery);
+		//select query to check result: predicate renamed
+		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
 		
-		assertEquals(expectedQueryResult, result);
+		//Check result
+		Iterator<Object> iteratorP = resultP.iterator();
+		while(iteratorP.hasNext()) {
+			JSONObject ob = new JSONObject();
+			ob = (JSONObject) iteratorP.next();
+			assertEquals("http://www.w3.org/2008/05/skos#replacement", ob.get("p").toString());
+		}
+		
+		//select query to check result: subject renamed
+		JSONArray resultS = kbClient.executeQuery(sparqlQueryS);
+		
+		//Check result
+		Iterator<Object> iteratorS = resultS.iterator();
+		while(iteratorS.hasNext()) {
+			JSONObject ob = new JSONObject();
+			ob = (JSONObject) iteratorS.next();
+			assertEquals("http://www.w3.org/2008/05/skos#replacement", ob.get("s").toString());
+		}
 	}
 	
 	//Test renameURIFragment on owl file
 	@Test
-	public void testRenameURIFragment() throws URISyntaxException, SQLException, ParseException, IOException {
+	public void testRenameURIFragment() throws URISyntaxException, ParseException, IOException {
 				
 		Path testFilePath = Paths.get(this.getClass().getResource("/ToolsTest/species.owl").toURI());
 		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/species.owl");
@@ -95,10 +109,27 @@ public class RenameToolTest {
 		//perform update
 		RenameTool.renameURIFragment(kbClient, target, replacement);
 		
-		//select query to check result
-		String result = kbClient.execute(sparqlQuery);
+		//select query to check result: predicate renamed
+		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
 		
-		assertEquals(expectedQueryResult, result);
+		//Check result
+		Iterator<Object> iteratorP = resultP.iterator();
+		while(iteratorP.hasNext()) {
+			JSONObject ob = new JSONObject();
+			ob = (JSONObject) iteratorP.next();
+			assertEquals("http://www.w3.org/2008/05/skos#replacement", ob.get("p").toString());
+		}
+		
+		//select query to check result: subject renamed
+		JSONArray resultS = kbClient.executeQuery(sparqlQueryS);
+		
+		//Check result
+		Iterator<Object> iteratorS = resultS.iterator();
+		while(iteratorS.hasNext()) {
+			JSONObject ob = new JSONObject();
+			ob = (JSONObject) iteratorS.next();
+			assertEquals("http://www.w3.org/2008/05/skos#replacement", ob.get("s").toString());
+		}
 	}
 	
 	// Test sparql builder. Update to replace URI.
