@@ -81,7 +81,7 @@ public class ResidentialAgent extends JPSHttpServlet {
 		
 		//subfunction to read per iri of user (in case there are more than one user. 
 		for(int x=0;x<sizeofiriuser;x++) {
-			readUserforAppSche(lst, h, iriofgroupuser.get(x));
+			readUserforPminPmaxUnwill(lst, h, iriofgroupuser.get(x));
 		}
 
 		broker.putLocal(baseUrl + "/" + bcap, bcapcsv);
@@ -102,10 +102,11 @@ public class ResidentialAgent extends JPSHttpServlet {
 		broker.putLocal(baseUrl + "/" + schedule, schedulecsv);
 		
 	}
-	protected void readUserforAppSche(List<String> lst, int h, String iriOfTypeUser) {
+	protected void readUserforPminPmaxUnwill(List<String> lst, int h, String iriOfTypeUser) {
 		//per equipment, per user, extract high, low and actual value 
 		Collections.rotate(lst, -h);
 		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
 				+ "SELECT ?entity ?Pmaxval ?Pminval ?unwillval " + "WHERE "
 				+ "{ ?entity a j6:Electronics ." + "?entity j9:hasActivePowerAbsorbed ?Pmax ."
@@ -119,66 +120,47 @@ public class ResidentialAgent extends JPSHttpServlet {
 				+ " ?Pmin   j2:hasValue ?vPmin ." + " ?vPmin   j2:numericalValue ?Pminval ."
 
 
-				+ "}";
-		List<String[]> subList =  new ArrayList<String[]>();
+				+ "}"+ "ORDER BY ASC(?entity)";
 		OntModel model2 = DESAgentNew.readModelGreedyForUser(iriOfTypeUser);
 		ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 		String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
 		String[] keysx = JenaResultSetFormatter.getKeys(resultx);
 		List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
 		
-
-		List<String>groupPmax=new ArrayList<String>();
-		List<String>groupPmin=new ArrayList<String>();
-		List<String>groupw=new ArrayList<String>();
-		List<String>groupschedule=new ArrayList<String>();
-		groupschedule.add(iriOfTypeUser);
-		//Set to ensure no repeats
-		int countr = 1; 
-		groupschedule.add(lst.get(0));
-		for(int d=0;d<resultListx.size();d++) {
-				if(resultListx.get(d)[5].contentEquals("1")) {
-					groupPmax.add(resultListx.get(d)[1]);
-					groupPmin.add(resultListx.get(d)[2]);
-					groupw.add(resultListx.get(d)[3]);
-				}
-				//HashMap
-				countr ++; 
-				if (countr < 12) { //11 appliances
-					groupschedule.add(resultListx.get(d)[4]);
-				} else {
-					groupschedule.add(resultListx.get(d)[4]);
-					String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-					subList.add(arr4);
-					//clear groupschedule
-					groupschedule=new ArrayList<String>();
-					countr = 1;
-					if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
-						groupschedule.add(iriOfTypeUser);
-						groupschedule.add(lst.get(Integer.parseInt(resultListx.get(d)[5])));
-					}
-				}				
-		}
-
-		List<String[]> csvofpmax = new ArrayList<String[]>();
-		List<String[]> csvofpmin = new ArrayList<String[]>();
-		List<String[]> csvofw = new ArrayList<String[]>();
-		List<String[]> csvofschedule = new ArrayList<String[]>();
 		
-		String[] arr1 = groupPmax.toArray(new String[groupPmax.size()]);
-		csvofpmax.add(arr1);
-		String[] arr2 = groupPmin.toArray(new String[groupPmin.size()]);
-		csvofpmin.add(arr2);
-		String[] arr3 = groupw.toArray(new String[groupw.size()]);
-		csvofw.add(arr3);
-		System.out.println(groupschedule.toArray().toString());
-		String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-		subList.add(arr4);
-		Collections.rotate(subList, h);
-		csvofschedule.addAll(subList);
+		String[] low1 = new String[resultListx.size()];
+		String[] high1 = new String[resultListx.size()];
+		String[] unwill1 = new String[resultListx.size()];
+
+		for(int d=0;d<resultListx.size();d++) {
+			high1[d] = resultListx.get(d)[1];
+			low1[d] = resultListx.get(d)[2];
+			unwill1[d] = resultListx.get(d)[3];
+		}
+		System.out.println("LOW 1");
+		
+	}
+	protected void readUserforAppSch(List<String> lst, int h, String iriOfTypeUser) {
+		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
+				+ "SELECT ?entity ?Pactval ?hourval " + "WHERE "
+				+ "{ ?entity a j6:Electronics ." 
+				+ "?entity j9:hasActivePowerAbsorbed ?Pact ." 
+				+ "?Pact a j9:AbsorbedActivePower ."
+				+ " ?Pact   j2:hasValue ?vPact ." + " ?vPact   j2:numericalValue ?Pactval ."
+				+ " ?vPact   j7:hasTime ?proptime ." + "?proptime j7:hour ?hourval ."
+				 
+				+ "}" + "ORDER BY ASC(?hourval)";
+		OntModel model2 = DESAgentNew.readModelGreedyForUser(iriOfTypeUser);
+		ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
+		String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
+		String[] keysx = JenaResultSetFormatter.getKeys(resultx);
+		List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
 	}
 	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
+		
 		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
 		extractResidentialData(iriofdistrict, baseUrl); //csv for residential
