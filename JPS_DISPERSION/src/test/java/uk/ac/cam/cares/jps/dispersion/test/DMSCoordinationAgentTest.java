@@ -42,7 +42,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		String resultStart = AgentCaller.executeGetWithJsonParameter(adms_url,jo.toString());
 	}
 
-	public void testSingpaporeEpisode() {
+	public void testSingaporeEpisode() {
 		// Runs the full Episode simulation for Singapore
 		JSONObject jo = new JSONObject();
 		Region.putRegionAndStation(jo,2);
