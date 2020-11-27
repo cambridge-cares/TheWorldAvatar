@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -128,11 +129,18 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
 		if (city.toLowerCase().contains("kong") || city.toLowerCase().contains("singapore")) {
 
-			// =======================================================================
-			logger.info("calling postgres= " + requestParams.toString());
-			String url = KeyValueManager.get(IKeys.URL_POSITIONQUERY);
-			url += "/getEntitiesWithinRegion";
-			String resultship = AgentCaller.executeGetWithURLAndJSON(url, requestParams.toString());
+			String resultship;
+			if (AgentLocator.isJPSRunningAtCMCL()) {
+				logger.info("calling ship data agent = " + requestParams.getJSONObject("region").toString());
+				resultship = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ShipDataAgent", 
+						requestParams.getJSONObject("region").toString());
+			} else {
+//				=======================================================================
+				logger.info("calling postgres= " + requestParams.toString());
+				String url = KeyValueManager.get(IKeys.URL_POSITIONQUERY);
+				url += "/getEntitiesWithinRegion";
+				resultship = AgentCaller.executeGetWithURLAndJSON(url, requestParams.toString());
+			}
 
 			JSONObject jsonShip = new JSONObject(resultship);
 			requestParams.put(PARAM_KEY_SHIP, jsonShip);

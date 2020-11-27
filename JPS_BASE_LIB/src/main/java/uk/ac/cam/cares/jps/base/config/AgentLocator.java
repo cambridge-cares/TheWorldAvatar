@@ -235,4 +235,10 @@ public class AgentLocator {
 
         return url;
     }
+
+    public static boolean isJPSRunningAtCMCL() {
+        Boolean testMode = false;
+        testMode = Boolean.valueOf(KeyValueMap.getInstance().get("cmcl"));
+        return testMode;
+    }
 }
