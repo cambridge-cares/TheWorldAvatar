@@ -369,8 +369,10 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 				MetaDataAnnotator.annotate("file:/"+destinationUrl, null, agent, true, topics, time);
 			}
 			System.out.println("metadata annotation finished");
-			String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());
-			String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
+			if (!AgentLocator.isJPSRunningAtCMCL()) {
+				String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());
+				String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.error("DispersionModellingAgent: Output Annotating Task could not finish");
