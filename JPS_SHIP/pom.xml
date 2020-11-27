@@ -132,7 +132,11 @@
             <artifactId>urlrewritefilter</artifactId>
             <version>4.0.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-sparqlbuilder</artifactId>
+            <version>3.4.3</version>
+        </dependency>
     </dependencies>
 
 </project>

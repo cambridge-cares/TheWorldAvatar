@@ -362,7 +362,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipType -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipType">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
     </owl:Class>
     
 
@@ -371,6 +371,20 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#SpeedOverGround">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipLength -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipLength">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalDimension"/>
+    </owl:Class>
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipBeam -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipBeam">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalDimension"/>
     </owl:Class>
 </rdf:RDF>
 
