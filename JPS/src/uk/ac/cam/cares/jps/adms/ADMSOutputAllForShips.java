@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
@@ -72,7 +74,11 @@ public class ADMSOutputAllForShips extends HttpServlet {
         	}else {
         		// it is a dat folder, trigger python
         		ArrayList<String> args = new ArrayList<String>();
-        		args.add("python");
+        		if (AgentLocator.isJPSRunningAtCMCL()) {
+        			args.add(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR));
+        		} else {
+        			args.add("python");
+        		}
         		args.add("dat_reader.py"); 
         		args.add(dat_files[0].getAbsolutePath());
         		String result = CommandHelper.executeCommands(targetFolder, args);
