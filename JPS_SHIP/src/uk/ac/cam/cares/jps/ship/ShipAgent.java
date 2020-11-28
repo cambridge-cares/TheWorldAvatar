@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.QuerySolution;
@@ -249,11 +250,13 @@ public class ShipAgent extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         JSONObject joforrec = AgentCaller.readJsonParameter(request);
-        String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST);
+        URIBuilder baseURL = new URIBuilder().setScheme(KeyValueManager.get(IKeys.URL_SCHEME))
+                .setHost(KeyValueManager.get(IKeys.HOST))
+                .setPath(KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS));
         if ((AgentLocator.isJPSRunningForTest())) {
-        	baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST)+":"+KeyValueManager.get(IKeys.PORT);
+            baseURL.setPort(Integer.parseInt(KeyValueManager.get(IKeys.PORT)));
         }
-        String shipKbURL = baseURL + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
+        String shipKbURL = baseURL.toString();
         String iri = null;
         String mmsi = null;
 
