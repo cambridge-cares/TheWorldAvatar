@@ -50,20 +50,12 @@ public class AgentCaller {
     private static final String JSON_PARAMETER_KEY = "query";
     private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
     private static String hostPort = null;
-    private static String urlscheme = null;
 
     private static synchronized String getHostPort() {
         if (hostPort == null) {
             hostPort = AgentLocator.getProperty("host") + ":" + AgentLocator.getProperty("port");
         }
         return hostPort;
-    }
-
-    private static synchronized String getUrlScheme() {
-        if (urlscheme == null) {
-            urlscheme = AgentLocator.getProperty("url.scheme");
-        }
-        return urlscheme;
     }
 
     public static String executeGet(String path) {
@@ -170,7 +162,7 @@ public class AgentCaller {
         try {
             builder = new URIBuilder(createURI(path));
         } catch (Exception e) {
-            builder = new URIBuilder().setScheme(getUrlScheme()).setHost(getHostPort()).setPath(path);
+            builder = new URIBuilder().setScheme("http").setHost(getHostPort()).setPath(path);
         }
         return builder;
     }
@@ -249,7 +241,7 @@ public class AgentCaller {
      * @return
      */
     public static String executeGetWithJsonParameter(String path, String json) {
-        URIBuilder builder = new URIBuilder().setScheme(getUrlScheme()).setHost(getHostPort())
+        URIBuilder builder = new URIBuilder().setScheme("http").setHost(getHostPort())
                 .setPath(path);
 
         builder.setParameter(JSON_PARAMETER_KEY, json);
