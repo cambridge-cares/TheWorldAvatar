@@ -1,5 +1,5 @@
-package uk.ac.cam.cares.jps.agent.test;
 
+package uk.ac.cam.cares.jps.agent.test;
 import java.net.URI;
 
 import org.json.JSONObject;
@@ -12,9 +12,7 @@ public class Matlab_test extends TestCase {
 	public void testFCQueryAgent(){
 		JSONObject jo = new JSONObject();
 		try {
-	        URI uri = AgentCaller.createURIWithURLandJSON("ElChemoAgent/test", jo.toString());
-	        System.out.println(uri);
-			String resultStart = AgentCaller.executeGetWithJsonParameter("ElChemoAgent/test", jo.toString());
+			String resultStart = AgentCaller.executeGetWithJsonParameter("ElChemoAgent/JPSMatlabAgent", jo.toString());
 			System.out.println(resultStart);
 			
 		} catch (Exception e) {
