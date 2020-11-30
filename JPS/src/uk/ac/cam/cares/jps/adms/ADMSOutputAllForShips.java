@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
@@ -45,7 +47,12 @@ public class ADMSOutputAllForShips extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         // String folder = null;
         String folderfilename = joforEN.getString("folder");
-        
+
+        // this is required because unix file paths do not appear as IRIs to the triple store
+        // so we have to add file:/ in front of the path
+        if (!CommandHelper.isWindows()) {
+            folderfilename = folderfilename.split("file:/")[1];
+        }
         // X.Zhou@2020.5.9 Implemented an extra mechanism to identify the extension of the target file and trigger different conversion script 
         // accordingly. I also suggest a future clean up/ restructure of the GST conversion script. I personally suspect the maintainability 
         // and extensibility of this script 
@@ -72,7 +79,11 @@ public class ADMSOutputAllForShips extends HttpServlet {
         	}else {
         		// it is a dat folder, trigger python
         		ArrayList<String> args = new ArrayList<String>();
-        		args.add("python");
+        		if (AgentLocator.isJPSRunningAtCMCL()) {
+        			args.add(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR));
+        		} else {
+        			args.add("python");
+        		}
         		args.add("dat_reader.py"); 
         		args.add(dat_files[0].getAbsolutePath());
         		String result = CommandHelper.executeCommands(targetFolder, args);

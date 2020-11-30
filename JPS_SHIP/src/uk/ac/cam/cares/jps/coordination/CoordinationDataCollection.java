@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
@@ -66,6 +67,12 @@ public class CoordinationDataCollection extends HttpServlet {
 
 	}
 
+	public void callAgent(JSONObject jo) {
+		// This is only used in CMCL
+		jo.put("reactionmechanism", "none");
+		AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/dispersion/coordination",jo.toString());
+	}
+	
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
 		JSONObject jo = new JSONObject();
@@ -91,13 +98,18 @@ public class CoordinationDataCollection extends HttpServlet {
 		
 		//retrieveShipdata();
 		try {
-			JSONObject episode=executeSGDataEPISODE(jo2);
-			JSONObject adms=executeSGDataADMS(jo);
-//			JSONObject episodeHK=executeHKDataEPISODE(jo4);
-//			JSONObject admsHK=executeHKDataADMS(jo3);
-			
-			callAgent(adms,episode);
-//			callAgent(admsHK,episodeHK);
+			if (AgentLocator.isJPSRunningAtCMCL()) {
+				JSONObject episode=executeSGDataEPISODE(jo2);
+				callAgent(episode);
+			} else {
+				JSONObject episode=executeSGDataEPISODE(jo2);
+				JSONObject adms=executeSGDataADMS(jo);
+	//			JSONObject episodeHK=executeHKDataEPISODE(jo4);
+	//			JSONObject admsHK=executeHKDataADMS(jo3);
+				
+				callAgent(adms,episode);
+	//			callAgent(admsHK,episodeHK);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
