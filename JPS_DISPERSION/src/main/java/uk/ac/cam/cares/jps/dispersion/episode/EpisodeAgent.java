@@ -532,6 +532,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 																								// radius in m
 				content[7] = "10"; // constant unused building height
 				content[8] = "20";// constant unused building width;
+				//this value is in knot, but in Kang's document, it should be in m/s
 				content[9] = coordinateship.getJSONObject(ship).get("speed").toString(); // should be in knot?
 				content[10] = coordinateship.getJSONObject(ship).get("angle").toString();
 				content[11] = "0";// circularangle assume it moves straightline

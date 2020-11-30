@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 
 /**
@@ -25,7 +26,9 @@ public class RemoteKnowledgeBaseClientTest {
 
 	String queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 	String updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-
+	String userName = "user";
+	String password = "password";
+	
 	/**
 	 * Verifies if the KnowledgeBaseClient constructor that is designed to<p>
 	 * set the query endpoint (URL) assigns the value to the corresponding<p>
@@ -65,7 +68,9 @@ public class RemoteKnowledgeBaseClientTest {
 	 */
 	@Test
 	public void endpointsAndQuerySetupTest() throws SQLException{
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismCountQuery());
+		userName = "user";
+		password = "password";
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismCountQuery(), userName, password);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -74,7 +79,7 @@ public class RemoteKnowledgeBaseClientTest {
 		assertEquals(formMechanismCountQuery(), kbClient.getQuery());
 		queryEndpoint = "/test/Query/Endpoint";
 		updateEndpoint = "/test/Update/Endpoint";
-		kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismIRIsQuery());
+		kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismIRIsQuery(), userName, password);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -83,7 +88,7 @@ public class RemoteKnowledgeBaseClientTest {
 		assertEquals(formMechanismIRIsQuery(), kbClient.getQuery());
 		queryEndpoint = "/extended/Test/QueryEndpoint";
 		updateEndpoint = "/extended/Test/UpdateEndpoint";
-		kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formInsertQuery());
+		kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formInsertQuery(), userName, password);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -153,6 +158,71 @@ public class RemoteKnowledgeBaseClientTest {
 	}
 	
 	/**
+	 * Verifies the validity of both the query URL and update URL.<br>
+	 * For example, standard protocols for URL, i.e. http and https are supported.  
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void connectionHttpURLTest() throws SQLException{
+		// Tests the query endpoint
+		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		assertTrue(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
+		queryEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		assertTrue(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
+		queryEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		assertFalse(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
+		// Tests the update endpoint with the update URL only 
+		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient.setUpdateEndpoint(updateEndpoint);
+		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		updateEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient.setUpdateEndpoint(updateEndpoint);
+		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		updateEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient.setUpdateEndpoint(updateEndpoint);
+		assertFalse(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		// Tests the update endpoint with both the query URL and update URL
+		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		queryEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		updateEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+		queryEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		updateEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		assertFalse(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
+	}
+	
+	/**
+	 * Verifies the validity of connection URL consisting of a query URL,<br>
+	 * user name and password. 
+	 * 
+	 * @throws SQLException
+	 */
+	@Test
+	public void connectionHttpUrlWithAuthTest() throws SQLException{ 
+		userName = "user";
+		password = "password";
+		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
+		RemoteKnowledgeBaseClient remoteKBClient = new RemoteKnowledgeBaseClient();
+		remoteKBClient.setQueryEndpoint(queryEndpoint);
+		remoteKBClient.setUser(userName);
+		remoteKBClient.setPassword(password);
+		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint).concat("&user=").concat(userName).concat("&password=").concat(password),
+				remoteKBClient.getConnectionUrl());
+	}
+	
+	/**
 	 * Tests if the HTTP request to run a SPARQL query returns the expected<p>
 	 * result. It also verifies if the mock service created for this test<p>
 	 * executes the correct method.
@@ -174,28 +244,6 @@ public class RemoteKnowledgeBaseClientTest {
 		assertEquals(jsonArray.toString(), result);
 		verify(kbClient).execute(formMechanismCountQuery());
 	}
-//
-//	@Test
-//	public void performQueryTest2() throws SQLException{
-//		KnowledgeBaseClient kbClient = new KnowledgeBaseClient();
-//		kbClient.setQueryEndpoint(queryEndpoint);
-//		kbClient.setQuery(formMechanismIRIsQuery());
-//		JSONArray result = kbClient.executeQuery();
-//		System.out.println(result.toString());
-//		assertNotNull(result.toString());
-//	}
-//	
-//	@Test
-//	public void updateQuery() throws SQLException{
-//		KnowledgeBaseClient kbClient = new KnowledgeBaseClient();
-//		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-//		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-//		kbClient.setQueryEndpoint(queryEndpoint);
-//		kbClient.setUpdateEndpoint(updateEndpoint);
-//		kbClient.setQuery(formDeleteQuery());
-//		System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
-//		
-//	}
 
 	/**
 	 * A SPARQL query to count the total number of mechanisms in a repository.
@@ -203,9 +251,9 @@ public class RemoteKnowledgeBaseClientTest {
 	 * @return
 	 */
 	private static String formMechanismCountQuery(){
-		String query = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
-			query = query.concat("SELECT (COUNT(?x) AS ?count)\n");
+			query = query.concat("SELECT ?x \n");
 			query = query.concat("WHERE\n");
 			query = query.concat("{\n");
 			query = query.concat("?x rdf:type ontokin:ReactionMechanism .\n");
@@ -219,6 +267,23 @@ public class RemoteKnowledgeBaseClientTest {
 	 * @return
 	 */
 	private static String formMechanismIRIsQuery(){
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
+			query = query.concat("SELECT ?x \n");
+			query = query.concat("WHERE\n");
+			query = query.concat("{\n");
+			query = query.concat("?x rdf:type ontokin:ReactionMechanism .\n");
+			query = query.concat("} LIMIT 10\n");
+			return query;
+	}
+
+	
+	/**
+	 * A SPARQL query to retrieve the IRIs of all mechanisms in a repository.
+	 * 
+	 * @return
+	 */
+	private static String formAnyTriplesQuery(){
 		String query = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
 			query = query.concat("SELECT ?x ?y ?z \n");

@@ -39,7 +39,6 @@ def preprocessing(miscCosts, cpo, fame):
                     continue                
             except:
                 prices[key][j] = None
-
     for key in miscCosts:
         if key.rfind('USD') != -1:
             ex_rates[key] = float(miscCosts[key])
@@ -269,13 +268,13 @@ def run(MoDS_data, miscCosts, cpo, fame):
 
 if __name__ == "__main__":
 
-        pythonLogger = PythonLogger('CPO_to_FAME_MoDS2.py')
-        pythonLogger.postInfoToLogServer('start of CPO_to_FAME_MoDS2.py')
+    pythonLogger = PythonLogger('CPO_to_FAME_MoDS2.py')
+    pythonLogger.postInfoToLogServer('start of CPO_to_FAME_MoDS2.py')
 
-        MoDS_data = str(sys.argv[1])
-        miscCosts = sys.argv[2]
-        cpo = json.loads(sys.argv[3])
-        fame = json.loads(sys.argv[4])
+    MoDS_data = str(sys.argv[1])
+    miscCosts = json.loads(sys.argv[2])
+    cpo = json.loads(sys.argv[3])
+    fame = json.loads(sys.argv[4])
     try:
         returnResultsToJava(run(MoDS_data, miscCosts, cpo, fame))
     except Exception as e:

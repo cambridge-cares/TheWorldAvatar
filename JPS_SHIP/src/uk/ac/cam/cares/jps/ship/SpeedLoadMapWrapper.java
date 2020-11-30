@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
@@ -29,11 +31,18 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
 		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
 		String pythonExec = smlWorkingDir + slmPython;
-
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(pythonExec);
-        args.add(slmScript);
-		args.add(inputs);
+
+		if (CommandHelper.isWindows()) {
+			args.add(pythonExec);
+	        args.add(slmScript);
+			args.add(inputs);
+		} else {
+			smlWorkingDir = AgentLocator.getCurrentJpsAppDirectory(this) +  slmDir.replace("\\", "/");
+			args.add(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR));
+			args.add(slmScript);
+			args.add(inputs);
+		}
 
 		return CommandHelper.executeCommands(smlWorkingDir, args);
 	}
@@ -43,6 +52,16 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		JSONObject in= new JSONObject();
+		/*
+		 * http://betterboat.com/average-boat-speed/ assume fastest medium boat 
+		 * max speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
+		 * https://www.marineinsight.com/shipping-news/worlds-fastest-ship-built-tasmania-christened-argentinas-president/->fastest=58.1 knot
+		 * knot*2500/58.1 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
+		 * kg/h NO2 (comparison of NO2
+		 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
+		 * 1 boat mass flux=0.0192143028723584 kg/s 
+
+		 */
 		double valuecalc=jo.getDouble("speed")*2500/58.1;
 		if(valuecalc>2500) {
 			valuecalc=2500;
