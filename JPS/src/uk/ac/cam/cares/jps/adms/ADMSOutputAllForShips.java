@@ -47,7 +47,12 @@ public class ADMSOutputAllForShips extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         // String folder = null;
         String folderfilename = joforEN.getString("folder");
-        
+
+        // this is required because unix file paths do not appear as IRIs to the triple store
+        // so we have to add file:/ in front of the path
+        if (!CommandHelper.isWindows()) {
+            folderfilename = folderfilename.split("file:/")[1];
+        }
         // X.Zhou@2020.5.9 Implemented an extra mechanism to identify the extension of the target file and trigger different conversion script 
         // accordingly. I also suggest a future clean up/ restructure of the GST conversion script. I personally suspect the maintainability 
         // and extensibility of this script 
