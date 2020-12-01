@@ -4,11 +4,6 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.SQLException;
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.Update;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -81,7 +76,7 @@ public class SensorSparql {
      * @param repo
      * @throws SQLException 
      */
-    public void createWeatherStation(String station_name, double [] xyz_coord, String repo) throws SQLException {
+    public void createWeatherStation(String station_name, double [] xyz_coord, String repo) {
         Iri weatherstation_iri = p_station.iri(station_name);
         Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
 
@@ -107,7 +102,7 @@ public class SensorSparql {
         ModifyQuery modify = Queries.MODIFY();
         
         modify.prefix(prefix_list).insert(combined_tp).where();
-        performUpdate(repo, modify.getQueryString());
+        performUpdate(repo, modify);
     }
 
     private TriplePattern [] getWeatherSensorTP(Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit) {
@@ -131,7 +126,7 @@ public class SensorSparql {
         return combined_tp;
     }
 
-    public void createAirQualityStation(String station_name, double [] xyz_coord, String repo) throws SQLException {
+    public void createAirQualityStation(String station_name, double [] xyz_coord, String repo) {
     	Iri airqualitystation_iri = p_station.iri(station_name);
         Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
 
@@ -159,7 +154,7 @@ public class SensorSparql {
         
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(prefix_list).insert(combined_tp).where();
-        performUpdate(repo, modify.getQueryString());
+        performUpdate(repo, modify);
     }
     
     public TriplePattern [] getAirQualitySensorTP(Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit) {
@@ -266,35 +261,14 @@ public class SensorSparql {
     	System.out.println(query.getQueryString());
     }
 
-    /**
-     * Delete a specific graph from an endpoint
-     * @param endpoint
-     * @param graph
-     * @throws SQLException
-     */
-    public void deleteGraph(String endpoint, String graph) throws SQLException {
-    	String update = "clear graph " + graph;
-    	performUpdate(endpoint, update);
-    }
-
-    /**
-     * Delete everything in an endpoint
-     * @param endpoint
-     * @throws SQLException
-     */
-    public void clearEndpoint(String endpoint) throws SQLException {
-        String update = "clear all";
-        performUpdate(endpoint, update);
-    }
-
-    private void performUpdate(String queryEndPoint, String query) throws SQLException {
+    private void performUpdate(String queryEndPoint, ModifyQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setUpdateEndpoint(queryEndPoint);
-        kbClient.setQuery(query);
+        kbClient.setQuery(query.getQueryString());
         System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
     }
 
-    private JSONArray performQuery(String queryEndPoint, SelectQuery query) throws SQLException {
+    private JSONArray performQuery(String queryEndPoint, SelectQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setQueryEndpoint(queryEndPoint);
         kbClient.setQuery(query.getQueryString());
