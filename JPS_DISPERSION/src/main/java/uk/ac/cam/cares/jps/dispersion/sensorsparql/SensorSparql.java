@@ -48,8 +48,7 @@ public class SensorSparql {
     public static final String SO2 = "OutsideSO2Concentration";
 
     // prefixes for SPARQL queries
-    private static Prefix p_weather = SparqlBuilder.prefix("weather",iri("http://www.theworldavatar.com/kb/weatherstations/"));
-    private static Prefix p_airquality = SparqlBuilder.prefix("airquality",iri("http://www.theworldavatar.com/kb/airqualitystations/"));
+    private static Prefix p_station = SparqlBuilder.prefix("station",iri("http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#"));
     private static Prefix p_space_time_extended = SparqlBuilder.prefix("space_time_extended",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"));
     private static Prefix p_space_time = SparqlBuilder.prefix("space_time",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"));
     private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
@@ -58,7 +57,6 @@ public class SensorSparql {
     private static Prefix p_ontosensor = SparqlBuilder.prefix("sensor",iri("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#"));
     private static Prefix p_time = SparqlBuilder.prefix("time",iri("http://www.w3.org/2006/time#"));
     private static Prefix p_coordsys = SparqlBuilder.prefix("coordsys",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"));
-    private static Prefix p_control = SparqlBuilder.prefix("control",iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#"));
     private static Prefix p_instrument = SparqlBuilder.prefix("instrument", iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"));
     
     // IRI of units used
@@ -72,8 +70,8 @@ public class SensorSparql {
     private static Iri unit_percentage = p_derived_SI_unit.iri("percentage"); // made up, does not exist in ontology
     private static Iri unit_ugm3 = p_derived_SI_unit.iri("ug_per_m.m.m");
 
-    private Prefix [] getOtherPrefix() {
-        Prefix [] prefixes = {p_space_time_extended,p_space_time,p_system,p_SI_unit,p_derived_SI_unit,p_ontosensor,p_time,p_coordsys,p_control,p_instrument};
+    private Prefix [] getPrefix() {
+        Prefix [] prefixes = {p_station,p_space_time_extended,p_space_time,p_system,p_SI_unit,p_derived_SI_unit,p_ontosensor,p_time,p_coordsys,p_instrument};
         return prefixes;
     }
 
@@ -84,31 +82,31 @@ public class SensorSparql {
      * @throws SQLException 
      */
     public void createWeatherStation(String station_name, double [] xyz_coord, String repo) throws SQLException {
-        Iri weatherstation_iri = p_weather.iri(station_name);
-        Iri stationcoordinates_iri = p_weather.iri(station_name+"_coordinates");
+        Iri weatherstation_iri = p_station.iri(station_name);
+        Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
 
-        TriplePattern weatherstation_tp = weatherstation_iri.isA(p_control.iri("MeasuringInstrument"))
+        TriplePattern weatherstation_tp = weatherstation_iri.isA(p_station.iri("WeatherStation"))
         		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
         
-        TriplePattern [] coordinates_xyz = getCoordinatesXYZ_tp(p_weather,station_name,stationcoordinates_iri,xyz_coord);
+        TriplePattern [] coordinates_xyz = getCoordinatesXYZ_tp(p_station,station_name,stationcoordinates_iri,xyz_coord);
 
         TriplePattern [] combined_tp = {};
         combined_tp = ArrayUtils.addAll(combined_tp, weatherstation_tp);
         combined_tp = ArrayUtils.addAll(combined_tp, coordinates_xyz);
-        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,cloud,unit_percentage));
-        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,precipitation,unit_mm));
-        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,pressure,unit_mbar));
-        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,temperature,unit_celcius));
-        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,humidity,unit_fraction));
-        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,windspeed,unit_ms));
-        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_weather,station_name,winddirection,unit_degree));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,cloud,unit_percentage));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,precipitation,unit_mm));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,pressure,unit_mbar));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,temperature,unit_celcius));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,humidity,unit_fraction));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,windspeed,unit_ms));
+        combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,winddirection,unit_degree));
         
-        Prefix [] prefix_list = {p_weather};
-        prefix_list = ArrayUtils.addAll(prefix_list, getOtherPrefix());
+        Prefix [] prefix_list = {p_station};
+        prefix_list = ArrayUtils.addAll(prefix_list, getPrefix());
         
         ModifyQuery modify = Queries.MODIFY();
         
-        modify.prefix(prefix_list).with(weatherstation_iri).insert(combined_tp).where();
+        modify.prefix(prefix_list).insert(combined_tp).where();
         performUpdate(repo, modify.getQueryString());
     }
 
@@ -118,7 +116,7 @@ public class SensorSparql {
         Iri datavalue_iri = station_prefix.iri(station_name+"_v"+data);
         Iri time_iri = station_prefix.iri(station_name+"_time"+data);
         
-        TriplePattern station_tp = station_iri.has(p_system.iri("contains"),sensor_iri);
+        TriplePattern station_tp = station_iri.has(p_system.iri("hasSubsystem"),sensor_iri);
         TriplePattern sensor_tp = sensor_iri.isA(p_instrument.iri("Q-Sensor")).andHas(p_ontosensor.iri("observes"),data_iri);
         TriplePattern data_tp = data_iri.isA(p_ontosensor.iri(data)).andHas(p_system.iri("hasValue"),datavalue_iri);
         
@@ -134,34 +132,33 @@ public class SensorSparql {
     }
 
     public void createAirQualityStation(String station_name, double [] xyz_coord, String repo) throws SQLException {
-    	Iri airqualitystation_iri = p_airquality.iri(station_name);
-        Iri stationcoordinates_iri = p_airquality.iri(station_name+"_coordinates");
+    	Iri airqualitystation_iri = p_station.iri(station_name);
+        Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
 
-        TriplePattern airqualitystation_tp = airqualitystation_iri.isA(p_control.iri("MeasuringInstrument"))
+        TriplePattern airqualitystation_tp = airqualitystation_iri.isA(p_station.iri("AirQualityStation"))
         		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
 
-        TriplePattern [] coordinates_xyz = getCoordinatesXYZ_tp(p_airquality,station_name,stationcoordinates_iri,xyz_coord);
+        TriplePattern [] coordinates_xyz = getCoordinatesXYZ_tp(p_station,station_name,stationcoordinates_iri,xyz_coord);
         
         TriplePattern [] combined_tp = {};
         combined_tp = ArrayUtils.addAll(combined_tp, airqualitystation_tp);
         combined_tp = ArrayUtils.addAll(combined_tp, coordinates_xyz);
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,CO2,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,CO,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,HC,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,NO2,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,NO,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,NOx,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,O3,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,PM1,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,PM25,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,PM10,unit_ugm3));
-        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_airquality,station_name,SO2,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,CO2,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,CO,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,HC,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,NO2,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,NO,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,NOx,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,O3,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,PM1,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,PM25,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,PM10,unit_ugm3));
+        combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,SO2,unit_ugm3));
         
-        Prefix [] prefix_list = {p_airquality};
-        prefix_list = ArrayUtils.addAll(prefix_list, getOtherPrefix());
+        Prefix [] prefix_list = getPrefix();
         
         ModifyQuery modify = Queries.MODIFY();
-        modify.prefix(prefix_list).with(airqualitystation_iri).insert(combined_tp).where();
+        modify.prefix(prefix_list).insert(combined_tp).where();
         performUpdate(repo, modify.getQueryString());
     }
     
@@ -171,7 +168,7 @@ public class SensorSparql {
         Iri datavalue_iri = station_prefix.iri(station_name+"_v"+data);
         Iri time_iri = station_prefix.iri(station_name+"_time"+data);
         
-        TriplePattern station_tp = station_iri.has(p_system.iri("contains"),sensor_iri);
+        TriplePattern station_tp = station_iri.has(p_system.iri("hasSubsystem"),sensor_iri);
         TriplePattern sensor_tp = sensor_iri.isA(p_instrument.iri("Q-Sensor")).andHas(p_ontosensor.iri("observes"),data_iri);
         TriplePattern data_tp = data_iri.isA(p_ontosensor.iri(data)).andHas(p_system.iri("hasValue"),datavalue_iri);
         
