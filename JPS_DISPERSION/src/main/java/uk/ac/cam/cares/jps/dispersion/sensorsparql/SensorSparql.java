@@ -279,7 +279,7 @@ public class SensorSparql {
     	String update = "clear graph " + graph;
     	performUpdate(endpoint, update);
     }
-    
+
     /**
      * Delete everything in an endpoint
      * @param endpoint
@@ -289,22 +289,14 @@ public class SensorSparql {
         String update = "clear all";
         performUpdate(endpoint, update);
     }
-    
+
     private void performUpdate(String queryEndPoint, String query) throws SQLException {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setUpdateEndpoint(queryEndPoint);
         kbClient.setQuery(query);
         System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
     }
-    
-    private void sendUpdate_RDF4J(String repo, ModifyQuery modify) {
-        System.out.println(modify.getQueryString());
-        Repository rep = new HTTPRepository(repo);
-        RepositoryConnection con = rep.getConnection();
-        Update operation = con.prepareUpdate(QueryLanguage.SPARQL, modify.getQueryString());
-        operation.execute();
-    }
-    
+
     private JSONArray performQuery(String queryEndPoint, SelectQuery query) throws SQLException {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setQueryEndpoint(queryEndPoint);

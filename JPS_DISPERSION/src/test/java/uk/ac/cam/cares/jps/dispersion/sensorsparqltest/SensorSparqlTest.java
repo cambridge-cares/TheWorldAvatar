@@ -6,7 +6,7 @@ import org.junit.Test;
 import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
 
 public class SensorSparqlTest {
-	String testrepo = "http://localhost:8080/rdf4j-server/repositories/stationtest";
+	String testrepo = "http://localhost:8080/rdf4j-server/repositories/stationtest/statements";
 	String blazegraphrepo = "http://localhost:8080/blazegraph/namespace/weatherstations/sparql";
 	String freddierepo = "https://kg.cmclinnovations.com/rdf4j-server/repositories/stationtest";
 	@Test
