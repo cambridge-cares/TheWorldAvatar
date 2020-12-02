@@ -487,7 +487,8 @@ public class gPROMSAgent extends JPSAgent {
     
     //Adding the matlab.csv file to the metadata repo
     String  destURI= dest.getAbsolutePath();
-    MetaDataAnnotator.annotateWithTimeAndAgent(destURI, gettingFilecreationtime(dest) , "gPROMS");
+    destURI = destURI.replace("\\", "/");
+    MetaDataAnnotator.annotateWithTimeAndAgent(destURI, gettingFilecreationtime(dest) , "jps:/gPROMS");
   }
   
   //Getting the time when file was modified for storing in the metadata annoattator
@@ -598,11 +599,11 @@ public class gPROMSAgent extends JPSAgent {
 			    
 			    for(int i =0; i< resultList.size();i++) {
 			    	if(i==0) {
-				  	fw.write("Feed_T\n");
+				  	fw.write("Feed__T\n");
 				  	fw.write(resultList.get(i).toString());
 			        }
 			    	if(i==1) {
-			    		fw.write("\nFeed_P\n");
+			    		fw.write("\nFeed__P\n");
 			    		fw.write(resultList.get(i).toString());
 			    	}
 			    }			 
