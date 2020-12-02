@@ -51,7 +51,11 @@ import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Date;
+import java.text.DateFormat;  
+import java.text.SimpleDateFormat;   
+import java.util.Calendar; 
 /**
  * gPROMS Agent developed for setting-up and running gPROMS chemical network on HPC. The input files
  * for gPROMS execution should be placed in user.home//input folder
@@ -215,7 +219,7 @@ public class gPROMSAgent extends JPSAgent {
 	}
 
 	/**
-	 * Validates input parameters specific to Kinetics Agent to decide whether<br>
+	 * Validates input parameters specific to gPROMS Agent to decide whether<br>
 	 * the job set up request can be served.
 	 */
 	@Override
@@ -483,9 +487,26 @@ public class gPROMSAgent extends JPSAgent {
     
     //Adding the matlab.csv file to the metadata repo
     String  destURI= dest.getAbsolutePath();
-    MetaDataAnnotator.annotateWithTimeAndAgent(destURI, "time", "gPROMS");
+    MetaDataAnnotator.annotateWithTimeAndAgent(destURI, gettingFilecreationtime(dest) , "gPROMS");
   }
-
+  
+  //Getting the time when file was modified for storing in the metadata annoattator
+  public static String gettingFilecreationtime(File file){
+	  Path filePath = file.toPath();
+	  BasicFileAttributes attributes = null;
+	  try
+	  {
+		  attributes = Files.readAttributes(filePath, BasicFileAttributes.class);
+	  }
+	  catch (IOException exception)
+	  {
+		  System.out.println("Exception handled when trying to get file " +
+              "attributes: " + exception.getMessage());
+	  }
+	  String creationDate = new String(attributes.creationTime().toString());
+      return(creationDate);
+  }
+  
   /**
 	 * Sets up a quantum job by creating the job folder and the following files</br>
 	 * under this folder:</br>
