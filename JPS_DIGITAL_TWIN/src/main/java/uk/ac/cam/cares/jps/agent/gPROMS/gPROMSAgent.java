@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -220,15 +221,54 @@ public class gPROMSAgent extends JPSAgent {
 
 	/**
 	 * Validates input parameters specific to gPROMS Agent to decide whether<br>
-	 * the job set up request can be served.
+	 * the job set up request can be served. The method checks wether the input files
+	 * required for the gPROMS agent execution are present at the required location
 	 */
 	@Override
-	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-		
-		if (requestParams.isEmpty()) {
-			throw new BadRequestException();
-		}
-		return true;
+	public boolean validateInput(JSONObject requestParams){
+	boolean valid;
+	
+	try{	
+		  File encrypt=new File(System.getProperty("user.home") + "\\input\\input");
+	      File inputFilegPROMS = new File(System.getProperty("user.home") + "\\input");
+	      
+	      FilenameFilter inputFilefilter = new FilenameFilter(){
+	          public boolean accept(File dir, String name) {
+	             String lowercaseName = name.toLowerCase();
+	             if (lowercaseName.endsWith(".input")) {
+	                return true;
+	             } else {
+	                return false;
+	             }
+	          }
+	       };
+	       
+	       FilenameFilter encryptFilefilter = new FilenameFilter(){
+		          public boolean accept(File dir, String name) {
+		             if (name.equals("Final_HPC.gENCRYPT")) {
+		                return true;
+		             } else {
+		                return false;
+		             }
+		          }
+		       }; 
+		    
+	       String inputfile[] = inputFilegPROMS.list(inputFilefilter);
+	       String encry[]=encrypt.list(encryptFilefilter);
+	       System.out.print(encry.length);
+	       
+	       if (inputfile.length>=1 && encry.length>=1){
+	    	   valid=true;
+	       }
+	       else{
+	    	   valid = false;
+	       }
+		} catch (Exception e) {
+			
+            throw new BadRequestException(e);
+            
+    }
+    return valid;
 	}
 
 	/**
