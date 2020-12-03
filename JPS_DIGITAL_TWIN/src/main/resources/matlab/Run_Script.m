@@ -11,10 +11,9 @@ close all
 %data = xlsread('Motor_Step_1.xlsx'); 
 filename = 'matInput.dat';
 data = csvread(filename);
-
-
+time = data(:,1);
+tFinal = time(end,:);
 tFinal          = 0.1;
-Factor          = 1000;
 MotorStep      = data;
 
 
