@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.jline.utils.OSUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.agent.configuration.DispersionAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.DispersionAgentProperty;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -358,10 +360,19 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			List<String> topics = new ArrayList<String>();
 			topics.add(cityIRI);
 			System.out.println("metadata annotation started");
-			MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics, time); // annotate
+			
+			// ideally both windows and unix should have file:/ in front of the path,
+			// however, something breaks within interpolation agent with file:/
+			if (OSUtils.IS_WINDOWS) {
+				MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics, time); // annotate
+			} else {
+				MetaDataAnnotator.annotate("file:/"+destinationUrl, null, agent, true, topics, time);
+			}
 			System.out.println("metadata annotation finished");
-			String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());
-			String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
+			if (!AgentLocator.isJPSRunningAtCMCL()) {
+				String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());
+				String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.error("DispersionModellingAgent: Output Annotating Task could not finish");

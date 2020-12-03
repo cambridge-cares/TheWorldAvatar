@@ -245,33 +245,6 @@ public class RemoteKnowledgeBaseClientTest {
 		verify(kbClient).execute(formMechanismCountQuery());
 	}
 
-	@Test
-	public void performQueryTest2() throws SQLException{
-		userName = "user";
-		password = "password";
-		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		RemoteKnowledgeBaseClient remoteKBClient = new RemoteKnowledgeBaseClient();
-		remoteKBClient.setQueryEndpoint(queryEndpoint);
-		remoteKBClient.setUser(userName);
-		remoteKBClient.setPassword(password);
-		remoteKBClient.setQuery(formMechanismIRIsQuery());
-		JSONArray result = remoteKBClient.executeQuery();
-		System.out.println(result.toString());
-		assertNotNull(result.toString());
-	}
-//	
-//	@Test
-//	public void updateQuery() throws SQLException{
-//		KnowledgeBaseClient kbClient = new KnowledgeBaseClient();
-//		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-//		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-//		kbClient.setQueryEndpoint(queryEndpoint);
-//		kbClient.setUpdateEndpoint(updateEndpoint);
-//		kbClient.setQuery(formDeleteQuery());
-//		System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
-//		
-//	}
-
 	/**
 	 * A SPARQL query to count the total number of mechanisms in a repository.
 	 * 
