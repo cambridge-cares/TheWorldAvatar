@@ -11,9 +11,12 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
 /**
  * Matlab Agent developed for setting-up and running electrical network The files for Matlab
@@ -26,8 +29,6 @@ public class JPSMatlabAgent extends JPSAgent {
   private static final long serialVersionUID = 1L;
   public static final String MESSAGE_KEY = "File generated and located at:";
   public static final String SUCCESS_MESSAGE_KEY = "Completed and executed";
-  public static final String UNKNOWN_REQUEST = "The request is unknown to Matlab Agent";
-  public static final String TEMP_OUTPUT_FILE = "\\matlab\\matlab.csv";
   public static final String TEMP_INPUT_FILE = "\\matlab\\matInput.dat";
   public static final String TEMP_SETTINGS_FILE = "\\input\\Settings.input";
   public static final String TEMP_BATCH_FILE = "\\matlab\\call_matlab.bat";
@@ -47,9 +48,13 @@ public class JPSMatlabAgent extends JPSAgent {
   public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     JSONObject jo = AgentCaller.readJsonParameter(request);
     String current = System.getProperty("user.home");
-    String pathToInputFile = current + TEMP_OUTPUT_FILE;
+    String activePowerFilePath = null;
+    String agentiri = gPROMSAgent.GPROMS_AGENT_URL;
+    List<String> lst = null;
+    JPSMatlabAgent iri = new JPSMatlabAgent();
+    activePowerFilePath = iri.queryRDF4J(agentiri, lst);
     JPSMatlabAgent app = new JPSMatlabAgent();
-    app.appendFile(pathToInputFile);
+    app.appendFile(activePowerFilePath);
     // Create file path for batch file
     String batchFile = current + TEMP_BATCH_FILE;
     System.out.printf(MESSAGE_KEY + batchFile + "\n");
@@ -61,13 +66,42 @@ public class JPSMatlabAgent extends JPSAgent {
     JPSMatlabAgent exe = new JPSMatlabAgent();
     exe.batchFile(batchFile, scriptFile, cmd);
     // Delete the temporary file
-    File tempFile = new File(pathToInputFile);
+    File tempFile = new File(activePowerFilePath);
     tempFile.delete();
     String pathToSettingFile = current + TEMP_SETTINGS_FILE;
     JPSMatlabAgent now = new JPSMatlabAgent();
     now.delete(pathToSettingFile, STARTLINE, NUMLINES);
     return jo;
+  }
 
+  /**
+   * Query RDF4J for pump IRI.
+   */
+  public String queryRDF4J(String agentiri, List<String> lst) {
+    String csvFilePath = null;
+    String resultFromRDF4J =
+        MetaDataQuery.queryResources(null, null, null, agentiri, null, null, null, lst);
+    String[] keys = JenaResultSetFormatter.getKeys(resultFromRDF4J);
+    List<String[]> listmap =
+        JenaResultSetFormatter.convertToListofStringArrays(resultFromRDF4J, keys);
+    for (String[] str : listmap) {
+      for (String s : str) {
+        if (isFile(s)) {
+          csvFilePath = s;
+          System.out.println("\nCSV File Path:" + csvFilePath);
+          break;
+        }
+      }
+      break;
+    }
+    return (csvFilePath);
+  }
+
+  /**
+   * Validate file path.
+   */
+  private boolean isFile(String path) {
+    return new File(path).isFile();
   }
 
   /**
@@ -156,7 +190,7 @@ public class JPSMatlabAgent extends JPSAgent {
         LINENUMBER++;
       }
       if (startline + numlines > LINENUMBER)
-        System.out.println(UNKNOWN_REQUEST);
+        System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
       br.close();
       FileWriter fw = new FileWriter(new File(filename));
       // Write entire string buffer into the file
