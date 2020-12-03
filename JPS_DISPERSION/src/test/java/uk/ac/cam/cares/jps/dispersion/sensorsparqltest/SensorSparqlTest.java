@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.sensorsparqltest;
 
+import org.json.JSONArray;
 import org.junit.Test;
 import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
 
@@ -22,12 +23,12 @@ public class SensorSparqlTest {
 		double [] xyz_coord = {104,2,9};
 		
 		SensorSparql ws = new SensorSparql();
-		ws.createAirQualityStation(station_name, xyz_coord, blazegraphrepo);
+		ws.createAirQualityStation(station_name, xyz_coord);
 	}
-	
+
 	@Test
 	public void testQueryCoordinates() {
 		SensorSparql ws = new SensorSparql();
-		ws.queryCoordinates(testrepo);
+		JSONArray result = ws.queryAirQualityStations();
 	}
 }

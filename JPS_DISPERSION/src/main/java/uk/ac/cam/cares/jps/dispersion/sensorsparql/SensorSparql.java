@@ -65,6 +65,9 @@ public class SensorSparql {
     private static Iri unit_percentage = p_derived_SI_unit.iri("percentage"); // made up, does not exist in ontology
     private static Iri unit_ugm3 = p_derived_SI_unit.iri("ug_per_m.m.m");
 
+    //endpoints
+    String airquality_endpoint = "http://localhost:8080/blazegraph/namespace/airquality/sparql";
+
     private Prefix [] getPrefix() {
         Prefix [] prefixes = {p_station,p_space_time_extended,p_space_time,p_system,p_SI_unit,p_derived_SI_unit,p_ontosensor,p_time,p_coordsys,p_instrument};
         return prefixes;
@@ -126,7 +129,7 @@ public class SensorSparql {
         return combined_tp;
     }
 
-    public void createAirQualityStation(String station_name, double [] xyz_coord, String repo) {
+    public void createAirQualityStation(String station_name, double [] xyz_coord) {
     	Iri airqualitystation_iri = p_station.iri(station_name);
         Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
 
@@ -154,7 +157,7 @@ public class SensorSparql {
         
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(prefix_list).insert(combined_tp).where();
-        performUpdate(repo, modify);
+        performUpdate(airquality_endpoint, modify);
     }
     
     public TriplePattern [] getAirQualitySensorTP(Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit) {
@@ -216,49 +219,35 @@ public class SensorSparql {
         TriplePattern [] coordinatesXYZ_tp = {projected_gp,xcoord_tp,ycoord_tp,zcoord_tp,vxcoord_tp,vycoord_tp,vzcoord_tp};
         return coordinatesXYZ_tp;
     }
-    
-    private GraphPattern getCoordinatesXYZ_gp(Variable [] coordinates_xyz) {
-    	Variable coord = SparqlBuilder.var("coord");
-        Variable xcoord = SparqlBuilder.var("xcoord");
-        Variable ycoord = SparqlBuilder.var("ycoord");
-        Variable zcoord = SparqlBuilder.var("zcoord");
-        Variable vxcoord = SparqlBuilder.var("vxcoord");
-        Variable vycoord = SparqlBuilder.var("vycoord");
-        Variable vzcoord = SparqlBuilder.var("vzcoord");
 
-        GraphPattern projected_gp = coord.isA(p_space_time_extended.iri("ProjectedCoordinateSystem"))
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord)
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_z"),zcoord);
-
-        GraphPattern coord_gp = GraphPatterns.and(xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vxcoord),
-        		ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vycoord),
-        		zcoord.isA(p_space_time.iri("StraightCoordinate")).andHas(p_system.iri("hasValue"),vzcoord));
-
-        GraphPattern vcoord_gp = GraphPatterns.and(
-        		vxcoord.isA(p_coordsys.iri("CoordinateValue"))
-        		.andHas(p_system.iri("numericalValue"), coordinates_xyz[0]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree),
-                vycoord.isA(p_coordsys.iri("CoordinateValue"))
-                .andHas(p_system.iri("numericalValue"), coordinates_xyz[1]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree),
-                vzcoord.isA(p_coordsys.iri("CoordinateValue"))
-                .andHas(p_system.iri("numericalValue"), coordinates_xyz[2]).andHas(p_system.iri("hasUnitOfMeasure"), unit_m));
-
-        GraphPattern coordinatesXYZ_gp = GraphPatterns.and(projected_gp,coord_gp,vcoord_gp);
-        return coordinatesXYZ_gp;
-    }
-    
-    public void queryCoordinates(String repo) {
+    public JSONArray queryAirQualityStations() {
     	SelectQuery query = Queries.SELECT();
+    	
+    	// properties we want to query
+    	Variable station = SparqlBuilder.var("station");
     	Variable xvalue = SparqlBuilder.var("xvalue");
     	Variable yvalue = SparqlBuilder.var("yvalue");
-    	Variable zvalue = SparqlBuilder.var("zvalue");
-    	Variable [] coordinates = {xvalue, yvalue, zvalue};
     	
-    	GraphPattern querypattern = getCoordinatesXYZ_gp(coordinates);
+    	// properties we don't need
+    	Variable coord = query.var();
+        Variable xcoord = query.var();
+        Variable ycoord = query.var();
+        Variable vxcoord = query.var();
+        Variable vycoord = query.var();
     	
-    	query.prefix(p_space_time_extended, p_space_time, p_system, p_coordsys,p_derived_SI_unit,p_SI_unit).select(coordinates).where(querypattern);
+        GraphPattern station_gp = station.has(p_space_time_extended.iri("hasGISCoordinateSystem"),coord);
+        GraphPattern projected_gp = coord.has(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
+        		.andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord);
+        GraphPattern coord_gp = GraphPatterns.and(xcoord.has(p_system.iri("hasValue"),vxcoord), 
+        		ycoord.has(p_system.iri("hasValue"),vycoord));
+        GraphPattern vcoord_gp = GraphPatterns.and(vxcoord.has(p_system.iri("numericalValue"), xvalue),
+        		vycoord.has(p_system.iri("numericalValue"), yvalue));
+        
+    	GraphPattern querypattern = GraphPatterns.and(station_gp,projected_gp,coord_gp,vcoord_gp);
     	
-    	System.out.println(query.getQueryString());
+    	query.prefix(p_space_time_extended, p_system).select(station,xvalue,yvalue).where(querypattern);
+    	
+    	return performQuery(airquality_endpoint,query);
     }
 
     private void performUpdate(String queryEndPoint, ModifyQuery query) {
