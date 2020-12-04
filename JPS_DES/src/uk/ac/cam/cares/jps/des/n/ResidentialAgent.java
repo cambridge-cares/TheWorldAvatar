@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.des;
+package uk.ac.cam.cares.jps.des.n;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +30,11 @@ public class ResidentialAgent extends JPSHttpServlet {
 	public static String Pmax="Pmax.csv";
 	public static String unwill="unwill.csv";
 	public static String schedule="ApplianceScheduleLoad1.csv";
-	
+	/** general function for extracting Residential Data
+	 * 
+	 * @param iriofnetworkdistrict
+	 * @param baseUrl
+	 */
 	public void extractResidentialData(String iriofnetworkdistrict, String baseUrl) {
 		OntModel model = DESAgentNew.readModelGreedy(iriofnetworkdistrict);
 		//extracts 
@@ -105,6 +109,11 @@ public class ResidentialAgent extends JPSHttpServlet {
 		broker.putLocal(baseUrl + "/" + schedule, schedulecsv);
 		
 	}
+	/** read each User for PminPmax and Unwill schedule for each appliance
+	 * 
+	 * @param iriOfTypeUser
+	 * @return
+	 */
 	protected List<String[]> readUserforPminPmaxUnwill( String iriOfTypeUser) {
 		//per equipment, per user, extract high, low and actual value 
 		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -142,6 +151,11 @@ public class ResidentialAgent extends JPSHttpServlet {
 //		System.out.println("LOW 1");
 		return Arrays.asList(high1, low1, unwill1);
 	}
+	/** read each User's appliance schedule and return as String[]
+	 * 
+	 * @param iriOfTypeUser
+	 * @return
+	 */
 	protected String[] readUserforAppSch( String iriOfTypeUser) {
 		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
@@ -166,16 +180,12 @@ public class ResidentialAgent extends JPSHttpServlet {
 		}
 		return groupschedule;
 	}
-	public String runResidentialPy(String script, String folder) throws Exception {
-		String result = "";
-			String path = AgentLocator.getCurrentJpsAppDirectory(this);
-			String command = "python " + path+ "/python/" +script + " " + folder;
-//			System.out.println(command);
-			result = CommandHelper.executeSingleCommand( path, command);
-		
-		
-			return result;
-	}
+	
+	/** returns noOfHouseHoulds x  (hourly power consumption profile of all appliances for a given household 
+	 * +hourly charging(+)/discharging(-) profile of all batteries for a given household
+	 * +hourly total power consumption profile for a given household)
+	 * 9 rows for now
+	 */
 	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request)  {
 		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
 		
@@ -184,7 +194,7 @@ public class ResidentialAgent extends JPSHttpServlet {
 		extractResidentialData(iriofdistrict, baseUrl); //csv for residential
 		JSONObject responseParams = new JSONObject();
 		try {
-			String res = runResidentialPy("residential.py", baseUrl);
+			String res =  new DESAgentNew().runPythonScript("residential.py", baseUrl);
 			//TODO: When other agents employ residential, results would be returned not just as a csv, but as another object
 			
 //			System.out.println(res);

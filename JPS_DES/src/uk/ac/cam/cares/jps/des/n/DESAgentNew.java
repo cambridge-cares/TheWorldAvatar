@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.des;
+package uk.ac.cam.cares.jps.des.n;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,13 +20,13 @@ import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-
-import uk.ac.cam.cares.jps.des.ResidentialAgent;
 
 @WebServlet(urlPatterns = { "/DESAgentNew"})
 
@@ -58,21 +58,27 @@ public class DESAgentNew extends JPSHttpServlet {
         queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
         OntModel model = readModelGreedy(iriofnetwork);
 		List<String[]> producer = providePVParameters(model); // create Parameters for Solar Cell
-		List<String[]> consumer = provideLoadFClist(model); // instance iri
+		List<String[]> consumer = new IndustrialAgent().provideLoadFClist(model); // instance iri
 		String producercsv = MatrixConverter.fromArraytoCsv(producer);
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
 		broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
 		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
 		new ResidentialAgent().extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+		try {
+			runPythonScript("system.py", baseUrl);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		return responseParams;
     }
-    /** Query OWL for Temperature and Radiation readings and place in csv file
+    /** Query OWL for Temperature and Radiation readings and place in csv file, return as List<String[]> of Temp followed by Irrad
      * 
      * @param irioftempF
      * @param iriofirrF
      * @param baseUrl location of folder where csvs are dumped
      */
-    private void queryForIrradTemp(String irioftempF, String iriofirrF, String baseUrl){
+    public List<String[]> queryForIrradTemp(String irioftempF, String iriofirrF, String baseUrl){
    	    	QueryBroker broker= new QueryBroker();  
 	       String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -107,7 +113,7 @@ public class DESAgentNew extends JPSHttpServlet {
  				readingFromCSV.add(ed);
  			}
  			broker.putLocal(baseUrl + "/WeatherForecast.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
- 			
+ 			return readingFromCSV;
     }
     /** find all subsystems that are linked to top node
      * 
@@ -228,51 +234,22 @@ public class DESAgentNew extends JPSHttpServlet {
 
         return resultListforcsv;
     }
-    /** returns relevant parameters for Fuel Cell (Used by Fuel Agent)
-     * 
-     * @param model
-     * @return
-     */
-    public static List<String[]> provideLoadFClist(OntModel model) {
-        String fuelcellInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-                + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-                + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-                + "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-                + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-                + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-                + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-                + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-                + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-                + "SELECT  ?nocellval ?effval ?tvalmin ?tvalmax "
-                + "WHERE {?entity  a  j1:FuelCell  ."
-                
-        		+ "?entity j1:hasNumberOfCells ?no ."
-        		+ "?no   j2:hasValue ?vno ."
-        		+ "?vno   j2:numericalValue ?nocellval ."
-        		
-        		+ "?entity j9:hasEfficiency ?eff ."
-        		+ "?eff   j2:hasValue ?veff ."
-        		+ "?veff   j2:numericalValue ?effval ."
-        		
-        		+ "?entity j8:has_temperature ?t ."
-        		+ "?t   j2:hasValue ?vt ."
-        		+ "?vt   j5:upperLimit ?tvalmax ."
-        		+ "?vt   j5:lowerLimit ?tvalmin ."
-
-                + "}";
-        List<String[]> resultListforcsv = new ArrayList<String[]>();
-        ResultSet resultSet = JenaHelper.query(model, fuelcellInfo);
-        String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-        String[] keys = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-        System.out.println("size of query consumer= "+resultListfromquery.size());
-		for (int d = 0; d < keys.length; d++) {
-				String[] line0 = { keys[d], resultListfromquery.get(0)[d] };
-				resultListforcsv.add(line0);
-		}
-
-        return resultListforcsv;
-    }
+    /** run Python Script in folder
+	 * 
+	 * @param script
+	 * @param folder
+	 * @return
+	 * @throws Exception
+	 */
+	public String runPythonScript(String script, String folder) throws Exception {
+		String result = "";
+			String path = AgentLocator.getCurrentJpsAppDirectory(this);
+			String command = "python " + path+ "/python/" +script + " " + folder;
+//			System.out.println(command);
+			result = CommandHelper.executeSingleCommand( path, command);
+		
+		
+			return result;
+	}
     
 }

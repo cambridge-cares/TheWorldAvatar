@@ -47,11 +47,12 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
-import uk.ac.cam.cares.jps.des.DESAgentNew;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
 import uk.ac.cam.cares.jps.des.FrontEndCoordination;
-import uk.ac.cam.cares.jps.des.ResidentialAgent;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
+import uk.ac.cam.cares.jps.des.n.DESAgentNew;
+import uk.ac.cam.cares.jps.des.n.ResidentialAgent;
+
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 public class Test_DES extends TestCase{
