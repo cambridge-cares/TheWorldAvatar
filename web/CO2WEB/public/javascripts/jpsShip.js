@@ -11,6 +11,9 @@ var slider = document.getElementById("myRange");
 var output = document.getElementById("demo");
 output.innerHTML = slider.value;
 
+//testing version for functionality to place sensors anywhere
+var testing = false;
+
 slider.onmouseup = function() { //previously oninput
     output.innerHTML = this.value;
     addheatmap();
@@ -83,9 +86,56 @@ function initMap() {
     var legend = document.getElementById('legend');
 
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
+    if (testing) {
+        let infoWindow = new google.maps.InfoWindow({
+            content: "Right click on the map to create virtual sensors!",
+            position: center,
+        });
+        infoWindow.open(map);
+        // Configure the click listener.
+        map.addListener("rightclick", (mapsMouseEvent) => {
+            // Close the current InfoWindow.
+            infoWindow.close();
+            // Create a new InfoWindow.
+            infoWindow = new google.maps.InfoWindow({
+                position: mapsMouseEvent.latLng,
+            });
+            var createSensorURL = prefix + "/JPS_DISPERSION/CreateNewSensor";
+            var lat = mapsMouseEvent.latLng.lat;
+            var lng = mapsMouseEvent.latLng.lng;
+            $.get(createSensorURL, { lat, lng }).done(function () {
+                infoWindow.setContent("Sensor created at " +
+                    JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2))
+            });
+            infoWindow.open(map);
+        });
 
-    
-  }
+        setTimeout(() => {
+            var bounds = map.getBounds();
+            initStations(bounds);
+        }, 500)
+    }
+}
+
+function initStations(bounds) {
+    var getSensors = prefix + "/JPS_DISPERSION/GetSensorsWithinBounds";
+    var upperx = bounds.getNorthEast().lng;
+    var uppery = bounds.getNorthEast().lat;
+    var lowerx = bounds.getSouthWest().lng;
+    var lowery = bounds.getSouthWest().lat;
+    $.get(getSensors, {upperx,uppery,lowerx,lowery}).done(function (stations) {
+        for (let s of stations) {
+            console.log(s.yvalue, s.xvalue);
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(s.yvalue, s.xvalue),
+                map: map,
+                title: s.station
+            });
+            markers.push(marker)
+        }
+    })
+}
+
 function getRelevantFolder(typeOfEmission, city){
     var locationIRI = "http://dbpedia.org/resource/"+city;
     var agentScenario = prefix +  "/JPS_DISPERSION/" + typeOfEmission + "/results/latest";
