@@ -33,15 +33,12 @@ public class JPSMatlabAgent extends JPSAgent {
   public static final String TEMP_BATCH_FILE = "/matlab/call_matlab.bat";
   public static final String TEMP_SCRIPT_FILE = "/matlab/Run_Script.m";
   public static final int STARTLINE = 69;
-  public static final int NUMLINES = 4;
+  public static final int NUMLINES = 5;
   public static int LINENUMBER = 1;
 
   /**
-   * Read the gPROMS output file from user.home/input directory Input filename: matlab.csv Get the
-   * values starting from row 2 and store it in array Loop the array till end and multiply
-   * ActivePower values with 0.5 in a new array key to get the reactive power Create a new CSV file
-   * and write it into the output directory user.home/matlab Matlab input filename: matInput.dat
-   * Create a batch file to execute MATLAB from command line
+   * Read the gPROMS output file from RDF4J repository. Validates input file. Create input file for
+   * Matlab. Run the script using a batch file. Deletes the temporary files.
    */
   @Override
   public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -52,25 +49,49 @@ public class JPSMatlabAgent extends JPSAgent {
     List<String> lst = null;
     JPSMatlabAgent iri = new JPSMatlabAgent();
     activePowerFilePath = iri.queryRDF4J(agentiri, lst);
-    JPSMatlabAgent app = new JPSMatlabAgent();
-    app.appendFile(activePowerFilePath);
-    // Create file path for batch file
-    String batchFile = current + TEMP_BATCH_FILE;
-    System.out.printf(MESSAGE_KEY + batchFile + "\n");
-    // File path for Matlab script file
-    String scriptFile = current + TEMP_SCRIPT_FILE;
-    System.out.println(MESSAGE_KEY + scriptFile + "\n");
-    // Command string for Matlab
-    String cmd = "matlab -nodisplay -nosplash -nodesktop -r \"run('" + scriptFile + "');exit;\"";
-    JPSMatlabAgent exe = new JPSMatlabAgent();
-    exe.batchFile(batchFile, scriptFile, cmd);
-    // Delete the temporary file
-    File tempFile = new File(activePowerFilePath);
-    tempFile.delete();
-    String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
-    JPSMatlabAgent now = new JPSMatlabAgent();
-    now.delete(pathToSettingFile, STARTLINE, NUMLINES);
+    JSONObject param = new JSONObject().put("key", activePowerFilePath);
+    if (validateInput(param)) {
+      JPSMatlabAgent app = new JPSMatlabAgent();
+      app.appendFile(activePowerFilePath);
+      // Create file path for batch file
+      String batchFile = current + TEMP_BATCH_FILE;
+      System.out.printf(MESSAGE_KEY + batchFile + "\n");
+      // File path for Matlab script file
+      String scriptFile = current + TEMP_SCRIPT_FILE;
+      System.out.println(MESSAGE_KEY + scriptFile + "\n");
+      // Command string for Matlab
+      String cmd = "matlab -nodisplay -nosplash -nodesktop -r \"run('" + scriptFile + "');exit;\"";
+      JPSMatlabAgent exe = new JPSMatlabAgent();
+      exe.batchFile(batchFile, scriptFile, cmd);
+      // Delete the temporary file
+      File tempFile = new File(activePowerFilePath);
+      tempFile.delete();
+      String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
+      JPSMatlabAgent now = new JPSMatlabAgent();
+      now.delete(pathToSettingFile, STARTLINE, NUMLINES);
+    } else {
+      System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
+    }
     return jo;
+  }
+
+  /**
+   * Validates input parameters specific to the Agent to decide whether<br>
+   * the execution request can be served. The method checks whether the input files required for the
+   * agent execution are present at the required location
+   */
+  public boolean validateInput(JSONObject requestparam) {
+    try {
+      String str = requestparam.getString("key");
+      if (new String(str).equals(gPROMSAgent.TEMP_DIRECTORY)) {
+        return true;
+      } else {
+        return false;
+      }
+
+    } catch (Exception e) {
+      throw new JPSRuntimeException(e.getMessage());
+    }
   }
 
   /**

@@ -88,9 +88,7 @@ public class gPROMSAgent extends JPSAgent {
   public static final String UPPER_LEVEL =
       "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#";
   public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
-  // Create a temporary folder in the user's home location
-  // private Path temporaryDirectory = null;
+  public static String TEMP_DIRECTORY = null;
 
   public JSONObject produceStatistics(String input) throws IOException, gPROMSAgentException {
     logger.info("Received a request to send statistics.\n");
@@ -472,6 +470,7 @@ public class gPROMSAgent extends JPSAgent {
     // Adding the matlab.csv file to the metadata repo
     String destURI = dest.getAbsolutePath();
     destURI = destURI.replace("\\", "/");
+    TEMP_DIRECTORY = destURI;
     MetaDataAnnotator.annotateWithTimeAndAgent(destURI, gettingFilecreationtime(dest),
         GPROMS_AGENT_URL);
   }
@@ -568,14 +567,14 @@ public class gPROMSAgent extends JPSAgent {
         try {
           FileWriter fw = new FileWriter(outputFilePath, true);
           // the true will append the new data
-          for (int i = 0; i < resultList.size(); i++) {
-            if (i == 0) {
+          for (int k = 0; k < resultList.size(); k++) {
+            if (k == 0) {
               fw.write("Feed__T\n");
-              fw.write(resultList.get(i).toString());
+              fw.write(resultList.get(k).toString());
             }
-            if (i == 1) {
+            if (k == 1) {
               fw.write("\nFeed__P\n");
-              fw.write(resultList.get(i).toString());
+              fw.write(resultList.get(k).toString());
             }
           }
           fw.close();
