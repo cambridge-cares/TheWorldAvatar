@@ -15,3 +15,9 @@ COLUMN_2 = 'Type'
 COLUMN_3 = 'Target'
 COLUMN_4 = 'Relation'
 COLUMN_5 = 'Value'
+
+def select_file():
+    """Suppresses the root window of GUI"""
+    Tk().withdraw()
+    """Opens a file dialog box to select a file"""
+    return askopenfilename()
