@@ -536,38 +536,7 @@ public class gPROMSAgent extends JPSAgent {
     // Extracting required variables from owl files
     String filePath = System.getProperty("user.home") + DEBUTANISER_SECTION;
     String outputFilePath = System.getProperty("user.home") + TEMP_SETTINGS_FILE;
-    SelectBuilder sb = new SelectBuilder().addPrefix("process", CHEMICAL_PROCESS_SYSTEM)
-        .addPrefix("system", UPPER_LEVEL).addPrefix("rdf", RDF).addVar(TEMP)
-        .addWhere(VAR, "rdf:type", "system:ScalarValue").addWhere(VAR, "system:value", TEMP);
-    System.out.println(sb.toString());
-    OntModel model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
-    InputStream is;
-    is = new FileInputStream(filePath);
-    model.read(is, null);
-    ResultSet resultSet = JenaHelper.query(model, sb.buildString());
-    List<Float> resultList = new ArrayList<Float>();
-    for (; resultSet.hasNext();) {
-      QuerySolution solution = resultSet.nextSolution();
-      System.out.println(solution.getLiteral(TEMP).getFloat());
-      resultList.add(solution.getLiteral(TEMP).getFloat());
-    }
-    try {
-      FileWriter fw = new FileWriter(outputFilePath, true);
-      // the true will append the new data
-      for (int i = 0; i < resultList.size(); i++) {
-        if (i == 0) {
-          fw.write("Feed__T\n");
-          fw.write(resultList.get(i).toString());
-        }
-        if (i == 1) {
-          fw.write("\nFeed__P\n");
-          fw.write(resultList.get(i).toString());
-        }
-      }
-      fw.close();
-    } catch (IOException ioe) {
-      throw new JPSRuntimeException(ioe.getMessage());
-    }
+    gPROMSAgent.queryBuilder(filePath, outputFilePath);
     // Compress all files in the temporary directory into a ZIP
     Path zipFile = Paths.get(System.getProperty("user.home") + "\\input.zip");
     // Create a temporary folder in the user's home location
@@ -578,6 +547,45 @@ public class gPROMSAgent extends JPSAgent {
     new ZipUtility().zip(zipContents, zipFile.toString());
     // Return the final ZIP file
     return new File(zipFile.toString());
+  }
+
+  static void queryBuilder(String filePath, String outputFilePath) {
+    SelectBuilder sb = new SelectBuilder().addPrefix("process", CHEMICAL_PROCESS_SYSTEM)
+        .addPrefix("system", UPPER_LEVEL).addPrefix("rdf", RDF).addVar(TEMP)
+        .addWhere(VAR, "rdf:type", "system:ScalarValue").addWhere(VAR, "system:value", TEMP);
+    System.out.println(sb.toString());
+    OntModel model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
+    InputStream is;
+    try {
+      is = new FileInputStream(filePath);
+      model.read(is, null);
+      ResultSet resultSet = JenaHelper.query(model, sb.buildString());
+      List<Float> resultList = new ArrayList<Float>();
+      for (; resultSet.hasNext();) {
+        QuerySolution solution = resultSet.nextSolution();
+        System.out.println(solution.getLiteral(TEMP).getFloat());
+        resultList.add(solution.getLiteral(TEMP).getFloat());
+        try {
+          FileWriter fw = new FileWriter(outputFilePath, true);
+          // the true will append the new data
+          for (int i = 0; i < resultList.size(); i++) {
+            if (i == 0) {
+              fw.write("Feed__T\n");
+              fw.write(resultList.get(i).toString());
+            }
+            if (i == 1) {
+              fw.write("\nFeed__P\n");
+              fw.write(resultList.get(i).toString());
+            }
+          }
+          fw.close();
+        } catch (IOException ioe) {
+          throw new JPSRuntimeException(ioe.getMessage());
+        }
+      }
+    } catch (FileNotFoundException e) {
+      throw new JPSRuntimeException(e.getMessage());
+    }
   }
 
   /**
