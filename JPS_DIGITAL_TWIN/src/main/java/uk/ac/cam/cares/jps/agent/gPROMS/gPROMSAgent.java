@@ -76,6 +76,8 @@ public class gPROMSAgent extends JPSAgent {
   public static final String JOB_STATISTICS_PATH = "/job/statistics";
   public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
   public static final String TEMP_SETTINGS_FILE = "/input/Settings.input";
+  public static final String ENCRYPT_PATH = "/input/input";
+  public static final String INPUT_PATH = "/input";
   public static final String DEBUTANISER_SECTION = "/input/debutaniser_section.owl";
   public static final String TEMP = "?Temp";
   public static final String VAR = "?x";
@@ -227,8 +229,8 @@ public class gPROMSAgent extends JPSAgent {
   public boolean validateInput(JSONObject requestParams) {
     boolean valid;
     try {
-      File encrypt = new File(System.getProperty("user.home") + "\\input\\input");
-      File inputFilegPROMS = new File(System.getProperty("user.home") + "\\input");
+      File encrypt = new File(System.getProperty("user.home") + ENCRYPT_PATH);
+      File inputFilegPROMS = new File(System.getProperty("user.home") + INPUT_PATH);
       FilenameFilter inputFilefilter = new FilenameFilter() {
         public boolean accept(File dir, String name) {
           String lowercaseName = name.toLowerCase();
