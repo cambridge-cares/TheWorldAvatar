@@ -237,38 +237,64 @@ if __name__ == "__main__":
     #automatically assigned
     household_below = 1/50*0.01*np.ones(24)
     household_above = 1/50*0.02*np.ones(24)
-    flex1 = np.array([[False, False, True, True, True, False, False, False, False, False, False],
-     [False, False, True, True, True, False, False, False, False, False, False],
-      [False, False, True, True, True, False, False, False, False, False, False],
-       [False, False, True, True, True, False, False, False, False, False, False],
-        [False, False, True, True, True, False, False, False, False, False, False],
-         [False, False, True, True, True, False, False, False, False, False, False],
-          [False, False, False, True, True, False, False, True, True, False, False],
-           [False, False, False, True, True, False, True, False, False, False, False],
-            [False, False, False, True, True, False, True, False, False, False, False],
-             [False, False, False, True, True, False, True, False, False, False, False],
-              [False, False, False, True, True, False, True, False, False, False, False],
-               [False, False, False, True, True, False, True, False, False, False, False],
-                [False, False, False, True, True, False, True, False, False, False, True],
-                 [False, False, False, True, True, True, True, False, False, False, True],
-                  [True, False, False, True, True, True, True, False, False, False, False],
-                   [True, False, False, True, True, False, True, False, False, False, False],
-                    [True, False, False, True, True, False, True, False, False, False, False],
-                     [True, False, False, True, True, True, True, False, False, False, False],
-                      [True, False, False, True, True, True, True, True, False, True, False],
-                       [False, True, False, True, True, True, True, False, False, False, False],
-                        [False, True, True, True, True, True, True, False, False, False, False],
-                         [False, True, True, True, True, False, True, False, False, False, False],
-                          [False, False, True, True, True, False, True, False, False, False, False],
-                           [False, False, True, True, True, False, False, False, False, False, False]])
-    sche1 = np.array([[0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.0, 0.65, 0.45, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.95], [0.0, 0.0, 0.0, 0.2, 0.01, 0.17, 0.32, 0.0, 0.0, 0.0, 0.95], [0.6, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.6, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.6, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [3.1, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [3.1, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.65, 0.0, 0.725, 0.0], [0.0, 2.4, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.2, 1.6, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.2, 0.1, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
-    low1  = np.array([0.6, 0.2, 0.1, 0.2, 0.01, 0.17, 0.32, 0.65, 0.45, 0.725, 0.95])
-    high1 = np.array([3.9, 3.0, 3.1, 0.2, 0.1, 0.17, 0.32, 0.65, 0.45, 0.725, 0.95])
+    # flex1 = np.array([[False, False, True, True, True, False, False, False, False, False, False],
+    #  [False, False, True, True, True, False, False, False, False, False, False],
+    #   [False, False, True, True, True, False, False, False, False, False, False],
+    #    [False, False, True, True, True, False, False, False, False, False, False],
+    #     [False, False, True, True, True, False, False, False, False, False, False],
+    #      [False, False, True, True, True, False, False, False, False, False, False],
+    #       [False, False, False, True, True, False, False, True, True, False, False],
+    #        [False, False, False, True, True, False, True, False, False, False, False],
+    #         [False, False, False, True, True, False, True, False, False, False, False],
+    #          [False, False, False, True, True, False, True, False, False, False, False],
+    #           [False, False, False, True, True, False, True, False, False, False, False],
+    #            [False, False, False, True, True, False, True, False, False, False, False],
+    #             [False, False, False, True, True, False, True, False, False, False, True],
+    #              [False, False, False, True, True, True, True, False, False, False, True],
+    #               [True, False, False, True, True, True, True, False, False, False, False],
+    #                [True, False, False, True, True, False, True, False, False, False, False],
+    #                 [True, False, False, True, True, False, True, False, False, False, False],
+    #                  [True, False, False, True, True, True, True, False, False, False, False],
+    #                   [True, False, False, True, True, True, True, True, False, True, False],
+    #                    [False, True, False, True, True, True, True, False, False, False, False],
+    #                     [False, True, True, True, True, True, True, False, False, False, False],
+    #                      [False, True, True, True, True, False, True, False, False, False, False],
+    #                       [False, False, True, True, True, False, True, False, False, False, False],
+    #                        [False, False, True, True, True, False, False, False, False, False, False]])
+    # sche1 = np.array([[0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.0, 0.65, 0.45, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.95], [0.0, 0.0, 0.0, 0.2, 0.01, 0.17, 0.32, 0.0, 0.0, 0.0, 0.95], [0.6, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.6, 0.0, 0.0, 0.2, 0.01, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.6, 0.0, 0.0, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [3.1, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [3.1, 0.0, 0.0, 0.2, 0.1, 0.17, 0.32, 0.65, 0.0, 0.725, 0.0], [0.0, 2.4, 0.0, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.2, 1.6, 0.2, 0.1, 0.17, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.2, 0.1, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.32, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.1, 0.2, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
+    # low1  = np.array([0.6, 0.2, 0.1, 0.2, 0.01, 0.17, 0.32, 0.65, 0.45, 0.725, 0.95])
+    # high1 = np.array([3.9, 3.0, 3.1, 0.2, 0.1, 0.17, 0.32, 0.65, 0.45, 0.725, 0.95])
 
-    unwill1 = np.array([0.5, 0.5, 0.6, 1.0, 0.7, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    # unwill1 = np.array([0.5, 0.5, 0.6, 1.0, 0.7, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
     #read bcap from csv
-    bcap1 = pd.read_csv('bcap.csv', header = None).iloc[0, 1]
     cd = 0.003
     Nr = 60
-    print(residential(np.zeros(24), np.zeros(24), household_below, household_above, flex1,
-     sche1, low1, high1, unwill1, bcap1, cd, Nr)[3:])
+
+    import pandas as pd
+    import sys
+    from caresjpsutil import returnExceptionToJava, returnResultsToJava
+    from caresjpsutil import PythonLogger
+    pythonLogger = PythonLogger('residential.py')
+    pythonLogger.postInfoToLogServer('start of residential.py')
+    folder = sys.argv[1]
+    low = pd.read_csv(folder + '/Pmin.csv', header = None)
+    high = pd.read_csv(folder + '/Pmax.csv', header = None)
+    unwill = pd.read_csv(folder + '/unwill.csv', header = None)
+    bcap = pd.read_csv(folder + '/bcap.csv', header = None)
+    appl1 = pd.read_csv(folder + '/ApplianceScheduleLoad1.csv', sep=',',header=None)
+    f = open(folder + "/residence.csv", 'ab')
+    for r in range(0, 3):
+        bcap1=bcap.iloc[r, 0]
+        seq = appl1.iloc[r]
+        sche1 = np.array( [seq[i:i+11] for i in range(0,len(seq),11)] )
+        flex1 = np.array(sche1, dtype=bool)
+
+
+        low1  = np.array(low.iloc[r,])
+        high1 = np.array(high.iloc[r,])
+        unwill1 = np.array(unwill.iloc[r,])
+        result = residential(np.zeros(24), np.zeros(24), household_below, household_above, flex1,
+            sche1, low1, high1, unwill1, bcap1, cd, Nr)[3:]
+        np.savetxt(f,result, delimiter=",")
+        returnResultsToJava(result)
+    pythonLogger.postInfoToLogServer('end of residential.py')

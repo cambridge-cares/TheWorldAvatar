@@ -1,29 +1,29 @@
 package uk.ac.cam.cares.jps.des;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.des.DESAgentNew;
 
 @SuppressWarnings("serial")
+@WebServlet(urlPatterns = {"/ResidentialAgent"})
 public class ResidentialAgent extends JPSHttpServlet {
 	public static String bcap="bcap.csv";
 	public static String Pmin="Pmin.csv";
@@ -68,43 +68,45 @@ public class ResidentialAgent extends JPSHttpServlet {
 		List<String[]> csvofpmin = new ArrayList<String[]>();
 		List<String[]> csvofw = new ArrayList<String[]>();
 		List<String[]> csvofschedule = new ArrayList<String[]>();
-		String[] timeschedu = {"t1","t2", "t3", "t4", "t5","t6","t7", "t8", "t9", "t10","t11","t12", "t13", "t14", "t15","t16","t17", "t18", "t19", "t20","t21","t22", "t23", "t24"};
 		
 		//grab the current time
-		List<String> lst = Arrays.asList(timeschedu);
 		Date date = new Date();   // given date
 		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
 		calendar.setTime(date);   // assigns calendar to given date 
 		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
 		
 		//rotate it according to the current hour to get the appropriate profile
-		
+
+//		Collections.rotate(lst, h);
 		//subfunction to read per iri of user (in case there are more than one user. 
 		for(int x=0;x<sizeofiriuser;x++) {
-			readUserforPminPmaxUnwill(lst, h, iriofgroupuser.get(x));
+			List<String[]> pmVal = readUserforPminPmaxUnwill( iriofgroupuser.get(x));
+			csvofpmax.add(pmVal.get(0));
+			csvofpmin.add(pmVal.get(1));
+			csvofw.add(pmVal.get(2));
+			csvofschedule.add(readUserforAppSch(iriofgroupuser.get(x)));
 		}
 
 		broker.putLocal(baseUrl + "/" + bcap, bcapcsv);
 		String pmaxcsv = MatrixConverter.fromArraytoCsv(csvofpmax);
-		System.out.println(pmaxcsv);
+//		System.out.println(pmaxcsv);
 		broker.putLocal(baseUrl + "/" + Pmax, pmaxcsv);
 
 		String pmincsv = MatrixConverter.fromArraytoCsv(csvofpmin);
-		System.out.println(pmincsv);
+//		System.out.println(pmincsv);
 		broker.putLocal(baseUrl + "/" + Pmin, pmincsv);
 
 		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
-		System.out.println(wcsv);
+//		System.out.println(wcsv);
 		broker.putLocal(baseUrl + "/" + unwill, wcsv);
 
 		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
-		System.out.println(schedulecsv);
+//		System.out.println(schedulecsv);
 		broker.putLocal(baseUrl + "/" + schedule, schedulecsv);
 		
 	}
-	protected void readUserforPminPmaxUnwill(List<String> lst, int h, String iriOfTypeUser) {
+	protected List<String[]> readUserforPminPmaxUnwill( String iriOfTypeUser) {
 		//per equipment, per user, extract high, low and actual value 
-		Collections.rotate(lst, -h);
 		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
@@ -137,12 +139,13 @@ public class ResidentialAgent extends JPSHttpServlet {
 			low1[d] = resultListx.get(d)[2];
 			unwill1[d] = resultListx.get(d)[3];
 		}
-		System.out.println("LOW 1");
-		
+//		System.out.println("LOW 1");
+		return Arrays.asList(high1, low1, unwill1);
 	}
-	protected void readUserforAppSch(List<String> lst, int h, String iriOfTypeUser) {
+	protected String[] readUserforAppSch( String iriOfTypeUser) {
 		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j7:<http://www.w3.org/2006/time#> "
 				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
 				+ "SELECT ?entity ?Pactval ?hourval " + "WHERE "
 				+ "{ ?entity a j6:Electronics ." 
@@ -151,20 +154,45 @@ public class ResidentialAgent extends JPSHttpServlet {
 				+ " ?Pact   j2:hasValue ?vPact ." + " ?vPact   j2:numericalValue ?Pactval ."
 				+ " ?vPact   j7:hasTime ?proptime ." + "?proptime j7:hour ?hourval ."
 				 
-				+ "}" + "ORDER BY ASC(?hourval)";
+				+ "}" + "ORDER BY ASC(?hourval) ASC(?entity)";
 		OntModel model2 = DESAgentNew.readModelGreedyForUser(iriOfTypeUser);
 		ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 		String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
 		String[] keysx = JenaResultSetFormatter.getKeys(resultx);
 		List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
+		String[] groupschedule = new String[resultListx.size()];
+		for(int d=0;d<resultListx.size();d++) {
+			groupschedule[d] = resultListx.get(d)[1];
+		}
+		return groupschedule;
 	}
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+	public String runResidentialPy(String script, String folder) throws Exception {
+		String result = "";
+			String path = AgentLocator.getCurrentJpsAppDirectory(this);
+			String command = "python " + path+ "/python/" +script + " " + folder;
+//			System.out.println(command);
+			result = CommandHelper.executeSingleCommand( path, command);
+		
+		
+			return result;
+	}
+	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request)  {
 		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
 		
 		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
 		extractResidentialData(iriofdistrict, baseUrl); //csv for residential
-		JSONObject responseParams = requestParams;	
+		JSONObject responseParams = new JSONObject();
+		try {
+			String res = runResidentialPy("residential.py", baseUrl);
+			//TODO: When other agents employ residential, results would be returned not just as a csv, but as another object
+			
+//			System.out.println(res);
+			responseParams.put("results", res);
+			}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
     	
 		return responseParams;
 	}
