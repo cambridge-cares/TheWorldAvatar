@@ -21,3 +21,14 @@ def select_file():
     Tk().withdraw()
     """Opens a file dialog box to select a file"""
     return askopenfilename()
+
+def is_header_valid(row):
+    if len(row)==5:
+        if row[0].strip().lower()==COLUMN_1.lower() \
+                and row[1].strip().lower()==COLUMN_2.lower() \
+                and row[2].strip().lower()==COLUMN_3.lower() \
+                and row[3].strip().lower()==COLUMN_4.lower() \
+                and row[4].strip().lower()==COLUMN_5.lower():
+            return True
+        else:
+            return False
