@@ -1,14 +1,18 @@
 package uk.ac.cam.cares.jps.des.n;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
+import org.json.CDL;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -40,13 +44,29 @@ public class CommercialAgent {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 				.addPrefix("plant", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#")
 				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
-				.addVar("?entity").addVar("?propVal").addWhere("?entity" ,"a", "j6:Building")
+				.addVar("?propVal").addWhere("?entity" ,"a", "j6:Building")
 				.addWhere("?entity" ,"plant:hasCapacity", "?capacity").addWhere("?capacity" ,"j2:hasValue", "?vProp")
-				.addWhere("?vProp" ,"j2:numericalValue", "?propVal");
+				.addWhere("?vProp" ,"j2:numericalValue", "?propVal").addOrderBy("?capacity");
 		Query q = sb.build();
 		ResultSet resultSetx = JenaHelper.query(model, q.toString());
-		String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
-		String[] keysx = JenaResultSetFormatter.getKeys(resultx);
-		List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
+		String resultListC = JenaResultSetFormatter.convertToCSV(resultSetx);
+		
+		sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("phase_system", "http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#")
+				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				.addPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+				.addVar("?propVal").addWhere("?entity" ,"a", "j6:Building")
+				.addWhere("?entity" ,"j2:hasProperty", "?prop").addWhere("?prop" ,"j2:hasValue", "?vProp")
+				.addWhere("?prop" ,"rdf:type", "phase_system:ThermalConductivity").addWhere("?vProp" ,"j2:numericalValue", "?propVal")
+				.addOrderBy("?prop");
+		q = sb.build();
+		resultSetx = JenaHelper.query(model, q.toString());
+		String resultListK = JenaResultSetFormatter.convertToCSV(resultSetx);
+		String[] csv = resultListC.split("\r\n");
+		String[] csv2 = resultListK.split("\r\n");
+		String[] csvNew =  (String[]) ArrayUtils.addAll(Arrays.copyOfRange(csv, 1, csv.length), Arrays.copyOfRange(csv2, 1, csv2.length));
+//		System.out.println(csv+csv2);
+		return;
+		 
 	}
 }
