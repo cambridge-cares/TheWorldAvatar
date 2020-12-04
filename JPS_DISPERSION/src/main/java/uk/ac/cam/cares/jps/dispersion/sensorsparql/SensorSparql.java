@@ -80,21 +80,42 @@ public class SensorSparql {
     /**
      * @param station_name
      * @param xyz_coord = x y coordinates are in EPSG:4326, z is the height in m
-     * @param repo
-     * @throws SQLException 
+     * @param repo 
      */
     public void createWeatherStation(String station_name, double [] xyz_coord, String repo) {
         Iri weatherstation_iri = p_station.iri(station_name);
         Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
+        Iri xcoord = p_station.iri(station_name+"_xcoord");
+        Iri ycoord = p_station.iri(station_name+"_ycoord");
+        Iri zcoord = p_station.iri(station_name+"_zcoord");
+        Iri vxcoord = p_station.iri(station_name+"_vxcoord");
+        Iri vycoord = p_station.iri(station_name+"_vycoord");
+        Iri vzcoord = p_station.iri(station_name+"_vzcoord");
 
         TriplePattern weatherstation_tp = weatherstation_iri.isA(p_station.iri("WeatherStation"))
         		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
-        
-        TriplePattern [] coordinates_xyz = getCoordinatesXYZ_tp(p_station,station_name,stationcoordinates_iri,xyz_coord);
 
+        TriplePattern projected_gp = stationcoordinates_iri.isA(p_space_time_extended.iri("ProjectedCoordinateSystem"))
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord)
+                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_z"),zcoord);
+
+        TriplePattern xcoord_tp = xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vxcoord);
+        TriplePattern ycoord_tp = ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vycoord);
+        TriplePattern zcoord_tp = zcoord.isA(p_space_time.iri("StraightCoordinate")).andHas(p_system.iri("hasValue"),vzcoord);
+
+        TriplePattern vxcoord_tp  = vxcoord.isA(p_coordsys.iri("CoordinateValue"))
+        		.andHas(p_system.iri("numericalValue"), xyz_coord[0]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
+        TriplePattern vycoord_tp = vycoord.isA(p_coordsys.iri("CoordinateValue"))
+                .andHas(p_system.iri("numericalValue"), xyz_coord[1]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
+        TriplePattern vzcoord_tp = vzcoord.isA(p_coordsys.iri("CoordinateValue"))
+                .andHas(p_system.iri("numericalValue"), xyz_coord[2]).andHas(p_system.iri("hasUnitOfMeasure"), unit_m);
+
+        TriplePattern [] coordinatesXYZ_tp = {projected_gp,xcoord_tp,ycoord_tp,zcoord_tp,vxcoord_tp,vycoord_tp,vzcoord_tp};
+        
         TriplePattern [] combined_tp = {};
         combined_tp = ArrayUtils.addAll(combined_tp, weatherstation_tp);
-        combined_tp = ArrayUtils.addAll(combined_tp, coordinates_xyz);
+        combined_tp = ArrayUtils.addAll(combined_tp, coordinatesXYZ_tp);
         combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,cloud,unit_percentage));
         combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,precipitation,unit_mm));
         combined_tp = ArrayUtils.addAll(combined_tp, getWeatherSensorTP(weatherstation_iri,p_station,station_name,pressure,unit_mbar));
@@ -210,34 +231,6 @@ public class SensorSparql {
 		
 		TriplePattern [] combined_tp = {station_tp,sensor_tp,data_tp,datavalue_tp,datatime_tp,protocol_tp,state_tp};
         return combined_tp;
-    }
-
-    private TriplePattern [] getCoordinatesXYZ_tp(Prefix node_prefix,String node_name, Iri coordinates_iri, double [] coordinates_xyz) {
-        Iri xcoord = node_prefix.iri(node_name+"_xcoord");
-        Iri ycoord = node_prefix.iri(node_name+"_ycoord");
-        Iri zcoord = node_prefix.iri(node_name+"_zcoord");
-        Iri vxcoord = node_prefix.iri(node_name+"_vxcoord");
-        Iri vycoord = node_prefix.iri(node_name+"_vycoord");
-        Iri vzcoord = node_prefix.iri(node_name+"_vzcoord");
-
-        TriplePattern projected_gp = coordinates_iri.isA(p_space_time_extended.iri("ProjectedCoordinateSystem"))
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord)
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_z"),zcoord);
-
-        TriplePattern xcoord_tp = xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vxcoord);
-        TriplePattern ycoord_tp = ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vycoord);
-        TriplePattern zcoord_tp = zcoord.isA(p_space_time.iri("StraightCoordinate")).andHas(p_system.iri("hasValue"),vzcoord);
-
-        TriplePattern vxcoord_tp  = vxcoord.isA(p_coordsys.iri("CoordinateValue"))
-        		.andHas(p_system.iri("numericalValue"), coordinates_xyz[0]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
-        TriplePattern vycoord_tp = vycoord.isA(p_coordsys.iri("CoordinateValue"))
-                .andHas(p_system.iri("numericalValue"), coordinates_xyz[1]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
-        TriplePattern vzcoord_tp = vzcoord.isA(p_coordsys.iri("CoordinateValue"))
-                .andHas(p_system.iri("numericalValue"), coordinates_xyz[2]).andHas(p_system.iri("hasUnitOfMeasure"), unit_m);
-
-        TriplePattern [] coordinatesXYZ_tp = {projected_gp,xcoord_tp,ycoord_tp,zcoord_tp,vxcoord_tp,vycoord_tp,vzcoord_tp};
-        return coordinatesXYZ_tp;
     }
 
     public JSONArray queryAirQualityStations(Scope sc) {
