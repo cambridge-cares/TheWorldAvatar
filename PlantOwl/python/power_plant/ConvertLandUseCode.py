@@ -35,3 +35,16 @@ def is_header_valid(row):
 
 def process_data(row):
     print()
+
+def convert_lucode():
+    file_path = select_file()
+    with open(file_path, newline='') as csvfile:
+        rows = csv.reader(csvfile, delimiter=',', quotechar='|')
+        line_count = 0
+        for row in rows:
+           if line_count == 0:
+               line_count +=1
+               if is_header_valid(row):
+                  process_data(row)
+               else:
+                   break
