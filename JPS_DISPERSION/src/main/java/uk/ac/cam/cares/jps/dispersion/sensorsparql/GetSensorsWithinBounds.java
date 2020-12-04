@@ -42,7 +42,7 @@ public class GetSensorsWithinBounds extends JPSHttpServlet{
 			Scope sc = new Scope(joScope);
 
 			SensorSparql ss = new SensorSparql();
-			JSONArray result = ss.queryAirQualityStations(sc);
+			JSONArray result = ss.queryAirStationsWithinScope(sc);
 			response.setContentType("application/json");
 			response.getWriter().write(result.toString());
 		}

@@ -233,7 +233,7 @@ public class SensorSparql {
         return combined_tp;
     }
 
-    public JSONArray queryAirQualityStations(Scope sc) {
+    public JSONArray queryAirStationsWithinScope(Scope sc) {
     	SelectQuery query = Queries.SELECT();
     	
     	// properties we want to query

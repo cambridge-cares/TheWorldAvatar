@@ -36,6 +36,6 @@ public class SensorSparqlTest {
         Region.putRegion(jo, 2);
         Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
 		SensorSparql ws = new SensorSparql();
-		JSONArray result = ws.queryAirQualityStations(sc);
+		JSONArray result = ws.queryAirStationsWithinScope(sc);
 	}
 }
