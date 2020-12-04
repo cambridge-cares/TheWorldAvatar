@@ -120,6 +120,9 @@ public class JPSMatlabAgent extends JPSAgent {
    * Validate file path.
    */
   private boolean isFile(String path) {
+    if (path == null) {
+      return true;
+    }
     return new File(path).isFile();
   }
 
