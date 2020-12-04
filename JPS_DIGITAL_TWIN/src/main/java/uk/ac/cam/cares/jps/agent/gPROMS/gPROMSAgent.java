@@ -465,7 +465,6 @@ public class gPROMSAgent extends JPSAgent {
     csvWriter.close();
     File dest = new File(System.getProperty("user.home") + "\\matlab\\matlab.csv");
     Files.copy(file.toPath(), dest.toPath());
-    System.out.println("Copied matlab file to input folder");
     // Adding the matlab.csv file to the metadata repo
     String destURI = dest.getAbsolutePath();
     destURI = destURI.replace("\\", "/");
