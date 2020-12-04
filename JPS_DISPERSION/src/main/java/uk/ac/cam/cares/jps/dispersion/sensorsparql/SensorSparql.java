@@ -4,18 +4,22 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.SQLException;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.region.Scope;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 
@@ -65,7 +69,7 @@ public class SensorSparql {
     private static Iri unit_percentage = p_derived_SI_unit.iri("percentage"); // made up, does not exist in ontology
     private static Iri unit_ugm3 = p_derived_SI_unit.iri("ug_per_m.m.m");
 
-    //endpoints
+    //endpoint
     String airquality_endpoint = "http://localhost:8080/blazegraph/namespace/airquality/sparql";
 
     private Prefix [] getPrefix() {
@@ -220,7 +224,7 @@ public class SensorSparql {
         return coordinatesXYZ_tp;
     }
 
-    public JSONArray queryAirQualityStations() {
+    public JSONArray queryAirQualityStations(Scope sc) {
     	SelectQuery query = Queries.SELECT();
     	
     	// properties we want to query
@@ -243,10 +247,17 @@ public class SensorSparql {
         GraphPattern vcoord_gp = GraphPatterns.and(vxcoord.has(p_system.iri("numericalValue"), xvalue),
         		vycoord.has(p_system.iri("numericalValue"), yvalue));
         
-    	GraphPattern querypattern = GraphPatterns.and(station_gp,projected_gp,coord_gp,vcoord_gp);
-    	
+    	// constraint to stations within scope
+    	sc.transform("EPSG:4326");
+        Expression<?> xconstraint = Expressions.and(Expressions.lt(xvalue, sc.getUpperx()),Expressions.gt(xvalue, sc.getLowerx()));
+        Expression<?> yconstraint = Expressions.and(Expressions.lt(yvalue, sc.getUppery()),Expressions.gt(yvalue, sc.getLowery()));
+        Expression<?> overallconstraint = Expressions.and(xconstraint,yconstraint);
+        
+        GraphPatternNotTriples querypattern = GraphPatterns.and(station_gp,projected_gp,coord_gp,vcoord_gp)
+        		.filter(overallconstraint);
+        
     	query.prefix(p_space_time_extended, p_system).select(station,xvalue,yvalue).where(querypattern);
-    	
+
     	return performQuery(airquality_endpoint,query);
     }
 

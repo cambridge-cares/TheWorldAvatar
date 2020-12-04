@@ -1,7 +1,11 @@
 package uk.ac.cam.cares.jps.dispersion.sensorsparqltest;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
+
+import uk.ac.cam.cares.jps.base.region.Region;
+import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
 
 public class SensorSparqlTest {
@@ -28,7 +32,10 @@ public class SensorSparqlTest {
 
 	@Test
 	public void testQueryCoordinates() {
+		JSONObject jo = new JSONObject();
+        Region.putRegion(jo, 2);
+        Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
 		SensorSparql ws = new SensorSparql();
-		JSONArray result = ws.queryAirQualityStations();
+		JSONArray result = ws.queryAirQualityStations(sc);
 	}
 }
