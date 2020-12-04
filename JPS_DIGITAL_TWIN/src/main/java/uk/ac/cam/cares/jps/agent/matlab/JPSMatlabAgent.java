@@ -29,10 +29,9 @@ public class JPSMatlabAgent extends JPSAgent {
   private static final long serialVersionUID = 1L;
   public static final String MESSAGE_KEY = "File generated and located at:";
   public static final String SUCCESS_MESSAGE_KEY = "Completed and executed";
-  public static final String TEMP_INPUT_FILE = "\\matlab\\matInput.dat";
-  public static final String TEMP_SETTINGS_FILE = "\\input\\Settings.input";
-  public static final String TEMP_BATCH_FILE = "\\matlab\\call_matlab.bat";
-  public static final String TEMP_SCRIPT_FILE = "\\matlab\\Run_Script.m";
+  public static final String TEMP_INPUT_FILE = "/matlab/matInput.dat";
+  public static final String TEMP_BATCH_FILE = "/matlab/call_matlab.bat";
+  public static final String TEMP_SCRIPT_FILE = "/matlab/Run_Script.m";
   public static final int STARTLINE = 69;
   public static final int NUMLINES = 4;
   public static int LINENUMBER = 1;
@@ -68,7 +67,7 @@ public class JPSMatlabAgent extends JPSAgent {
     // Delete the temporary file
     File tempFile = new File(activePowerFilePath);
     tempFile.delete();
-    String pathToSettingFile = current + TEMP_SETTINGS_FILE;
+    String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
     JPSMatlabAgent now = new JPSMatlabAgent();
     now.delete(pathToSettingFile, STARTLINE, NUMLINES);
     return jo;
@@ -88,7 +87,6 @@ public class JPSMatlabAgent extends JPSAgent {
       for (String s : str) {
         if (isFile(s)) {
           csvFilePath = s;
-          System.out.println("\nCSV File Path:" + csvFilePath);
           break;
         }
       }
