@@ -434,7 +434,6 @@ public class gPROMSAgent extends JPSAgent {
       System.out.println(table[i][0]);
     }
     exportDataToExcel(jobFolder.toString() + "/matlab.csv", table);
-    System.out.println("StartingMatlab");
     JSONObject jo = new JSONObject();
     String resultStart =
         AgentCaller.executeGetWithJsonParameter("ElChemoAgent/JPSMatlabAgent", jo.toString());

@@ -49,8 +49,8 @@ public class JPSMatlabAgent extends JPSAgent {
     List<String> lst = null;
     JPSMatlabAgent iri = new JPSMatlabAgent();
     activePowerFilePath = iri.queryRDF4J(agentiri, lst);
-    JSONObject param = new JSONObject().put("key", activePowerFilePath);
-    if (validateInput(param)) {
+    // JSONObject param = new JSONObject().put("key", activePowerFilePath);
+    if (validateInput(activePowerFilePath)) {
       JPSMatlabAgent app = new JPSMatlabAgent();
       app.appendFile(activePowerFilePath);
       // Create file path for batch file
@@ -80,9 +80,10 @@ public class JPSMatlabAgent extends JPSAgent {
    * the execution request can be served. The method checks whether the input files required for the
    * agent execution are present at the required location
    */
-  public boolean validateInput(JSONObject requestparam) {
+  public boolean validateInput(String requestparam) {
     try {
-      String str = requestparam.getString("key");
+      // String str = requestparam.getString("key");
+      String str = requestparam;
       if (new String(str).equals(gPROMSAgent.TEMP_DIRECTORY)) {
         return true;
       } else {
