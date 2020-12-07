@@ -8,6 +8,8 @@ import ABoxGeneration as aboxgen
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
+import PropertyReader as propread
+import ABoxGeneration as aboxgen
 
 """Declared column headers as constants"""
 COLUMN_1 = 'Source'
@@ -15,6 +17,20 @@ COLUMN_2 = 'Type'
 COLUMN_3 = 'Target'
 COLUMN_4 = 'Relation'
 COLUMN_5 = 'Value'
+TOTAL_NO_OF_COLUMNS = 5
+
+"""Predefined types source entries"""
+TYPE_INSTANCE = 'Instance'
+TYPE_DATA     = 'Data Property'
+
+"""Utility constants"""
+HASH = '#'
+SLASH = '/'
+UNDERSCORE = '_'
+
+"""Declared an array to maintain the list of already created instances"""
+instances = []
+g = Graph()
 
 def select_file():
     """Suppresses the root window of GUI"""
@@ -23,7 +39,7 @@ def select_file():
     return askopenfilename()
 
 def is_header_valid(row):
-    if len(row)==5:
+    if len(row) >= TOTAL_NO_OF_COLUMNS:
         if row[0].strip().lower()==COLUMN_1.lower() \
                 and row[1].strip().lower()==COLUMN_2.lower() \
                 and row[2].strip().lower()==COLUMN_3.lower() \
@@ -34,7 +50,36 @@ def is_header_valid(row):
             return False
 
 def process_data(row):
-    print()
+    if len(row) >= TOTAL_NO_OF_COLUMNS:
+        if row[0].strip() is None or row[0].strip()  == '' \
+                or row[1].strip() is None or row[1].strip()  == '' \
+                or row[2].strip() is None or row[2].strip()  == '':
+           return
+
+        if row[1].strip().lower() == TYPE_INSTANCE.lower():
+            if row[2].strip() in instances:
+                if row[3].strip().lower()  == '':
+                    return
+                else:
+                    print()
+                    aboxgen.link_instance(g, URIRef(row[3]),
+                                              propread.getABoxIRI()+SLASH+format_iri(row[0])+HASH+format_iri(row[2])+UNDERSCORE+format_iri(row[0]),
+                                              propread.getABoxIRI()+SLASH+format_iri(row[0])+HASH+format_iri(row[2])+UNDERSCORE+format_iri(row[0]))
+            else:
+                print('Creating an instance:')
+                aboxgen.create_instance(g,
+                                        URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
+                                        propread.getABoxIRI()+SLASH+format_iri(row[0])+HASH+format_iri(row[2])+UNDERSCORE+format_iri(row[0]),
+                                        format_iri(row[0]))
+                instances.append(row[0])
+
+def format_iri(iri):
+    iri = iri.replace(" ","")
+    return iri
+
+def create_namespace(IRI):
+    print(IRI)
+    return Namespace(IRI)
 
 def convert_lucode():
     file_path = select_file()
@@ -43,11 +88,15 @@ def convert_lucode():
         line_count = 0
         for row in rows:
            if line_count == 0:
-               line_count +=1
-               if is_header_valid(row):
-                  process_data(row)
-               else:
+               if not is_header_valid(row):
+                   print('Found invalid header, so it will terminate now.')
                    break
+               else:
+                   print('Found valid header, so it is creating a graph model for adding instances to it.')
+                   g = Graph()
+           if line_count > 0:
+               process_data(row)
+           line_count +=1
 
 if __name__ == '__main__':
     convert_lucode()
