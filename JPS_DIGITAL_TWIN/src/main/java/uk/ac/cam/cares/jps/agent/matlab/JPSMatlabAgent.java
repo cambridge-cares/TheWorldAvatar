@@ -100,7 +100,6 @@ public class JPSMatlabAgent extends JPSAgent {
    */
   public boolean validateInput(String requestparam) {
     try {
-      // String str = requestparam.getString("key");
       String str = requestparam;
       if (new String(str).equals(gPROMSAgent.TEMP_DIRECTORY)) {
         return true;
@@ -202,7 +201,6 @@ public class JPSMatlabAgent extends JPSAgent {
       writer.write(cmd);
       writer.close();
       // Execute batch file
-      // Runtime rs = Runtime.getRuntime();
       Process pb = Runtime.getRuntime().exec(batchFile);
       BufferedReader reader = new BufferedReader(new InputStreamReader(pb.getInputStream()));
       while ((reader.readLine()) != null) {
