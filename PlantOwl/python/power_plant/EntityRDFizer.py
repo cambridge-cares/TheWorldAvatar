@@ -4,12 +4,12 @@
 ##########################################
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.namespace import RDF, RDFS, Namespace
-import ABoxGeneration as aboxgen
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
 import PropertyReader as propread
 import ABoxGeneration as aboxgen
+import os.path as path
 
 """Declared column headers as constants"""
 COLUMN_1 = 'Source'
@@ -93,8 +93,11 @@ def create_namespace(IRI):
     print(IRI)
     return Namespace(IRI)
 
-def convert_lucode():
-    file_path = select_file()
+def convert_lucode(file_path):
+    print('Provided file path:', file_path)
+    if not path.isfile(file_path):
+        print('The provided file path is not valid.')
+        return
     with open(file_path, 'rt') as csvfile:
         rows = csv.reader(csvfile, skipinitialspace=True)
         line_count = 0
@@ -115,4 +118,4 @@ def convert_lucode():
     g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(), format="application/rdf+xml")
 
 if __name__ == '__main__':
-    convert_lucode()
+    convert_lucode(select_file())
