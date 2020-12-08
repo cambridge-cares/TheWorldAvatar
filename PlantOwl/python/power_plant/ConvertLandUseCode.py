@@ -29,7 +29,7 @@ SLASH = '/'
 UNDERSCORE = '_'
 
 """Declared an array to maintain the list of already created instances"""
-instances = []
+instances = dict()
 g = Graph()
 
 def select_file():
@@ -58,20 +58,25 @@ def process_data(row):
 
         if row[1].strip().lower() == TYPE_INSTANCE.lower():
             if row[2].strip() in instances:
-                if row[3].strip().lower()  == '':
+                if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
-                    print()
+                    print('link instance 1', instances.get(row[0]))
+                    print('link instance 2', instances.get(row[2]))
                     aboxgen.link_instance(g, URIRef(row[3]),
-                                              propread.getABoxIRI()+SLASH+format_iri(row[0])+HASH+format_iri(row[2])+UNDERSCORE+format_iri(row[0]),
-                                              propread.getABoxIRI()+SLASH+format_iri(row[0])+HASH+format_iri(row[2])+UNDERSCORE+format_iri(row[0]))
+                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())+HASH+
+                                                     format_iri(instances.get(row[0].strip()))+
+                                                     UNDERSCORE+format_iri(row[0].strip())),
+                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())+HASH+
+                                                     format_iri(instances.get(row[2].strip()))+UNDERSCORE+
+                                                     format_iri(row[2].strip())))
             else:
                 print('Creating an instance:')
                 aboxgen.create_instance(g,
                                         URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
                                         propread.getABoxIRI()+SLASH+format_iri(row[0])+HASH+format_iri(row[2])+UNDERSCORE+format_iri(row[0]),
                                         format_iri(row[0]))
-                instances.append(row[0])
+                instances[row[0].strip()] = row[2].strip()
 
 def format_iri(iri):
     iri = iri.replace(" ","")
@@ -93,10 +98,14 @@ def convert_lucode():
                    break
                else:
                    print('Found valid header, so it is creating a graph model for adding instances to it.')
+                   global g
                    g = Graph()
+
            if line_count > 0:
                process_data(row)
            line_count +=1
+           print('[', line_count, ']', row)
+    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(), format="application/rdf+xml")
 
 if __name__ == '__main__':
     convert_lucode()
