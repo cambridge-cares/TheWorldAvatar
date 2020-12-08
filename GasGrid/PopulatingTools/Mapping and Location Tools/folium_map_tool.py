@@ -57,4 +57,15 @@ for j in location_index:
 overall_location = overall_location[1:,:]
 
 
-m.save(r'PopulatingTools\Mapping and Location Tools\standard_test_map.html')
+NTS = 'PopulatingTools\Mapping and Location Tools\pipenetwork.geojson'
+NTS_layer = folium.GeoJson(NTS).add_to(m)
+folium.LayerControl().add_to(m)
+
+start_end = pd.read_csv(r'PopulatingTools\Mapping and Location Tools\pipe_start_end.csv').to_numpy()[:,1:]
+
+for i in range(len(start_end[:,0])):
+    locations = np.array([start_end[i,:2],start_end[i,2:4]])
+    locations = locations * 0.0001
+    folium.PolyLine(locations).add_to(m)
+
+m.save(r'PopulatingTools\Mapping and Location Tools\folium_map.html')
