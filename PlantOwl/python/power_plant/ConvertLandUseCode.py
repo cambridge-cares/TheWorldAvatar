@@ -64,26 +64,20 @@ def process_data(row):
                     print('link instance 1', instances.get(row[0]))
                     print('link instance 2', instances.get(row[2]))
                     aboxgen.link_instance(g, URIRef(row[3]),
-                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())+HASH+
-                                                     format_iri(instances.get(row[0].strip()))+
-                                                     UNDERSCORE+format_iri(row[0].strip())),
-                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())+HASH+
-                                                     format_iri(instances.get(row[2].strip()))+UNDERSCORE+
-                                                     format_iri(row[2].strip())))
+                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
+                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
             else:
                 print('Creating an instance:')
                 aboxgen.create_instance(g,
                                         URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
-                                        propread.getABoxIRI()+SLASH+format_iri(row[0])+HASH+format_iri(row[2])+UNDERSCORE+format_iri(row[0]),
+                                        propread.getABoxIRI()+SLASH+format_iri(row[0]),
                                         format_iri(row[0]))
                 instances[row[0].strip()] = row[2].strip()
 
         elif row[1].strip().lower() == TYPE_DATA.lower():
             if row[2].strip() in instances and not row[4].strip() == '':
                 aboxgen.link_data(g, URIRef(row[0].strip()),
-                                  URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())+HASH+
-                                                     format_iri(instances.get(row[2].strip()))+UNDERSCORE+
-                                                     format_iri(row[2].strip())),
+                                  URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())),
                                   row[4].strip())
 
 def format_iri(iri):
