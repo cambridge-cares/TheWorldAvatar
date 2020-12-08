@@ -57,7 +57,16 @@ def process_data(row):
            return
 
         if row[1].strip().lower() == TYPE_INSTANCE.lower():
-            if row[2].strip() in instances:
+            if (row[3].strip() is None or row[3].strip() == '') \
+                    and (row[4].strip() is None or row[4].strip() == ''):
+                print('Creating an instance:')
+                aboxgen.create_instance(g,
+                                        URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
+                                        propread.getABoxIRI()+SLASH+format_iri(row[0]),
+                                        row[0])
+                instances[row[0].strip()] = row[2].strip()
+
+            elif row[2].strip() in instances:
                 if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
@@ -66,13 +75,6 @@ def process_data(row):
                     aboxgen.link_instance(g, URIRef(row[3]),
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
-            else:
-                print('Creating an instance:')
-                aboxgen.create_instance(g,
-                                        URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
-                                        propread.getABoxIRI()+SLASH+format_iri(row[0]),
-                                        format_iri(row[0]))
-                instances[row[0].strip()] = row[2].strip()
 
         elif row[1].strip().lower() == TYPE_DATA.lower():
             if row[2].strip() in instances and not row[4].strip() == '':
@@ -81,6 +83,9 @@ def process_data(row):
                                   row[4].strip())
 
 def format_iri(iri):
+    iri = iri.title()
+    iri = iri.replace(":"," ")
+    iri = iri.replace(",", " ")
     iri = iri.replace(" ","")
     return iri
 
@@ -90,8 +95,8 @@ def create_namespace(IRI):
 
 def convert_lucode():
     file_path = select_file()
-    with open(file_path, newline='') as csvfile:
-        rows = csv.reader(csvfile, delimiter=',', quotechar='|')
+    with open(file_path, 'rt') as csvfile:
+        rows = csv.reader(csvfile, skipinitialspace=True)
         line_count = 0
         for row in rows:
            if line_count == 0:
