@@ -6,6 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -32,6 +37,9 @@ public class JPSMatlabAgent extends JPSAgent {
   public static final String TEMP_INPUT_FILE = "/matlab/matInput.dat";
   public static final String TEMP_BATCH_FILE = "/matlab/call_matlab.bat";
   public static final String TEMP_SCRIPT_FILE = "/matlab/Run_Script.m";
+  public static final String PATH_FREQUENCY_FILE = "/matlab/freq.csv";
+  public static final String MATLAB_AGENT_URL =
+      "http://www.theworldavatar.com/kb/agents/Service__matlab.owl#Service";
   public static final int STARTLINE = 69;
   public static final int NUMLINES = 5;
   public static int LINENUMBER = 1;
@@ -69,6 +77,16 @@ public class JPSMatlabAgent extends JPSAgent {
       String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
       JPSMatlabAgent now = new JPSMatlabAgent();
       now.delete(pathToSettingFile, STARTLINE, NUMLINES);
+      // adding the freq.csv file to the JPS metadata
+      File dest = new File(System.getProperty("user.home") + PATH_FREQUENCY_FILE);
+      String pathToFrequency = dest.getAbsolutePath();
+      pathToFrequency = pathToFrequency.replace("\\", "/");
+      MetaDataAnnotator.annotateWithTimeAndAgent(pathToFrequency, gettingFilecreationtime(dest),
+          MATLAB_AGENT_URL);
+      JSONObject jObject = new JSONObject();
+      String resultStart = AgentCaller.executeGetWithJsonParameter("ElChemoAgent/SpinElectrical",
+          jObject.toString());
+      System.out.println(resultStart);
     } else {
       System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
     }
@@ -184,9 +202,13 @@ public class JPSMatlabAgent extends JPSAgent {
       writer.write(cmd);
       writer.close();
       // Execute batch file
-      Runtime rs = Runtime.getRuntime();
+      // Runtime rs = Runtime.getRuntime();
+      Process pb = Runtime.getRuntime().exec(batchFile);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(pb.getInputStream()));
+      while ((reader.readLine()) != null) {
+      }
       try {
-        rs.exec(batchFile).waitFor();
+        pb.waitFor();
       } catch (InterruptedException e) {
         throw new JPSRuntimeException(e.getMessage());
       }
@@ -195,6 +217,22 @@ public class JPSMatlabAgent extends JPSAgent {
     } catch (IOException e) {
       throw new JPSRuntimeException(e.getMessage());
     }
+
+  }
+
+  /**
+   * Getting the time when file was modified for storing in the metadata annoattator
+   */
+  public static String gettingFilecreationtime(File file) {
+    Path filePath = file.toPath();
+    BasicFileAttributes attributes = null;
+    try {
+      attributes = Files.readAttributes(filePath, BasicFileAttributes.class);
+    } catch (IOException exception) {
+      throw new JPSRuntimeException(exception.getMessage());
+    }
+    String creationDate = new String(attributes.creationTime().toString());
+    return (creationDate);
   }
 
   /**
