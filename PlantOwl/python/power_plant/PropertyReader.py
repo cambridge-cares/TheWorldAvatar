@@ -13,6 +13,14 @@ def getTBoxIRI():
 def getABoxIRI():
     return config.get('IRISection', 'kb.abox.iri')
 
+def getABoxFileName():
+    return config.get('FileSection', 'kb.abox.file.name')
+
+def getABoxFileExtension():
+    return config.get('FileSection', 'kb.abox.file.extension')
+
 if __name__ == '__main__':
     print(getTBoxIRI())
     print(getABoxIRI())
+    print(getABoxFileName())
+    print(getABoxFileExtension())
