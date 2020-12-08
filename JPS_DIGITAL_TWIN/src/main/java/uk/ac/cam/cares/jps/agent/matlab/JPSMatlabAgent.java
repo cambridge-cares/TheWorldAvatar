@@ -207,6 +207,7 @@ public class JPSMatlabAgent extends JPSAgent {
       }
       try {
         pb.waitFor();
+        Thread.sleep(1000);
       } catch (InterruptedException e) {
         throw new JPSRuntimeException(e.getMessage());
       }
