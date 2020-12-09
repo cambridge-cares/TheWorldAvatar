@@ -10,8 +10,11 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -38,20 +41,34 @@ public class ResidentialAgent extends JPSHttpServlet {
 	public void extractResidentialData(String iriofnetworkdistrict, String baseUrl) {
 		OntModel model = DESAgentNew.readModelGreedy(iriofnetworkdistrict);
 		//extracts 
-		String groupInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "SELECT ?entity ?propval ?user " 
-				+ "WHERE {"
-				+ "{ ?entity a j6:Building ." + "  ?entity j2:hasProperty ?prop ." 
-				+ " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." + "?entity j4:isComprisedOf ?user ." 
-				+ "}"
-				+ "FILTER regex(STR(?user),\"001\") ." + "}" + "GROUP BY ?entity ?propval ?user "
-				+ "ORDER BY ASC(?user)";
-		
-		
+//		String groupInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
+//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+//				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+//				+ "SELECT ?entity ?propval ?user " 
+//				+ "WHERE {"
+//				+ "{ ?entity a j6:Building ." + "  ?entity j2:hasProperty ?prop ." 
+//				+ " ?prop   j2:hasValue ?vprop ."
+//				+ " ?vprop   j2:numericalValue ?propval ." + "?entity j4:isComprisedOf ?user ." 
+//				+ "}"
+//				+ "FILTER regex(STR(?user),\"001\") ." + "}" + "GROUP BY ?entity ?propval ?user "
+//				+ "ORDER BY ASC(?user)";
+		String groupInfo ="";
+		try {
+			SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+					.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#")
+					.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+					.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+					.addVar("?entity").addVar("?propval").addVar("?user").addWhere("?entity" ,"a", "j6:Building")
+					.addWhere("?entity" ,"j2:hasProperty", "?prop").addWhere("?prop" ,"j2:hasValue", "?vProp")
+					.addWhere("?vProp" ,"j2:numericalValue", "?propval").addWhere("?entity" ,"j4:isComprisedOf", "?user")
+					.addOrderBy("?user").addFilter("regex(STR(?user),\"001\")");
+				Query q = sb.build();
+				groupInfo = q.toString();
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		ResultSet resultSet = JenaHelper.query(model, groupInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
@@ -115,23 +132,23 @@ public class ResidentialAgent extends JPSHttpServlet {
 	 * @return
 	 */
 	protected List<String[]> readUserforPminPmaxUnwill( String iriOfTypeUser) {
-		//per equipment, per user, extract high, low and actual value 
-		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "SELECT ?entity ?Pmaxval ?Pminval ?unwillval " + "WHERE "
-				+ "{ ?entity a j6:Electronics ." + "?entity j9:hasActivePowerAbsorbed ?Pmax ."
-				+ "?Pmax a j9:MaximumActivePower ." + " ?Pmax   j2:hasValue ?vPmax ."
-				+ " ?vPmax   j2:numericalValue ?Pmaxval ."
-
-				+ "  ?entity j2:hasProperty ?prop ." + "?prop a j6:IdealityFactor ." + " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?unwillval ."
-
-				+ "?entity j9:hasActivePowerAbsorbed ?Pmin ." + "?Pmin a j9:MinimumActivePower ."
-				+ " ?Pmin   j2:hasValue ?vPmin ." + " ?vPmin   j2:numericalValue ?Pminval ."
-
-
-				+ "}"+ "ORDER BY ASC(?entity)";
+		//per equipment, per user, extract high, low and actual value
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addVar("?entity").addVar("?Pmaxval").addVar("?Pminval").addVar("?unwillval")
+				.addWhere("?entity" ,"a", "j6:Electronics").addWhere("?entity" ,"j9:hasActivePowerAbsorbed", "?Pmax")
+				.addWhere("?Pmax" ,"a", "j9:MaximumActivePower").addWhere("?Pmax" ,"j2:hasValue", "?vPmax")
+				.addWhere("?vPmax" ,"j2:numericalValue", "?Pmaxval")
+				
+				.addWhere("?entity" ,"j2:hasProperty", "?prop").addWhere("?prop" ,"a", "j6:IdealityFactor")
+				.addWhere("?prop" ,"j2:hasValue", "?vProp").addWhere("?vProp" ,"j2:numericalValue", "?unwillval")
+				
+				.addWhere("?entity" ,"j9:hasActivePowerAbsorbed", "?Pmin").addWhere("?Pmin" ,"a", "j9:MinimumActivePower")
+				.addWhere("?Pmin" ,"j2:hasValue", "?vPmin").addWhere("?vPmin" ,"j2:numericalValue", "?Pminval")
+				.addOrderBy("?entity");
+			Query q = sb.build();
+			String equipmentinfo = q.toString();
 		OntModel model2 = DESAgentNew.readModelGreedyForUser(iriOfTypeUser);
 		ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 		String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
@@ -157,18 +174,19 @@ public class ResidentialAgent extends JPSHttpServlet {
 	 * @return
 	 */
 	protected String[] readUserforAppSch( String iriOfTypeUser) {
-		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j7:<http://www.w3.org/2006/time#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "SELECT ?entity ?Pactval ?hourval " + "WHERE "
-				+ "{ ?entity a j6:Electronics ." 
-				+ "?entity j9:hasActivePowerAbsorbed ?Pact ." 
-				+ "?Pact a j9:AbsorbedActivePower ."
-				+ " ?Pact   j2:hasValue ?vPact ." + " ?vPact   j2:numericalValue ?Pactval ."
-				+ " ?vPact   j7:hasTime ?proptime ." + "?proptime j7:hour ?hourval ."
-				 
-				+ "}" + "ORDER BY ASC(?hourval) ASC(?entity)";
+		
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				.addPrefix("j7", "http://www.w3.org/2006/time#")
+				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addVar("?entity").addVar("?Pactval").addVar("?hourval")
+				.addWhere("?entity" ,"a", "j6:Electronics").addWhere("?entity" ,"j9:hasActivePowerAbsorbed", "?Pact")
+				.addWhere("?Pact" ,"a", "j9:AbsorbedActivePower").addWhere("?Pact" ,"j2:hasValue", "?vPact")
+				.addWhere("?vPact" ,"j2:numericalValue", "?Pactval")
+				.addWhere("?vPact" ,"j7:hasTime", "?proptime").addWhere("?proptime" ,"j7:hour", "?hourval")
+				.addOrderBy("?hourval").addOrderBy("?entity");
+		Query q = sb.build();
+		String equipmentinfo = q.toString();
 		OntModel model2 = DESAgentNew.readModelGreedyForUser(iriOfTypeUser);
 		ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 		String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
@@ -195,9 +213,7 @@ public class ResidentialAgent extends JPSHttpServlet {
 		JSONObject responseParams = new JSONObject();
 		try {
 			String res =  new DESAgentNew().runPythonScript("residential.py", baseUrl);
-			//TODO: When other agents employ residential, results would be returned not just as a csv, but as another object
-			
-//			System.out.println(res);
+
 			responseParams.put("results", res);
 			}
 		catch (Exception ex) {

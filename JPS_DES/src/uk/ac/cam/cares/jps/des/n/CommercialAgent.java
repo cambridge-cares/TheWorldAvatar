@@ -24,9 +24,14 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/CommercialAgent"})
 public class CommercialAgent {
+	/** Main Function for processing Commercial Agent. 
+	 * Employs queryForWeather Forecast as well as building constants. 
+	 * @param requestParams
+	 * @param request
+	 * @return
+	 */
 	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	JSONObject responseParams = requestParams;	
-    	QueryBroker broker= new QueryBroker();  
         String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
         String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
@@ -34,13 +39,10 @@ public class CommercialAgent {
         String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
         new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
-        OntModel model = new DESAgentNew().readModelGreedy(iriofnetwork);
-        queryForBuildingConstants(model, baseUrl);
+        queryForBuildingConstants(iriofnetwork, baseUrl);
         try {
 			String res =  new DESAgentNew().runPythonScript("commercial.py", baseUrl);
-			//TODO: When other agents employ residential, results would be returned not just as a csv, but as another object
 			
-//			System.out.println(res);
 			responseParams.put("results", res);
 			}
 		catch (Exception ex) {
@@ -48,8 +50,14 @@ public class CommercialAgent {
 		}
 		return responseParams;
     }
-	
-	public void queryForBuildingConstants(OntModel model, String baseUrl) {
+	/** queries dynamically the Electrical network for Commercial Constants to be used by the Python
+	 * 
+	 * @param iriofnetwork IRI of Electrical Network
+	 * @param baseUrl Folder in which constant.csv is dumped in
+	 */
+	public void queryForBuildingConstants(String iriofnetwork, String baseUrl) {
+        new DESAgentNew();
+		OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
 		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 				.addPrefix("plant", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#")
 				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")

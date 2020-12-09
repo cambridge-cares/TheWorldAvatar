@@ -33,7 +33,7 @@ public class Test_AgentsNew extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/ResidentialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
-	/**
+	/** tests of Commercial Agent runs successfully
 	 * 
 	 */
 	public void testCommercialAgent() {
@@ -42,8 +42,7 @@ public class Test_AgentsNew extends TestCase{
 	    String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial";
 	     new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
 		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
-		OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
-        new CommercialAgent().queryForBuildingConstants(model, baseUrl);
+		new CommercialAgent().queryForBuildingConstants(iriofnetwork, baseUrl);
         try {
 			String result = new DESAgentNew().runPythonScript("commercial.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial");
 			System.out.println(result);
@@ -51,6 +50,14 @@ public class Test_AgentsNew extends TestCase{
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	/** test Commercial agent calls through Agent successfully
+	 * dumps result in JPS Scenarios folder
+	 */
+	public void testCommerciallAgentCaller() {
+		JSONObject jo = new JSONObject().put("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/CommercialAgent", jo.toString());
+		assertNotNull(resultStart);
 	}
 	public void testSystemAgent() {
 		try {
