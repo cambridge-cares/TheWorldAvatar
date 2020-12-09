@@ -9,14 +9,19 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
@@ -80,30 +85,35 @@ public class DESAgentNew extends JPSHttpServlet {
      */
     public List<String[]> queryForIrradTemp(String irioftempF, String iriofirrF, String baseUrl){
    	    	QueryBroker broker= new QueryBroker();  
-	       String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
-					+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
-					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-					+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" ;
-
-			
-			String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
-					+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
-					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-					+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" ;
-
+   	    	WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+   	    			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
+   	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+   	    			.addPrefix("j6", "http://www.w3.org/2006/time#").addWhere("?entity", "j4:observes", "?prop")
+   	    			.addWhere("?prop", "j2:hasValue", "?vprop").addWhere("?vprop", "j2:numericalValue", "?propval")
+   	    			.addWhere("?vprop", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
+	       
+   	    	
+   	    	SelectBuilder sensorTemp = new SelectBuilder()
+   	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+   	    			.addVar("?entity").addVar("?propval")
+   	    			.addVar("?proptimeval").addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+   	    	Query q= sensorTemp.build(); 
+   	    	String sensorInfo = q.toString();
+   	    	SelectBuilder sensorIrrad = new SelectBuilder()
+   	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+   	    			.addVar("?entity").addVar("?propval")
+   	    			.addVar("?proptimeval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB);
+   	    	
+   	    	q= sensorIrrad.build(); 
+   	    	String sensorInfo2 = q.toString();
+   	    	
 			
  			//grab forecast results
-			String result = new QueryBroker().queryFile(irioftempF, sensorinfo+ "ORDER BY ASC(?proptimeval)");
+			String result = new QueryBroker().queryFile(irioftempF, sensorInfo);
 			String[] keys = JenaResultSetFormatter.getKeys(result);
 			List<String[]>  resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
  			System.out.println("Temperature " + resultListfromquerytemp.toString());
- 			String result2 = new QueryBroker().queryFile(iriofirrF, sensorinfo2+ "ORDER BY ASC(?proptimeval)");
+ 			String result2 = new QueryBroker().queryFile(iriofirrF, sensorInfo2);
  			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
  			List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
  			System.out.println("Irradiation " + resultListfromqueryirr.toString());

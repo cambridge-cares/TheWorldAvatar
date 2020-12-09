@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.des.test;
 
-import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;

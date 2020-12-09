@@ -40,19 +40,6 @@ public class ResidentialAgent extends JPSHttpServlet {
 	 */
 	public void extractResidentialData(String iriofnetworkdistrict, String baseUrl) {
 		OntModel model = DESAgentNew.readModelGreedy(iriofnetworkdistrict);
-		//extracts 
-//		String groupInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
-//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-//				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-//				+ "SELECT ?entity ?propval ?user " 
-//				+ "WHERE {"
-//				+ "{ ?entity a j6:Building ." + "  ?entity j2:hasProperty ?prop ." 
-//				+ " ?prop   j2:hasValue ?vprop ."
-//				+ " ?vprop   j2:numericalValue ?propval ." + "?entity j4:isComprisedOf ?user ." 
-//				+ "}"
-//				+ "FILTER regex(STR(?user),\"001\") ." + "}" + "GROUP BY ?entity ?propval ?user "
-//				+ "ORDER BY ASC(?user)";
 		String groupInfo ="";
 		try {
 			SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
@@ -66,7 +53,7 @@ public class ResidentialAgent extends JPSHttpServlet {
 				Query q = sb.build();
 				groupInfo = q.toString();
 		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
+			// parseExpression due to REGEX used in Filter
 			e1.printStackTrace();
 		}
 		ResultSet resultSet = JenaHelper.query(model, groupInfo);
