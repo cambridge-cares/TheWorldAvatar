@@ -2,6 +2,12 @@
 # Author: Feroz Farazi (msff2@cam.ac.uk) #
 # Date: 04 Dec 2020                      #
 ##########################################
+
+"""This module is designed to convert entities of any domain and their data and metadata into RDF.
+It requires the entities and their data to be provided as inputs in an ABox excel template, that is
+filled in with example data and that is provided in the following path:
+python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
+
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.namespace import RDF, RDFS, Namespace
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
@@ -32,12 +38,14 @@ UNDERSCORE = '_'
 instances = dict()
 g = Graph()
 
+"""This shows a file dialog box that enables the user to select a file to convert into RDF"""
 def select_file():
     """Suppresses the root window of GUI"""
     Tk().withdraw()
     """Opens a file dialog box to select a file"""
     return askopenfilename()
 
+"""This function checks the validity of header in the ABox excel template"""
 def is_header_valid(row):
     if len(row) >= TOTAL_NO_OF_COLUMNS:
         if row[0].strip().lower()==COLUMN_1.lower() \
@@ -49,6 +57,7 @@ def is_header_valid(row):
         else:
             return False
 
+"""This function converts a row into an entity or a link between two entities or a data or annotation property value"""
 def process_data(row):
     if len(row) >= TOTAL_NO_OF_COLUMNS:
         if row[0].strip() is None or row[0].strip()  == '' \
@@ -82,6 +91,7 @@ def process_data(row):
                                   URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())),
                                   row[4].strip())
 
+"""Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
     iri = iri.title()
     iri = iri.replace(":"," ")
@@ -89,11 +99,14 @@ def format_iri(iri):
     iri = iri.replace(" ","")
     return iri
 
+"""Converts an IRI into a namespace"""
 def create_namespace(IRI):
     print(IRI)
     return Namespace(IRI)
 
-def convert_lucode(file_path):
+"""This function checks the validity of the excel template header and iterates over each data row until the whole
+content of the template is converted into RDF"""
+def convert_into_rdf(file_path):
     print('Provided file path:', file_path)
     if not path.isfile(file_path):
         print('The provided file path is not valid.')
@@ -117,5 +130,7 @@ def convert_lucode(file_path):
            print('[', line_count, ']', row)
     g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(), format="application/rdf+xml")
 
+"""This block of codes calls the function that converts the content of ABox excel template into RDF"""
 if __name__ == '__main__':
-    convert_lucode(select_file())
+    """Calls the RDF conversion function"""
+    convert_into_rdf(select_file())
