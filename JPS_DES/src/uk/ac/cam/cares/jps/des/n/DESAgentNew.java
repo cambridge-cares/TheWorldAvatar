@@ -245,7 +245,7 @@ public class DESAgentNew extends JPSHttpServlet {
 		String result = "";
 			String path = AgentLocator.getCurrentJpsAppDirectory(this);
 			String command = "python " + path+ "/python/" +script + " " + folder;
-//			System.out.println(command);
+			System.out.println(command);
 			result = CommandHelper.executeSingleCommand( path, command);
 		
 		

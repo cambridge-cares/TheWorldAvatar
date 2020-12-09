@@ -273,21 +273,28 @@ def commercial(totGen, aggrLoad, AirTemp,Radiation, business_below, business_abo
 	 np.dot(np.kron(np.identity(24), 1/cb.mc*np.ones(cb.mc)), RoomTemp), cb.res.x]
 
 if __name__ == "__main__":
-	AirTemp = np.array([28.45, 28.3 , 28.11, 27.9 , 27.74, 27.68, 27.59, 27.54, 26.59, 23.82,
-	 26.7 , 28.23, 28.92, 29.15, 30.56, 30.45, 30.65, 31.06, 30.97, 30.76, 30.03, 29.76, 29.48, 28.99])#24 readings
-	Radiation = np.array([1.700e-02, 2.100e-02, 1.500e-02, 2.000e-02, 1.800e-02,
-	 1.500e-02, 2.400e-02, 3.360e-01, 2.343e+01, 1.193e+02, 4.061e+02, 5.386e+02,
-	  6.513e+02, 7.080e+02, 7.000e+02, 6.656e+02, 5.661e+02, 4.238e+02, 2.571e+02,
-	   8.630e+01, 1.071e+00, 1.900e-02, 1.800e-02, 1.700e-02]) #24 readings
-	C1 = 9.356e5
-	C2 = 2.970e6
-	C3 = 6.695e5
-	K1 = 16.48
-	K2 = 108.5
-	K3 = 5
-	K4 = 30.5
-	K5 = 23.04
-	
+	import pandas as pd
+	import sys
+	from caresjpsutil import returnExceptionToJava, returnResultsToJava
+	from caresjpsutil import PythonLogger
+
+	pythonLogger = PythonLogger('commercial.py')
+	pythonLogger.postInfoToLogServer('start of commercial.py')
+	folder = sys.argv[1]
+	dfWeather=pd.read_csv(folder + '/WeatherForecast.csv', sep=',', header=None)
+	dfConst=pd.read_csv(folder + '/constant.csv', sep=',', header=None)
+	AirTemp = dfWeather[0].to_numpy()
+	Radiation = dfWeather[1].to_numpy()
+	C1 = dfConst.iloc[0,0]
+	C2 = dfConst.iloc[0,1]
+	C3 = dfConst.iloc[0,2]
+	K1 = dfConst.iloc[0,3]
+	K2 = dfConst.iloc[0,4]
+	K3 = dfConst.iloc[0,5]
+	K4 = dfConst.iloc[0,6]
+	K5 = dfConst.iloc[0,7]
+
+	#Default Values; we don't have a OWL for them since they're arbitrary
 	business_below = 1.14*1/50*0.01*np.ones(24)
 	business_above = 1.14*1/50*0.02*np.ones(24)
 	HeatSource = np.array([5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 25.0, 25.0, 25.0, 25.0, 25.0,
@@ -303,6 +310,11 @@ if __name__ == "__main__":
 	B = np.array([[-1/C1], [0], [0]])
 	C = np.array([[1/C1*K3, 1/C1, 1/C1], [0, 1/C2, 0], [1/C3*K4, 0, 0]])
 	Nc = 1
-	print(commercial(np.zeros(24), np.zeros(24), AirTemp,Radiation, business_below,
+	f = open(folder + "/commercial.csv", 'ab')
+	
+	result = commercial(np.zeros(24), np.zeros(24), AirTemp,Radiation, business_below,
 	 business_above, HeatSource, RoomTempLow, RoomTempHigh, InitialTemp,
-	  C1, C2, C3, K1, K2, K3, K4, K5, A, B, C, Nc)[3:])
+	  C1, C2, C3, K1, K2, K3, K4, K5, A, B, C, Nc)[3:]
+	np.savetxt(f,result, delimiter=",")
+	returnResultsToJava(result)
+	pythonLogger.postInfoToLogServer('end of commercial.py')
