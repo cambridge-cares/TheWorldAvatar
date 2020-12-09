@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -26,20 +28,22 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 	private static final String slmDir = "\\python\\ADMS-speed-load-map";
 	private static final String slmPython = "\\env\\Scripts\\python.exe";
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
+	private static final String pypath = "bin/python";
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
 		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
 		String pythonExec = smlWorkingDir + slmPython;
 		ArrayList<String> args = new ArrayList<String>();
-
+		Path venvPath = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR), pypath);
+				
 		if (CommandHelper.isWindows()) {
 			args.add(pythonExec);
 	        args.add(slmScript);
 			args.add(inputs);
 		} else {
 			smlWorkingDir = AgentLocator.getCurrentJpsAppDirectory(this) +  slmDir.replace("\\", "/");
-			args.add(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR));
+			args.add(venvPath.toString());
 			args.add(slmScript);
 			args.add(inputs);
 		}
