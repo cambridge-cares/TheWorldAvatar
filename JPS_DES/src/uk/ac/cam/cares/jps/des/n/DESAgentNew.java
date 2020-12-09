@@ -69,6 +69,7 @@ public class DESAgentNew extends JPSHttpServlet {
 		broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
 		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
 		new ResidentialAgent().extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+		new CommercialAgent().queryForBuildingConstants(iriofnetwork, baseUrl);//csv for commercial
 		try {
 			runPythonScript("system.py", baseUrl);
 		} catch (Exception e) {

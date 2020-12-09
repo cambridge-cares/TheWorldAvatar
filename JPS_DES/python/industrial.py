@@ -616,18 +616,19 @@ if __name__ == "__main__":
     Ccw = 4.18e3*1e3*Qcw #[W/C]
     z2 = 2
 
-    #FuelCell
-    # polarization curve parameters:
-    U0 = 33.18             #[V]
-    E1 = -0.013            #[V/C]
-    E2 = -1.57             #[1]
-    I0 = 8.798             #[A]
-    R = -2.04              #[Ohm*C]
+    
     DF_FC = pd.read_csv("FuelCell.csv", header=None )
     nc2 = DF_FC.iloc[0,1] # no. of cells
     eta = DF_FC.iloc[1,1] # fuel utilization factor
     Tlow = DF_FC.iloc[2,1] #[C]
     Thigh = DF_FC.iloc[3,1] #[C]
+    #FuelCell
+    # polarization curve parameters:
+    U0 = DF_FC.iloc[4,1]   #[V]
+    E1 = -0.013            #[V/C]
+    E2 = -1.57             #[1]
+    I0 = 8.798             #[A]
+    R = -2.04              #[Ohm*C]
     # track optimal operating temperature if possible:
     Ilow = Tlow**2*E1/R #[A]
     Ihigh = Thigh**2*E1/R #[A]

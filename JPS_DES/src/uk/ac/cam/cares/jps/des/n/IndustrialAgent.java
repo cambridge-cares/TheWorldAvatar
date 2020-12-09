@@ -6,7 +6,9 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 
@@ -35,11 +37,36 @@ public class IndustrialAgent {
         OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
 		List<String[]> consumer = provideLoadFClist(model); // instance iri
         
-        queryForPhysicalConstants();
+        queryForPhysicalConstants(model);
 		return responseParams;
     }
 	
-	public void queryForPhysicalConstants() {
+	public void queryForPhysicalConstants(OntModel model) {
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
+				.addVar("?nocellval").addVar("?effval").addVar("?tvalmin").addVar("?tvalmax").addVar("?voltVal")
+				.addWhere("?entity" ,"a", "j1:FuelCell").addWhere("?entity" ,"j1:hasNumberOfCells", "?no")
+				.addWhere("?no" ,"j2:hasValue", "?vno").addWhere("?vno" ,"j2:numericalValue", "?nocellval")
+				
+				.addWhere("?entity" ,"j9:hasEfficiency", "?eff")
+				.addWhere("?eff" ,"j2:hasValue", "?veff").addWhere("?veff" ,"j2:numericalValue", "?effval")
+				
+				.addWhere("?entity" ,"j2:hasProperty", "?max").addWhere("?max" ,"a", "j2:MaximumDesignTemperature")
+				.addWhere("?max" ,"j2:hasValue", "?vmax").addWhere("?vmax" ,"j2:numericalValue", "?tvalmax")
+				
+				.addWhere("?entity" ,"j2:hasProperty", "?min").addWhere("?min" ,"a", "j2:MinimumDesignTemperature")
+				.addWhere("?min" ,"j2:hasValue", "?vmin").addWhere("?vmin" ,"j2:numericalValue", "?tvalmin")
+				
+				.addWhere("?entity" ,"j9:hasVoltageOutput", "?volt")
+				.addWhere("?volt" ,"j2:hasValue", "?vVolt").addWhere("?vVolt" ,"j2:numericalValue", "?voltVal");
+		Query q = sb.build();
+		String groupInfo = q.toString();
+		ResultSet resultSet = JenaHelper.query(model, groupInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		
 	}/** returns relevant parameters for Fuel Cell (Used by Fuel Agent)
      * 
@@ -49,11 +76,7 @@ public class IndustrialAgent {
     public static List<String[]> provideLoadFClist(OntModel model) {
         String fuelcellInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
                 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-                + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-                + "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
                 + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-                + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-                + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
                 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
                 + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
                 + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
