@@ -26,29 +26,30 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 @WebServlet("/SLMAgent")
 public class SpeedLoadMapWrapper extends HttpServlet {
 	private static final String slmDir = "\\python\\ADMS-speed-load-map";
-	private static final String slmPython = "\\env\\Scripts\\python.exe";
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
-	private static final String pypath = "bin/python";
+	private static final String pypathUnix = "bin/python";
+	private static final String pypathWindows = "\\Scripts\\python.exe";
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
-		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
-		String pythonExec = smlWorkingDir + slmPython;
+		String slmWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
 		ArrayList<String> args = new ArrayList<String>();
-		Path venvPath = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR), pypath);
+		Path venvPath;
 				
 		if (CommandHelper.isWindows()) {
-			args.add(pythonExec);
+			venvPath = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR), pypathWindows);
+			args.add(venvPath.toString());
 	        args.add(slmScript);
 			args.add(inputs);
 		} else {
-			smlWorkingDir = AgentLocator.getCurrentJpsAppDirectory(this) +  slmDir.replace("\\", "/");
+			slmWorkingDir = AgentLocator.getCurrentJpsAppDirectory(this) +  slmDir.replace("\\", "/");
+			venvPath = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR), pypathUnix);
 			args.add(venvPath.toString());
 			args.add(slmScript);
 			args.add(inputs);
 		}
 
-		return CommandHelper.executeCommands(smlWorkingDir, args);
+		return CommandHelper.executeCommands(slmWorkingDir, args);
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
