@@ -384,7 +384,7 @@ public class MatchAggregator extends JPSAgent {
 		//		.getProperty(OntomatchProperties.CARDINALITYFILTERING_TMP_ALIGNMENT_PATH);
 		String[] paras = {  alignmentFileAddr };
 		String pyName = OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_ONETOONECARDI);
-		String[] results = pyHelper.callPython(pyName, paras, MatchAggregator.class);
+		String[] results = pyHelper.callPython(pyName, paras, this);//
 		System.out.println(results[0]);
 		System.out.println(results[0]);
 

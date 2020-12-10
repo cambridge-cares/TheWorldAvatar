@@ -101,7 +101,6 @@ public class CoordinationAgent extends JPSAgent {
 	final String SAME_CLASS_THRESHOLD = "sameClassThrehold";
 	final String P_FACTOR = "pFactor";
 	private String venvname = OntomatchProperties.getInstance().getProperty(OntomatchProperties.VENV_NAME);
-
 	private AsyncPythonHelper pyHelper =  AsyncPythonHelper.getInstance(venvname);
 
 	@Override
@@ -266,7 +265,7 @@ public class CoordinationAgent extends JPSAgent {
 	protected void callLexicalProcessor(String IRI) {
 		JSONObject requestParams = new JSONObject();
 		String name = getShortName(IRI);
-		String saveAddress = AgentLocator.getCurrentJpsAppDirectory(CoordinationAgent.class) + "/tmp/" + name + ".pkl";
+		String saveAddress = AgentLocator.getCurrentJpsAppDirectory(this) + "/tmp/" + name + ".pkl";//
 		File tempFile = new File(saveAddress);
 		if(tempFile.exists()) {
 			return;
@@ -389,7 +388,7 @@ public class CoordinationAgent extends JPSAgent {
 		String[] params = { fileAddr, TBOXIRI, saveAddr };
 		JSONObject results = pyHelper.callPython("success",
 				OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_LOADTBOX), params,
-				CoordinationAgent.class);
+				this);//
 		System.out.println(results);
 		if(results.has("error")) {
 			throw new Exception(results.getString("error"));
