@@ -174,7 +174,7 @@ public class OntoPrimeSpeciesKBConfig {
 	@Value("${ontoprimespecies.namespace}")
 	private String ontoPrimeSpeciesNamespace;
 	
-	@Value("ontospecies.kb.file.head.comment")
+	@Value("${ontospecies.kb.file.head.comment}")
 	private String ontoSpeciesHeadComment;
 	
 	public String getOntoPrimeSpeciesNamespace() {
