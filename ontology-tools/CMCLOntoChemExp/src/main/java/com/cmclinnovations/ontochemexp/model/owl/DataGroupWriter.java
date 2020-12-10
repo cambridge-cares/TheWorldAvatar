@@ -673,13 +673,13 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPreferredKey(), STRING);
 			}
 			
-			if (dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
-					&& !dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
-						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
-			}
+//			if (dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
+//					&& !dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
+//						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
+//			}
 		} catch (ABoxManagementException e) {
 			logger.error("An individual of PropertyComponentSpeciesLink could not be created.");
 		}
@@ -709,14 +709,14 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 						dataGroupPropertySpeciesLink.getSpeciesLinkPreferredKey(), STRING);
 			}
 
-			if (dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID() != null
-					&& !dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
-								+ dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
-						dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID(), STRING);
-			}
+//			if (dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID() != null
+//					&& !dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
+//								+ dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
+//						dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID(), STRING);
+//			}
 
 			if (dataGroupPropertySpeciesLink.getSpeciesLinkValue() != null
 					&& !dataGroupPropertySpeciesLink.getSpeciesLinkValue().trim().isEmpty()) {
@@ -822,13 +822,13 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 						dataGroupPropertyDerivedPropertyFeature.getFeatureId(), STRING);
 			}
 
-			if (dataGroupPropertyDerivedPropertyFeature.getFeaturePrimeID() != null
-					&& !dataGroupPropertyDerivedPropertyFeature.getFeaturePrimeID().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"Feature" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
-						dataGroupPropertyDerivedPropertyFeature.getFeaturePrimeID(), STRING);
-			}
+//			if (dataGroupPropertyDerivedPropertyFeature.getFeaturePrimeID() != null
+//					&& !dataGroupPropertyDerivedPropertyFeature.getFeaturePrimeID().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"Feature" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
+//						dataGroupPropertyDerivedPropertyFeature.getFeaturePrimeID(), STRING);
+//			}
 
 			if (dataGroupPropertyDerivedPropertyFeature.getFeatureType() != null
 					&& !dataGroupPropertyDerivedPropertyFeature.getFeatureType().trim().isEmpty()) {
@@ -975,16 +975,16 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 						STRING);
 			}
 
-			if (dataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink.getDataAttributeLinkPrimeID() != null
-					&& !dataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink.getDataAttributeLinkPrimeID()
-							.trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"DataAttributeLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
-								+ dataGroupPropertyCount + UNDERSCORE + indicatorCount,
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
-						dataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink.getDataAttributeLinkPrimeID(),
-						STRING);
-			}
+//			if (dataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink.getDataAttributeLinkPrimeID() != null
+//					&& !dataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink.getDataAttributeLinkPrimeID()
+//							.trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"DataAttributeLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
+//								+ dataGroupPropertyCount + UNDERSCORE + indicatorCount,
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
+//						dataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink.getDataAttributeLinkPrimeID(),
+//						STRING);
+//			}
 
 			if (dataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink.getDataAttributeLinkValue() != null
 					&& !dataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink.getDataAttributeLinkValue()

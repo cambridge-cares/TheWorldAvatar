@@ -67,13 +67,13 @@ public class DataGroupPropertyComponentParser extends PrimeConverter implements 
 						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPreferredKey(), STRING);
 			}
 			
-			if (dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
-					&& !dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
-						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
-			}
+//			if (dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
+//					&& !dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
+//						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
+//			}
 		} catch (ABoxManagementException e) {
 			logger.error("An individual of PropertyComponentSpeciesLink could not be created.");
 		}

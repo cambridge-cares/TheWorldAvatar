@@ -352,12 +352,12 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 						commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPreferredKey(), STRING);
 			}		
 			
-			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
-					&& !commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
-				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), 
-						commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
-			}
+//			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
+//					&& !commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
+//				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), 
+//						commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
+//			}
 			
 			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkValue() != null 
 					&& !commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkValue().trim().isEmpty()) {

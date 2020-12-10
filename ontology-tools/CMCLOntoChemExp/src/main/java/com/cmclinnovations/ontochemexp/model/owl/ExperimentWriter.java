@@ -61,15 +61,15 @@ public class ExperimentWriter extends PrimeConverter implements IExperimentWrite
 	}
 	
 	private void addAllAttributes() {
-		if (experiment.getPrimeID() != null && !experiment.getPrimeID().trim().isEmpty()) {
-			try {
-				iABoxManagement.addProperty("Experiment"+UNDERSCORE+experimentInstanceId, 
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), experiment.getPrimeID(), STRING);
-			} catch (ABoxManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		if (experiment.getPrimeID() != null && !experiment.getPrimeID().trim().isEmpty()) {
+//			try {
+//				iABoxManagement.addProperty("Experiment"+UNDERSCORE+experimentInstanceId, 
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), experiment.getPrimeID(), STRING);
+//			} catch (ABoxManagementException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 		
 		if (experiment.getXmlns() != null && !experiment.getXmlns().trim().isEmpty()) {
 			try {
