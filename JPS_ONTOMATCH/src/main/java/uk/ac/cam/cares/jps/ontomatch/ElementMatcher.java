@@ -33,7 +33,8 @@ import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 public class ElementMatcher extends JPSAgent {
 
 	private static final long serialVersionUID = -7032945484999523116L;
-
+	private String venvname = OntomatchProperties.getInstance().getProperty(OntomatchProperties.VENV_NAME);
+	private AsyncPythonHelper pyHelper =  AsyncPythonHelper.getInstance(venvname);
 	/** Types of element matchers **/
 	public enum MATCHERTYPE {
 		DOMAIN, STRING, WORD, VALUE, I_STRING, I_WORD
@@ -93,10 +94,10 @@ public class ElementMatcher extends JPSAgent {
 			/** construct params list according to matcher type, then call python ***/
 			if (type == MATCHERTYPE.DOMAIN) {// special case: domain matcher needs extra params
 				String[] paras = { savePath, srcPkl, tgtPkl, pyMatchFunction, modelPath, dictPath };
-				results = AsyncPythonHelper.callPython(matcherLocation, paras, LexicalProcessor.class);
+				results = pyHelper.callPython(matcherLocation, paras, LexicalProcessor.class);
 			} else {// other cases
 				String[] paras = { savePath, srcPkl, tgtPkl, pyMatchFunction };
-				results = AsyncPythonHelper.callPython(matcherLocation, paras, LexicalProcessor.class);
+				results = pyHelper.callPython(matcherLocation, paras, LexicalProcessor.class);
 			}
 			System.out.println(results[0]);
 			System.out.println(results[1]);

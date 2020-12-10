@@ -44,6 +44,7 @@ public class OntomatchProperties {
     public final static String SUCCESS_FLAG= "success.flag";
 	public static final String CARDINALITYFILTERING_TMP_ALIGNMENT_PATH = "caridinalityfiltering.tmp.alignment.path";
 	public static final String TEMP_ABOXFILE_NAME = "temp.aboxfile.name";
+	public static final String VENV_NAME = "venv.name";
 
 	
     @Autowired

@@ -80,7 +80,8 @@ public class MatchAggregator extends JPSAgent {
 	protected String classAlignmentIRI;
 	protected double pFactor, sameClassThreshold;
 	protected List<Generator> MatcherResultGenerators = new ArrayList<Generator>();
-
+	private String venvname = OntomatchProperties.getInstance().getProperty(OntomatchProperties.VENV_NAME);
+	private AsyncPythonHelper pyHelper =  AsyncPythonHelper.getInstance(venvname);
 	/*** types of optional steps in aggregator **/
 	 enum AGGREGATE_CHOICE {
 		PENALIZING, CARDINALITY
@@ -383,7 +384,7 @@ public class MatchAggregator extends JPSAgent {
 		//		.getProperty(OntomatchProperties.CARDINALITYFILTERING_TMP_ALIGNMENT_PATH);
 		String[] paras = {  alignmentFileAddr };
 		String pyName = OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_ONETOONECARDI);
-		String[] results = AsyncPythonHelper.callPython(pyName, paras, MatchAggregator.class);
+		String[] results = pyHelper.callPython(pyName, paras, MatchAggregator.class);
 		System.out.println(results[0]);
 		System.out.println(results[0]);
 

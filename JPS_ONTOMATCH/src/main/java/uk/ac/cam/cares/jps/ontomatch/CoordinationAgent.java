@@ -100,6 +100,9 @@ public class CoordinationAgent extends JPSAgent {
 	final String CLASS_ALIGNMENT = "classAlignment";
 	final String SAME_CLASS_THRESHOLD = "sameClassThrehold";
 	final String P_FACTOR = "pFactor";
+	private String venvname = OntomatchProperties.getInstance().getProperty(OntomatchProperties.VENV_NAME);
+
+	private AsyncPythonHelper pyHelper =  AsyncPythonHelper.getInstance(venvname);
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -384,7 +387,7 @@ public class CoordinationAgent extends JPSAgent {
 	 */
 	public void loadTBOX(String fileAddr, String TBOXIRI, String saveAddr) throws Exception {
 		String[] params = { fileAddr, TBOXIRI, saveAddr };
-		JSONObject results = AsyncPythonHelper.callPython("success",
+		JSONObject results = pyHelper.callPython("success",
 				OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_LOADTBOX), params,
 				CoordinationAgent.class);
 		System.out.println(results);

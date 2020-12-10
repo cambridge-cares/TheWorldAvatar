@@ -43,7 +43,8 @@ import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 public class TopicModelAgent extends JPSAgent{
 
 	private static final long serialVersionUID = -4621180516256485859L;
-
+	private String venvname = OntomatchProperties.getInstance().getProperty(OntomatchProperties.VENV_NAME);
+	private AsyncPythonHelper pyHelper =  AsyncPythonHelper.getInstance(venvname);
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         JSONObject result = new JSONObject();
 		if (validateInput(requestParams)) {
@@ -70,7 +71,7 @@ public class TopicModelAgent extends JPSAgent{
         
 		try {
 			String[] params = {corpusLocation, dictionaryLocation, docsPath, modelLocation}; 
-			String[] prints = AsyncPythonHelper.callPython("modelTopic.py",params, TopicModelAgent.class);
+			String[] prints = pyHelper.callPython("modelTopic.py",params, TopicModelAgent.class);
 			List<String> topics = new ArrayList<String>();
 			String serverPath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL);
 			String afileIRI = serverPath+"topicmodel";

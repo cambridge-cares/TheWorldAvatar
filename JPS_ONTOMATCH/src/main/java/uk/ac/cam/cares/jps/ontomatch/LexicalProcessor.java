@@ -45,7 +45,8 @@ import uk.ac.cam.cares.jps.paramsValidator.ParamsValidateHelper.CUSTOMVALUETYPE;
 public class LexicalProcessor extends JPSAgent {
 
 	private static final long serialVersionUID = -5914984180067956570L;
-
+	private String venvname = OntomatchProperties.getInstance().getProperty(OntomatchProperties.VENV_NAME);
+	private AsyncPythonHelper pyHelper =  AsyncPythonHelper.getInstance(venvname);
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject resultObj = new JSONObject();
@@ -65,7 +66,7 @@ public class LexicalProcessor extends JPSAgent {
 			String[] paras = { readAddress, saveAddress };
 			String pyname = OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_LEXICALPROCESSOR);
 			String successFlag = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SUCCESS_FLAG);
-			JSONObject pyresult = AsyncPythonHelper.callPython(successFlag, pyname, paras, LexicalProcessor.class);
+			JSONObject pyresult = pyHelper.callPython(successFlag, pyname, paras, LexicalProcessor.class);
             System.out.println(pyresult.toString());
 			/** write to metadata store **/
 			String serverUrl = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL);
