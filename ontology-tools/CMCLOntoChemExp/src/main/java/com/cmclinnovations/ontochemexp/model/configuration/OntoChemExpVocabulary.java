@@ -929,4 +929,15 @@ public class OntoChemExpVocabulary {
 	public void setDataPropertyhasPropertyID(String dataPropertyhasPropertyID) {
 		this.dataPropertyhasPropertyID = dataPropertyhasPropertyID;
 	}
+	
+	@Value("${ontochemexp.data.property.hasUniqueSpeciesIRI}")
+	private String dataPropertyhasUniqueSpeciesIRI;
+
+	public String getDataPropertyhasUniqueSpeciesIRI() {
+		return dataPropertyhasUniqueSpeciesIRI;
+	}
+
+	public void setDataPropertyhasUniqueSpeciesIRI(String dataPropertyhasUniqueSpeciesIRI) {
+		this.dataPropertyhasUniqueSpeciesIRI = dataPropertyhasUniqueSpeciesIRI;
+	}
 }
