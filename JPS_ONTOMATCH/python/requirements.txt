@@ -21,7 +21,7 @@ more-itertools==8.5.0
 multiprocess==0.70.10
 nltk==3.5
 numpy==1.19.2
-Owlready2==0.24
+owlready2==0.24
 packaging==20.4
 pathos==0.2.6
 plac==1.2.0
@@ -35,11 +35,13 @@ python-dateutil==2.8.1
 regex==2020.7.14
 requests==2.24.0
 s3transfer==0.3.3
-scipy==1.5.2
 six==1.15.0
 smart-open==2.1.1
-spiral @ git+https://github.com/casics/spiral.git@a10fcd3afbd4c28e917cc0056d6f646cc2e9bd44
+-e git+https://github.com/casics/spiral.git@a10fcd3afbd4c28e917cc0056d6f646cc2e9bd44#egg=spiral
 termcolor==1.1.0
 toml==0.10.1
 tqdm==4.49.0
 urllib3==1.25.10
+scipy
+rdflib
+otsrdflib==0.5.0

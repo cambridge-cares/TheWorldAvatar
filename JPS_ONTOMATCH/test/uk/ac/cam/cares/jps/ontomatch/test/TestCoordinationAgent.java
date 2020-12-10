@@ -79,7 +79,7 @@ public class TestCoordinationAgent extends Mockito{
 	}
 
 
-	@Ignore
+@Ignore
 	@Test 
 	public void testRetrieveTriplesRemote() {
 		String ep = "http://dbpedia.org/sparql";
@@ -89,6 +89,7 @@ public class TestCoordinationAgent extends Mockito{
 		String tIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
 		List IRIs = new ArrayList<String>();
 		IRIs.add(targetClassIRI);
+		
 		try {
 			a.queryPotentialInstanceAndSave(IRIs, ep,tIRI, true, saveIRI);
 		} catch (IOException e) {
@@ -98,9 +99,10 @@ public class TestCoordinationAgent extends Mockito{
 	    
 	}
 
-	  
+
+	
     @Test
-    public void testIndiCoordi() {
+    public void testIndiCoordi() {//56x5000
         HttpServletRequest request = mock(HttpServletRequest.class);       
         HttpServletResponse response = mock(HttpServletResponse.class);
         System.out.println("test coordi");
@@ -117,11 +119,16 @@ public class TestCoordinationAgent extends Mockito{
 		weights.add(0.6);
 		weights.add(0.3);
 		weights.add(0.1);
+		List<String> choices = new ArrayList<String>();
+        choices.add("PENALIZING");
+        choices.add("CARDINALITY");
+
 		JSONObject jo  = new JSONObject();
         jo.put("aIRI", stubSavePath);
         jo.put("sourceIRI", stubEP);
         jo.put("targetIRI", stubTgt);
         jo.put("matchingType", mt);
+        jo.put("choices", choices);
         jo.put("threshold", 0.55);
         jo.put("weights", weights);
         jo.put("classAlignment", classAlign);

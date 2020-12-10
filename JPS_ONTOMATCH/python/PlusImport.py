@@ -35,7 +35,10 @@ if __name__ == "__main__":
     saveIRI = sys.argv[3]
     #ontologyIRI = "D:/workwork/ontoMatchFiles/jpspp.rdf"
     #saveIRI = "D:/workwork/ontoMatchFiles/jpsppcombine.rdf"
-
+    #tIRI = "D:/workwork/testFiles/ontologies/PowerPlant.owl"
+    #C:\Users\morta\WebstormProjects\MatchAgentVisual\public\kb\ONTOMATCH\jpspppt.owl
+    #saveIRI = "file:///C:/Users/morta/WebstormProjects/MatchAgentVisual/public/kb/ONTOMATCH/jpspppt.owl"
+    #ontologyIRI = "D:/workwork/ontoMatchFiles/jpspp.rdf"
     #ontologyIRI = "D:/workwork/ontoMatchFiles/tmpdbp.owl"
     #saveIRI = "D:/workwork/ontoMatchFiles/tmpdbpT.owl"
     #tIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl"

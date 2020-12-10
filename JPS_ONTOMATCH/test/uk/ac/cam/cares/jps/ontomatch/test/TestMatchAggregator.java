@@ -62,22 +62,7 @@ public class TestMatchAggregator extends Mockito {
 		System.out.println(v);
 
 	}
-	@Ignore
-	@Test
-	public void checkListSorting() {
-		List<String[]> a = new ArrayList<String[]>();
-		String[] a1 = {"b","c","0"};
-		String[] a2 = {"b","b","0"};
-		String[] a3 = {"a","c","0"};
-		a.add(a1);a.add(a2);a.add(a3);
-		List<String[]> sorted = new MatchAggregator4Test().sortAlignmentListByEntityName(a);
-	//TODO
-		for(String[] item:sorted) {
-		for(String i: item) {
-			System.out.println(i);
-		}
-	}
-	}
+
 
 	
 	
