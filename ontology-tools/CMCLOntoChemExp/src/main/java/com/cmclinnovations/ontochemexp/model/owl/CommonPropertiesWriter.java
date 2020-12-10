@@ -20,7 +20,9 @@ import com.cmclinnovations.ontochemexp.model.data.structure.prime.property.Compo
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.property.SpeciesLink;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.property.Uncertainty;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.property.Value;
+import com.cmclinnovations.ontochemexp.model.exception.OntoChemExpException;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.CommonPropertiesParseStatus;
+import com.cmclinnovations.ontochemexp.model.utils.PrimeConverterUtils;
 import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
 
 /**
@@ -352,12 +354,26 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 						commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPreferredKey(), STRING);
 			}		
 			
-//			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
-//					&& !commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
+			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
+					&& !commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
 //				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
 //						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), 
 //						commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
-//			}
+				
+				String uniqueSpeciesIRI;
+				try {
+					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
+							.concat(commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID()));
+					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
+						iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+							ontoChemExpVocabulary.getDataPropertyhasUniqueSpeciesIRI(), 
+							uniqueSpeciesIRI, STRING);
+					}
+				} catch (OntoChemExpException e) {
+					logger.error("The uniqueSpeciesIRI could not be retrieved.");
+					e.printStackTrace();
+				}
+			}
 			
 			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkValue() != null 
 					&& !commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkValue().trim().isEmpty()) {
