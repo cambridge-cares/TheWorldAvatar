@@ -14,11 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.http.client.methods.HttpPost;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -29,8 +31,12 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
  * 
  * @author Gourab Karmakar (gourab.karmakar@cares.cam.ac.uk)
  */
-@WebServlet("/JPSMatlabAgent")
+@WebServlet(urlPatterns = {"/JPSMatlabAgent/startSimulation", "/JPSMatlabAgent/processResult"})
 public class JPSMatlabAgent extends JPSAgent {
+  public static final String SIM_START_PATH = "/JPSMatlabAgent/startSimulation";
+  public static final String SIM_PROCESS_PATH = "/JPSMatlabAgent/processResult";
+  public static final String KEY_WATCH = "watch";
+  public static final String KEY_CALLBACK_URL = "callback";
   private static final long serialVersionUID = 1L;
   public static final String MESSAGE_KEY = "File generated and located at:";
   public static final String SUCCESS_MESSAGE_KEY = "Completed and executed";
@@ -50,31 +56,48 @@ public class JPSMatlabAgent extends JPSAgent {
    */
   @Override
   public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-    JSONObject jo = AgentCaller.readJsonParameter(request);
+    JSONObject responseParams = requestParams;
+    String path = request.getServletPath();
+    System.out.println("path= " + path);
     String current = System.getProperty("user.home");
     String activePowerFilePath = null;
     String agentiri = gPROMSAgent.GPROMS_AGENT_URL;
     List<String> lst = null;
     JPSMatlabAgent iri = new JPSMatlabAgent();
     activePowerFilePath = iri.queryRDF4J(agentiri, lst);
-    // JSONObject param = new JSONObject().put("key", activePowerFilePath);
-    if (validateInput(activePowerFilePath)) {
-      JPSMatlabAgent app = new JPSMatlabAgent();
-      app.appendFile(activePowerFilePath);
-      // Create file path for batch file
-      String batchFile = current + TEMP_BATCH_FILE;
-      System.out.printf(MESSAGE_KEY + batchFile + "\n");
-      // File path for Matlab script file
-      String scriptFile = current + TEMP_SCRIPT_FILE;
-      System.out.println(MESSAGE_KEY + scriptFile + "\n");
-      // Command string for Matlab
-      String cmd = "matlab -nodisplay -nosplash -nodesktop -r \"run('" + scriptFile + "');exit;\"";
-      JPSMatlabAgent exe = new JPSMatlabAgent();
-      exe.batchFile(batchFile, scriptFile, cmd);
+    if (SIM_START_PATH.equals(path)) {
+      JSONObject jofornuc = requestParams;
+      if (validateInput(activePowerFilePath)) {
+        JPSMatlabAgent app = new JPSMatlabAgent();
+        app.appendFile(activePowerFilePath);
+        // Create file path for batch file
+        String batchFile = current + TEMP_BATCH_FILE;
+        batchFile = batchFile.replace("\\", "/");
+        System.out.printf(MESSAGE_KEY + batchFile + "\n");
+        // File path for Matlab script file
+        String scriptFile = current + TEMP_SCRIPT_FILE;
+        scriptFile = scriptFile.replace("\\", "/");
+        System.out.println(MESSAGE_KEY + scriptFile + "\n");
+        // Command string for Matlab
+        String cmd =
+            "matlab -nodisplay -nosplash -nodesktop -r \"run('" + scriptFile + "');exit;\"";
+        JPSMatlabAgent exe = new JPSMatlabAgent();
+        exe.batchFile(batchFile, scriptFile, cmd);
+        // watcher to look for output files.
+        File dest = new File(System.getProperty("user.home") + PATH_FREQUENCY_FILE);
+        String pathToFrequency = dest.getAbsolutePath();
+        pathToFrequency = pathToFrequency.replace("\\", "/");
+        notifyWatcher(jofornuc, pathToFrequency,
+            request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+      } else {
+        System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
+      }
+    } else if (SIM_PROCESS_PATH.equals(path)) {
       // Delete the temporary file
       File tempFile = new File(activePowerFilePath);
       tempFile.delete();
       String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
+      pathToSettingFile = pathToSettingFile.replace("\\", "/");
       JPSMatlabAgent now = new JPSMatlabAgent();
       now.delete(pathToSettingFile, STARTLINE, NUMLINES);
       // adding the freq.csv file to the JPS metadata
@@ -87,10 +110,18 @@ public class JPSMatlabAgent extends JPSAgent {
       String resultStart = AgentCaller.executeGetWithJsonParameter("ElChemoAgent/SpinElectrical",
           jObject.toString());
       System.out.println(resultStart);
-    } else {
-      System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
     }
-    return jo;
+    return responseParams;
+  }
+
+  /**
+   * notifies the watcher to return with the callback.
+   */
+  private void notifyWatcher(JSONObject agentArgs, String filePath, String callbackIRI) {
+    agentArgs.put(KEY_WATCH, filePath);
+    agentArgs.put(KEY_CALLBACK_URL, callbackIRI);
+    execute(KeyValueMap.getInstance().get("url.jps_aws"), agentArgs.toString(),
+        HttpPost.METHOD_NAME);
   }
 
   /**
@@ -106,7 +137,6 @@ public class JPSMatlabAgent extends JPSAgent {
       } else {
         return false;
       }
-
     } catch (Exception e) {
       throw new JPSRuntimeException(e.getMessage());
     }
@@ -175,6 +205,7 @@ public class JPSMatlabAgent extends JPSAgent {
       csvReader.close();
       // Write the ArrayList into CSV into the path specified
       String matInputFile = System.getProperty("user.home") + TEMP_INPUT_FILE;
+      matInputFile = matInputFile.replace("\\", "/");
       System.out.printf(MESSAGE_KEY + matInputFile + "\n");
       FileWriter csvWriter = new FileWriter(matInputFile);
       for (List<String> rowData : output) {
@@ -187,7 +218,6 @@ public class JPSMatlabAgent extends JPSAgent {
     } catch (IOException e) {
       throw new JPSRuntimeException(e.getMessage());
     }
-
   }
 
   /**
@@ -207,7 +237,6 @@ public class JPSMatlabAgent extends JPSAgent {
       }
       try {
         pb.waitFor();
-        Thread.sleep(1000);
       } catch (InterruptedException e) {
         throw new JPSRuntimeException(e.getMessage());
       }
@@ -216,7 +245,6 @@ public class JPSMatlabAgent extends JPSAgent {
     } catch (IOException e) {
       throw new JPSRuntimeException(e.getMessage());
     }
-
   }
 
   /**
