@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.adms;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.SystemUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +39,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static Logger logger = LoggerFactory.getLogger(ADMSOutputAllForShips.class);
 	String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
-
+	Path pyrelpath = SystemUtils.IS_OS_LINUX ? Paths.get("bin","python") : Paths.get("Scripts","python.exe");
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -80,7 +83,8 @@ public class ADMSOutputAllForShips extends HttpServlet {
         		// it is a dat folder, trigger python
         		ArrayList<String> args = new ArrayList<String>();
         		if (AgentLocator.isJPSRunningAtCMCL()) {
-        			args.add(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR));
+        			Path pyexe = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR),pyrelpath.toString());
+        			args.add(pyexe.toString());
         		} else {
         			args.add("python");
         		}
