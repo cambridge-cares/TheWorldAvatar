@@ -37,11 +37,30 @@ public class IndustrialAgent {
         OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
 		List<String[]> consumer = provideLoadFClist(model); // instance iri
         
-        queryForPhysicalConstants(model);
+        queryForChemicalConstants(model);
+        queryForFuelCellConstants(model);
 		return responseParams;
     }
-	
-	public void queryForPhysicalConstants(OntModel model) {
+	public void queryForChemicalConstants(OntModel model) {
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
+				.addVar("?max").addVar("?tvalmax")
+				.addWhere("?entity" ,"a", "j1:Electrolizer")
+				.addWhere("?entity" ,"j2:hasProperty", "?max")
+				.addWhere("?max" ,"j2:hasValue", "?vmax").addWhere("?vmax" ,"j2:numericalValue", "?tvalmax").addOrderBy("?max");
+		Query q = sb.build();
+		String groupInfo = q.toString();
+		ResultSet resultSet = JenaHelper.query(model, groupInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		
+				
+				
+	}
+	public void queryForFuelCellConstants(OntModel model) {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
 				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
@@ -60,7 +79,10 @@ public class IndustrialAgent {
 				.addWhere("?min" ,"j2:hasValue", "?vmin").addWhere("?vmin" ,"j2:numericalValue", "?tvalmin")
 				
 				.addWhere("?entity" ,"j9:hasVoltageOutput", "?volt")
-				.addWhere("?volt" ,"j2:hasValue", "?vVolt").addWhere("?vVolt" ,"j2:numericalValue", "?voltVal");
+				.addWhere("?volt" ,"j2:hasValue", "?vVolt").addWhere("?vVolt" ,"j2:numericalValue", "?voltVal")
+		
+				.addWhere("?entity" ,"j9:hasVoltageOutput", "?curr")
+				.addWhere("?curr" ,"j2:hasValue", "?vCurr").addWhere("?vCurr" ,"j2:numericalValue", "?currVal");
 		Query q = sb.build();
 		String groupInfo = q.toString();
 		ResultSet resultSet = JenaHelper.query(model, groupInfo);

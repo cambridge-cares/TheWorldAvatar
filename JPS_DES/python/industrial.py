@@ -587,8 +587,8 @@ if __name__ == "__main__":
    
     #Electrolyzer
     # physical constants:
-    F = 96485.34 #[A*s/mol]
-    z1 = 2 # no. of electrons transferred per reaction
+    F = 96485.34 #[A*s/mol] #Faraday's Constant
+    z1 = 2 # no. of electrons transferred per reaction #This is standard for the reaction
     # reaction information: (25 degreeC and 1 bar @ standard conditions) 
     dG0 = 237e3 #[J/mol]
     dH = 286e3 #[J/mol]
@@ -627,8 +627,10 @@ if __name__ == "__main__":
     U0 = DF_FC.iloc[4,1]   #[V]
     E1 = -0.013            #[V/C]
     E2 = -1.57             #[1]
-    I0 = 8.798             #[A]
+    I0 = DF_FC.iloc[5,1]   #[A]
     R = -2.04              #[Ohm*C]
+    # variables that are not taken from OWL file taken from here: https://doi.org/10.1016/j.jpowsour.2004.08.019 
+    # Apparently they're taken from another paper? There's no basis? Extract from properties file? 
     # track optimal operating temperature if possible:
     Ilow = Tlow**2*E1/R #[A]
     Ihigh = Thigh**2*E1/R #[A]

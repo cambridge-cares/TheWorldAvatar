@@ -66,7 +66,7 @@ public class Test_AgentsNew extends TestCase{
 		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 
         OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
-		new IndustrialAgent().queryForPhysicalConstants(model);
+		new IndustrialAgent().queryForChemicalConstants(model);
 //       try {
 //			String result = new DESAgentNew().runPythonScript("commercial.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial");
 //			System.out.println(result);
