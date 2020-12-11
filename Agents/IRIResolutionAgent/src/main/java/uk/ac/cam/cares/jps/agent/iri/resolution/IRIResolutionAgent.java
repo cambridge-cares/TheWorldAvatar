@@ -19,5 +19,19 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
  */
 @Controller
 public class IRIResolutionAgent extends JPSAgent{
-
+	/**
+	 * Extracts the name of repository or namespace from the current IRI<br>
+	 * and returns it to the calling method. 
+	 * 
+	 * @param iri the URI of request
+	 * @return
+	 */
+	public String retrieveRepositoryOrNamespace(String iri){
+		String[] tokens = iri.split("/");
+		if(tokens.length>1 && tokens[0].length()>5){
+			return tokens[0];
+		}else{
+			return null;
+		}
+	}
 }
