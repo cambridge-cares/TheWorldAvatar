@@ -19,6 +19,38 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
  */
 @Controller
 public class IRIResolutionAgent extends JPSAgent{
+
+	public static final String SHORT_JPS_IRI = "/onto*/*/*";
+	public static final String LONG_JPS_IRI = "/onto*/*/*/*";
+	
+	/**
+	 * Receives a short IRI among two types of IRIs and resolves it by querying<br>
+	 * the JPS knowledge graph stored in a polymorphic knowledge store. 
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(SHORT_JPS_IRI)
+	@ResponseBody
+	public String resolveShortIRI(HttpServletRequest request) {
+		String repositoryOrNamespace = retrieveRepositoryOrNamespace(request.getRequestURI());
+		return repositoryOrNamespace + " " + request.getRequestURL();
+	}
+	
+	/**
+	 * Receives a long IRI among two types of IRIs and resolves it by querying<br>
+	 * the JPS knowledge graph stored in a polymorphic knowledge store.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(LONG_JPS_IRI)
+	@ResponseBody
+	public String resolveLongIRI(HttpServletRequest request){
+		String repositoryOrNamespace = retrieveRepositoryOrNamespace(request.getRequestURI());
+		return repositoryOrNamespace + " " + request.getRequestURL().toString();
+	}
+
 	/**
 	 * Extracts the name of repository or namespace from the current IRI<br>
 	 * and returns it to the calling method. 
