@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.dispersion.test;
+package uk.ac.cam.cares.jps.dispersion.agents.test;
 
 import org.json.JSONObject;
 
