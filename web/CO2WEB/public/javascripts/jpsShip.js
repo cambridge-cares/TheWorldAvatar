@@ -11,6 +11,9 @@ var slider = document.getElementById("myRange");
 var output = document.getElementById("demo");
 output.innerHTML = slider.value;
 
+//testing version for functionality to place sensors anywhere
+var testing = false;
+
 slider.onmouseup = function() { //previously oninput
     output.innerHTML = this.value;
     addheatmap();
@@ -28,12 +31,18 @@ $("#location").on("change", () => {
         map.setZoom(10);
          map.set('maxZoom', 11);
         getRelevantFolder(arrUrl[2], "Singapore");
+        if (testing) {
+            setTimeout(() => initCreateNewSensor(map), 500)
+        }
 
     }else if (mlocation === "Hong Kong") {
         center = new google.maps.LatLng(22.28911086466781,114.1491155592187);
         map.setZoom(10);
          map.set('maxZoom', 11);
         getRelevantFolder(arrUrl[2], "Hong_Kong");
+        if (testing) {
+            setTimeout(() => initCreateNewSensor(map), 500)
+        }
     }
     // var legend = document.createElement("legend");
     // legend.innerHTML = "<h3>Legend</h3>"; 
@@ -83,9 +92,58 @@ function initMap() {
     var legend = document.getElementById('legend');
 
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
+    if (testing) {
+        setTimeout(() => initCreateNewSensor(map), 500)
+    }
+}
 
-    
-  }
+function initCreateNewSensor(map) {
+    // initialise the listener to create new stations
+    var bounds = map.getBounds();
+    let infoWindow = new google.maps.InfoWindow({
+        content: "Right click on the map to create virtual sensors!",
+        position: map.getCenter()
+    });
+    infoWindow.open(map);
+    // Configure the click listener.
+    map.addListener("rightclick", (mapsMouseEvent) => {
+        // Close the current InfoWindow.
+        infoWindow.close();
+        // Create a new InfoWindow.
+        infoWindow = new google.maps.InfoWindow({
+            position: mapsMouseEvent.latLng,
+        });
+        var createSensorURL = prefix + "/JPS_DISPERSION/CreateNewSensor";
+        var lat = mapsMouseEvent.latLng.lat;
+        var lng = mapsMouseEvent.latLng.lng;
+        $.get(createSensorURL, { lat, lng }).done(function () {
+            infoWindow.setContent("Sensor created at " +
+                JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2))
+        });
+        infoWindow.open(map);
+    });
+    renderSensorsWithinBounds(bounds);
+}
+
+function renderSensorsWithinBounds(bounds) {
+    var getSensors = prefix + "/JPS_DISPERSION/GetSensorsWithinBounds";
+    var upperx = bounds.getNorthEast().lng;
+    var uppery = bounds.getNorthEast().lat;
+    var lowerx = bounds.getSouthWest().lng;
+    var lowery = bounds.getSouthWest().lat;
+    $.get(getSensors, {upperx,uppery,lowerx,lowery}).done(function (stations) {
+        for (let s of stations) {
+            console.log(s.yvalue, s.xvalue);
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(s.yvalue, s.xvalue),
+                map: map,
+                title: s.station
+            });
+            markers.push(marker)
+        }
+    })
+}
+
 function getRelevantFolder(typeOfEmission, city){
     var locationIRI = "http://dbpedia.org/resource/"+city;
     var agentScenario = prefix +  "/JPS_DISPERSION/" + typeOfEmission + "/results/latest";
@@ -107,9 +165,11 @@ function getRelevantFolder(typeOfEmission, city){
             if (city == "Hong_Kong"){
                 city = "hongkong";
             }
-            querySensor(city, function (sensorData) {
-                renderSensorStations(sensorData);
-            });
+            if (!testing) {
+                querySensor(city, function (sensorData) {
+                    renderSensorStations(sensorData);
+                });
+            }
         })
         let agentInformation = prefix + "/JPS/ADMSOutputAllForShips";//"/info"
         console.log(agentInformation);
