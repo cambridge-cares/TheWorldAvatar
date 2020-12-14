@@ -586,12 +586,13 @@ if __name__ == "__main__":
     industry_above = np.array([0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308, 0.000308])
    
     #Electrolyzer
+    DF_E= pd.read_csv("ElectrolyzerConstant.csv", header=None )
     # physical constants:
-    F = 96485.34 #[A*s/mol] #Faraday's Constant
-    z1 = 2 # no. of electrons transferred per reaction #This is standard for the reaction
+    F = DF_E.iloc[2,1] #96485.34 #[A*s/mol] #Faraday's Constant
+    z1 = DF_E.iloc[6,1] #2 # no. of electrons transferred per reaction #This is standard for the reaction
     # reaction information: (25 degreeC and 1 bar @ standard conditions) 
-    dG0 = 237e3 #[J/mol]
-    dH = 286e3 #[J/mol]
+    dG0 = DF_E.iloc[8,1] #237e3 #[J/mol]
+    dH = DF_E.iloc[9,1] #286e3 #[J/mol]
     # I-U curve parameters:
     r1 = 8.05e-5 #[Ohm*m^2]
     r2 = -2.5e-7 #[Ohm*m^2/C]
@@ -606,15 +607,15 @@ if __name__ == "__main__":
     h_cond = 7             #[W/C]
     h_conv = 0.02          #[W/C/A]
     # operation parameters:
-    Ar = 0.25   #[m^2]
+    Ar = DF_E.iloc[0,1] #0.25   #[m^2]
     nc1 = 21 # no. of cells in series
     Ct = 625e3 #[J/C]
-    Rt = 0.167 #[C/W]
+    Rt = DF_E.iloc[4,1] #0.167 #[C/W] #Heat Resistance
     taut = Ct*Rt #[s]
-    Qcw = 0.6/3600 #[m^3/s] flow rate of cooling water
-    Tcwi = 14.5 #[C]
+    Qcw =  DF_E.iloc[5,1] #[m^3/s] flow rate of cooling water
+    Tcwi = DF_E.iloc[1,1] # 14.5 #[C]
     Ccw = 4.18e3*1e3*Qcw #[W/C]
-    z2 = 2
+    z2 =  2 #no of Electrons
 
     
     DF_FC = pd.read_csv("FuelCell.csv", header=None )

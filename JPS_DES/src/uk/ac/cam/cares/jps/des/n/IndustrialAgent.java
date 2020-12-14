@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
@@ -49,7 +50,15 @@ public class IndustrialAgent {
 				.addVar("?max").addVar("?tvalmax")
 				.addWhere("?entity" ,"a", "j1:Electrolizer")
 				.addWhere("?entity" ,"j2:hasProperty", "?max")
-				.addWhere("?max" ,"j2:hasValue", "?vmax").addWhere("?vmax" ,"j2:numericalValue", "?tvalmax").addOrderBy("?max");
+				.addWhere("?max" ,"j2:hasValue", "?vmax").addWhere("?vmax" ,"j2:numericalValue", "?tvalmax")
+				.addOrderBy("?max")
+				.addUnion( new WhereBuilder()
+						.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
+						.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+						.addWhere("?entity" ,"a", "j1:Electrolizer")
+						.addWhere( "?entity" ,"j1:hasResistance", "?max")
+				        .addWhere("?max" ,"j2:hasValue", "?vmax").addWhere("?vmax" ,"j2:numericalValue", "?tvalmax")
+				    );
 		Query q = sb.build();
 		String groupInfo = q.toString();
 		ResultSet resultSet = JenaHelper.query(model, groupInfo);
