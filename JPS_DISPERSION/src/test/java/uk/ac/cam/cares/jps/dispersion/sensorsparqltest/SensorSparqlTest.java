@@ -2,8 +2,6 @@ package uk.ac.cam.cares.jps.dispersion.sensorsparqltest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Test;
-
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
@@ -39,8 +37,21 @@ public class SensorSparqlTest extends TestCase{
 	}
 	
 	public void testQueryAirStationCoordinatesWithIRI() {
-		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#airqualitystation1";
+		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
 		SensorSparql ss = new SensorSparql();
 		ss.queryAirStationCoordinatesWithIRI(station_iri);
+	}
+	
+	public void testAddSensorValue() {
+		String station_iri_string = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
+		SensorSparql ss = new SensorSparql();
+		ss.addSensorValue(station_iri_string,SensorSparql.CO2,30,false);
+	}
+	
+	public void testQueryAirStationProperties() {
+		String station_iri_string = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
+		SensorSparql ss = new SensorSparql();
+		JSONArray result = ss.queryAirStationProperties(station_iri_string);
+		result.getJSONObject(0);
 	}
 }
