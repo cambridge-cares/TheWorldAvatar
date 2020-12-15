@@ -79,6 +79,25 @@
                 </configuration>
             </plugin>
 
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<id>creating pyvenv</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>.\pyvenv.cmd</executable>
+							<workingDirectory>python/ADMS-speed-load-map</workingDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
         </plugins>
     </build>
 
