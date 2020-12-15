@@ -45,8 +45,14 @@ public class CreateNewSensor extends JPSHttpServlet{
 			JSONObject sensor_request = new JSONObject();
 			sensor_request.put(Region.keyAirStationIRI, stationiri);
 			AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/SensorUpdaterAgent", sensor_request.toString());
+
+			// javascript needs these in the response, couldn't figure out how to do it nicely in js
+			JSONObject output = new JSONObject();
+			output.put("lat", lat);
+			output.put("lng", lng);
+			output.put(Region.keyAirStationIRI, stationiri);
 			response.setContentType("application/json");
-			response.getWriter().write(sensor_request.toString()); // javascript needs this for the marker
+			response.getWriter().write(output.toString()); // javascript needs this for the marker
 		}
 	}
 
