@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.des.test;
 
+import java.util.List;
+
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 
@@ -64,16 +66,23 @@ public class Test_AgentsNew extends TestCase{
 	public void testIndustrialAgent() {
 	    String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\industrial";
 		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
-
+		String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
+	    String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
+	    
+		new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
+        
         OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
-		new IndustrialAgent().queryForChemicalConstants(model);
-//       try {
-//			String result = new DESAgentNew().runPythonScript("commercial.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial");
-//			System.out.println(result);
-//			}
-//		catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
+		IndustrialAgent ic = new IndustrialAgent();
+		ic.queryForChemicalConstants(model, baseUrl);
+        ic.queryForFuelCellConstants(model, baseUrl);
+		
+       try {
+			String result = new DESAgentNew().runPythonScript("industrial.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\industrial");
+			System.out.println(result);
+			}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	public void testSystemAgent() {
 		try {

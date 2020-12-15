@@ -63,11 +63,8 @@ public class DESAgentNew extends JPSHttpServlet {
         queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
         OntModel model = readModelGreedy(iriofnetwork);
 		List<String[]> producer = providePVParameters(model); // create Parameters for Solar Cell
-		List<String[]> consumer = new IndustrialAgent().provideLoadFClist(model); // instance iri
 		String producercsv = MatrixConverter.fromArraytoCsv(producer);
-		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
 		broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
-		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
 		new ResidentialAgent().extractResidentialData(iriofdistrict, baseUrl); //csv for residential
 		new CommercialAgent().queryForBuildingConstants(iriofnetwork, baseUrl);//csv for commercial
 		try {
