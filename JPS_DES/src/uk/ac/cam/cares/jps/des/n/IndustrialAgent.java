@@ -27,12 +27,10 @@ public class IndustrialAgent {
     	String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
         String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
-        String iriofBuilding=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/district/building/CommercialBuilding-001.owl");
         
-        String cityIRI = requestParams.optString("cityIRI", "http://dbpedia.org/page/Singapore");
         String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
-        List<String[]>TempIrrad =  new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
+        new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
         
         //constants for Fuel Cell
         OntModel model = DESAgentNew.readModelGreedy(iriofnetwork); 

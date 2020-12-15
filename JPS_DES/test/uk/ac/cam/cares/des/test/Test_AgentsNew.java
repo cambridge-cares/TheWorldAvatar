@@ -11,6 +11,7 @@ import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
 import uk.ac.cam.cares.jps.des.n.ResidentialAgent;
+import uk.ac.cam.cares.jps.des.n.SolarAgent;
 
 public class Test_AgentsNew extends TestCase{
 	/** tests if Residential Agent calls successfully. 
@@ -58,11 +59,16 @@ public class Test_AgentsNew extends TestCase{
 	 * dumps result in JPS Scenarios folder
 	 */
 	public void testCommerciallAgentCaller() {
-		JSONObject jo = new JSONObject().put("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
+		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
+		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
+		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/CommercialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
-	
+	/** tests if Industrial Agent calls successfully. 
+	 * Industrial Agent requires caresjpsutil library. 
+	 * 
+	 */
 	public void testIndustrialAgent() {
 	    String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\industrial";
 		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
@@ -83,6 +89,23 @@ public class Test_AgentsNew extends TestCase{
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	/** test Industrial agent calls through Agent successfully
+	 * dumps result in JPS Scenarios folder
+	 */
+	public void testIndustriallAgentCaller() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
+		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
+		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/CommercialAgent", jo.toString());
+		assertNotNull(resultStart);
+	}
+	public void testSolarAgent() {
+		SolarAgent sa = new SolarAgent();
+		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
+		
+		OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
+		sa.provideGenlist(model);
 	}
 	public void testSystemAgent() {
 		try {
