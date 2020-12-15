@@ -75,8 +75,19 @@ public class JPSMatlabAgent extends JPSAgent {
         tempFile.delete();
         String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
         pathToSettingFile = pathToSettingFile.replace("\\", "/");
-        JPSMatlabAgent now = new JPSMatlabAgent();
-        now.delete(pathToSettingFile, STARTLINE, NUMLINES);
+        File settingFile = new File(pathToSettingFile);
+        settingFile.delete();
+        String templatePath=current +"\\input\\template.input";
+        templatePath=templatePath.replace("\\", "/");
+        File template=new File(templatePath);
+        try {
+			Files.copy(template.toPath(),settingFile.toPath());
+		} catch (IOException e) {
+			
+			 throw new JPSRuntimeException(e.getMessage());
+		}
+        //JPSMatlabAgent now = new JPSMatlabAgent();
+        //now.delete(pathToSettingFile, STARTLINE, NUMLINES);
         // Create file path for batch file
         String batchFile = current + TEMP_BATCH_FILE;
         batchFile = batchFile.replace("\\", "/");
