@@ -70,6 +70,13 @@ public class JPSMatlabAgent extends JPSAgent {
       if (validateInput(activePowerFilePath)) {
         JPSMatlabAgent app = new JPSMatlabAgent();
         app.appendFile(activePowerFilePath);
+        // Delete the temporary file
+        File tempFile = new File(activePowerFilePath);
+        tempFile.delete();
+        String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
+        pathToSettingFile = pathToSettingFile.replace("\\", "/");
+        JPSMatlabAgent now = new JPSMatlabAgent();
+        now.delete(pathToSettingFile, STARTLINE, NUMLINES);
         // Create file path for batch file
         String batchFile = current + TEMP_BATCH_FILE;
         batchFile = batchFile.replace("\\", "/");
@@ -93,14 +100,6 @@ public class JPSMatlabAgent extends JPSAgent {
         System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
       }
     } else if (SIM_PROCESS_PATH.equals(path)) {
-      // Delete the temporary file
-      File tempFile = new File(activePowerFilePath);
-      tempFile.delete();
-      String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
-      pathToSettingFile = pathToSettingFile.replace("\\", "/");
-      JPSMatlabAgent now = new JPSMatlabAgent();
-      now.delete(pathToSettingFile, STARTLINE, NUMLINES);
-      // adding the freq.csv file to the JPS metadata
       File dest = new File(System.getProperty("user.home") + PATH_FREQUENCY_FILE);
       String pathToFrequency = dest.getAbsolutePath();
       pathToFrequency = pathToFrequency.replace("\\", "/");
