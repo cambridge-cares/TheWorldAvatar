@@ -23,6 +23,7 @@ public class Region {
     public static String keyRegion = "region";
     public static String keySrsname = "srsname";
     public static String keyAirStationIRI = "airStationIRI";
+    public static String keyCity = "city";
 
     // City IRIs
     public static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
