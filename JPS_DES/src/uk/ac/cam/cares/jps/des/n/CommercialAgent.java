@@ -19,11 +19,12 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/CommercialAgent"})
-public class CommercialAgent {
+public class CommercialAgent extends JPSHttpServlet {
 	/** Main Function for processing Commercial Agent. 
 	 * Employs queryForWeather Forecast as well as building constants. 
 	 * @param requestParams

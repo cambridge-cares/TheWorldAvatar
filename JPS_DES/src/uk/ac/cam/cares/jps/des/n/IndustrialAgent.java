@@ -16,11 +16,12 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/IndustrialAgent"})
-public class IndustrialAgent {
+public class IndustrialAgent extends JPSHttpServlet {
 
 	private JSONObject responseParams;
 	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {

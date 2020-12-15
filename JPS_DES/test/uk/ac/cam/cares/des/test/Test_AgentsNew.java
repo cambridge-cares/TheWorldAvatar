@@ -58,7 +58,7 @@ public class Test_AgentsNew extends TestCase{
 	/** test Commercial agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
-	public void testCommerciallAgentCaller() {
+	public void testCommercialAgentCaller() {
 		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
 		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
 		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
@@ -83,7 +83,7 @@ public class Test_AgentsNew extends TestCase{
         ic.queryForFuelCellConstants(model, baseUrl);
 		
        try {
-			String result = new DESAgentNew().runPythonScript("industrial.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\industrial");
+			String result = new DESAgentNew().runPythonScript("industrial.py", baseUrl);
 			System.out.println(result);
 			}
 		catch (Exception ex) {
@@ -93,19 +93,45 @@ public class Test_AgentsNew extends TestCase{
 	/** test Industrial agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
-	public void testIndustriallAgentCaller() {
+	public void testIndustrialAgentCaller() {
 		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
 		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
 		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/CommercialAgent", jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/IndustrialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	/** tests if Solar Radiation Agent calls successfully. 
+	 * Solar Radiation Agent requires caresjpsutil library. 
+	 *  
+	 */
 	public void testSolarAgent() {
 		SolarAgent sa = new SolarAgent();
 		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
-		
+		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\solar";
+		String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
+	    String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
+	    
+		new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
+        
 		OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
-		sa.provideGenlist(model);
+		sa.provideGenlist(model, baseUrl);
+		 try {
+				String result = new DESAgentNew().runPythonScript("solarRadiation.py", baseUrl);
+				System.out.println(result);
+				}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+	}
+	/** test Solar agent calls through Agent successfully
+	 * dumps result in JPS Scenarios folder
+	 */
+	public void testSolarAgentCaller() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
+		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
+		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/SolarAgent", jo.toString());
+		assertNotNull(resultStart);
 	}
 	public void testSystemAgent() {
 		try {
