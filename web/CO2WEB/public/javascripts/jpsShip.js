@@ -99,7 +99,7 @@ function initMap() {
 
 function initCreateNewSensor(map) {
     // initialise the listener to create new stations
-    var bounds = map.getBounds();
+    let bounds = map.getBounds();
     let infoWindow = new google.maps.InfoWindow({
         content: "Right click on the map to create virtual sensors!",
         position: map.getCenter()
@@ -113,12 +113,15 @@ function initCreateNewSensor(map) {
         infoWindow = new google.maps.InfoWindow({
             position: mapsMouseEvent.latLng,
         });
-        var createSensorURL = prefix + "/JPS_DISPERSION/CreateNewSensor";
-        var lat = mapsMouseEvent.latLng.lat;
-        var lng = mapsMouseEvent.latLng.lng;
-        $.get(createSensorURL, { lat, lng }).done(function () {
+        let createSensorURL = prefix + "/JPS_DISPERSION/CreateNewSensor";
+        let lat = mapsMouseEvent.latLng.lat;
+        let lng = mapsMouseEvent.latLng.lng;
+        $.get(createSensorURL, { lat, lng }).done(function (r) {
             infoWindow.setContent("Sensor created at " +
                 JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2))
+            // r is the output defined within CreateNewSensor
+            // not possible to access mapsMouseEvent.latLng here;
+            createStation(r.lat, r.lng, r.airStationIRI);
         });
         infoWindow.open(map);
     });
@@ -131,17 +134,29 @@ function renderSensorsWithinBounds(bounds) {
     var uppery = bounds.getNorthEast().lat;
     var lowerx = bounds.getSouthWest().lng;
     var lowery = bounds.getSouthWest().lat;
-    $.get(getSensors, {upperx,uppery,lowerx,lowery}).done(function (stations) {
-        for (let s of stations) {
-            console.log(s.yvalue, s.xvalue);
-            var marker = new google.maps.Marker({
-                position: new google.maps.LatLng(s.yvalue, s.xvalue),
-                map: map,
-                title: s.station
-            });
-            markers.push(marker)
-        }
+    $.get(getSensors, { upperx, uppery, lowerx, lowery }).done(function (stations) {
+        stations.map(station => {
+            createStation(station.yvalue, station.xvalue, station.airStationIRI);
+        })
     })
+}
+
+function createStation(lat, lng, airStationIRI) {
+    var querySensorProperties = prefix + "/JPS_DISPERSION/QuerySensorProperties";
+    let marker = new google.maps.Marker({
+        position: new google.maps.LatLng(lat, lng),
+        map: map,
+        title: airStationIRI
+    });
+    marker.addListener('click', function () {
+        $.get(querySensorProperties, { airStationIRI }).done(function (data) {
+            let sensorAttributes = { data: "", names: "" }
+            sensorAttributes.data = data
+            sensorAttributes.names = ["Pollutant", "Concentration"]
+            renderAttributeTable(sensorAttributes)
+        });
+    });
+    markers.push(marker)
 }
 
 function getRelevantFolder(typeOfEmission, city){
@@ -418,8 +433,13 @@ function renderAttributeTable(attrs){
     tableStr+="</tr>";
     for(let row of attrs.data){
         tableStr+="<tr>"
-        for(let col of row){
-            tableStr+="<td>"+col+"</td>"
+        if (testing) {
+            tableStr += "<td>" + row.data_type + "</td>"
+            tableStr += "<td>" + row.numvalue + "</td>"
+        } else {
+            for (let col of row) {
+                tableStr += "<td>" + col + "</td>"
+            }
         }
         tableStr+="</tr>"
     };
