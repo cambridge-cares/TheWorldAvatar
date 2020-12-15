@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
 
@@ -36,8 +37,16 @@ public class CreateNewSensor extends JPSHttpServlet{
 			//work out how many stations exist in the endpoint and give a unique name
 			//functionality to delete does not exist yet so this won't break!
 			int station_number = stations.length() + 1;
-			String station_name = "airqualitystation" + station_number;
-			ss.createAirQualityStation(station_name, xy);
+			String station_name = "virtualsensor" + station_number;
+			String stationiri = ss.createAirQualityStation(station_name, xy);
+			
+			// call SensorUpdaterAgent to populate this sensors with values
+			// The agent won't do anything if there are no dispersion matrices 
+			JSONObject sensor_request = new JSONObject();
+			sensor_request.put(Region.keyAirStationIRI, stationiri);
+			AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/SensorUpdaterAgent", sensor_request.toString());
+			response.setContentType("application/json");
+			response.getWriter().write(sensor_request.toString()); // javascript needs this for the marker
 		}
 	}
 
