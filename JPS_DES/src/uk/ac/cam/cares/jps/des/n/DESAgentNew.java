@@ -52,7 +52,7 @@ public class DESAgentNew extends JPSHttpServlet {
         super.doHttpJPS(request, response, reqBody);
     }
     protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	JSONObject responseParams = requestParams;	
+    	JSONObject responseParams = new JSONObject();	
     	String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
@@ -74,6 +74,7 @@ public class DESAgentNew extends JPSHttpServlet {
 			createTimer(baseUrl);
 			MetaDataAnnotator.annotate(baseUrl, null, agent, true, null);
 
+			responseParams.put("result", result);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

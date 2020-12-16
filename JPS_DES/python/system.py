@@ -99,7 +99,7 @@ def system(AirTemp, Radiation, alpha_sc, a_ref, Il_ref, Io_ref,
 				break
 		except: pass
 
-		penetration = [out0[0], out1[0], out2[0], out3[0], out4[0]]
+		penetration = [out0[0], out1[0], out2[0], out3[0], out4[0], totGen]
 		
 	# [residential cost 1, residential cost 2, residential cost 3, commerical cost,
 	# return [out0[1], out1[1], out2[1], out3[1],
@@ -257,8 +257,10 @@ if __name__ == "__main__":
               Ccw, z2, U0, E1, E2, I0, R, nc2, eta, Tlow, Thigh, Ilow,
                Ihigh, quantity, Ni)
 
-	
-	residential = result[0][2]+result[1][2]+result[2][2]
+	out0 = result[0]
+	out1 = result[1]
+	out2 = result[2]
+	residential = out0[2]+out1[2]+out2[2]
 	commercial = result[3][2]
 	industrial = result[4][2]
 	renewableGen = result[5]

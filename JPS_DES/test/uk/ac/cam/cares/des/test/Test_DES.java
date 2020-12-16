@@ -83,7 +83,10 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
-
+	/** calls the old DES Agent
+	 * 
+	 * @throws IOException
+	 */
 	public void testStartDESAgent() throws IOException  {
 		
 
@@ -101,7 +104,7 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
-	/*
+	/**
 	 * Calls upon the FrontEnd Coordination agent that would call the latest DES run (Forecast+DESpython wrapper)
 	 * And afterwards blockchain wrapper
 	 */
@@ -119,7 +122,7 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
-	/*
+	/**
 	 * Calls and runs the Blockchain transaction with test values
 	 */
 	public void testBlockchainWrapperDirectCall() throws IOException{
@@ -131,6 +134,10 @@ public class Test_DES extends TestCase{
 		jo.put("solar","3.784461764480557235e+01");
 		System.out.println(new BlockchainWrapper().calculateTrade(jo));
 	}
+	/** calls the last modified directory linked with Service__DES
+	 * 
+	 * @return
+	 */
 	public String getLastModifiedDirectory() {
     	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
 		List<String> lst = null;
@@ -140,7 +147,7 @@ public class Test_DES extends TestCase{
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
     	return listmap.get(0)[0];
     }
-	/*
+	/**
 	 * Calls and runs the Blockchain transaction with test values (thru TOMCAT)
 	 */
 	public void testBlockchainWrapperAgentCall() throws IOException{
@@ -157,7 +164,7 @@ public class Test_DES extends TestCase{
 	}
 	
 
-	/*
+	/**
 	 * Calls and runs the hourly weather retriever, that uses OCR
 	 */
 	public void testIrradiationRetreiverDirectCall() throws Exception {
@@ -175,7 +182,7 @@ public class Test_DES extends TestCase{
 
 		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 	}
-	/*
+	/**
 	 * Calls and runs the hourly weather retriever, that uses OCR (thru TOMCAT)
 	 */
 	public void testIrradiationRetreiverAgentCall() throws Exception {
@@ -190,33 +197,7 @@ public class Test_DES extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 		System.out.println(resultStart);
 	}
-
-	/*
-	 * Tests the retrieval of data from one sensor. 
-	 */
-	public void testcsvmanipulation () {
-		 String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
-					+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
-					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" +"ORDER BY ASC(?proptimeval)";
-		
-		String iriirradiationsensor="http://localhost:8080/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
-		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorinfo);
-		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
-		System.out.println("sizeofresult="+resultListfromqueryirr.size());
-		System.out.println("element= "+resultListfromqueryirr.get(0)[2]);
-		String content=resultListfromqueryirr.get(23)[2];
-		System.out.println("content="+content);
-		System.out.println("year= "+content.split("-")[0]);
-		System.out.println("month= "+content.split("-")[1]);
-		System.out.println("date= "+content.split("-")[2].split("T")[0]);
-		System.out.println("time= "+content.split("-")[2].split("T")[1].split("\\+")[0]);
-	}
-	/** test retrieval from a forecast
+	/** test retrieval from a forecast (Old Version)
 	 * 
 	 * @param iriofnetwork
 	 * @return
@@ -269,49 +250,7 @@ public class Test_DES extends TestCase{
 		ArrayList<String[]> readingFromCSV = new ArrayList<String[]>();
 		
 	}
-	public static OntModel readModelGreedy(String iriofnetwork) {
-		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "SELECT ?component "
-				+ "WHERE { " 
-				+ "?entity   j2:hasSubsystem ?component ." 
-				+ "}";
-
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
-	}
 	
-	public static OntModel readModelGreedyForUser(String useriri) {
-		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
-				+ "SELECT ?component "
-				+ "WHERE { " 
-				+ "?entity   j2:isConnectedTo ?component ." 
-				+ "}";
-
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(useriri, electricalnodeInfo);
-	}
-	
-	public void testquerygreedymultiple() { //testing for csv creation related to residential
-		new ResidentialAgent().extractResidentialData(DISIRI, "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\4cd621f7-fe43-40e4-80e5-28fbe53ef2c5\\JPS_DES");
-		
-	}
-	/*
-	 * tests the call of electrical network
-	 */
-	public void testquerygen() {
-		OntModel model = readModelGreedy(ENIRI);
-		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
-		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
-	}
-	
-	public void testCreateJSON() {
-		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\3d64a110-ce59-4f9b-97a6-e2a80eb3c7f7\\JPS_DES";
-		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
-		System.out.println(d.toString());
-	}
 	/*
 	 * Finds the latest directory, as part of the coordinate agent. 
 	 */
@@ -342,36 +281,6 @@ public class Test_DES extends TestCase{
 		}
 	
 	}
-	public void testQueryBuilder() {
-		String groupInfo2 = "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "SELECT ?entity (COUNT(?entity) AS ?group) " 
-				+ "WHERE " + "{ ?entity a j6:Building ."
-				+ "?entity j4:isComprisedOf ?user ."
-				+ "}"
-
-				+ "GROUP BY ?entity ";
-		OntModel model = readModelGreedy(DISIRI);
-		ResultSet resultSet = JenaHelper.query(model, groupInfo2);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-//		SelectQuery selectQuery = Queries.SELECT();
-//		ConstructQuery constructQuery = Queries.CONSTRUCT();
-//		Prefix j4 = SparqlBuilder.prefix("j4", iri("http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#"));
-//		Prefix j6 = SparqlBuilder.prefix("j6", iri("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"));
-		
-		
-//		QueryExecution queryExec = QueryExecutionFactory.create(query, model);
-//		ResultSet rs = queryExec.execSelect();   
-//		//reset the cursor, so that the ResultSet can be repeatedly used
-//		ResultSetRewindable results = ResultSetFactory.copyResults(rs);   
-//		String result1 = JenaResultSetFormatter.convertToJSONW3CStandard(results);
-//		String[] keys1 = JenaResultSetFormatter.getKeys(result1);
-//		List<String[]> resultList1 = JenaResultSetFormatter.convertToListofStringArrays(result1, keys1);
-//		System.out.println(results);
-	}
-	
 
 	
 	

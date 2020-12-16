@@ -1,12 +1,12 @@
 package uk.ac.cam.cares.des.test;
 
-import java.util.List;
-
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.des.BlockchainWrapper;
+import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
@@ -24,6 +24,7 @@ public class Test_AgentsNew extends TestCase{
 		try {
 			String result = new DESAgentNew().runPythonScript("residential.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest");
 			System.out.println(result);
+			assertNotNull(result);
 			}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -51,6 +52,7 @@ public class Test_AgentsNew extends TestCase{
         try {
 			String result = new DESAgentNew().runPythonScript("commercial.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial");
 			System.out.println(result);
+			assertNotNull(result);
 			}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -86,6 +88,7 @@ public class Test_AgentsNew extends TestCase{
        try {
 			String result = new DESAgentNew().runPythonScript("industrial.py", baseUrl);
 			System.out.println(result);
+			assertNotNull(result);
 			}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -119,6 +122,7 @@ public class Test_AgentsNew extends TestCase{
 		 try {
 				String result = new DESAgentNew().runPythonScript("solarRadiation.py", baseUrl);
 				System.out.println(result);
+				assertNotNull(result);
 				}
 			catch (Exception ex) {
 				ex.printStackTrace();
@@ -154,6 +158,7 @@ public class Test_AgentsNew extends TestCase{
 			new IndustrialAgent().queryForConstantsIndustrial(model, baseUrl);;//csv for commercial
 			try {
 				String result = new DESAgentNew().runPythonScript("system.py", baseUrl);
+				assertNotNull(result);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -172,7 +177,24 @@ public class Test_AgentsNew extends TestCase{
 		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
 		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
 		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/SolarAgent", jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", jo.toString());
 		assertNotNull(resultStart);
+	}
+	/** check if FrontEnd Case Scenario works
+	 * 
+	 */
+	public void testFrontEndTalk() {
+		FrontEndCoordination fec = new FrontEndCoordination();
+		//looks for last created directory through the Metadata Query
+		String directorychosen= fec.getLastModifiedDirectory();
+		System.out.println(directorychosen);
+		BlockchainWrapper bc = new BlockchainWrapper();
+		//looks for the data according to the csvs stored
+		JSONObject graData  = bc.provideJSONResult(directorychosen);
+		JSONObject jo = bc.determineValue (graData);
+		System.out.println(jo.toString());
+		//TODO: later on, check value of data 
+		assertNotNull(jo);
+		
 	}
 }
