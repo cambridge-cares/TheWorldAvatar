@@ -2,10 +2,12 @@ package uk.ac.cam.cares.jps.agent.matlab;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +17,12 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -23,6 +31,7 @@ import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
 /**
@@ -46,6 +55,10 @@ public class JPSMatlabAgent extends JPSAgent {
   public static final String PATH_FREQUENCY_FILE = "/matlab/freq.csv";
   public static final String MATLAB_AGENT_URL =
       "http://www.theworldavatar.com/kb/agents/Service__matlab.owl#Service";
+  public static final String ELECTRICAL_SYSTEM_IRI = "\\matlab\\electrical_system.owl";
+  public static final String PARAMETER = "\\matlab\\param.mat";
+  public static String ELECTRICAL_SYSTEM =
+      "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl";
   public static final int STARTLINE = 69;
   public static final int NUMLINES = 5;
   public static int LINENUMBER = 1;
@@ -69,10 +82,14 @@ public class JPSMatlabAgent extends JPSAgent {
       JSONObject jofornuc = requestParams;
       if (validateInput(activePowerFilePath)) {
         JPSMatlabAgent app = new JPSMatlabAgent();
+        String str = current + ELECTRICAL_SYSTEM_IRI;
+        String outFile = current + PARAMETER;
         app.appendFile(activePowerFilePath);
+        ELECTRICAL_SYSTEM = gPROMSAgent.CHEMICAL_PROCESS_SYSTEM;
         // Delete the temporary file
         File tempFile = new File(activePowerFilePath);
         tempFile.delete();
+        JPSMatlabAgent.queryBuilder(str, outFile);
         // JPSMatlabAgent now = new JPSMatlabAgent();
         // now.delete(pathToSettingFile, STARTLINE, NUMLINES);
         // Create file path for batch file
@@ -286,6 +303,49 @@ public class JPSMatlabAgent extends JPSAgent {
       fw.write(sb.toString());
       fw.close();
     } catch (Exception e) {
+      throw new JPSRuntimeException(e.getMessage());
+    }
+  }
+
+  /**
+   * Query Builder
+   */
+  static void queryBuilder(String filePath, String outputFilePath) {
+    SelectBuilder sb = new SelectBuilder().addPrefix("electrical", ELECTRICAL_SYSTEM)
+        .addPrefix("system", gPROMSAgent.UPPER_LEVEL).addPrefix("rdf", gPROMSAgent.RDF)
+        .addVar(gPROMSAgent.TEMP).addWhere(gPROMSAgent.VAR, "rdf:type", "system:ScalarValue")
+        .addWhere(gPROMSAgent.VAR, "system:value", gPROMSAgent.TEMP);
+    System.out.println(sb.toString());
+    OntModel model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
+    InputStream is;
+    try {
+      is = new FileInputStream(filePath);
+      model.read(is, null);
+      ResultSet resultSet = JenaHelper.query(model, sb.buildString());
+      List<Float> resultList = new ArrayList<Float>();
+      for (; resultSet.hasNext();) {
+        QuerySolution solution = resultSet.nextSolution();
+        System.out.println(solution.getLiteral(gPROMSAgent.TEMP).getFloat());
+        resultList.add(solution.getLiteral(gPROMSAgent.TEMP).getFloat());
+        try {
+          FileWriter fw = new FileWriter(outputFilePath, true);
+          // the true will append the new data
+          for (int k = 0; k < resultList.size(); k++) {
+            if (k == 0) {
+              fw.write("Transformer_Rating\n");
+              fw.write(resultList.get(k).toString());
+            }
+            if (k == 1) {
+              fw.write("\nTurns__Ratio\n");
+              fw.write(resultList.get(k).toString());
+            }
+          }
+          fw.close();
+        } catch (IOException ioe) {
+          throw new JPSRuntimeException(ioe.getMessage());
+        }
+      }
+    } catch (FileNotFoundException e) {
       throw new JPSRuntimeException(e.getMessage());
     }
   }
