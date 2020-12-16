@@ -116,11 +116,9 @@ public class DESAgentNew extends JPSHttpServlet {
 			String result = new QueryBroker().queryFile(irioftempF, sensorInfo);
 			String[] keys = JenaResultSetFormatter.getKeys(result);
 			List<String[]>  resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
- 			System.out.println("Temperature " + resultListfromquerytemp.toString());
  			String result2 = new QueryBroker().queryFile(iriofirrF, sensorInfo2);
  			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
  			List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
- 			System.out.println("Irradiation " + resultListfromqueryirr.toString());
  			List<String[]> readingFromCSV = new ArrayList<String[]>();
  			for (int d=0;d<resultListfromqueryirr.size();d++) {
  				String[] ed= {resultListfromquerytemp.get(d)[1],resultListfromqueryirr.get(d)[1]};

@@ -42,10 +42,8 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		JSONObject graData =new JSONObject();
 		graData = provideJSONResult(requestParams.getString("directory"));
 		JSONObject jo = determineValue (graData);
-		System.out.println(jo.toString());
 		try {
 			result = calculateTrade(jo);
-			System.out.println("result from BlockchainHash " + result.toString());
 			graData.put("txHash", result.get("txHash"));
 			graData.put("sandr", result.get("sandr"));
 			
@@ -75,7 +73,6 @@ public class BlockchainWrapper extends JPSHttpServlet{
 			return "Value too small, transaction not completed";
 		}Credentials credentials = WalletUtils.loadCredentials("Caesar1!",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
-		System.out.println(transactionReceipt.getTransactionHash());
 		return  transactionReceipt.getTransactionHash();
 		
 	}
@@ -253,8 +250,6 @@ public class BlockchainWrapper extends JPSHttpServlet{
 				totalList.add(transactionhash3);
 				
 			}
-			System.out.println("WHO TO WHO " + whoTowho.toString());
-			System.out.println("TX HASHES " + totalList.toString());
 			jS.put("txHash",totalList.toArray());
 			jS.put("sandr",whoTowho.toArray());
 		}
