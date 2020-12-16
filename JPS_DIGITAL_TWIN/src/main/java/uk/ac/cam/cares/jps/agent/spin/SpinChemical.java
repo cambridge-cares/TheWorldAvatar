@@ -21,35 +21,36 @@ import org.topbraid.spin.inference.SPINInferences;
 import org.topbraid.spin.system.SPINLabels;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import com.opencsv.CSVReader;
-import uk.ac.cam.cares.jps.agent.matlab.JPSMatlabAgent;
+
+import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
-@WebServlet("/SpinElectrical")
-public class SpinElectrical extends JPSAgent {
+@WebServlet("/SpinChemical")
+public class SpinChemical extends JPSAgent {
   private static final long serialVersionUID = 1L;
-  public static final double MAX = 50.2;
-  public static final double MIN = 49.8;
+  public static final double MAX = 1.0;
+  public static final double MIN = 0.973;
   static String ontologyURL =
-      "https://topbraid.org/examples/kennedysSPIN";
+      "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/processSPIN.ttl";
 
   public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     JSONObject jo = AgentCaller.readJsonParameter(request);
     String current = System.getProperty("user.home");
     System.out.println("\nThis is Spin agent:" + current);
-    String frequencyFilePath = null;
-    String agentiri = JPSMatlabAgent.MATLAB_AGENT_URL;
+    String moleFractionFilePath = null;
+    String agentiri = gPROMSAgent.GPROMS_AGENT_URL ;
+    String str= requestParams.getString("inputFile");
     List<String> lst = null;
-    SpinElectrical iri = new SpinElectrical();
-    frequencyFilePath = iri.queryRDF4J(agentiri, lst);
-    System.out.println("\nThis is frequencyFilePath: " + frequencyFilePath);
+    SpinChemical iri = new SpinChemical();
+    moleFractionFilePath = iri.queryRDF4J(agentiri, lst);
+    System.out.println("\nThis is moleFractionFilePath: " + moleFractionFilePath);
     CSVReader reader = null;
-    String str=requestParams.getString("inputfile");
     try {
-      reader = new CSVReader(new FileReader(frequencyFilePath));
+      reader = new CSVReader(new FileReader(moleFractionFilePath));
     } catch (FileNotFoundException e1) {
       throw new JPSRuntimeException(e1.getMessage());
     }
@@ -60,7 +61,7 @@ public class SpinElectrical extends JPSAgent {
     try {
       while ((nextLine = reader.readNext()) != null) {
         lineNumber++;
-        double cmp = 50;
+        double cmp = .975;
         try {
           cmp = Double.parseDouble(nextLine[1]);
         } catch (NumberFormatException e) {
@@ -89,23 +90,23 @@ public class SpinElectrical extends JPSAgent {
      * Create ontology Model with imports
      */
     OntModel ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM,
-        new SpinElectrical().getBaseModel(ontologyURL));
+        new SpinChemical().getBaseModel(ontologyURL));
 
-    Model inferrenceTriples = new SpinElectrical().inferredTriples(ontModel);
+    Model inferrenceTriples = new SpinChemical().inferredTriples(ontModel);
     /**
      * Lists inferred triples.
      */
-    new SpinElectrical().getInferredTriples(inferrenceTriples);
+    new SpinChemical().getInferredTriples(inferrenceTriples);
 
     /**
      * Lists all constraint violations.
      */
-    new SpinElectrical().getAllConstraintViolations(ontModel);
+    new SpinChemical().getAllConstraintViolations(ontModel);
     return jo;
   }
 
   /**
-   * Query RDF4J for electrical system output IRI.
+   * Query RDF4J for chemical system output IRI.
    */
   public String queryRDF4J(String agentiri, List<String> lst) {
     String csvFilePath = null;
