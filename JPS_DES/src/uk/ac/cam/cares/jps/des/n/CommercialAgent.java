@@ -40,7 +40,9 @@ public class CommercialAgent extends JPSHttpServlet {
         String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
         new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
-        queryForBuildingConstants(iriofnetwork, baseUrl);
+        OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
+		
+        queryForBuildingConstants(model, baseUrl);
         try {
 			String res =  new DESAgentNew().runPythonScript("commercial.py", baseUrl);
 			
@@ -56,10 +58,8 @@ public class CommercialAgent extends JPSHttpServlet {
 	 * @param iriofnetwork IRI of Electrical Network
 	 * @param baseUrl Folder in which constant.csv is dumped in
 	 */
-	public void queryForBuildingConstants(String iriofnetwork, String baseUrl) {
-        new DESAgentNew();
-		OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+	public void queryForBuildingConstants(OntModel model, String baseUrl) {
+        SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 				.addPrefix("plant", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#")
 				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
 				.addVar("?CpropVal").addWhere("?entity" ,"a", "j6:Building")

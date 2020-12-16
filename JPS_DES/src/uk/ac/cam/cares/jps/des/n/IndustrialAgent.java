@@ -35,8 +35,7 @@ public class IndustrialAgent extends JPSHttpServlet {
         
         //constants for Fuel Cell
         OntModel model = DESAgentNew.readModelGreedy(iriofnetwork); 
-        queryForChemicalConstants(model, baseUrl);
-        queryForFuelCellConstants(model, baseUrl);
+        queryForConstantsIndustrial(model, baseUrl);
         JSONObject responseParams = new JSONObject();
 		try {
 			String res =  new DESAgentNew().runPythonScript("industrial.py", baseUrl);
@@ -48,6 +47,11 @@ public class IndustrialAgent extends JPSHttpServlet {
 		}
 		return responseParams;
     }
+	public void queryForConstantsIndustrial(OntModel model, String baseUrl) {
+		queryForChemicalConstants(model, baseUrl);
+        queryForFuelCellConstants(model, baseUrl);
+        
+	}
 	public void queryForChemicalConstants(OntModel model, String baseUrl) {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
