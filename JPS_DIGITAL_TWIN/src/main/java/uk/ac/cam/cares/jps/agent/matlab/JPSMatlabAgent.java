@@ -57,8 +57,9 @@ public class JPSMatlabAgent extends JPSAgent {
       "http://www.theworldavatar.com/kb/agents/Service__matlab.owl#Service";
   public static final String ELECTRICAL_SYSTEM_IRI = "\\matlab\\electrical_system.owl";
   public static final String PARAMETER = "\\matlab\\param.mat";
-  public static String ELECTRICAL_SYSTEM =
-      "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl";
+  public static final String ONTOPOWSYS =
+      "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#";
+
   public static final int STARTLINE = 69;
   public static final int NUMLINES = 5;
   public static int LINENUMBER = 1;
@@ -76,16 +77,16 @@ public class JPSMatlabAgent extends JPSAgent {
     String activePowerFilePath = null;
     String agentiri = gPROMSAgent.GPROMS_AGENT_URL;
     List<String> lst = null;
+    String str = requestParams.getString("ELECTRICAL_SYSTEM_IRI");
     JPSMatlabAgent iri = new JPSMatlabAgent();
     activePowerFilePath = iri.queryRDF4J(agentiri, lst);
     if (SIM_START_PATH.equals(path)) {
       JSONObject jofornuc = requestParams;
       if (validateInput(activePowerFilePath)) {
         JPSMatlabAgent app = new JPSMatlabAgent();
-        String str = current + ELECTRICAL_SYSTEM_IRI;
+        str = current + ELECTRICAL_SYSTEM_IRI;
         String outFile = current + PARAMETER;
         app.appendFile(activePowerFilePath);
-        ELECTRICAL_SYSTEM = gPROMSAgent.CHEMICAL_PROCESS_SYSTEM;
         // Delete the temporary file
         File tempFile = new File(activePowerFilePath);
         tempFile.delete();
@@ -311,7 +312,7 @@ public class JPSMatlabAgent extends JPSAgent {
    * Query Builder
    */
   static void queryBuilder(String filePath, String outputFilePath) {
-    SelectBuilder sb = new SelectBuilder().addPrefix("electrical", ELECTRICAL_SYSTEM)
+    SelectBuilder sb = new SelectBuilder().addPrefix("electrical", ONTOPOWSYS)
         .addPrefix("system", gPROMSAgent.UPPER_LEVEL).addPrefix("rdf", gPROMSAgent.RDF)
         .addVar(gPROMSAgent.TEMP).addWhere(gPROMSAgent.VAR, "rdf:type", "system:ScalarValue")
         .addWhere(gPROMSAgent.VAR, "system:value", gPROMSAgent.TEMP);
@@ -332,11 +333,11 @@ public class JPSMatlabAgent extends JPSAgent {
           // the true will append the new data
           for (int k = 0; k < resultList.size(); k++) {
             if (k == 0) {
-              fw.write("Transformer_Rating\n");
+              fw.write("RatedPower\n");
               fw.write(resultList.get(k).toString());
             }
             if (k == 1) {
-              fw.write("\nTurns__Ratio\n");
+              fw.write("\nRatedFrequency\n");
               fw.write(resultList.get(k).toString());
             }
           }
