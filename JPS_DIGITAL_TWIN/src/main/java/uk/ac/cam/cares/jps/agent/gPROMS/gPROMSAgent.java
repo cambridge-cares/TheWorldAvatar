@@ -75,7 +75,8 @@ public class gPROMSAgent extends JPSAgent {
   public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
   public static final String JOB_STATISTICS_PATH = "/job/statistics";
   public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
-  public static final String TEMP_SETTINGS_FILE = "/input/Settings.input";
+  public static final String TEMP_SETTINGS_FILE = "/input/template.input";
+  public static final String SETTINGS_FILE = "/input/Settings.input";
   public static final String ENCRYPT_PATH = "/input/input";
   public static final String INPUT_PATH = "/input";
   public static final String DEBUTANISER_SECTION = "/input/debutaniser_section.owl";
@@ -435,6 +436,8 @@ public class gPROMSAgent extends JPSAgent {
     }
     exportDataToExcel(jobFolder.toString() + "/matlab.csv", table);
     JSONObject jo = new JSONObject();
+    File temp=new File (System.getProperty("user.home")+SETTINGS_FILE);
+    temp.delete();
     String resultStart = AgentCaller
         .executeGetWithJsonParameter("ElChemoAgent/JPSMatlabAgent/startSimulation", jo.toString());
     System.out.println(resultStart);
@@ -532,8 +535,12 @@ public class gPROMSAgent extends JPSAgent {
     // Preparation of settings.input file
     // Extracting required variables from owl files
     String filePath = System.getProperty("user.home") + DEBUTANISER_SECTION;
-    String outputFilePath = System.getProperty("user.home") + TEMP_SETTINGS_FILE;
-    gPROMSAgent.queryBuilder(filePath, outputFilePath);
+    String tempFilePath = System.getProperty("user.home") + TEMP_SETTINGS_FILE;
+    File tempSettings= new File (tempFilePath);
+    String settingsFilePath = System.getProperty("user.home") + SETTINGS_FILE;
+    File settingFile= new File (settingsFilePath);
+    Files.copy(tempSettings.toPath(), settingFile.toPath());   
+    gPROMSAgent.queryBuilder(filePath, settingsFilePath);
     // Compress all files in the temporary directory into a ZIP
     Path zipFile = Paths.get(System.getProperty("user.home") + "\\input.zip");
     // Create a temporary folder in the user's home location

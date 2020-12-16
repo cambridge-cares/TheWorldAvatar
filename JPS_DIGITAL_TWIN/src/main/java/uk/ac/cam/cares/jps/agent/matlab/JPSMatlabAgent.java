@@ -66,26 +66,26 @@ public class JPSMatlabAgent extends JPSAgent {
     JPSMatlabAgent iri = new JPSMatlabAgent();
     activePowerFilePath = iri.queryRDF4J(agentiri, lst);
     if (SIM_START_PATH.equals(path)) {
-      JSONObject jofornuc = requestParams;
+       JSONObject jofornuc = requestParams;
       if (validateInput(activePowerFilePath)) {
         JPSMatlabAgent app = new JPSMatlabAgent();
         app.appendFile(activePowerFilePath);
         // Delete the temporary file
         File tempFile = new File(activePowerFilePath);
         tempFile.delete();
-        String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
-        pathToSettingFile = pathToSettingFile.replace("\\", "/");
-        File settingFile = new File(pathToSettingFile);
-        settingFile.delete();
-        String templatePath=current +"\\input\\template.input";
-        templatePath=templatePath.replace("\\", "/");
-        File template=new File(templatePath);
-        try {
-			Files.copy(template.toPath(),settingFile.toPath());
-		} catch (IOException e) {
+        //String pathToSettingFile = current + gPROMSAgent.TEMP_SETTINGS_FILE;
+        //pathToSettingFile = pathToSettingFile.replace("\\", "/");
+        //File settingFile = new File(pathToSettingFile);
+        //settingFile.delete();
+        //String templatePath=current +"\\input\\template.input";
+        //templatePath=templatePath.replace("\\", "/");
+        //File template=new File(templatePath);
+        //try {
+			//Files.copy(template.toPath(),settingFile.toPath());
+		//} catch (IOException e) {
 			
-			 throw new JPSRuntimeException(e.getMessage());
-		}
+			// throw new JPSRuntimeException(e.getMessage());
+		//}
         //JPSMatlabAgent now = new JPSMatlabAgent();
         //now.delete(pathToSettingFile, STARTLINE, NUMLINES);
         // Create file path for batch file
@@ -111,6 +111,7 @@ public class JPSMatlabAgent extends JPSAgent {
         System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
       }
     } else if (SIM_PROCESS_PATH.equals(path)) {
+    	System.out.println("Testing whether the else if lopp is executed");
       File dest = new File(System.getProperty("user.home") + PATH_FREQUENCY_FILE);
       String pathToFrequency = dest.getAbsolutePath();
       pathToFrequency = pathToFrequency.replace("\\", "/");
@@ -130,6 +131,8 @@ public class JPSMatlabAgent extends JPSAgent {
   private void notifyWatcher(JSONObject agentArgs, String filePath, String callbackIRI) {
     agentArgs.put(KEY_WATCH, filePath);
     agentArgs.put(KEY_CALLBACK_URL, callbackIRI);
+    System.out.println("The keyvalueamp for AWS watcher that is an argument:"+KeyValueMap.getInstance().get("url.jps_aws"));
+    System.out.println("The agent arguments for execute are :" +agentArgs.toString());
     execute(KeyValueMap.getInstance().get("url.jps_aws"), agentArgs.toString(),
         HttpPost.METHOD_NAME);
   }
