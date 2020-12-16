@@ -77,14 +77,16 @@ public class JPSMatlabAgent extends JPSAgent {
     String activePowerFilePath = null;
     String agentiri = gPROMSAgent.GPROMS_AGENT_URL;
     List<String> lst = null;
-    String str = requestParams.getString("ELECTRICAL_SYSTEM_IRI");
+    // String str = requestParams.getString("ELECTRICAL_SYSTEM_IRI");
     JPSMatlabAgent iri = new JPSMatlabAgent();
     activePowerFilePath = iri.queryRDF4J(agentiri, lst);
     if (SIM_START_PATH.equals(path)) {
       JSONObject jofornuc = requestParams;
       if (validateInput(activePowerFilePath)) {
         JPSMatlabAgent app = new JPSMatlabAgent();
-        str = current + ELECTRICAL_SYSTEM_IRI;
+        String str = requestParams.getString("ELECTRICAL_SYSTEM_IRI");
+        // System.out.println("The Electrical system IRI is: " + str);
+        // str = current + ELECTRICAL_SYSTEM_IRI;
         String outFile = current + PARAMETER;
         app.appendFile(activePowerFilePath);
         // Delete the temporary file

@@ -52,7 +52,6 @@ public class SpinElectrical extends JPSAgent {
     } catch (FileNotFoundException e1) {
       throw new JPSRuntimeException(e1.getMessage());
     }
-
     String[] nextLine;
     int lineNumber = 0;
     double min = MIN;
@@ -74,6 +73,7 @@ public class SpinElectrical extends JPSAgent {
           min = cmp;
         }
       }
+      reader.close();
     } catch (IOException e) {
       throw new JPSRuntimeException(e.getMessage());
     }

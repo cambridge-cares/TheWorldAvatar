@@ -80,6 +80,7 @@ public class gPROMSAgent extends JPSAgent {
   public static final String ENCRYPT_PATH = "/input/input";
   public static final String INPUT_PATH = "/input";
   public static final String DEBUTANISER_SECTION = "/input/debutaniser_section.owl";
+  public static final String ELECTRICAL_SYSTEM = "\\matlab\\electrical_system.owl";
   public static final String TEMP = "?Temp";
   public static final String VAR = "?x";
   public static final String GPROMS_AGENT_URL =
@@ -436,7 +437,9 @@ public class gPROMSAgent extends JPSAgent {
     }
     exportDataToExcel(jobFolder.toString() + "/matlab.csv", table);
     JSONObject jo = new JSONObject();
-    File temp=new File (System.getProperty("user.home")+SETTINGS_FILE);
+    String eStr = System.getProperty("user.home") + ELECTRICAL_SYSTEM;
+    jo.put("ELECTRICAL_SYSTEM_IRI", eStr);
+    File temp = new File(System.getProperty("user.home") + SETTINGS_FILE);
     temp.delete();
     String resultStart = AgentCaller
         .executeGetWithJsonParameter("ElChemoAgent/JPSMatlabAgent/startSimulation", jo.toString());
@@ -536,10 +539,10 @@ public class gPROMSAgent extends JPSAgent {
     // Extracting required variables from owl files
     String filePath = System.getProperty("user.home") + DEBUTANISER_SECTION;
     String tempFilePath = System.getProperty("user.home") + TEMP_SETTINGS_FILE;
-    File tempSettings= new File (tempFilePath);
+    File tempSettings = new File(tempFilePath);
     String settingsFilePath = System.getProperty("user.home") + SETTINGS_FILE;
-    File settingFile= new File (settingsFilePath);
-    Files.copy(tempSettings.toPath(), settingFile.toPath());   
+    File settingFile = new File(settingsFilePath);
+    Files.copy(tempSettings.toPath(), settingFile.toPath());
     gPROMSAgent.queryBuilder(filePath, settingsFilePath);
     // Compress all files in the temporary directory into a ZIP
     Path zipFile = Paths.get(System.getProperty("user.home") + "\\input.zip");
