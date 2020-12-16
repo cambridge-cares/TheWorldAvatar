@@ -52,7 +52,6 @@ public class IndustrialAgent extends JPSHttpServlet {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
 				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
-				.addPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
 				.addVar("?max").addVar("?tvalmax")
 				.addWhere("?entity" ,"a", "j1:Electrolizer")
 				.addWhere("?entity" ,"j2:hasProperty", "?max")

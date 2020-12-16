@@ -5,7 +5,10 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 
@@ -42,56 +45,54 @@ public class SolarAgent extends JPSHttpServlet{
     	return requestParams;
     }
 	public void provideGenlist(OntModel model, String baseUrl) { //for file "PV_parameters.csv"
-        String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-                + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-                + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-                + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-                + "SELECT ?alphaval ?aval ?ilval ?ioval ?rsval ?rshval ?tcval ?gval ?egval "
-                + "WHERE {?entity  a  j1:PhotovoltaicPanel  ."
-                
-                + "?entity   j1:hasMaterialBandGap ?mbg ."
-                + "?mbg   j2:hasValue ?vmbg ."
-                + "?vmbg   j2:numericalValue ?egval ."
-                
-                + "?entity   j1:hasBaseTestingIrradiance ?g ."
-                + "?g   j2:hasValue ?vg ."
-                + "?vg   j2:numericalValue ?gval ."
-                
-                + "?entity   j8:has_temperature ?t ."
-                + "?t   j2:hasValue ?vt ."
-                + "?vt   j2:numericalValue ?tcval ." 
-                
-                + "?entity   j2:hasProperty ?a ."
-                + "?a   j2:hasValue ?va ."
-                + "?va   j2:numericalValue ?aval ."
-                
-                + "?entity   j1:hasTemperatureCoeffOfPower ?tcoeff ."
-                + "?tcoeff   j2:hasValue ?vtcoeff ."
-                + "?vtcoeff   j2:numericalValue ?alphaval ."
-
-                + "?entity   j1:hasResistance ?rs ."
-                + "?rs a j1:SeriesResistance ."
-                + "?rs  j2:hasValue ?vrs ."
-                + "?vrs   j2:numericalValue ?rsval ."
-                
-                + "?entity   j1:hasResistance ?rsh ."
-                + "?rsh a j1:ShuntResistance ."
-                + "?rsh   j2:hasValue ?vrsh ."
-                + "?vrsh   j2:numericalValue ?rshval ."
-                               
-                + "?entity   j1:hasRatedCurrent ?il ."
-                + "?il a j1:OutputRatedCurrent ."
-                + "?il   j2:hasValue ?vil ."
-                + "?vil   j2:numericalValue ?ilval ."
-                
-                + "?entity   j1:hasRatedCurrent ?io ."
-                + "?io a j9:MinimumCurrent ."
-                + "?io   j2:hasValue ?vio ."
-                + "?vio   j2:numericalValue ?ioval ."
-
-                + "}";
-        
-        ResultSet resultSet = JenaHelper.query(model, gennodeInfo);
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#")
+				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addVar("?alphaval").addVar("?aval").addVar("?ilval").addVar("?ioval")
+				.addVar("?rsval").addVar("?rshval").addVar("?tcval").addVar("?gval")
+				.addVar("?egval")
+				.addWhere("?entity" ,"j1:hasTemperatureCoeffOfPower", "?tcoeff")
+				.addWhere("?tcoeff" ,"j2:hasValue", "?vmax")
+				.addWhere("?vmax" ,"j2:numericalValue", "?alphaval")
+				.addWhere("?entity" ,"j2:hasProperty", "?a")
+				.addWhere("?a" ,"j2:hasValue", "?va")
+				.addWhere("?va" ,"j2:numericalValue", "?aval")
+				
+				.addWhere("?entity" ,"j1:hasRatedCurrent", "?il")
+				.addWhere("?il" ,"a", "j1:OutputRatedCurrent")
+				.addWhere("?il" ,"j2:hasValue", "?vil")
+				.addWhere("?vil" ,"j2:numericalValue", "?ilval")				
+				.addWhere("?entity" ,"j1:hasRatedCurrent", "?io")
+				.addWhere("?io" ,"a", "j9:MinimumCurrent")
+				.addWhere("?io" ,"j2:hasValue", "?vio")
+				.addWhere("?vio" ,"j2:numericalValue", "?ioval")
+				
+				.addWhere("?entity" ,"j1:hasResistance", "?rs")
+				.addWhere("?rs" ,"a", "j1:SeriesResistance")
+				.addWhere("?rs" ,"j2:hasValue", "?vrs")
+				.addWhere("?vrs" ,"j2:numericalValue", "?rsval")				
+				.addWhere("?entity" ,"j1:hasResistance", "?rsh")
+				.addWhere("?rsh" ,"a", "j1:ShuntResistance")
+				.addWhere("?rsh" ,"j2:hasValue", "?vrsh")
+				.addWhere("?vrsh" ,"j2:numericalValue", "?rshval")
+				
+				.addWhere("?entity" ,"j8:has_temperature", "?t")
+				.addWhere("?t" ,"j2:hasValue", "?vt")
+				.addWhere("?vt" ,"j2:numericalValue", "?tcval")
+				
+				.addWhere("?entity" ,"j1:hasBaseTestingIrradiance", "?g")
+				.addWhere("?g" ,"j2:hasValue", "?vg")
+				.addWhere("?vg" ,"j2:numericalValue", "?gval")
+				.addWhere("?entity" ,"j1:hasMaterialBandGap", "?mbg")
+				.addWhere("?mbg" ,"j2:hasValue", "?vmbg")
+				.addWhere("?vmbg" ,"j2:numericalValue", "?egval")
+				;
+	
+				
+		Query q = sb.build();
+		String newQ = q.toString();
+		ResultSet resultSet = JenaHelper.query(model, newQ);
         String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keys = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
