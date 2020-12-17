@@ -48,11 +48,10 @@ Repository Name: thermochemistry
 
 * Jmol/JSmol:
   https://sourceforge.net/projects/jmol/files/ (https://sourceforge.net/projects/jsmol/ is deprecated)
-  Download and extract the latest version of the archive. NB The contents of the file jsmol.zip within the extracted folder have been added to molhub/WebContent/.
-  However, we do need the Jmol jar files, as at least one of them is called on the command line to generate molecule images upon upload of Gaussian files to MolHub.
+  Download and extract the latest version of the archive. NB The contents of the file jsmol.zip within the extracted folder may need to be added to molhub/WebContent/jsmol/. DO NOT COMMIT THEM TO THIS GIT REPOSITORY!
+  We do need the Jmol jar files (Jmol.jar, JmolData.jar, JmolLib.jar), as at least one of them is called on the command line to generate molecule images upon upload of Gaussian files to MolHub. They may need to be located in molhub/WebContent/WEB-INF/lib/. DO NOT COMMIT THEM TO THIS GIT REPOSITORY!
   See deployment notes below.
-  To do: Update the contents of molhub/WebContent/jsmol/ and the deployed jar files with the latest version, occasionally.
-  
+
 * GLPK (GNU Linear Programming Kit):
   https://www.gnu.org/software/glpk/
   Download from http://ftp.gnu.org/gnu/glpk/
