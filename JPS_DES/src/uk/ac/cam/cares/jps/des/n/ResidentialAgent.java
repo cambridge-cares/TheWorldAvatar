@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.des.n;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -77,11 +78,7 @@ public class ResidentialAgent extends JPSHttpServlet {
 		List<String[]> csvofw = new ArrayList<String[]>();
 		List<String[]> csvofschedule = new ArrayList<String[]>();
 		
-		//grab the current time
-		Date date = new Date();   // given date
-		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
-		calendar.setTime(date);   // assigns calendar to given date 
-		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+		
 		
 		//rotate it according to the current hour to get the appropriate profile
 
@@ -179,6 +176,13 @@ public class ResidentialAgent extends JPSHttpServlet {
 		String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
 		String[] keysx = JenaResultSetFormatter.getKeys(resultx);
 		List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
+
+		//grab the current time
+		Date date = new Date();   // given date
+		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+		calendar.setTime(date);   // assigns calendar to given date 
+		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+		Collections.rotate(resultListx,(24-h)*11); //rotate by number of hours
 		String[] groupschedule = new String[resultListx.size()];
 		for(int d=0;d<resultListx.size();d++) {
 			groupschedule[d] = resultListx.get(d)[1];
