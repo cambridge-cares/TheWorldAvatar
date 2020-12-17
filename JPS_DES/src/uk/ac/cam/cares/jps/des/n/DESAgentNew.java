@@ -106,7 +106,7 @@ public class DESAgentNew extends JPSHttpServlet {
    	    	SelectBuilder sensorIrrad = new SelectBuilder()
    	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
    	    			.addVar("?entity").addVar("?propval")
-   	    			.addVar("?proptimeval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB);
+   	    			.addVar("?proptimeval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
    	    	
    	    	q= sensorIrrad.build(); 
    	    	String sensorInfo2 = q.toString();

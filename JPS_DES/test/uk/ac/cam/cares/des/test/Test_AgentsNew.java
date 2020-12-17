@@ -179,11 +179,12 @@ public class Test_AgentsNew extends TestCase{
 		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", jo.toString());
 		assertNotNull(resultStart);
+		FrontEndTalk();
 	}
 	/** check if FrontEnd Case Scenario works
 	 * 
 	 */
-	public void testFrontEndTalk() {
+	public void FrontEndTalk() {
 		FrontEndCoordination fec = new FrontEndCoordination();
 		//looks for last created directory through the Metadata Query
 		String directorychosen= fec.getLastModifiedDirectory();

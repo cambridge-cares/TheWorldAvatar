@@ -87,7 +87,7 @@ public class Test_DES extends TestCase{
 	 * 
 	 * @throws IOException
 	 */
-	public void testStartDESAgent() throws IOException  {
+	public void xxxtestStartDESAgent() throws IOException  {
 		
 
 		JSONObject jo = new JSONObject();
@@ -251,7 +251,7 @@ public class Test_DES extends TestCase{
 		
 	}
 	
-	/*
+	/**
 	 * Finds the latest directory, as part of the coordinate agent. 
 	 */
 	public void testfindlatestdirectory() {
