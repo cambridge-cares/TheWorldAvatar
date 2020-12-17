@@ -138,7 +138,7 @@ const index = Math.floor(Math.random() * random_questions.length);
 }
 
 let local_address = 'http://127.0.0.1:5000/'
-let cmcl_address = 'https://kg.cmclinnovations.com/'
+let cmcl_address = 'https://kg.cmclinnovations.com/chemistry_chatbot/'
 let address = cmcl_address
 
 	$(window).on('load', function(){
