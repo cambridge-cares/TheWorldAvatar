@@ -52,6 +52,11 @@ Repository Name: thermochemistry
   However, we do need the Jmol jar files, as at least one of them is called on the command line to generate molecule images upon upload of Gaussian files to MolHub.
   See deployment notes below.
   To do: Update the contents of molhub/WebContent/jsmol/ and the deployed jar files with the latest version, occasionally.
+  
+* GLPK (GNU Linear Programming Kit):
+  https://www.gnu.org/software/glpk/
+  Download from http://ftp.gnu.org/gnu/glpk/
+  Versions that have been used successfully include 4.52.1, 4.58, and 4.59.
 
 ### Database configuration ###
 
