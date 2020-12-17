@@ -1,82 +1,144 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>uk.ac.cam.cares.jps</groupId>
-  <artifactId>JPS_COMPOSITION_LITE</artifactId>
-  <packaging>war</packaging>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>JPS_COMPOSITION_LITE Maven Webapp</name>
-  <url>http://maven.apache.org</url>
-  <dependencies>
-<dependency>
-  <groupId>junit</groupId>
-  <artifactId>junit</artifactId>
-  <version>4.12</version>
-  <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>apache-jena-libs</artifactId>
-    <type>pom</type>
-    <version>3.11.0</version>
-  </dependency>
-<dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20180813</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpclient</artifactId>
-    <version>4.5.8</version>
-</dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.ac.cam.cares.jps</groupId>
+	<artifactId>JPS_COMPOSITION_LITE</artifactId>
+	<packaging>war</packaging>
+	<version>1.0.0</version>
+	<name>JPS_COMPOSITION_LITE Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>apache-jena-libs</artifactId>
+			<type>pom</type>
+			<version>3.11.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180813</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.8</version>
+		</dependency>
 
-<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-databind</artifactId>
-    <version>2.9.4</version>
-</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.9.4</version>
+		</dependency>
 
 
- <dependency>
-        <groupId>org.apache.maven.surefire</groupId>
-        <artifactId>surefire-junit47</artifactId>
-        <version>3.0.0-M3</version>
-      </dependency>
+		<dependency>
+			<groupId>org.apache.maven.surefire</groupId>
+			<artifactId>surefire-junit47</artifactId>
+			<version>3.0.0-M3</version>
+		</dependency>
 
-        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.servlet/jsp-api -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-  <build>
-    <finalName>JPS_COMPOSITION_LITE</finalName>
-     <plugins>
-         <plugin>
-             <artifactId>maven-compiler-plugin</artifactId>
-             <version>3.5.1</version>
-             <configuration>
-                 <source>1.8</source>
-                 <target>1.8</target>
-             </configuration>
-         </plugin>
-         
-         <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
-            </plugin>
-         
-        </plugins>
-  </build>
+		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.servlet/jsp-api -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+
+	<build>
+		<finalName>JPS_COMPOSITION_LITE</finalName>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>test</testSourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+	<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-surefire-plugin</artifactId>
+		<version>2.12.4</version>
+		<configuration>
+			<skipTests>true</skipTests>
+		</configuration>
+	</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.2.2</version>
+				<configuration>
+					<webResources>
+						<resource>
+							<directory>WebContent/assets</directory>
+							<targetPath>assets</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/MapPointSelection</directory>
+							<targetPath>MapPointSelection</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/OutputVisualization</directory>
+							<targetPath>OutputVisualization</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/image</directory>
+							<targetPath>/image</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/regionSelection</directory>
+							<targetPath>/regionSelection</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/release</directory>
+							<targetPath>/release</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/themes</directory>
+							<targetPath>/themes</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/javascripts</directory>
+							<targetPath>/javascripts</targetPath>
+						</resource>
+
+						<resource>
+							<directory>WebContent</directory>
+							<includes>
+								<include>*.html</include>
+								<include>*.txt</include>
+								<include>*.js</include>
+							</includes>
+						</resource>
+					</webResources>
+					<warName>${project.artifactId}##${project.version}</warName>
+					<outputDirectory>${tomcatPath}/webapps</outputDirectory>
+				</configuration>
+			</plugin>
+
+
+		</plugins>
+	</build>
 </project>

@@ -1,8 +1,10 @@
 package uk.ac.cam.cares.jps.adms;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +20,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 /**
@@ -29,23 +35,82 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 public class ADMSOutputAllForShips extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static Logger logger = LoggerFactory.getLogger(ADMSOutputAllForShips.class);
+	String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
+
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      * get all adms output in one go
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        String folder = null;
-
         JSONObject joforEN = AgentCaller.readJsonParameter(request);
+        request.setCharacterEncoding("UTF-8");
+        // String folder = null;
+        String folderfilename = joforEN.getString("folder");
+
+        // this is required because unix file paths do not appear as IRIs to the triple store
+        // so we have to add file:/ in front of the path
+        if (!CommandHelper.isWindows()) {
+            folderfilename = folderfilename.split("file:/")[1];
+        }
+        // X.Zhou@2020.5.9 Implemented an extra mechanism to identify the extension of the target file and trigger different conversion script 
+        // accordingly. I also suggest a future clean up/ restructure of the GST conversion script. I personally suspect the maintainability 
+        // and extensibility of this script 
+        File output = new File(folderfilename);
+        String folder = output.getParent();
+        File dir = new File(folder);
+        
+        File[] gst_files = dir.listFiles((dir1, name) -> name.contains("test.levels") && name.endsWith(".gst"));
+        File[] dat_files = dir.listFiles((dir1, name) -> name.endsWith(".dat"));
+        
+        System.out.println("GST files : " + Arrays.toString(gst_files));
+        System.out.println("DAT files : " + Arrays.toString(dat_files));
+
+        int n_gst = gst_files.length;
+        int n_dat = dat_files.length;
+        if ((n_gst + n_dat) == 0) {
+        	response.getWriter().write("Error: empty foder");
+        }
+        else
+        {
+        	if (n_gst > n_dat) {
+        		// it is a gst folder 
+                get_output_for_gst(request, response, folder);
+        	}else {
+        		// it is a dat folder, trigger python
+        		ArrayList<String> args = new ArrayList<String>();
+        		if (AgentLocator.isJPSRunningAtCMCL()) {
+        			args.add(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR));
+        		} else {
+        			args.add("python");
+        		}
+        		args.add("dat_reader.py"); 
+        		args.add(dat_files[0].getAbsolutePath());
+        		String result = CommandHelper.executeCommands(targetFolder, args);
+        		response.setContentType("application/json");
+        		response.getWriter().write(result);
+        		
+        	}
+        	
+        }
+        
+         
+        
+        
+        
+    }
+    
+    
+    public void get_output_for_gst(HttpServletRequest request, HttpServletResponse response, String folder) throws IOException {
+    	
         try {
-            folder = joforEN.getString("folder");
+           
 
             String outputFile = folder + "/test.levels.gst";
+			// get what file is stored in the folder 
+			// DAT / GST
             String csv = new QueryBroker().readFileLocal(outputFile);
             List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
-
             int startcontentindex = 7;
 
             int heightamount = (simulationResult.get(0).length - startcontentindex) / getAllPollutants(simulationResult, startcontentindex).size();//height variation level amount (e.g:0m,10m,20m,30m) currently 4
@@ -191,6 +256,13 @@ public class ADMSOutputAllForShips extends HttpServlet {
             //make the json array to replace the functionality of gstreader.py
             JSONObject ans = new JSONObject();
             JSONArray a = new JSONArray();
+            JSONArray xcoord = new JSONArray();
+            JSONArray ycoord = new JSONArray();
+            //to get the x and y coordinates in their native form, get [4,5]
+            for (int i = 1; i< simulationResult.size(); i++) {
+            	xcoord.put(Float.parseFloat(simulationResult.get(i)[4]));
+            	ycoord.put(Float.parseFloat(simulationResult.get(i)[5]));
+            }
             for (int z = 0; z < heightamount; z++) {
                 JSONArray h = new JSONArray();
                 for (int y = startcontentindex; y < startcontentindex + findUniquePol(copier, startcontentindex).size(); y++) { // index0-index 9 for 1 pollutant
@@ -206,6 +278,11 @@ public class ADMSOutputAllForShips extends HttpServlet {
             ans.put("numpol", numpol);
             ans.put("listofpol", findUniquePol(copier, startcontentindex));
             ans.put("numheight", heightamount);
+            ans.put("numinterval", 10);
+            ans.put("initialheight", 0);
+            ans.put("x_coord", xcoord);
+            ans.put("y_coord", ycoord);
+            
 
 
             new QueryBroker().putLocal(folder + "/testmod.levels.gst", MatrixConverter.fromArraytoCsv(copier));
@@ -218,6 +295,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
+    
 
     public List<String> findUniquePol(List<String[]> simulationResult, int startcontentindex) { //only the unique
         List<String> newList = getAllPollutants(simulationResult, startcontentindex).stream().distinct().collect(Collectors.toList()); //remove duplication

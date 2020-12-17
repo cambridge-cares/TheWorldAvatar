@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.validator.routines.DoubleValidator;
+import org.apache.commons.validator.routines.IntegerValidator;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 
 
@@ -68,8 +72,14 @@ public class MenTableAgent extends HttpServlet {
 		
 		JSONObject jogui = AgentCaller.readJsonParameter(request);	
 		logger.info("jsonstring= "+jogui);
-		
-		
+		boolean validated = validateInput(jogui);
+		if (validated== false) {
+			logger.info("MEN_Table Agent stop");
+			response.setContentType("application/json");
+			JSONObject error404 = new JSONObject();
+			error404.put("Error", "non-valid input reached. Please try again. ");
+			response.getWriter().write(error404.toString());
+		}
 		// read form fields	
 		double carbontax = 0.0;
 		double interestfactor = 1.0;
@@ -84,6 +94,7 @@ public class MenTableAgent extends HttpServlet {
 			annualfactor = jogui.getJSONArray("AnnualCostFactor");
 					
 		} catch (JSONException e1) {
+
 			logger.error(e1.getMessage(), e1);
 		}
 		
@@ -171,4 +182,42 @@ public class MenTableAgent extends HttpServlet {
 
 		logger.info("MEN_Table Agent stop");
 	}
+	/** validation of inputs for MEN Table Agent
+	 * 
+	 * @param args JSON object representing input
+	 * @return
+	 */
+	public boolean validateInput(JSONObject args) {
+		boolean yrBool,intMarketBool,carbBool,intBool;
+		yrBool=intMarketBool=carbBool=intBool = true;
+        DoubleValidator doubleValidator = new DoubleValidator();
+        
+        IntegerValidator intValidator = new IntegerValidator();
+    	try {
+        
+        	intMarketBool = InputValidator.checkBoolean(args.get("InternationalMarketLowestPriceApplied"));
+        	carbBool=  doubleValidator.isValid(args.get("CarbonTax").toString());
+        	intBool =  doubleValidator.isValid(args.get("InternationalMarketPriceFactor").toString());
+        	JSONArray jArr = args.getJSONArray("AnnualCostFactor");
+        	
+        	for (int i = 0; i < jArr.length(); i++) {
+        		  String yr = jArr.getString(i);
+        		  if (!intValidator.isValid(yr)) {
+        			  yrBool = false;
+        		  }
+        		}
+        	
+    	} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	 if (intMarketBool &&carbBool&&intBool && yrBool== true) {
+    		 return true;
+     	}else {
+     		return false;
+     	}	
+    	 }
 }

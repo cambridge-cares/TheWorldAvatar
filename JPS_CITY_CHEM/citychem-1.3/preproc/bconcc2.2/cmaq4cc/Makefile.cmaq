@@ -1,0 +1,90 @@
+# BCONCC2.2
+# Makefile for program CMAQ4CC
+#
+# Adjust the netcdf library path
+#
+#NC_LIB  = /usr/local/netcdf4/
+
+
+MODEL = cmaq4cc.exe
+#FC    = gfortran
+FC    = gfortran
+CC    = gcc
+#BIN   = Linux2_x86_64gfort
+BIN   = Linux2_x86_64gfort
+
+f90_FLAGS  = $(DEFINEFLAGS) $(FOPTFLAGS) $(OMPFLAGS) $(ARCHFLAGS) -I../ioapi3.2/ioapi/fixed_src -I . -I . -I.
+F90_FLAGS  = $(DEFINEFLAGS) $(FOPTFLAGS) $(OMPFLAGS) $(ARCHFLAGS) -I../ioapi3.2/ioapi/fixed_src -I . -I . -I.
+C_FLAGS    = -O2 -DFLDMN -I .
+
+LINKER     = $(FC)
+LINK_FLAGS = 
+
+CPP       = $(CC)
+CPP_FLAGS = 
+
+IOAPI      =  -L//home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2//${BIN} -lioapi
+
+#NETCDF     =  -L$(NC_LIB)lib -lnetcdff -lnetcdf
+NETCDF     = -L/usr/local/netcdf4/lib -lnetcdf -lnetcdff
+
+LIBRARIES  = $(IOAPI) $(NETCDF)
+
+FIXED      = -I../ioapi3.2/ioapi/fixed_src
+#NETCDFINC  = -I/$(NC_LIB)include
+NETCDFINC  = -I/usr/local/netcdf4/include
+
+
+# New for ioapi v3.2
+IOAPIINC   = -I//home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2//${BIN}
+
+INCLUDES  = $(FIXED) $(NETCDFINC) $(IOAPIINC)
+
+#include Makeinclude.${BIN}
+include /home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2//ioapi/Makeinclude.${BIN}
+
+DEFS =
+
+CSRC =\
+	write2dfield.f90        \
+	module_cc_input.f90     \
+	stopit.f90              \
+	get_user_input_cmaq.f90 \
+	cmaq4cchem.f90
+
+OBJS = $(CSRC:.f90=.o)
+
+$(MODEL) : $(OBJS)
+	$(FC) $(f90_FLAGS) $^ $(LIBRARIES) -o $@
+
+#      -----------------------   RULES:   -------------------------
+
+%.o : %.mod        #  Disable "gmake"s obnoxious implicit Modula-2 rule !!
+
+.SUFFIXES: .f .o
+
+.f.o:
+	$(FC) $(f_FLAGS) $(INCLUDES) -c $< -o $@
+
+.F.o:
+	$(FC) -c $(F_FLAGS) $(CPP_FLAGS) $(INCLUDES) $<
+
+
+.F90.o:
+	$(FC) -c $(F90_FLAGS) $(CPP_FLAGS) $(INCLUDES) $<
+
+.SUFFIXES: .f90 .o
+
+.f90.o:
+	$(FC) -c $(f90_FLAGS) $(INCLUDES) $<
+
+.c.o:
+	$(CC) -c $(C_FLAGS) $<
+
+clean:
+	rm -f $(OBJS) $(MODEL) *.mod *.f~ *.f90~
+
+# dependencies
+
+cmaq4cchem.o        : /home/matthias/CITYCHEM_DEV/citychem-1.3/preproc/bconcc2.2/ioapi3.2//${BIN}/modatts3.mod
+

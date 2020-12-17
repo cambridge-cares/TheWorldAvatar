@@ -1,0 +1,44 @@
+body {
+	background-color: #cbe1e4
+}
+.div-left {
+	background-color: #FFFFFF
+}
+.div-right {
+	background-color: #FFFFFF
+}
+.col-md-half{-ms-flex:0 0 4.166666%;flex:0 0 4.166666%;max-width:4.166666%}
+.col-md-eightpointfive{-ms-flex:0 0 70.833333%;flex:0 0 70.833333%;max-width:70.833333%;padding-left:15px;padding-right:15px}
+th {
+    background-color: #cbe1e4;
+    color: #495057;
+} 
+hr.line {
+  border-top: 1px solid #cbe1e4;
+}
+.container {
+	max-width: 95% !important;	
+}
+
+.row-query-results {
+	white-space: nowrap;
+}
+
+.btn-help {
+    margin: 7px -20px 0px !important;
+    padding: 0px 7px 2px !important;
+}
+
+.btn-help  + .tooltip.top > .tooltip-arrow {
+	background-color: #ffffff;
+}
+
+/* The heart of the matter */
+.chart-group > .row {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.chart-group > .row > .chartCanvas {
+  display: inline-block;
+  float: none;
+}

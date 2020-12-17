@@ -1,0 +1,33 @@
+# VERSION "$Id: Makeinclude.Linux2_x86g95 1 2017-06-10 18:05:20Z coats $"
+#
+#  Flags for g95 / gcc
+
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = g95
+# FC = gfortran-ssa
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -I
+E132 = -ffixed-line-length-132
+
+MFLAGS    =  -ffast-math
+
+OMPFLAGS  = # -mp
+OMPLIBS   = # -lmp
+COPTFLAGS = -O2 ${MFLAGS}
+FOPTFLAGS = -O2 ${MFLAGS}
+FPPFLAGS  = -DF90=1
+FSFLAGS   = -fstatic
+ARCHFLAGS = \
+-DFLDMN=1 -D_G95=1 -DAUTO_ARRAYS=1 -DF90=1 -DSECOND_UNDERSCORE=1 # -DIOAPI_NOFLUSH=1
+PARFLAGS  =
+ARCHLIB   = -lgcc -lf95 -lreadline -lncurses -lc
+# ARCHLIB   = -lc -lgfortran -lg2c
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

@@ -1,0 +1,50 @@
+# Version "$Id: Makeinclude.WIN_x86gfort 1 2017-06-10 18:05:20Z coats $"
+#
+#  Makeinclude for Cygwin-Windows, using the Cygwin 32-bit gcc/gfortran compilers
+#  Must install Cygwin, together with Cygwin compilers and development environment
+#  and Cygwin libnetcdf.dll.a and libnetcdff.dll.a.
+#
+#  Note that in "m3tools/Makefile" the netCDF libraries should be
+#       -libnetcdff.dll -lnetcdf.dll
+#
+#  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
+#  to implement  IARGC() and GETARG() for compilers
+#  ("gfortran" version 4.8 or later to be exact) that insist on
+#  enforcing F2003-only with no backwards nor industry-standards compatibility.
+#
+#  Remove "-DNEED_ARGS=1" from ARCHFLAGS for version 4.7.x and earlier
+#
+# Use "-march=native -mtune=native" if compile-platform and compute-platform
+# are the same.
+# Use "-Wall -Wsurprising" for full diagnostics.
+
+AR   = ar
+CC   = gcc
+FC   = gfortran
+M4   = m4
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -I
+E132 = -ffixed-line-length-132
+
+MFLAGS    = -ffast-math -funroll-loops # -m64 -Wall -Wsurprising -march=native -mtune=native
+
+OMPFLAGS  = -fopenmp
+OMPLIBS   = -fopenmp
+COPTFLAGS = -O3 ${MFLAGS}
+FOPTFLAGS = -O3 ${MFLAGS} # -fsecond-underscore
+FPPFLAGS  = -DF90=1
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = \
+ -DAUTO_ARRAYS=1 \
+ -DSECOND_UNDERSCORE=1 \
+ -DF90=1 -DFLDMN=1 \
+ -DFSTR_L=int \
+ -DIOAPI_NO_STDOUT=1 \
+ -DNEED_ARGS=1
+PARFLAGS  =
+ARCHLIB   = -dynamic -L/usr/lib -lm -lpthread -lc
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = 

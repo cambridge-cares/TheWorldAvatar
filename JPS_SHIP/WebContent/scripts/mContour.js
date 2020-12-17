@@ -21,6 +21,10 @@ function getContourMaps (address, folder) {
 	let POL_LIST = data['listofpol']  
     	let POL_NUM = data['numpol']
     	let HEIGHT_NUM = data['numheight']
+    	let HEIGHT_GAP=data['numinterval']
+    	let INITIAL_HEIGHT=data['initialheight']
+    	
+    	
       
       let bands = []
       //calculate global min max per polutant
@@ -130,9 +134,8 @@ function getContourMaps (address, folder) {
       let canvas = $('#drawcanvas')[0]
       let context = canvas.getContext('2d')
       context.save();
-      context.translate(canvas.width, 0)
-      context.scale(-1, 1)
-
+      context.translate(0, canvas.height);
+      context.scale(1, -1/originRatio);
       //========convert all svg strs to png images=============//
 
       let futureImages = svgstrs.map((svgstr) => {
@@ -155,7 +158,7 @@ function getContourMaps (address, folder) {
         })
         console.log(dataurls)
         context.restore();
-        resolve([dataurls,POL_LIST,POL_NUM,HEIGHT_NUM])
+        resolve([dataurls,POL_LIST,POL_NUM,HEIGHT_NUM,HEIGHT_GAP,INITIAL_HEIGHT])
 
       }, err => {//todo: err handling
         reject(err)

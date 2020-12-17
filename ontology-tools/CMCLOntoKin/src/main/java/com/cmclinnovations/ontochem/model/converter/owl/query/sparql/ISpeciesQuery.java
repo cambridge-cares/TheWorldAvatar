@@ -1,0 +1,11 @@
+package com.cmclinnovations.ontochem.model.converter.owl.query.sparql;
+
+/**
+ * An interface designed for the SpeciesQuery class.
+ * 
+ * @author msff2
+ *
+ */
+public interface ISpeciesQuery {
+	public void query();
+}

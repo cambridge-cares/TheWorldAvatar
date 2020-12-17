@@ -123,7 +123,7 @@ public class TestAgentDescriptions extends TestCase {
 	private Service createDescrForAgentPowerPlant() {
 		return new ServiceBuilder().operation(null, JPS + "/PowerPlant")
 			.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-			.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+			.input("http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism", "reactionmechanism")
 			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.build();
 	}
@@ -141,7 +141,7 @@ public class TestAgentDescriptions extends TestCase {
 	private Service createDescrForAgentShip() {
 		return new ServiceBuilder().operation(null, JPS + "/ShipAgent")
 			.input("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship", "ship")
-			.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+			.input("http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism", "reactionmechanism")
 			.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 			.build();
 	}
@@ -276,7 +276,7 @@ public class TestAgentDescriptions extends TestCase {
 				.operation(null, null)
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+				.input("http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism", "reactionmechanism")
 				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
 				.build();
@@ -287,7 +287,7 @@ public class TestAgentDescriptions extends TestCase {
 				.operation(null, JPS + "/ADMSCoordinationAgentWithScenario")
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Plant", "plant")
-				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+				.input("http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism", "reactionmechanism")
 				.output("https://www.w3.org/ns/csvw#Table", "dispersiongrid")
 				.output("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#BuildingType", true, "buildings", true)
 				.build();
@@ -307,7 +307,7 @@ public class TestAgentDescriptions extends TestCase {
 	private Service createDescrForAgentSRMEmissions() {
 		return new ServiceBuilder()
 				.operation(null, JPS + "/SRMAgent")
-				.input("https://como.cheng.cam.ac.uk/kb/ontochem.owl#ReactionMechanism", "reactionmechanism")
+				.input("http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ReactionMechanism", "reactionmechanism")
 				.input("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#CompressionIgnitionEngine", "engine")
 				.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 				.build();

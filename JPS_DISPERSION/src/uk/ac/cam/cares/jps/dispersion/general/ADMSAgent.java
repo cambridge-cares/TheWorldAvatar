@@ -1,3 +1,4 @@
+
 package uk.ac.cam.cares.jps.dispersion.general;
 
 import java.io.File;
@@ -53,7 +54,7 @@ public class ADMSAgent extends DispersionModellingAgent {
     	logger.info("enter adms request parameter");
         JSONObject region = requestParams.getJSONObject("region");
         String cityIRI = requestParams.getString("city");
-        String agent = requestParams.getString("agent");
+        
         JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
         List<String> stnList = MiscUtil.toList(stnIRI);
         //JSONArray buildingIRI=requestParams.getJSONArray("building");
@@ -74,9 +75,10 @@ public class ADMSAgent extends DispersionModellingAgent {
         String targetCRSName = getTargetCRS(cityIRI);
         String dataPath = QueryBroker.getLocalDataPath();
         String fullPath = dataPath + "/JPS_ADMS"; // only applies for ship at the moment
-        String extrainfo=requestParams.toString();
-        new QueryBroker().putLocal(dataPath+"/extra_info.json", extrainfo);	
         String newBuildingData = getBuildingData(region,cityIRI);
+        
+     
+       
        
         JSONObject newRegion = getNewRegionData(upperx, uppery, lowerx, lowery, targetCRSName, sourceCRSName);
         
@@ -89,6 +91,17 @@ public class ADMSAgent extends DispersionModellingAgent {
             if (requestParams.has(PARAM_KEY_SHIP)) {
                 JSONArray coords  = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
                 QueryBroker broker = new QueryBroker();
+                
+                // write extra info to a file: 1. buildings, ships, coordinates
+                
+                JSONObject extra_info = new JSONObject();
+                extra_info.put("buildings", newBuildingData);
+                extra_info.put("coordinates", region);
+                extra_info.put("ships", coords);
+                QueryBroker extra_file_broker = new QueryBroker();
+                extra_file_broker.putLocal(fullPath + "/extra_info.json",extra_info.toString());
+                
+                
                 broker.putLocal(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
                 createWeatherInput(fullPath,null,stnList);
@@ -110,7 +123,7 @@ public class ADMSAgent extends DispersionModellingAgent {
         String target = fullPath + "/test.levels.gst";
         File name=new File(target);
         if(name.length()!=0&&name.exists()) {
-        	//String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
+        	String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
             //String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
         	//MetaDataAnnotator.annotateWithTimeAndAgent(target, timestamp, agent);	
         	List<String> topics = new ArrayList<String>();
@@ -166,15 +179,13 @@ public class ADMSAgent extends DispersionModellingAgent {
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
 		        		wind.put("hasdirection", listmap.get(r)[1]);
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("temperature")) {
-
 		        		  temperature.put("hasvalue", listmap.get(r)[1]);
-		        		
+		        		  
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("humidity")) {
-
-			        		String decimalhumidity=listmap.get(r)[1];
-			        		double percent=Double.valueOf(decimalhumidity)*100;
-			        		relativehumidity.put("hasvalue",""+percent);
-	
+		        		String decimalhumidity=listmap.get(r)[1];
+		        		double percent=Double.valueOf(decimalhumidity)*100;
+		        		relativehumidity.put("hasvalue",""+percent);
+		        		  
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("precipitation")) {
 		        		precipitation.put("hasintensity", listmap.get(r)[1]);
 		        		precipitationdata=listmap.get(r)[1];
@@ -191,8 +202,6 @@ public class ADMSAgent extends DispersionModellingAgent {
 	        weather.put("hashumidity", relativehumidity);
 	        weather.put("hasprecipation", precipitation);
 	        weather.put("hascloudcover", cloudcover);
-	        System.out.println("temperature="+temperature);
-	        System.out.println("humidity="+relativehumidity);
 	        
 	        System.out.println("weather data= "+weather.toString());
 	        writeMetFile(weather, dataPath);

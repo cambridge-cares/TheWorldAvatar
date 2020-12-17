@@ -3,7 +3,8 @@
 # File documentation
 #
 
-
+import warnings
+warnings.filterwarnings("ignore")
 from lxml import html
 import requests, sys
 import json

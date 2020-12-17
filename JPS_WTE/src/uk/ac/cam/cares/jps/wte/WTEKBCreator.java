@@ -726,10 +726,10 @@ public class WTEKBCreator {
 					tech2.addProperty(hasLaborCost, manpowercost);
 					tech2.addProperty(hasTax, polltreatmenttax);
 					for(int t=1;t<=1;t++) {
-					Individual unitdevice = WasteTreatmentDeviceclass.createIndividual(Prefix + mainobjectname + ".owl#UnitDeviceOf" + mainobjectname+"_"+t);
-					tech2.addProperty(realizedByDevice, unitdevice);
-					unitdevice.setPropertyValue(usedInYear, jenaOwlModel.createTypedLiteral(new Integer(t))); //the amount of unit still not be possible to be included in owl files
-					unitdevice.setPropertyValue(amountOfUnit, jenaOwlModel.createTypedLiteral(Math.round(new Double(outputdata[0]))));
+						Individual unitdevice = WasteTreatmentDeviceclass.createIndividual(Prefix + mainobjectname + ".owl#UnitDeviceOf" + mainobjectname+"_"+t);
+						tech2.addProperty(realizedByDevice, unitdevice);
+						unitdevice.setPropertyValue(usedInYear, jenaOwlModel.createTypedLiteral(new Integer(t))); //the amount of unit still not be possible to be included in owl files
+						unitdevice.setPropertyValue(amountOfUnit, jenaOwlModel.createTypedLiteral(Math.round(new Double(outputdata[0]))));
 					}
 					Vtechcap.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(propertydata.get(0)[1])));
 					Vinstallcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(propertydata.get(0)[2])));
@@ -1051,7 +1051,7 @@ public class WTEKBCreator {
 			}
 			else if(flag.contains("onsitewtf")) {
 				for(int d=1;d<=outputdata.size();d++) {
-					String wtfname="OnSiteWasteTreatment-"+d; 
+					String wtfname="OnSiteWasteTreatment-"+String.format("%03d", d); ; 
 					if(Double.parseDouble(outputdata.get(d-1)[0])!=0.0) {
 						inFile = new FileInputStream(filePath);
 						in = new InputStreamReader(inFile, "UTF-8");
@@ -1062,9 +1062,8 @@ public class WTEKBCreator {
 						//wtf.add(iriofwtf); should the onsite attached to the waste system??
 						String content = JenaHelper.writeToString(jenaOwlModel);
 						new QueryBroker().putOld(Prefix+wtfname+".owl", content);
+						onsiteiri.add(Prefix+wtfname+".owl#"+wtfname);
 					}
-					System.out.println(Prefix+wtfname+".owl#"+wtfname);
-					onsiteiri.add(Prefix+wtfname+".owl#"+wtfname);
 				}
 
 //				for(int d=1;d<=4;d++) { //incinerator not to be touched again which is d=4
@@ -1079,7 +1078,6 @@ public class WTEKBCreator {
 //					String content = JenaHelper.writeToString(jenaOwlModel);
 //					new QueryBroker().putOld(Prefix+wtfname+".owl", content);
 //				}
-				System.out.println("it is processed= " + flag);
 			 
 			}
 			else if(flag.contains("foodcourt")) {
@@ -1096,7 +1094,7 @@ public class WTEKBCreator {
 					jenaOwlModel2.read(in, null);
 					initOWLClasses(jenaOwlModel2);
 
-					String fcname="FoodCourt-"+d; 
+					String fcname="FoodCourt-"+String.format("%03d", d); 
 				String irioffc=doConversionFC(jenaOwlModel2,Prefix, fcname,data);
 				foodcourt.add(irioffc);
 				String content = JenaHelper.writeToString(jenaOwlModel2);
@@ -1106,13 +1104,13 @@ public class WTEKBCreator {
 			}
 			else if(flag.contains("wtf")) {
 
-				for(int d=1;d<=4;d++) { //incinerator not to be touched again which is d=4
+				for(int d=1;d<=3;d++) { //incinerator not to be touched again which is d=4
 					inFile = new FileInputStream(filePath);
 					in = new InputStreamReader(inFile, "UTF-8");
 					OntModel jenaOwlModel = ModelFactory.createOntologyModel();
 					jenaOwlModel.read(in, null);
 					initOWLClasses(jenaOwlModel);
-					String wtfname="WasteTreatment-"+d; 
+					String wtfname="OffsiteWasteTreatment-"+d; 
 					String iriofwtf=doConversionWTF(jenaOwlModel,Prefix, wtfname);
 					wtf.add(iriofwtf);
 					String content = JenaHelper.writeToString(jenaOwlModel);
@@ -1147,7 +1145,7 @@ public class WTEKBCreator {
 		converter.startConversion("foodcourt",null,null,null);
 		converter.startConversion("transport",null,null,null);
 		converter.startConversion("wtf",null,null,null);
-//		transportiri="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
+		transportiri="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
 //		for(int x=1;x<=7;x++) {
 //		foodcourt.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-"+x+".owl#FoodCourt-"+x);
 //		}
