@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -16,26 +18,38 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 @WebServlet("/SLMAgent")
 public class SpeedLoadMapWrapper extends HttpServlet {
 	private static final String slmDir = "\\python\\ADMS-speed-load-map";
-	private static final String slmPython = "\\env\\Scripts\\python.exe";
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
+	private static final String pypathUnix = "bin/python";
+	private static final String pypathWindows = "\\Scripts\\python.exe";
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
-		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
-		String pythonExec = smlWorkingDir + slmPython;
-
+		String slmWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(pythonExec);
-        args.add(slmScript);
-		args.add(inputs);
+		Path venvPath;
+				
+		if (CommandHelper.isWindows()) {
+			venvPath = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR), pypathWindows);
+			args.add(venvPath.toString());
+	        args.add(slmScript);
+			args.add(inputs);
+		} else {
+			slmWorkingDir = AgentLocator.getCurrentJpsAppDirectory(this) +  slmDir.replace("\\", "/");
+			venvPath = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR), pypathUnix);
+			args.add(venvPath.toString());
+			args.add(slmScript);
+			args.add(inputs);
+		}
 
-		return CommandHelper.executeCommands(smlWorkingDir, args);
+		return CommandHelper.executeCommands(slmWorkingDir, args);
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -43,6 +57,16 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		JSONObject in= new JSONObject();
+		/*
+		 * http://betterboat.com/average-boat-speed/ assume fastest medium boat 
+		 * max speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
+		 * https://www.marineinsight.com/shipping-news/worlds-fastest-ship-built-tasmania-christened-argentinas-president/->fastest=58.1 knot
+		 * knot*2500/58.1 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
+		 * kg/h NO2 (comparison of NO2
+		 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
+		 * 1 boat mass flux=0.0192143028723584 kg/s 
+
+		 */
 		double valuecalc=jo.getDouble("speed")*2500/58.1;
 		if(valuecalc>2500) {
 			valuecalc=2500;
@@ -66,7 +90,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 	private JSONObject crankUpRealShipModel(String type, String newjsonfile) {
 		JSONObject json = new JSONObject(newjsonfile);
 		
-		
+		// these scaling factors are purely to make the results fall within the reasonable range
 		for(int gas=0;gas<json.getJSONArray("pollutants").length();gas++) {
 			JSONObject pollutantmass=json.getJSONArray("pollutants").getJSONObject(gas);
 			Double oldvaluemixmass= pollutantmass.getDouble("value");

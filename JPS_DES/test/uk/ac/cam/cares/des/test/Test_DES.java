@@ -27,6 +27,7 @@ import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -113,6 +114,15 @@ public class Test_DES extends TestCase{
 		jo.put("solar","3.784461764480557235e+01");
 		System.out.println(new BlockchainWrapper().calculateTrade(jo));
 	}
+	public String getLastModifiedDirectory() {
+    	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
+		List<String> lst = null;
+    	System.out.println(lst);
+    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
+		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
+		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
+    	return listmap.get(0)[0];
+    }
 	/*
 	 * Calls and runs the Blockchain transaction with test values (thru TOMCAT)
 	 */
@@ -123,6 +133,7 @@ public class Test_DES extends TestCase{
 		jo.put("residential","8.826121920185781278e+00");
 		jo.put("gridsupply","4.409266691007480290e+01");
 		jo.put("solar","3.784461764480557235e+01");
+		jo.put("directory",getLastModifiedDirectory());
 	    System.out.println(jo.toString());
 		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
 		System.out.println(v);

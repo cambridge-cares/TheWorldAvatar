@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -26,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class BaseOntologyModelManager {
@@ -35,9 +39,8 @@ public class BaseOntologyModelManager {
     private static final String EX_SAVE_OWL =  "Saving OWL failed: ";
     static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
     private static final String ABSDIR_KB = ABSDIR_ROOT + "/kb/";
-    //protected static final String ABSDIR_ROOT_TEST = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
-   protected static final String ABSDIR_ROOT_TEST = "C://Users/KADIT01/TOMCAT/webapps/ROOT";
-//  protected static final String ABSDIR_ROOT_TEST =  "C://Users/LONG01/TOMCAT/webapps/ROOT";
+    // now reading from JPS_BASE_LIB/src/main/resources in jpstest.properties
+    protected static final String ABSDIR_ROOT_TEST =  KeyValueMap.getProperty("/jpstest.properties",IKeys.ABSDIR_ROOT);
     private static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
     private static final String IRI_BASE_TEST = "http://localhost:8080";
     protected static final String IRI_KB_TEST = IRI_BASE_TEST + "/kb/";
@@ -61,11 +64,11 @@ public class BaseOntologyModelManager {
         return conceptMap.get(name);
     }
 
-    public static void save(OntModel jenaOwlModel, String iriOfChimney) {
+    public static void save(OntModel jenaOwlModel, String iriOfChimney, String mmsi) {
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readWriteLock.writeLock().lock();
         try {
-            saveToOwl(jenaOwlModel, iriOfChimney);
+            saveToOwl(jenaOwlModel, iriOfChimney, mmsi);
         } catch (IOException e) {
             throw new JPSRuntimeException(EX_SAVE_OWL + iriOfChimney);
         } finally {
@@ -73,12 +76,12 @@ public class BaseOntologyModelManager {
         }
     }
 
-    public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney) throws IOException {
+    public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
         String filePath2;
         if (!AgentLocator.isJPSRunningForTest()) {
             filePath2= iriOfChimney.replaceAll(IRI_KB, ABSDIR_KB).split("#")[0];
         } else {
-            filePath2= iriOfChimney.replaceAll(IRI_KB_TEST, ABSDIR_KB_TEST).split("#")[0];
+            filePath2= Paths.get(ABSDIR_KB_TEST,"ships",mmsi,"Chimney-1.owl").toString();
         }
         logger.info("the filepath created= "+filePath2);
 

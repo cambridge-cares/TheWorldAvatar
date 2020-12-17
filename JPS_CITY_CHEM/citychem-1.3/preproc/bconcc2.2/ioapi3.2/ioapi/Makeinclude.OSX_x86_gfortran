@@ -1,0 +1,41 @@
+# VERSION "$Id: Makeinclude.OSX_x86_gfortran 1 2017-06-10 18:05:20Z coats $"
+#
+#  03/2016 by CJC for MAC OSX gfortran/gcc.
+#
+#  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
+#  to implement  IARGC() and GETARG() for compilers
+#  ("gfortran" version 4.8 or later to be exact) that insist on
+#  enforcing F2003-only with no backwards nor industry-standards compatibility.
+#
+#  Remove "-DNEED_ARGS=1" from ARCHFLAGS for gfortran-4.7.x and earlier
+#
+# Use "-march=native -mtune=native" if compile-platform and compute-platform
+# are the same, for processor specific instruction-set and optimization.
+# Use "-Wall -Wsurprising" for full diagnostics.
+#
+
+AR   = ar
+CC   = gcc
+FC   = gfortran
+M4   = m4
+CPP  = cpp
+LINK = gcc
+
+## Module-include-directory command
+MODI = -I
+E132 = -ffixed-line-length-132
+
+MFLAGS    = # -ffast-math -funroll-loops -m64 -Wall -Wsurprising -march=native -mtune=native
+
+OMPFLAGS  = -fopenmp
+OMPLIBS   = -fopenmp
+COPTFLAGS = -O3 -fno-common ${MFLAGS}
+FOPTFLAGS = -O3 ${MFLAGS}
+FPPFLAGS  = -DF90=1
+FSFLAGS   = -fno-automatic
+ARCHFLAGS =  -DF90=1 -DAUTO_ARRAYS=1 -DMACH=1 -DFLDMN=1 -DNEED_ARGS=1
+PARFLAGS  = 
+ARCHLIB   = 
+
+M4DEFFILE = 
+PVMLIBS   = 

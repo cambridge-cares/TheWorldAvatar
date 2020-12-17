@@ -48,38 +48,48 @@
     </build>
 
 	<dependencies>
-	<dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version> 
-            <scope>provided</scope> 
-        </dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.eclipse.rdf4j</groupId>
 			<artifactId>rdf4j-runtime</artifactId>
 			<version>2.4.0-M2</version>
 		</dependency>
 		<dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>servlet-api</artifactId>
-    <version>2.5</version>
-</dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
-			<artifactId>jps-base</artifactId>
+			<artifactId>jps-base-lib</artifactId>
 			<version>1.3.0</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>3.2.9.RELEASE</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 			<version>3.2.9.RELEASE</version>
 		</dependency>
-				<!-- Spring MVC for Servlet Environments (depends on spring-core, spring-beans, 
+		<dependency>
+    		<groupId>javax.ws.rs</groupId>
+    		<artifactId>javax.ws.rs-api</artifactId>
+    		<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.6</version>
+		</dependency>
+		<!-- Spring MVC for Servlet Environments (depends on spring-core, spring-beans, 
 			spring-context, spring-web) Define this if you use Spring MVC with a Servlet 
 			Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
 		<dependency>
@@ -115,38 +125,42 @@
 			<artifactId>spring-security-web</artifactId>
 			<version>3.2.9.RELEASE</version>
 		</dependency>
-	<dependency>
-		<groupId>org.springframework.security</groupId>
-		<artifactId>spring-security-config</artifactId>
-		<version>3.2.9.RELEASE</version>
-	</dependency>
-
-        		<dependency>
-    		<groupId>com.jayway.jsonpath</groupId>
-    		<artifactId>json-path</artifactId>
-    		<version>2.4.0</version>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>3.2.9.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>2.4.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-<dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.8.1</version>
-</dependency>
-		
-<dependency>
-    <groupId>com.konghq</groupId>
-    <artifactId>unirest-java</artifactId>
-    <version>3.7.02</version>
-    <classifier>standalone</classifier>
-</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.konghq</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>3.7.02</version>
+			<classifier>standalone</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
 		
 		<dependency>
-  <groupId>junit</groupId>
-  <artifactId>junit</artifactId>
-  <version>4.11</version>
-  <scope>test</scope>
-</dependency>
-</dependencies>
-	
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-sparqlbuilder</artifactId>
+            <version>3.4.3</version>
+        </dependency>
+
+	</dependencies>	
   
 </project>

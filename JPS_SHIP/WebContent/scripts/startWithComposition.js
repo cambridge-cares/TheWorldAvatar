@@ -2,7 +2,7 @@ let osmbGlobal;
 let originRatio = 1;
 metaEndpoint = "http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation";
 //metaEndpoint = "http://localhost:8080/rdf4j-server/repositories/airqualitystation";
-sensorIRIs;
+let sensorIRIs;
 
 $(function(){
 
@@ -145,7 +145,7 @@ $(function(){
  PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
  PREFIX j6:<http://www.w3.org/2006/time#>
  PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
- SELECT ?vprop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?unit
+ SELECT Distinct ?prop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?unit
  {graph stationIRI
  {
   ?graph j4:hasOverallPSI ?allpsi .
@@ -157,7 +157,7 @@ $(function(){
 ?vprop   j4:prescaledNumValue ?propval .
     ?vprop   j2:hasUnitOfMeasure ?unit .
   ?vprop   j6:hasTime ?proptime .
-  ?proptime   j6:inXSDDateTimeStamp ?proptimeval .
+  ?proptime   j6:inXSDDateTime ?proptimeval .
 }}
  ORDER BY DESC(?proptimeval) LIMIT10`;
        // stationIRI = "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001"
@@ -268,6 +268,16 @@ console.log(result)});
                         item[7] = parseFloat(item[7]).toFixed(2)
 
                     })
+                    sensorAttributes.data.sort(function(a, b) {
+                        var nameA = a[0].toUpperCase(); // ignore upper and lowercase
+                        var nameB = b[0].toUpperCase(); // ignore upper and lowercase
+                        if (nameA < nameB) {
+                            return -1;
+                        }
+                        if (nameA > nameB) {
+                            return 1;
+                        }
+                    });
                     renderAttributeTable(sensorAttributes);
                 })
                    // });
@@ -301,11 +311,13 @@ console.log(result)});
 		$('#inputFields').append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>'
 );
 
-
+		let keyvendor=window.location.pathname.split('/')[2];
+		console.log("Keyvendor= "+keyvendor);
         var locationIRI =  mlocation = $('#location').val();
         let folder;
         console.log('locationIRI '+locationIRI);
-        let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulation";//"/agent"
+        let agentScenario =  "/JPS_DISPERSION/" + keyvendor + "/results/latest";
+
         let agentInformation =  "/JPS_SHIP/GetExtraInfo";//"/info"
         //TODO:determine what sequence to query;
         $.get(agentScenario, {city:locationIRI}).done(function (data) {
@@ -324,6 +336,10 @@ console.log(result)});
             var xmax = parseInt(info.region.uppercorner.upperx);
             var ymin = parseInt(info.region.lowercorner.lowery);
             var ymax = parseInt(info.region.uppercorner.uppery);
+            $('#xlower').val(xmin)
+            $('#xupper').val(xmax)
+            $('#ylower').val(ymin)
+            $('#yupper').val(ymax)
             originRatio = (xmax-xmin)/(ymax-ymin);
             let ratio;
             [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18

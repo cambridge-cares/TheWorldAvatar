@@ -1,0 +1,36 @@
+# VERSION "$Id: Makeinclude.Linux2_x86_64sunmpi 1 2017-06-10 18:05:20Z coats $"
+#
+#  Build MPI/PnetCDF distributed-file support using "mpif90" and "mpcc",
+#  where compilers are built "on top of" Sun compilers
+#
+#       Linux for 64-bit x86_64 (AMD64, EMT64) using the
+#       Sun Studio Express compiler suite
+#
+AR   = ar
+CC   = mpicc
+CXX  = sunCC
+FC   = mpif95
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -M
+E132 = -extend-source 132
+
+# MFLAGS    =  -xarch=native -xtarget=native -m64 -xdebugformat=dwarf
+MFLAGS    =  -xarch=avx -xtarget=sandybridge -m64 -xdebugformat=dwarf
+
+OMPFLAGS  = -openmp -stackvar
+OMPLIBS   = -mt -lnsl
+COPTFLAGS = -O3 ${MFLAGS}
+FOPTFLAGS = -O3 ${MFLAGS}
+FPPFLAGS  = -DIOAPI_PNCF=1
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1 -DBIT32=1 -DF90=1
+PARFLAGS  =
+ARCHLIB   = -Bdynamic -lc
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3
+

@@ -18,10 +18,17 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet("/StatisticAnalysis")
 public class StatisticAnalysisAgent extends JPSHttpServlet{
+	/**
+	 * Summary of Statistic Analysis agent:
+	 * Calculates statistical properties of pollutants:
+	 * mean, max, min and PSI = pollutant standards index
+	 * PSI is calculated through a hard coded table and linear interpolation - very bad!
+	 * Source of the PSI table:
+	 * https://www.haze.gov.sg/docs/default-source/faq/computation-of-the-pollutant-standards-index-(psi).pdf
+	 */
 	 protected void setLogger() {
 	        logger = LoggerFactory.getLogger(StatisticAnalysisAgent.class);
 	    }
@@ -258,6 +265,26 @@ public class StatisticAnalysisAgent extends JPSHttpServlet{
 		}
 		
 		public List<String[]> prepareInput(String context,String propnameclass,String dataPath) {
+			//TODO: make the averaging time according to the psa table, for both the aqmesh and virtual sensor
+			String limit="8";
+			if(context.toLowerCase().contains("aqmesh")) {
+				if(propnameclass.contains("PM")||propnameclass.contains("SO2")) {
+					limit="288";
+				}else if(propnameclass.contains("COConc")||propnameclass.contains("O3")) {
+					limit="96";
+				}else if(propnameclass.contains("NO2")) {
+					limit="12";
+				}
+				
+			}else {
+				if(propnameclass.contains("PM")||propnameclass.contains("SO2")) {
+					limit="24";
+				}else if(propnameclass.contains("COConc")||propnameclass.contains("O3")) {
+					limit="8";
+				}else if(propnameclass.contains("NO2")) {
+					limit="2";
+				}
+			}
 			String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
@@ -273,18 +300,18 @@ public class StatisticAnalysisAgent extends JPSHttpServlet{
 					+ " ?vprop   j6:hasTime ?proptime ."
 //					+ " ?proptime   j6:hasBeginning ?proptimestart ."
 //					+ " ?proptime   j6:hasEnd ?proptimeend ."
-					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+					+ " ?proptime   j6:inXSDDateTime ?proptimeval ."
 //					+ " ?proptimestart   j6:inXSDDateTimeStamp ?proptimestartval ." 
 //					+ " ?proptimeend   j6:inXSDDateTimeStamp ?proptimeendval ."
 					+ "}" 
 					+ "}"
-					+ "ORDER BY DESC(?proptimeval)LIMIT8"; //take 8 newest
+					+ "ORDER BY DESC(?proptimeval)LIMIT"+limit; //take 8 newest
 			
 			List<String[]> resultQuery =queryEndPointDataset(sensorinfo);
 			String[]header= {propnameclass,"starttime"};
 			resultQuery.add(0,header);
-			String filename= propnameclass+"latest8hrdata.csv"; //what is input file name
-			new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultQuery));
+			String filename= propnameclass+"latestdata.csv"; //what is input file name
+			//new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultQuery));
 			
 			return resultQuery;
 		}

@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.base.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.http.HttpResponse;
@@ -21,6 +23,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentLocator {
 
+	private static String JPS_CONFIG_ENVIRONMENT_TEST_KEY = "test";
     private static AgentLocator instance = null;
 
     private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
@@ -52,48 +55,53 @@ public class AgentLocator {
         jpsBaseDirectory = createJpsBaseDirectory(path);
         logger.info("JPS_BASE directory = " + jpsBaseDirectory);
     }
-
+    /** previously used to determine the location of JPS BASE CONFIG as part of JPS BASE webapp
+     * Now config file is stored in JPS BASE LIB/src/main/resources
+     *  
+     * @param currentJpsAppDirectory
+     * @return
+     */
     public static String createJpsBaseDirectory(String currentJpsAppDirectory) {
-
-        String result = null;
-
-        String path = currentJpsAppDirectory.replace("\\", "/");
-        int index = path.lastIndexOf("/");
-        String firstPart = path.substring(0, index);
-        System.out.println("jps base dir first part = " + firstPart);
-        File dir = new File(firstPart);
-
-        // there might be several webapps with name of form JPS_BASE##x.y.z
-        // find the one with the largest version x.y.z
-        String highestVersion = null;
-        for (File current : dir.listFiles()) {
-            if (!current.isDirectory()) {
-                continue;
-            }
-            path = current.getAbsolutePath().replace("\\", "/");
-            index = path.lastIndexOf("/");
-            String secondPart = path.substring(index + 1);
-            System.out.println("jps base dir second part = " + secondPart);
-            if (secondPart.startsWith("JPS_BASE")) {
-                String version = null;
-                index = secondPart.lastIndexOf("##");
-                if (index >= 0) {
-                    version = secondPart.substring(index + 2);
-                }
-                if (result == null || isVersionLargerThan(version, highestVersion)) {
-                    result = path;
-                    highestVersion = version;
-                    System.out.println("jps base dir current path candidate = " + path);
-                }
-            }
-        }
-        if (result == null) {
-            result = path + "/../../../JPS_BASE";
-            if (!Files.isDirectory(Paths.get(result))) {
-                result = path + "/../../JPS_BASE";
-            }
-        }
-        return result;
+    	return "/";
+//        String result = null;
+//        
+//        String path = currentJpsAppDirectory.replace("\\", "/");
+//        int index = path.lastIndexOf("/");
+//        String firstPart = path.substring(0, index);
+//        System.out.println("jps base dir first part = " + firstPart);
+//        File dir = new File(firstPart);
+//
+//        // there might be several webapps with name of form JPS_BASE##x.y.z
+//        // find the one with the largest version x.y.z
+//        String highestVersion = null;
+//        for (File current : dir.listFiles()) {
+//            if (!current.isDirectory()) {
+//                continue;
+//            }
+//            path = current.getAbsolutePath().replace("\\", "/");
+//            index = path.lastIndexOf("/");
+//            String secondPart = path.substring(index + 1);
+//            System.out.println("jps base dir second part = " + secondPart);
+//            if (secondPart.startsWith("JPS_BASE")) {
+//                String version = null;
+//                index = secondPart.lastIndexOf("##");
+//                if (index >= 0) {
+//                    version = secondPart.substring(index + 2);
+//                }
+//                if (result == null || isVersionLargerThan(version, highestVersion)) {
+//                    result = path;
+//                    highestVersion = version;
+//                    System.out.println("jps base dir current path candidate = " + path);
+//                }
+//            }
+//        }
+//        if (result == null) {
+//            result = path + "/../../../JPS_BASE";
+//            if (!Files.isDirectory(Paths.get(result))) {
+//                result = path + "/../../JPS_BASE";
+//            }
+//        }
+//        return result;
     }
 
     public static boolean isVersionLargerThan(String v1, String v2) {
@@ -157,18 +165,16 @@ public class AgentLocator {
         return getSingleton().jpsBaseDirectory;
     }
 
+    /**
+     * This method is used to determine which enviroment JPS agents should operate in:
+     * development/testing or production.
+     *
+     * @return Boolean testMode
+     */
     public static boolean isJPSRunningForTest() {
-
-        String path = getJPSBaseDirectory();
-        if (path != null) {
-            String[] serverDirectories = new String[]{"C:/TOMCAT/webapps/JPS_BASE", "C:\\TOMCAT\\webapps\\JPS_BASE", "C:\\TOMCAT_8081_9.0.20\\webapps\\JPS_BASE", "C:/TOMCAT_8081_9.0.20/webapps/JPS_BASE"};
-            for (String current : serverDirectories) {
-                if (path.startsWith(current)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        Boolean testMode = false;
+        testMode = Boolean.valueOf(KeyValueMap.getInstance().get(JPS_CONFIG_ENVIRONMENT_TEST_KEY));
+        return testMode;
     }
 
     public static String getAbsolutePath(String keyForRelativePath, Object thisObject) {
@@ -228,5 +234,11 @@ public class AgentLocator {
         }
 
         return url;
+    }
+
+    public static boolean isJPSRunningAtCMCL() {
+        Boolean testMode = false;
+        testMode = Boolean.valueOf(KeyValueMap.getInstance().get("cmcl"));
+        return testMode;
     }
 }

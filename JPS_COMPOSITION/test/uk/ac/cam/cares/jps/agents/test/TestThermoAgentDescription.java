@@ -29,7 +29,7 @@ public class TestThermoAgentDescription extends TestCase {
 
 		return new ServiceBuilder().operation(null, JPS_THERMO + "/thermocalculation")
 				.input("https://como.cheng.cam.ac.uk/kb/compchem.owl#G09", "g09")
-				.output("https://como.cheng.cam.ac.uk/kb/ontochem.owl#Species", "species").build();
+				.output("http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species", "species").build();
 	}
 
 	@Test

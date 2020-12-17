@@ -46,7 +46,7 @@ var firstQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/P
 	"?vVM   j2:numericalValue ?VoltMagvalue ." // Vm
 	+
 	" ?vVM   j6:hasTime ?proptime ." +
-	" ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+	" ?proptime   j6:inXSDDateTime ?proptimeval ."
 
 	+
 	"?model   j5:hasModelVariable ?VA ." +
@@ -55,7 +55,7 @@ var firstQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/P
 	"?vVA   j2:numericalValue ?VoltAnglevalue ." // Va
 	+
 	" ?vVA   j6:hasTime ?proptime ." +
-	" ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+	" ?proptime   j6:inXSDDateTime ?proptimeval ."
 
 	+
 	"?model   j5:hasModelVariable ?BKV ." +
@@ -86,7 +86,7 @@ var secondQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/
 	"?vpg   j2:numericalValue ?activepowervalue ." // pg
 	+
 	" ?vpg   j6:hasTime ?proptime ." +
-	" ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+	" ?proptime   j6:inXSDDateTime ?proptimeval ."
 
 
 	+
@@ -96,7 +96,7 @@ var secondQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/
 	"?vqg   j2:numericalValue ?reactivepowervalue ." // qg
 	+
 	" ?vqg   j6:hasTime ?proptime ." +
-	" ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." +
+	" ?proptime   j6:inXSDDateTime ?proptimeval ." +
 	"}" +
 	"ORDER BY ASC(?proptime)";
 
@@ -110,7 +110,7 @@ var irradiationQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontoca
 	+ " ?prop   j2:hasValue ?vprop ."
 	+ " ?vprop   j2:numericalValue ?propval ." 
 	+ " ?vprop   j6:hasTime ?proptime ."
-	+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+	+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
 	+ "}" 
 	+ "ORDER BY ASC(?proptimeval)";
 var prefix = "http://www.jparksimulator.com";

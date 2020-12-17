@@ -1,0 +1,33 @@
+# VERSION "$Id: Makeinclude.IRIX64dbg 1 2017-06-10 18:05:20Z coats $"
+#
+#       Note:  there are problems with -TARG: need to be fixed-up
+#       on a  system-by-system basis, due to inconsistencies in SGI
+#       V7.3.x and V7.4.x compiler command-line behaviors.
+#
+AR   = ar
+CC   = cc  -64
+FC   = f90 -64
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+MFLAGS    = -64 -align64 -r12000 \
+ -OPT:Olimit=0 -TARG:platform=ip27 -TARG:processor=r12000 
+
+OMPFLAGS  = -mp -mpio
+OMPLIBS   = -mp -mpio -lmp
+COPTFLAGS = -g ${MFLAGS}
+FOPTFLAGS = -g -C ${MFLAGS}
+FPPFLAGS  = -cpp -macro_expand
+FSFLAGS   = -static
+ARCHFLAGS = -DAUTO_ARRAYS=1 -DF90=1 -DSTAR=101
+PARFLAGS  =
+PARFLAGS  =
+ARCHLIB   = 
+
+PVM_ARCH  = SGI64
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3
+

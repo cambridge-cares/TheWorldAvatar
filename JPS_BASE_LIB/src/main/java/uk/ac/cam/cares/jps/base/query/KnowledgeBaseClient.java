@@ -1,10 +1,16 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.sql.SQLException;
+
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
+
+import java.util.logging.Logger;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -15,17 +21,66 @@ import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
-public class KnowledgeBaseClient {
+/**
+ * Abstract Knowledge Base Client class that declares methods for performing SPARQL 
+ * queries and updates on triple stores.
+ * 
+ * If the old methods are no longer needed this class could be converted to an interface.
+ *  
+ * @author Casper Lindberg
+ *
+ */
+public abstract class KnowledgeBaseClient{
 	
-	private static KnowledgeBaseClient instance = null;
+	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
+		
+	/**
+	 * Default constructor
+	 */
+	public KnowledgeBaseClient() {}
+		
+	// 
 	
-	private static synchronized KnowledgeBaseClient getInstance() {
-		if (instance == null) {
-			instance = new KnowledgeBaseClient();
-		}
-		return instance;
-	}
+	// SPARQL Query methods
+	
+	public abstract JSONArray executeQuery(String query);	
+	
+	public abstract JSONArray executeQuery();
+	
+	public abstract String execute();
+	
+	public abstract String execute(String sparql);
+	
+	// SPARQL update methods
+	
+	public abstract int executeUpdate();
+	
+	public abstract int executeUpdate(String update);
+	
+	public abstract int executeUpdate(UpdateRequest update);
+	
+	// Load and write methods
+	
+	public abstract void load();
+	
+	public abstract void end();
+	
+	// Variable access
+	
+	public abstract String setQuery(String query);
 
+	public abstract String getQuery();
+	
+	public abstract String setUpdateEndpoint(String updateEndpoint);
+	
+	public abstract String getQueryEndpoint();
+	
+	public abstract String setQueryEndpoint(String queryEndpoint);
+	
+	public abstract String getUpdateEndpoint();
+	
+	//// CSL: deprecated methods.  
+	
 	/**
 	 * https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-put<br>
 	 * The method also allows to put non-RDF resources.
@@ -36,8 +91,7 @@ public class KnowledgeBaseClient {
 	 */
 	public static String put(String datasetUrl, String targetUrl, String content, String contentType) {
 		
-		JPSBaseLogger.info(getInstance(), "put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
-
+		JPSBaseLogger.info(KnowledgeBaseClient.class, "put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 		Object[] a = createRequestUrl(datasetUrl, targetUrl, true);
 		
 		if (a != null) {
@@ -62,7 +116,7 @@ public class KnowledgeBaseClient {
 	 */
 	public static String get(String datasetUrl, String targetUrl, String accept) {
 		
-		JPSBaseLogger.info(getInstance(), "get for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+		JPSBaseLogger.info(KnowledgeBaseClient.class, "get for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
 		Object[] a = createRequestUrl(datasetUrl, targetUrl, true);
 		
@@ -101,7 +155,7 @@ public class KnowledgeBaseClient {
 		// 3) scnearioUrl in the JPS context
 		// 	  in combination with corresponding cases from 1) and 2)
 		
-		JPSBaseLogger.info(getInstance(), "query for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+		JPSBaseLogger.info(KnowledgeBaseClient.class, "query for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
 		boolean sparqlAbility = hasSparqlAbility(targetUrl);
 		Object[] a = createRequestUrl(datasetUrl, targetUrl, sparqlAbility);
@@ -120,7 +174,7 @@ public class KnowledgeBaseClient {
 		} 
 		
 		// case 1b
-		JPSBaseLogger.info(getInstance(), "SPARQL query is performed locally for targetUrl=" + targetUrl);
+		JPSBaseLogger.info(KnowledgeBaseClient.class, "SPARQL query is performed locally for targetUrl=" + targetUrl);
 		String localUrl = ScenarioHelper.cutHash(targetUrl);
 		localUrl = ResourcePathConverter.convert(localUrl);
 		ResultSet resultSet = JenaHelper.queryUrl(localUrl, sparqlQuery);
@@ -191,7 +245,7 @@ public class KnowledgeBaseClient {
 	 */
 	public static void update(String datasetUrl, String targetUrl, String sparqlUpdate) {
 		
-		JPSBaseLogger.info(getInstance(), "update for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+		JPSBaseLogger.info(KnowledgeBaseClient.class, "update for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
 		boolean sparqlAbility = hasSparqlAbility(targetUrl);
 		Object[] a = createRequestUrl(datasetUrl, targetUrl, sparqlAbility);
@@ -216,7 +270,7 @@ public class KnowledgeBaseClient {
 		String requestUrl = ScenarioHelper.cutHash(targetUrl);
 //		requestUrl = ResourcePathConverter.convertToLocalPath(requestUrl);
 		requestUrl = ResourcePathConverter.convert(requestUrl);
-		JPSBaseLogger.info(getInstance(), "SPARQL update is performed locally for requestUrl=" + requestUrl);
+		JPSBaseLogger.info(KnowledgeBaseClient.class, "SPARQL update is performed locally for requestUrl=" + requestUrl);
 		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
 		OntModel model = JenaHelper.createModel(requestUrl);	
 		UpdateAction.execute(request, model);
@@ -250,4 +304,5 @@ public class KnowledgeBaseClient {
 		}
 		return url;
 	}
+
 }

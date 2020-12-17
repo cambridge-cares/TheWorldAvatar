@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -257,15 +258,30 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
-	    if (fileWithinBucket.exists()) { 	
-	    	return completePathWithinBucket;
-	    } else if (copyToBucket) {
+		if (fileWithinBucket.exists()) {
+			return completePathWithinBucket;
+		}
+		if (copyToBucket && !fileWithinBucket.exists()) {
+			String content;
+			UrlValidator urlValidator = new UrlValidator();
 
-	    	String content = new QueryBroker().readFileLocal(resource);
-	    	FileUtil.writeFileLocally(completePathWithinBucket, content);
-	    	return completePathWithinBucket;
-	    }  
+			try {
+				if (urlValidator.isValid(resource)) {
+					content = new QueryBroker().readFile(resource);
+				} else {
+					//assuming regular file
+					content = new QueryBroker().readFileLocal(resource);
+				}
+				if (!content.isEmpty()) {
+					FileUtil.writeFileLocally(completePathWithinBucket, content);
+					resource = completePathWithinBucket;
+				}
+			} catch (Exception ex) {
+				throw new JPSRuntimeException(ex);
+			}
+		}
 
+	    //copyToBucket is false: i.e. return the IRI directly. 
 	    return resource;
 	}
 	

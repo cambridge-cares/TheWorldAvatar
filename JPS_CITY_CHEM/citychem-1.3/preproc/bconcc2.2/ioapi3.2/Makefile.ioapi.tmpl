@@ -1,0 +1,240 @@
+#.........................................................................
+# VERSION "$Id: Makefile.template 1 2017-06-10 18:05:20Z coats $"
+#      EDSS/Models-3 I/O API Version 3.2.
+#.........................................................................
+# COPYRIGHT
+#       (C) 1992-2002 MCNC and Carlie J. Coats, Jr., and
+#       (C) 2003-2004 by Baron Advanced Meteorological Systems,
+#       (C) 2005-2014 Carlie J. Coats, Jr., and
+#       (C) 2014-2015 UNC Institute for the Environment
+#       Distributed under the GNU Lesser PUBLIC LICENSE version 2.1
+#       See file "LGPL.txt" for conditions of use.
+#.........................................................................
+#  Usage:
+#       Either edit this Makefile to un-comment the options you want, or
+#       override the options by environment or command-line variables.
+#       For example:
+#
+#    setenv BIN      Linux2_x86_64ifort
+#    setenv BASEDIR  /wherever/I-ve/un-tarred/the/code
+#    setenv CPLMODE  nocpl
+#    make
+#
+#  or:
+#
+#    make BIN=Linux2_x86_64pg  CPLMODE=pncf INSTALL=/foo/bar
+#
+#.........................................................................
+#  Environment/Command-line Variables:
+#
+#       BIN     machine/OS/compiler/mode type. Shows up as suffix
+#               for "$(IODIR)/Makeinclude.$(BIN)" to determine compilation
+#               flags, and in $(OBJDIR) and $(INSTALL) to determine
+#               binary directories
+#
+#       INSTALL installation-directory root, used for "make install":
+#               "libioapi.a" and the tool executables will be installed
+#               in $(INSTALL)/$(BIN)
+#
+#       LIBINST overrides  $(INSTALL)/$(BIN) for libioapi.a
+#
+#       BININST overrides  $(INSTALL)/$(BIN) for M3TOOLS executables
+#.........................................................................
+#  Directories:
+#
+#       $(BASEDIR)  is the root directory for the I/O API library source,
+#                   the M3Tools and M3Test source,the  HTML documentation,
+#                   and the (machine/compiler/flag-specific) binary
+#                   object/library/executable directories.
+#       $(HTMLDIR)  is the web documentation
+#       $(IODIR)    is the I/O API library source
+#       $(TOOLDIR)  is the "M3TOOLS" source
+#       $(OBJDIR)   is the current machine/compiler/flag-specific
+#                   build-directory
+#       $(INSTALL)  installation-directory root, used for "make install":
+#                   "libioapi.a" and the tool executables will be installed
+#                   in $(INSTALL)/$(BIN) object/library/executable directory
+#.........................................................................
+# Note On Library Versions and configuration:
+#
+#       Environment variable "BIN" specifies library version up to
+#       link- and compile-flag compatibility.  Dependecies upon machine,
+#       OS, and compiler are found in file "Makeinclude.$(BIN)".
+#       Command-line "make BIN=<something>..." overrides environment
+#       variable "% setenv BIN <something>" which overrides the
+#       make-variable default below.
+#
+#       IN PARTICULAR, pay attention to the notes for various versions
+#       that may be built for Linux x86 with the Portland Group
+#       compilers:  see comments in $(IODIR)/include 'MAKEINCLUDE'.Linux2_x86pg
+#.........................................................................
+# Special Make-targets
+#
+#       configure:  "Makefile"s, with the definitions indicated below.
+#       all:      OBJDIR, FIXDIR, libioapi.a, and executables, with
+#                 the current mode.
+#       lib:      OBJDIR, FIXDIR, libioapi.a
+#       clean:    remove .o's, libioapi.a, and executables from OBJDIR
+#       rmexe:    remove executables from OBJDIR
+#       relink:   rebuild executables from OBJDIR
+#       install:  copy "libioapi.a" and executables to $(INSTDIR)
+#       dirs:     make OBJDIR and FIXDIR directories
+#       fix:      FIXDIR and extended-fixed-source INCLUDE-files
+#       gtar:     GZipped tar-file of the source and docs
+#       nametest: test of name-mangling compatibility (requires that
+#                 libnetcdff.a be manually placed into $(OBJDIR))
+#
+######################################################################
+#      ----------   Definitions for "make configure"  ------------------
+#
+#  VERSIONING DEFINITIONS:  the preprocessor definitions in $(IOAPIDEFS)
+#  (below) govern I/O API behavior; versions with distinct combinations
+#  of these options are NOT library- nor object-compatible and should
+#  be built in *distinct*  $(OBJDIR)s:
+#
+#       Defining IOAPICPL turns on PVM-enabled "coupling mode" and
+#       requires "libpvm3.a" for linking.
+#
+#       Defining IOAPI_PNCF turns on PnetCDF based distributed I/O
+#       and requires libpnetcdf.a and libmpi.a for linking; it should
+#       be used only with an MPI-based ${BIN} (e.g., Linux2_x86_64ifortmpi)
+#
+#       Defining IOAPI_NCF4 turns on full netCDF-4 interfaces, including
+#       support for INTEGER*8 variables and attributes.  It requires
+#       extra libraries for linking, which can be found by running the
+#       commands  "nf-config --flibs" and "nc-config --libs"
+#
+#       Defining IOAPI_NO_STDOUT suppresses WRITEs to the screen in
+#       routines INIT3(), M3MSG2(), M3MESG(), M3PARAG(), and M3ABORT().
+#       This also helps control the "double-printed-message" behavior
+#       caused by recent SGI compilers.
+#
+#       Defining IO_360 creates the 360-day "global climate" version
+#       of the library.
+#
+#       Defining BIN3_DEBUG turns on trace-messages for native-binary
+#       mode routines.
+######################################################################
+#      ----------   Default/fall-back Definitions --------------------
+#      Environment variables override these; 
+#      variable setting on the command line ("make VAR=VALUE ...")
+#      overrides that.
+#  BIN        : Use 64-bit gcc/gfortran
+#  BASEDIR    : source under this current directory
+#  INSTALL    : installation directly under ${HOME}
+#  LIBINST    :  for installation of library
+#  BININST    : for installation of m3tools executables
+#  CPLMODE    : nocpl
+#  IOAPIDEFS  : none (can override for climo-year, etc.
+#  PVMINCL    : none
+#  NCFLIBS    : assumes netCDF-4-style separate libs
+
+.SUFFIXES: .m4 .c .F .f .mod .for
+
+
+#BIN     = Linux2_x86_64gfort
+#BASEDIR = /home/matthias/CITYCHEM/Chemistry/bconcc2.2/ioapi3.2/
+#NCFLIBS = -L/usr/local/netcdf4/lib -lnetcdf -lnetcdff
+
+BIN     = @{IOAPI}
+BASEDIR = @{BASEDIR}/preproc/bconcc2.2/ioapi3.2
+M3EXE   = @{BASEDIR}/preproc/bconcc2.2/ioapi3.2/bin/m3cpleplus.exe
+NCFLIBS = @{NCLIB}
+
+#      ----------  Edit-command used by "make configure"  to customize the "*/Makefile*"
+
+SEDCMD = \
+-e 's|IOAPI_BASE|$(BASEDIR)|' \
+-e 's|LIBINSTALL|$(LIBINST)|' \
+-e 's|BININSTALL|$(BININST)|' \
+-e 's|IOAPI_DEFS|$(IOAPIDEFS)|' \
+-e 's|NCFLIBS|$(NCFLIBS)|' \
+-e 's|MAKEINCLUDE|include $(IODIR)/Makeinclude.$(BIN)|' \
+-e 's|PVMINCLUDE|include  $(PVMINCL)|'
+
+#      ----------   I/O API Build System directory definitions  --------
+
+VERSION = 3.2-${CPLMODE}
+
+##IODIR   = ${BASEDIR}/ioapi
+##OBJDIR  = ${BASEDIR}/${BIN}
+
+IODIR   = @{IOAPIDIR}/ioapi
+OBJDIR  = @{IOAPIDIR}/${BIN}
+M3DIR   = ${BASEDIR}/m3plus
+FIXDIR  = ${IODIR}/fixed_src
+HTMLDIR = $(BASEDIR)/HTML
+
+
+include ${IODIR}/Makeinclude.${BIN}
+
+CFLAGS  = -I${IODIR} $(DEFINEFLAGS) $(COPTFLAGS)
+FFLAGS  = -I${IODIR} $(DEFINEFLAGS) $(FOPTFLAGS) $(OMPFLAGS) $(ARCHFLAGS)
+LDFLAGS = -I$(IODIR) $(DEFINEFLAGS) $(ARCHFLAGS)
+
+LIBS    = -L${OBJDIR} -lioapi $(NCFLIBS) $(OMPLIBS) $(ARCHLIB)
+
+CPLMODE    = nocpl
+IOAPIDEFS  = 
+PVMINCL    =
+
+#      ----------------------   TOP-LEVEL TARGETS:   ------------------
+#
+all:  dirs fix configure
+	(cd $(IODIR)   ; make BIN=${BIN} all)
+#	(cd $(TOOLDIR) ; make BIN=${BIN} all)
+
+configure:
+	(cd $(IODIR)   ;  sed $(SEDCMD) < Makefile.$(CPLMODE).sed > Makefile )
+#	(cd $(TOOLDIR) ;  sed $(SEDCMD) < Makefile.$(CPLMODE).sed > Makefile )
+
+m3p: $(M3EXE)
+
+clean:
+	(cd $(IODIR)   ; make BIN=${BIN} -i clean)
+#	(cd $(TOOLDIR) ; make BIN=${BIN} -i clean)
+
+dirs: $(OBJDIR) $(FIXDIR)
+
+fix:
+	(cd $(IODIR)   ; make fixed_src)
+
+$(FIXDIR):
+	mkdir -p $(FIXDIR)
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
+#####  M3PLUS ###########################################
+
+M3SRC = \
+$(M3DIR)/m3cpleplus.for
+
+M3OBJ = $(M3SRC:.for=.o)
+
+$(M3EXE): ${M3OBJ}
+	cd ${OBJDIR}; $(FC) ${LDFLAGS} $^ ${LIBS} -o $@
+
+#      -----------------------   RULES:   -------------------------
+
+%.o : %.mod        #  Disable "gmake"s obnoxious implicit Modula-2 rule !!
+%.f : %.F          #  Hack for some versions of  "gmake" + "gfortran"
+
+.F.o:
+	cd ${OBJDIR}; $(FC) $(FPPFLAGS) $(FFLAGS) -c $(SRCDIR)/$<
+
+.f.o:
+	cd ${OBJDIR}; $(FC) $(FFLAGS) -c $(SRCDIR)/$<
+
+.f90.o:
+	cd ${OBJDIR}; $(FC) $(FFLAGS) -c $(SRCDIR)/$<
+
+#.for.o:  ${OBJDIR}/m3utilio.mod  ${OBJDIR}/modgctp.mod  ${OBJDIR}/modatts3.mod
+#	cd ${OBJDIR}; $(FC) $(FFLAGS) -c $< -o $@
+
+.for.o:
+	cd ${OBJDIR}; $(FC) $(FFLAGS) -c $< -o $@
+
+#  ---------------------------  Dependencies:  --------------------
+
+m3cpleplus.o        : m3utilio.mod  modgctp.mod modatts3.mod

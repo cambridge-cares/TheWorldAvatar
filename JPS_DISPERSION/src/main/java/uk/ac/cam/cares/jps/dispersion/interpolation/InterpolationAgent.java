@@ -25,6 +25,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpPost;
+import org.apache.commons.validator.routines.IntegerValidator;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -41,6 +45,8 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.base.region.Region;
+
 @WebServlet(urlPatterns ={"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
 	public String SIM_START_PATH = "/InterpolationAgent/startSimulation";
@@ -69,23 +75,25 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 */
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		String path = request.getServletPath();
 		
 	//	if (SIM_START_PATH.equals(path)) {//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		 
+		validateInput(requestParams.toString());
 		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 		String agentiri = requestParams.optString("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-		String coordinates = readCoordinate(stationiri,agentiri);
-		String gasType, dispMatrix ="";
 		String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
+		String options = requestParams.optString("options","1");//How do we select the options? 
+		
+		String targetCRSName = Region.getTargetCRSName(agentiri,location);
+		String coordinates = readCoordinate(stationiri,targetCRSName);
+
+		String gasType, dispMatrix ="";
 		String[] directorydata = getLastModifiedDirectory(agentiri, location);
 		File dirFile = new File(directorydata[0]);
 		String directoryFolder = dirFile.getParent();
-		String directorytime=ConvertTime(directorydata[1]);
-		System.out.println("dirtime= "+directorytime);
-		
-		String options = requestParams.optString("options","1");//How do we select the options? 
+		Date directorytime=ConvertTime(directorydata[1]);
+		DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
 		String[] arrayFile = finder(directoryFolder);
 		String fGas = arrayFile[0];
 		File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst
@@ -104,14 +112,15 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		}
 		copyTemplate(baseUrl, "virtual_sensor.m");
 		requestParams.put("baseUrl", baseUrl);
-		requestParams.put("directoryTime", directorytime);
+		requestParams.put("directoryTime", pstFormat.format(directorytime));
 		//modify matlab to read 
 		
 			try {
-				logger.info("starting to create batch file");
-				createCommand(baseUrl, coordinates,gasType, options, dispMatrix);
-//				runModel(baseUrl);
-				logger.info("finish Simulation");
+				System.out.println("Interpolation agent:starting to create batch file");
+				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
+				createCommand(baseUrl, coordinates, gasType, options, dispMatrix);
+				//runModel(baseUrl);
+				System.out.println("Interpolation agent:finish Simulation");
 //				notifyWatcher(requestParams, baseUrl+"/exp.csv",
 //	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 //	           
@@ -123,11 +132,11 @@ public class InterpolationAgent  extends JPSHttpServlet {
 //				 String baseUrl = requestParams.getString("baseUrl");
 //				 String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 //				 String directorytime = requestParams.getString("directoryTime");
-				 Thread.sleep(120000);
+				 Thread.sleep(60000);
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
-				 logger.info(arg);
-				 logger.info("it now updating");
+				 System.out.println(arg);
+				 System.out.println("Interpolation agent:it now updating");
 				 //update here
 				 double concpm10=0.0;
 				 double concpm25=0.0;
@@ -150,7 +159,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 						updateRepoNewMethod(stationiri, classname, value, value, directorytime);
 					} else if (component.contentEquals("C2H6") || component.contentEquals("C2H4")
 							|| component.contentEquals("nC4H10") || component.contentEquals("HC")
-							|| component.contentEquals("nC3H6") || component.contentEquals("oXylene")
+							|| component.contentEquals("C3H6") || component.contentEquals("oXylene")
 							|| component.contentEquals("isoprene")) {
 						concHC = concHC + Double.valueOf(value);
 					}
@@ -159,7 +168,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
-				 logger.info("updates finished");
+				 System.out.println("Interpolation agent:updates finished");
 			 }catch (Exception e) {
 				e.printStackTrace();
 			}			 
@@ -167,23 +176,26 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		return requestParams;
 	}
 	
-	public static String ConvertTime(String current) {
+	public static Date ConvertTime(String current) {
 		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		   utcFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		   String result=current;
+//		   String result=current;
+		   Date date=null;
 		try {
-			  Date date = utcFormat.parse(current);
-			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-
-			   System.out.println(pstFormat.format(date));
-			   result=pstFormat.format(date)+"+08:00";
-			   return result;
+			 date = utcFormat.parse(current);
+//			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+//			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+//
+//			   System.out.println(pstFormat.format(date));
+//			   result=pstFormat.format(date);
+//			   return result;
+			  return date;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return result;
+//		return result;
+		return date;
 		
 	}
 
@@ -308,7 +320,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		File file = new File(filename);
 		String writePath = newdir + "/"+"test.dat";
 		File myObj = new File(writePath);
-		logger.info(writePath);
+		System.out.println(writePath);
 		Path fileName = path.getFileName();
 		String destinationUrl = newdir + "/"+fileName.toString();
 		new QueryBroker().putLocal(destinationUrl, file);
@@ -358,19 +370,13 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @param baseUrl
 	 * @throws Exception
 	 */
-	public void createCommand(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
+	public void createBat(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
 		String loc = " virtual_sensor(" + coordinates +"," +gasType
 				+"," +options+",'"+baseUrl+"/','" + dispMatrix+"'";
 		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" 
 		+ "matlab -nosplash -noFigureWindows -r \"try; cd('"+baseUrl
 		+"');"+ loc + "); catch; end; quit\"";
-		String args = "";
-        args+="matlab -nosplash -r \"try; ";
-        args+=loc;
-        args+="); catch; end; quit\"";
-        System.out.println(args);
-        String result = CommandHelper.executeSingleCommand(baseUrl, args);
-        System.out.println(result);
+		new QueryBroker().putLocal(baseUrl + "/runm.bat", bat);
 	}
 	/** runs the batch file. 
 	 * 
@@ -379,9 +385,12 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @throws InterruptedException
 	 */
 	public void runModel(String baseUrl) throws IOException, InterruptedException {
+		System.out.println("Interpolation agent: Running Model");
 		String startbatCommand =baseUrl+"/runm.bat";
-		String result= executeSingleCommand(baseUrl,startbatCommand);
-		logger.info("final after calling: "+result);
+		System.out.println("Interpolation agent:startbatcommand= "+startbatCommand);
+//		String result= executeSingleCommand(baseUrl,startbatCommand);
+		String result= CommandHelper.executeSingleCommand(baseUrl, startbatCommand);
+		System.out.println("Interpolation agent:final after calling: "+result);
 	}
 	/** executes the process. Called by runModel. 
 	 * 
@@ -393,7 +402,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	private String executeSingleCommand(String targetFolder , String command) throws InterruptedException 
 	{  
 	 
-		logger.info("In folder: " + targetFolder + " Executed: " + command);
+		System.out.println("In folder: " + targetFolder + " Executed: " + command);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		try {
@@ -443,18 +452,26 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		lst.add(location);
 		System.out.println(lst);
 
-		String query_latest_path = "Prefix dcterms:<http://purl.org/dc/terms/>\r\n" + "\r\n" + "Select ?s ?x \r\n"
-				+ "Where{\r\n" + "  ?s dcterms:creator ?o .\r\n" + "   ?s dcterms:created ?x .\r\n"
-				+ "  ?s dcterms:subject <" + location + "> .\r\n" + "  \r\n" + "  \r\n"
+		String query_latest_path = "Prefix dcterms:<http://purl.org/dc/terms/>\r\n" + "\r\n" 
+		+ "Select ?s ?x \r\n"
+				+ "Where{\r\n" 
+		+ "  ?s dcterms:creator <"+agentiri+"> .\r\n" 
+		+ "   ?s dcterms:created ?x .\r\n"
+				+ "  ?s dcterms:subject <" + location + "> .\r\n" 
+		+ "  \r\n" + "  \r\n"
 				+ "} ORDER BY DESC (?x) Limit 1";
 
 		String result = KnowledgeBaseClient.query(metadataseturl, null, query_latest_path);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-
-		String dir = listmap.get(0)[0];
-		String simulationtime = listmap.get(0)[1];
+		String dir="none";
+		String simulationtime="none";
+		if(listmap.size()==1) {
+			 dir = listmap.get(0)[0];
+			 simulationtime = listmap.get(0)[1];
+		}
 		String[] resp = { dir, simulationtime };
+
 		return resp;
 	}
     /** read the coordinates of the station based on the iri
@@ -462,7 +479,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
      * @param stationiri
      * @return
      */
-    public String readCoordinate(String stationiri,String agent) {
+    public String readCoordinate(String stationiri,String targetCRSName) {
 		String sparqlQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
 				"PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>" + 
 				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>" + 
@@ -485,31 +502,11 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				"}"
 				+ "}" ;
 
-		String epsgActive="3414";//singapore
-		if(stationiri.contains("singapore")) {
-			if(agent.contains("ADMS")) {
-				epsgActive="3414";
-			}else {
-				epsgActive="32648";
-			}
-			
-		}else if(stationiri.contains("hongkong")) {
-			if(agent.contains("ADMS")) {
-				epsgActive="2326";
-			}else {
-				epsgActive="32650";
-			}
-		}else if(stationiri.contains("berlin")) {
-			epsgActive="25833";
-		}else if(stationiri.contains("thehague")) {
-			epsgActive="28992";
-		}
-		
 			List<String[]> resultListfromquery =queryEndPointDataset(sparqlQuery);
 			String xVal = resultListfromquery.get(0)[0];
 			String yVal = resultListfromquery.get(0)[1];
 			String zVal = resultListfromquery.get(0)[2];
-			double[] locationstnconverted = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+			double[] locationstnconverted = CRSTransformer.transform("EPSG:4326", targetCRSName,
 					new double[] { Double.valueOf(xVal), Double.valueOf(yVal) });
 			
 			StringJoiner sb = new StringJoiner(" ");
@@ -519,8 +516,19 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			return "[" + sb.toString() + "]";
 		
     }
-    public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, String newtimestamp) {
-		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    /** performs scheduled update to triple storage
+     * 
+     * @param context
+     * @param propnameclass
+     * @param scaledvalue
+     * @param prescaledvalue
+     * @param newtimestamp
+     */
+    public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, Date newtimestamp) {
+		DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+    	
+    	String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
@@ -532,7 +540,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				+ " ?prop a j4:"+propnameclass+" ."
 				+ " ?prop   j2:hasValue ?vprop ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ."
 //				+ " ?proptime   j6:hasBeginning ?proptimestart ."
 //				+ " ?proptime   j6:hasEnd ?proptimeend ."
 //				+ " ?proptimestart   j6:inXSDDateTimeStamp ?proptimestartval ." 
@@ -548,30 +556,106 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
 				+ "WITH <" + context + ">"
 				+ "DELETE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime ?olddatatime ."
 				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "} "
 				+ "INSERT {"
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime \""+pstFormat.format(newtimestamp)+"\"^^xsd:dateTime ." 
 				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
 				+ "} "
 				+ "WHERE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime ?olddatatime ."
 				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "}";
 		
-		//System.out.println("print sparqlupdate= "+sparqlupdate);
+		System.out.println("print sparqlupdate= "+sparqlupdate);
 			
 			KnowledgeBaseClient.update(dataseturl, null, sparqlupdate); //update the dataset	
 	}
+    /** runs matlab code using CommandHelper/Comand Line
+     * 
+     * @param baseUrl
+     * @param coordinates
+     * @param gasType
+     * @param options
+     * @param dispMatrix
+     * @throws Exception
+     */
+    public void createCommand(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
+		String loc = " virtual_sensor(" + coordinates +"," +gasType
+				+"," +options+",'"+baseUrl+"/','" + dispMatrix+"'";
+		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" 
+		+ "matlab -nosplash -noFigureWindows -r \"try; cd('"+baseUrl
+		+"');"+ loc + "); catch; end; quit\"";
+		String args = "";
+        args+="matlab -nosplash -r \"try; ";
+        args+=loc;
+        args+="); catch; end; quit\"";
+        System.out.println(args);
+        String result = CommandHelper.executeSingleCommand(baseUrl, args);
+        System.out.println(result);
+	}
+    /** validates input given json-toString()
+     * 
+     * @param json
+     */
+    public void validateInput(String json) {
+
+            JSONObject args = new JSONObject(json);
+            boolean option_opt,agent_opt,city_opt,airStatn_opt; 
+            option_opt = agent_opt= city_opt= airStatn_opt = false;
+            IntegerValidator iv = new IntegerValidator();
+            UrlValidator urlValidator = new UrlValidator();
+        	try {
+            if (args.has("options")) {
+            	//check if options is Numeric //Check if within 1 - 4
+            	option_opt = iv.isValid(args.get("options").toString()) && iv.isInRange(Integer.parseInt(args.get("options").toString()),1,4);
+            	
+            }
+            if (args.has("agent")) {
+            	agent_opt = urlValidator.isValid(args.get("agent").toString());
+				
+            	
+            }
+            if (args.has("city")) {
+            	city_opt = urlValidator.isValid(args.get("city").toString());
+            	
+            }
+            if (args.has("airStationIRI")) {
+            	airStatn_opt = urlValidator.isValid(args.get("airStationIRI").toString());
+            }
+           
+        	} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	 if (option_opt &&agent_opt&&city_opt&&airStatn_opt== true) {
+        		 System.out.println("All outputs valid");
+          		
+        		 return;
+         	}else {
+         		System.out.println("Invalid value input: Please try again ");
+         		logger.info("Invalid value input: Please try again ");
+         	}
+        	
+    }
+    /** Queries 
+     * 
+     * @param querycontext
+     * @return List<String[]>
+     */
 	private List<String[]> queryEndPointDataset(String querycontext) {
 		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);

@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.srm;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -207,7 +206,7 @@ public class SRMAgent extends HttpServlet  {
 		    //First, query from ontokin to get the specific reaction mechanism in the format of owl file iri  
 			try {
 				String mechanismquery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " 
-						+ "PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#> "
+						+ "PREFIX ontochem: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> "
 						+ "SELECT ?x "
 						+ "WHERE {?x  rdf:type  ontochem:ReactionMechanism ." 
 						+ "}";
@@ -228,202 +227,8 @@ public class SRMAgent extends HttpServlet  {
 			
 			//-------------------------------------------------------------------------------
 			
-			//prepare the input engine file from the kb data
-			String engineInfo = "PREFIX eng:<http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#> " 
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
-					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
-					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-					+ "SELECT ?No_cyl ?No_exh_val ?No_int_val ?Strokes ?Bore ?CR ?Wrist_pin_offset ?Eng_displ_vol ?Con_rod ?extEGR ?Stroke ?intEGR ?C_to_H ?RON ?RPM ?Int_dia ?Exh_dia ?Int_event_height ?Exh_event_height ?EVO ?EVC ?IVO ?IVC ?AFRstoich ?IniFuelAirEquivRatio ?AFR ?Tman ?Pman ?amfr ?Tex ?Pex "
-					+ "WHERE {?entity  a  eng:CompressionIgnitionEngine  ." 
-					+ "?entity   eng:numberOfCylinder ?No_cyl ."
-					+ "?entity   eng:numberOfExhaustValve ?No_exh_val ."
-					+ "?entity   eng:numberOfStroke ?Strokes ."
-					+ "?entity   eng:numberOfIntakeValve ?No_int_val ."
-					+ "?entity   eng:hasEngineSpeed ?ES ."
-					+ "?ES   j2:hasValue ?vES ."
-					+ "?vES   j2:numericalValue ?RPM ."
-					
-					+ "?entity   eng:hasFuel ?fuel ."
-					+ "?fuel   eng:hasCtoHRatio ?CHRat ."
-					+ "?CHRat   j2:hasValue ?vCHRat ."
-					+ "?vCHRat   j2:numericalValue ?C_to_H ."
-					+ "?fuel   eng:hasRON ?fuRON ."
-					+ "?fuRON   j2:hasValue ?vfuRON ."
-					+ "?vfuRON   j2:numericalValue ?RON ."
-					
-					+ "?entity   j3:realizes ?comb ."
-					+ "?comb   eng:hasStoichiometricAirFuelRatio ?SAFR ."
-					+ "?SAFR   j2:hasValue ?vSAFR ."
-					+ "?vSAFR   j2:numericalValue ?AFRstoich ."
-					+ "?comb   eng:hasInitialFuelAirRatio ?IFAR ."
-					+ "?IFAR   j2:hasValue ?vIFAR ."
-					+ "?vIFAR   j2:numericalValue ?IniFuelAirEquivRatio ."
-					+ "?comb   eng:hasAirFuelRatio ?OvAFR ."
-					+ "?OvAFR   j2:hasValue ?vOvAFR ."
-					+ "?vOvAFR   j2:numericalValue ?AFR ."
-					
-					+ "?comb   j4:hasInput ?airstream ."
-					+ "?airstream   j5:refersToGeneralizedAmount ?genamountairstream ."
-					+ "?genamountairstream   j2:hasSubsystem ?matamountairstream ."
-					+ "?matamountairstream   j6:refersToMaterial ?matairstream ."
-					+ "?matairstream   j7:thermodynamicBehavior ?phaseairstream ."
-					+ "?phaseairstream   j8:has_pressure ?pressureairstream ."
-					+ "?pressureairstream   j2:hasValue ?vpressureairstream ."
-					+ "?vpressureairstream   j2:numericalValue ?Pman ."
-					+ "?phaseairstream   j8:has_temperature ?temperatureairstream ."
-					+ "?temperatureairstream   j2:hasValue ?vtemperatureairstream ."
-					+ "?vtemperatureairstream   j2:numericalValue ?Tman ."
-					+ "?matamountairstream   j2:hasProperty ?amfrairstream ."
-					+ "?amfrairstream  j2:hasValue ?vamfrairstream ."
-					+ "?vamfrairstream   j2:numericalValue ?amfr ."
-					
-					+ "?comb   j4:hasOutput ?wastestream ."
-					+ "?wastestream   j5:refersToGeneralizedAmount ?genamountwastestream ."
-					+ "?genamountwastestream   j2:hasSubsystem ?matamountwastestream ."
-					+ "?matamountwastestream   j6:refersToMaterial ?matwastestream ."
-					+ "?matwastestream   j7:thermodynamicBehavior ?phasewastestream ."
-					+ "?phasewastestream   j8:has_pressure ?pressurewastestream ."
-					+ "?pressurewastestream   j2:hasValue ?vpressurewastestream ."
-					+ "?vpressurewastestream   j2:numericalValue ?Pex ."
-					+ "?phasewastestream   j8:has_temperature ?temperaturewastestream ."
-					+ "?temperaturewastestream   j2:hasValue ?vtemperaturewastestream ."
-					+ "?vtemperaturewastestream   j2:numericalValue ?Tex ."
-					
-					+ "?entity   j2:hasSubsystem ?cyl ."
-					+ "?cyl   eng:hasWristPinOffset ?WPoff ."
-					+ "?WPoff   j2:hasValue ?vWPoff ."
-					+ "?vWPoff   j2:numericalValue ?Wrist_pin_offset ."
-					+ "?cyl   eng:hasBore ?borecyl ."
-					+ "?borecyl   j2:hasValue ?vborecyl ."
-					+ "?vborecyl   j2:numericalValue ?Bore ."
-					+ "?cyl   eng:hasInternalEGR ?interegr ."
-					+ "?interegr   j2:hasValue ?vinteregr ."
-					+ "?vinteregr   j2:numericalValue ?intEGR ."
-					+ "?cyl   eng:hasExternalEGR ?exteregr ."
-					+ "?exteregr   j2:hasValue ?vexteregr ."
-					+ "?vexteregr   j2:numericalValue ?extEGR ."
-					+ "?cyl   eng:hasDisplacementVolume ?dispvolume ."
-					+ "?dispvolume   j2:hasValue ?vdispvolume ."
-					+ "?vdispvolume   j2:numericalValue ?Eng_displ_vol ."
-					+ "?cyl   eng:hasConnectingRodLength ?crlength ."
-					+ "?crlength   j2:hasValue ?vcrlength ."
-					+ "?vcrlength   j2:numericalValue ?Con_rod ."
-					+ "?cyl   eng:hasStrokeDistance ?SD ."
-					+ "?SD   j2:hasValue ?vSD ."
-					+ "?vSD   j2:numericalValue ?Stroke ."
-					+ "?cyl   eng:hasCompressionRatio ?CompR ."
-					+ "?CompR   j2:hasValue ?vCompR ."
-					+ "?vCompR   j2:numericalValue ?CR ."
-
-					
-					+ "?entity   j2:hasSubsystem ?exv ."
-					+ "?exv   eng:hasOpeningConditionAngle ?opexv ."
-					+ "?opexv   j2:hasValue ?vopexv ."
-					+ "?vopexv   j2:numericalValue ?EVO ."
-					+ "?exv   eng:hasClosingConditionAngle ?clexv ."
-					+ "?clexv   j2:hasValue ?vclexv ."
-					+ "?vclexv   j2:numericalValue ?EVC ."
-					+ "?exv   eng:hasExhaustValveDiameter ?Dexv ."
-					+ "?Dexv   j2:hasValue ?vDexv ."
-					+ "?vDexv   j2:numericalValue ?Exh_dia ."
-					+ "?exv   eng:hasExhaustEventHeight ?Hexv ."
-					+ "?Hexv   j2:hasValue ?vHexv ."
-					+ "?vHexv   j2:numericalValue ?Exh_event_height ."
-					
-					+ "?entity   j2:hasSubsystem ?inv ."
-					+ "?inv   eng:hasOpeningConditionAngle ?opinv ."
-					+ "?opinv   j2:hasValue ?vopinv ."
-					+ "?vopinv   j2:numericalValue ?IVO ."
-					+ "?inv   eng:hasClosingConditionAngle ?clinv ."
-					+ "?clinv   j2:hasValue ?vclinv ."
-					+ "?vclinv   j2:numericalValue ?IVC ."
-					+ "?inv   eng:hasIntakeValveDiameter ?Dinv ."
-					+ "?Dinv   j2:hasValue ?vDinv ."
-					+ "?vDinv   j2:numericalValue ?Int_dia ."
-					+ "?inv   eng:hasIntakeEventHeight ?Hinv ."
-					+ "?Hinv   j2:hasValue ?vHinv ."
-					+ "?vHinv   j2:numericalValue ?Int_event_height ."
-					
-					
-					+ "}";
+			//prepareXMLInput(iriofengine); temporarily use the direct input file given
 			
-			
-			
-			String engineInfoclass = "PREFIX eng:<http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#> " 
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
-					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
-					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-					+ "SELECT ?OpMode "
-					+ "WHERE {?entity   eng:numberOfCylinder ?No_cyl ."
-					+ "?entity  a ?OpMode ."
-					+"FILTER regex(STRBEFORE(STR(?OpMode),\"#\"), \"http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl\") ."
-					+ "}";
-			
-			jenaOwlModel = ModelFactory.createOntologyModel();	
-			jenaOwlModel.read(iriofengine, null);
-			
-		ResultSet rs_engine = SRMAgent.queryFromOWLFile(engineInfo,jenaOwlModel); 
-
-		String []a= {"No_cyl","No_exh_val","No_int_val","Strokes","C_to_H","RON","RPM","Int_dia","Exh_dia","Int_event_height","Exh_event_height","EVO","EVC","IVO","IVC","AFRstoich","IniFuelAirEquivRatio","AFR","Tman","Pman","Tex","Pex","Wrist_pin_offset","Bore","intEGR","extEGR","Eng_displ_vol","Con_rod","Stroke","CR","amfr"};
-		int sizea=a.length;
-		//system.out.println("size of a= "+sizea);
-		String valueiri=null;
-		SRMAgent xmlreader = new SRMAgent();
-		for (; rs_engine.hasNext();) {			
-			QuerySolution qs_p = rs_engine.nextSolution();
-			for (int b=0;b<sizea;b++)
-			{
-
-					Literal cpiri = qs_p.getLiteral(a[b]); // extract the name of the source
-					 valueiri = cpiri.toString();
-
-			//system.out.println(a[b]+" = "+valueiri);
-			try {
-
-				xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",a[b],valueiri);
-			} catch (TransformerFactoryConfigurationError | TransformerException e) {
-							
-				logger.error(e.getMessage());
-			}
-
-			logger.info("query result1= "+valueiri);
-
-			}
-		}
-		
-		ResultSet rs_engineclass = SRMAgent.queryFromOWLFile(engineInfoclass,jenaOwlModel); 
-		String valueiri2=null;
-		String valuetype2=null;
-		for (; rs_engineclass.hasNext();) {			
-			QuerySolution qs_p = rs_engineclass.nextSolution();
-
-			
-				Resource cpiri = qs_p.getResource("OpMode"); // extract the name of the source
-				valueiri2 = cpiri.toString();
-				if(valueiri2.contains("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#")&&!valueiri2.contains("#Engine")){
-					valuetype2=("CI");
-					//system.out.println("query result1= "+valuetype2);
-					try {
-						xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml","OpMode",valuetype2);
-						} 
-					catch (TransformerFactoryConfigurationError | TransformerException e) {
-						logger.error(e.getMessage());
-					}
-			
-					}	
-		
-			}
-		// edit the input params file
-
-				editinputparamXML(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml","mechanism.bin");
 				
 				
 				/** This part put run to the SRM Engine simulation and take the output */
@@ -440,6 +245,205 @@ public class SRMAgent extends HttpServlet  {
 
 		logger.info("finished successfully");
 		
+	}
+
+	private void prepareXMLInput(String iriofengine) throws TransformerFactoryConfigurationError {
+		//prepare the input engine file from the kb data
+		String engineInfo = "PREFIX eng:<http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#> " 
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?No_cyl ?No_exh_val ?No_int_val ?Strokes ?Bore ?CR ?Wrist_pin_offset ?Eng_displ_vol ?Con_rod ?extEGR ?Stroke ?intEGR ?C_to_H ?RON ?RPM ?Int_dia ?Exh_dia ?Int_event_height ?Exh_event_height ?EVO ?EVC ?IVO ?IVC ?AFRstoich ?IniFuelAirEquivRatio ?AFR ?Tman ?Pman ?amfr ?Tex ?Pex "
+				+ "WHERE {?entity  a  eng:CompressionIgnitionEngine  ." 
+				+ "?entity   eng:numberOfCylinder ?No_cyl ."
+				+ "?entity   eng:numberOfExhaustValve ?No_exh_val ."
+				+ "?entity   eng:numberOfStroke ?Strokes ."
+				+ "?entity   eng:numberOfIntakeValve ?No_int_val ."
+				+ "?entity   eng:hasEngineSpeed ?ES ."
+				+ "?ES   j2:hasValue ?vES ."
+				+ "?vES   j2:numericalValue ?RPM ."
+				
+				+ "?entity   eng:hasFuel ?fuel ."
+				+ "?fuel   eng:hasCtoHRatio ?CHRat ."
+				+ "?CHRat   j2:hasValue ?vCHRat ."
+				+ "?vCHRat   j2:numericalValue ?C_to_H ."
+				+ "?fuel   eng:hasRON ?fuRON ."
+				+ "?fuRON   j2:hasValue ?vfuRON ."
+				+ "?vfuRON   j2:numericalValue ?RON ."
+				
+				+ "?entity   j3:realizes ?comb ."
+				+ "?comb   eng:hasStoichiometricAirFuelRatio ?SAFR ."
+				+ "?SAFR   j2:hasValue ?vSAFR ."
+				+ "?vSAFR   j2:numericalValue ?AFRstoich ."
+				+ "?comb   eng:hasInitialFuelAirRatio ?IFAR ."
+				+ "?IFAR   j2:hasValue ?vIFAR ."
+				+ "?vIFAR   j2:numericalValue ?IniFuelAirEquivRatio ."
+				+ "?comb   eng:hasAirFuelRatio ?OvAFR ."
+				+ "?OvAFR   j2:hasValue ?vOvAFR ."
+				+ "?vOvAFR   j2:numericalValue ?AFR ."
+				
+				+ "?comb   j4:hasInput ?airstream ."
+				+ "?airstream   j5:refersToGeneralizedAmount ?genamountairstream ."
+				+ "?genamountairstream   j2:hasSubsystem ?matamountairstream ."
+				+ "?matamountairstream   j6:refersToMaterial ?matairstream ."
+				+ "?matairstream   j7:thermodynamicBehavior ?phaseairstream ."
+				+ "?phaseairstream   j8:has_pressure ?pressureairstream ."
+				+ "?pressureairstream   j2:hasValue ?vpressureairstream ."
+				+ "?vpressureairstream   j2:numericalValue ?Pman ."
+				+ "?phaseairstream   j8:has_temperature ?temperatureairstream ."
+				+ "?temperatureairstream   j2:hasValue ?vtemperatureairstream ."
+				+ "?vtemperatureairstream   j2:numericalValue ?Tman ."
+				+ "?matamountairstream   j2:hasProperty ?amfrairstream ."
+				+ "?amfrairstream  j2:hasValue ?vamfrairstream ."
+				+ "?vamfrairstream   j2:numericalValue ?amfr ."
+				
+				+ "?comb   j4:hasOutput ?wastestream ."
+				+ "?wastestream   j5:refersToGeneralizedAmount ?genamountwastestream ."
+				+ "?genamountwastestream   j2:hasSubsystem ?matamountwastestream ."
+				+ "?matamountwastestream   j6:refersToMaterial ?matwastestream ."
+				+ "?matwastestream   j7:thermodynamicBehavior ?phasewastestream ."
+				+ "?phasewastestream   j8:has_pressure ?pressurewastestream ."
+				+ "?pressurewastestream   j2:hasValue ?vpressurewastestream ."
+				+ "?vpressurewastestream   j2:numericalValue ?Pex ."
+				+ "?phasewastestream   j8:has_temperature ?temperaturewastestream ."
+				+ "?temperaturewastestream   j2:hasValue ?vtemperaturewastestream ."
+				+ "?vtemperaturewastestream   j2:numericalValue ?Tex ."
+				
+				+ "?entity   j2:hasSubsystem ?cyl ."
+				+ "?cyl   eng:hasWristPinOffset ?WPoff ."
+				+ "?WPoff   j2:hasValue ?vWPoff ."
+				+ "?vWPoff   j2:numericalValue ?Wrist_pin_offset ."
+				+ "?cyl   eng:hasBore ?borecyl ."
+				+ "?borecyl   j2:hasValue ?vborecyl ."
+				+ "?vborecyl   j2:numericalValue ?Bore ."
+				+ "?cyl   eng:hasInternalEGR ?interegr ."
+				+ "?interegr   j2:hasValue ?vinteregr ."
+				+ "?vinteregr   j2:numericalValue ?intEGR ."
+				+ "?cyl   eng:hasExternalEGR ?exteregr ."
+				+ "?exteregr   j2:hasValue ?vexteregr ."
+				+ "?vexteregr   j2:numericalValue ?extEGR ."
+				+ "?cyl   eng:hasDisplacementVolume ?dispvolume ."
+				+ "?dispvolume   j2:hasValue ?vdispvolume ."
+				+ "?vdispvolume   j2:numericalValue ?Eng_displ_vol ."
+				+ "?cyl   eng:hasConnectingRodLength ?crlength ."
+				+ "?crlength   j2:hasValue ?vcrlength ."
+				+ "?vcrlength   j2:numericalValue ?Con_rod ."
+				+ "?cyl   eng:hasStrokeDistance ?SD ."
+				+ "?SD   j2:hasValue ?vSD ."
+				+ "?vSD   j2:numericalValue ?Stroke ."
+				+ "?cyl   eng:hasCompressionRatio ?CompR ."
+				+ "?CompR   j2:hasValue ?vCompR ."
+				+ "?vCompR   j2:numericalValue ?CR ."
+
+				
+				+ "?entity   j2:hasSubsystem ?exv ."
+				+ "?exv   eng:hasOpeningConditionAngle ?opexv ."
+				+ "?opexv   j2:hasValue ?vopexv ."
+				+ "?vopexv   j2:numericalValue ?EVO ."
+				+ "?exv   eng:hasClosingConditionAngle ?clexv ."
+				+ "?clexv   j2:hasValue ?vclexv ."
+				+ "?vclexv   j2:numericalValue ?EVC ."
+				+ "?exv   eng:hasExhaustValveDiameter ?Dexv ."
+				+ "?Dexv   j2:hasValue ?vDexv ."
+				+ "?vDexv   j2:numericalValue ?Exh_dia ."
+				+ "?exv   eng:hasExhaustEventHeight ?Hexv ."
+				+ "?Hexv   j2:hasValue ?vHexv ."
+				+ "?vHexv   j2:numericalValue ?Exh_event_height ."
+				
+				+ "?entity   j2:hasSubsystem ?inv ."
+				+ "?inv   eng:hasOpeningConditionAngle ?opinv ."
+				+ "?opinv   j2:hasValue ?vopinv ."
+				+ "?vopinv   j2:numericalValue ?IVO ."
+				+ "?inv   eng:hasClosingConditionAngle ?clinv ."
+				+ "?clinv   j2:hasValue ?vclinv ."
+				+ "?vclinv   j2:numericalValue ?IVC ."
+				+ "?inv   eng:hasIntakeValveDiameter ?Dinv ."
+				+ "?Dinv   j2:hasValue ?vDinv ."
+				+ "?vDinv   j2:numericalValue ?Int_dia ."
+				+ "?inv   eng:hasIntakeEventHeight ?Hinv ."
+				+ "?Hinv   j2:hasValue ?vHinv ."
+				+ "?vHinv   j2:numericalValue ?Int_event_height ."
+				
+				
+				+ "}";
+		
+		
+		
+		String engineInfoclass = "PREFIX eng:<http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#> " 
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?OpMode "
+				+ "WHERE {?entity   eng:numberOfCylinder ?No_cyl ."
+				+ "?entity  a ?OpMode ."
+				+"FILTER regex(STRBEFORE(STR(?OpMode),\"#\"), \"http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl\") ."
+				+ "}";
+		
+		jenaOwlModel = ModelFactory.createOntologyModel();	
+		jenaOwlModel.read(iriofengine, null);
+		
+ResultSet rs_engine = SRMAgent.queryFromOWLFile(engineInfo,jenaOwlModel); 
+
+String []a= {"No_cyl","No_exh_val","No_int_val","Strokes","C_to_H","RON","RPM","Int_dia","Exh_dia","Int_event_height","Exh_event_height","EVO","EVC","IVO","IVC","AFRstoich","IniFuelAirEquivRatio","AFR","Tman","Pman","Tex","Pex","Wrist_pin_offset","Bore","intEGR","extEGR","Eng_displ_vol","Con_rod","Stroke","CR","amfr"};
+int sizea=a.length;
+//system.out.println("size of a= "+sizea);
+String valueiri=null;
+SRMAgent xmlreader = new SRMAgent();
+for (; rs_engine.hasNext();) {			
+		QuerySolution qs_p = rs_engine.nextSolution();
+		for (int b=0;b<sizea;b++)
+		{
+
+				Literal cpiri = qs_p.getLiteral(a[b]); // extract the name of the source
+				 valueiri = cpiri.toString();
+
+		//system.out.println(a[b]+" = "+valueiri);
+		try {
+
+			xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",a[b],valueiri);
+		} catch (TransformerFactoryConfigurationError | TransformerException e) {
+						
+			logger.error(e.getMessage());
+		}
+
+		logger.info("query result1= "+valueiri);
+
+		}
+}
+
+ResultSet rs_engineclass = SRMAgent.queryFromOWLFile(engineInfoclass,jenaOwlModel); 
+String valueiri2=null;
+String valuetype2=null;
+for (; rs_engineclass.hasNext();) {			
+		QuerySolution qs_p = rs_engineclass.nextSolution();
+
+		
+			Resource cpiri = qs_p.getResource("OpMode"); // extract the name of the source
+			valueiri2 = cpiri.toString();
+			if(valueiri2.contains("http://www.theworldavatar.com/ontology/ontoengine/OntoEngine.owl#")&&!valueiri2.contains("#Engine")){
+				valuetype2=("CI");
+				//system.out.println("query result1= "+valuetype2);
+				try {
+					xmlreader.editXMLForengine(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputEngineML.xml","OpMode",valuetype2);
+					} 
+				catch (TransformerFactoryConfigurationError | TransformerException e) {
+					logger.error(e.getMessage());
+				}
+		
+				}	
+
+		}
+// edit the input params file
+
+			editinputparamXML(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml",AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/InputParams.xml","mechanism.bin");
 	}
 
 	private void cleanDirectory() {

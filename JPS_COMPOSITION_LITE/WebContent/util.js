@@ -198,7 +198,6 @@ function convertNodeObjToMSMObj(testObj) {
 
 }
 
-
 // This function send out a request in the form of JSON object
 function sendRequest(agentInJSON, RequestUrl) {
 
@@ -220,7 +219,6 @@ function addToServicePool() {
 
 }
 
-
 // Send out a service in the form of JSON to the server, ServiceWriter will be used to translate it into rdf(s) format
 function convertJSONToOWL() {
     $.ajax({
@@ -237,10 +235,9 @@ function convertJSONToOWL() {
 function goToVisualization(event) {
 
     var baseUrl = event.srcElement.parentElement.getAttribute('data');
-    baseUrl = baseUrl.replace('www.theworldavatar.com', window.location.host);
+    baseUrl = baseUrl.replace('fworldavatar.com', window.location.host);
     window.location.href = baseUrl + '?data=' + JSON.stringify(executionChain);
 }
-
 
 // The compose a composite
 function composeService() {
@@ -248,21 +245,21 @@ function composeService() {
     $("#myDiagramDiv").width("0%");
     $("#myDiagramDiv2").height("700px");
 
-	var result_xf = {"linkFromPortIdProperty":"fromPort","linkToPortIdProperty":"toPort","nodeDataArray":[{"key":"Inputs","inputs":[],"outputs":[{"name":"Reaction Mechanism"},{"name":"Region"}],"loc":"200 400"},{"key":"GetPlantsInRegion","inputs":[{"name":"Region"}],"outputs":[{"name":"Plant"}],"loc":"600 300"},{"key":"RegionToCity","inputs":[{"name":"Region"}],"outputs":[{"name":"city"}],"loc":"600 500"},{"key":"SRM Agent","inputs":[{"name":"Engine"},{"name":"Reaction Mechanism"}],"outputs":[{"name":"NonReusable WasteProduct"}],"loc":"900 0"},{"key":"AccuWeather","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 200","score":"Score: 2.66"},{"key":"BuildingQuery","inputs":[{"name":"Region"},{"name":"city"}],"outputs":[{"name":"BuildingType"}],"loc":"900 400"},{"key":"OpenWeatherMap","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 600","score":"Score: 5.03"},{"key":"YahooWeather","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 800","score":"Score: 3.18"},{"key":"ADMS","inputs":[{"name":"Region"},{"name":"WeatherCondition"},{"name":"NonReusable WasteProduct"},{"name":"BuildingType"}],"outputs":[{"name":"Table"}],"loc":"1200 400"}],"linkDataArray":[{"from":"Inputs","to":"GetPlantsInRegion","fromPort":"Region","toPort":"Region","curviness":60},{"from":"Inputs","to":"RegionToCity","fromPort":"Region","toPort":"Region","curviness":60},{"from":"RegionToCity","to":"AccuWeather","fromPort":"city","toPort":"city","curviness":60},{"from":"Inputs","to":"BuildingQuery","fromPort":"Region","toPort":"Region","curviness":60},{"from":"RegionToCity","to":"BuildingQuery","fromPort":"city","toPort":"city","curviness":60},{"from":"GetPlantsInRegion","to":"SRM Agent","fromPort":"Plant","toPort":"Engine","curviness":60},{"from":"RegionToCity","to":"OpenWeatherMap","fromPort":"city","toPort":"city","curviness":60},{"from":"RegionToCity","to":"YahooWeather","fromPort":"city","toPort":"city","curviness":60},{"from":"Inputs","to":"ADMS","fromPort":"Region","toPort":"Region","curviness":60},{"from":"AccuWeather","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"OpenWeatherMap","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"YahooWeather","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"BuildingQuery","to":"ADMS","fromPort":"BuildingType","toPort":"BuildingType","curviness":60},{"from":"SRM Agent","to":"ADMS","fromPort":"NonReusable WasteProduct","toPort":"NonReusable WasteProduct","curviness":60},{"from":"Inputs","to":"SRM Agent","fromPort":"Reaction Mechanism","toPort":"Reaction Mechanism","curviness":60}]};
+	// var result_xf = {"linkFromPortIdProperty":"fromPort","linkToPortIdProperty":"toPort","nodeDataArray":[{"key":"Inputs","inputs":[],"outputs":[{"name":"Reaction Mechanism"},{"name":"Region"}],"loc":"200 400"},{"key":"GetPlantsInRegion","inputs":[{"name":"Region"}],"outputs":[{"name":"Plant"}],"loc":"600 300"},{"key":"RegionToCity","inputs":[{"name":"Region"}],"outputs":[{"name":"city"}],"loc":"600 500"},{"key":"SRM Agent","inputs":[{"name":"Engine"},{"name":"Reaction Mechanism"}],"outputs":[{"name":"NonReusable WasteProduct"}],"loc":"900 0"},{"key":"AccuWeather","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 200","score":"Score: 2.66"},{"key":"BuildingQuery","inputs":[{"name":"Region"},{"name":"city"}],"outputs":[{"name":"BuildingType"}],"loc":"900 400"},{"key":"OpenWeatherMap","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 600","score":"Score: 5.03"},{"key":"YahooWeather","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 800","score":"Score: 3.18"},{"key":"ADMS","inputs":[{"name":"Region"},{"name":"WeatherCondition"},{"name":"NonReusable WasteProduct"},{"name":"BuildingType"}],"outputs":[{"name":"Table"}],"loc":"1200 400"}],"linkDataArray":[{"from":"Inputs","to":"GetPlantsInRegion","fromPort":"Region","toPort":"Region","curviness":60},{"from":"Inputs","to":"RegionToCity","fromPort":"Region","toPort":"Region","curviness":60},{"from":"RegionToCity","to":"AccuWeather","fromPort":"city","toPort":"city","curviness":60},{"from":"Inputs","to":"BuildingQuery","fromPort":"Region","toPort":"Region","curviness":60},{"from":"RegionToCity","to":"BuildingQuery","fromPort":"city","toPort":"city","curviness":60},{"from":"GetPlantsInRegion","to":"SRM Agent","fromPort":"Plant","toPort":"Engine","curviness":60},{"from":"RegionToCity","to":"OpenWeatherMap","fromPort":"city","toPort":"city","curviness":60},{"from":"RegionToCity","to":"YahooWeather","fromPort":"city","toPort":"city","curviness":60},{"from":"Inputs","to":"ADMS","fromPort":"Region","toPort":"Region","curviness":60},{"from":"AccuWeather","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"OpenWeatherMap","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"YahooWeather","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"BuildingQuery","to":"ADMS","fromPort":"BuildingType","toPort":"BuildingType","curviness":60},{"from":"SRM Agent","to":"ADMS","fromPort":"NonReusable WasteProduct","toPort":"NonReusable WasteProduct","curviness":60},{"from":"Inputs","to":"SRM Agent","fromPort":"Reaction Mechanism","toPort":"Reaction Mechanism","curviness":60}]};
 	
 	
 	
 	
-    visualizeComposition(result_xf);
+    // visualizeComposition(result_xf);
 	
-	/*
+	 
     console.log('original', JSON.stringify(myDiagram.model))
 	console.log('model', convertNodeObjToMSMObj(myDiagram.model));
 	
     $.ajax({
         method: "POST",
-        url: hostname + "ServiceCompositionEndpoint",
-        data: convertNodeObjToMSMObj(myDiagram.model),
+        url: hostname + "CompositionEndpoint",
+        data: {'query': convertNodeObjToMSMObj(myDiagram.model)},
         timeout: 5000
 
     })
@@ -281,7 +278,7 @@ function composeService() {
         .fail(function (error) {
             alert('This might not be a valid composite service')
         });
-		*/
+		 
 		
 		
 }
@@ -307,13 +304,14 @@ function sendToExecutor(){
     $('#visualizationSelection').show();
 	
 	var compositeServiceObj = composite_agent;
-  
+	console.log("input for executor= ");
+	console.log(JSON.stringify(compositeServiceObj));
  
 
     $.ajax({
         method: "POST",
-        url: hostname + "ServiceExecutorEndpoint",
-        data: JSON.stringify(compositeServiceObj),
+        url: hostname + "ExecutionEndpoint",
+        data: {'query':JSON.stringify(compositeServiceObj)},
         timeout: 2000
 
     })
@@ -337,13 +335,11 @@ function sendToExecutor(){
         });
 }
 
-
-
 function optimizeService() {
     $.ajax({
         method: "POST",
-        url: hostname + "ServiceOptimizationEndpoint",
-        data: compositeService,
+        url: hostname + "OptimizationEndpoint",
+        data: {'query':compositeService},
         timeout: 10000
 
     })
@@ -377,114 +373,228 @@ function optimizeService() {
 
 }
 
-
 function replaceAll(text, search, replacement) {
     return text.replace(new RegExp(search, 'g'), replacement);
 }
 
-function convertComposition(result) {
+function get_inputs_arrays (){
+	
+	
+}
 
+function seperate_init_inputs(result){
+	var inputs_uri = result.initialInputs;
+	var processed_uri = [];
+	inputs_uri.forEach(function(uri){
+		var input_name = uri;
+//		try {
+//			  input_name = uri.split('#')[1];		
+//			}
+//		catch(err) {
+//		      input_name = uri;
+//			}
+		processed_uri.push({"name": input_name});
+	});
+	return processed_uri;
+}
 
-    var visualizationObject = {
-        linkFromPortIdProperty: "fromPort",
-        linkToPortIdProperty: "toPort",
-        nodeDataArray: [],
-        linkDataArray: []
-    };
+function split_agent_name(agent_uri){
+	return agent_uri.split('__')[1].split("#")[0].split(".owl")[0];	
+}
 
-    var initOutputs = [];
-    result.initialInputs.forEach(function (initInput) {
-        initOutputs.push({name: IRIProcessor(initInput.type)});
-    });
-
-    var initObject = {key: "Inputs", inputs: [], outputs: initOutputs.sort(dynamicSort("name")), loc: "200 0"};
-    visualizationObject.nodeDataArray.push(initObject);
-
-    var initLayer = {services: [{operations: [{outputs: [{mandatoryParts: result.initialInputs}]}], uri: 'Inputs'}]};
-
-
-    var previousLayers = [initLayer];
-    var layers = result.layers;
-    layers.forEach(function (layer, layerIndex) {
-        previousLayers.push(layer);
-        layer.services.forEach(function (service, serviceIndex) {
-            var serviceObject = {key: IRIProcessor(service.uri), inputs: [], outputs: [], loc: ""};
-            var inputs = [];
-            var outputs = [];
-
-            var extra_indent = 0;
-
-            service.operations[0].inputs.forEach(function (input) {
-                input.mandatoryParts.forEach(function (model) {
-                    // Go and find outputs in the all previous layer and make the connection
-                    previousLayers.forEach(function (previousLayer, previousLayerIndex) {
-                        previousLayer.services.forEach(function (previousService) {
-                            previousService.operations[0].outputs.forEach(function (previousOutput) {
-                                previousOutput.mandatoryParts.forEach(function (previousOutputPart) {
-                                    if (previousOutputPart.type === model.type) {
-                                    	//console.log("------- After processor ------- ")
-                                    	//console.log(IRIProcessor(previousService.uri))
-                                        var newConnection = {
-                                            from: IRIProcessor(previousService.uri),
-                                            to: IRIProcessor(service.uri),
-                                            fromPort: IRIProcessor(previousOutputPart.type),
-                                            toPort: IRIProcessor(model.type),
-											curviness: 60
-                                        };
-                                        visualizationObject.linkDataArray.push(newConnection);
-                                        if (layerIndex === previousLayerIndex) {
-                                            extra_indent = 300;
-                                        }
-
-                                    }
-                                })
-                            })
-                        });
-                    });
-                    inputs.push({name: IRIProcessor(model.type)})
-                });
-            });
-            service.operations[0].outputs.forEach(function (output) {
-                output.mandatoryParts.forEach(function (model) {
-                    outputs.push({name: IRIProcessor(model.type)})
-                })
-            });
-            serviceObject.inputs = inputs.sort(dynamicSort("name"));
-            serviceObject.outputs = outputs.sort(dynamicSort("name"));
-            serviceObject.loc = (layerIndex + 1) * 300 + extra_indent + " " + serviceIndex * 200;
-            visualizationObject.nodeDataArray.push(serviceObject);
-        });
-
-    });
-
-    let nodeDataArray = visualizationObject.nodeDataArray;
-    let scoreMap = result['scoreMap'];
-    
-//    console.log('score map', scoreMap);
-    for(let idx in nodeDataArray){
-    	let nodeData = nodeDataArray[idx];
-    	let nodeKey = nodeData['key'];
-    	for(let key in scoreMap){
-    		if(key.includes(nodeKey)){
-    			let scoreArray = scoreMap[key];
-    			let sum = 		 parseInt(scoreArray[0]);
-    			let number = 	 parseInt(scoreArray[1]);
-    			//console.log('sum', sum);
-    			//console.log('num', number);
-    			let score = (((sum/ number) / 2132611) * 5).toFixed(2);
-    			//console.log('score', score);
-    			nodeData['score'] = 'Score: ' + score;
-    		}
-    	}
-    	
-    	
+function search_for_downstream_agent_and_register_connetion(visualization_object, is_initial_input, result, outputs, from_agent_name){
+	// go through the "input_mapping" and returns the list of agents ... as well as creating a link
+	/*  
+	 {
+      "from": "Inputs",
+      "to": "SRM Agent",
+      "fromPort": "Reaction Mechanism",
+      "toPort": "Reaction Mechanism",
+      "curviness": 60
     }
+	 */
+	
+	let connection = {"from": "", "to": "", "fromPort": "", "toPort": "", "curviness": 60}
+	
+ 
+//	for (let output in outputs){
+//	outputs.forEach(function(output){	
+		let output_uri = "";
+	
+		if(is_initial_input){
+			output_uri = outputs.name;
+			
+			
+			console.log('============== output uri for init inputs ==============')
+			console.log(output_uri)
+			console.log('========================================================')
+		}
+		else{
+			let outputs = result['output_mapping'][from_agent_name];
+			console.log(from_agent_name)
+			console.log("############################")
+			console.log('outputs', outputs)
+			for (let output in outputs){
+				output_uri = output;				
+			}
+		}
+		
+		for (let agent_uri in result.input_mapping){
+			
+			agent_name = split_agent_name(agent_uri);			
+//			let agent_name = agent_uri;
+//			try{
+//				 agent_name = split_agent_name(agent_uri);			
+//			}
+//			catch(err){
+//				console.log(err);
+//			}
+			 
+			// console.log(result.input_mapping[agent_uri]);
+			// go through the map, see whether the "output" matches anything
+			
+			for (let input_uri in result.input_mapping[agent_uri]) // check the inputs in every agent
+			{
+				console.log('=============== input and output comparison =============')
+				console.log(input_uri, output_uri)
+				console.log('=========================================================')
+				
+				if (input_uri === output_uri) { 
+					// create a connection 
+				if (is_initial_input){
+						// then "from" is "Input"
+					connection["from"] = "Inputs";
+					connection["to"]   = agent_name;
+					connection["toPort"] = result.input_mapping[agent_uri][input_uri];
+					connection["fromPort"] = result['output_mapping'][from_agent_name][output_uri];
+		  			} 
+				else{
+					// all the "to" part stay the same, "from" will be the upstream agent ... 
+					connection["from"] = split_agent_name(from_agent_name);
+					connection["to"]   = agent_name;
+					connection["toPort"] = result.input_mapping[agent_uri][input_uri];
+					connection["fromPort"] = result['output_mapping'][from_agent_name][output_uri];
+				}
+				
+				console.log('----------- the connections created ------------------')
+				console.log(connection);
+				visualization_object['linkDataArray'].push(connection);
+				}
+			}
+				
+		}
+//	}
+	
+}
+
+function calculate_loc(layer_index, agent_index){
+	let x = (layer_index + 3) * 300;
+	let y = agent_index * 100;
+	return x.toString() + " " + y.toString();
+}
+
+function create_agent_node(agent_uri, result, layer_index, agent_index){
+	let agent_node = {"key":"","inputs":[],"outputs":[],"loc":""};
+	// let node_inputs_and_outputs = {'inputs': [], 'outputs':[]};
+	
+	let agent_name=  split_agent_name(agent_uri);	
+	agent_node['key'] = agent_name;
+	
+	console.log('======================= creating an agent node ======================');
+	console.log(agent_uri);
+	let outputs = result['output_mapping'][agent_uri];
+	for (let key in outputs){
+//		console.log(key)
+//		console.log(outputs[key])
+		let output_name = outputs[key];
+		agent_node['outputs'].push({"name": output_name});
+	}
+
+	let inputs = result['input_mapping'][agent_uri]; 	
+	for (let key in inputs){
+//		console.log(key)
+//		console.log(inputs[key])
+		let input_name = inputs[key];
+		agent_node['inputs'].push({"name": input_name});
+	}
+	 
+	agent_node['loc'] = calculate_loc(layer_index, agent_index);
+	return agent_node;
+	 
+}
+
+function convertComposition(result) {
+	// 1. Construct the object for the initial inputs 
+	
+	let visualization_object = {'nodeDataArray':[], 'linkDataArray':[], 'linkFromPortIdProperty': 'fromPort', 'linkToPortIdProperty': 'toPort'};
+	
+    var init_input_node = {
+        "key": "Inputs",
+        "inputs": [],
+        "outputs": [],
+        "loc": "200 400"
+      }
+
+    init_input_node.outputs = seperate_init_inputs(result);
+    visualization_object.nodeDataArray.push(init_input_node); // add the initial node(s) to the visualization object ... 
+    search_for_downstream_agent_and_register_connetion(visualization_object, true, result, init_input_node.outputs, null);
     
-   // console.log('visualization object', nodeDataArray);
-    
-    
-    
-    return visualizationObject;
+	var layers = result.layers; // the "layers" array stores a list of URIs for the agents 
+	
+	/*   an example of layers ... 
+	 *   "layers": [
+    [
+      "http://www.theworldavatar.com/kb/agents/Service__GetPlantsInRegion.owl#Service",
+      "http://www.theworldavatar.com/kb/agents/Service__RegionToCity.owl#Service"
+    ],
+    [
+      "http://www.theworldavatar.com/kb/agents/Service__SRMEmissions.owl#Service",
+      "http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service",
+      "http://www.theworldavatar.com/kb/agents/Service__AccuWeather.owl#Service",
+      "http://www.theworldavatar.com/kb/agents/Service__PowerPlant.owl#Service",
+      "http://www.theworldavatar.com/kb/agents/Service__YahooWeather.owl#Service",
+      "http://www.theworldavatar.com/kb/agents/Service__BuildingQuery.owl#Service"
+    ],
+    [
+      "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service"
+    ],
+    []
+  ]
+	 */
+	var layer_index = 0;
+	layers.forEach(function (layer) {
+		// iterate through all the layers and construct elements in the "nodeDataArray" ... 
+		  
+		// stop if encounters an empty layer 
+		// 1. agents within the first layer are only connected to Inputs 
+		
+		agent_index =0;
+		layer.forEach(function (agent_uri){
+			// give the outputs of those agents ... 
+			
+			// console.log('----------- agent uri ----------')
+			// console.log(agent_uri)
+			let outputs = [];
+			 
+			// create the node for an agent ...
+			// {"key":"GetPlantsInRegion","inputs":[{"name":"Region"}],"outputs":[{"name":"Plant"}],"loc":"600 300"} 
+			// get agents' inputs and outputs in strings ... from result[input_mapping] and result[output_mapping]
+			let agent_node = create_agent_node(agent_uri, result,layer_index, agent_index);
+			visualization_object["nodeDataArray"].push(agent_node);
+			search_for_downstream_agent_and_register_connetion(visualization_object, false, result, outputs , agent_uri)
+			agent_index++;
+		});
+		layer_index++;
+	});
+	
+	
+	console.log('========= visualization object ===========')
+	console.log(visualization_object)
+	console.log('==========================================')
+	
+	// visualization_object  = {"linkFromPortIdProperty":"fromPort","linkToPortIdProperty":"toPort","nodeDataArray":[{"key":"Inputs","inputs":[],"outputs":[{"name":"Reaction Mechanism"},{"name":"Region"}],"loc":"200 400"},{"key":"GetPlantsInRegion","inputs":[{"name":"Region"}],"outputs":[{"name":"Plant"}],"loc":"600 300"},{"key":"RegionToCity","inputs":[{"name":"Region"}],"outputs":[{"name":"city"}],"loc":"600 500"},{"key":"SRM Agent","inputs":[{"name":"Engine"},{"name":"Reaction Mechanism"}],"outputs":[{"name":"NonReusable WasteProduct"}],"loc":"900 0"},{"key":"AccuWeather","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 200","score":"Score: 2.66"},{"key":"BuildingQuery","inputs":[{"name":"Region"},{"name":"city"}],"outputs":[{"name":"BuildingType"}],"loc":"900 400"},{"key":"OpenWeatherMap","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 600","score":"Score: 5.03"},{"key":"YahooWeather","inputs":[{"name":"city"}],"outputs":[{"name":"WeatherCondition"}],"loc":"900 800","score":"Score: 3.18"},{"key":"ADMS","inputs":[{"name":"Region"},{"name":"WeatherCondition"},{"name":"NonReusable WasteProduct"},{"name":"BuildingType"}],"outputs":[{"name":"Table"}],"loc":"1200 400"}],"linkDataArray":[{"from":"Inputs","to":"GetPlantsInRegion","fromPort":"Region","toPort":"Region","curviness":60},{"from":"Inputs","to":"RegionToCity","fromPort":"Region","toPort":"Region","curviness":60},{"from":"RegionToCity","to":"AccuWeather","fromPort":"city","toPort":"city","curviness":60},{"from":"Inputs","to":"BuildingQuery","fromPort":"Region","toPort":"Region","curviness":60},{"from":"RegionToCity","to":"BuildingQuery","fromPort":"city","toPort":"city","curviness":60},{"from":"GetPlantsInRegion","to":"SRM Agent","fromPort":"Plant","toPort":"Engine","curviness":60},{"from":"RegionToCity","to":"OpenWeatherMap","fromPort":"city","toPort":"city","curviness":60},{"from":"RegionToCity","to":"YahooWeather","fromPort":"city","toPort":"city","curviness":60},{"from":"Inputs","to":"ADMS","fromPort":"Region","toPort":"Region","curviness":60},{"from":"AccuWeather","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"OpenWeatherMap","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"YahooWeather","to":"ADMS","fromPort":"WeatherCondition","toPort":"WeatherCondition","curviness":60},{"from":"BuildingQuery","to":"ADMS","fromPort":"BuildingType","toPort":"BuildingType","curviness":60},{"from":"SRM Agent","to":"ADMS","fromPort":"NonReusable WasteProduct","toPort":"NonReusable WasteProduct","curviness":60},{"from":"Inputs","to":"SRM Agent","fromPort":"Reaction Mechanism","toPort":"Reaction Mechanism","curviness":60}]};
+	 
+    return visualization_object;
 }
 
 function IRIProcessor(IRI) {

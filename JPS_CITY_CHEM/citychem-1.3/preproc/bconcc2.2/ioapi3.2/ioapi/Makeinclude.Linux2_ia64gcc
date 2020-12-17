@@ -1,0 +1,26 @@
+# @(#)$Header: /env/proj/archive/cvs/ioapi/./ioapi/src/Makeinclude.Linux2_x86,v 1.2 2000/11/28 21:56:44 smith_w Exp $
+#
+#       Linux for X86_64 using the GNU compiler suite
+#
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = gfortran
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MFLAGS    =  -ffast-math -funroll-loops -fschedule-insns
+
+OMPFLAGS  = 
+OMPLIBS   = 
+COPTFLAGS = -O2 ${MFLAGS}
+FOPTFLAGS = -O2 ${MFLAGS}
+FPPFLAGS  =
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1 -DSECOND_UNDERSCORE=1
+PARFLAGS  =
+ARCHLIB   = 
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+# PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

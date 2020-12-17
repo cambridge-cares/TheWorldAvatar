@@ -14,7 +14,7 @@ class ADMSMapSpeedTorqueNOxSoot(object):
         # Default input values.
         self.NO_frac = 0.35
         self.NumParSizeClasses = 4
-        self.LogNorm_mu = 200.0
+        self.LogNorm_mu = 2000.0
         # controlls the width of the distribution
         self.LogNorm_sigma = 1.0
         # unpickled surrogate models
@@ -77,7 +77,7 @@ class ADMSMapSpeedTorqueNOxSoot(object):
         prev_cdf = 0.0
         for i in range(1, self.NumParSizeClasses + 1):
             # 1e4 ... / 4
-            the_size = exp(log(1e3) * i / 7)
+            the_size = exp(log(1e4) * i / 4)
             cdf = self.log_normal_cdf(the_size, self.LogNorm_mu, self.LogNorm_sigma)
             the_mfr = soot * (cdf - prev_cdf) / 1000.0 / 3600.0  # g/h to kg/s
             the_list.append(self.par_size_class_dict(the_size, 'nm', 1800, 'kg/m3', the_mfr, 'kg/s'))

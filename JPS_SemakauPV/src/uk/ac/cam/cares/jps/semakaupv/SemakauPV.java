@@ -102,10 +102,16 @@ public class SemakauPV extends JPSHttpServlet {
 			String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
  					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
  					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
- 					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
- 					+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
- 					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
- 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+ 					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+ 					+ "SELECT ?entity ?propval ?proptimeval "
+ 					+ "WHERE { ?entity a j5:Q-Sensor ." 
+ 					+ "  ?entity j4:observes ?prop ." 
+ 					+ " ?prop   j2:hasValue ?vprop ."
+ 					+ " ?vprop   j2:numericalValue ?propval ." 
+ 					+ " ?vprop   j6:hasTime ?proptime ."
+ 					+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
+ 					+ "}" 
+ 					+ "ORDER BY ASC(?proptimeval)";
 
  			String result2 = new QueryBroker().queryFile(irradSensorIRI, sensorinfo2);
  			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
@@ -242,7 +248,7 @@ public class SemakauPV extends JPSHttpServlet {
 				+ "?Pg  j2:hasValue ?vpg ."
 				+ "?vpg   j2:numericalValue ?activepowervalue ." // pg
 				+ " ?vpg   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
 				
 
 				+ "?model   j5:hasModelVariable ?Qg ." 
@@ -250,7 +256,7 @@ public class SemakauPV extends JPSHttpServlet {
 				+ "?Qg  j2:hasValue ?vqg ."
 				+ "?vqg   j2:numericalValue ?reactivepowervalue ." // qg
 				+ " ?vqg   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ."
 				+ "}" 
 				+ "ORDER BY ASC(?proptime)"; 
 		
@@ -276,14 +282,14 @@ public class SemakauPV extends JPSHttpServlet {
 				+ "?VM  j2:hasValue ?vVM ."
 				+ "?vVM   j2:numericalValue ?VoltMagvalue ." // Vm
 				+ " ?vVM   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
 
 				+ "?model   j5:hasModelVariable ?VA ." 
 				+ "?VA  a  j3:Va  ." 
 				+ "?VA  j2:hasValue ?vVA ."
 				+ "?vVA   j2:numericalValue ?VoltAnglevalue ." // Va
 				+ " ?vVA   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
 
 				+ "?model   j5:hasModelVariable ?BKV ." 
 				+ "?BKV  a  j3:baseKV  ." 

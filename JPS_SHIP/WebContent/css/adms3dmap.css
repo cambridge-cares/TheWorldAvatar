@@ -4,8 +4,12 @@
             position: relative;
         }
 
+        #mapwrapper{
+            position: relative;
+
+        }
         #sensorTable{
-            position:relative;
+
         }
         .control {
             position: absolute;

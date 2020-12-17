@@ -5,11 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -141,7 +143,7 @@ public class AirSensorKBCreator {
 		hasvalue = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
 		hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
-		timexsdvalue = jenaOwlModel.getDatatypeProperty("http://www.w3.org/2006/time#inXSDDateTimeStamp");
+		timexsdvalue = jenaOwlModel.getDatatypeProperty("http://www.w3.org/2006/time#inXSDDateTime");
 		
 		gasProtocolVersion = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#gasProtocolVersion");
 		particleProtocolVersion = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#particleProtocolVersion");
@@ -175,9 +177,9 @@ public class AirSensorKBCreator {
 
 		
 		//for SG:
-		int numberofstn=1;
+//		int numberofstn=1;
 //		String locationid="SG";
-		String locationid="SGAQMesh"; //enable this when creating the AQMesh sensor. 
+//		String locationid="SGAQMesh"; //enable this when creating the AQMesh sensor. 
 		
 		//for the aqmesh use index 2 in number of stn
 		
@@ -191,8 +193,8 @@ public class AirSensorKBCreator {
 			
 		
 		//for HK:
-//		int numberofstn=1;
-//		String locationid="HK";
+		int numberofstn=1;
+		String locationid="HK";
 		
 		//for the aqmesh use index 2 in d
 		for(int d=1;d<=numberofstn;d++) {
@@ -237,7 +239,7 @@ public class AirSensorKBCreator {
 		
 	}
 	//start there
-	public void doConversionAirsensor(OntModel jenaOwlModel, String mainobjectname,String Prefix,List<String[]> readingFromCSV,String propertyname,OntClass propclass,String[]location) throws FileNotFoundException, URISyntaxException{
+	public void doConversionAirsensor(OntModel jenaOwlModel, String mainobjectname,String Prefix,List<String[]> readingFromCSV,String propertyname,OntClass propclass,String[]location) throws FileNotFoundException, URISyntaxException, ParseException{
 		String particleprotocol="V3.0";
 		String gasprotocol="V5.1";
 		//int numberofdataslots=24*7; //(assume now 1 week every hour) 1 day every minute then 1440
@@ -331,9 +333,13 @@ public class AirSensorKBCreator {
 				prescaledvalue=readingFromCSV.get(y)[9];
 				scaledvalue=readingFromCSV.get(y)[10]; 
 			}
-			String timestampstartvalue=formatTime(readingFromCSV.get(x)[2]);
+			String timestampstartvalue=readingFromCSV.get(x)[2]; //eg=30/Apr/2020 23:00:00
 			//String timestampendvalue=formatTime(readingFromCSV.get(x)[3]);
-			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
+			 DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+			 Date date1=dateFormat.parse(timestampstartvalue);
+			 String timeformatted=pstFormat.format(date1); 
+
 			
 			//Individual timestamp = timeentityclass.createIndividual(Prefix+mainobjectname+".owl#TimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
 			Individual timestampstart = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#TimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
@@ -345,7 +351,9 @@ public class AirSensorKBCreator {
 			valueofproperty.addProperty(hasunit, ugperm3);
 			
 			valueofproperty.addProperty(hastime, timestampstart);
-			timestampstart.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampstartvalue)));
+			
+			timestampstart.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(timeformatted,XSDDatatype.XSDdateTime)); 
+//			timestampstart.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampstartvalue))); //or change to string?
 //			timestamp.addProperty(hasBeginning, timestampstart);
 //			timestamp.addProperty(hasEnd, timestampend);
 //			timestampstart.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampstartvalue)));

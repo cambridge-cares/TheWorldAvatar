@@ -28,7 +28,7 @@ const controlButtonsSetter = osmb => {
     })
   }
 }
-let sensorIRIs = [{x:103.83143122477935 , y:1.2429458210894155, name:"test"}];
+//let sensorIRIs = [{x:103.83143122477935 , y:1.2429458210894155, name:"test"}];
 //todo: add render sensor function
 const initadms3dmap = (
   list, range, osmb, location, coordinatesMid, cityiri, shipList, folder) => {
@@ -53,8 +53,8 @@ const initadms3dmap = (
 
   const position = {}
 
-  position.latitude = 1.27993// coordinatesMid[0]
-  position.longitude = 103.859//coordinatesMid[1]
+  position.latitude = coordinatesMid[0]
+  position.longitude =coordinatesMid[1]
 
   osmb.setPosition(position)
   osmb.setZoom(15.7)
@@ -152,6 +152,8 @@ const initadms3dmap = (
 	const POL_LIST = data[1]
 	const POL_NUM = data[2]
 	const HEIGHT_NUM = data[3]
+	const HEIGHT_GAP=data[4]
+	const INITIAL_HEIGHT=data[5]
 	makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')
     const LEGEND_WRAPPER = 'legendwrapper'
     const SLIDER_WRAPPER = 'sliderwrapper'
@@ -200,7 +202,7 @@ const initadms3dmap = (
     makeSlider(SLIDER_WRAPPER, HEIGHT_NUM, function (event, ui) {
       if (preObj) preObj.destroy()
       idxH = ui.value
-      $('#height-show').val(idxH * 10)
+      $('#height-show').val(INITIAL_HEIGHT+idxH * HEIGHT_GAP)
       thresholds = dataurls[idxH * POL_NUM + idxSrc][1]
       color = dataurls[idxH * POL_NUM + idxSrc][2]
       image = dataurls[idxH * POL_NUM + idxSrc][0]

@@ -1,0 +1,49 @@
+# Version "$Id: Makeinclude.WIN_x86_64mingw64 1 2017-06-10 18:05:20Z coats $"
+#
+#  64-bit MinGW-64 "gcc" and "gfortran"
+#  Requires netCDF 4.x and netcdf-fortran-4.x (netCDF-3.x Fortran won't compile)
+#  Must install Cygwin
+#  Must install Mingw-64 compilers and utilities.
+#  Must replace Cygwin "nm.exe" by Mingw-64 "nm.exe" for netCDF "configure":
+#      cd /usr/bin
+#      mv nm.exe i686-nm.exe
+#      ln -s $cwd/x86_64-w64-mingw32-nm.exe $cwd/nm.exe
+#  Must remove "systemf.c" from Makefile (mingw-64 C has dependency-troubles with it)
+#  Libraries should go in "lib64" instead of "lib"
+#  Manually run "ranlib" on netCDF libraries.
+#
+#  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
+#  to implement  IARGC() and GETARG() for compilers
+#  ("gfortran" version 4.8 or later to be exact) that insist on
+#  enforcing F2003-only with no backwards nor industry-standards compatibility.
+#
+
+AR   = /usr/x86_64-w64-mingw32/bin/ar.exe
+CC   = /usr/bin/x86_64-w64-mingw32-gcc.exe
+FC   = /usr/bin/x86_64-w64-mingw32-gfortran.exe
+M4   = m4
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -I
+
+MFLAGS    = -ffast-math -funroll-loops -m64 # -Wall -Wsurprising -march=native -mtune=native
+
+OMPFLAGS  = -fopenmp
+OMPLIBS   = -fopenmp
+COPTFLAGS = -O3 ${MFLAGS}
+FOPTFLAGS = -O3 ${MFLAGS} # -fsecond-underscore
+FPPFLAGS  = -DF90=1
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = \
+ -DAUTO_ARRAYS=1 \
+ -DSECOND_UNDERSCORE=1 \
+ -DF90=1 -DFLDMN=1 \
+ -DFSTR_L=int \
+ -DIOAPI_NO_STDOUT=1 \
+ -DNEED_ARGS=1
+PARFLAGS  =
+ARCHLIB   = -dynamic -lm -lpthread
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = 

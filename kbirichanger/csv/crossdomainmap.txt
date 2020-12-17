@@ -1,0 +1,8 @@
+map for cross domain
+V_ActualVoltage_LoadPoint_R-602001,V_ActualV_R-301load
+V_Angle_LoadPoint_R-602001,V_theta_R-301load
+V_NominalVoltage_LoadPoint_R-602001,V_NominalV_R-301load
+V_Pin_LoadPoint_R-602001,V_Pout_R-301load
+V_Pout_LoadPoint_R-602001,V_Pout_R-301load
+V_Qin_LoadPoint_R-602001,V_Qout_R-301load
+V_Qout_LoadPoint_R-602001,V_Qout_R-301load

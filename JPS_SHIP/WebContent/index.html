@@ -67,7 +67,7 @@
     <select id="location" name="location">
         <option value=""></option>
         <option value="http://dbpedia.org/resource/Singapore">Singapore</option>
-        <option value="http://dbpedia.org/resource/HongKong">Hong Kong</option>
+        <option value="http://dbpedia.org/resource/Hong_Kong">Hong Kong</option>
     </select>
     <label for="xlower">X lower:</label>
     <!--input id="xlower" type="text" value='13728088' readonly/-->
@@ -100,7 +100,18 @@
 
     </ul>
 </div>
+<div id="mapwrapper">
 <div id="map">
+</div>
+<div class="choice  container-fluid">
+    <div class="row">
+        <div id="sliderwrapper" class = "col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
+        <div id="optionwrapper" class = "col-xs-3 col-sm-3 col-md-3 col-lg-3"></div>
+        <div id="legendwrapper" class = "col-xs-3 col-sm-3 col-md-3 col-lg-3"></div>
+
+    </div>
+
+</div>
 </div>
 <div id="sensorTable"></div>
 <div class="control tilt">
@@ -118,15 +129,6 @@
     <button class="inc">+</button>
 </div>
 
-<div class="choice  container-fluid">
-    <div class="row">
-        <div id="sliderwrapper" class = "col-xs-1 col-sm-1 col-md-1 col-lg-1"></div>
-        <div id="optionwrapper" class = "col-xs-3 col-sm-3 col-md-3 col-lg-3"></div>
-        <div id="legendwrapper" class = "col-xs-3 col-sm-3 col-md-3 col-lg-3"></div>
-
-    </div>
-
-</div>
 
 <div id="svgwrapper">
     <svg xmlns="http://www.w3.org/2000/svg"  id='contoursvg' width="1024" height="1024"></svg>

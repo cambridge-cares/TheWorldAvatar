@@ -34,9 +34,13 @@ public class TestCoordinatorCollection extends TestCase{
 	}
 	
 	public void testgetcurrentweather() throws JSONException, UnsupportedEncodingException {
+		System.out.println("from= "+HKUWeatherRetriever.getTimeInXsdTimeStampFormat(System.currentTimeMillis() - 600 * 1000));
+//		String result = HKUWeatherRetriever.queryFromHKUServer(
+//				HKUWeatherRetriever.getTimeInXsdTimeStampFormat(System.currentTimeMillis() - 600 * 1000),
+//				HKUWeatherRetriever.getTimeInXsdTimeStampFormat(System.currentTimeMillis()),"/getweatherhistory");
 		String result = HKUWeatherRetriever.queryFromHKUServer(
-				HKUWeatherRetriever.getTimeInXsdTimeStampFormat(System.currentTimeMillis() - 600 * 1000),
-				HKUWeatherRetriever.getTimeInXsdTimeStampFormat(System.currentTimeMillis()),"/getweatherhistory");
+				"2020-06-08T11:00:10",
+				"2020-06-08T12:00:10","/getweatherhistory");
 		
 		System.out.println(result);
 		

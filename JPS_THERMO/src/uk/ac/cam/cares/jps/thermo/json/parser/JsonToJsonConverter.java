@@ -131,6 +131,7 @@ public class JsonToJsonConverter {
 		/**
 		 * @author NK510 Adds the content of JSON file into Json object.
 		 */
+		logger.info("JSON filePath:"+filePath);
 		logger.info("JSON string: " + IOUtils.toString(new FileInputStream (new File(filePath)),"UTF-8"));
 		
 		JSONObject  jsonObject = new JSONObject(IOUtils.toString(new FileInputStream (new File(filePath)),"UTF-8"));

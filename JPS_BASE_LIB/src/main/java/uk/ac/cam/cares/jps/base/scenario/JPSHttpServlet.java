@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.HttpGet;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Controller;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
+import javax.ws.rs.core.Response;
 
 /**
  * All JPS agents that want to make use of scenario have to inherit from this servlet class.
@@ -109,10 +113,15 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @throws IOException @see PrintWriter#getWriter
      */
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    	System.out.println("DO HTTP JPS: 1 ");
     	setLogger();
-    	System.out.println("DO HTTP JPS: 2 ");
-        response.getWriter().write(getResponseBody(request));
+        try {
+            String responseBody = getResponseBody(request);
+            response.getWriter().write(responseBody);
+        } catch (BadRequestException e) {
+            response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+        } catch (JPSRuntimeException e) {
+        	response.setStatus(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
+        }
     }
 
     /**
@@ -124,7 +133,12 @@ public abstract class JPSHttpServlet extends HttpServlet {
      */
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
     	setLogger();
-        response.getWriter().write(getResponseBody(request, reqBody));
+        try {
+            String responseBody = getResponseBody(request, reqBody);
+            response.getWriter().write(responseBody);
+        } catch (BadRequestException e) {
+            response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+        }
     }
     
     protected void setLogger() {
@@ -137,7 +151,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @param request HTTP Servlet Request
      * @return Response parameters as String
      */
-    private String getResponseBody(HttpServletRequest request) {
+    protected String getResponseBody(HttpServletRequest request) {
     	System.out.println("DO GET RESPONSE BODY: 1 ");
         JSONObject requestParams = AgentCaller.readJsonParameter(request);
         System.out.println("DO GET RESPONSE BODY: 2 ");
@@ -156,7 +170,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @param request HTTP Servlet Request
      * @return Response parameters as String
      */
-    private String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
+    protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
         JSONObject responseParams;
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
