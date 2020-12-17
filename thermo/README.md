@@ -57,6 +57,10 @@ Repository Name: thermochemistry
   Download from http://ftp.gnu.org/gnu/glpk/
   Versions that have been used successfully include 4.52.1, 4.58, and 4.59.
 
+* Gaussian files and other files that may be useful for unit testing can be found in an older (and much bigger) version of this git repository:
+  vienna/home/userspace/CoMoCommon/Archive/Codes/CARES/thermochemistry-BEFORE-CLEAN-2020-12-07
+  DO NOT COMMIT ANY OF THESE FILES TO THIS GIT REPOSITORY!
+
 ### Database configuration ###
 
 MolHub connects to an RDF4J triple-store.
