@@ -1,6 +1,5 @@
 import json
-import sys,os
-
+import sys, os
 
 from Chatbot.Interpretation_parser import InterpretationParser
 from Chatbot.SearchEngine import SearchEngine
@@ -16,8 +15,6 @@ import os
 import tarfile
 
 from location import WIKI_MODELS_DIR
-
-
 
 
 # 0. get the topic model result, choose which direction it goes
@@ -44,7 +41,7 @@ class CoordinateAgent:
         # self.stopwords.append('all')
 
         self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
-        self.interpreter = Interpreter.load(self.nlu_model_directory) # load the wiki nlu models
+        self.interpreter = Interpreter.load(self.nlu_model_directory)  # load the wiki nlu models
         self.jps_interface = Chatbot(socketio)
         # try:
         #     from __main__ import socketio
@@ -54,11 +51,18 @@ class CoordinateAgent:
         #     print('Importing socketIO from run_socket')
         self.socket = socketio
 
-
     # TODO: separate the function of topic identifying
     # TODO: separate the SPARQL query
     # TODO: show progress
     # def identify_topics(self, question):
+
+    def question_classification(self, question):
+        intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
+        return intent_and_entities['intent']
+
+    def named_entity_recognition(self, question):
+        intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
+        return intent_and_entities['entities']
 
     @lru_cache(maxsize=None)
     def run(self, question):
@@ -106,13 +110,13 @@ class CoordinateAgent:
         # result = self.wiki_query(question)
         # return result
         # # for topic in topics:
-            # if topic == 'wiki':
-            #     try:
-            #         result = self.wiki_query(question)
-            #         return result
-            #     except:
-            #         # TODO: add JPS results to it
-            #         pass
+        # if topic == 'wiki':
+        #     try:
+        #         result = self.wiki_query(question)
+        #         return result
+        #     except:
+        #         # TODO: add JPS results to it
+        #         pass
 
     @lru_cache(maxsize=64)
     def wiki_query(self, question):
@@ -144,9 +148,6 @@ class CoordinateAgent:
         print('the result in json format', result[0])
         print('the sparql query', result[2])
         return result[0]
-
-
-
 
 # ca = CoordinateAgent()
 # ca.run('what reactions produce NO2 + O2')

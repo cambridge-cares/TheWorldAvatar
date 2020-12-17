@@ -2,10 +2,10 @@
   "config": "99914b932bd37a50b983c5e7c90ae93b",
   "core-config": "95c1b632bd1c398582f24965d588acc2",
   "nlu-config": "ca502db9f502749c3447aca038d8ba31",
-  "domain": 1586100049592098009,
+  "domain": 1802306613959371306,
   "nlg": "99914b932bd37a50b983c5e7c90ae93b",
-  "messages": 103982955418602613,
+  "messages": 1654580984659797695,
   "stories": 751098818652394202,
-  "trained_at": 1600718246.0256426,
+  "trained_at": 1600805337.4036095,
   "version": "1.10.8"
 }

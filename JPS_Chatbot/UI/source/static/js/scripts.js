@@ -309,7 +309,7 @@ let address = cmcl_address
     query_wolfram_alpha(address, msg);
     query_google(address, msg);
 
-    $.get(address + "chemistry_chatbot/query?question=" + msg, function( data ) {
+    $.get(address + "chemistry_chatbot/query?type=worldavatar&question=" + msg, function( data ) {
       displayResults(msg, data, 'jps')
     });
 
@@ -456,14 +456,15 @@ function process_json_result(question, result){
 }
 // if the query to the JPS fails, the system queries both wolfram_alpha and google at the same time
 function query_wolfram_alpha(address, msg){
-    $.get(address + "chemistry_chatbot/query_wolfram?question=" + msg, function( data ) {
+//    $.get(address + "chemistry_chatbot/query_wolfram?question=" + msg, function( data ) {
+    $.get(address + "chemistry_chatbot/query?type=wolfram&question=" + msg, function( data ) {
       visualize_wolfram_result(data, 'wolfram')
     });
 }
 
 function query_google(address, msg){
     // the result returned by google will be in the form of html divisions, the visualization will be different
-        $.get(address + "chemistry_chatbot/query_google?question=" + msg, function( data ) {
+        $.get(address + "chemistry_chatbot/query?type=google&question=" + msg, function( data ) {
          visualize_google_result(data, 'google')
     });
 }

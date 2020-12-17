@@ -19,8 +19,8 @@ def fire_query_to_chatbot(question):
     # x = input()
     values = {'question': question}
     tail = (urllib.parse.urlencode(values))
-    url = "http://127.0.0.1:5000/query?question="  + tail
-    #
+    url = "http://127.0.0.1:5000/chemistry_chatbot/query?type=worldavatar&question="  + tail
+    #http://127.0.0.1:5000/chemistry_chatbot/query?type=wolfram&question=%C2%A0%20show%20me%20the%20vibration%20frequency%20of%20H2O2
 
 
     r = urllib.request.urlopen(url)
@@ -68,6 +68,7 @@ with open('page_questions') as f:
     # for q in random.choices(page_questions, k= 10):
     for q in page_questions:
         # print(q)
+        print('the question is', q)
         r = fire_query_to_chatbot(q)
 
         content = r.read().decode('utf-8')
