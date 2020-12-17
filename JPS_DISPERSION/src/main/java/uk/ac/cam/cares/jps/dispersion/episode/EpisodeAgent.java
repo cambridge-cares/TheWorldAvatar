@@ -715,7 +715,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		double procupy = sc.getUppery();
 		procupy=Double.valueOf(df.format(procupy));
 
-		double[] center = sc.getScopeCentre();;
+		double[] center = sc.getScopeCentre();
 		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
 		double[] dcell = calculateEachDistanceCellDetails(procupx, procupy, proclowx, proclowy, nx, ny);
 
