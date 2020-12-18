@@ -92,7 +92,7 @@ public class SensorSparql {
      * @param station_name
      * @param xyz_coord = x y coordinates are in EPSG:4326, z is the height in m 
      */
-    public void createWeatherStation(String station_name, double [] xyz_coord) {
+    public static void createWeatherStation(String station_name, double [] xyz_coord) {
         Iri weatherstation_iri = p_station.iri(station_name);
         Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
         Iri time_iri = p_station.iri(station_name+"_time");
@@ -101,8 +101,8 @@ public class SensorSparql {
         		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
 
         TriplePattern [] coordinatesXYZ_tp = getCoordinatesTP(stationcoordinates_iri,station_name,xyz_coord);
-        // time stamp is shared by all properties
-        //inXSDDateTime is used in existing codes, but inXSDDateTimeStamp is the recommended 1
+
+        // time stamp is shared by all properties, in unix timestamp
         TriplePattern time_tp = time_iri.isA(p_time.iri("Instant")).andHas(p_time.iri("inTimePosition"),0);
         
         TriplePattern [] combined_tp = {};
@@ -125,7 +125,7 @@ public class SensorSparql {
         performUpdate(weather_endpoint, modify);
     }
 
-    private TriplePattern [] getWeatherSensorTP(Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit, Iri time_iri) {
+    private static TriplePattern [] getWeatherSensorTP(Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit, Iri time_iri) {
         Iri sensor_iri = station_prefix.iri(station_name+"_sensor"+data);
         Iri data_iri = station_prefix.iri(station_name+"_"+data);
         Iri datavalue_iri = station_prefix.iri(station_name+"_v"+data);
@@ -185,6 +185,7 @@ public class SensorSparql {
      */
     public static void updateWeatherStation(WeatherStation ws) {
     	Iri stationiri = iri(ws.getStationiri());
+    	modifyTimeStamp(stationiri,ws.getTimestamp(),weather_endpoint);
     	modifyWeatherData(stationiri,cloud,ws.getCloudcover());
     	modifyWeatherData(stationiri,precipitation,ws.getPrecipitation());
     	modifyWeatherData(stationiri,pressure,ws.getPressure());
@@ -205,16 +206,42 @@ public class SensorSparql {
     	TriplePattern station_tp = stationiri.has(p_system.iri("hasSubsystem"),sensor_iri);
         TriplePattern sensor_tp = sensor_iri.has(p_ontosensor.iri("observes"),data_iri);
         TriplePattern data_tp = data_iri.isA(p_ontosensor.iri(datatype)).andHas(p_system.iri("hasValue"),datavalue_iri);
-        TriplePattern datavalue_tp = datavalue_iri.has(p_system.iri("numericalValue"), oldvalue);
+        TriplePattern olddatavalue_tp = datavalue_iri.has(p_system.iri("numericalValue"), oldvalue);
         
-        GraphPattern weatherdata_gp = GraphPatterns.and(station_tp,sensor_tp,data_tp,datavalue_tp);
-    	TriplePattern delete_tp = datavalue_iri.has(p_system.iri("numericalValue"), oldvalue);
-    	TriplePattern insert_tp = datavalue_iri.has(p_system.iri("numericalValue"), newvalue);
+        GraphPattern weatherdata_gp = GraphPatterns.and(station_tp,sensor_tp,data_tp,olddatavalue_tp);
+    	TriplePattern newvalue_tp = datavalue_iri.has(p_system.iri("numericalValue"), newvalue);
    
     	sub.select(datavalue_iri,oldvalue).where(weatherdata_gp);
     	ModifyQuery modify = Queries.MODIFY();
-    	modify.prefix(p_system,p_ontosensor).delete(delete_tp).insert(insert_tp).where(sub);
+    	modify.prefix(p_system,p_ontosensor).delete(olddatavalue_tp).insert(newvalue_tp).where(sub);
     	performUpdate(weather_endpoint,modify);
+    }
+    
+    /**
+     * can be used by both weather and air quality stations
+     */
+    private static void modifyTimeStamp(Iri stationiri,long timestamp, String endpoint) {
+    	// all properties share the same timestamp, so we just have to match the pattern for one property
+    	SubSelect sub = GraphPatterns.select();
+    	Variable time_iri = SparqlBuilder.var("time_iri");
+    	Variable oldvalue = SparqlBuilder.var("oldvalue");
+    	Variable sensor_iri = sub.var();
+    	Variable data_iri = sub.var();
+    	Variable datavalue_iri = sub.var();
+    	
+    	TriplePattern station_tp = stationiri.has(p_system.iri("hasSubsystem"),sensor_iri);
+        TriplePattern sensor_tp = sensor_iri.has(p_ontosensor.iri("observes"),data_iri);
+        TriplePattern data_tp = data_iri.has(p_system.iri("hasValue"), datavalue_iri); 
+        TriplePattern datavalue_tp = datavalue_iri.has(p_time.iri("hasTime"), time_iri);
+        TriplePattern oldtime_tp = time_iri.has(p_time.iri("inTimePosition"), oldvalue);
+        TriplePattern newtime_tp = time_iri.has(p_time.iri("inTimePosition"), timestamp);
+        
+        GraphPattern subquerypattern = GraphPatterns.and(station_tp,sensor_tp,data_tp,datavalue_tp,oldtime_tp);
+        sub.select(time_iri,oldvalue).where(subquerypattern);
+        
+        ModifyQuery modify = Queries.MODIFY();
+        modify.prefix(p_system,p_ontosensor,p_time).delete(oldtime_tp).insert(newtime_tp).where(sub);
+        performUpdate(endpoint,modify);
     }
     
     /**
@@ -241,6 +268,7 @@ public class SensorSparql {
     	Variable vhumidity = SparqlBuilder.var("vhumidity");
     	Variable vwindspeed = SparqlBuilder.var("vwindspeed");
     	Variable vwinddirection = SparqlBuilder.var("vwinddirection");
+    	Variable vtime = SparqlBuilder.var("vtime");
     	
     	GraphPattern cloud_gp = getWeatherDataGP(stationiri,query,vcloud,cloud);
     	GraphPattern precip_gp = getWeatherDataGP(stationiri,query,vprecip,precipitation);
@@ -251,9 +279,11 @@ public class SensorSparql {
     	GraphPattern winddirection_gp = getWeatherDataGP(stationiri,query,vwinddirection,winddirection);
     	
     	GraphPattern data_gp = GraphPatterns.and(cloud_gp,precip_gp,pressure_gp,temp_gp,humidity_gp,windspeed_gp,winddirection_gp);
+    	GraphPattern time_gp = getStationTimeGP(query,stationiri,vtime);
         GraphPattern coordinates_gp = getStationCoordinatesGP(query,stationiri,xyzval);
-        GraphPattern querypattern = GraphPatterns.and(data_gp,coordinates_gp);
-        Variable [] queryvariables = {xval,yval,zval,vcloud,vprecip,vpressure,vtemp,vhumidity,vwindspeed,vwinddirection};
+        
+        GraphPattern querypattern = GraphPatterns.and(data_gp,coordinates_gp,time_gp);
+        Variable [] queryvariables = {xval,yval,zval,vcloud,vprecip,vpressure,vtemp,vhumidity,vwindspeed,vwinddirection,vtime};
         
         query.prefix(getPrefix()).select(queryvariables).where(querypattern);
         JSONArray queryresult = performQuery(weather_endpoint,query);
@@ -299,6 +329,23 @@ public class SensorSparql {
         GraphPattern coordinates_gp = GraphPatterns.and(station_gp,projected_gp,coord_gp,vcoord_gp);
         
         return coordinates_gp;
+    }
+    
+    private static GraphPattern getStationTimeGP(SelectQuery query, Iri stationiri, Variable vtime) {
+    	Variable time_iri = query.var();
+    	Variable sensor_iri = query.var();
+    	Variable data_iri = query.var();
+    	Variable datavalue_iri = query.var();
+    	
+    	TriplePattern station_tp = stationiri.has(p_system.iri("hasSubsystem"),sensor_iri);
+        TriplePattern sensor_tp = sensor_iri.has(p_ontosensor.iri("observes"),data_iri);
+        // all data properties have the same time stamp, specifying cloud ensures that there's only 1 query result, making it less confusing
+        TriplePattern data_tp = data_iri.isA(p_ontosensor.iri(cloud)).andHas(p_system.iri("hasValue"), datavalue_iri); 
+        TriplePattern datavalue_tp = datavalue_iri.has(p_time.iri("hasTime"), time_iri);
+        TriplePattern vtime_tp = time_iri.has(p_time.iri("inTimePosition"), vtime);
+        
+        GraphPattern time_gp = GraphPatterns.and(station_tp,sensor_tp,data_tp,datavalue_tp,vtime_tp);
+        return time_gp;
     }
     
     public String createAirQualityStation(String station_name, double [] xyz_coord) {
