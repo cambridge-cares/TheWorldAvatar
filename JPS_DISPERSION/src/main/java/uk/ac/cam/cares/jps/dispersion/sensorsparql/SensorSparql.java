@@ -301,34 +301,18 @@ public class SensorSparql {
         return coordinates_gp;
     }
     
-    public String createAirQualityStation(String station_name, double [] xy_coord) {
+    public String createAirQualityStation(String station_name, double [] xyz_coord) {
     	Iri airqualitystation_iri = p_station.iri(station_name);
         Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
-        Iri xcoord = p_station.iri(station_name+"_xcoord");
-        Iri ycoord = p_station.iri(station_name+"_ycoord");
-        Iri vxcoord = p_station.iri(station_name+"_vxcoord");
-        Iri vycoord = p_station.iri(station_name+"_vycoord");
 
         TriplePattern airqualitystation_tp = airqualitystation_iri.isA(p_station.iri("AirQualityStation"))
         		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
-        
-        TriplePattern projected_gp = stationcoordinates_iri.isA(p_space_time_extended.iri("ProjectedCoordinateSystem"))
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord);
 
-        TriplePattern xcoord_tp = xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vxcoord);
-        TriplePattern ycoord_tp = ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vycoord);
-
-        TriplePattern vxcoord_tp  = vxcoord.isA(p_coordsys.iri("CoordinateValue"))
-        		.andHas(p_system.iri("numericalValue"), xy_coord[0]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
-        TriplePattern vycoord_tp = vycoord.isA(p_coordsys.iri("CoordinateValue"))
-                .andHas(p_system.iri("numericalValue"), xy_coord[1]).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
-
-        TriplePattern [] coordinatesXY_tp = {projected_gp,xcoord_tp,ycoord_tp,vxcoord_tp,vycoord_tp};
+        TriplePattern [] coordinatesXYZ_tp = getCoordinatesTP(stationcoordinates_iri,station_name,xyz_coord);
 
         TriplePattern [] combined_tp = {};
         combined_tp = ArrayUtils.addAll(combined_tp, airqualitystation_tp);
-        combined_tp = ArrayUtils.addAll(combined_tp, coordinatesXY_tp);
+        combined_tp = ArrayUtils.addAll(combined_tp, coordinatesXYZ_tp);
         combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,CO2,0.0));
         combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,CO,0.0));
         combined_tp = ArrayUtils.addAll(combined_tp, getAirQualitySensorTP(airqualitystation_iri,p_station,station_name,HC,0.0));
