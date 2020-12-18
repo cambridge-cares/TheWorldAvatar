@@ -484,10 +484,20 @@ public class SensorSparql {
     }
     
     public JSONArray queryAirStationsWithinScope(Scope sc) {
+    	JSONArray result = queryStationsWithinScope(sc,airquality_endpoint);
+    	return result;
+    }
+    
+    public JSONArray queryWeatherStationsWithinScope(Scope sc) {
+    	JSONArray result = queryStationsWithinScope(sc,weather_endpoint);
+    	return result;
+    }
+    
+    private JSONArray queryStationsWithinScope(Scope sc, String endpoint) {
     	SelectQuery query = Queries.SELECT();
     	
     	// properties we want to query
-    	Variable station = SparqlBuilder.var(Region.keyAirStationIRI);
+    	Variable station = SparqlBuilder.var("stationiri");
     	Variable xvalue = SparqlBuilder.var("xvalue");
     	Variable yvalue = SparqlBuilder.var("yvalue");
     	
@@ -517,7 +527,7 @@ public class SensorSparql {
         
     	query.prefix(p_space_time_extended, p_system).select(station,xvalue,yvalue).where(querypattern);
 
-    	return performQuery(airquality_endpoint,query);
+    	return performQuery(endpoint,query);
     }
 
     /**
