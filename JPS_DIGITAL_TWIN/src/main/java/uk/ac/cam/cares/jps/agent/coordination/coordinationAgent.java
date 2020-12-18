@@ -30,10 +30,15 @@ public class coordinationAgent extends JPSAgent  {
 		        .executeGetWithJsonParameter("ElChemoAgent/job/request", requestParams.toString());
 	
 	//Execution of SPIN for chemical
-	requestParams.put("gPROMS_URI", gPROMSAgent.GPROMS_AGENT_URL);
+	//requestParams.put("gPROMS_URI", gPROMSAgent.GPROMS_AGENT_URL);
 	String spinStartc = AgentCaller
 	        .executeGetWithJsonParameter("ElChemoAgent/SpinChemical", requestParams.toString());
-		 
+	
+	if (spinStartc!=null){
+		System.exit(0);
+	}
+	
+	else {	 
 	//Taking  Matlab agent inputs
 	requestParams.put("Electrical_IRI",ELECTRICAL_SYSTEM_IRI);	
 	
@@ -62,8 +67,10 @@ public class coordinationAgent extends JPSAgent  {
 	requestParams.put("Matlab_IRI", JPSMatlabAgent.MATLAB_AGENT_URL);
 	String spinStarte = AgentCaller
 	        .executeGetWithJsonParameter("ElChemoAgent/SpinElectrical", requestParams.toString());
-	
+	if (spinStarte!=null){
+		System.exit(0);
+	}
+	}
 	return requestParams;
-
 	}
 }
