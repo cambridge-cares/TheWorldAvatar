@@ -21,7 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
@@ -80,7 +79,7 @@ public class SensorSparql {
     private static Iri unit_ugm3 = p_derived_SI_unit.iri("ug_per_m.m.m");
 
     //endpoint
-    String airquality_endpoint = "http://localhost:8080/blazegraph/namespace/airquality/sparql";
+    static String airquality_endpoint = "http://localhost:8080/blazegraph/namespace/airquality/sparql";
     static String weather_endpoint = "http://localhost:8080/blazegraph/namespace/weatherstation/sparql";
 
     private static Prefix [] getPrefix() {
@@ -237,7 +236,7 @@ public class SensorSparql {
         TriplePattern newtime_tp = time_iri.has(p_time.iri("inTimePosition"), timestamp);
         
         GraphPattern subquerypattern = GraphPatterns.and(station_tp,sensor_tp,data_tp,datavalue_tp,oldtime_tp);
-        sub.select(time_iri,oldvalue).where(subquerypattern);
+        sub.select(time_iri,oldvalue).where(subquerypattern).distinct();
         
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(p_system,p_ontosensor,p_time).delete(oldtime_tp).insert(newtime_tp).where(sub);
@@ -284,8 +283,8 @@ public class SensorSparql {
         
         GraphPattern querypattern = GraphPatterns.and(data_gp,coordinates_gp,time_gp);
         Variable [] queryvariables = {xval,yval,zval,vcloud,vprecip,vpressure,vtemp,vhumidity,vwindspeed,vwinddirection,vtime};
-        
-        query.prefix(getPrefix()).select(queryvariables).where(querypattern);
+        // distinct used here purely because time triple is shared by all data, hence giving multiple results
+        query.prefix(getPrefix()).select(queryvariables).where(querypattern).distinct();
         JSONArray queryresult = performQuery(weather_endpoint,query);
         result = queryresult.getJSONObject(0);
     	return result;
@@ -340,7 +339,7 @@ public class SensorSparql {
     	TriplePattern station_tp = stationiri.has(p_system.iri("hasSubsystem"),sensor_iri);
         TriplePattern sensor_tp = sensor_iri.has(p_ontosensor.iri("observes"),data_iri);
         // all data properties have the same time stamp, specifying cloud ensures that there's only 1 query result, making it less confusing
-        TriplePattern data_tp = data_iri.isA(p_ontosensor.iri(cloud)).andHas(p_system.iri("hasValue"), datavalue_iri); 
+        TriplePattern data_tp = data_iri.has(p_system.iri("hasValue"), datavalue_iri); 
         TriplePattern datavalue_tp = datavalue_iri.has(p_time.iri("hasTime"), time_iri);
         TriplePattern vtime_tp = time_iri.has(p_time.iri("inTimePosition"), vtime);
         
@@ -483,17 +482,17 @@ public class SensorSparql {
         performUpdate(airquality_endpoint, modify);
     }
     
-    public JSONArray queryAirStationsWithinScope(Scope sc) {
+    public static JSONArray queryAirStationsWithinScope(Scope sc) {
     	JSONArray result = queryStationsWithinScope(sc,airquality_endpoint);
     	return result;
     }
     
-    public JSONArray queryWeatherStationsWithinScope(Scope sc) {
+    public static JSONArray queryWeatherStationsWithinScope(Scope sc) {
     	JSONArray result = queryStationsWithinScope(sc,weather_endpoint);
     	return result;
     }
     
-    private JSONArray queryStationsWithinScope(Scope sc, String endpoint) {
+    private static JSONArray queryStationsWithinScope(Scope sc, String endpoint) {
     	SelectQuery query = Queries.SELECT();
     	
     	// properties we want to query
@@ -530,6 +529,17 @@ public class SensorSparql {
     	return performQuery(endpoint,query);
     }
 
+    public static long queryWeatherStationTimeStamp(String stationiri_string) {
+    	SelectQuery query = Queries.SELECT();
+    	Iri stationiri = iri(stationiri_string);
+    	Variable vtime = SparqlBuilder.var("vtime");
+    	GraphPattern querypattern = getStationTimeGP(query,stationiri,vtime);
+    	query.prefix(p_ontosensor,p_time,p_system).select(vtime).where(querypattern).distinct();
+    	JSONArray queryresult = performQuery(weather_endpoint,query);
+    	long timestamp = queryresult.getJSONObject(0).getLong("vtime");
+    	return timestamp;
+    }
+    
     /**
      * Returns the IRIs of the air quality stations in the endpoint
      * @return
