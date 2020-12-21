@@ -16,6 +16,7 @@ LUCODE = 'lucode'
 REF_DATE = 'refdate'
 SHAPE_LENGTH = 'Shape_Length'
 SHAPE_AREA = 'Shape_Area'
+SURFACE_PROPERTY = 'surfaceProperty'
 
 
 """Creates a context for parsing when the GML file name and tag is given"""
@@ -65,6 +66,20 @@ def get_crop_map(context):
                 if get_tag_name(attribute.tag.lower()) ==  SHAPE_AREA.lower():
                     cropMap.shapeArea = attribute.text
                     print('Shape_Area', attribute.text)
+                if get_tag_name(attribute.tag.lower()) == SURFACE_PROPERTY.lower():
+                    for surface in attribute:
+                        for pathces in surface:
+                            for polygonPatch in pathces:
+                                for exterior in polygonPatch:
+                                    for linerRing in exterior:
+                                        for posList in linerRing:
+                                            cropMap.polygon = split_at_span(' ', 2, posList.text)
+                                            print(posList.text)
+                                            print(len(cropMap.polygon))
+
+def split_at_span(delimiter, span, string):
+    words = string.split(delimiter)
+    return [delimiter.join(words[i:i + span]) for i in range(0, len(words), span)]
 
 
 def get_tag_name(url):
