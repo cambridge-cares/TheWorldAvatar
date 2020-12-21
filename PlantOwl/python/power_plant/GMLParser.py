@@ -3,8 +3,20 @@
 # Date: 17 Dec 2020                      #
 ##########################################
 from builtins import enumerate
+
+from filetype.types.image import Cr2
 from lxml import etree
-from power_plant.Envelope import Envelope
+
+from CropMap import CropMap
+from Envelope import Envelope
+
+OBJECT_ID = 'OBJECTID'
+CROME_ID = 'cromeid'
+LUCODE = 'lucode'
+REF_DATE = 'refdate'
+SHAPE_LENGTH = 'Shape_Length'
+SHAPE_AREA = 'Shape_Area'
+
 
 """Creates a context for parsing when the GML file name and tag is given"""
 def get_context(file_name, tag):
@@ -27,8 +39,33 @@ def get_crop_map(context):
         print(elem)
         for map in elem:
             print(get_tag_name(map.tag))
+            cropMap = CropMap()
+            cropMap.name = get_tag_name(map.tag)
+            cropMap.id = map.attrib['{http://www.opengis.net/gml}id']
+            print('cropMap.id',cropMap.id)
             for attribute in map:
-                print(attribute.tag)
+                print('attribute.text', attribute.text)
+                if attribute.text == None or attribute.text == '':
+                    continue
+                if get_tag_name(attribute.tag.lower()) ==  OBJECT_ID.lower():
+                    cropMap.objectID = attribute.text
+                    print('OBJECT_ID', attribute.text)
+                if get_tag_name(attribute.tag.lower()) ==  CROME_ID.lower():
+                    cropMap.cromeID = attribute.text
+                    print('cromeid', attribute.text)
+                if get_tag_name(attribute.tag.lower()) ==  LUCODE.lower():
+                    cropMap.luCode = attribute.text
+                    print('lucode', attribute.text)
+                if get_tag_name(attribute.tag.lower()) ==  REF_DATE.lower():
+                    cropMap.refDate = attribute.text
+                    print('refdate', attribute.text)
+                if get_tag_name(attribute.tag.lower()) ==  SHAPE_LENGTH.lower():
+                    cropMap.shapeLength = attribute.text
+                    print('Shape_Length', attribute.text)
+                if get_tag_name(attribute.tag.lower()) ==  SHAPE_AREA.lower():
+                    cropMap.shapeArea = attribute.text
+                    print('Shape_Area', attribute.text)
+
 
 def get_tag_name(url):
     if '}' in url:

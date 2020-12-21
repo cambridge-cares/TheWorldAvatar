@@ -3,6 +3,8 @@
 # Date: 18 Dec 2020                      #
 ##########################################
 class CropMap():
+    name = ''
+    id = ''
     objectID = ''
     cromeID = ''
     luCode = ''
