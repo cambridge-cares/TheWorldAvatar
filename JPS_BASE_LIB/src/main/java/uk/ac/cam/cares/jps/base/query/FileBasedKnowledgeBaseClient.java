@@ -302,13 +302,31 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	public void writeToFile(){
 		
-		if( graphFilePaths.size() > 0 ) { //named graphs
+		//named graphs
+		if( graphFilePaths.size() > 0 ) { 
 			for(int i = 0; i < graphFilePaths.size(); i++) {
 				writeToFile(graphs.get(i), graphFilePaths.get(i), graphLangs.get(i));
 			}
-		}else {	//default graph
-			writeToFile(this.defaultFilePath, this.defaultLangOut);
 		}
+		
+		//default graph
+		if(defaultFilePath != null){	
+			writeToFile(null, this.defaultFilePath, this.defaultLangOut);
+		}
+	}
+	
+	/**
+	 * Write graph back to file. Null or "default" writes the default graph.
+	 * @param graph
+	 */
+	public void writeToFile(String graph) {		
+		
+		if(graph == null || graph.equals("default")) {
+			writeToFile(null, this.defaultFilePath, this.defaultLangOut);
+		}else {
+			writeToFile(graph, graphFilePaths.get(graphs.indexOf(graph)), graphLangs.get(graphs.indexOf(graph)));
+		}
+		
 	}
 	
 	/**
@@ -319,14 +337,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	public void writeToFile(String filePath, Lang langOut) {
 		
-		try (OutputStream out = new FileOutputStream(filePath)){
-			
-			RDFDataMgr.write(out, dataset.getDefaultModel(), langOut);
-			
-			out.flush();
-		}catch(IOException e) {
-			throw new JPSRuntimeException(e);
-		}
+		writeToFile(null, filePath, langOut);
 	}
 	
 	/**
@@ -338,17 +349,25 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	public void writeToFile(String graph, String filePath, Lang langOut) {
 		
-		if (dataset.containsNamedModel(graph)) {
-			try (OutputStream out = new FileOutputStream(filePath)){
+		try (OutputStream out = new FileOutputStream(filePath)){
+
+			//Default graph
+			if(graph == null) {
 				
-				RDFDataMgr.write(out, dataset.getNamedModel(graph), langOut);
-				
-				out.flush();
-			}catch(IOException e) {
-				throw new JPSRuntimeException(e);
+					RDFDataMgr.write(out, dataset.getDefaultModel(), langOut);	
+					out.flush();
+			
+			//Named graph
+			}else if(dataset.containsNamedModel(graph)) {
+					
+					RDFDataMgr.write(out, dataset.getNamedModel(graph), langOut);
+					out.flush();
+			
+			}else {
+				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + graph + " does not exist.");
 			}
-		}else {
-			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + graph + " does not exist.");
+		}catch(IOException e) {
+			throw new JPSRuntimeException(e);
 		}
 	}
 	
