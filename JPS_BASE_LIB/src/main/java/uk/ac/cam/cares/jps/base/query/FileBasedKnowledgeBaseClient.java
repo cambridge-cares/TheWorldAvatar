@@ -151,7 +151,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Load a 
+	 * Load a named graph
 	 * @param graph
 	 * @param filePath
 	 */
@@ -193,19 +193,66 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			if(graph == null) {
 				defaultLangOut = lang;
 			}else {
-			
 				graphLangs.add(lang);	
 			}
 			
-			//Load the file to dataset
-			conn.load(graph, filePath);
+			//Data is triples
+			if(RDFLanguages.isTriples(lang)) {
+	
+				if(!dataset.containsNamedModel(graph)) { //TODO test for null
+					//Load the triples to graph in dataset
+					conn.load(graph, filePath);
+				}else {
+					throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + graph + " already exists!");
+				}
+			//Data is quads
+			}else {
+				
+				//Load quads to separate dataset first 
+				Dataset tempDataset = RDFDataMgr.loadDataset(filePath);
+				
+				//TODO: check how default graph is treated
+				
+				Iterator<String> it = tempDataset.listNames();
+				
+				int contextCount = 0;
+				while(it.hasNext()) {
+					
+					contextCount ++;
+					
+					//error: multiple contexts in file
+					if(contextCount > 1) {
+						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: multiple contexts in file not supported!");
+					}
+					
+					String context = it.next();
+					
+					//context does not match supplied graph name					
+					if(!tempDataset.containsNamedModel(graph)) { //TODO test for null
+						//change graph name
+						graphs.set(graphs.indexOf(graph), context);
+						System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph + " changed to " + context);
+					}
+						
+					//error: context already exists in dataset
+					if(dataset.containsNamedModel(context)) { //TODO test for null
+						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + context + " already exists!");
+					}
+				}		
 			
-			checkGraphs(graph); //TODO check this
+				//add the data to the connection dataset
+				conn.putDataset(tempDataset);
+				
+				//clear and close temporary resource
+				tempDataset.asDatasetGraph().clear(); 
+				tempDataset.close();
+			}
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: cannot load " + filePath + ". File does not exist.");
 		}
 	}	
 	
+	/*
 	private void checkGraphs(String graph) {
 		
 		//Check if graph name has changed
@@ -236,6 +283,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		    }
 		}
 	}
+	*/
 	
 	/**
 	 * Writes the model to file and closes the connection.
