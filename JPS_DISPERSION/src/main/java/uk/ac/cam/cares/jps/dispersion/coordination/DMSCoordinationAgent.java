@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.coordination;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +22,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.dispersion.general.DispersionModellingAgent;
 
@@ -114,9 +116,19 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		String city = getCity(requestParams);
 
-		requestParams.put("city", city);
+		// temporary workaround until we remove city IRIs completely!
+		String city;
+		try {
+			// This is the default way city IRI is obtained
+			city = getCity(requestParams);
+			new URL(city).toURI();
+			requestParams.put("city", city);
+		} catch (Exception e) {
+			// If city IRI API fails, ship use cases are guaranteed to work. not for power plant 
+			city = requestParams.getString("city");
+		}
+
 		String result;
 		if (!requestParams.getString("agent").contains("Episode")) { 
 			result = execute("/JPS/GetBuildingListFromRegion", requestParams.toString());
@@ -130,7 +142,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
 		requestParams.put("stationiri", stationiri);
 
-		if (city.toLowerCase().contains("kong") || city.toLowerCase().contains("singapore")) {
+		if (city.toLowerCase().contains("kong") || city.toLowerCase().contains("singapore") || city.toLowerCase().contains("plymouth")) {
 
 			logger.info("calling ship data agent = " + requestParams.getJSONObject("region").toString());
 			String resultship = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ShipDataAgent", 

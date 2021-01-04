@@ -30,6 +30,7 @@ public class Region {
     public static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
     public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
     public static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
+    public static final String PLYMOUTH_IRI = "http://dbpedia.org/resource/Plymouth";
 
     // City names
     private static final String Berlin = "Berlin";
@@ -123,16 +124,23 @@ public class Region {
         switch (option) {
             case 1: // Singapore ADMS
                 jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+                jo.put(keyCity, SINGAPORE_IRI);
                 break;
             case 2: // Singapore Episode
                 jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002");
+                jo.put(keyCity, SINGAPORE_IRI);
                 break;
             case 3: // Hong Kong ADMS
                 jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-001.owl#AirQualityStation-001");
+                jo.put(keyCity, HONG_KONG_IRI);
                 break;
             case 4: // Hong Kong Episode
                 jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+                jo.put(keyCity, HONG_KONG_IRI);
                 break;
+            case 5: // Plymouth Episode
+            	jo.put(keyCity, PLYMOUTH_IRI);
+            	break;
         }
     }
 
