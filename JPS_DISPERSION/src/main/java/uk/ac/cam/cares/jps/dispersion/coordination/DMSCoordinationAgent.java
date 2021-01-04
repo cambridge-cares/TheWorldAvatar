@@ -117,10 +117,13 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		String city = getCity(requestParams);
 
 		requestParams.put("city", city);
-		String result = execute("/JPS/GetBuildingListFromRegion", requestParams.toString());
-		JSONArray building = new JSONObject(result).getJSONArray("building");
-		requestParams.put("building", building);
-		logger.info("building FROM COORDINATION AGENT: " + building.toString());
+		String result;
+		if (!requestParams.getString("agent").contains("Episode")) { 
+			result = execute("/JPS/GetBuildingListFromRegion", requestParams.toString());
+			JSONArray building = new JSONObject(result).getJSONArray("building");
+			requestParams.put("building", building);
+			logger.info("building FROM COORDINATION AGENT: " + building.toString());
+		}
 
 		// @TODO - improve weather update frequency
 		result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());

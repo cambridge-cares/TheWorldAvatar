@@ -152,4 +152,17 @@ public class Scope {
         // update CRS
         this.sourceCRS = targetCRS;
     }
+    
+    /**
+     * Checks whether the given point is located within the scope
+     * @param xy
+     * @return
+     */
+    public boolean isWithinScope(double [] xy) {
+    	boolean within = false;
+    	if ((this.upperx >= xy[0]) && (this.lowerx <= xy[0]) && (this.uppery >= xy[1]) && (this.lowery <= xy[1])) {
+    		within = true;
+    	}
+    	return within;
+    }
 }
