@@ -267,7 +267,7 @@ if __name__ == "__main__":
 	gridGen = residential + commercial + industrial - renewableGen
 
 	np.savetxt(folder +"/totgen.csv",[residential, commercial, industrial, renewableGen, gridGen], delimiter=",")
-	np.savetxt(folder +"/rh1.csv",[out0[4],out0[3], out0[5],out1[4],out1[3], out1[5],out2[4],out2[3], out2[5]], delimiter="," )
+	np.savetxt(folder +"/rh1.csv",[out0[3],out0[4], out0[5],out1[3],out1[4],out1[5],out2[3],out2[4], out2[5]], delimiter="," )
 	returnResultsToJava(result)
 	now = datetime.now()
 	current_time = now.strftime("%H:%M:%S")
