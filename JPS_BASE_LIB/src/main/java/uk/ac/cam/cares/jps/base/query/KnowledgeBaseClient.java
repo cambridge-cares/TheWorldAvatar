@@ -3,7 +3,9 @@ package uk.ac.cam.cares.jps.base.query;
 import java.sql.SQLException;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -51,6 +53,8 @@ public abstract class KnowledgeBaseClient{
 	
 	public abstract String execute(String sparql);
 	
+	public abstract Model queryConstruct(Query sparql);
+	
 	// SPARQL update methods
 	
 	public abstract int executeUpdate();
@@ -58,6 +62,12 @@ public abstract class KnowledgeBaseClient{
 	public abstract int executeUpdate(String update);
 	
 	public abstract int executeUpdate(UpdateRequest update);
+	
+	// Dataset access
+	
+	public abstract void putGraph(String graph, Model model);
+	
+	public abstract Model fetchGraph(String graph);
 	
 	// Load and write methods
 	

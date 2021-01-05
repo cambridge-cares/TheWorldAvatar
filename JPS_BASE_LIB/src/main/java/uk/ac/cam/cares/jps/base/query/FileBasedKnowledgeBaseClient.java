@@ -9,10 +9,12 @@ import java.util.Iterator;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.TxnType;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.riot.Lang;
@@ -408,5 +410,35 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			json.put(obj);
 		}
 		return json;
+	}
+	
+	//****************************************
+	//csl
+	// Clone tools
+	@Override
+	public Model queryConstruct(Query sparql) {
+		
+		if (conn != null) {
+			conn.begin( TxnType.READ );	
+			try {
+				QueryExecution queryExec = conn.query(sparql);
+				Model results = queryExec.execConstruct();
+				return results;
+			} finally {
+				conn.end();
+			}
+		} else {
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
+		}
+	}
+	
+	@Override
+	public void putGraph(String graph, Model model) {
+		conn.put(graph, model);
+	}
+	
+	@Override
+	public Model fetchGraph(String graph) {
+		return conn.fetch(graph);
 	}
 }

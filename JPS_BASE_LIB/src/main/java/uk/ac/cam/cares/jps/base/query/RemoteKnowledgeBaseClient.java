@@ -7,6 +7,14 @@ import java.sql.Statement;
 
 import org.apache.jena.jdbc.JenaDriver;
 import org.apache.jena.jdbc.remote.RemoteEndpointDriver;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.TxnType;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.rdfconnection.RDFConnectionRemote;
+import org.apache.jena.rdfconnection.RDFConnectionRemoteBuilder;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -571,5 +579,88 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 		return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
 				.concat("=");
 	}
-
+	
+	//************************************
+	//csl
+	//clone tool
+	
+	/*
+	public Model constructModel(String query) throws SQLException, JSONException {
+		
+		JSONArray result = executeQuery(query);
+		
+		Model model = ModelFactory.createDefaultModel();
+		
+		for (int i=0; i<result.length(); i++) {
+					
+			JSONObject jo = result.getJSONObject(i);
+			
+			Node  s = ResourceFactory.createResource(jo.getString("Subject")).asNode();
+		    Node  p = ResourceFactory.createResource(jo.getString("Predicate")).asNode();   
+		    Node  o = ResourceFactory.createResource(jo.getString("Object")).asNode();
+		  
+		    model.add( model.asStatement(new Triple(s,p,o)));
+		}
+		return model;
+	}
+	*/
+	
+	//RDFConnection 
+	
+	private RDFConnection connectUpdate() {
+		
+		RDFConnectionRemoteBuilder builder = null;
+		if(updateEndpoint != null) {
+			builder = RDFConnectionRemote.create().destination(updateEndpoint);
+		}else {
+			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
+		}
+		
+		return builder.build();
+	}
+	
+	private RDFConnection connectQuery() {
+		
+		RDFConnectionRemoteBuilder builder = null;
+		if(queryEndpoint != null) {
+			builder = RDFConnectionRemote.create().destination(queryEndpoint);
+		}else {
+			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
+		}
+		
+		return builder.build();
+	}
+	
+	@Override
+	public void putGraph(String graph, Model model) {
+		
+		RDFConnection conn = connectUpdate();
+		conn.put(graph, model);
+	}
+	
+	@Override
+	public Model fetchGraph(String graph) {
+		
+		RDFConnection conn = connectUpdate();
+		return conn.fetch(graph);
+	}
+	
+	@Override
+	public Model queryConstruct(Query sparql) {
+		
+		RDFConnection conn = connectQuery();
+		
+		if (conn != null) {
+			conn.begin( TxnType.READ );	
+			try {
+				QueryExecution queryExec = conn.query(sparql);
+				Model results = queryExec.execConstruct();
+				return results;
+			} finally {
+				conn.end();
+			}
+		} else {
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
+		}
+	}
 }
