@@ -97,6 +97,13 @@ In addition, in $CATALINA_HOME (which defaults to /usr/share/tomcat/ on CEntOS) 
 
 To do: Write a deploy.sh Linux shell script.
 
+* To set up on Claudius
+  - To upload it on Claudius just copy war file into "webapps" Tomcat folder.
+  - On Claudius, in Tomcat folder "/conf/Catalina/" we store Python code, xslt transformation, jar files, that are necessaary for full functionally of molhub service. Do not delete it.
+  - To run "upload" molhub functionality, one may need to set up parser enviroment.
+    i.  Download Anaconda (if applicable)
+    ii. Select “Gaussian_parser” environment that is required before running the Python parser
+
 ## Contribution guidelines ##
 
 * Writing tests
