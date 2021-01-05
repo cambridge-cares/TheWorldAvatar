@@ -85,7 +85,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	
 	/**
 	 * Constructor loads multiple file/contexts.
-	 * @param grpahs
+	 * @param graphs
 	 * @param filePaths
 	 */
 	public FileBasedKnowledgeBaseClient(String[] graphs, String[] filePaths) {
@@ -199,19 +199,23 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			//Data is triples
 			if(RDFLanguages.isTriples(lang)) {
 	
-				if(!dataset.containsNamedModel(graph)) { //TODO test for null
-					//Load the triples to graph in dataset
-					conn.load(graph, filePath);
+				if(graph == null) {
+					if(!dataset.getDefaultModel().isEmpty()) {
+						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: default graph already exists!");
+					}
 				}else {
-					throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + graph + " already exists!");
+					if(dataset.containsNamedModel(graph)) { 
+						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + graph + " already exists!");
+					}
 				}
+				
+				conn.load(graph, filePath);
+				
 			//Data is quads
 			}else {
 				
 				//Load quads to separate dataset first 
 				Dataset tempDataset = RDFDataMgr.loadDataset(filePath);
-				
-				//TODO: check how default graph is treated
 				
 				Iterator<String> it = tempDataset.listNames();
 				
@@ -227,21 +231,41 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 					
 					String context = it.next();
 					
-					//context does not match supplied graph name					
-					if(!tempDataset.containsNamedModel(graph)) { //TODO test for null
-						//change graph name
-						graphs.set(graphs.indexOf(graph), context);
-						System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph + " changed to " + context);
-					}
-						
 					//error: context already exists in dataset
-					if(dataset.containsNamedModel(context)) { //TODO test for null
-						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + context + " already exists!");
+					if(context == null) {
+						if(!dataset.getDefaultModel().isEmpty()) {
+							throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: default graph already exists!");
+						}
+					}else {
+						if(dataset.containsNamedModel(context)) {
+							throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + context + " already exists!");
+						}
+					}
+					
+					//context does not match supplied graph name
+					if(!context.equals(graph)) {
+						if(graph == null) {
+							
+							//add named graph
+							graphs.add(context);
+							graphFilePaths.add(defaultFilePath);
+							graphLangs.add(lang);
+							
+							//set default graph to null
+							defaultFilePath = null;
+							
+							System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph + " changed to " + context);
+							
+						}else {
+							//change graph name
+							graphs.set(graphs.indexOf(graph), context);
+							System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph + " changed to " + context);
+						}
 					}
 				}		
 			
 				//add the data to the connection dataset
-				conn.putDataset(tempDataset);
+				conn.loadDataset(tempDataset);
 				
 				//clear and close temporary resource
 				tempDataset.asDatasetGraph().clear(); 
@@ -251,39 +275,6 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: cannot load " + filePath + ". File does not exist.");
 		}
 	}	
-	
-	/*
-	private void checkGraphs(String graph) {
-		
-		//Check if graph name has changed
-		//If loading quads, the graph name will be the context
-		Iterator<String> graphNames = dataset.listNames();
-		while (graphNames.hasNext()) {
-			
-			//TODO
-			//issue if NQuads loaded as default
-			
-			String graphName = graphNames.next();
-		    //if a graph is not contained, replace the name of the newly added graph
-		    if(!graphs.contains(graphName)){
-		    	
-		    	if(graph == null){
-		    		//default graph changed to named graph
-		    		graphs.add(graphName);
-		    		graphFilePaths.add(defaultFilePath);
-		    		defaultFilePath = null;
-		    		graphLangs.add(defaultLangOut);
-		    	}else if(graphs.contains(graph)){
-		    		graphs.set(graphs.indexOf(graph), graphName);
-		    		System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph + " changed to " + graphName);
-		    	}else {
-		    		//already replaced
-		    		throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: Multiple contexts in file. Not currently supported.");		
-		    	}
-		    }
-		}
-	}
-	*/
 	
 	/**
 	 * Writes the model to file and closes the connection.
