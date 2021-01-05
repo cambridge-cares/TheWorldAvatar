@@ -15,6 +15,8 @@ import java.nio.file.StandardCopyOption;
 
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.query.Dataset;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
@@ -102,6 +104,43 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertEquals(testQuery, kbClient.getQuery());
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
+	}
+	
+	/**
+	 * Test constructor with multiple files and contexts
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 */
+	@Test
+	public void testConstructorWithArray() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		
+		String[] filePaths = new String[2];
+		filePaths[0] = filePath;
+		filePaths[1] = filePathNQ;
+		
+		String[] graphs = new String[2];
+		graphs[0] = "http://example.com/triples";
+		graphs[1] = "http://example.com/context";
+				
+		kbClient = new FileBasedKnowledgeBaseClient(graphs, filePaths);
+		
+		assertTrue(kbClient.isConnected());
+		assertFalse(kbClient.isEmpty());
+		
+		//check loaded to graphs
+		// access private variable
+		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
+		Field field = kbClient.getClass().getDeclaredField("dataset");;
+		field.setAccessible(true);
+		Dataset fieldValue = (Dataset) field.get(kbClient);
+			    
+		Model model0 = fieldValue.getNamedModel(graphs[0]);
+		Model model1 = fieldValue.getNamedModel(graphs[1]);
+		
+		assertFalse(model0.isEmpty());
+		assertFalse(model1.isEmpty());
 	}
 	
 	/**
@@ -264,8 +303,8 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient.setFilePath(filePath);
 		
 		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("filePath"));
-	    Field field = kbClient.getClass().getDeclaredField("filePath");;
+		assertNotNull(kbClient.getClass().getDeclaredField("defaultFilePath"));
+	    Field field = kbClient.getClass().getDeclaredField("defaultFilePath");;
 	    field.setAccessible(true);
 	    String fieldValue = (String) field.get(kbClient);
 	    
@@ -289,8 +328,8 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertEquals(filePath, kbClient.setQueryEndpoint(filePath));
 		
 		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("filePath"));
-	    Field field = kbClient.getClass().getDeclaredField("filePath");;
+		assertNotNull(kbClient.getClass().getDeclaredField("defaultFilePath"));
+	    Field field = kbClient.getClass().getDeclaredField("defaultFilePath");;
 	    field.setAccessible(true);
 	    String fieldValue = (String) field.get(kbClient);
 	    
@@ -314,8 +353,8 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertEquals(filePath, kbClient.setUpdateEndpoint(filePath));
 		
 		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("filePath"));
-	    Field field = kbClient.getClass().getDeclaredField("filePath");;
+		assertNotNull(kbClient.getClass().getDeclaredField("defaultFilePath"));
+	    Field field = kbClient.getClass().getDeclaredField("defaultFilePath");;
 	    field.setAccessible(true);
 	    String fieldValue = (String) field.get(kbClient);
 	    
@@ -362,8 +401,8 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
 		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("langOut"));
-	    Field field = kbClient.getClass().getDeclaredField("langOut");;
+		assertNotNull(kbClient.getClass().getDeclaredField("defaultLangOut"));
+	    Field field = kbClient.getClass().getDeclaredField("defaultLangOut");;
 	    field.setAccessible(true);
 	    
 	    Lang fieldValue = (Lang) field.get(kbClient);
@@ -393,8 +432,8 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient.load(filePathNQ);
 		
 		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("langOut"));
-	    Field field = kbClient.getClass().getDeclaredField("langOut");;
+		assertNotNull(kbClient.getClass().getDeclaredField("defaultLangOut"));
+	    Field field = kbClient.getClass().getDeclaredField("defaultLangOut");;
 	    field.setAccessible(true);
 	    
 	    Lang fieldValue = (Lang) field.get(kbClient);
