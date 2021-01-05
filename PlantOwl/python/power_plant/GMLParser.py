@@ -77,11 +77,12 @@ def get_crop_map(context):
                                             print(posList.text)
                                             print(len(cropMap.polygon))
 
+"""Splits the given string after certain number of substrings, indicated by the span, separated by the delimeter"""
 def split_at_span(delimiter, span, string):
     words = string.split(delimiter)
     return [delimiter.join(words[i:i + span]) for i in range(0, len(words), span)]
 
-
+"""Extracts and returns the name of tag from a URL"""
 def get_tag_name(url):
     if '}' in url:
         tokens = url.split('}')
@@ -89,6 +90,7 @@ def get_tag_name(url):
             return tokens[1]
     return None
 
+"""Parses a standard GML file consisting of an Envelope and a set of feature members"""
 def parse_gml(file_name):
     context = get_context(file_name, '{http://www.opengis.net/gml}Envelope')
     envelope = get_envelope(context)
@@ -116,6 +118,7 @@ def parse_gml(file_name):
 
     # elem.clear()
 
+"""This block of code is the access point to this Python module"""
 if __name__ == '__main__':
     file_name = 'Crop_Map_of_England_2019_North_Yorkshire.gml'
     parse_gml(file_name)
