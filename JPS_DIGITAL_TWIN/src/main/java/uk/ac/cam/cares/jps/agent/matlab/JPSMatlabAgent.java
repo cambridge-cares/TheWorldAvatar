@@ -59,7 +59,11 @@ public class JPSMatlabAgent extends JPSAgent {
   public static final String PARAMETER = "\\matlab\\param.mat";
   public static final String ONTOPOWSYS =
       "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#";
-
+  public static final String SYSTEM =
+      "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#";
+  public static final String RDF_SYNTAX = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+  public static final String VAL = "?Value";
+  public static final String PARAM = "?x";
   public static final int STARTLINE = 69;
   public static final int NUMLINES = 5;
   public static int LINENUMBER = 1;
@@ -77,7 +81,6 @@ public class JPSMatlabAgent extends JPSAgent {
     String activePowerFilePath = null;
     String agentiri = gPROMSAgent.GPROMS_AGENT_URL;
     List<String> lst = null;
-    // String str = requestParams.getString("ELECTRICAL_SYSTEM_IRI");
     JPSMatlabAgent iri = new JPSMatlabAgent();
     activePowerFilePath = iri.queryRDF4J(agentiri, lst);
     if (SIM_START_PATH.equals(path)) {
@@ -85,16 +88,12 @@ public class JPSMatlabAgent extends JPSAgent {
       if (validateInput(activePowerFilePath)) {
         JPSMatlabAgent app = new JPSMatlabAgent();
         String str = requestParams.getString("ELECTRICAL_SYSTEM_IRI");
-        // System.out.println("The Electrical system IRI is: " + str);
-        // str = current + ELECTRICAL_SYSTEM_IRI;
         String outFile = current + PARAMETER;
         app.appendFile(activePowerFilePath);
         // Delete the temporary file
         File tempFile = new File(activePowerFilePath);
         tempFile.delete();
         JPSMatlabAgent.queryBuilder(str, outFile);
-        // JPSMatlabAgent now = new JPSMatlabAgent();
-        // now.delete(pathToSettingFile, STARTLINE, NUMLINES);
         // Create file path for batch file
         String batchFile = current + TEMP_BATCH_FILE;
         batchFile = batchFile.replace("\\", "/");
@@ -315,9 +314,8 @@ public class JPSMatlabAgent extends JPSAgent {
    */
   static void queryBuilder(String filePath, String outputFilePath) {
     SelectBuilder sb = new SelectBuilder().addPrefix("electrical", ONTOPOWSYS)
-        .addPrefix("system", gPROMSAgent.UPPER_LEVEL).addPrefix("rdf", gPROMSAgent.RDF)
-        .addVar(gPROMSAgent.TEMP).addWhere(gPROMSAgent.VAR, "rdf:type", "system:ScalarValue")
-        .addWhere(gPROMSAgent.VAR, "system:value", gPROMSAgent.TEMP);
+        .addPrefix("system", SYSTEM).addPrefix("rdf", RDF_SYNTAX).addVar(VAL)
+        .addWhere(PARAM, "rdf:type", "system:ScalarValue").addWhere(PARAM, "system:value", VAL);
     System.out.println(sb.toString());
     OntModel model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
     InputStream is;
@@ -328,8 +326,8 @@ public class JPSMatlabAgent extends JPSAgent {
       List<Float> resultList = new ArrayList<Float>();
       for (; resultSet.hasNext();) {
         QuerySolution solution = resultSet.nextSolution();
-        System.out.println(solution.getLiteral(gPROMSAgent.TEMP).getFloat());
-        resultList.add(solution.getLiteral(gPROMSAgent.TEMP).getFloat());
+        System.out.println(solution.getLiteral(VAL).getFloat());
+        resultList.add(solution.getLiteral(VAL).getFloat());
         try {
           FileWriter fw = new FileWriter(outputFilePath, true);
           // the true will append the new data
