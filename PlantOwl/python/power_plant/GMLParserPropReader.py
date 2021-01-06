@@ -25,6 +25,12 @@ def getABoxFileName():
 def getABoxFileExtension():
     return config.get('ABOX', 'kb.abox.file.extension')
 
+def getShapeLengthVocabulary():
+    return config.get('ABOX', 'shape.length.vocab')
+
+def getShapeAreaVocabulary():
+    return config.get('ABOX', 'shape.area.vocab')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
@@ -32,3 +38,5 @@ if __name__ == '__main__':
     print(getABoxIRI())
     print(getABoxFileName())
     print(getABoxFileExtension())
+    print(getShapeLengthVocabulary())
+    print(getShapeLengthVocabulary())
