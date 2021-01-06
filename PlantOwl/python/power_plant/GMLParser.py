@@ -51,15 +51,12 @@ def get_envelope(context):
 
 """Parses properties of the current crop map"""
 def get_crop_map(context):
+    map_counter = 0
+    file_counter = 0
+    global g
     for event, elem in context:
         print(elem)
-        map_counter = 0
         for map in elem:
-            if map_counter >= int(gmlpropread.getNOfMapsInAnAboxFile()):
-                global g
-                g.serialize(destination=gmlpropread.getABoxFileName() + gmlpropread.getABoxFileExtension(),
-                            format="application/rdf+xml")
-                g = Graph()
             print(get_tag_name(map.tag))
             cropMap = CropMap()
             cropMap.name = get_tag_name(map.tag)
@@ -102,6 +99,22 @@ def get_crop_map(context):
                                                                     + rdfizer.format_iri(cropMap.id),
                                                                     cropMap.name)
                                             print(cropMap.polygon)
+        map_counter += 1
+        if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
+            save_into_disk(g, file_counter)
+            file_counter += 1
+            g = Graph()
+            print('Total number of files:', file_counter)
+    if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) != 0:
+        save_into_disk(g, file_counter)
+        print('Total number of maps:', map_counter)
+
+"""Saves a graph into the disk/file system"""
+def save_into_disk(g, file_counter):
+    g.serialize(destination=gmlpropread.getABoxFileName() + rdfizer.UNDERSCORE + str(
+        file_counter) + gmlpropread.getABoxFileExtension(),
+                format="application/rdf+xml")
+
 
 """Splits the given string after certain number of substrings, indicated by the span, separated by the delimeter"""
 def split_at_span(delimiter, span, string):
