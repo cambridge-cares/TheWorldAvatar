@@ -80,9 +80,17 @@ def get_crop_map(context):
                     print('refdate', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  SHAPE_LENGTH.lower():
                     cropMap.shapeLength = attribute.text
+                    aboxgen.link_data(g, URIRef(gmlpropread.getShapeLengthVocabulary()),
+                                      URIRef(gmlpropread.getABoxIRI()
+                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                      cropMap.shapeLength)
                     print('Shape_Length', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  SHAPE_AREA.lower():
                     cropMap.shapeArea = attribute.text
+                    aboxgen.link_data(g, URIRef(gmlpropread.getShapeAreaVocabulary()),
+                                      URIRef(gmlpropread.getABoxIRI()
+                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                      cropMap.shapeArea)
                     print('Shape_Area', attribute.text)
                 if get_tag_name(attribute.tag.lower()) == SURFACE_PROPERTY.lower():
                     for surface in attribute:
@@ -98,6 +106,7 @@ def get_crop_map(context):
                                                                     gmlpropread.getABoxIRI() + rdfizer.SLASH
                                                                     + rdfizer.format_iri(cropMap.id),
                                                                     cropMap.name)
+
                                             print(cropMap.polygon)
         map_counter += 1
         if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
@@ -159,5 +168,5 @@ def parse_gml(file_name):
 
 """This block of code is the access point to this Python module"""
 if __name__ == '__main__':
-    file_name = 'Crop_Map_of_England_2019_North_Yorkshire.gml'
+    file_name = 'Crop_Map_of_England_2018_Cambridgeshire_snippet.gml'
     parse_gml(file_name)
