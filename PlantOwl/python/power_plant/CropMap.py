@@ -21,4 +21,4 @@ class CropMap():
     """The shape area of a crop map instance"""
     shapeArea = ''
     """The polygon of a crop map instance"""
-    polygon = []
+    polygon = ''
