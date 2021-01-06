@@ -18,6 +18,12 @@ SHAPE_LENGTH = 'Shape_Length'
 SHAPE_AREA = 'Shape_Area'
 SURFACE_PROPERTY = 'surfaceProperty'
 
+URL_ENVELOPE = '{http://www.opengis.net/gml}Envelope'
+URL_FEATURE_MEMBER = '{http://www.opengis.net/gml}featureMember'
+URL_ID = '{http://www.opengis.net/gml}id'
+
+ATTRB_SRS_NAME = 'srsName'
+ATTRB_SRS_DIMENSION = 'srsDimension'
 
 """Creates a context for parsing when the GML file name and tag is given"""
 def get_context(file_name, tag):
@@ -30,8 +36,8 @@ def get_context(file_name, tag):
 def get_envelope(context):
     for event, elem in context:
         envelope = Envelope()
-        envelope.srsName = elem.attrib['srsName']
-        envelope.srsDimension = elem.attrib['srsDimension']
+        envelope.srsName = elem.attrib[ATTRB_SRS_NAME]
+        envelope.srsDimension = elem.attrib[ATTRB_SRS_DIMENSION]
         return envelope
 
 """Parses properties of the current crop map"""
@@ -42,7 +48,7 @@ def get_crop_map(context):
             print(get_tag_name(map.tag))
             cropMap = CropMap()
             cropMap.name = get_tag_name(map.tag)
-            cropMap.id = map.attrib['{http://www.opengis.net/gml}id']
+            cropMap.id = map.attrib[URL_ID]
             print('cropMap.id',cropMap.id)
             for attribute in map:
                 print('attribute.text', attribute.text)
@@ -92,13 +98,13 @@ def get_tag_name(url):
 
 """Parses a standard GML file consisting of an Envelope and a set of feature members"""
 def parse_gml(file_name):
-    context = get_context(file_name, '{http://www.opengis.net/gml}Envelope')
+    context = get_context(file_name, URL_ENVELOPE)
     envelope = get_envelope(context)
     if envelope.srsName != None or envelope.srsName != '':
         print(envelope.srsName)
     if envelope.srsDimension !=None or envelope.srsDimension != '':
         print(envelope.srsDimension)
-    context = get_context(file_name, '{http://www.opengis.net/gml}featureMember')
+    context = get_context(file_name, URL_FEATURE_MEMBER)
     get_crop_map(context)
 
 # for event, elem in context:
