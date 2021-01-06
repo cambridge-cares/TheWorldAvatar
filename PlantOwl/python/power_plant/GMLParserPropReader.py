@@ -16,7 +16,19 @@ def getClassLinearRing():
 def getPropertyPosList():
     return config.get('TBOX', 'property.pos.list')
 
+def getABoxIRI():
+    return config.get('ABOX', 'kb.abox.iri')
+
+def getABoxFileName():
+    return config.get('ABOX', 'kb.abox.file.name')
+
+def getABoxFileExtension():
+    return config.get('ABOX', 'kb.abox.file.extension')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
     print(getPropertyPosList())
+    print(getABoxIRI())
+    print(getABoxFileName())
+    print(getABoxFileExtension())

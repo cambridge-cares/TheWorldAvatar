@@ -9,6 +9,12 @@ from lxml import etree
 
 from CropMap import CropMap
 from Envelope import Envelope
+from rdflib import Graph, URIRef
+
+import PropertyReader as propread
+import GMLParserPropReader as gmlpropread
+import ABoxGeneration as aboxgen
+import EntityRDFizer as rdfizer
 
 OBJECT_ID = 'OBJECTID'
 CROME_ID = 'cromeid'
@@ -24,6 +30,9 @@ URL_ID = '{http://www.opengis.net/gml}id'
 
 ATTRB_SRS_NAME = 'srsName'
 ATTRB_SRS_DIMENSION = 'srsDimension'
+
+"""Declared a variable for creating a graph model"""
+g = Graph()
 
 """Creates a context for parsing when the GML file name and tag is given"""
 def get_context(file_name, tag):
@@ -44,7 +53,13 @@ def get_envelope(context):
 def get_crop_map(context):
     for event, elem in context:
         print(elem)
+        map_counter = 0
         for map in elem:
+            if map_counter >= int(gmlpropread.getNOfMapsInAnAboxFile()):
+                global g
+                g.serialize(destination=gmlpropread.getABoxFileName() + gmlpropread.getABoxFileExtension(),
+                            format="application/rdf+xml")
+                g = Graph()
             print(get_tag_name(map.tag))
             cropMap = CropMap()
             cropMap.name = get_tag_name(map.tag)
@@ -79,9 +94,14 @@ def get_crop_map(context):
                                 for exterior in polygonPatch:
                                     for linerRing in exterior:
                                         for posList in linerRing:
-                                            cropMap.polygon = split_at_span(' ', 2, posList.text)
-                                            print(posList.text)
-                                            print(len(cropMap.polygon))
+                                            #cropMap.polygon = split_at_span(' ', 2, posList.text)
+                                            cropMap.polygon = posList.text.replace(" ", "#")
+                                            aboxgen.create_instance(g,
+                                                                    URIRef(gmlpropread.getClassLinearRing()),
+                                                                    gmlpropread.getABoxIRI() + rdfizer.SLASH
+                                                                    + rdfizer.format_iri(cropMap.id),
+                                                                    cropMap.name)
+                                            print(cropMap.polygon)
 
 """Splits the given string after certain number of substrings, indicated by the span, separated by the delimeter"""
 def split_at_span(delimiter, span, string):
