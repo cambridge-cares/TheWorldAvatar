@@ -12,6 +12,7 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.web3j.crypto.Credentials;
@@ -24,7 +25,9 @@ import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns = {"/GetBlock" })
 public class BlockchainWrapper extends JPSHttpServlet{
 	private static String ElectricPublicKey = "0xCB37bDCAfb98463d5bfB573781f022Cd1D2EDB81";
@@ -37,13 +40,10 @@ public class BlockchainWrapper extends JPSHttpServlet{
 
 		JSONObject result=new JSONObject();
 		JSONObject graData =new JSONObject();
-		DistributedEnergySystem des = new DistributedEnergySystem();
-		graData = des.provideJSONResult(requestParams.getString("directory"));
+		graData = provideJSONResult(requestParams.getString("directory"));
 		JSONObject jo = determineValue (graData);
-		System.out.println(jo.toString());
 		try {
 			result = calculateTrade(jo);
-			System.out.println("result from BlockchainHash " + result.toString());
 			graData.put("txHash", result.get("txHash"));
 			graData.put("sandr", result.get("sandr"));
 			
@@ -73,7 +73,6 @@ public class BlockchainWrapper extends JPSHttpServlet{
 			return "Value too small, transaction not completed";
 		}Credentials credentials = WalletUtils.loadCredentials("Caesar1!",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
-		System.out.println(transactionReceipt.getTransactionHash());
 		return  transactionReceipt.getTransactionHash();
 		
 	}
@@ -85,7 +84,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 	 * @return
 	 * @throws JSONException
 	 */
-    public static JSONObject determineValue (JSONObject basefold) throws JSONException {
+    public JSONObject determineValue (JSONObject basefold) throws JSONException {
 
 		JSONObject jo = new JSONObject();
     	try {
@@ -251,8 +250,6 @@ public class BlockchainWrapper extends JPSHttpServlet{
 				totalList.add(transactionhash3);
 				
 			}
-			System.out.println("WHO TO WHO " + whoTowho.toString());
-			System.out.println("TX HASHES " + totalList.toString());
 			jS.put("txHash",totalList.toArray());
 			jS.put("sandr",whoTowho.toArray());
 		}
@@ -261,6 +258,54 @@ public class BlockchainWrapper extends JPSHttpServlet{
 	}
 
 		return jS;
+	}
+	/** provides result in the response of a JSON form
+	 * 
+	 * @param baseUrl
+	 * @return
+	 */
+	public JSONObject provideJSONResult(String baseUrl) {
+		String weatherdir = baseUrl + "/WeatherForecast.csv";
+		String content = new QueryBroker().readFileLocal(weatherdir);
+		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
+
+		String powerdir = baseUrl + "/totgen.csv";
+		String content2 = new QueryBroker().readFileLocal(powerdir);
+		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
+		JSONObject dataresult = new JSONObject();
+
+		String rhdir = baseUrl + "/rh1.csv";
+		String content3 = new QueryBroker().readFileLocal(rhdir);
+		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
+		
+		String timer = baseUrl + "/timer.csv";
+		String content4 = new QueryBroker().readFileLocal(timer);
+		List<String[]> timerResult = MatrixConverter.fromCsvToArray(content4);
+		
+		JSONArray temperature = new JSONArray();
+		JSONArray irradiation = new JSONArray();
+
+		int sizeofweather = weatherResult.size();
+		for (int x = 0; x < sizeofweather; x++) {
+			temperature.put(weatherResult.get(x)[0]);
+			irradiation.put(weatherResult.get(x)[1]);
+		}
+
+		// log to check if it's reading the right one. x
+
+		dataresult.put("temperature", temperature);
+		dataresult.put("irradiation", irradiation);
+		dataresult.put("gridsupply", simulationResult.get(4));
+		dataresult.put("solar", simulationResult.get(3));
+		dataresult.put("residential", simulationResult.get(0));
+		dataresult.put("industrial", simulationResult.get(2));
+		dataresult.put("commercial", simulationResult.get(1));
+		dataresult.put("timer",timerResult.get(0));
+		dataresult.put("rh1", rhResult.subList(0, 3).toArray());
+		dataresult.put("rh2", rhResult.subList(3, 6).toArray());
+		dataresult.put("rh3", rhResult.subList(6, rhResult.size()).toArray());
+
+		return dataresult;
 	}
 	
 }
