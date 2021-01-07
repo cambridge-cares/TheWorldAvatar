@@ -71,6 +71,10 @@ def get_crop_map(context):
                     print('OBJECT_ID', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  CROME_ID.lower():
                     cropMap.cromeID = attribute.text
+                    aboxgen.link_data(g, URIRef(gmlpropread.getCromeIDVocabulary()),
+                                      URIRef(gmlpropread.getABoxIRI()
+                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                      cropMap.cromeID)
                     print('cromeid', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  LUCODE.lower():
                     cropMap.luCode = attribute.text

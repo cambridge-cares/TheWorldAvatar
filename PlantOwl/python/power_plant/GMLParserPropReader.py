@@ -37,6 +37,9 @@ def getRefDateVocabulary():
 def getLucodeVocabulary():
     return config.get('TBOX', 'property.lucode')
 
+def getCromeIDVocabulary():
+    return config.get('TBOX', 'property.crome.id')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
@@ -48,3 +51,4 @@ if __name__ == '__main__':
     print(getShapeLengthVocabulary())
     print(getRefDateVocabulary())
     print(getLucodeVocabulary())
+    print(getCromeID())
