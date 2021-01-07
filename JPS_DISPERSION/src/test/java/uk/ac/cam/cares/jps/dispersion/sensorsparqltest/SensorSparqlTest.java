@@ -61,8 +61,7 @@ public class SensorSparqlTest extends TestCase{
 		JSONObject jo = new JSONObject();
         Region.putRegion(jo, 2);
         Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
-		SensorSparql ws = new SensorSparql();
-		JSONArray result = ws.queryAirStationsWithinScope(sc);
+		SensorSparql.queryAirStationsWithinScope(sc);
 	}
 	
 	public void testQueryAirStationCoordinatesWithIRI() {
