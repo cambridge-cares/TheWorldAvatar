@@ -77,6 +77,10 @@ def get_crop_map(context):
                     print('lucode', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  REF_DATE.lower():
                     cropMap.refDate = attribute.text
+                    aboxgen.link_data(g, URIRef(gmlpropread.getRefDateVocabulary()),
+                                      URIRef(gmlpropread.getABoxIRI()
+                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                      cropMap.refDate)
                     print('refdate', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  SHAPE_LENGTH.lower():
                     cropMap.shapeLength = attribute.text

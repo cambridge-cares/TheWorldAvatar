@@ -31,6 +31,9 @@ def getShapeLengthVocabulary():
 def getShapeAreaVocabulary():
     return config.get('ABOX', 'shape.area.vocab')
 
+def getRefDateVocabulary():
+    return config.get('TBOX', 'property.ref.date')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
@@ -40,3 +43,4 @@ if __name__ == '__main__':
     print(getABoxFileExtension())
     print(getShapeLengthVocabulary())
     print(getShapeLengthVocabulary())
+    print(getRefDateVocabulary())
