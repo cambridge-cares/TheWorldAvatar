@@ -22,7 +22,6 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.dispersion.general.DispersionModellingAgent;
 
@@ -138,8 +137,13 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		}
 
 		// @TODO - improve weather update frequency
-		result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
-//		result = execute("/JPS_DISPERSION/WeatherAgent", requestParams.getJSONObject("region").toString());
+		// temporary measure to avoid changing things on Claudius
+		if (AgentLocator.isJPSRunningAtCMCL()) {
+			result = execute("/JPS_DISPERSION/WeatherAgent", requestParams.getJSONObject("region").toString());
+		} else {
+		    result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
+		}
+		
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
 		requestParams.put("stationiri", stationiri);
 
@@ -162,7 +166,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 			// requestParams.toString(), HttpPost.METHOD_NAME);
 
 			String resultPath = DISPERSION_PATH;
-			if (path.equals(ADMS_PATH) && validateWeatherInput(stationiri.getString(0))) {
+			if (path.equals(ADMS_PATH)) {
 				resultPath = resultPath + DispersionModellingAgent.ADMS_PATH;
 				result = execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
 
@@ -178,8 +182,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
 				String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
 
-			} else if (path.equals(EPISODE_PATH) && validateWeatherInput(stationiri.getString(0))
-					&& validateWeatherInput(stationiri.getString(1))) {
+			} else if (path.equals(EPISODE_PATH)) {
 				resultPath = resultPath + DispersionModellingAgent.EPISODE_PATH;
 				result = execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
 
