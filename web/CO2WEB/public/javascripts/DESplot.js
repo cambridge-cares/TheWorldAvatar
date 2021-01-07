@@ -2,6 +2,7 @@
 Implements the Sim prototype. for Mau.
 ***/
 console.log('desplot live find')
+// var prefix = "http://localhost:8080";
 prefix = "http://jparksimulator.com";
 ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
@@ -193,7 +194,7 @@ function configRH(idofgraph, data){
       labels:hourOfDay,
       datasets: [
         {
-          label:'Ref',
+          label:'Appliance Load',
           pointRadius:2,
           pointHoverRadius:5,
           borderColor:"#0ff253",
@@ -201,14 +202,14 @@ function configRH(idofgraph, data){
           fill: false,
         }, 
         {
-          label:'Opt',
+          label:'Battery Load',
           pointRadius:2,
           pointHoverRadius:5,
           borderColor:"#f1c40f",
           data: data[1], 
           fill: false,
         },  {
-          label:'Load',
+          label:'Total Power Consumption',
           pointRadius:2,
           pointHoverRadius:5,
           borderColor:"#f20fae",
