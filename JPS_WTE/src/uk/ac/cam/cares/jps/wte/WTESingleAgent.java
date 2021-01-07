@@ -11,7 +11,6 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -20,6 +19,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.update.Update;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -418,16 +418,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 		if(filtered.size()>0) {
 			UpdateBuilder sb = new UpdateBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 					.addPrefix("plant", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#")
-					.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
-					.addVar("?CpropVal").addWhere("?entity" ,"a", "j6:Building")
-					.addWhere("?entity" ,"plant:hasCapacity", "?capacity").addWhere("?capacity" ,"j2:hasValue", "?vProp")
-					.addWhere("?vProp" ,"j2:numericalValue", "?CpropVal").addOrderBy("?capacity");
-			Query q = sb.build();
-			ResultSet resultSetx = JenaHelper.query(model, q.toString());
+					.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#");
 			
-			SelectBuilder sb = new SelectBuilder().addPrefix("OW", "http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#")
-					.addPrefix("OCPSYST", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-					
 			String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 					+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
 						+ "INSERT DATA { \r\n";
@@ -443,6 +435,15 @@ public class WTESingleAgent extends JPSHttpServlet {
 				String[] keyswt = JenaResultSetFormatter.getKeys(result);
 				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
 				String techiri=resultList.get(Integer.valueOf(filtered.get(w)[0]))[1];
+				
+				sb.addInsert(techiri , "OW:realizedByDevice" , currentunit )
+				.addInsert( currentunit,"a","OW:WasteTreatmentDevice" )
+				.addInsert( currentunit,"OW:usedInYear",indexByYear)
+				.addInsert( currentunit,"OW:amountOfUnit",numunit)
+				;
+				Update q = sb.build();
+				System.out.println(q.toString());
+				
 				b.append("<" + techiri + "> OW:realizedByDevice <" + currentunit + "> . \r\n");
 				b.append("<" + currentunit + "> a OW:WasteTreatmentDevice . \r\n");
 				b.append("<" + currentunit + "> OW:usedInYear " + indexByYear + " . \r\n");

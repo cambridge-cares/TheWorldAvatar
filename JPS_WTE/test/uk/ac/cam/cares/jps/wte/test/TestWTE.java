@@ -122,7 +122,7 @@ public class TestWTE extends TestCase {
 			List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );
 			at.updateFCHelper(sitemapping);
 			
-//			at.updateinOffsiteWT(inputoffsitedata,baseUrl,1);
+			at.updateinOffsiteWT(inputoffsitedata,baseUrl,1);
 //			at.updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
 			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system				
 			
