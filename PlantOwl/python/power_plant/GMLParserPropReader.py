@@ -43,6 +43,9 @@ def getCromeIDVocabulary():
 def getObjectIDVocabulary():
     return config.get('TBOX', 'property.object.id')
 
+def getDataTypePolygonalPoints():
+    return config.get('TBOX', 'data.type.polygon.points')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
@@ -56,3 +59,4 @@ if __name__ == '__main__':
     print(getLucodeVocabulary())
     print(getCromeIDVocabulary())
     print(getObjectIDVocabulary())
+    print(getDataTypePolygonalPoints())
