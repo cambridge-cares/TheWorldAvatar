@@ -115,14 +115,15 @@ def get_crop_map(context):
                                 for exterior in polygonPatch:
                                     for linerRing in exterior:
                                         for posList in linerRing:
-                                            #cropMap.polygon = split_at_span(' ', 2, posList.text)
-                                            cropMap.polygon = posList.text.replace(" ", "#")
                                             aboxgen.create_instance(g,
                                                                     URIRef(gmlpropread.getClassLinearRing()),
                                                                     gmlpropread.getABoxIRI() + rdfizer.SLASH
                                                                     + rdfizer.format_iri(cropMap.id),
                                                                     cropMap.name)
-
+                                            aboxgen.link_data_with_type(g, URIRef(gmlpropread.getPropertyPosList()),
+                                                              URIRef(gmlpropread.getABoxIRI()
+                                                                     + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                                              posList.text.replace(" ", "#"), URIRef(gmlpropread.getDataTypePolygonalPoints()))
                                             print(cropMap.polygon)
         map_counter += 1
         if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
