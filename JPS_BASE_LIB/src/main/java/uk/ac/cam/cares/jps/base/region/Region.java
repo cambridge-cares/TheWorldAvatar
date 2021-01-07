@@ -139,6 +139,8 @@ public class Region {
                 jo.put(keyCity, HONG_KONG_IRI);
                 break;
             case 5: // Plymouth Episode
+            	// dummy air quality station (temporary)
+            	jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
             	jo.put(keyCity, PLYMOUTH_IRI);
             	break;
         }
@@ -173,7 +175,7 @@ public class Region {
             }
         }
         else if (cityIRI.contains(Plymouth)) {
-        	targetCRSName = "EPSG:27700";
+        	targetCRSName = "EPSG:32630";
         }
         return targetCRSName;
     }
@@ -192,7 +194,7 @@ public class Region {
         } else if (cityIRI.contains(Hong_Kong)) {
             srtm.add("N22E114");
         } else if (cityIRI.contains(Plymouth)) {
-        	srtm.add("N50W004");
+        	srtm.add("N50W005");
         }
         return srtm;
     }
