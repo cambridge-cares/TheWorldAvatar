@@ -70,8 +70,12 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		//use Transfer class to send ether
 		//check value of moneyEth. if moneyEth is too small, there's a UnsupportedOperationException error thrown. 
 		if (moneyEth < 0) {
-			return "Value too small, transaction not completed";
-		}Credentials credentials = WalletUtils.loadCredentials("Caesar1!",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
+			System.out.println("Value too small, transaction not completed");
+			moneyEth = 0;
+		}else if (moneyEth < Math.pow(10, -1)) {
+			moneyEth = 0;
+		}
+		Credentials credentials = WalletUtils.loadCredentials("Caesar1!",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
 		return  transactionReceipt.getTransactionHash();
 		
