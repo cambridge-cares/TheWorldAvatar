@@ -34,6 +34,9 @@ def getShapeAreaVocabulary():
 def getRefDateVocabulary():
     return config.get('TBOX', 'property.ref.date')
 
+def getLucodeVocabulary():
+    return config.get('TBOX', 'property.lucode')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
@@ -44,3 +47,4 @@ if __name__ == '__main__':
     print(getShapeLengthVocabulary())
     print(getShapeLengthVocabulary())
     print(getRefDateVocabulary())
+    print(getLucodeVocabulary())
