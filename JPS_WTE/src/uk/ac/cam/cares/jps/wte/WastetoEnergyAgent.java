@@ -23,8 +23,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -354,7 +352,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 */
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		String path = request.getServletPath();
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
 		OntModel model= readModelGreedy(wasteIRI);

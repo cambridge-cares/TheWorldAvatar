@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.wte;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -9,16 +8,16 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import com.google.common.primitives.Ints; 
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Resource;
 import org.json.JSONObject;
@@ -26,25 +25,19 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 @WebServlet(urlPatterns= {"/processresult"})
 public class WTESingleAgent extends JPSHttpServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/** Find offsite technologies that use technology
 	 * 
 	 */
 	public static String Offsiteoutput = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 			+ "SELECT ?entity ?Tech1 " 
 			+ "WHERE {"
 			+ "?entity   j1:useTechnology ?Tech1 ."  
@@ -71,15 +64,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		return jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
 	}
-	/** derive property that defines direct subsystem relationships as described in the ontology
-	 * 
-	 * @param jenaOwlModel (OntModel)
-	 * @return
-	 */
-	private ObjectProperty getIsDirectSubsystemOf(OntModel jenaOwlModel) {
-		return jenaOwlModel.getObjectProperty(
-				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf");
-	}
+	
 
 	/** derive property that defines delivery of waste
 	 * 
@@ -139,7 +124,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @return result of Query
 	 */
 	public List<String[]> readAndDump(OntModel model, String mainquery) {
-		List<String[]> inputdata = new ArrayList<String[]>();
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keysfc = JenaResultSetFormatter.getKeys(result);
@@ -432,6 +416,18 @@ public class WTESingleAgent extends JPSHttpServlet {
 		}
 		
 		if(filtered.size()>0) {
+			UpdateBuilder sb = new UpdateBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+					.addPrefix("plant", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#")
+					.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+					.addVar("?CpropVal").addWhere("?entity" ,"a", "j6:Building")
+					.addWhere("?entity" ,"plant:hasCapacity", "?capacity").addWhere("?capacity" ,"j2:hasValue", "?vProp")
+					.addWhere("?vProp" ,"j2:numericalValue", "?CpropVal").addOrderBy("?capacity");
+			Query q = sb.build();
+			ResultSet resultSetx = JenaHelper.query(model, q.toString());
+			
+			SelectBuilder sb = new SelectBuilder().addPrefix("OW", "http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#")
+					.addPrefix("OCPSYST", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+					
 			String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 					+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
 						+ "INSERT DATA { \r\n";

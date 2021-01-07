@@ -2,9 +2,6 @@ package uk.ac.cam.cares.jps.wte.visualization;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,12 +17,15 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
 public class WTEVisualization extends JPSHttpServlet{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**gets the food court name, xy coordinates
 	 */
 	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
