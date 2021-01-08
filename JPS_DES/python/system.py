@@ -273,6 +273,8 @@ if __name__ == "__main__":
 	industrial = result[4][2]
 	renewableGen = result[5]
 	gridGen = residential + commercial + industrial - renewableGen
+	#clear to zero
+	gridGen = gridGen.clip(min=0)
 
 	np.savetxt(folder +"/totgen.csv",[residential, commercial, industrial, renewableGen, gridGen], delimiter=",")
 	np.savetxt(folder +"/rh1.csv",[out0[3],out0[4], out0[5],out1[3],out1[4],out1[5],out2[3],out2[4], out2[5]], delimiter="," )
