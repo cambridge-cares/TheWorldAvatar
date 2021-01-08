@@ -34,7 +34,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 	public static final String DISPERSION_PATH = "/JPS_DISPERSION";
 	public static final String EPISODE_PATH = "/episode/dispersion/coordination";
 	public static final String ADMS_PATH = "/adms/dispersion/coordination";
-	public static final String NO_CITY_FOUND_MSG = "No City found in Region.";
 	
 	public boolean validateWeatherInput(String context) {
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
@@ -91,42 +90,13 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
 		return newwaste;
 	}
-
-	private String getCity(JSONObject requestParams) {
-		String regionToCityResult = null;
-		String city = null;
-
-		if (requestParams != null) {
-			JSONObject regionInfo = requestParams.getJSONObject("region");
-			if (regionInfo != null & regionInfo.length() != 0) {
-				JSONObject region = new JSONObject().put("region", regionInfo);
-				regionToCityResult = execute("/JPS/RegionToCity", region.toString());
-			}
-		}
-
-		if (!regionToCityResult.isEmpty()) {
-			city = new JSONObject(regionToCityResult).getString("city");
-		} else {
-			throw new JPSRuntimeException(NO_CITY_FOUND_MSG);
-		}
-		return city;
-	}
 	
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
 
 		// temporary workaround until we remove city IRIs completely!
-		String city;
-		try {
-			// This is the default way city IRI is obtained
-			city = getCity(requestParams);
-			new URL(city).toURI();
-			requestParams.put("city", city);
-		} catch (Exception e) {
-			// If city IRI API fails, ship use cases are guaranteed to work. not for power plant 
-			city = requestParams.getString("city");
-		}
+		String city = requestParams.getString("city");
 
 		String result;
 		if (!requestParams.getString("agent").contains("Episode")) { 
@@ -161,9 +131,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 			newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
 
 			requestParams.put("waste", newwaste);
-
-			// result = execute("/JPS_DISPERSION/DispersionModellingAgent",
-			// requestParams.toString(), HttpPost.METHOD_NAME);
 
 			String resultPath = DISPERSION_PATH;
 			if (path.equals(ADMS_PATH)) {

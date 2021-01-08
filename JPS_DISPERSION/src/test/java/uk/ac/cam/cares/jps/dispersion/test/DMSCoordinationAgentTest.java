@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.region.Region;
@@ -152,90 +151,4 @@ public class DMSCoordinationAgentTest extends TestCase {
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultList;
 	}
-
-	public void testGetCity() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
-		DMSCoordinationAgent dmsa = new DMSCoordinationAgent();
-		assertNotNull(dmsa.getClass().getDeclaredMethod("getCity", JSONObject.class));
-		Method getCity = dmsa.getClass().getDeclaredMethod("getCity", JSONObject.class);
-		getCity.setAccessible(true);
-
-		JSONObject args = null;
-
-		try {
-			getCity.invoke(dmsa, args);
-		} catch (InvocationTargetException e) {
-			assertEquals(null, e.getTargetException().getMessage());
-		}
-
-		args = new JSONObject();
-
-		try {
-			getCity.invoke(dmsa, args);
-		} catch (InvocationTargetException e) {
-			assertEquals("JSONObject[\"region\"] not found.", e.getTargetException().getMessage());
-		}
-
-		args = args.put(Region.keyRegion, "");
-
-		try {
-			getCity.invoke(dmsa, args);
-		} catch (InvocationTargetException e) {
-			assertEquals("JSONObject[\"region\"] is not a JSONObject.", e.getTargetException().getMessage());
-		}
-
-		args = args.put(Region.keyRegion, JSONObject.NULL);
-
-		try {
-			getCity.invoke(dmsa, args);
-		} catch (InvocationTargetException e) {
-			assertTrue(e.getTargetException().getMessage().contains("JSONObject[\"region\"] is not a JSONObject."));
-		}
-
-		JSONObject upcorn = new JSONObject();
-		upcorn.put(Region.keyUpperx, JSONObject.NULL);
-		upcorn.put(Region.keyUppery, JSONObject.NULL);
-
-		JSONObject lowcorn = new JSONObject();
-		lowcorn.put(Region.keyLowerx, JSONObject.NULL);
-		lowcorn.put(Region.keyLowery, JSONObject.NULL);
-
-		JSONObject region = new JSONObject();
-		region.put(Region.keySrsname, JSONObject.NULL);
-		region.put(Region.keyLowercorner, lowcorn);
-		region.put(Region.keyUppercorner, upcorn);
-
-		args = args.put(Region.keyRegion, region);
-
-		try {
-			getCity.invoke(dmsa, args);
-		} catch (InvocationTargetException e) {
-			assertTrue(e.getTargetException().getMessage().contains(DMSCoordinationAgent.NO_CITY_FOUND_MSG));
-		}
-		
-		args.remove(Region.keyRegion);
-		Region.putRegion(args, 2);
-
-		try {
-			getCity.invoke(dmsa, args);
-			assertEquals(getCity.invoke(dmsa, args), Region.SINGAPORE_IRI);
-		} catch (JPSRuntimeException e) {
-			assertTrue(false);
-
-		}
-		
-		args.remove(Region.keyRegion);
-		Region.putRegion(args, 4);
-
-		try {
-			getCity.invoke(dmsa, args);
-			assertEquals(getCity.invoke(dmsa, args), Region.HONG_KONG_IRI);
-			System.out.println("testGetCity ran.");
-		} catch (JPSRuntimeException e) {
-			assertTrue(false);
-
-		}
-	
-	}
-
 }
