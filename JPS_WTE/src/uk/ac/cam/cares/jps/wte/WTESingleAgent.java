@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -34,12 +35,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 	/** Find offsite technologies that use technology
 	 * 
 	 */
-	public static String Offsiteoutput = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-			+ "SELECT ?entity ?Tech1 " 
-			+ "WHERE {"
-			+ "?entity   j1:useTechnology ?Tech1 ."  
-			+ "}"
-			+ "ORDER BY DESC(?Tech1)";
+	
 
 	
 	/** derive property that defines numerical values as described in the ontology
@@ -411,7 +407,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 				}
 			}
 		}
-		
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1", "http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#")
+				.addVar("?entity").addVar("?Tech1").addWhere("?entity" ,"j1:useTechnology", "?Tech1")
+				.addOrderBy("?Tech1");
+		String Offsiteoutput = sb.toString();
 		if(filtered.size()>0) {
 			String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 					+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
