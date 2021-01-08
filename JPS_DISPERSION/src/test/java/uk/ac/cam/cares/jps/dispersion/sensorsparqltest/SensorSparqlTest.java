@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.dispersion.sensorsparqltest;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -30,6 +29,11 @@ public class SensorSparqlTest extends TestCase{
 		}
 	}
 	
+	public void testQueryWeatherStationProperties() {
+		String stationiri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1";
+		SensorSparql.queryWeatherStationProperties(stationiri);
+	}
+	
 	public void testUpdateWeatherStation() {
 		WeatherStation ws = new WeatherStation();
 		ws.setStationiri("http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1");
@@ -44,13 +48,13 @@ public class SensorSparqlTest extends TestCase{
 		SensorSparql.updateWeatherStation(ws);
 	}
 	
-	public void testQueryWeatherStationProperties() {
+	public void testQueryWeatherStationTimeStamp() {
 		String stationiri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1";
-		SensorSparql.queryWeatherStationProperties(stationiri);
+		SensorSparql.queryWeatherStationTimeStamp(stationiri);
 	}
 	
 	public void testCreateAirQualityStation() {
-		String station_name = "airqualitystation1";
+		String station_name = "virtualsensor1";
 		double [] xyz_coord = {104,2,9};
 		
 		SensorSparql ws = new SensorSparql();
@@ -66,20 +70,21 @@ public class SensorSparqlTest extends TestCase{
 	
 	public void testQueryAirStationCoordinatesWithIRI() {
 		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
-		SensorSparql ss = new SensorSparql();
-		ss.queryAirStationCoordinatesWithIRI(station_iri);
+		SensorSparql.queryAirStationCoordinatesWithIRI(station_iri);
 	}
 	
 	public void testAddSensorValue() {
 		String station_iri_string = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
-		SensorSparql ss = new SensorSparql();
-		ss.addSensorValue(station_iri_string,SensorSparql.CO2,30,false);
+		SensorSparql.addSensorValue(station_iri_string,SensorSparql.CO2,30,false);
 	}
 	
 	public void testQueryAirStationProperties() {
 		String station_iri_string = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
-		SensorSparql ss = new SensorSparql();
-		JSONArray result = ss.queryAirStationProperties(station_iri_string);
+		JSONArray result = SensorSparql.queryAirStationProperties(station_iri_string);
 		result.getJSONObject(0);
+	}
+	
+	public void testQueryAllStations() {
+		SensorSparql.queryAllAirStations();
 	}
 }
