@@ -118,8 +118,8 @@ if __name__ == "__main__":
 
 	now = datetime.now()
 	current_time = now.strftime("%H:%M:%S")
-	pythonLogger = PythonLogger('system.py')
-	pythonLogger.postInfoToLogServer('start of system.py, Current Time = '+current_time)
+	# pythonLogger = PythonLogger('system.py')
+	# pythonLogger.postInfoToLogServer('start of system.py, Current Time = '+current_time)
 	folder = sys.argv[1]
 	#forecast Weather
 	dfWeather=pd.read_csv(folder + '/WeatherForecast.csv', sep=',', header=None)
@@ -281,4 +281,4 @@ if __name__ == "__main__":
 	returnResultsToJava(result)
 	now = datetime.now()
 	current_time = now.strftime("%H:%M:%S")
-	pythonLogger.postInfoToLogServer('end of system.py, Current time = ' +current_time)
+	# pythonLogger.postInfoToLogServer('end of system.py, Current time = ' +current_time)
