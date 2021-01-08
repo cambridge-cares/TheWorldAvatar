@@ -11,15 +11,12 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.update.Update;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -416,14 +413,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 		}
 		
 		if(filtered.size()>0) {
-			UpdateBuilder sb = new UpdateBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-					.addPrefix("plant", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#")
-					.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#");
-			
 			String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 					+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
 						+ "INSERT DATA { \r\n";
 			for(int w=0;w<filtered.size();w++) {
+				
 				StringBuffer b = new StringBuffer();
 				String currentunit = filtered.get(w)[1].split("#")[0] + "#UnitDeviceOf-" + filtered.get(w)[1].split("#")[1]+"_"+indexByYear; //w is precaution if duplicate instance
 				int numunit = Integer.valueOf(filtered.get(w)[2]);
@@ -436,13 +430,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
 				String techiri=resultList.get(Integer.valueOf(filtered.get(w)[0]))[1];
 				
-				sb.addInsert(techiri , "OW:realizedByDevice" , currentunit )
-				.addInsert( currentunit,"a","OW:WasteTreatmentDevice" )
-				.addInsert( currentunit,"OW:usedInYear",indexByYear)
-				.addInsert( currentunit,"OW:amountOfUnit",numunit)
-				;
-				Update q = sb.build();
-				System.out.println(q.toString());
 				
 				b.append("<" + techiri + "> OW:realizedByDevice <" + currentunit + "> . \r\n");
 				b.append("<" + currentunit + "> a OW:WasteTreatmentDevice . \r\n");
