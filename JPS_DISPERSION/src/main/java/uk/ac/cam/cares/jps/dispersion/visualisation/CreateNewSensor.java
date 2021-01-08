@@ -29,7 +29,7 @@ public class CreateNewSensor extends JPSHttpServlet{
 			JSONObject r = AgentCaller.readJsonParameter(request);
 			double lat = Double.parseDouble(String.valueOf(r.get("lat")));
 			double lng = Double.parseDouble(String.valueOf(r.get("lng")));
-			double [] xy = {lng,lat};
+			double [] xyz = {lng,lat,10}; // hardcoded height
 			
 			SensorSparql ss = new SensorSparql();
 			JSONArray stations = ss.queryAllAirStations();
@@ -38,7 +38,7 @@ public class CreateNewSensor extends JPSHttpServlet{
 			//functionality to delete does not exist yet so this won't break!
 			int station_number = stations.length() + 1;
 			String station_name = "virtualsensor" + station_number;
-			String stationiri = ss.createAirQualityStation(station_name, xy);
+			String stationiri = ss.createAirQualityStation(station_name, xyz);
 			
 			// call SensorUpdaterAgent to populate this sensors with values
 			// The agent won't do anything if there are no dispersion matrices 
