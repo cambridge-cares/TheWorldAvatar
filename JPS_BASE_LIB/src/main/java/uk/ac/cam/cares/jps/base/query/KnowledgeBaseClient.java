@@ -63,12 +63,6 @@ public abstract class KnowledgeBaseClient{
 	
 	public abstract int executeUpdate(UpdateRequest update);
 	
-	// Dataset access
-	
-	public abstract void putGraph(String graph, Model model);
-	
-	public abstract Model fetchGraph(String graph);
-	
 	// Load and write methods
 	
 	public abstract void load();

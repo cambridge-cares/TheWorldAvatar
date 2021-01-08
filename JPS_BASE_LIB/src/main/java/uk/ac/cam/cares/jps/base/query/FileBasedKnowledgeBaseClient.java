@@ -412,9 +412,10 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		return json;
 	}
 	
-	//****************************************
-	//csl
-	// Clone tools
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
 	@Override
 	public Model queryConstruct(Query sparql) {
 		
@@ -430,15 +431,5 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
 		}
-	}
-	
-	@Override
-	public void putGraph(String graph, Model model) {
-		conn.put(graph, model);
-	}
-	
-	@Override
-	public Model fetchGraph(String graph) {
-		return conn.fetch(graph);
 	}
 }

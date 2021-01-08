@@ -580,45 +580,10 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 				.concat("=");
 	}
 	
-	//************************************
-	//csl
-	//clone tool
-	
-	/*
-	public Model constructModel(String query) throws SQLException, JSONException {
-		
-		JSONArray result = executeQuery(query);
-		
-		Model model = ModelFactory.createDefaultModel();
-		
-		for (int i=0; i<result.length(); i++) {
-					
-			JSONObject jo = result.getJSONObject(i);
-			
-			Node  s = ResourceFactory.createResource(jo.getString("Subject")).asNode();
-		    Node  p = ResourceFactory.createResource(jo.getString("Predicate")).asNode();   
-		    Node  o = ResourceFactory.createResource(jo.getString("Object")).asNode();
-		  
-		    model.add( model.asStatement(new Triple(s,p,o)));
-		}
-		return model;
-	}
-	*/
-	
-	//RDFConnection 
-	
-	private RDFConnection connectUpdate() {
-		
-		RDFConnectionRemoteBuilder builder = null;
-		if(updateEndpoint != null) {
-			builder = RDFConnectionRemote.create().destination(updateEndpoint);
-		}else {
-			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
-		}
-		
-		return builder.build();
-	}
-	
+	/**
+	 * Return RDFConnection to sparql query endpoint
+	 * @return
+	 */
 	private RDFConnection connectQuery() {
 		
 		RDFConnectionRemoteBuilder builder = null;
@@ -631,20 +596,10 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 		return builder.build();
 	}
 	
-	@Override
-	public void putGraph(String graph, Model model) {
-		
-		RDFConnection conn = connectUpdate();
-		conn.put(graph, model);
-	}
-	
-	@Override
-	public Model fetchGraph(String graph) {
-		
-		RDFConnection conn = connectUpdate();
-		return conn.fetch(graph);
-	}
-	
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
 	@Override
 	public Model queryConstruct(Query sparql) {
 		
