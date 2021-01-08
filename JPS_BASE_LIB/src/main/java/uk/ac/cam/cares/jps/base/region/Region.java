@@ -107,7 +107,7 @@ public class Region {
 
     /**
      * Adds region to the JSON object received
-     * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
+     * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode, 5) Plymouth Episode
      */
     public static void putRegion(JSONObject jo, int option) {
         jo.put(keyRegion, getScope(option));
