@@ -80,6 +80,26 @@
             </plugin>
 
 			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<version>1.3.0</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<id>downloading python 3.6.8 for windows</id>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe</url>
+							<outputFileName>python-3.6.8.exe</outputFileName>
+							<outputDirectory>python/ADMS-speed-load-map</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>3.0.0</version>

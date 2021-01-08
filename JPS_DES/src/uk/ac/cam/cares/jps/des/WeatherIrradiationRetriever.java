@@ -137,7 +137,6 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		readingFromCSV.add(newline);
 		List<String[]> actualWeather = new ArrayList<String[]>();
 		actualWeather.add(newline);
-		new QueryBroker().putLocal(folder + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(actualWeather));
 		
 		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
