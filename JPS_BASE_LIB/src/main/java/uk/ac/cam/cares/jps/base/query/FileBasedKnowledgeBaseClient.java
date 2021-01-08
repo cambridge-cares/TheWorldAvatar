@@ -72,15 +72,14 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Constructor loads the file and set the sparql query/update.
+	 * Constructor loads a file to a named graph
+	 * @param graph name/context
 	 * @param filePath
-	 * @param sparql query/update
 	 */
-	public FileBasedKnowledgeBaseClient(String filePath, String query) {
-		this.query = query; 
-		this.defaultFilePath = filePath;
+	public FileBasedKnowledgeBaseClient(String graph, String filePath) {
+		
 		init();
-		load();
+		load(graph, filePath);
 	}
 	
 	/**
@@ -231,7 +230,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 					
 					String context = it.next();
 					
-					//error: context already exists in dataset
+					//error: context already exists in the dataset
 					if(context == null) {
 						if(!dataset.getDefaultModel().isEmpty()) {
 							throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: default graph already exists!");
@@ -242,7 +241,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 						}
 					}
 					
-					//context does not match supplied graph name
+					//context does not match the supplied graph name
 					if(!context.equals(graph)) {
 						if(graph == null) {
 							
@@ -267,7 +266,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 				//add the data to the connection dataset
 				conn.loadDataset(tempDataset);
 				
-				//clear and close temporary resource
+				//clear and close the temporary resource
 				tempDataset.asDatasetGraph().clear(); 
 				tempDataset.close();
 			}

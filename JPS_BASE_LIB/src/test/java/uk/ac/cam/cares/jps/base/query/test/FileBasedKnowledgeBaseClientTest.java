@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -47,6 +48,8 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 	private String filePath;
 	private String filePathNQ;
+	private String filePathNQ2;
+	private String filePathOWL;
 	
 	private String testQuery = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 	
@@ -58,17 +61,28 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Before
 	public void setup() throws URISyntaxException, IOException {
 		
-		// Test owl file
-		Path testResourcePath = Paths.get(this.getClass().getResource("/KBClientTest/species.rdf").toURI());
-		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/species.rdf");		
+		// Test rdf file
+		Path testResourcePath = Paths.get(this.getClass().getResource("/KBClientTest/testRDF.rdf").toURI());
+		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/testRDF.rdf");		
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();
 		
+		// Test owl file
+		Path testResourcePathOWL = Paths.get(this.getClass().getResource("/KBClientTest/testOWL.owl").toURI());
+		Path tempFilePathOWL = Paths.get(tempFolder.getRoot().toString() + "/testOWL.owl");
+		Files.copy(testResourcePathOWL, tempFilePathOWL, StandardCopyOption.REPLACE_EXISTING);
+		filePathOWL = tempFilePathOWL.toString();
+		
 		// Test NQ file
-		Path testResourcePathNQ = Paths.get(this.getClass().getResource("/KBClientTest/species.nq").toURI());
-		Path tempFilePathNQ = Paths.get(tempFolder.getRoot().toString() + "/species.nq");
+		Path testResourcePathNQ = Paths.get(this.getClass().getResource("/KBClientTest/testQuads.nq").toURI());
+		Path tempFilePathNQ = Paths.get(tempFolder.getRoot().toString() + "/testQuads.nq");
 		Files.copy(testResourcePathNQ, tempFilePathNQ, StandardCopyOption.REPLACE_EXISTING);
 		filePathNQ = tempFilePathNQ.toString();
+		
+		Path testResourcePathNQ2 = Paths.get(this.getClass().getResource("/KBClientTest/testQuads2.nq").toURI());
+		Path tempFilePathNQ2 = Paths.get(tempFolder.getRoot().toString() + "/testQuads2.nq");
+		Files.copy(testResourcePathNQ2, tempFilePathNQ2, StandardCopyOption.REPLACE_EXISTING);
+		filePathNQ2 = tempFilePathNQ2.toString();
 	}
 	
 	/**
@@ -85,25 +99,28 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Test constructor with bad file path
+	 * Test named graph constructor
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
 	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testConstructorWithBadFilePath() {
-		
-		kbClient = new FileBasedKnowledgeBaseClient("Example/does/not/exist");
-	}
+	@Test
+	public void testNamedGraphConstructor() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 	
-	/**
-	 * Test constructor with file path and query string
-	 */
-	@Test 
-	public void testConstructorWithFilePathAndQuery() {
-				
-		kbClient = new FileBasedKnowledgeBaseClient(filePath, testQuery);
-		assertEquals(filePath, kbClient.getFilePath());
-		assertEquals(testQuery, kbClient.getQuery());
+		kbClient = new FileBasedKnowledgeBaseClient("http://example.com/triples", filePath);
+		
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
+		
+		//check graph is loaded
+		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
+		Field field = kbClient.getClass().getDeclaredField("dataset");;
+		field.setAccessible(true);
+		Dataset fieldValue = (Dataset) field.get(kbClient);
+			    
+		Model model = fieldValue.getNamedModel("http://example.com/triples");
+		assertFalse(model.isEmpty());
 	}
 	
 	/**
@@ -169,10 +186,160 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
+	 * Test load graph
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws NoSuchFieldException 
+	 */
+	@Test
+	public void testLoadGraph() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+	
+		kbClient = new FileBasedKnowledgeBaseClient();
+	
+	    //load triples to default graph
+	    kbClient.load(null, filePath);
+		
+  		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
+  		Field field = kbClient.getClass().getDeclaredField("dataset");;
+  		field.setAccessible(true);
+  		Dataset fieldValue = (Dataset) field.get(kbClient);
+  		Model model1 = fieldValue.getDefaultModel();
+  		assertFalse(model1.isEmpty());
+	    
+	    //load triples to named graph
+	    kbClient.load( "http://example.com/triples", filePathOWL);
+	    
+	    fieldValue = (Dataset) field.get(kbClient);
+  		Model model2 = fieldValue.getNamedModel("http://example.com/triples");
+  		assertFalse(model2.isEmpty());
+	    
+		//load quads 
+	    kbClient.load( "http://example.com/context", filePathNQ);
+	    
+	    fieldValue = (Dataset) field.get(kbClient);
+  		Model model3 = fieldValue.getNamedModel("http://example.com/context");
+  		assertFalse(model3.isEmpty());
+	}
+	
+	/**
+	 * Test load quads. Supplied name overriden by context
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
+	 */
+	@Test
+	public void testLoadQuad() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		
+		//Try loading quad to a different named graph. Model should be loaded to the context
+		kbClient.load("http://example.com/differentContext", filePathNQ);
+		
+		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
+  		Field field = kbClient.getClass().getDeclaredField("dataset");;
+  		field.setAccessible(true);
+  		Dataset fieldValue = (Dataset) field.get(kbClient);
+  		Model model1 = fieldValue.getNamedModel("http://example.com/context");
+  		assertFalse(model1.isEmpty());
+  		
+  		assertNotNull(kbClient.getClass().getDeclaredField("graphs"));
+  		Field field2 = kbClient.getClass().getDeclaredField("graphs");;
+  		field2.setAccessible(true);
+  		@SuppressWarnings("unchecked")
+		ArrayList<String> field2Value = (ArrayList<String>) field2.get(kbClient);
+  		assertTrue(field2Value.contains("http://example.com/context"));
+  		assertFalse(field2Value.contains("http://example.com/differentContext"));
+	}
+	 
+	/**
+	 * Test load quads. Supplied name overriden by context
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
+	 */
+	@Test
+	public void testLoadQuadDefault() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		
+		//Try loading quad to default. Model should be loaded to a named graph
+		kbClient.load(filePathNQ);
+		
+		//Check the quad is loaded to the correct context
+		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
+  		Field field = kbClient.getClass().getDeclaredField("dataset");;
+  		field.setAccessible(true);
+  		Dataset fieldValue = (Dataset) field.get(kbClient);
+  		Model model1 = fieldValue.getNamedModel("http://example.com/context");
+  		assertFalse(model1.isEmpty());
+  		
+  		assertNotNull(kbClient.getClass().getDeclaredField("graphs"));
+  		Field field2 = kbClient.getClass().getDeclaredField("graphs");;
+  		field2.setAccessible(true);
+  		@SuppressWarnings("unchecked")
+		ArrayList<String> field2Value = (ArrayList<String>) field2.get(kbClient);
+  		assertTrue(field2Value.contains("http://example.com/context"));
+  		
+  		//Assert default graph is empty
+  		Model model2 = fieldValue.getDefaultModel();
+  		assertTrue(model2.isEmpty());
+  		
+  		assertTrue(kbClient.getFilePath() == null);
+	}
+	
+	/**
+	 * Multiple contexts in quad. Expect error
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testMultipleContexts() {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load("http://example.com/context", filePathNQ2);
+	}
+	
+	/**
+	 * Multiple quads with same context. Expect error.
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testSameContext() {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load("http://example.com/context", filePathNQ);
+		kbClient.load("http://example.com/context2", filePathNQ);
+	}
+	
+	/**
+	 * Loading multiple files to same graph. Expect error.
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testSameGraph() {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load("http://example.com/context", filePathOWL);
+		kbClient.load("http://example.com/context", filePath);
+	}
+	
+	/**
+	 * Multiple files to default graph. Expect error.
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testMultipleDefault() {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePathOWL);
+		kbClient.load(filePath);
+	}
+	
+	/**
 	 * Load a model
 	 */
 	@Test
-	public void testLoadFile() {
+	public void testLoadFileToDefault() {
 	
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
@@ -198,7 +365,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	 */
 	@Test
 	public void testLoad() {
-		
+				
 		kbClient = new FileBasedKnowledgeBaseClient();
 		kbClient.setFilePath(filePath);
 		kbClient.load();
@@ -217,6 +384,8 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient = new FileBasedKnowledgeBaseClient();
 		kbClient.load();
 	}
+	
+	//******************
 	
 	/**
 	 * Test write to file
