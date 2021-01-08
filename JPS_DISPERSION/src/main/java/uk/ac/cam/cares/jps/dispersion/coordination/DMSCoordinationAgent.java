@@ -99,12 +99,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		String city = requestParams.getString("city");
 
 		String result;
-		if (!requestParams.getString("agent").contains("Episode")) { 
-			result = execute("/JPS/GetBuildingListFromRegion", requestParams.toString());
-			JSONArray building = new JSONObject(result).getJSONArray("building");
-			requestParams.put("building", building);
-			logger.info("building FROM COORDINATION AGENT: " + building.toString());
-		}
 
 		// @TODO - improve weather update frequency
 		// temporary measure to avoid changing things on Claudius
