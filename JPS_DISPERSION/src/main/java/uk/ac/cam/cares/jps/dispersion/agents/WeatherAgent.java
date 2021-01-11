@@ -17,8 +17,9 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.dispersion.episode.CalculationUtils;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.WeatherStation;
+import uk.ac.cam.cares.jps.dispersion.sparql.SensorSparql;
+import uk.ac.cam.cares.jps.dispersion.sparql.WeatherStation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

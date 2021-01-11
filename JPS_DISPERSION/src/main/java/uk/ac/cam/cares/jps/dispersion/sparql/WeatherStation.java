@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.dispersion.sensorsparql;
+package uk.ac.cam.cares.jps.dispersion.sparql;
 
 import org.json.JSONObject;
 

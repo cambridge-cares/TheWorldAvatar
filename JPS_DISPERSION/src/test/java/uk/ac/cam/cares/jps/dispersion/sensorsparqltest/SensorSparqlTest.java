@@ -10,8 +10,8 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.WeatherStation;
+import uk.ac.cam.cares.jps.dispersion.sparql.SensorSparql;
+import uk.ac.cam.cares.jps.dispersion.sparql.WeatherStation;
 
 public class SensorSparqlTest extends TestCase{
 	public void testCreateWeatherStation() {

@@ -14,7 +14,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
+import uk.ac.cam.cares.jps.dispersion.sparql.SensorSparql;
 
 /**
  * This servlet is called from the jpsShip javascript and returns the stations within the current bounds

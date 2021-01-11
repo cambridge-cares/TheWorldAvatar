@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
+import uk.ac.cam.cares.jps.dispersion.sparql.SensorSparql;
 
 @WebServlet("/QuerySensorProperties")
 public class QuerySensorProperties extends JPSHttpServlet{
