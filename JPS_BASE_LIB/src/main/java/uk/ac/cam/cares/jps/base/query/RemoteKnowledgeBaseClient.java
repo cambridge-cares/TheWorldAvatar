@@ -124,7 +124,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @param password 
 	 */
 	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query, String user, String password){
-		this.query = query; // query variable in super class
+		this.query = query;
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
@@ -302,7 +302,6 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * Execute sparql query using the query variable
 	 * 
 	 * @return JSONArray as String 
-	 * @throws SQLException
 	 */
 	public String execute(){
 		return execute(this.query);
@@ -313,7 +312,6 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * 
 	 * @param sparql
 	 * @return JSONArray as String
-	 * @throws SQLException
 	 */
 	public String execute(String query){
 		JSONArray result = executeQuery(query);

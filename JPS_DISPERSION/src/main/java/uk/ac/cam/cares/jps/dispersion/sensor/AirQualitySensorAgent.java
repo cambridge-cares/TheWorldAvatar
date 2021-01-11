@@ -304,7 +304,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				JSONObject joGas = new JSONObject(jArr.get(i).toString());//{}
 				JSONObject jo = new JSONObject();			
 				jo.put("CO", joGas.getDouble("co_prescaled"));
-//				jo.put("CO2", joGas.getDouble("uart_prescaled")*1000);
+				jo.put("CO2", joGas.getDouble("uart_prescaled")*1000);
 				if(joGas.getDouble("no_prescaled")<0) {
 					jo.put("NO", 0.0);
 					jo.put("NOx", Double.valueOf( joGas.getDouble("no2_prescaled")));

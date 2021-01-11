@@ -23,25 +23,28 @@ public class Region {
     public static String keyRegion = "region";
     public static String keySrsname = "srsname";
     public static String keyAirStationIRI = "airStationIRI";
+    public static String keyCity = "city";
 
     // City IRIs
     public static final String BERLIN_IRI = "http://dbpedia.org/resource/Berlin";
     public static final String THE_HAGUE_IRI = "http://dbpedia.org/resource/The_Hague";
     public static final String SINGAPORE_IRI = "http://dbpedia.org/resource/Singapore";
     public static final String HONG_KONG_IRI = "http://dbpedia.org/resource/Hong_Kong";
+    public static final String PLYMOUTH_IRI = "http://dbpedia.org/resource/Plymouth";
 
     // City names
     private static final String Berlin = "Berlin";
     private static final String The_Hague = "The_Hague";
     private static final String Singapore = "Singapore";
     private static final String Hong_Kong = "Hong_Kong";
+    private static final String Plymouth = "Plymouth";
 
     /**
      * Returns a JSONObject containing the scope coordinates and SRS name
      * Options: 1) Sg ADMS, 2) Sg Episode, 3) HK ADMS, 4) HK Episode
      */
     private static JSONObject getScope(int option) {
-        String x_low = null, x_up = null , y_low = null, y_up = null;
+        String x_low = null, x_up = null , y_low = null, y_up = null, srsname = null;
 
         JSONObject joScope = new JSONObject();
         JSONObject joUppercorner = new JSONObject();
@@ -55,6 +58,7 @@ public class Region {
                 x_up  = "11564077.989";
                 y_low = "140107.739"; 
                 y_up  = "143305.896";
+                srsname = CRSTransformer.EPSG_3857;
                 break;
 
             case 2: // Singapore Episode
@@ -62,6 +66,7 @@ public class Region {
                 x_up  = "11572101.89";
                 y_low = "131707.739"; 
                 y_up  = "151860.32";
+                srsname = CRSTransformer.EPSG_3857;
                 break;
 
             case 3: // Hong Kong ADMS
@@ -69,6 +74,7 @@ public class Region {
                 x_up  = "12711879.81";
                 y_low = "2545200.172"; 
                 y_up  = "2550426.72";
+                srsname = CRSTransformer.EPSG_3857;
                 break;
 
             case 4: // Hong Kong Episode
@@ -76,6 +82,15 @@ public class Region {
                 x_up  = "12720578.56";
                 y_low = "2534900.06"; 
                 y_up  = "2562555.26";
+                srsname = CRSTransformer.EPSG_3857;
+                break;
+                
+            case 5: // Plymouth Episode
+            	x_low = "237044.13";
+            	x_up = "257044.13";
+                y_low = "44991.65";
+                y_up = "64991.65";
+                srsname = "EPSG:27700";
                 break;
         }
         joUppercorner.put(keyUpperx, x_up);
@@ -83,7 +98,7 @@ public class Region {
         joLowercorner.put(keyLowerx, x_low);
         joLowercorner.put(keyLowery, y_low);
 
-        joScope.put(keySrsname, CRSTransformer.EPSG_3857);
+        joScope.put(keySrsname, srsname);
         joScope.put(keyLowercorner, joLowercorner);
         joScope.put(keyUppercorner, joUppercorner);
 
@@ -109,16 +124,25 @@ public class Region {
         switch (option) {
             case 1: // Singapore ADMS
                 jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+                jo.put(keyCity, SINGAPORE_IRI);
                 break;
             case 2: // Singapore Episode
                 jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002");
+                jo.put(keyCity, SINGAPORE_IRI);
                 break;
             case 3: // Hong Kong ADMS
                 jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-001.owl#AirQualityStation-001");
+                jo.put(keyCity, HONG_KONG_IRI);
                 break;
             case 4: // Hong Kong Episode
                 jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+                jo.put(keyCity, HONG_KONG_IRI);
                 break;
+            case 5: // Plymouth Episode
+            	// dummy air quality station (temporary)
+            	jo.put(keyAirStationIRI, "http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+            	jo.put(keyCity, PLYMOUTH_IRI);
+            	break;
         }
     }
 
@@ -150,6 +174,9 @@ public class Region {
                 targetCRSName = CRSTransformer.EPSG_32650;
             }
         }
+        else if (cityIRI.contains(Plymouth)) {
+        	targetCRSName = "EPSG:32630";
+        }
         return targetCRSName;
     }
 
@@ -166,6 +193,8 @@ public class Region {
             srtm.add("N01E104");
         } else if (cityIRI.contains(Hong_Kong)) {
             srtm.add("N22E114");
+        } else if (cityIRI.contains(Plymouth)) {
+        	srtm.add("N50W005");
         }
         return srtm;
     }

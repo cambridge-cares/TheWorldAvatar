@@ -11,13 +11,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns = { "/showDESResult"})
 
@@ -41,7 +44,6 @@ public class FrontEndCoordination extends JPSHttpServlet{
 	    	JSONObject jo = new JSONObject();
 	    	jo.put("directory", directorychosen);
  			String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
- 			System.out.println("Called GetBlock" + v);
  			System.gc();
  			responseParams = new JSONObject(v);
  	    		 
@@ -55,7 +57,6 @@ public class FrontEndCoordination extends JPSHttpServlet{
     public String getLastModifiedDirectory() {
     	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
 		List<String> lst = null;
-    	System.out.println(lst);
     	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
 		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
@@ -87,7 +88,6 @@ public class FrontEndCoordination extends JPSHttpServlet{
 
 					// System.out.println("size= "+list.size()+" ,listcontent= "+list.get(0));
 					if (list.contains("totgen.csv") && list.contains("rh1.csv")) {
-						System.out.println("it goes here");
 						filechosen = file;
 						break outerloop;
 					}
@@ -99,5 +99,5 @@ public class FrontEndCoordination extends JPSHttpServlet{
 		}
 		return filechosen.getAbsolutePath() + "/JPS_DES";
 	}
-   
+    
 }

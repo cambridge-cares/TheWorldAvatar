@@ -4,7 +4,17 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.rdf4j.RDF4JException;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.http.HTTPRepository;
+import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
@@ -245,5 +255,132 @@ public class PrimeConverterUtils extends PrimeConverter{
 			throws IOException {
 		return new BufferedReader(new InputStreamReader(new FileInputStream(
 				filePathPlusName), "UTF-8"));
-	}	
+	}
+	
+	
+	public static String retrieveSpeciesIRI(String speciesFileIRI) throws OntoChemExpException {
+		if (speciesFileIRI.trim().startsWith("<") || speciesFileIRI.trim().endsWith(">")) {
+			speciesFileIRI = speciesFileIRI.replace("<", "").replace(">", "");
+		}
+		String uniqueSpeciesIRI = new String();
+		String queryString = formSpeciesIRIQuery(speciesFileIRI);
+		List<List<String>> testResults = queryRepository(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), queryString);
+		if (testResults.size() == 2) {
+			uniqueSpeciesIRI = testResults.get(1).get(0);
+		}
+		return uniqueSpeciesIRI;
+	}
+	
+	private static String formSpeciesIRIQuery(String partialSpeciesIRI) {
+		String queryString = "PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n";
+		queryString = queryString.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		queryString = queryString.concat("SELECT ?species \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ?species rdf:type OntoSpecies:Species . \n");
+		queryString = queryString.concat("    FILTER regex(str(?species), \"").concat(partialSpeciesIRI).concat("\", \"i\") \n");
+		queryString = queryString.concat("}");
+		return queryString;
+	}
+	
+	/**
+	 * Query a given repository using a given SPARQL query string. 
+	 * 
+	 * @param serverURL
+	 * @param repositoryID
+	 * @param queryString
+	 * @return
+	 * @throws OntoChemExpException
+	 */
+	public static List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString) throws OntoChemExpException {
+		List<List<String>> processedResultList = new ArrayList<List<String>>();
+		
+		try {
+			Repository repo = new HTTPRepository(serverURL, repositoryID);
+			repo.initialize();
+			RepositoryConnection con = repo.getConnection();
+			
+			try {
+				TupleQuery queryResult = con.prepareTupleQuery(queryString);
+				try (TupleQueryResult result = queryResult.evaluate()) {
+					processResult(result, processedResultList);
+				} finally {
+					repo.shutDown();
+				}
+			} catch (Exception e) {
+				logger.error("Exception occurred.");
+				e.printStackTrace();
+				throw new OntoChemExpException("Exception occurred");
+			} finally {
+				logger.info("Executed the command to close the connection to the repository.");
+				con.close();
+			}
+		} catch (RDF4JException e) {
+			logger.error("RDF4JException occurred.");
+			e.printStackTrace();
+			throw new OntoChemExpException("RDF4JException occurred.");
+		}
+		return processedResultList;
+	}
+	
+	private static void processResult(TupleQueryResult result, List<List<String>> processedResultList) {
+		List<String> columnTitles = new ArrayList<>();
+		for (String bindingName : result.getBindingNames()) {
+			columnTitles.add(bindingName);
+		}
+		processedResultList.add(columnTitles);
+		while (result.hasNext()) {
+			BindingSet solution = result.next();
+			
+			List<String> processedResult = new ArrayList<>();
+			for (String bindingName : solution.getBindingNames()) {
+				processedResult.add(removeDataType(solution.getValue(bindingName).toString()));
+			}
+			processedResultList.add(processedResult);
+		}
+	}
+	
+	/**
+	 * Removes the following XML Schema data types from a string:</br>
+	 * 1. string</br>
+	 * 2. integer</br>
+	 * 3. float</br>
+	 * 4. double.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	private static String removeDataType(String value) {
+		String stringType = "^^<http://www.w3.org/2001/XMLSchema#string>";
+		String integerType = "^^<http://www.w3.org/2001/XMLSchema#integer>";
+		String floatType = "^^<http://www.w3.org/2001/XMLSchema#float>";
+		String doubleType = "^^<http://www.w3.org/2001/XMLSchema#double>";
+		if (value.contains(stringType)) {
+			value = value.replace(stringType, "");
+		} else if (value.contains(integerType)) {
+			value = value.replace(integerType, "");
+			value = replaceInvertedComma(value);
+		} else if (value.contains(floatType)) {
+			value = value.replace(floatType, "");
+			value = replaceInvertedComma(value);
+		} else if (value.contains(doubleType)) {
+			value = value.replace(doubleType, "");
+			value = replaceInvertedComma(value);
+		} else if (value.startsWith("\"") || value.endsWith("\"")) {
+			value = value.replace("\"", "");
+		}
+		return value;
+	}
+
+	/**
+	 * Removes inverted commas from a string.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	private static String replaceInvertedComma(String value) {
+		if (value.contains("\"")) {
+			value = value.replace("\"", "");
+		}
+		return value;
+	}
 }
