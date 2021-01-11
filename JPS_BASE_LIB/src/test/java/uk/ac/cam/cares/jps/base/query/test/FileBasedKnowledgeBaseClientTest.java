@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -54,7 +55,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	private String testQuery = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 	
 	/**
-	 * Copy test resources into temporary folder 
+	 * Copy test resources into temporary folder.
 	 * @throws URISyntaxException
 	 * @throws IOException
 	 */
@@ -85,8 +86,10 @@ public class FileBasedKnowledgeBaseClientTest {
 		filePathNQ2 = tempFilePathNQ2.toString();
 	}
 	
+	//// Test constructors
+	
 	/**
-	 * Test constructor with file path provided
+	 * Test constructor with file path provided.
 	 */
 	@Test
 	public void testConstructorWithFilePath() {
@@ -124,7 +127,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Test constructor with multiple files and contexts
+	 * Test constructor with multiple files and contexts.
 	 * @throws SecurityException 
 	 * @throws NoSuchFieldException 
 	 * @throws IllegalAccessException 
@@ -161,7 +164,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Test initialisation of Dataset and RDFConnection
+	 * Test initialisation of Dataset and RDFConnection.
 	 * 
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
@@ -186,19 +189,23 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Test load graph
+	 * Test load graphs and write.
+	 * 
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 * @throws InvocationTargetException 
 	 * @throws IllegalArgumentException 
 	 * @throws IllegalAccessException 
 	 * @throws NoSuchFieldException 
+	 * @throws IOException 
 	 */
 	@Test
-	public void testLoadGraph() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+	public void testLoadGraphAndWrite() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException, IOException {
 	
 		kbClient = new FileBasedKnowledgeBaseClient();
 	
+		// TEST LOAD
+		
 	    //load triples to default graph
 	    kbClient.load(null, filePath);
 		
@@ -222,10 +229,32 @@ public class FileBasedKnowledgeBaseClientTest {
 	    fieldValue = (Dataset) field.get(kbClient);
   		Model model3 = fieldValue.getNamedModel("http://example.com/context");
   		assertFalse(model3.isEmpty());
+  		
+  		// TEST WRITE
+  		
+  		//Test write to file
+		File file0 = new File(filePath);
+		File file1 = new File(filePathOWL);
+		File file2 = new File(filePathNQ);
+		
+		//delete files
+		Files.deleteIfExists(Paths.get(filePath));
+		assertFalse(file0.exists());
+		Files.deleteIfExists(Paths.get(filePathOWL));
+		assertFalse(file1.exists());
+		Files.deleteIfExists(Paths.get(filePathNQ));
+		assertFalse(file2.exists());
+  			
+		//write file
+		kbClient.writeToFile();
+		assertTrue(file0.exists());
+		assertTrue(file1.exists());
+		assertTrue(file2.exists());
 	}
 	
 	/**
-	 * Test load quads. Supplied name overriden by context
+	 * Test load quads. Supplied name should be overriden by context in file.
+	 * 
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 * @throws SecurityException 
@@ -236,9 +265,9 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
-		//Try loading quad to a different named graph. Model should be loaded to the context
 		kbClient.load("http://example.com/differentContext", filePathNQ);
 		
+		// check a model is loaded to the context given in the file
 		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
   		Field field = kbClient.getClass().getDeclaredField("dataset");;
   		field.setAccessible(true);
@@ -246,6 +275,7 @@ public class FileBasedKnowledgeBaseClientTest {
   		Model model1 = fieldValue.getNamedModel("http://example.com/context");
   		assertFalse(model1.isEmpty());
   		
+  		// check graphs variable has changed
   		assertNotNull(kbClient.getClass().getDeclaredField("graphs"));
   		Field field2 = kbClient.getClass().getDeclaredField("graphs");;
   		field2.setAccessible(true);
@@ -256,7 +286,8 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	 
 	/**
-	 * Test load quads. Supplied name overriden by context
+	 * Test load quads to default graph. The model should be loaded as a named graph.
+	 * 
 	 * @throws IllegalAccessException 
 	 * @throws IllegalArgumentException 
 	 * @throws SecurityException 
@@ -270,7 +301,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		//Try loading quad to default. Model should be loaded to a named graph
 		kbClient.load(filePathNQ);
 		
-		//Check the quad is loaded to the correct context
+		//Check the quad is loaded to the correct named grpah
 		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
   		Field field = kbClient.getClass().getDeclaredField("dataset");;
   		field.setAccessible(true);
@@ -278,6 +309,7 @@ public class FileBasedKnowledgeBaseClientTest {
   		Model model1 = fieldValue.getNamedModel("http://example.com/context");
   		assertFalse(model1.isEmpty());
   		
+  		//Check graphs variable contains the context
   		assertNotNull(kbClient.getClass().getDeclaredField("graphs"));
   		Field field2 = kbClient.getClass().getDeclaredField("graphs");;
   		field2.setAccessible(true);
@@ -293,50 +325,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Multiple contexts in quad. Expect error
-	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testMultipleContexts() {
-		
-		kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.load("http://example.com/context", filePathNQ2);
-	}
-	
-	/**
-	 * Multiple quads with same context. Expect error.
-	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testSameContext() {
-		
-		kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.load("http://example.com/context", filePathNQ);
-		kbClient.load("http://example.com/context2", filePathNQ);
-	}
-	
-	/**
-	 * Loading multiple files to same graph. Expect error.
-	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testSameGraph() {
-		
-		kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.load("http://example.com/context", filePathOWL);
-		kbClient.load("http://example.com/context", filePath);
-	}
-	
-	/**
-	 * Multiple files to default graph. Expect error.
-	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testMultipleDefault() {
-		
-		kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.load(filePathOWL);
-		kbClient.load(filePath);
-	}
-	
-	/**
-	 * Load a model
+	 * Load a model.
 	 */
 	@Test
 	public void testLoadFileToDefault() {
@@ -351,28 +340,13 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Test exception thrown by giving bad file path to load
+	 * Test exception thrown by giving bad file path to load.
 	 */
 	@Test(expected = JPSRuntimeException.class)
 	public void testLoadBadFile() {
 	
 		kbClient = new FileBasedKnowledgeBaseClient();
 		kbClient.load("Example/does/not/exist");
-	}
-	
-	/**
-	 * Load model
-	 */
-	@Test
-	public void testLoad() {
-				
-		kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.setFilePath(filePath);
-		kbClient.load();
-		
-		assertEquals(filePath, kbClient.getFilePath());
-		assertTrue(kbClient.isConnected());
-		assertFalse(kbClient.isEmpty());
 	}
 
 	/**
@@ -385,56 +359,90 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient.load();
 	}
 	
-	//******************
+	////  Test errors thrown by edge cases
 	
 	/**
-	 * Test write to file
-	 * @throws IOException
+	 * Multiple contexts in quad. Expect an error.
 	 */
-	@Test
-	public void testWriteToFileDefault() throws IOException {
+	@Test(expected = JPSRuntimeException.class)
+	public void testMultipleContexts() {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
-		
-		//load file
-		kbClient.load(filePath);
-		assertTrue(kbClient.isConnected());
-		assertFalse(kbClient.isEmpty());
-
-		File file = new File(filePath);
-		
-		//delete file
-		Files.deleteIfExists(Paths.get(filePath));
-		assertFalse(file.exists());
-		
-		//write file
-		kbClient.writeToFile();
-		assertTrue(file.exists());
+		kbClient.load("http://example.com/context", filePathNQ2);
 	}
 	
+	/**
+	 * Multiple quads with same context. Expect an error.
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testSameContext() {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load("http://example.com/context", filePathNQ);
+		kbClient.load("http://example.com/context2", filePathNQ);
+	}
+	
+	/**
+	 * Loading multiple files to same graph. Expect an error.
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testSameGraph() {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load("http://example.com/context", filePathOWL);
+		kbClient.load("http://example.com/context", filePath);
+	}
+	
+	/**
+	 * Loading multiple files to default graph. Expect an error.
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testMultipleDefault() {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(filePathOWL);
+		kbClient.load(filePath);
+	}
+	
+	//// Writing to file
+
 	/**
 	 * Test writing to new file
 	 * @throws IOException
 	 */
 	@Test
-	public void testWriteToFile() throws IOException {
+	public void testWriteGraphToFile() throws IOException {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
+		
+		//TEST WRITE DEFAULT
+		
 		kbClient.load(filePath);
 		
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
 				
 		//write file
-		String newFilePath = Paths.get(tempFolder.getRoot().toString() + "/newfile.owl").toString();
-		kbClient.writeToFile(newFilePath, Lang.RDFXML);
+		String newFilePath = Paths.get(tempFolder.getRoot().toString() + "/newfile.nq").toString();
+		kbClient.writeToFile(null, newFilePath, Lang.NQ);
 		
 		File file = new File(newFilePath);
 		assertTrue(file.exists());
+		
+		// TEST WRITE NAMED
+		
+		kbClient.load( "http://example.com/triples", filePathOWL);
+		
+		//write file
+		String newFilePath2 = Paths.get(tempFolder.getRoot().toString() + "/newfile2.nq").toString();
+		kbClient.writeToFile("http://example.com/triples", newFilePath2, Lang.NQ);
+		
+		File file2 = new File(newFilePath2);
+		assertTrue(file2.exists());
 	} 
 	
 	/**
-	 * Test end. Should write to file and then close resources
+	 * Test end. Should write to file and then close resources.
 	 */
 	@Test
 	public void testEnd() {
@@ -457,7 +465,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Set and get file path variable
+	 * Set and get file path variable.
 	 * 
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
@@ -482,7 +490,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 
 	/**
-	 * Set and get Query endpoint should set and get the filePath variable
+	 * Set and get Query endpoint should set and get the filePath variable.
 	 * 
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
@@ -507,7 +515,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Set and get Update endpoint should set and get the filePath variable
+	 * Set and get Update endpoint should set and get the filePath variable.
 	 * 
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
@@ -532,7 +540,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Set and get the query string
+	 * Set and get the query string.
 	 * 
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
@@ -557,7 +565,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Set a new serialisation language for output
+	 * Set a new serialisation language for output.
 	 * 
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
@@ -575,7 +583,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	    field.setAccessible(true);
 	    
 	    Lang fieldValue = (Lang) field.get(kbClient);
-	    assertEquals(Lang.RDFXML,fieldValue); //default language
+	    assertEquals(null,fieldValue); //default language
 	    
 	    //Set lang to NQ
 		kbClient.setOutputLang(Lang.NQ);
@@ -583,7 +591,6 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertEquals(Lang.NQ,fieldValue);
 	}
 	
-	//Test with different file type
 	/**
 	 * Test load and write with different serialisation language. 
 	 * langOut variable should be updated during load.
@@ -607,11 +614,86 @@ public class FileBasedKnowledgeBaseClientTest {
 	    
 	    Lang fieldValue = (Lang) field.get(kbClient);
 	    
-	    assertEquals(Lang.NQ, fieldValue); 
+	    assertEquals(null, fieldValue); 
+	    
+	    assertNotNull(kbClient.getClass().getDeclaredField("graphLangs"));
+  		Field field2 = kbClient.getClass().getDeclaredField("graphLangs");;
+  		field2.setAccessible(true);
+  		@SuppressWarnings("unchecked")
+		ArrayList<Lang> field2Value = (ArrayList<Lang>) field2.get(kbClient);
+  		assertTrue(field2Value.contains(Lang.NQUADS));   
 	}
 
 	/**
-	 * Test Sparql update
+	 * Set output serialization language for named graphs.
+	 * @param langOut
+	 * @throws SecurityException 
+	 * @throws NoSuchFieldException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 */
+	@Test
+	public void testSetOutputLangs() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+	
+		//Initialise variable
+		ArrayList<Lang> initialLangs = new ArrayList<Lang>();
+		initialLangs.add(Lang.RDFXML);
+		initialLangs.add(Lang.RDFXML);
+		initialLangs.add(Lang.RDFXML);
+		initialLangs.add(Lang.RDFXML);
+		
+		assertNotNull(kbClient.getClass().getDeclaredField("graphLangs"));
+  		Field field2 = kbClient.getClass().getDeclaredField("graphLangs");;
+  		field2.setAccessible(true);
+		field2.set(kbClient, initialLangs);
+  		
+	    //Set lang array
+		Lang[] langOut = new Lang[4];
+		langOut[0] = Lang.NQUADS;
+		langOut[1] = Lang.NQUADS;
+		langOut[2] = Lang.NQUADS;
+		langOut[3] = Lang.NQUADS;
+		
+		ArrayList<Lang> expected = new ArrayList<Lang>();
+		expected.addAll(Arrays.asList(langOut));
+		
+		kbClient.setOutputLang(langOut);
+		
+		// check variable
+  		@SuppressWarnings("unchecked")
+		ArrayList<Lang> field2Value = (ArrayList<Lang>) field2.get(kbClient);
+  		assertEquals(expected, field2Value);   
+	}
+	
+	/**
+	 * Set output langs array. Throw error due to incorrect array size.
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testSetOutputLangsError() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+	
+	    //Set lang array
+		Lang[] langOut = new Lang[4];
+		langOut[0] = Lang.NQUADS;
+		langOut[1] = Lang.NQUADS;
+		langOut[2] = Lang.NQUADS;
+		langOut[3] = Lang.NQUADS;
+		
+		ArrayList<Lang> expected = new ArrayList<Lang>();
+		expected.addAll(Arrays.asList(langOut));
+		
+		kbClient.setOutputLang(langOut); 
+	}
+	
+	/**
+	 * Test Sparql update.
 	 * 
 	 * @throws ParseException
 	 */
@@ -634,7 +716,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Test Sparql Update with String
+	 * Test Sparql Update with String.
 	 * @throws ParseException
 	 */
 	@Test
@@ -655,7 +737,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 
 	/**
-	 * Test Sparql Update with UpdateRequest 
+	 * Test Sparql Update with UpdateRequest.
 	 * @throws ParseException
 	 */
 	@Test
@@ -709,6 +791,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	
 	/**
 	 * Test Sparql query. Should return result as JSONArray.
+	 * 
 	 * @throws JSONException
 	 */
 	@Test
@@ -726,6 +809,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	
 	/**
 	 * Test Sparql query with String. Should return result as JSONArray.
+	 * 
 	 * @throws JSONException
 	 */
 	@Test

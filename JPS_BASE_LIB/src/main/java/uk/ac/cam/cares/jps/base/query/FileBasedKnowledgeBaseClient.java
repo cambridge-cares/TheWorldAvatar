@@ -43,7 +43,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	
 	private String query;
 	//Default graph
-	private Lang defaultLangOut = Lang.RDFXML; // RDFXML by default
+	private Lang defaultLangOut; // RDFXML by default
 	private String defaultFilePath;
 	//Named graphs
 	private ArrayList<String> graphs = new ArrayList<String>();
@@ -252,6 +252,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 							
 							//set default graph to null
 							defaultFilePath = null;
+							defaultLangOut = null;
 							
 							System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph + " changed to " + context);
 							
