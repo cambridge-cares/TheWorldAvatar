@@ -4,6 +4,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
+import org.eclipse.rdf4j.sparqlbuilder.core.From;
 import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -24,7 +25,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.region.Scope;
 
 public class ShipSparql {
-    String ship_endpoint = KeyValueManager.get(IKeys.URL_SHIPSQUERY);
+    String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
 
     private static Prefix p_ship = SparqlBuilder.prefix("ship",iri("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"));
     private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
@@ -39,6 +40,7 @@ public class ShipSparql {
     private Iri unit_knot = p_derived_SI_unit.iri("knot"); // not SI unit, change to m/s soon
     private static Iri unit_m = p_SI_unit.iri("m");
 
+    private static Iri ship_graph = p_ship.iri("Ships");
     /**
      * Creates a ship instance on ship_endpoint, Blazegraph is highly recommended because of its performance
      * @param i
@@ -129,9 +131,9 @@ public class ShipSparql {
 
         Prefix [] prefix_list = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_time,p_SI_unit};
         ModifyQuery modify = Queries.MODIFY();
-        modify.prefix(prefix_list).insert(combined_tp).where();
+        modify.prefix(prefix_list).insert(combined_tp).where().with(ship_graph);
 
-        performUpdate(ship_endpoint, modify.getQueryString());
+        performUpdate(modify);
     }
 
     /** 
@@ -212,32 +214,30 @@ public class ShipSparql {
         OrderCondition alDesc = SparqlBuilder.desc(al);
         OrderCondition awDesc = SparqlBuilder.desc(aw);
 
-        query.prefix(p_ship,p_space_time_extended, p_system).select(mmsi_value,type,al,aw,ss,cu,lon,lat).where(querypattern)
+        // named graph
+        From queryGraph = SparqlBuilder.from(ship_graph);
+        
+        query.from(queryGraph).prefix(p_ship,p_space_time_extended, p_system).select(mmsi_value,type,al,aw,ss,cu,lon,lat).where(querypattern)
         .orderBy(speedDesc).orderBy(alDesc).orderBy(awDesc).limit(300);
 
-        JSONArray result = performQuery(ship_endpoint,query.getQueryString());
+        JSONArray result = performQuery(query);
 
         return result;
     }
 
-    private void performUpdate(String queryEndPoint, String query) {
+    private void performUpdate(ModifyQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-        kbClient.setUpdateEndpoint(queryEndPoint);
-        kbClient.setQuery(query);
+        kbClient.setUpdateEndpoint(endpoint);
+        kbClient.setQuery(query.getQueryString());
         System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
     }
 
-    private JSONArray performQuery(String queryEndPoint, String query) {
+    private JSONArray performQuery(SelectQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-        kbClient.setQueryEndpoint(queryEndPoint);
-        kbClient.setQuery(query);
+        kbClient.setQueryEndpoint(endpoint);
+        kbClient.setQuery(query.getQueryString());
         JSONArray result = null;
         result = kbClient.executeQuery(); 
         return result;
-    }
-
-    public void clearEndpoint() {
-        String update = "clear all";
-        performUpdate(ship_endpoint, update);
     }
 }
