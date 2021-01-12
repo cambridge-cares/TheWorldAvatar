@@ -25,7 +25,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.region.Scope;
 
 public class ShipSparql {
-    static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
+    private static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
 
     private static Prefix p_ship = SparqlBuilder.prefix("ship",iri("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"));
     private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));

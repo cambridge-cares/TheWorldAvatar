@@ -82,9 +82,9 @@ public class SensorSparql {
     private static Iri unit_ugm3 = p_derived_SI_unit.iri("ug_per_m.m.m");
 
     //endpoint
-    static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
-    static Iri weather_graph = p_station.iri("WeatherStations");
-    static Iri airquality_graph = p_station.iri("AirQualityStations");
+    private static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
+    private static Iri weather_graph = p_station.iri("WeatherStations");
+    private static Iri airquality_graph = p_station.iri("AirQualityStations");
 
     private static Prefix [] getPrefix() {
         Prefix [] prefixes = {p_station,p_space_time_extended,p_space_time,p_system,p_SI_unit,p_derived_SI_unit,p_ontosensor,p_time,p_coordsys,p_instrument};
