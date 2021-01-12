@@ -25,7 +25,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.region.Scope;
 
 public class ShipSparql {
-    String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
+    static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
 
     private static Prefix p_ship = SparqlBuilder.prefix("ship",iri("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"));
     private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
@@ -37,7 +37,7 @@ public class ShipSparql {
     private static Prefix p_SI_unit = SparqlBuilder.prefix("si_unit",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#"));
 
     private static Iri unit_degree = p_derived_SI_unit.iri("degree");
-    private Iri unit_knot = p_derived_SI_unit.iri("knot"); // not SI unit, change to m/s soon
+    private static Iri unit_knot = p_derived_SI_unit.iri("knot"); // not SI unit, change to m/s soon
     private static Iri unit_m = p_SI_unit.iri("m");
 
     private static Iri ship_graph = p_ship.iri("Ships");
@@ -54,7 +54,7 @@ public class ShipSparql {
      * @param lon
      * @param timestamp
      */
-    public void createShip(int i, int mmsi, String type, int al, int aw, double ss, double cu,
+    public static void createShip(int i, int mmsi, String type, int al, int aw, double ss, double cu,
             double lat, double lon, int timestamp) {
         String ship_name = "ship"+i;
         Iri ship_iri = p_ship.iri(ship_name);
@@ -141,7 +141,7 @@ public class ShipSparql {
      * @param sc
      * @return
      */
-    public JSONArray queryShipWithinScope(Scope sc) {
+    public static JSONArray queryShipWithinScope(Scope sc) {
         SelectQuery query = Queries.SELECT();
 
         // values we want to obtain
@@ -225,14 +225,14 @@ public class ShipSparql {
         return result;
     }
 
-    private void performUpdate(ModifyQuery query) {
+    private static void performUpdate(ModifyQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setUpdateEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
         System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
     }
 
-    private JSONArray performQuery(SelectQuery query) {
+    private static JSONArray performQuery(SelectQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setQueryEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());

@@ -24,8 +24,7 @@ public class ShipDataAgent extends JPSAgent {
     	JSONObject response = new JSONObject();
     	if (validateInput(requestParams)) {
 	        Scope sc = new Scope(requestParams);
-	        ShipSparql ss = new ShipSparql();
-	        JSONArray result = ss.queryShipWithinScope(sc);
+	        JSONArray result = ShipSparql.queryShipWithinScope(sc);
 	        JSONObject items = new JSONObject();
 	        items.put(keyItems, result);
 	        response.put(keyCollection, items);

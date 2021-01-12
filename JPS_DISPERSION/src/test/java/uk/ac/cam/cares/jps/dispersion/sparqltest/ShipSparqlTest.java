@@ -27,7 +27,6 @@ public class ShipSparqlTest {
         String csvFile=new QueryBroker().readFileLocal(csvPath);
         List<String[]> csv_array = MatrixConverter.fromCsvToArray(csvFile);
         int mmsi, al, aw, ts, tst; double ss, cu, lat, lon; String type;
-        ShipSparql sparql = new ShipSparql();
         boolean success;
         for (int i = 1; i < csv_array.size(); i++) {
         	success = false;
@@ -56,9 +55,9 @@ public class ShipSparqlTest {
             while (!success) {
             	try {
             		if (ts > tst) {
-                        sparql.createShip(i,mmsi,type,al,aw,ss,cu,lat,lon,ts);
+            			ShipSparql.createShip(i,mmsi,type,al,aw,ss,cu,lat,lon,ts);
                     } else {
-                        sparql.createShip(i,mmsi,type,al,aw,ss,cu,lat,lon,tst);
+                    	ShipSparql.createShip(i,mmsi,type,al,aw,ss,cu,lat,lon,tst);
                     }
             		success = true;
             	} catch (JPSRuntimeException e) {
@@ -75,7 +74,6 @@ public class ShipSparqlTest {
         
         Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
         
-        ShipSparql sparql = new ShipSparql();
-        sparql.queryShipWithinScope(sc);
+        ShipSparql.queryShipWithinScope(sc);
     }
 }
