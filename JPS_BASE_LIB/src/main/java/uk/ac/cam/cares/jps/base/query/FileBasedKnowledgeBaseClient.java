@@ -315,7 +315,11 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	public void writeToFile(String graph) {		
 		
 		if(graph == null || graph.equals("default")) {
-			writeToFile(null, this.defaultFilePath, this.defaultLangOut);
+			if(defaultFilePath != null || defaultLangOut != null) {
+				writeToFile(null, this.defaultFilePath, this.defaultLangOut);
+			}else {
+				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: no file path given.");
+			}
 		}else {
 			writeToFile(graph, graphFilePaths.get(graphs.indexOf(graph)), graphLangs.get(graphs.indexOf(graph)));
 		}
@@ -641,7 +645,6 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		}
 		return json;
 	}
-}
 	
 	/**
 	 * Perform a sparql construct query
