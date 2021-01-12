@@ -106,7 +106,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		requestParams.put("stationiri", stationiri);
 
 		logger.info("calling ship data agent = " + requestParams.getJSONObject("region").toString());
-		String resultship = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ShipDataAgent", 
+		String resultship = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/ShipDataAgent", 
 				requestParams.getJSONObject("region").toString());
 
 		JSONObject jsonShip = new JSONObject(resultship);
