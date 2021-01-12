@@ -9,20 +9,28 @@ import org.apache.jena.update.UpdateRequest;
 
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 
+/**
+ * This tool clones a graph from one repository to another.
+ * 
+ * @author Casper Lindberg
+ *
+ */
 public class CloningTool {
 	
 	/**
-	 * Clone all triples from source repository to target repository. Context is lost.
+	 * Clone all triples from source repository to target repository. Note: context is lost!
 	 * @param sourceKB
 	 * @param targetKB
 	 */
+	/* // It is better that the graph is explicitly specified.  
 	public static void clone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB) {
 		
 		clone(sourceKB, null, targetKB, null);
 	}
+	*/
 	
 	/**
-	 * Clone a named graph from source knowledge base to a named graph in target knowledge base.
+	 * Clone a named graph from the source knowledge base to a named graph in the target knowledge base.
 	 * @param sourceKB
 	 * @param sourceGraph
 	 * @param targetKB
