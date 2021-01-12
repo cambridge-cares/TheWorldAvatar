@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.ship.shipdata;
+package uk.ac.cam.cares.jps.dispersion.agents;
 
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.dispersion.sparql.ShipSparql;
 
 @WebServlet(urlPatterns = {"/ShipDataAgent"})
 public class ShipDataAgent extends JPSAgent {

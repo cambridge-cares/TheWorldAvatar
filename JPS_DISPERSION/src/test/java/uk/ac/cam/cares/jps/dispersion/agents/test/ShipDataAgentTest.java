@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.ship.shipdata.test;
+package uk.ac.cam.cares.jps.dispersion.agents.test;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.ship.shipdata.ShipDataAgent;
+import uk.ac.cam.cares.jps.dispersion.agents.ShipDataAgent;
 
 public class ShipDataAgentTest {
     @Test

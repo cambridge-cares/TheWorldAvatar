@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.dispersion.sensorsparqltest;
+package uk.ac.cam.cares.jps.dispersion.sparqltest;
 
 import java.util.List;
 

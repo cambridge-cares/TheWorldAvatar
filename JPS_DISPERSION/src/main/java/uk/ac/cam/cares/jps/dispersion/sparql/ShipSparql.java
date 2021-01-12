@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.ship.shipdata;
+package uk.ac.cam.cares.jps.dispersion.sparql;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 

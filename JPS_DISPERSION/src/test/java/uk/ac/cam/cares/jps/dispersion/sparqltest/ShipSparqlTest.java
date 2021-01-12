@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.ship.shipdata.test;
+package uk.ac.cam.cares.jps.dispersion.sparqltest;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.ship.shipdata.ShipSparql;
+import uk.ac.cam.cares.jps.dispersion.sparql.ShipSparql;
 
 public class ShipSparqlTest {
     /**
