@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
+import uk.ac.cam.cares.jps.dispersion.sparql.WeatherStation;
 
 
 
@@ -129,79 +130,38 @@ public class ADMSAgent extends DispersionModellingAgent {
     	System.out.println("going to create the weather input");
 		//in here file name is not used as it is hard-coded in python
 		logger.info("going to weather creation");
-		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
-				+ "PREFIX j6:<http://www.w3.org/2006/time#>" 
-				+ "SELECT ?class ?propval ?proptimeval "
-				+ "{ GRAPH <"+stniri.get(0)+"> "
-				+ "{ "
-				 
-				+ "  ?entity j4:observes ?prop ." 
-				+ " ?prop a ?class ."
-				+ " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." 
-				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
-				+ "}" 
-				+ "}" 
-				+ "ORDER BY DESC(?proptimeval)LIMIT 7";
-		
-		List<String[]> listmap = queryEndPointDataset(sensorinfo); //taken from dispersion modelling agent
-
-		 System.out.println("size="+listmap.size());
-		 logger.info("query is successful");
-	        JSONObject weather = new JSONObject();
-		    JSONObject cloudcover= new JSONObject();
-		    JSONObject precipitation= new JSONObject();
-		    JSONObject temperature= new JSONObject();
-		    JSONObject wind= new JSONObject();
-		    JSONObject relativehumidity= new JSONObject();
+	    JSONObject weather = new JSONObject();
+		JSONObject cloudcover= new JSONObject();
+		JSONObject precipitation= new JSONObject();
+		JSONObject temperature= new JSONObject();
+		JSONObject wind= new JSONObject();
+		JSONObject relativehumidity= new JSONObject();
+		WeatherStation ws = new WeatherStation(stniri.get(0));
+		// these unnecessary 'hasspeed' fields are required by the python script
+		wind.put("hasspeed", String.valueOf(ws.getWindspeed()));
+		wind.put("hasdirection", String.valueOf(ws.getWinddirection()));
+		temperature.put("hasvalue", String.valueOf(ws.getTemperature()));
+		relativehumidity.put("hasvalue", String.valueOf(ws.getHumidity()));
+		precipitation.put("hasintensity", String.valueOf(ws.getPrecipitation()));
+		precipitationdata=String.valueOf(ws.getPrecipitation()); // required for emissions later
+		cloudcover.put("hascloudcovervalue", String.valueOf(ws.getCloudcover()));
 		    
-	        for(int r=0;r<listmap.size();r++) {
-	        	
-	        		System.out.println("it goes number 1");
-	        		if(listmap.get(r)[0].toLowerCase().contains("speed")) {
-	        			wind.put("hasspeed", listmap.get(r)[1]);
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
-		        		wind.put("hasdirection", listmap.get(r)[1]);
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("temperature")) {
-
-		        		  temperature.put("hasvalue", listmap.get(r)[1]);
-		        		
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("humidity")) {
-
-			        		String decimalhumidity=listmap.get(r)[1];
-			        		double percent=Double.valueOf(decimalhumidity)*100;
-			        		relativehumidity.put("hasvalue",""+percent);
-	
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("precipitation")) {
-		        		precipitation.put("hasintensity", listmap.get(r)[1]);
-		        		precipitationdata=listmap.get(r)[1];
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("cloud")) {
-		        		cloudcover.put("hascloudcovervalue", listmap.get(r)[1]);
-		        	
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("pressure")) {
-
-		        	}
-	        	
-	        }
-	        if(temperature.length()==0) {
-	        	temperature.put("hasvalue", "25");
-	        }
-	        if(relativehumidity.length()==0) {
-	        	relativehumidity.put("hasvalue", "68");
-	        }
-	        weather.put("haswind", wind);
-	        weather.put("hasexteriortemperature", temperature);
-	        weather.put("hashumidity", relativehumidity);
-	        weather.put("hasprecipation", precipitation);
-	        weather.put("hascloudcover", cloudcover);
-	        System.out.println("temperature="+temperature);
-	        System.out.println("humidity="+relativehumidity);
+	    if(temperature.length()==0) {
+	    	temperature.put("hasvalue", "25");
+	    }
+	    if(relativehumidity.length()==0) {
+	    	relativehumidity.put("hasvalue", "68");
+	    }
+	    weather.put("haswind", wind);
+	    weather.put("hasexteriortemperature", temperature);
+	    weather.put("hashumidity", relativehumidity);
+	    weather.put("hasprecipation", precipitation);
+	    weather.put("hascloudcover", cloudcover);
+	    System.out.println("temperature="+temperature);
+	    System.out.println("humidity="+relativehumidity);
 	        
-	        System.out.println("weather data= "+weather.toString());
-	        writeMetFile(weather, dataPath);
+	    System.out.println("weather data= "+weather.toString());
+	    writeMetFile(weather, dataPath);
 	}
 
     private String getTargetCRS(String cityIRI) {
