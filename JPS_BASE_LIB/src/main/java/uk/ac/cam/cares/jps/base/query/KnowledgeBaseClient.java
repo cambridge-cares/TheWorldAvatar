@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -65,11 +67,18 @@ public abstract class KnowledgeBaseClient{
 	public abstract String execute();
 	
 	/**
-	 * Excute sparql query supplied by the calling method.
+	 * Execute sparql query supplied by the calling method.
 	 * @param sparql query
 	 * @return JSONArray as String
 	 */
 	public abstract String execute(String query);
+	
+	/**
+	 * Execute sparql construct query.
+	 * @param sparql
+	 * @return
+	 */
+	public abstract Model queryConstruct(Query sparql);
 	
 	// SPARQL update methods
 	

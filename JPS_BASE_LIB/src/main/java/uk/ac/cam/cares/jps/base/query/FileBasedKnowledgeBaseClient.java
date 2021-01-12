@@ -11,10 +11,12 @@ import java.util.Iterator;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.TxnType;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.riot.Lang;
@@ -313,7 +315,11 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	public void writeToFile(String graph) {		
 		
 		if(graph == null || graph.equals("default")) {
-			writeToFile(null, this.defaultFilePath, this.defaultLangOut);
+			if(defaultFilePath != null || defaultLangOut != null) {
+				writeToFile(null, this.defaultFilePath, this.defaultLangOut);
+			}else {
+				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: no file path given.");
+			}
 		}else {
 			writeToFile(graph, graphFilePaths.get(graphs.indexOf(graph)), graphLangs.get(graphs.indexOf(graph)));
 		}
@@ -638,5 +644,26 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			json.put(obj);
 		}
 		return json;
+	}
+	
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
+	@Override
+	public Model queryConstruct(Query sparql) {
+		
+		if (conn != null) {
+			conn.begin( TxnType.READ );	
+			try {
+				QueryExecution queryExec = conn.query(sparql);
+				Model results = queryExec.execConstruct();
+				return results;
+			} finally {
+				conn.end();
+			}
+		} else {
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
+		}
 	}
 }
