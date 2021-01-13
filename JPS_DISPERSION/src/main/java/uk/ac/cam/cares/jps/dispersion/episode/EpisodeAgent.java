@@ -14,6 +14,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +51,7 @@ import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.dispersion.general.DispersionModellingAgent;
+import uk.ac.cam.cares.jps.dispersion.sensorsparql.WeatherStation;
 
 public class EpisodeAgent extends DispersionModellingAgent {
 	
@@ -281,8 +284,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
             createEmissionInput(dataPath, "lines.csv",shipdata);
             try { //for control file
                 createControlTopologyFile(srtm, dataPath, "aermap.inp",sc);
-                createControlWeatherORCityChemFile(dataPath, "run_file.asc",stniri,sc);
-                createControlWeatherORCityChemFile(dataPath, "citychem_restart.txt",stniri,sc);
+                if (!AgentLocator.isJPSRunningAtCMCL()) {
+                    createControlWeatherORCityChemFile(dataPath, "run_file.asc",stniri,sc);
+                    createControlWeatherORCityChemFile(dataPath, "citychem_restart.txt",stniri,sc);
+                }
                 createControlEmissionFile(shipdata,dataPath,"cctapm_meta_LSE.inp",sc);
                 createControlEmissionFile(shipdata,dataPath,"cctapm_meta_PSE.inp",sc);
             } catch (IOException e) {
@@ -290,8 +295,26 @@ public class EpisodeAgent extends DispersionModellingAgent {
                 e.printStackTrace();
             }
             createReceptorFile(dataPath,"receptor_input.txt",sc);
-            createWeatherInput(dataPath,"mcwind_input.txt",stniri);
+            if (!AgentLocator.isJPSRunningAtCMCL()) {
+                createWeatherInput(dataPath,"mcwind_input.txt",stniri);
+            }
 
+            // temporary mess, will be merged after everything is tidied up!
+            if (AgentLocator.isJPSRunningAtCMCL()) {
+            	WeatherStation[] weatherStations = new WeatherStation[stnIRI.length()];
+	            // first station is the main station, second station only provides wind speed/direction
+	            for (int i=0; i<stnIRI.length(); i++) {
+	            	weatherStations[i] = new WeatherStation(stnIRI.getString(i));
+	            }
+	            try {
+	                createControlWeatherORCityChemFile(dataPath, "run_file.asc",weatherStations,sc);
+                    createControlWeatherORCityChemFile(dataPath, "citychem_restart.txt",weatherStations,sc);
+	            } catch (IOException e) {
+	            	e.printStackTrace();
+	            }
+                createWeatherInput(dataPath,"mcwind_input.txt",weatherStations);
+            }
+            
             //zip all the input file created
             File inputfile=null;
             try {
@@ -360,9 +383,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
                 // Agent IRI
                 String agent=input.getString("agent");
                 new URL(agent).toURI();
-                // Air station IRI
-                String airstn=input.getString("airStationIRI");
-                new URL(airstn).toURI();
+                
                 valid = true;
             } catch (Exception e) {
                 throw new BadRequestException(e);
@@ -460,6 +481,46 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	        new QueryBroker().putLocal(dataPath + "/"+filename, sb.toString());  	
 	}
 
+    // new method using weather station objects
+    private void createWeatherInput(String dataPath, String filename,WeatherStation[] ws) {	
+		List<String[]> resultquery = new ArrayList<String[]>();
+
+	    String[]header= {"*","yyyy","mm","dd","hh","FF1","DD1","T25m","DT","RH%","PP_mm","Cloud","Press","FF2","DD2"};
+	    resultquery.add(0,header);
+	    String[]content=new String[15];
+	    content[0]="";
+	    LocalDateTime dateTime = LocalDateTime.ofEpochSecond(ws[0].getTimestamp(), 0, ZoneOffset.ofHours(-Integer.parseInt(gmttimedifference)));
+	    content[1] = String.valueOf(dateTime.getYear()); 
+	    content[2] = String.valueOf(dateTime.getMonthValue());
+	    content[3] = String.valueOf(dateTime.getDayOfMonth());
+	    content[4] = String.valueOf(dateTime.getHour());
+	    content[5] = String.valueOf(ws[0].getWindspeed());
+	    content[6] = String.valueOf(ws[0].getWinddirection());
+	    content[7] = String.valueOf(ws[0].getTemperature());
+	    content[8]=""+deltaT; //currently hardcoded about the delta T but can be substituted by model
+	    content[9] = String.valueOf(ws[0].getHumidity());
+	    content[10] = String.valueOf(ws[0].getPrecipitation());
+	    content[11] = String.valueOf(ws[0].getCloudcover());
+	    content[12] = String.valueOf(ws[0].getPressure());
+	    content[13] = String.valueOf(ws[1].getWindspeed());
+	    content[14] = String.valueOf(ws[1].getWinddirection());
+ 	    resultquery.add(content);
+	    StringBuilder sb= new StringBuilder();
+        //convert to tsv
+        for(int v=0;v<resultquery.size();v++) {
+	        for (int c=0;c<resultquery.get(0).length;c++) {
+	            sb.append(resultquery.get(v)[c]);
+	       	    if(resultquery.get(0).length-c!=1) {
+	       	        sb.append(separator);
+	        	}
+	        	else {
+	        	    sb.append("\n");
+	        	}
+	        }
+        }
+        new QueryBroker().putLocal(dataPath + "/"+filename, sb.toString());  	
+	}
+    
 	@Override
 	public void createEmissionInput(String dataPath, String filename,JSONObject shipdata) {
 		JSONArray coordinateship = getEntityData(shipdata);
@@ -632,6 +693,23 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		in.put("weatherinput",weather);
 		String  modifiedcontent=modifyTemplate(Filename,in,sc);
 		 new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
+	}
+	
+	public void createControlWeatherORCityChemFile(String dataPath, String Filename,WeatherStation[] ws,Scope sc) throws IOException {
+		JSONArray weather=new JSONArray();
+		for(int i=0; i<ws.length; i++) {
+			JSONObject stn= new JSONObject();
+			stn.put("name",ws[i].getStationiri().split("#")[1]);
+			stn.put("x", String.valueOf(ws[i].getXcoord()));
+			stn.put("y", String.valueOf(ws[i].getYcoord()));
+			stn.put("z", String.valueOf(ws[i].getZcoord()));
+			weather.put(stn);
+		}
+
+		JSONObject in= new JSONObject();
+		in.put("weatherinput",weather);
+		String  modifiedcontent=modifyTemplate(Filename,in,sc);
+	    new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
 	}
 	
 	public void createControlEmissionFile(JSONObject shipdata,String dataPath,String Filename,Scope sc) throws IOException {
