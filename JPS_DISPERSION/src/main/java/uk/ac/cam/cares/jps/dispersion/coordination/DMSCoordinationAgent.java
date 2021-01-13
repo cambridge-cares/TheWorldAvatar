@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.coordination;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +34,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 	public static final String DISPERSION_PATH = "/JPS_DISPERSION";
 	public static final String EPISODE_PATH = "/episode/dispersion/coordination";
 	public static final String ADMS_PATH = "/adms/dispersion/coordination";
-	public static final String NO_CITY_FOUND_MSG = "No City found in Region.";
 	
 	public boolean validateWeatherInput(String context) {
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
@@ -90,110 +90,66 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
 		return newwaste;
 	}
-
-	private String getCity(JSONObject requestParams) {
-		String regionToCityResult = null;
-		String city = null;
-
-		if (requestParams != null) {
-			JSONObject regionInfo = requestParams.getJSONObject("region");
-			if (regionInfo != null & regionInfo.length() != 0) {
-				JSONObject region = new JSONObject().put("region", regionInfo);
-				regionToCityResult = execute("/JPS/RegionToCity", region.toString());
-			}
-		}
-
-		if (!regionToCityResult.isEmpty()) {
-			city = new JSONObject(regionToCityResult).getString("city");
-		} else {
-			throw new JPSRuntimeException(NO_CITY_FOUND_MSG);
-		}
-		return city;
-	}
 	
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		String city = getCity(requestParams);
 
-		requestParams.put("city", city);
+		// temporary workaround until we remove city IRIs completely!
+		String city = requestParams.getString("city");
+
 		String result;
-		if (!requestParams.getString("agent").contains("Episode")) { 
-			result = execute("/JPS/GetBuildingListFromRegion", requestParams.toString());
-			JSONArray building = new JSONObject(result).getJSONArray("building");
-			requestParams.put("building", building);
-			logger.info("building FROM COORDINATION AGENT: " + building.toString());
-		}
 
 		// @TODO - improve weather update frequency
-		result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
+		// temporary measure to avoid changing things on Claudius
+		if (AgentLocator.isJPSRunningAtCMCL()) {
+			result = execute("/JPS_DISPERSION/WeatherAgent", requestParams.getJSONObject("region").toString());
+		} else {
+		    result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
+		}
+		
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
 		requestParams.put("stationiri", stationiri);
 
-		if (city.toLowerCase().contains("kong") || city.toLowerCase().contains("singapore")) {
+		logger.info("calling ship data agent = " + requestParams.getJSONObject("region").toString());
+		String resultship = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ShipDataAgent", 
+				requestParams.getJSONObject("region").toString());
 
-			logger.info("calling ship data agent = " + requestParams.getJSONObject("region").toString());
-			String resultship = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ShipDataAgent", 
-					requestParams.getJSONObject("region").toString());
+		JSONObject jsonShip = new JSONObject(resultship);
+		requestParams.put(PARAM_KEY_SHIP, jsonShip);
 
-			JSONObject jsonShip = new JSONObject(resultship);
-			requestParams.put(PARAM_KEY_SHIP, jsonShip);
+		if (((JSONArray) ((JSONObject) jsonShip.get("collection")).get("items")).length() != 0) {
+			String reactionMechanism = requestParams.optString("reactionmechanism");
+			JSONArray newwaste;
 
-			if (((JSONArray) ((JSONObject) jsonShip.get("collection")).get("items")).length() != 0) {
-				String reactionMechanism = requestParams.optString("reactionmechanism");
-				JSONArray newwaste;
+			newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
 
-				newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
+			requestParams.put("waste", newwaste);
 
-				requestParams.put("waste", newwaste);
+			String resultPath = DISPERSION_PATH;
+			if (path.equals(ADMS_PATH)) {
+				resultPath = resultPath + DispersionModellingAgent.ADMS_PATH;
+				result = execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
 
-				// result = execute("/JPS_DISPERSION/DispersionModellingAgent",
-				// requestParams.toString(), HttpPost.METHOD_NAME);
+				String folder = new JSONObject(result).getString("folder");
+				requestParams.put("folder", folder);
 
-				String resultPath = DISPERSION_PATH;
-				if (path.equals(ADMS_PATH) && validateWeatherInput(stationiri.getString(0))) {
-					resultPath = resultPath + DispersionModellingAgent.ADMS_PATH;
-					result = execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
+				JSONObject newJo = new JSONObject();
+				newJo.put("city", city);
+				newJo.put("airStationIRI", requestParams.get("airStationIRI").toString());
+				newJo.put("agent", requestParams.get("agent").toString());
+				String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation",
+						newJo.toString());
 
-					String folder = new JSONObject(result).getString("folder");
-					requestParams.put("folder", folder);
+				String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
 
-					JSONObject newJo = new JSONObject();
-					newJo.put("city", city);
-					newJo.put("airStationIRI", requestParams.get("airStationIRI").toString());
-					newJo.put("agent", requestParams.get("agent").toString());
-					String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation",
-							newJo.toString());
+			} else if (path.equals(EPISODE_PATH)) {
+				resultPath = resultPath + DispersionModellingAgent.EPISODE_PATH;
+				result = execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
 
-					String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
-
-				} else if (path.equals(EPISODE_PATH) && validateWeatherInput(stationiri.getString(0))
-						&& validateWeatherInput(stationiri.getString(1))) {
-					resultPath = resultPath + DispersionModellingAgent.EPISODE_PATH;
-					result = execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
-
-					String folder = new JSONObject(result).getString("folder");
-					requestParams.put("folder", folder);
-
-//					JSONObject newJo = new JSONObject();
-//					newJo.put("city", city);
-//					newJo.put("airStationIRI", requestParams.get("airStationIRI").toString());
-//					newJo.put("agent", requestParams.get("agent").toString());
-//					String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation",
-//							newJo.toString());
-//
-//					String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
-				}
+				String folder = new JSONObject(result).getString("folder");
+				requestParams.put("folder", folder);
 			}
-
-		} else {
-			// =======================================================================
-			String wasteresult = execute("/JPS/PowerPlant", requestParams.toString());
-			String waste = new JSONObject(wasteresult).getString("waste");
-			requestParams.put("waste", waste);
-			result = execute("/JPS_DISPERSION/adms/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
-			String folder = new JSONObject(result).getString("folder");
-			requestParams.put("folder", folder);
 		}
 
 		return requestParams;

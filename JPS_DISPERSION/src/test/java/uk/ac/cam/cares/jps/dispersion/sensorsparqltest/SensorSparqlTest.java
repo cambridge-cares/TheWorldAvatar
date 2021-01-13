@@ -1,23 +1,52 @@
 package uk.ac.cam.cares.jps.dispersion.sensorsparqltest;
 
+import java.lang.reflect.Method;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
+import uk.ac.cam.cares.jps.dispersion.sensorsparql.WeatherStation;
 
 public class SensorSparqlTest extends TestCase{
-	String testrepo = "http://localhost:8080/rdf4j-server/repositories/stationtest/statements";
-	String blazegraphrepo = "http://localhost:8080/blazegraph/namespace/weatherstations/sparql";
-	String freddierepo = "https://kg.cmclinnovations.com/rdf4j-server/repositories/stationtest";
-
 	public void testCreateWeatherStation() {
-		String station_name = "weatherstation1";
-		double [] xyz_coord = {4,25,3};
+		String csvPath = AgentLocator.getPathToWorkingDir(this) + "/station_coordinates.csv";
+		String csvFile=new QueryBroker().readFileLocal(csvPath);
+		List<String[]> csv_array = MatrixConverter.fromCsvToArray(csvFile);
 		
-		SensorSparql ws = new SensorSparql();
-		ws.createWeatherStation(station_name, xyz_coord, blazegraphrepo);
+		for (int i = 1; i <csv_array.size(); i++) {
+			double x = Double.parseDouble(csv_array.get(i)[0]);
+			double y = Double.parseDouble(csv_array.get(i)[1]);
+			double z = Double.parseDouble(csv_array.get(i)[2]);
+			String station_name = "weatherstation" + String.valueOf(i);
+			double [] xyz = {x,y,z};
+			SensorSparql.createWeatherStation(station_name, xyz);
+		}
+	}
+	
+	public void testUpdateWeatherStation() {
+		WeatherStation ws = new WeatherStation();
+		ws.setStationiri("http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1");
+		ws.setCloudcover(50);
+		ws.setHumidity(0.1);
+		ws.setPrecipitation(10);
+		ws.setPressure(1010);
+		ws.setTemperature(30);
+		ws.setWinddirection(60);
+		ws.setWindspeed(15);
+		ws.setTimestamp(100);
+		SensorSparql.updateWeatherStation(ws);
+	}
+	
+	public void testQueryWeatherStationProperties() {
+		String stationiri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1";
+		SensorSparql.queryWeatherStationProperties(stationiri);
 	}
 	
 	public void testCreateAirQualityStation() {
@@ -32,8 +61,7 @@ public class SensorSparqlTest extends TestCase{
 		JSONObject jo = new JSONObject();
         Region.putRegion(jo, 2);
         Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
-		SensorSparql ws = new SensorSparql();
-		JSONArray result = ws.queryAirStationsWithinScope(sc);
+		SensorSparql.queryAirStationsWithinScope(sc);
 	}
 	
 	public void testQueryAirStationCoordinatesWithIRI() {
