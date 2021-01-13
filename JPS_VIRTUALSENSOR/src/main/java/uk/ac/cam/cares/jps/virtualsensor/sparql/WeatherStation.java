@@ -32,8 +32,8 @@ public class WeatherStation implements Comparable<WeatherStation>{
 		this.pressure = queryresult.getDouble("vpressure");
 		this.temperature = queryresult.getDouble("vtemp");
 		this.timestamp = queryresult.getLong("vtime");
-		this.winddirection = queryresult.getDouble("vwindspeed");
-		this.windspeed = queryresult.getDouble("vwinddirection");
+		this.winddirection = queryresult.getDouble("vwinddirection");
+		this.windspeed = queryresult.getDouble("vwindspeed");
 	}
 	
 	public double getXcoord() {
