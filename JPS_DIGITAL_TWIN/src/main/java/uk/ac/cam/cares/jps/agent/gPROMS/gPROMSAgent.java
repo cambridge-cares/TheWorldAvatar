@@ -92,6 +92,7 @@ public class gPROMSAgent extends JPSAgent {
       "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#";
   public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
   public static final String NOT_PRESENT = "Job id is not present.";
+  public static final String MESSAGE = "message";
   public static final String UNAVAILABLE = "Job id is unavailable.";
   public static final String SUCCESS = "Job id is executed and finished";
   public static final String FAILED = "Job failed.";
@@ -116,8 +117,6 @@ public class gPROMSAgent extends JPSAgent {
 
   /** Starts the asynchronous scheduler to monitor quantum jobs. */
   public void init() throws ServletException {
-    logger.info("---------- gPROMS Simulation Agent has started ----------");
-    System.out.println(System.getProperty("user.dir"));
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     gPROMSAgent gPROMSAgent = new gPROMSAgent();
     // initialising classes to read properties from the gPROMS-agent.properites file
@@ -202,8 +201,6 @@ public class gPROMSAgent extends JPSAgent {
   @Override
   public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     String path = request.getServletPath();
-    System.out.println(
-        "...........................A request has been received..........................");
     if (path.equals(gPROMSAgent.JOB_REQUEST_PATH)) {
       try {
         return setUpJob(requestParams.toString());
@@ -280,7 +277,7 @@ public class gPROMSAgent extends JPSAgent {
     JSONObject json = new JSONObject();
     String jobId = getJobId(requestParams);
     if (jobId == null) {
-      return json.put("message", NOT_PRESENT);
+      return json.put(MESSAGE, NOT_PRESENT);
     }
     initAgentProperty();
     JSONObject message = checkJobInWorkspace(jobId);
@@ -295,7 +292,7 @@ public class gPROMSAgent extends JPSAgent {
     if (message != null) {
       return message;
     }
-    return json.put("message", UNAVAILABLE);
+    return json.put(MESSAGE, UNAVAILABLE);
   }
 
   /**
@@ -310,7 +307,7 @@ public class gPROMSAgent extends JPSAgent {
       File[] jobFolders = workspace.listFiles();
       for (File jobFolder : jobFolders) {
         if (jobFolder.getName().equals(jobId)) {
-          return json.put("message", SUCCESS);
+          return json.put(MESSAGE, SUCCESS);
         }
       }
     }

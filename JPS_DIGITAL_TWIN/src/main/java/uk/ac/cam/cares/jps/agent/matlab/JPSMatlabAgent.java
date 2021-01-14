@@ -76,7 +76,6 @@ public class JPSMatlabAgent extends JPSAgent {
   public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     JSONObject responseParams = requestParams;
     String path = request.getServletPath();
-    System.out.println("path= " + path);
     String current = System.getProperty("user.home");
     String activePowerFilePath = null;
     String agentiri = gPROMSAgent.GPROMS_AGENT_URL;
@@ -97,11 +96,8 @@ public class JPSMatlabAgent extends JPSAgent {
         // Create file path for batch file
         String batchFile = current + TEMP_BATCH_FILE;
         batchFile = batchFile.replace("\\", "/");
-        System.out.printf(MESSAGE_KEY + batchFile + "\n");
-        // File path for Matlab script file
         String scriptFile = current + TEMP_SCRIPT_FILE;
         scriptFile = scriptFile.replace("\\", "/");
-        System.out.println(MESSAGE_KEY + scriptFile + "\n");
         // Command string for Matlab
         String cmd =
             "matlab -nodisplay -nosplash -nodesktop -r \"run('" + scriptFile + "');exit;\"";
@@ -219,7 +215,6 @@ public class JPSMatlabAgent extends JPSAgent {
       // Write the ArrayList into CSV into the path specified
       String matInputFile = System.getProperty("user.home") + TEMP_INPUT_FILE;
       matInputFile = matInputFile.replace("\\", "/");
-      System.out.printf(MESSAGE_KEY + matInputFile + "\n");
       FileWriter csvWriter = new FileWriter(matInputFile);
       for (List<String> rowData : output) {
         csvWriter.append(String.join(",", rowData));
@@ -303,7 +298,6 @@ public class JPSMatlabAgent extends JPSAgent {
             .addVar(VAL)
             .addWhere(PARAM, "rdf:type", "system:ScalarValue")
             .addWhere(PARAM, "system:value", VAL);
-    System.out.println(sb.toString());
     OntModel model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
     InputStream is;
     try {
@@ -313,7 +307,6 @@ public class JPSMatlabAgent extends JPSAgent {
       List<Float> resultList = new ArrayList<Float>();
       for (; resultSet.hasNext(); ) {
         QuerySolution solution = resultSet.nextSolution();
-        System.out.println(solution.getLiteral(VAL).getFloat());
         resultList.add(solution.getLiteral(VAL).getFloat());
         try {
           FileWriter fw = new FileWriter(outputFilePath, true);
