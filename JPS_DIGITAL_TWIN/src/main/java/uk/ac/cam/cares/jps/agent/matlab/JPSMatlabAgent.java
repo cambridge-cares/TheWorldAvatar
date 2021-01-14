@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 /**
  * Matlab Agent developed for setting-up and running electrical network The files for Matlab
  * execution should be placed in user.home//matlab folder
- * 
+ *
  * @author Gourab Karmakar (gourab.karmakar@cares.cam.ac.uk)
  */
 @WebServlet(urlPatterns = {"/JPSMatlabAgent/startSimulation", "/JPSMatlabAgent/processResult"})
@@ -111,37 +111,34 @@ public class JPSMatlabAgent extends JPSAgent {
         File dest = new File(System.getProperty("user.home") + PATH_FREQUENCY_FILE);
         String pathToFrequency = dest.getAbsolutePath();
         pathToFrequency = pathToFrequency.replace("\\", "/");
-        notifyWatcher(jofornuc, pathToFrequency,
+        notifyWatcher(
+            jofornuc,
+            pathToFrequency,
             request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
       } else {
         System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
       }
     } else if (SIM_PROCESS_PATH.equals(path)) {
-      System.out.println("Testing whether the else if lopp is executed");
       File dest = new File(System.getProperty("user.home") + PATH_FREQUENCY_FILE);
       String pathToFrequency = dest.getAbsolutePath();
       pathToFrequency = pathToFrequency.replace("\\", "/");
-      MetaDataAnnotator.annotateWithTimeAndAgent(pathToFrequency, gettingFilecreationtime(dest),
-          MATLAB_AGENT_URL);
+      MetaDataAnnotator.annotateWithTimeAndAgent(
+          pathToFrequency, gettingFilecreationtime(dest), MATLAB_AGENT_URL);
       JSONObject jObject = new JSONObject();
-      String resultStart = AgentCaller.executeGetWithJsonParameter("ElChemoAgent/SpinElectrical",
-          jObject.toString());
+      String resultStart =
+          AgentCaller.executeGetWithJsonParameter(
+              "ElChemoAgent/SpinElectrical", jObject.toString());
       System.out.println(resultStart);
     }
     return responseParams;
   }
 
-  /**
-   * notifies the watcher to return with the callback.
-   */
+  /** notifies the watcher to return with the callback. */
   private void notifyWatcher(JSONObject agentArgs, String filePath, String callbackIRI) {
     agentArgs.put(KEY_WATCH, filePath);
     agentArgs.put(KEY_CALLBACK_URL, callbackIRI);
-    System.out.println("The keyvalueamp for AWS watcher that is an argument:"
-        + KeyValueMap.getInstance().get("url.jps_aws"));
-    System.out.println("The agent arguments for execute are :" + agentArgs.toString());
-    execute(KeyValueMap.getInstance().get("url.jps_aws"), agentArgs.toString(),
-        HttpPost.METHOD_NAME);
+    execute(
+        KeyValueMap.getInstance().get("url.jps_aws"), agentArgs.toString(), HttpPost.METHOD_NAME);
   }
 
   /**
@@ -162,9 +159,7 @@ public class JPSMatlabAgent extends JPSAgent {
     }
   }
 
-  /**
-   * Query RDF4J for pump IRI.
-   */
+  /** Query RDF4J for pump IRI. */
   public String queryRDF4J(String agentiri, List<String> lst) {
     String csvFilePath = null;
     String resultFromRDF4J =
@@ -184,9 +179,7 @@ public class JPSMatlabAgent extends JPSAgent {
     return (csvFilePath);
   }
 
-  /**
-   * Validate file path.
-   */
+  /** Validate file path. */
   private boolean isFile(String path) {
     if (path == null) {
       return true;
@@ -240,9 +233,7 @@ public class JPSMatlabAgent extends JPSAgent {
     }
   }
 
-  /**
-   * Create a batch file to execute MATLAB from command line
-   */
+  /** Create a batch file to execute MATLAB from command line */
   void batchFile(String batchFile, String scriptFile, String cmd) {
     // Creating batch file
     try {
@@ -253,8 +244,7 @@ public class JPSMatlabAgent extends JPSAgent {
       // Execute batch file
       Process pb = Runtime.getRuntime().exec(batchFile);
       BufferedReader reader = new BufferedReader(new InputStreamReader(pb.getInputStream()));
-      while ((reader.readLine()) != null) {
-      }
+      while ((reader.readLine()) != null) {}
       try {
         pb.waitFor();
       } catch (InterruptedException e) {
@@ -267,9 +257,7 @@ public class JPSMatlabAgent extends JPSAgent {
     }
   }
 
-  /**
-   * Getting the time when file was modified for storing in the metadata annoattator
-   */
+  /** Getting the time when file was modified for storing in the metadata annoattator */
   public static String gettingFilecreationtime(File file) {
     Path filePath = file.toPath();
     BasicFileAttributes attributes = null;
@@ -282,9 +270,7 @@ public class JPSMatlabAgent extends JPSAgent {
     return (creationDate);
   }
 
-  /**
-   * Delete the temporarily created values
-   */
+  /** Delete the temporarily created values */
   void delete(String filename, int startline, int numlines) {
     try {
       BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -293,12 +279,10 @@ public class JPSMatlabAgent extends JPSAgent {
       String line;
       while ((line = br.readLine()) != null) {
         // Store each valid line in the string buffer
-        if (LINENUMBER < startline || LINENUMBER >= startline + numlines)
-          sb.append(line + "\n");
+        if (LINENUMBER < startline || LINENUMBER >= startline + numlines) sb.append(line + "\n");
         LINENUMBER++;
       }
-      if (startline + numlines > LINENUMBER)
-        System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
+      if (startline + numlines > LINENUMBER) System.out.println(gPROMSAgent.UNKNOWN_REQUEST);
       br.close();
       FileWriter fw = new FileWriter(new File(filename));
       // Write entire string buffer into the file
@@ -309,13 +293,16 @@ public class JPSMatlabAgent extends JPSAgent {
     }
   }
 
-  /**
-   * Query Builder
-   */
+  /** Query Builder */
   static void queryBuilder(String filePath, String outputFilePath) {
-    SelectBuilder sb = new SelectBuilder().addPrefix("electrical", ONTOPOWSYS)
-        .addPrefix("system", SYSTEM).addPrefix("rdf", RDF_SYNTAX).addVar(VAL)
-        .addWhere(PARAM, "rdf:type", "system:ScalarValue").addWhere(PARAM, "system:value", VAL);
+    SelectBuilder sb =
+        new SelectBuilder()
+            .addPrefix("electrical", ONTOPOWSYS)
+            .addPrefix("system", SYSTEM)
+            .addPrefix("rdf", RDF_SYNTAX)
+            .addVar(VAL)
+            .addWhere(PARAM, "rdf:type", "system:ScalarValue")
+            .addWhere(PARAM, "system:value", VAL);
     System.out.println(sb.toString());
     OntModel model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
     InputStream is;
@@ -324,7 +311,7 @@ public class JPSMatlabAgent extends JPSAgent {
       model.read(is, null);
       ResultSet resultSet = JenaHelper.query(model, sb.buildString());
       List<Float> resultList = new ArrayList<Float>();
-      for (; resultSet.hasNext();) {
+      for (; resultSet.hasNext(); ) {
         QuerySolution solution = resultSet.nextSolution();
         System.out.println(solution.getLiteral(VAL).getFloat());
         resultList.add(solution.getLiteral(VAL).getFloat());
@@ -351,5 +338,3 @@ public class JPSMatlabAgent extends JPSAgent {
     }
   }
 }
-
-

@@ -8,8 +8,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-
-
+/** To test the execution of gPROMS agent */
 public class Matlab_test extends TestCase {
   public static final String TEST_FILE =
       "C:\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\test\\resources\\matlab.csv";
@@ -33,4 +32,3 @@ public class Matlab_test extends TestCase {
     }
   }
 }
-

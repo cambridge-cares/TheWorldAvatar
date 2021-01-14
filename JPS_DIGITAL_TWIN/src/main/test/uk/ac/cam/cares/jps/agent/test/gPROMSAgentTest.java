@@ -6,7 +6,6 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class gPROMSAgentTest extends TestCase {
-
   public void testFCQueryAgent() {
     JSONObject jo = new JSONObject();
     try {
@@ -26,5 +25,4 @@ public class gPROMSAgentTest extends TestCase {
       throw new JPSRuntimeException(e.getMessage());
     }
   }
-
 }

@@ -47,7 +47,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
@@ -56,18 +55,20 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 /**
  * gPROMS Agent developed for setting-up and running gPROMS chemical network on HPC. The input files
  * for gPROMS execution should be placed in user.home//input folder
- * 
- * @author Aravind Devanand (aravind@u.nus.edu)
  *
+ * @author Aravind Devanand (aravind@u.nus.edu)
  */
 @Controller
-@WebServlet(urlPatterns = {gPROMSAgent.JOB_REQUEST_PATH, gPROMSAgent.JOB_STATISTICS_PATH,})
+@WebServlet(
+    urlPatterns = {
+      gPROMSAgent.JOB_REQUEST_PATH,
+      gPROMSAgent.JOB_STATISTICS_PATH,
+    })
 public class gPROMSAgent extends JPSAgent {
   private static final long serialVersionUID = 1L;
   private Logger logger = LoggerFactory.getLogger(gPROMSAgent.class);
   private File workspace;
   static JobSubmission jobSubmission;
-  static SlurmJob slurmJob;
   public static ApplicationContext applicationContextgPROMSAgent;
   public static gPROMSAgentProperty gpROMSAgentProperty;
   public static final String UNKNOWN_REQUEST = "The request is unknown to the Agent";
@@ -90,6 +91,10 @@ public class gPROMSAgent extends JPSAgent {
   public static final String UPPER_LEVEL =
       "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#";
   public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+  public static final String NOT_PRESENT = "Job id is not present.";
+  public static final String UNAVAILABLE = "Job id is unavailable.";
+  public static final String SUCCESS = "Job id is executed and finished";
+  public static final String FAILED = "Job failed.";
   public static String TEMP_DIRECTORY = null;
 
   public JSONObject produceStatistics(String input) throws IOException, gPROMSAgentException {
@@ -109,9 +114,7 @@ public class gPROMSAgent extends JPSAgent {
     return jobSubmission.getStatistics();
   }
 
-  /**
-   * Starts the asynchronous scheduler to monitor quantum jobs.
-   */
+  /** Starts the asynchronous scheduler to monitor quantum jobs. */
   public void init() throws ServletException {
     logger.info("---------- gPROMS Simulation Agent has started ----------");
     System.out.println(System.getProperty("user.dir"));
@@ -124,22 +127,23 @@ public class gPROMSAgent extends JPSAgent {
     // the job scheduler starts and getAgentPeriodicActionInterval<br>
     // refers to the interval between two consecutive executions of<br>
     // the scheduler.
-
-    executorService.scheduleAtFixedRate(() -> {
-      try {
-        gPROMSAgent.monitorJobs();
-      } catch (SlurmJobException e) {
-        throw new JPSRuntimeException(e.getMessage());
-      }
-    }, gpROMSAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
-        gpROMSAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+    executorService.scheduleAtFixedRate(
+        () -> {
+          try {
+            gPROMSAgent.monitorJobs();
+          } catch (SlurmJobException e) {
+            throw new JPSRuntimeException(e.getMessage());
+          }
+        },
+        gpROMSAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
+        gpROMSAgentProperty.getAgentPeriodicActionInterval(),
+        TimeUnit.SECONDS);
     logger.info("---------- gPROMS Simulation jobs are being monitored  ----------");
   }
 
   /**
    * Initialises the unique instance of the gpROMSAgentProperty class that<br>
    * reads all properties of gPROMSAgent from the kinetics-agent property file.<br>
-   *
    * Initialises the unique instance of the SlurmJobProperty class and<br>
    * sets all properties by reading them from the kinetics-agent property file<br>
    * through the gPROMSAgent class.
@@ -155,38 +159,39 @@ public class gPROMSAgent extends JPSAgent {
       gpROMSAgentProperty = applicationContextgPROMSAgent.getBean(gPROMSAgentProperty.class);
     }
     if (jobSubmission == null) {
-      jobSubmission = new JobSubmission(gpROMSAgentProperty.getAgentClass(),
-          gpROMSAgentProperty.getHpcAddress());
-      jobSubmission.slurmJobProperty
-          .setHpcServerLoginUserName(gpROMSAgentProperty.getHpcServerLoginUserName());
-      jobSubmission.slurmJobProperty
-          .setHpcServerLoginUserPassword(gpROMSAgentProperty.getHpcServerLoginUserPassword());
+      jobSubmission =
+          new JobSubmission(
+              gpROMSAgentProperty.getAgentClass(), gpROMSAgentProperty.getHpcAddress());
+      jobSubmission.slurmJobProperty.setHpcServerLoginUserName(
+          gpROMSAgentProperty.getHpcServerLoginUserName());
+      jobSubmission.slurmJobProperty.setHpcServerLoginUserPassword(
+          gpROMSAgentProperty.getHpcServerLoginUserPassword());
       jobSubmission.slurmJobProperty.setAgentClass(gpROMSAgentProperty.getAgentClass());
-      jobSubmission.slurmJobProperty
-          .setAgentCompletedJobsSpacePrefix(gpROMSAgentProperty.getAgentCompletedJobsSpacePrefix());
-      jobSubmission.slurmJobProperty
-          .setAgentFailedJobsSpacePrefix(gpROMSAgentProperty.getAgentFailedJobsSpacePrefix());
+      jobSubmission.slurmJobProperty.setAgentCompletedJobsSpacePrefix(
+          gpROMSAgentProperty.getAgentCompletedJobsSpacePrefix());
+      jobSubmission.slurmJobProperty.setAgentFailedJobsSpacePrefix(
+          gpROMSAgentProperty.getAgentFailedJobsSpacePrefix());
       jobSubmission.slurmJobProperty.setHpcAddress(gpROMSAgentProperty.getHpcAddress());
       jobSubmission.slurmJobProperty.setInputFileName(gpROMSAgentProperty.getInputFileName());
-      jobSubmission.slurmJobProperty
-          .setInputFileExtension(gpROMSAgentProperty.getInputFileExtension());
+      jobSubmission.slurmJobProperty.setInputFileExtension(
+          gpROMSAgentProperty.getInputFileExtension());
       jobSubmission.slurmJobProperty.setOutputFileName(gpROMSAgentProperty.getOutputFileName());
-      jobSubmission.slurmJobProperty
-          .setOutputFileExtension(gpROMSAgentProperty.getOutputFileExtension());
-      jobSubmission.slurmJobProperty
-          .setJsonInputFileName(gpROMSAgentProperty.getJsonInputFileName());
-      jobSubmission.slurmJobProperty
-          .setJsonFileExtension(gpROMSAgentProperty.getJsonFileExtension());
-      jobSubmission.slurmJobProperty
-          .setJsonFileExtension(gpROMSAgentProperty.getJsonFileExtension());
-      jobSubmission.slurmJobProperty
-          .setSlurmScriptFileName(gpROMSAgentProperty.getSlurmScriptFileName());
-      jobSubmission.slurmJobProperty
-          .setMaxNumberOfHPCJobs(gpROMSAgentProperty.getMaxNumberOfHPCJobs());
+      jobSubmission.slurmJobProperty.setOutputFileExtension(
+          gpROMSAgentProperty.getOutputFileExtension());
+      jobSubmission.slurmJobProperty.setJsonInputFileName(
+          gpROMSAgentProperty.getJsonInputFileName());
+      jobSubmission.slurmJobProperty.setJsonFileExtension(
+          gpROMSAgentProperty.getJsonFileExtension());
+      jobSubmission.slurmJobProperty.setJsonFileExtension(
+          gpROMSAgentProperty.getJsonFileExtension());
+      jobSubmission.slurmJobProperty.setSlurmScriptFileName(
+          gpROMSAgentProperty.getSlurmScriptFileName());
+      jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(
+          gpROMSAgentProperty.getMaxNumberOfHPCJobs());
       jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(
           gpROMSAgentProperty.getAgentInitialDelayToStartJobMonitoring());
-      jobSubmission.slurmJobProperty
-          .setAgentPeriodicActionInterval(gpROMSAgentProperty.getAgentPeriodicActionInterval());
+      jobSubmission.slurmJobProperty.setAgentPeriodicActionInterval(
+          gpROMSAgentProperty.getAgentPeriodicActionInterval());
     }
   }
 
@@ -215,7 +220,6 @@ public class gPROMSAgent extends JPSAgent {
         throw new JPSRuntimeException(e.getMessage());
       }
     } else {
-      System.out.println("Unknown request");
       throw new JPSRuntimeException(UNKNOWN_REQUEST);
     }
   }
@@ -231,25 +235,27 @@ public class gPROMSAgent extends JPSAgent {
     try {
       File encrypt = new File(System.getProperty("user.home") + ENCRYPT_PATH);
       File inputFilegPROMS = new File(System.getProperty("user.home") + INPUT_PATH);
-      FilenameFilter inputFilefilter = new FilenameFilter() {
-        public boolean accept(File dir, String name) {
-          String lowercaseName = name.toLowerCase();
-          if (lowercaseName.endsWith(".input")) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-      };
-      FilenameFilter encryptFilefilter = new FilenameFilter() {
-        public boolean accept(File dir, String name) {
-          if (name.equals("Final_HPC.gENCRYPT")) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-      };
+      FilenameFilter inputFilefilter =
+          new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+              String lowercaseName = name.toLowerCase();
+              if (lowercaseName.endsWith(".input")) {
+                return true;
+              } else {
+                return false;
+              }
+            }
+          };
+      FilenameFilter encryptFilefilter =
+          new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+              if (name.equals("Final_HPC.gENCRYPT")) {
+                return true;
+              } else {
+                return false;
+              }
+            }
+          };
       String inputfile[] = inputFilegPROMS.list(inputFilefilter);
       String encry[] = encrypt.list(encryptFilefilter);
       System.out.print(encry.length);
@@ -274,7 +280,7 @@ public class gPROMSAgent extends JPSAgent {
     JSONObject json = new JSONObject();
     String jobId = getJobId(requestParams);
     if (jobId == null) {
-      return json.put("message", "jobId is not present in the request parameters.");
+      return json.put("message", NOT_PRESENT);
     }
     initAgentProperty();
     JSONObject message = checkJobInWorkspace(jobId);
@@ -289,7 +295,7 @@ public class gPROMSAgent extends JPSAgent {
     if (message != null) {
       return message;
     }
-    return json.put("message", "The job is not available in the system.");
+    return json.put("message", UNAVAILABLE);
   }
 
   /**
@@ -297,7 +303,6 @@ public class gPROMSAgent extends JPSAgent {
    * If the job is available, it returns that the job is currently running.
    */
   private JSONObject checkJobInWorkspace(String jobId) {
-
     JSONObject json = new JSONObject();
     // The path to the set-up and running jobs folder.
     workspace = jobSubmission.getWorkspaceDirectory();
@@ -305,7 +310,7 @@ public class gPROMSAgent extends JPSAgent {
       File[] jobFolders = workspace.listFiles();
       for (File jobFolder : jobFolders) {
         if (jobFolder.getName().equals(jobId)) {
-          return json.put("message", "The job is being executed.");
+          return json.put("message", SUCCESS);
         }
       }
     }
@@ -319,22 +324,28 @@ public class gPROMSAgent extends JPSAgent {
   private JSONObject checkJobInCompletedJobs(String jobId) {
     JSONObject json = new JSONObject();
     // The path to the completed jobs folder.
-    String completedJobsPath = workspace.getParent().concat(File.separator)
-        .concat(gpROMSAgentProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName());
+    String completedJobsPath =
+        workspace
+            .getParent()
+            .concat(File.separator)
+            .concat(gpROMSAgentProperty.getAgentCompletedJobsSpacePrefix())
+            .concat(workspace.getName());
     File completedJobsFolder = new File(completedJobsPath);
     if (completedJobsFolder.isDirectory()) {
       File[] jobFolders = completedJobsFolder.listFiles();
       for (File jobFolder : jobFolders) {
         if (jobFolder.getName().equals(jobId)) {
           try {
-            String inputJsonPath = completedJobsPath.concat(File.separator)
-                .concat(jobFolder.getName()).concat(File.separator)
-                .concat(gpROMSAgentProperty.getReferenceOutputJsonFile());
+            String inputJsonPath =
+                completedJobsPath
+                    .concat(File.separator)
+                    .concat(jobFolder.getName())
+                    .concat(File.separator)
+                    .concat(gpROMSAgentProperty.getReferenceOutputJsonFile());
             InputStream inputStream = new FileInputStream(inputJsonPath);
             return new JSONObject(FileUtil.inputStreamToString(inputStream));
           } catch (FileNotFoundException e) {
-            return json.put("message",
-                "The job has been completed, but the file that contains results is not found.");
+            return json.put("message", NOT_PRESENT);
           }
         }
       }
@@ -350,24 +361,25 @@ public class gPROMSAgent extends JPSAgent {
   private JSONObject checkJobInFailedJobs(String jobId) {
     JSONObject json = new JSONObject();
     // The path to the failed jobs folder.
-    String failedJobsPath = workspace.getParent().concat(File.separator)
-        .concat(gpROMSAgentProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName());
+    String failedJobsPath =
+        workspace
+            .getParent()
+            .concat(File.separator)
+            .concat(gpROMSAgentProperty.getAgentFailedJobsSpacePrefix())
+            .concat(workspace.getName());
     File failedJobsFolder = new File(failedJobsPath);
     if (failedJobsFolder.isDirectory()) {
       File[] jobFolders = failedJobsFolder.listFiles();
       for (File jobFolder : jobFolders) {
         if (jobFolder.getName().equals(jobId)) {
-          return json.put("message",
-              "The job terminated with an error. Please check the failed jobs folder.");
+          return json.put("message", FAILED);
         }
       }
     }
     return null;
   }
 
-  /**
-   * Monitors already set up jobs.
-   */
+  /** Monitors already set up jobs. */
   private void monitorJobs() throws SlurmJobException {
     // Configures all properties required for setting-up and running a Slurm job.
     jobSubmission.monitorJobs();
@@ -375,9 +387,9 @@ public class gPROMSAgent extends JPSAgent {
   }
 
   /**
-   * Monitors the currently running quantum jobs to allow new jobs to start.</br>
-   * In doing so, it checks if the number of running jobs is less than the</br>
-   * maximum number of jobs allowed to run at a time.
+   * Monitors the currently running quantum jobs to allow new jobs to start.</br> In doing so, it
+   * checks if the number of running jobs is less than the</br> maximum number of jobs allowed to
+   * run at a time.
    */
   public void processOutputs() {
     workspace = jobSubmission.getWorkspaceDirectory();
@@ -392,7 +404,8 @@ public class gPROMSAgent extends JPSAgent {
               PostProcessing.updateJobOutputStatus(jobFolder);
             } else {
               // Failure
-              Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(),
+              Utils.modifyStatus(
+                  Utils.getStatusFile(jobFolder).getAbsolutePath(),
                   Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
             }
           }
@@ -409,8 +422,10 @@ public class gPROMSAgent extends JPSAgent {
    */
   public boolean postProcessing(Path jobFolder) throws IOException {
     // Find the job results ZIP
-    Path archive = Paths.get(jobFolder.toString(),
-        gpROMSAgentProperty.getOutputFileName() + gpROMSAgentProperty.getOutputFileExtension());
+    Path archive =
+        Paths.get(
+            jobFolder.toString(),
+            gpROMSAgentProperty.getOutputFileName() + gpROMSAgentProperty.getOutputFileExtension());
     if (!Files.exists(archive))
       throw new IOException("Cannot find expected archive at: " + archive);
     if (!Files.exists(archive) || Files.readAllBytes(archive).length <= 0) {
@@ -441,20 +456,18 @@ public class gPROMSAgent extends JPSAgent {
     jo.put("ELECTRICAL_SYSTEM_IRI", eStr);
     File temp = new File(System.getProperty("user.home") + SETTINGS_FILE);
     temp.delete();
-    String resultStart = AgentCaller
-        .executeGetWithJsonParameter("ElChemoAgent/JPSMatlabAgent/startSimulation", jo.toString());
+    String resultStart =
+        AgentCaller.executeGetWithJsonParameter(
+            "ElChemoAgent/JPSMatlabAgent/startSimulation", jo.toString());
     System.out.println(resultStart);
     return true;
   }
 
-  /**
-   * Extract values to csv file
-   */
+  /** Extract values to csv file */
   public static void exportDataToExcel(String fileName, float[][] data)
       throws FileNotFoundException, IOException {
     File file = new File(fileName);
-    if (!file.isFile())
-      file.createNewFile();
+    if (!file.isFile()) file.createNewFile();
     FileWriter csvWriter = new FileWriter(file);
     int rowCount = data.length;
     for (int i = 0; i < rowCount; i++) {
@@ -475,13 +488,11 @@ public class gPROMSAgent extends JPSAgent {
     String destURI = dest.getAbsolutePath();
     destURI = destURI.replace("\\", "/");
     TEMP_DIRECTORY = destURI;
-    MetaDataAnnotator.annotateWithTimeAndAgent(destURI, gettingFilecreationtime(dest),
-        GPROMS_AGENT_URL);
+    MetaDataAnnotator.annotateWithTimeAndAgent(
+        destURI, gettingFilecreationtime(dest), GPROMS_AGENT_URL);
   }
 
-  /**
-   * Getting the time when file was modified for storing in the metadata annoattator
-   */
+  /** Getting the time when file was modified for storing in the metadata annoattator */
   public static String gettingFilecreationtime(File file) {
     Path filePath = file.toPath();
     BasicFileAttributes attributes = null;
@@ -495,11 +506,9 @@ public class gPROMSAgent extends JPSAgent {
   }
 
   /**
-   * Sets up a quantum job by creating the job folder and the following files</br>
-   * under this folder:</br>
-   * - the input file.</br>
-   * - the Slurm script file.</br. - the Status file.</br>
-   * - the JSON input file, which comes from the user request.</br>
+   * Sets up a quantum job by creating the job folder and the following files</br> under this
+   * folder:</br> - the input file.</br> - the Slurm script file.</br. - the Status file.</br> - the
+   * JSON input file, which comes from the user request.</br>
    */
   public JSONObject setUpJob(String jsonString)
       throws IOException, gPROMSAgentException, SlurmJobException {
@@ -509,9 +518,7 @@ public class gPROMSAgent extends JPSAgent {
     return obj;
   }
 
-  /**
-   * Sets up the quantum job for the current input.
-   */
+  /** Sets up the quantum job for the current input. */
   private String setUpJobOnAgentMachine(String jsonInput)
       throws IOException, gPROMSAgentException, SlurmJobException {
     initAgentProperty();
@@ -523,12 +530,18 @@ public class gPROMSAgent extends JPSAgent {
     System.out.println("tempdir1 is" + temporaryDirectory1.toString());
     System.out.println("userdir is" + System.getProperty("user.dir"));
     System.out.println("scrptdir is" + gpROMSAgentProperty.getAgentScriptsLocation().toString());
-    return jobSubmission.setUpJob(jsonInput,
-        new File(URLDecoder.decode(getClass().getClassLoader()
-            .getResource(gpROMSAgentProperty.getSlurmScriptFileName()).getPath(), "utf-8")),
-        getInputFile(jsonInput, jobFolderName), timeStamp);
+    return jobSubmission.setUpJob(
+        jsonInput,
+        new File(
+            URLDecoder.decode(
+                getClass()
+                    .getClassLoader()
+                    .getResource(gpROMSAgentProperty.getSlurmScriptFileName())
+                    .getPath(),
+                "utf-8")),
+        getInputFile(jsonInput, jobFolderName),
+        timeStamp);
   }
-
 
   /**
    * Prepares input files, bundle them in a zip file and return the zip file to the calling method
@@ -557,9 +570,14 @@ public class gPROMSAgent extends JPSAgent {
   }
 
   static void queryBuilder(String filePath, String outputFilePath) {
-    SelectBuilder sb = new SelectBuilder().addPrefix("process", CHEMICAL_PROCESS_SYSTEM)
-        .addPrefix("system", UPPER_LEVEL).addPrefix("rdf", RDF).addVar(TEMP)
-        .addWhere(VAR, "rdf:type", "system:ScalarValue").addWhere(VAR, "system:value", TEMP);
+    SelectBuilder sb =
+        new SelectBuilder()
+            .addPrefix("process", CHEMICAL_PROCESS_SYSTEM)
+            .addPrefix("system", UPPER_LEVEL)
+            .addPrefix("rdf", RDF)
+            .addVar(TEMP)
+            .addWhere(VAR, "rdf:type", "system:ScalarValue")
+            .addWhere(VAR, "system:value", TEMP);
     System.out.println(sb.toString());
     OntModel model = ModelFactory.createOntologyModel(OntModelSpec.RDFS_MEM);
     InputStream is;
@@ -568,7 +586,7 @@ public class gPROMSAgent extends JPSAgent {
       model.read(is, null);
       ResultSet resultSet = JenaHelper.query(model, sb.buildString());
       List<Float> resultList = new ArrayList<Float>();
-      for (; resultSet.hasNext();) {
+      for (; resultSet.hasNext(); ) {
         QuerySolution solution = resultSet.nextSolution();
         System.out.println(solution.getLiteral(TEMP).getFloat());
         resultList.add(solution.getLiteral(TEMP).getFloat());
@@ -595,16 +613,12 @@ public class gPROMSAgent extends JPSAgent {
     }
   }
 
-  /**
-   * Produces a job folder name by following the schema hpcAddress_timestamp
-   */
+  /** Produces a job folder name by following the schema hpcAddress_timestamp */
   public String getNewJobFolderName(String hpcAddress, long timeStamp) {
     return hpcAddress.concat("_").concat("" + timeStamp);
   }
 
-  /**
-   * Returns the job id.
-   */
+  /** Returns the job id. */
   public String getJobId(JSONObject jsonObject) {
     if (jsonObject.has("jobId")) {
       return jsonObject.get("jobId").toString();
