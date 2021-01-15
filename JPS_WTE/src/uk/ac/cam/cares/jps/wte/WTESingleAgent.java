@@ -31,6 +31,50 @@ public class WTESingleAgent extends JPSHttpServlet {
 	/**
 	 * 
 	 */
+	
+	/** Gets the following output values of the composite waste system. 
+	 * the name, revenue, installation cost, operational cost, labor cost, land cost, pollution cost, transport cost
+	 * resource cost. 
+	 */
+	public static String wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
+			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+			+ "SELECT ?entity ?vrevenue ?vinstallationcost ?voperationalcost ?vlaborcost  ?vlandcost ?vpollutioncost ?vtransportcost ?vresourcecost  " 
+			+ "WHERE {"
+			+ "?entity  a j2:CompositeSystem ."
+			+ "?entity   j3:hasUtilityCost ?UC1 ."
+			+ "?UC1  a j3:UtilityCosts ."
+			+ "?UC1     j2:hasValue ?vresourcecost ." 
+						
+			+ "?entity   j3:hasInstallationCost ?IC1 ."
+			+ "?IC1     j2:hasValue ?vinstallationcost ."  
+			
+			+ "?entity   j3:hasRevenue ?Rev1 ."
+			+ "?Rev1     j2:hasValue ?vrevenue ." 
+			
+			+ "?entity   j3:hasCost ?LC1 ."
+			+ "?LC1  a j3:CostsForLand ."
+			+ "?LC1     j2:hasValue ?vlandcost ."
+			
+			+ "?entity   j3:hasCost ?OC1 ."
+			+ "?OC1  a j3:OperationalExpenditureCosts ."
+			+ "?OC1     j2:hasValue ?voperationalcost ."
+			
+			+ "?entity   j1:hasTax ?PC1 ."
+			+ "?PC1     j2:hasValue ?vpollutioncost ."  
+			
+			+ "?entity   j3:hasLaborCost ?LabC1 ."
+			+ "?LabC1     j2:hasValue ?vlaborcost ." 
+			
+			+ "?entity   j8:hasTransportationCost ?TC1 ."
+			+ "?TC1     j2:hasValue ?vtransportcost ." 
+			
+			+ "}";
 	private static final long serialVersionUID = 1L;
 	/** Find offsite technologies that use technology
 	 * 
@@ -76,6 +120,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		
+		
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		try {
 			//read for FC details
@@ -90,7 +136,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,15);
 			List<String[]> sitemapping= updateNewFC(baseUrl,inputoffsitedata);
 			updateFCHelper(sitemapping);
-			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system	
+			updateKBForSystem(wasteIRI, baseUrl,wasteSystemOutputQuery,onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		 }catch (Exception e) {
 			e.printStackTrace();

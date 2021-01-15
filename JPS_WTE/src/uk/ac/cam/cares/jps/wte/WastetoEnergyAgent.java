@@ -69,163 +69,44 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	/** gets the transportation route, the tax on the route, the capacity of travel, the cost of travel, and
 	 * emission rate of travelling on that route. 
 	 */
-	//only one set of result is returned
-	public String transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT ?Unit_transport_capacity ?Unit_transport_cost ?pollutionTransportTax ?dieselConsTruck " 
-			+ "WHERE {"
-			+ "?entity  a j8:TransportationRoute ."
-			+ "?entity   j8:suitFor ?truck ." 
-			+ "?truck   j1:hasTax ?PTT ." 
-			+ "?PTT     j2:hasValue ?vPTT ."
-			+ "?vPTT  j2:numericalValue ?pollutionTransportTax ."
-			
-			+ "?truck   j8:hasTransportationCapacity ?TC ." 
-			+ "?TC     j2:hasValue ?vTC ."
-			+ "?vTC  j2:numericalValue ?Unit_transport_capacity ."
+	public static String getTransportQuery() {
+		SelectBuilder sb = new SelectBuilder()
+				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#")
+				.addVar("?Unit_transport_capacity").addVar("?Unit_transport_cost")
+				.addVar("?pollutionTransportTax").addVar("?dieselConsTruck")
+		.addWhere("?entity", "a","j8:TransportationRoute").addWhere("?entity", "j8:suitFor","?truck")
+		.addWhere("?truck" ,"j1:hasTax", "?PTT").addWhere("?PTT" ,"j2:hasValue", "?vPTT")
+		.addWhere("?vPTT" ,"j2:numericalValue", "?pollutionTransportTax")
+		.addWhere("?truck", "j8:hasTransportationCapacity","?TC")
+		.addWhere("?TC", "j2:hasValue","?vTC")
+		.addWhere("?vTC", "j2:numericalValue","?Unit_transport_capacity")
+		.addWhere("?truck", "j8:hasTransportationCost","?TCost")
+		.addWhere("?TCost", "j2:hasValue","?vTCost")
+		.addWhere("?vTCost", "j2:numericalValue","?Unit_transport_cost")
 
-			+ "?truck   j8:hasTransportationCost ?TCost ." 
-			+ "?TCost     j2:hasValue ?vTCost ."
-			+ "?vTCost  j2:numericalValue ?Unit_transport_cost ." 
-			
-			+ "?truck   j8:hasEmission ?Temission ." 
-			+ "?Temission     j2:hasValue ?vTemission ."
-			+ "?vTemission  j2:numericalValue ?dieselConsTruck ." 
-			
-			+ "}";
-	/** Gets the Benchmark land cost of implementing the Composite system, the operation value, managing cost, 
-	 * installation cost, life cycle of the system, energy and water consumption; 
-	 * as well as discount rate, lifecycle, and disposal fee. 
-	 */
-	public String wasteSystemQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT DISTINCT ?entity ?BLandCostvalue ?BOpexvalue ?BManCostvalue ?BInstallationCostvalue ?BLifeCyclevalue ?BEnergyconsumptionvalue ?BWaterConsumptionvalue ?DiscountRatevalue ?LifeCyclevalue ?DisposalFeevalue " 
-			+ "WHERE {"
-			+ "?entity  a j2:CompositeSystem ."
-			+ "?entity   j1:hasBenchmark ?B1 ." 
-			+ "?B1   a j3:CostsForLand ." 
-			+ "?B1     j2:hasValue ?vB1 ."
-			+ "?vB1  j2:numericalValue ?BLandCostvalue ."
-			
-			+ "?entity   j1:hasBenchmark ?B2 ." 
-			+ "?B2   a j3:OperationalExpenditureCosts ." 
-			+ "?B2     j2:hasValue ?vB2 ."
-			+ "?vB2  j2:numericalValue ?BOpexvalue ."
-
-			+ "?entity   j1:hasBenchmark ?B3 ." 
-			+ "?B3   a j3:OperatingLaborCosts ." 
-			+ "?B3     j2:hasValue ?vB3 ."
-			+ "?vB3  j2:numericalValue ?BManCostvalue ."
-			
-			+ "?entity   j1:hasBenchmark ?B4 ." 
-			+ "?B4   a j3:InstallationCostsForSystemsRealization ." 
-			+ "?B4     j2:hasValue ?vB4 ."
-			+ "?vB4  j2:numericalValue ?BInstallationCostvalue ."
-			
-			+ "?entity   j1:hasBenchmark ?B5 ." 
-			+ "?B5   a j1:LifeCycle ." 
-			+ "?B5     j2:hasValue ?vB5 ."
-			+ "?vB5  j2:numericalValue ?BLifeCyclevalue ."
-			
-			+ "?entity   j1:hasBenchmark ?B6 ." 
-			+ "?B6   a j1:ResourceConsumption ." 
-			+ "?B6     j1:inContextOf <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#energy> ."
-			+ "?B6     j2:hasValue ?vB6 ."
-			+ "?vB6  j2:numericalValue ?BEnergyconsumptionvalue ."
-			
-			+ "?entity   j1:hasBenchmark ?B7 ." 
-			+ "?B7   a j1:ResourceConsumption ." 
-			+ "?B7     j1:inContextOf <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#water> ."
-			+ "?B7     j2:hasValue ?vB7 ."
-			+ "?vB7  j2:numericalValue ?BWaterConsumptionvalue ."
-			
-			+ "?entity   j1:hasDiscountRate ?DC ." 
-			+ "?DC     j2:hasValue ?vDC ."
-			+ "?vDC  j2:numericalValue ?DiscountRatevalue ." 
-			
-			+ "?entity   j1:hasLifeCycle ?LC ." 
-			+ "?LC     j2:hasValue ?vLC ."
-			+ "?vLC  j2:numericalValue ?LifeCyclevalue ." 
-			
-			+ "?entity   j3:hasUtilityCost ?Dispfee ." 
-			+ "?Dispfee     j2:hasValue ?vDispfee ."
-			+ "?vDispfee  j2:numericalValue ?DisposalFeevalue ." 
-			
-			+ "}";
-	/** Gets the following output values of the composite waste system. 
-	 * the name, revenue, installation cost, operational cost, labor cost, land cost, pollution cost, transport cost
-	 * resource cost. 
-	 */
-	public static String wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT ?entity ?vrevenue ?vinstallationcost ?voperationalcost ?vlaborcost  ?vlandcost ?vpollutioncost ?vtransportcost ?vresourcecost  " 
-			+ "WHERE {"
-			+ "?entity  a j2:CompositeSystem ."
-			+ "?entity   j3:hasUtilityCost ?UC1 ."
-			+ "?UC1  a j3:UtilityCosts ."
-			+ "?UC1     j2:hasValue ?vresourcecost ." 
-						
-			+ "?entity   j3:hasInstallationCost ?IC1 ."
-			+ "?IC1     j2:hasValue ?vinstallationcost ."  
-			
-			+ "?entity   j3:hasRevenue ?Rev1 ."
-			+ "?Rev1     j2:hasValue ?vrevenue ." 
-			
-			+ "?entity   j3:hasCost ?LC1 ."
-			+ "?LC1  a j3:CostsForLand ."
-			+ "?LC1     j2:hasValue ?vlandcost ."
-			
-			+ "?entity   j3:hasCost ?OC1 ."
-			+ "?OC1  a j3:OperationalExpenditureCosts ."
-			+ "?OC1     j2:hasValue ?voperationalcost ."
-			
-			+ "?entity   j1:hasTax ?PC1 ."
-			+ "?PC1     j2:hasValue ?vpollutioncost ."  
-			
-			+ "?entity   j3:hasLaborCost ?LabC1 ."
-			+ "?LabC1     j2:hasValue ?vlaborcost ." 
-			
-			+ "?entity   j8:hasTransportationCost ?TC1 ."
-			+ "?TC1     j2:hasValue ?vtransportcost ." 
-			
-			+ "}";
+		.addWhere("?truck", "j8:hasEmission","?Temission")
+		.addWhere("?Temission", "j2:hasValue","?vTemission")
+		.addWhere("?vTemission", "j2:numericalValue","?dieselConsTruck");
+		Query q = sb.build();
+		return q.toString();
+	}
+	
+	
+	
 	/** gets the OffsiteWasteTreatmentFacility's 
 	 * Incineration upper bound, CoDigestion upper bound, and Anerobic Digestion upper bound. 
 	 */
-	public static String compquery= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT ?entity ?tech1upp ?tech2upp ?tech3upp "
-			+ "WHERE {" + "?entity  a j1:OffsiteWasteTreatmentFacility ." // specified class declared (off or on)
-			
-			+ "?entity   j1:hasOffsiteIncinerationUpperBound ?tech1upp ."
-			+ "?entity   j1:hasOffsiteCoDigestionUpperBound ?tech2upp ."
-			+ "?entity   j1:hasOffsiteAnerobicDigestionUpperBound ?tech3upp ."
-
-			+ "}"+ "ORDER BY ASC(?entity)";
+	public static String returnUpperBoundQuery() {
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+				.addVar("?entity").addVar("?tech1upp").addVar("?tech2upp").addVar("?tech3upp")
+				.addWhere("?entity" ,"j1:hasOffsiteIncinerationUpperBound", "?tech1upp")
+				.addWhere("?entity" ,"j1:hasOffsiteCoDigestionUpperBound", "?tech2upp")
+				.addWhere("?entity" ,"j1:hasOffsiteAnerobicDigestionUpperBound", "?tech3upp");
+		return sb.buildString();
+	}
 	
 	
 	/** main function. Reads the values in and copies the templates back. 
@@ -234,23 +115,34 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
-		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		String wasteIRI=requestParams.optString("wastenetwork"
+				, "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
 		//render ontological model of waste network
 		OntModel model= readModelGreedy(wasteIRI);
 		//creates the csv of FCs, with Site_xy reading for location, waste containing the level of waste in years 1-15
+		//in baseUrl folder
 		List<String[]> fcMarkers = prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
+		// searches for number of clusters to agglomerate (i.e. number of onsite WTF max)
 		String n_cluster= requestParams.optString("n_cluster", Integer.toString(fcMarkers.size()));
+		//TODO: Can put this as input to matlab, but I don't know Matlab well enough for this, so having a txt to read from 
+		// is feasible for now. 
         new QueryBroker().putLocal(baseUrl + "/n_cluster.txt",n_cluster ); 
+        //create csv for location of offsite WTF in baseUrl folder
 		prepareCSVWT("Location.csv", baseUrl,model); 
-		prepareCSVTransport(transportQuery,"transport.csv", baseUrl,model); 
-		prepareCSVCompTECHBased(compquery,baseUrl,model);
+		// get transport costs for transport usage. 
+		prepareCSVTransport(getTransportQuery(),"transport.csv", baseUrl,model); 
+		//prepare csv of upper bounds of all kinds of tech
+		//TODO: the more types of technology is added, the more likely this method (returnUpperBoundQuery()) changes. 
+		prepareCSVCompTECHBased(returnUpperBoundQuery(),baseUrl,model);
+		//form query of waste Tech offsite 
 		String WTFTechOffsiteQuery = FCQuerySource.getTechQuery() 
 				.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
 		prepareCSVTECHBased(WTFTechOffsiteQuery,baseUrl,model,"offsite");
 		String WTFTechOnsiteQuery = FCQuerySource.getTechQuery() 
-				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility").buildString();
+				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
+				.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
 		prepareCSVTECHBased(WTFTechOnsiteQuery,baseUrl,model,"onsite");
-		//TODO: should be able to run Main.m without needing to copy over, but I don't know Matlab well enough how to avoid doing so. 
+		//TODO: should be able to run Main.m without needing to copy over, but I don't know Matlab well enough 
 		// Should need something like fullfile to use "readmatrix" to read an absolute path. 
 		copyTemplate(baseUrl, "SphereDist.m");
 		copyTemplate(baseUrl, "Main.m");
@@ -369,7 +261,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         resultxy.add(0,keyswt);
         new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy)); 	
 	}
-	/** Creates the CSV file for the upper bound as described by compquery. 
+	/** Creates the CSV file for the upper bound 
 	 * 
 	 * @param mainquery compquery. 
 	 * @param baseUrl String
