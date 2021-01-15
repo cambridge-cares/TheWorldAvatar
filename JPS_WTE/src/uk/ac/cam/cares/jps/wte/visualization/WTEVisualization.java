@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,6 +19,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
@@ -26,28 +28,7 @@ public class WTEVisualization extends JPSHttpServlet{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	/**gets the food court name, xy coordinates
-	 */
-	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT ?entity ?name ?xvalue ?yvalue " //YEAR IS NOT INCLUDED IF JUST USING SIMPLIFIED VERSION
-			+ "WHERE {"
-			+ "?entity  a j1:FoodCourt ."
-			+ "?entity   j8:hasName ?name ." 
-            + "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-            + "?coorsys   j7:hasProjectedCoordinate_x ?x ." 
-            + "?x   j2:hasValue ?xval ."
-            + "?xval   j2:numericalValue ?xvalue ."
-            + "?coorsys   j7:hasProjectedCoordinate_y ?y ."
-            + "?y   j2:hasValue ?yval ."
-            + "?yval   j2:numericalValue ?yvalue ."
-			+ "}";
+	
 	/**gets the OffsiteWasteTreatment entity, xy coordinates
 	 */
 	public static String WTquery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
@@ -150,6 +131,8 @@ public class WTEVisualization extends JPSHttpServlet{
 	 */
 	public String createMarkers(OntModel model, JSONObject jo) throws IOException {
 		ArrayList<String>textcomb=new ArrayList<String>();
+		Query fcQu = FCQuerySource.getFCQuery().build();
+		String FCQuery = fcQu.toString();
 		List<String[]> foodcourts = queryCoordinate(model, FCQuery); //hard assumption that there would be foodcourts all the time
 		for (int i = 0; i < foodcourts.size(); i++) {
 			String content="{\"coors\": {\"lat\": "+foodcourts.get(i)[3]+", \"lng\": "+foodcourts.get(i)[2]

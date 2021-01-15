@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.wte.test;
 import java.io.IOException;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
@@ -14,13 +15,23 @@ import uk.ac.cam.cares.jps.wte.visualization.WTEVisualization;
 
 public class TestVisualization  extends TestCase {
 	public String WasteTopNode = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+	static String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+	
+	/** produces xy coordinates of each FC on the network. 
+	 * tests if the result is empty or if it contains the coordinates/values
+	 */
 	public void testFCQueryDirect(){
 		WTEVisualization a = new WTEVisualization();
 		JSONObject jo = new JSONObject();
-		OntModel model = WastetoEnergyAgent.readModelGreedy(WasteTopNode);
+		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		try {
-			String g = a.createMarkers(model, jo);
-			System.out.println(g);
+			String result = a.createMarkers(model, jo);
+			assertNotNull(result);
+			JSONObject fcMap = new JSONObject(result);
+			assertTrue(fcMap.has("result"));
+			//result has to be a string and not a JSONobject because of how javascript retrieves the value
+			JSONArray coordinates = fcMap.getJSONArray("result");
+			assertNotNull(coordinates);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

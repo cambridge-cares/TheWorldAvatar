@@ -405,7 +405,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}
 	/** Creates the CSV of the foodcourt for the Matlab code to read. 
-	 * gets the food court name, xy coordinates, amount of waste, the year and the type (FoodCourt)
+	 * a. reading the model and getting the number of FC *number of years of waste levels 
+	 * b. creating the csv file of site locations, and waste levels of those FoodCourts per year
+	 * 
 	 * @param mainquery
 	 * @param filename
 	 * @param filename2
