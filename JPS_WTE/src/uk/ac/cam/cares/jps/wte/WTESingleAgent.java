@@ -36,14 +36,23 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * the name, revenue, installation cost, operational cost, labor cost, land cost, pollution cost, transport cost
 	 * resource cost. 
 	 */
+	public static String getWasteSystemOutputQuery() {
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#")
+				.addVar("?entity").addVar("?vrevenue").addVar("?vinstallationcost").addVar("?voperationalcost")
+				.addVar("?vlaborcost").addVar("?vlandcost").addVar("?vpollutioncost").addVar("?vtransportcost")
+				.addVar("?vresourcecost")
+				.addWhere("?entity" ,"a", "j2:CompositeSystem")
+				.addWhere("?entity" ,"j3:hasUtilityCost", "?UC1")
+				.addWhere("?UC1" ,"a", "j3:UtilityCosts")
+				.addWhere("?UC1" ,"j2:hasValue", "?vresourcecost");
+		return sb.buildString();
+				
+	}
 	public static String wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 			+ "SELECT ?entity ?vrevenue ?vinstallationcost ?voperationalcost ?vlaborcost  ?vlandcost ?vpollutioncost ?vtransportcost ?vresourcecost  " 
 			+ "WHERE {"
 			+ "?entity  a j2:CompositeSystem ."
