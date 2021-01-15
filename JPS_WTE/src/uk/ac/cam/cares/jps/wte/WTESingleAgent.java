@@ -79,11 +79,13 @@ public class WTESingleAgent extends JPSHttpServlet {
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		try {
 			//read for FC details
-			List<String[]> resu =  readAndDump(model,WastetoEnergyAgent.FCQuery);
+			List<String[]> resu =  readAndDump(model,WastetoEnergyAgent.getFCQuery());
 			//select in year 1
 			List<String[]> fcMapping = createFoodCourt(resu);
 			//properties of OnsiteTech
-			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
+			String WTFTechOnsiteQuery = FCQuerySource.getTechQuery() 
+					.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility").buildString();
+			List<String[]> propertydataonsite = readAndDump(model, WTFTechOnsiteQuery );
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,15);
 			List<String[]> sitemapping= updateNewFC(baseUrl,inputoffsitedata);

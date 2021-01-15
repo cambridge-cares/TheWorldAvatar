@@ -17,6 +17,7 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WTESingleAgent;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
@@ -41,6 +42,33 @@ public class TestWTE extends TestCase {
 		File file2 = new File("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest\\Waste.csv");
 		assertTrue(file2.exists());
 	}
+	/** get Offsite WTF locations
+	 * 
+	 */
+	public void testQueryOffsiteWT() {
+		WastetoEnergyAgent a= new WastetoEnergyAgent ();
+		
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
+		a.prepareCSVWT("Location.csv", baseUrl,model); 
+		File file = new File( "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest\\Location.csv");
+		assertTrue(file.exists());
+	}
+
+	public void testQueryTechOffsiteQuery() {
+	String query = FCQuerySource.getTechQuery() 
+			.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
+
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		FCQuerySource.queryResult(model,query);
+	}
+	public void testQueryTechOnsiteQuery() {
+		String query = FCQuerySource.getTechQuery() 
+				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility").buildString();
+
+			OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+			FCQuerySource.queryResult(model,query);
+		}
 	/** Query for costs after simulation finishes running
 	 * 
 	 */
@@ -102,11 +130,16 @@ public class TestWTE extends TestCase {
 		String wasteIRI ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		List<String[]> inputsondata = ag.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model, 15); 
-		ag.prepareCSVWT(ag.WTquery,"Location.csv", baseUrl,model); 
+		ag.prepareCSVWT("Location.csv", baseUrl,model); 
 		ag.prepareCSVTransport(ag.transportQuery,"transport.csv", baseUrl,model); 
 		ag.prepareCSVCompTECHBased(ag.compquery,baseUrl,model);
-		ag.prepareCSVTECHBased(ag.WTFTechQuery,baseUrl,model,"offsite");
-		List<String[]> propertydataonsite=ag.prepareCSVTECHBased(ag.WTFTechOnsiteQuery,baseUrl,model,"onsite");
+		
+		String WTFTechQuery = FCQuerySource.getTechQuery() 
+				.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
+		ag.prepareCSVTECHBased(WTFTechQuery,baseUrl,model,"offsite");
+		String WTFTechOnsiteQuery = FCQuerySource.getTechQuery() 
+				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility").buildString();
+		ag.prepareCSVTECHBased(WTFTechOnsiteQuery,baseUrl,model,"onsite");
 		ag.copyTemplate(baseUrl, "SphereDist.m");
 		ag.copyTemplate(baseUrl, "Main.m");
 		ag.copyTemplate(baseUrl, "D2R.m");
@@ -117,19 +150,19 @@ public class TestWTE extends TestCase {
 //                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 			//read for FC details
 			WTESingleAgent at = new WTESingleAgent();
-			List<String[]> resu =  at.readAndDump(model,WastetoEnergyAgent.FCQuery);
+			List<String[]> resu =  at.readAndDump(model,WastetoEnergyAgent.getFCQuery());
 			//select in year 1
 			List<String[]> fcMapping = at.createFoodCourt(resu);
 			//properties of OnsiteTech
 			//creates onsite WTF if indicated by the number of units (onsite).csv
-			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
+//			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
 			List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
 			List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );
 			at.updateFCHelper(sitemapping);
 			
 			at.updateinOffsiteWT(inputoffsitedata,baseUrl,1);
 //			at.updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
-			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system				
+//			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system				
 			
 		} catch (Exception e) {
 			e.printStackTrace();
