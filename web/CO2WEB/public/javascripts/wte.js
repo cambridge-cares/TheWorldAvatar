@@ -1,7 +1,8 @@
 scenario = "testFW";
 /* prefix to be changed according to local or testing 
 */
-prefix = "http://www.jparksimulator.com";
+var prefix = "http://localhost:8080";
+// prefix = "http://www.jparksimulator.com";
 markers = []
 var infowindow;
 var listOfIRIs = [];
@@ -649,7 +650,7 @@ function addUnitInputsDisplay(data, type){
 /** query backend using greedy method for FC and Offsite. Does Callback to read input from scenario. 
  *  runs during init
  * @param {String} agenturl 
- * @param {Function} fnCreate 
+ * @param {Function} fnCreate (usually createUrlForAgent) 
  * @param {Function} callback 
  */
 function queryForMarkers(agenturl,fnCreate,  callback){
@@ -675,48 +676,48 @@ function queryForMarkers(agenturl,fnCreate,  callback){
         var obj0 = JSON.parse(data).result;
         var size=obj0.length; 
         
-    //We currently know of a few cases:
-    var x;
-    // scan some duplicates
-    var markerdict = []; 
+        //We currently know of a few cases:
+        var x;
+        // scan some duplicates
+        var markerdict = []; 
 
-    for (x=0; x< size; x++){
-        
-        var obj = JSON.parse(obj0[x]);  
-        var name = obj.entity;
-        console.log(name);
-        if (name.includes("FoodCourt")){
-            var icon = {
-                url: 'images/foodcourt.png',
-                scaledSize : new google.maps.Size(50, 50),
-            };
-        }else if (name.includes("OnSite")){
-            if (name.includes("-000")){
-                continue;
+        for (x=0; x< size; x++){
+            
+            var obj = JSON.parse(obj0[x]);  
+            var name = obj.entity;
+            console.log(name);
+            if (name.includes("FoodCourt")){
+                var icon = {
+                    url: 'images/foodcourt.png',
+                    scaledSize : new google.maps.Size(50, 50),
+                };
+            }else if (name.includes("OnSite")){
+                if (name.includes("-000")){
+                    continue;
+                }
+                var icon = {
+                    url: 'images/onsite.png', 
+                    scaledSize : new google.maps.Size(30, 30),
+                };
+                listOfIRIs.push(name);  
+            }else{
+                var icon = {
+                    url: 'images/offsite.png', 
+                    scaledSize : new google.maps.Size(50, 50),
+                };
+                listOfIRIs.push(name);  
             }
-            var icon = {
-                url: 'images/onsite.png', 
-                scaledSize : new google.maps.Size(30, 30),
-            };
-            listOfIRIs.push(name);  
-        }else{
-            var icon = {
-                url: 'images/offsite.png', 
-                scaledSize : new google.maps.Size(50, 50),
-            };
-            listOfIRIs.push(name);  
+            markerdict.push([name, obj.coors.lat,obj.coors.lng, icon]);
         }
-        markerdict.push([name, obj.coors.lat,obj.coors.lng, icon]);
-    }
 
-    for (x=0; x< markerdict.length; x++){
-        createMarker(markerdict[x]);
-    }
-    //run callback function of other initiations. 
-    scenarioUR = JSON.parse(data).jpscontext.scenariourl;
-    scenariolst  = scenarioUR.split('/');
-    scenario = scenariolst[scenariolst.length-1];
-    callback();
+        for (x=0; x< markerdict.length; x++){
+            createMarker(markerdict[x]);
+        }
+        //run callback function of other initiations. 
+        scenarioUR = JSON.parse(data).jpscontext.scenariourl;
+        scenariolst  = scenarioUR.split('/');
+        scenario = scenariolst[scenariolst.length-1];
+        callback();
     });
 
 }

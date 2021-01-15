@@ -1,6 +1,6 @@
 var scenario = "base";
-// var prefix = "http://localhost:8080";
-var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
+var prefix = "http://localhost:8080";
+// var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
