@@ -11,7 +11,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpPost;
+import org.apache.jena.arq.querybuilder.Order;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -52,9 +55,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 */
 	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
 			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
@@ -79,6 +79,18 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?vdatetime  j6:year ?year ." 
 			+ "}"
 			+ "ORDER BY ASC(?year)";//1,10,2,3...
+	
+	public static String getFCQuery() {
+		SelectBuilder sb = FCQuerySource.getFCQuery();
+		sb.addPrefix("j6", "http://www.w3.org/2006/time#").addVar("?entity").addVar("?name")
+		.addVar("?wasteproductionvalue").addVar("?year")
+		.addWhere("?entity", "j1:produceWaste","?WP").addWhere("?WP", "j2:hasValue","?vWP")
+		.addWhere("?vWP", "j2:numericalValue","?wasteproductionvalue").addWhere("?vWP", "j6:hasTime","?time")
+		.addWhere("?time", "j6:inDateTime","?vdatetime")
+		.addWhere("?vdatetime", "j6:year","?year").addOrderBy("?year");
+		Query q = sb.build();
+		return q.toString();
+	}
 	/**gets the Offsite Waste Treatment facility, and its xy coordinates. 
 	 */
 	public static String WTquery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
@@ -354,8 +366,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		//render ontological model of waste network
 		OntModel model= readModelGreedy(wasteIRI);
-		List<String[]> fcMarkers = prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+		//creates the csv of FCs, with Site_xy reading for location, waste containing the level of waste in years 1-15
+		List<String[]> fcMarkers = prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
 		String n_cluster= requestParams.optString("n_cluster", Integer.toString(fcMarkers.size()));
         new QueryBroker().putLocal(baseUrl + "/n_cluster.txt",n_cluster ); 
 		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
@@ -383,15 +397,12 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 * @return
 	 */
 	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
-		String wasteinfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "SELECT ?component "
-				+ "WHERE {?entity  a  j2:CompositeSystem  ." 
-				+ "?entity   j2:hasSubsystem ?component ." 
-				+ "}";
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
+		String wasteInfo = sb.build().toString();
 
 		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, wasteinfo);
+		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}
 	/** Creates the CSV of the foodcourt for the Matlab code to read. 
 	 * gets the food court name, xy coordinates, amount of waste, the year and the type (FoodCourt)
@@ -402,18 +413,18 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 * @param model
 	 * @return
 	 */
-	public List<String[]> prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) { //create csv for food court and giving the list of complete food court iri
+	public List<String[]> prepareCSVFC(String filename,String filename2, String baseUrl,OntModel model, int noOfYears) { //create csv for food court and giving the list of complete food court iri
 		//csv input file		
-		ResultSet resultSet = JenaHelper.query(model, mainquery);
+		ResultSet resultSet = JenaHelper.query(model,getFCQuery());
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keysfc = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keysfc);
         List<String[]> resultxy = new ArrayList<String[]>();
         List<String[]> resultfcmapper = new ArrayList<String[]>();
 		for (int d = 0; d < resultList.size(); d++) {
-			String[] comp = { resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
-			String[] mapper = {resultList.get(d)[5],resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
-			if (resultList.get(d)[4].contentEquals("1")) {
+			String[] comp = { resultList.get(d)[2], resultList.get(d)[3] };// only extract and y
+			String[] mapper = {resultList.get(d)[0],resultList.get(d)[2], resultList.get(d)[3] };// only extract and y
+			if (resultList.get(d)[5].contentEquals("1")) { //get the initial year first
 				resultxy.add(comp);
 				resultfcmapper.add(mapper);
 			}
@@ -421,19 +432,18 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         if (filename2 != null) {//waste.csv
 			List<String[]> resultwaste = new ArrayList<String[]>();
 			int size = resultList.size();
-			int amountinst = size / 15; // assume it's from year 1
+			int amountinst = size / noOfYears; // assume it's from year 1
 
 			for (int n = 0; n < amountinst; n++) {
-				int yearend=15;//control how many year we want to use;assume yearend =1 (only 1 year)
-				String[] consumption = new String[yearend];
-				for (int r = 0; r < yearend; r++) { 
-					consumption[r] = resultList.get(r * amountinst + n)[3];
+				String[] consumption = new String[noOfYears];
+				for (int r = 0; r < noOfYears; r++) { 
+					consumption[r] = resultList.get(r * amountinst + n)[4];
 				}
 				resultwaste.add(consumption);
 			}
 			new QueryBroker().putLocal(baseUrl + "/" + filename2, MatrixConverter.fromArraytoCsv(resultwaste));
 		}
-        String[]header= {keysfc[1],keysfc[2]};
+        String[]header= {keysfc[2],keysfc[3]};
        // String[]headerwaste= {"waste year1"};
         resultxy.add(0,header);
         //resultwaste.add(0,headerwaste);
@@ -677,6 +687,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 //			
 //	 }
 	
+    public static void main(String[] args) 
+    {
+    	
+    }
 
 
 }

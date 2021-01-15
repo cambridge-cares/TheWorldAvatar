@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.wte.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -22,19 +23,23 @@ import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 public class TestWTE extends TestCase {
 	static String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 	String usecaseID = UUID.randomUUID().toString();
-	/**Query no of FC
+	/** test the FCQuery creation by 
+	 * a. reading the model and getting the number of FC *number of years of waste levels 
+	 * b. creating the csv file of site locations, and waste levels of those FoodCourts per year
+	 * c. test presence of file there. 
+	 * 
 	 */
 	public void testQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
-		String query= a.FCQuery;
-		ResultSet resultSet = JenaHelper.query(model, query);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-        String[] keys = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-        System.out.println("size of result="+resultList.size()); //should be 109*15
-		
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
+		int noOfYears = 15;
+		a.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model, noOfYears);
+		File file = new File( "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest\\Site_xy.csv");
+		assertTrue(file.exists());
+		File file2 = new File("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest\\Waste.csv");
+		assertTrue(file2.exists());
 	}
 	/** Query for costs after simulation finishes running
 	 * 
@@ -96,7 +101,7 @@ public class TestWTE extends TestCase {
 		String sourceName = BucketHelper.getScenarioName(baseUrl);
 		String wasteIRI ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
-		List<String[]> inputsondata = ag.prepareCSVFC(ag.FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+		List<String[]> inputsondata = ag.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model, 15); 
 		ag.prepareCSVWT(ag.WTquery,"Location.csv", baseUrl,model); 
 		ag.prepareCSVTransport(ag.transportQuery,"transport.csv", baseUrl,model); 
 		ag.prepareCSVCompTECHBased(ag.compquery,baseUrl,model);
