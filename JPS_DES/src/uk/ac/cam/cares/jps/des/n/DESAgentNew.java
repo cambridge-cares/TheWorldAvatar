@@ -128,36 +128,38 @@ public class DESAgentNew extends JPSHttpServlet {
  			return readingFromCSV;
     }
     /** find all subsystems that are linked to top node
-     * 
-     * @param iriofnetwork
-     * @return
-     */
+    *
+    * @param iriofnetwork
+    * @return
+    */
     public static OntModel readModelGreedy(String iriofnetwork) {
-		String nodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "SELECT ?component "
-				+ "WHERE {"
-				+ "?entity   j2:hasSubsystem ?component ." 
-				+ "}";
+	    SelectBuilder modelQ = new SelectBuilder()
+	    .addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+	    .addVar("?component")
+	    .addWhere("?entity","j2:hasSubsystem", "?component");
+	    Query q= modelQ.build();
+	    String nodeInfo = q.toString();
+	
+	    QueryBroker broker = new QueryBroker();
+	    return broker.readModelGreedy(iriofnetwork, nodeInfo);
+    }
 
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, nodeInfo);
-	}
-    
-	/** find individual components (for residential) of appliances
-	 * 
-	 * @param useriri
-	 * @return
-	 */
+    /** find individual components (for residential) of appliances
+    *
+    * @param useriri
+    * @return
+    */
     public static OntModel readModelGreedyForUser(String useriri) {
-		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "SELECT ?component " + "WHERE { " + "?entity   j2:isConnectedTo ?component ." + "}";
-
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(useriri, electricalnodeInfo);
-	}
+	
+	    SelectBuilder modelQ = new SelectBuilder()
+	    .addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+	    .addVar("?component")
+	    .addWhere("?entity","j2:isConnectedTo", "?component");
+	    Query q= modelQ.build();
+	    String electricalnodeInfo = q.toString();
+	    QueryBroker broker = new QueryBroker();
+	    return broker.readModelGreedy(useriri, electricalnodeInfo);
+    }
     
     /** run Python Script in folder
 	 * 
