@@ -1,5 +1,7 @@
 import re
 
+import time
+
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
@@ -14,8 +16,28 @@ class GoogleAPI:
         self.options = Options()
         self.options.add_argument('--headless')
         self.options.add_argument('--disable-logging') 
+        address = '185.141.58.20:19596'
+        webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
+            "httpProxy": address,
+            "sslProxy": address,
+            "proxyType": "MANUAL"
+        }
+
         self.driver = webdriver.Firefox(options=self.options)
+
         self.url_template = 'https://www.google.com/search?q=%s'
+
+    # due to possible restriction from google, we implement a proxy to enable robust request to google.
+    def test_proxy_ip(self):
+        start_time = time.time()
+        self.driver.get("http://www.whatsmyip.org/")
+        html_source = self.driver.find_element_by_tag_name('html').find_element_by_id('ip').get_attribute('innerHTML')
+        print('got response')
+        print(html_source)
+        end_time = time.time()
+        print('it took ', end_time - start_time)
+        return html_source
+
 
     def combine_key_components(self, key_components):
         pass
@@ -182,8 +204,18 @@ class GoogleAPI:
         self.options = Options()
         self.options.add_argument('--headless')
         self.options.add_argument('--disable-logging')
+        address = '185.141.58.20:19596'
+        webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
+            "httpProxy": address,
+            "sslProxy": address,
+            "proxyType": "MANUAL"
+        }
+
         self.driver = webdriver.Firefox(options=self.options)
         # self.driver = webdriver.Firefox(options=self.options)
+
+        # self.test_proxy_ip()
+
         try:
             self.driver.get(url)
             html_source = self.driver.find_element_by_tag_name('html').get_attribute('innerHTML')
@@ -241,3 +273,13 @@ class GoogleAPI:
             return result
         else:
             return ""
+    
+
+    # def run(self, question):
+    #     ip = self.test_proxy_ip()
+    #     with open('iplog', 'w') as f:
+    #         f.write(ip)
+    #         f.close()
+    #     print('=======================')
+    #     print(ip)
+    #     print('here is the ip')

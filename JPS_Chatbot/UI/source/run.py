@@ -52,7 +52,9 @@ def make_query():
             return json.dumps(result)
         elif question_type == 'google':
             question = request.args.get('question').strip()
+            print('here is the ip aa')
             r = google_api.run(question)
+            print(r)
             return str(r)
         elif question_type == 'wolfram':
             result = wolfram_and_google.get_result_from_wolfram(question)
