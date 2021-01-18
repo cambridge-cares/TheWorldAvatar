@@ -80,6 +80,15 @@ public class TestWTE extends TestCase {
         System.out.println(Arrays.toString(resultList.get(0)));
 	
 	}
+	
+	public void testWTEKBCreatorWasteSystemOutputQuery() {
+		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		
+		String query = WTESingleAgent.getWasteSystemOutputQuery();
+		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
+		System.out.println("size of result="+resultList.size()); 
+        
+	}
 	public void testQueryTechOffsiteQuery() {
 	String query = FCQuerySource.getTechQuery() 
 			.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();

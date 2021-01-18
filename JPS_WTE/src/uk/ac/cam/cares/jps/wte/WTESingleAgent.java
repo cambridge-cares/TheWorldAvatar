@@ -40,13 +40,39 @@ public class WTESingleAgent extends JPSHttpServlet {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
 				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#")
+				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#")
 				.addVar("?entity").addVar("?vrevenue").addVar("?vinstallationcost").addVar("?voperationalcost")
 				.addVar("?vlaborcost").addVar("?vlandcost").addVar("?vpollutioncost").addVar("?vtransportcost")
 				.addVar("?vresourcecost")
-				.addWhere("?entity" ,"a", "j2:CompositeSystem")
+				.addWhere("?entity" ,"a", "j2:CompositeSystem")				
+
+				.addWhere("?entity" ,"j3:hasRevenue", "?Rev1")
+				.addWhere("?Rev1" ,"j2:hasValue", "?vrevenue")				
+
+				.addWhere("?entity" ,"j3:hasInstallationCost", "?IC1")
+				.addWhere("?IC1" ,"j2:hasValue", "?vinstallationcost")
+
+				.addWhere("?entity" ,"j3:hasCost", "?OC1")
+				.addWhere("?OC1" ,"a", "j3:OperationalExpenditureCosts")
+				.addWhere("?OC1" ,"j2:hasValue", "?voperationalcost")
+
+				.addWhere("?entity" ,"j3:hasLaborCost", "?LabC1")
+				.addWhere("?LabC1" ,"j2:hasValue", "?vlaborcost")
+
+				.addWhere("?entity" ,"j3:hasCost", "?LC1")
+				.addWhere("?LC1" ,"a", "j3:CostsForLand")
+				.addWhere("?LC1" ,"j2:hasValue", "?vlandcost")
+				
+				.addWhere("?entity" ,"j1:hasTax", "?PC1")
+				.addWhere("?PC1" ,"j2:hasValue", "?vpollutioncost")
+				
+				.addWhere("?entity" ,"j8:hasTransportationCost", "?TC1")
+				.addWhere("?TC1" ,"j2:hasValue", "?vtransportcost")
+				
 				.addWhere("?entity" ,"j3:hasUtilityCost", "?UC1")
 				.addWhere("?UC1" ,"a", "j3:UtilityCosts")
 				.addWhere("?UC1" ,"j2:hasValue", "?vresourcecost");
+				
 		return sb.buildString();
 				
 	}
