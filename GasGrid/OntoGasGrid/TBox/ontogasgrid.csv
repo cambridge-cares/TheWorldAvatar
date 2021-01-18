@@ -2,9 +2,9 @@ Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
 http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem,Class,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
 http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,Class,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
 http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,Class,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
-Gas Network,Class,,,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
-Grid Component,Class,,,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
-Grid Pipeline,Class,,,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Gas Network,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf, ,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Grid Component,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf, ,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Grid Pipeline,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf, ,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
 Storage,Class,Grid Component,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
 Intake,Class,Grid Component,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
 Offtake,Class,Grid Component,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
@@ -37,3 +37,12 @@ has Diameter,Data Property ,,,Grid Pipeline,String,,,http://www.theworldavatar.c
 http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#enters,Object Property,,,Grid Pipeline,Grid Component ,,,http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl
 http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#leaves,Object Property,,,Grid Pipeline ,Grid Component ,,,http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl
 has Volume ,Data Property ,,,Grid Pipeline ,String ,,,http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
