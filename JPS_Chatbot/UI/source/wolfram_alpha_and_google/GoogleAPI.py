@@ -16,7 +16,7 @@ class GoogleAPI:
         self.options = Options()
         self.options.add_argument('--headless')
         self.options.add_argument('--disable-logging') 
-        address = '185.141.58.20:19596'
+        address = '185.141.58.109:19596'
         webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
             "httpProxy": address,
             "sslProxy": address,
@@ -204,7 +204,7 @@ class GoogleAPI:
         self.options = Options()
         self.options.add_argument('--headless')
         self.options.add_argument('--disable-logging')
-        address = '185.141.58.20:19596'
+        address = '185.141.58.109:19596'
         webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
             "httpProxy": address,
             "sslProxy": address,

@@ -17,7 +17,7 @@ class Proxy:
         self.options = Options()
         self.options.add_argument('--headless')
         self.options.add_argument('--disable-logging')
-        address = '185.141.58.20:19596'
+        address = '185.141.58.109:19596'
         webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
             "httpProxy": address,
             "sslProxy": address,
@@ -30,7 +30,7 @@ class Proxy:
     # due to possible restriction from google, we implement a proxy to enable robust request to google.
     def make_proxy_requst(self):
         start_time = time.time()
-        ip_list = ['185.141.58.20:19596']
+        ip_list = ['185.141.58.109:19596']
         ip = ip_list.pop()
         # prox = Proxy()
         # prox.proxy_type = ProxyType.MANUAL
