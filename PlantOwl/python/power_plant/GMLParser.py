@@ -30,9 +30,12 @@ URL_ID = '{http://www.opengis.net/gml}id'
 
 ATTRB_SRS_NAME = 'srsName'
 ATTRB_SRS_DIMENSION = 'srsDimension'
+ENVELOPE_LOWER_CORNER = 'lowerCorner'
+ENVELOPE_UPPER_CORNER = 'upperCorner'
 
 """Declared a variable for creating a graph model"""
 g = Graph()
+envelope = Envelope()
 
 """Creates a context for parsing when the GML file name and tag is given"""
 def get_context(file_name, tag):
@@ -44,9 +47,16 @@ def get_context(file_name, tag):
 """
 def get_envelope(context):
     for event, elem in context:
-        envelope = Envelope()
+        global envelope
         envelope.srsName = elem.attrib[ATTRB_SRS_NAME]
         envelope.srsDimension = elem.attrib[ATTRB_SRS_DIMENSION]
+        for geospatialData in elem:
+            if geospatialData.text == None or geospatialData.text == '':
+                continue
+            if get_tag_name(geospatialData.tag.lower()) == ENVELOPE_LOWER_CORNER.lower():
+                envelope.lowerCorner = geospatialData.text
+            if get_tag_name(geospatialData.tag.lower()) == ENVELOPE_UPPER_CORNER.lower():
+                envelope.upperCorner = geospatialData.text
         return envelope
 
 """Parses properties of the current crop map"""
@@ -185,5 +195,5 @@ def parse_gml(file_name):
 
 """This block of code is the access point to this Python module"""
 if __name__ == '__main__':
-    file_name = 'Crop_Map_of_England_2018_Cambridgeshire_snippet.gml'
+    file_name = 'Crop_Map_of_England_2019_North_Yorkshire.gml'
     parse_gml(file_name)
