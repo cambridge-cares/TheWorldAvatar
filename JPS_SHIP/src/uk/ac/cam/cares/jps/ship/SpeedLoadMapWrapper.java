@@ -1,14 +1,13 @@
 package uk.ac.cam.cares.jps.ship;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
-
+import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,8 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
@@ -27,27 +24,46 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 public class SpeedLoadMapWrapper extends HttpServlet {
 	private static final String slmDir = "\\python\\ADMS-speed-load-map";
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
+	private static final String jpsShipProperties = "\\WEB-INF\\classes\\resources\\jpsship.properties";
 	private static final String pypathUnix = "bin/python";
 	private static final String pypathWindows = "\\Scripts\\python.exe";
+	private static final String slmPyvenv = "speed.load.map.venv.dir";
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
 		String slmWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
+		String jpsShipPropertiesDir = AgentLocator.getCurrentJpsAppDirectory(this) + jpsShipProperties;
 		ArrayList<String> args = new ArrayList<String>();
 		Path venvPath;
+		InputStream input = null;
+		Properties jpsProperties = new Properties();
+		
+		try {
+			if (CommandHelper.isWindows()) {
+				input = new FileInputStream(jpsShipPropertiesDir);
+			} else {
+				input = new FileInputStream(jpsShipPropertiesDir.replace("\\", "/"));
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			jpsProperties.load(input);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 				
 		if (CommandHelper.isWindows()) {
-			venvPath = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR), pypathWindows);
-			args.add(venvPath.toString());
-	        args.add(slmScript);
-			args.add(inputs);
+			venvPath = Paths.get(jpsProperties.getProperty(slmPyvenv), pypathWindows);
 		} else {
 			slmWorkingDir = AgentLocator.getCurrentJpsAppDirectory(this) +  slmDir.replace("\\", "/");
-			venvPath = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR), pypathUnix);
-			args.add(venvPath.toString());
-			args.add(slmScript);
-			args.add(inputs);
+			venvPath = Paths.get(jpsProperties.getProperty(slmPyvenv), pypathUnix);
 		}
+		
+		args.add(venvPath.toString());
+		args.add(slmScript);
+		args.add(inputs);
 
 		return CommandHelper.executeCommands(slmWorkingDir, args);
 	}
