@@ -46,6 +46,24 @@ def getObjectIDVocabulary():
 def getDataTypePolygonalPoints():
     return config.get('TBOX', 'data.type.polygon.points')
 
+def getClassEnvelope():
+    return config.get('TBOX', 'class.envelope')
+
+def getSrsName():
+    return config.get('TBOX', 'property.srs.name')
+
+def getSrsDimension():
+    return config.get('TBOX', 'property.srs.dimension')
+
+def getLowerCorner():
+    return config.get('TBOX', 'property.lower.corner')
+
+def getUpperCorner():
+    return config.get('TBOX', 'property.upper.corner')
+
+def getCentrePoint():
+    return config.get('TBOX', 'property.centre.point')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
