@@ -5,3 +5,5 @@
 class Envelope():
     srsName = ''
     srsDimension = ''
+    lowerCorner = ''
+    upperCorner = ''
