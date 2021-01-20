@@ -9,12 +9,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.chatbot.config.ChatbotConstants;
+
 /**
  * Servlet implementation class NamedEntityRecognition
  */
 @WebServlet("/NamedEntityRecognition")
-public class NamedEntityRecognition extends HttpServlet {
+public class NamedEntityRecognition extends JPSHttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final String route = "/query_wolfram";
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -24,32 +32,24 @@ public class NamedEntityRecognition extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		String question = request.getParameter("question"); // to get parameter question from the HTTP request 
+	@Override	
+	protected JSONObject processRequestParameters(JSONObject requestParams) {
+		// expected inputs 
 		
-		// request the interface provided by flask (The Python scripts already provides HTTP access, the Java wrapper is )
-		String http_url = "http://localhost:5000/chemistry_chatbot/NamedEntityRecognition";
-		
-		// put the keys and inputs 
-		ArrayList<String> inputs = new ArrayList<String>();
-		inputs.add(question);
-		
-		ArrayList<String> keys = new ArrayList<String>();
-		inputs.add("question");
-		String result = MakeRequest.send(inputs, keys, http_url); // make the http request		
-		response.getWriter().write(result);
+	    String host = AgentLocator.getProperty("host");
+	    String port = ChatbotConstants.ChatbotPortNumber;
+	    String subdirectory = ChatbotConstants.SubDirectory;
+	    String question = requestParams.getString("question");	    
+	    // construct the complete http request 
+	    
+	    
+	    String path = "http://" + host + ":" + port + "/" + subdirectory + route;
+	    String result_string = AgentCaller.executeGet(path, "question", question);
+	    JSONObject result = new JSONObject();
+	    result.put("result", result_string);
+		return result;
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+    
+ 
 
 }
