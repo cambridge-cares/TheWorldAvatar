@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.wte;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -8,9 +9,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import com.google.common.primitives.Ints; 
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -23,14 +27,23 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 @WebServlet(urlPatterns= {"/processresult"})
 public class WTESingleAgent extends JPSHttpServlet {
-	/**
-	 * 
-	 */
+	/** Extracts the onsite facility's tech capacity, installation cost, operation cost, transferrate electric value, energy consumption
+	  * 
+	  */
+	public static String getOffsiteOutputQuery() {
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+				.addVar("?entity").addVar("?Tech1").addWhere("?entity" ,"j1:useTechnology", "?Tech1");
+		return sb.buildString();
+				
+	}
 	
 	/** Gets the following output values of the composite waste system. 
 	 * the name, revenue, installation cost, operational cost, labor cost, land cost, pollution cost, transport cost
@@ -76,47 +89,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 		return sb.buildString();
 				
 	}
-	public static String wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-			+ "SELECT ?entity ?vrevenue ?vinstallationcost ?voperationalcost ?vlaborcost  ?vlandcost ?vpollutioncost ?vtransportcost ?vresourcecost  " 
-			+ "WHERE {"
-			+ "?entity  a j2:CompositeSystem ."
-			+ "?entity   j3:hasUtilityCost ?UC1 ."
-			+ "?UC1  a j3:UtilityCosts ."
-			+ "?UC1     j2:hasValue ?vresourcecost ." 
-						
-			+ "?entity   j3:hasInstallationCost ?IC1 ."
-			+ "?IC1     j2:hasValue ?vinstallationcost ."  
-			
-			+ "?entity   j3:hasRevenue ?Rev1 ."
-			+ "?Rev1     j2:hasValue ?vrevenue ." 
-			
-			+ "?entity   j3:hasCost ?LC1 ."
-			+ "?LC1  a j3:CostsForLand ."
-			+ "?LC1     j2:hasValue ?vlandcost ."
-			
-			+ "?entity   j3:hasCost ?OC1 ."
-			+ "?OC1  a j3:OperationalExpenditureCosts ."
-			+ "?OC1     j2:hasValue ?voperationalcost ."
-			
-			+ "?entity   j1:hasTax ?PC1 ."
-			+ "?PC1     j2:hasValue ?vpollutioncost ."  
-			
-			+ "?entity   j3:hasLaborCost ?LabC1 ."
-			+ "?LabC1     j2:hasValue ?vlaborcost ." 
-			
-			+ "?entity   j8:hasTransportationCost ?TC1 ."
-			+ "?TC1     j2:hasValue ?vtransportcost ." 
-			
-			+ "}";
-	private static final long serialVersionUID = 1L;
-	/** Find offsite technologies that use technology
-	 * 
-	 */
-	
-
-	
 	/** derive property that defines numerical values as described in the ontology
 	 * 
 	 * @param jenaOwlModel
@@ -136,7 +108,15 @@ public class WTESingleAgent extends JPSHttpServlet {
 		return jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
 	}
-	
+	/** derive property that defines direct subsystem relationships as described in the ontology
+	 * 
+	 * @param jenaOwlModel (OntModel)
+	 * @return
+	 */
+	private ObjectProperty getIsDirectSubsystemOf(OntModel jenaOwlModel) {
+		return jenaOwlModel.getObjectProperty(
+				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf");
+	}
 
 	/** derive property that defines delivery of waste
 	 * 
@@ -155,8 +135,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
-		
-		
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		try {
 			//read for FC details
@@ -164,14 +142,16 @@ public class WTESingleAgent extends JPSHttpServlet {
 			//select in year 1
 			List<String[]> fcMapping = createFoodCourt(resu);
 			//properties of OnsiteTech
+
 			String WTFTechOnsiteQuery = FCQuerySource.getTechQuery() 
-					.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility").buildString();
-			List<String[]> propertydataonsite = readAndDump(model, WTFTechOnsiteQuery );
+					.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
+					.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
+			List<String[]> propertydataonsite = readAndDump(model, WTFTechOnsiteQuery);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,15);
 			List<String[]> sitemapping= updateNewFC(baseUrl,inputoffsitedata);
 			updateFCHelper(sitemapping);
-			updateKBForSystem(wasteIRI, baseUrl,wasteSystemOutputQuery,onsiteiricomplete); //for waste system	
+			updateKBForSystem(wasteIRI, baseUrl, getWasteSystemOutputQuery() ,onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		 }catch (Exception e) {
 			e.printStackTrace();
@@ -200,6 +180,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @return result of Query
 	 */
 	public List<String[]> readAndDump(OntModel model, String mainquery) {
+		List<String[]> inputdata = new ArrayList<String[]>();
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keysfc = JenaResultSetFormatter.getKeys(result);
@@ -490,16 +471,12 @@ public class WTESingleAgent extends JPSHttpServlet {
 				}
 			}
 		}
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1", "http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#")
-				.addVar("?entity").addVar("?Tech1").addWhere("?entity" ,"j1:useTechnology", "?Tech1")
-				.addOrderBy("?Tech1");
-		String Offsiteoutput = sb.toString();
+		
 		if(filtered.size()>0) {
 			String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 					+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
 						+ "INSERT DATA { \r\n";
 			for(int w=0;w<filtered.size();w++) {
-				
 				StringBuffer b = new StringBuffer();
 				String currentunit = filtered.get(w)[1].split("#")[0] + "#UnitDeviceOf-" + filtered.get(w)[1].split("#")[1]+"_"+indexByYear; //w is precaution if duplicate instance
 				int numunit = Integer.valueOf(filtered.get(w)[2]);
@@ -507,12 +484,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 				//0=incineration
 				//1=codigestion
 				//2=anaerobic
-				String result = new QueryBroker().queryFile(filtered.get(w)[1], Offsiteoutput);
+				String result = new QueryBroker().queryFile(filtered.get(w)[1], getOffsiteOutputQuery());
 				String[] keyswt = JenaResultSetFormatter.getKeys(result);
 				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
 				String techiri=resultList.get(Integer.valueOf(filtered.get(w)[0]))[1];
-				
-				
 				b.append("<" + techiri + "> OW:realizedByDevice <" + currentunit + "> . \r\n");
 				b.append("<" + currentunit + "> a OW:WasteTreatmentDevice . \r\n");
 				b.append("<" + currentunit + "> OW:usedInYear " + indexByYear + " . \r\n");
