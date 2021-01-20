@@ -42,7 +42,8 @@ public class NamedEntityRecognition extends JPSHttpServlet {
 	    String question = requestParams.getString("question");	    
 	    // construct the complete http request 
 	    
-	    
+	    // To request the interface provided by flask (The Python scripts already provide HTTP access, the Java wrapper is
+	    // an extra layer to provide a standard agent interface.) 
 	    String path = "http://" + host + ":" + port + "/" + subdirectory + route;
 	    String result_string = AgentCaller.executeGet(path, "question", question);
 	    JSONObject result = new JSONObject();

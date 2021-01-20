@@ -37,6 +37,7 @@ public class QuestionClassification extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
+    
 	protected JSONObject processRequestParameters(JSONObject requestParams) {
 		// expected input is "term"
 		
@@ -48,6 +49,10 @@ public class QuestionClassification extends HttpServlet {
 	    
 	    
 	    String path = "http://" + host + ":" + port + "/" + subdirectory + route;
+	    // To request the interface provided by flask (The Python scripts already provide HTTP access, the Java wrapper is
+	    // an extra layer to provide a standard agent interface.) 
+	    
+ 
 	    String result_string = AgentCaller.executeGet(path, "question", question);
 	    JSONObject result = new JSONObject();
 	    result.put("result", result_string);

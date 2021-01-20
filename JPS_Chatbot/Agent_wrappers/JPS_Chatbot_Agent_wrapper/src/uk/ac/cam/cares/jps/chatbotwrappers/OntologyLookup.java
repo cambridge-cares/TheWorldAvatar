@@ -42,7 +42,8 @@ public class OntologyLookup extends HttpServlet {
 	    String term = requestParams.getString("term");	    // get the input 
 	    // construct the complete http request 
 	    
-	    
+	    // To request the interface provided by flask (The Python scripts already provide HTTP access, the Java wrapper is
+	    // an extra layer to provide a standard agent interface.) 
 	    String path = "http://" + host + ":" + port + "/" + subdirectory + route;
 	    String result_string = AgentCaller.executeGet(path, "term", term);
 	    JSONObject result = new JSONObject();
