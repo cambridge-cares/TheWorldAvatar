@@ -33,6 +33,8 @@ ATTRB_SRS_DIMENSION = 'srsDimension'
 ENVELOPE_LOWER_CORNER = 'lowerCorner'
 ENVELOPE_UPPER_CORNER = 'upperCorner'
 
+ENVELOPE_INSTANCE_PREFIX = 'Envelope_of_'
+
 """Declared a variable for creating a graph model"""
 g = Graph()
 envelope = Envelope()
@@ -135,6 +137,35 @@ def get_crop_map(context):
                                                                      + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
                                                               posList.text.replace(" ", "#"), URIRef(gmlpropread.getDataTypePolygonalPoints()))
                                             print(cropMap.polygon)
+            """Adds data and metadata to the envelope"""
+            if map_counter == 0:
+                aboxgen.create_instance(g,
+                                        URIRef(gmlpropread.getClassEnvelope()),
+                                        gmlpropread.getABoxIRI() + rdfizer.SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name),
+                                        ENVELOPE_INSTANCE_PREFIX+cropMap.name)
+                aboxgen.link_data(g, URIRef(gmlpropread.getSrsName()),
+                                        URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
+                                        envelope.srsName)
+                aboxgen.link_data(g, URIRef(gmlpropread.getSrsDimension()),
+                                        URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
+                                        envelope.srsDimension)
+                aboxgen.link_data(g, URIRef(gmlpropread.getLowerCorner()),
+                                        URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
+                                        envelope.lowerCorner.replace(' ', '#'))
+                aboxgen.link_data(g, URIRef(gmlpropread.getUpperCorner()),
+                                        URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
+                                        envelope.upperCorner.replace(' ', '#'))
+            """Link each feature to the envelope"""
+            aboxgen.link_instance(g, URIRef(gmlpropread.getBoundedBy()),
+                                  URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
+                                  + rdfizer.format_iri(cropMap.id)),
+                                  URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
+                                  + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)))
         map_counter += 1
         if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
             save_into_disk(g, file_counter)
@@ -195,5 +226,5 @@ def parse_gml(file_name):
 
 """This block of code is the access point to this Python module"""
 if __name__ == '__main__':
-    file_name = 'Crop_Map_of_England_2019_North_Yorkshire.gml'
+    file_name = 'Crop_Map_of_England_2018_Cambridgeshire_snippet.gml'
     parse_gml(file_name)
