@@ -1,9 +1,6 @@
 package uk.ac.cam.cares.jps.wte;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,15 +13,12 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.expr.ExprVar;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -269,11 +263,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 * @return List
 	 */
 	public void prepareCSVCompTECHBased(String mainquery,String baseUrl,OntModel model) {		
-		ResultSet resultSet = JenaHelper.query(model, mainquery);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-        String[] keyswt = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
-        List<String[]> resultTechOffsiteWTF = new ArrayList<String[]>();
+		List<String[]> resultList = FCQuerySource.queryResult(model, mainquery);
+		 List<String[]> resultTechOffsiteWTF = new ArrayList<String[]>();
         int technumber=3;
         String[] header = new String[resultList.size()];
 		for (int d = 0; d < technumber; d++) {

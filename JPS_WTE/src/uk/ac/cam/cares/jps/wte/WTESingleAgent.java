@@ -35,7 +35,8 @@ import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 @WebServlet(urlPatterns= {"/processresult"})
 public class WTESingleAgent extends JPSHttpServlet {
-	/** Extracts the onsite facility's tech capacity, installation cost, operation cost, transferrate electric value, energy consumption
+	
+/** Extracts the onsite facility's tech capacity, installation cost, operation cost, transferrate electric value, energy consumption
 	  * 
 	  */
 	public static String getOffsiteOutputQuery() {
@@ -89,6 +90,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		return sb.buildString();
 				
 	}
+	
 	/** derive property that defines numerical values as described in the ontology
 	 * 
 	 * @param jenaOwlModel
@@ -138,7 +140,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		try {
 			//read for FC details
-			List<String[]> resu =  readAndDump(model,WastetoEnergyAgent.getFCQuery());
+			List<String[]> resu =  FCQuerySource.queryResult(model,WastetoEnergyAgent.getFCQuery());
 			//select in year 1
 			List<String[]> fcMapping = createFoodCourt(resu);
 			//properties of OnsiteTech
@@ -146,12 +148,12 @@ public class WTESingleAgent extends JPSHttpServlet {
 			String WTFTechOnsiteQuery = FCQuerySource.getTechQuery() 
 					.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
 					.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
-			List<String[]> propertydataonsite = readAndDump(model, WTFTechOnsiteQuery);
+			List<String[]> propertydataonsite = FCQuerySource.queryResult(model, WTFTechOnsiteQuery);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,15);
 			List<String[]> sitemapping= updateNewFC(baseUrl,inputoffsitedata);
 			updateFCHelper(sitemapping);
-			updateKBForSystem(wasteIRI, baseUrl, getWasteSystemOutputQuery() ,onsiteiricomplete); //for waste system	
+			updateKBForSystem(wasteIRI, baseUrl, getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		 }catch (Exception e) {
 			e.printStackTrace();
@@ -174,19 +176,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		
 		return simulationResult;
 	}
-	/** scans in model and reads out according to Query
-	 * 
-	 * @param model Ontological model created in processRequestParameters
-	 * @return result of Query
-	 */
-	public List<String[]> readAndDump(OntModel model, String mainquery) {
-		List<String[]> inputdata = new ArrayList<String[]>();
-		ResultSet resultSet = JenaHelper.query(model, mainquery);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-        String[] keysfc = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keysfc);
-		return resultList;
-	}
+	
 	/** helper function for createFC for later conversion
 	 * Basically gets the iris, and xy coordinates
 	 * @param resultList
@@ -196,8 +186,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 List<String[]> inputdata = new ArrayList<String[]>();
 		for (int d = 0; d < resultList.size(); d++) {
 			//entity, x, y
-			String[] mapper = {resultList.get(d)[5],resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
-			if (resultList.get(d)[4].contentEquals("1")) { //self select for year
+			String[] mapper = {resultList.get(d)[0],resultList.get(d)[2], resultList.get(d)[3] };// only extract and y
+			if (resultList.get(d)[5].contentEquals("1")) { //self select for year
 				inputdata.add(mapper);
 			}
 		}
@@ -484,7 +474,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 				//0=incineration
 				//1=codigestion
 				//2=anaerobic
-				String result = new QueryBroker().queryFile(filtered.get(w)[1], getOffsiteOutputQuery());
+				String result = new QueryBroker().queryFile(filtered.get(w)[1], Offsiteoutput);
 				String[] keyswt = JenaResultSetFormatter.getKeys(result);
 				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
 				String techiri=resultList.get(Integer.valueOf(filtered.get(w)[0]))[1];
