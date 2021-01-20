@@ -64,6 +64,9 @@ def getUpperCorner():
 def getCentrePoint():
     return config.get('TBOX', 'property.centre.point')
 
+def getBoundedBy():
+    return config.get('TBOX', 'property.bounded.by')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
@@ -78,3 +81,10 @@ if __name__ == '__main__':
     print(getCromeIDVocabulary())
     print(getObjectIDVocabulary())
     print(getDataTypePolygonalPoints())
+    print(getClassEnvelope())
+    print(getSrsName())
+    print(getSrsDimension())
+    print(getLowerCorner())
+    print(getUpperCorner())
+    print(getCentrePoint())
+    print(getBoundedBy())
