@@ -177,7 +177,7 @@ public class TestWTE extends TestCase {
 		ag.copyTemplate(baseUrl, "Main.m");
 		ag.copyTemplate(baseUrl, "D2R.m");		
 		ag.createBat(baseUrl, n_cluster);
-		TimeUnit.MINUTES.sleep(2);
+		TimeUnit.MINUTES.sleep(1);
 		System.out.println("Matlab simulation should have finished. ");
 //			Read for next agent
 		WTESingleAgent at = new WTESingleAgent();
@@ -187,8 +187,7 @@ public class TestWTE extends TestCase {
 		
 
 		model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
-		//not the same result; as there should be more than one onsite
-	    assertNotSame(1, propertydataonsite.size());
+		//only one year (first year) to minimize the number of OnsiteWTF being created. 15 in the actual site
 		List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
 		List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
 		List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );

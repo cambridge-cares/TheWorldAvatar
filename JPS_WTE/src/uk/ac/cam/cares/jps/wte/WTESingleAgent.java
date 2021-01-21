@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns= {"/processresult"})
 public class WTESingleAgent extends JPSHttpServlet {
 	
-/** Extracts the onsite facility's tech capacity, installation cost, operation cost, transferrate electric value, energy consumption
+	/** Extracts the onsite facility's tech capacity, installation cost, operation cost, transferrate electric value, energy consumption
 	  * 
 	  */
 	public static String getOffsiteOutputQuery() {
@@ -101,15 +101,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 	private ObjectProperty getHasSubsystemRelation(OntModel jenaOwlModel) {
 		return jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
-	}
-	/** derive property that defines direct subsystem relationships as described in the ontology
-	 * 
-	 * @param jenaOwlModel (OntModel)
-	 * @return
-	 */
-	private ObjectProperty getIsDirectSubsystemOf(OntModel jenaOwlModel) {
-		return jenaOwlModel.getObjectProperty(
-				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf");
 	}
 
 	/** derive property that defines delivery of waste
@@ -292,7 +283,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 				
 			}
 			String content = JenaHelper.writeToString(model);
-			new QueryBroker().putOld(fc, content);
+			new QueryBroker().put(fc, content);
 
 		}
 	}
@@ -391,7 +382,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 
 			String sparql = sparqlStart + b.toString() + "} \r\n";
 			
-			new QueryBroker().updateFileOLD(foodcourtmap.get(d)[0], sparql);
+			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 
 		}
 		
@@ -428,7 +419,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		
 		
 		String content = JenaHelper.writeToString(model);
-		new QueryBroker().putOld(resultList.get(0)[0], content);
+		new QueryBroker().put(resultList.get(0)[0], content);
 
 	}
 	
