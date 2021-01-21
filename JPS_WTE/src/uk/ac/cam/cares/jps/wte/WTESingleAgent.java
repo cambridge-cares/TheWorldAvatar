@@ -185,14 +185,13 @@ public class WTESingleAgent extends JPSHttpServlet {
 		}
 		return inputdata;
 	}
-	/** creates the Onsite Waste Treatment Facility OWL file
+	/** creates the Onsite Waste Treatment Facility OWL file array 
 	 * 
 	 * @param inputdata {[List<String[]>]} list of FC 
 	 * @param baseUrl String
 	 * @return List<String> list of IRIS of onsite WTF
 	 * @throws Exception
 	 */
-		
 	public List<String> updateinOnsiteWT(List<String[]> inputdata,
 			String baseUrl,
 			List<String[]> propertydata, int index) throws Exception { //creating needed onsite WTF while returning complete set of onsite iri
@@ -233,6 +232,13 @@ public class WTESingleAgent extends JPSHttpServlet {
 		converter.onsiteiri = mappedonsiteiri;
 		return mappedonsiteiri;
 	}
+	/** updates waste values and location of waste delivery to Foodcourts
+	 * 
+	 * @param baseUrl Scenario Folder
+	 * @param inputdataoffsite
+	 * @return
+	 * @throws IOException
+	 */
 	public List<String[]> updateNewFC(String baseUrl,
 			List<String[]> inputdataoffsite) throws IOException{
 		List<String[]>sitemapping=new ArrayList<String[]>();
@@ -266,6 +272,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 		}
 		return sitemapping;
 	}
+	/** helper function for updateNewFC, creates the waste production
+	 * 
+	 * @param sitemapping
+	 */
 	public void updateFCHelper( List<String[]>sitemapping) {
 		int noOfFC = sitemapping.size()/15;
 		for (int i = 1; i<= noOfFC; i++) {
@@ -380,15 +390,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 			}
 
 			String sparql = sparqlStart + b.toString() + "} \r\n";
-			try {
-			      FileWriter myWriter = new FileWriter("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
-			      myWriter.write(sparql);
-			      myWriter.close();
-			      
-			    } catch (IOException e) {
-			      System.out.println("An error occurred.");
-			      e.printStackTrace();
-			    }
+			
 			new QueryBroker().updateFileOLD(foodcourtmap.get(d)[0], sparql);
 
 		}
