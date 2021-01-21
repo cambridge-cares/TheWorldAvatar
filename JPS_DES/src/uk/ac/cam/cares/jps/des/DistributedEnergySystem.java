@@ -38,7 +38,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 @WebServlet(urlPatterns = { "/DESAgent"})
-/*
+/** Old method for DES; no longer used. 
  * Wrapper for the python agent and displaying the result
  */
 public class DistributedEnergySystem extends JPSHttpServlet {
