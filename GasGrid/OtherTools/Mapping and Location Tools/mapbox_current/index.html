@@ -1,86 +1,234 @@
 <!DOCTYPE html>
 <html lan="eng">
+
 <head>
     <style>
         h1 {
             position: relative;
-            font-size:20px;
+            font-size: 20px;
             text-align: left;
             margin-left: 20px;
-            color: #FFFFFF;
+            color: #C4C4C4;
             font-family: Helvetica, sans-serif;
         }
 
         h2 {
             text-align: center;
-            color: #6B6B6B;
+            color: #C4C4C4;
         }
 
         h3 {
             text-align: center;
-            color: #6B6B6B;
+            color: #C4C4C4;
         }
 
-        #map { 
+        #map {
             position: absolute;
-            height:99vh;
-            width:99vw;
+            top: 0;
+            bottom: 0;
+            width: 100%;
         }
 
         .reset {
             font-family: Helvetica, sans-serif;
             display: block;
             position: relative;
-            margin: 10px auto;
             margin-left: 20px;
             width: 200px;
             height: 30px;
             padding: 0px;
             font-size: 13px;
             text-align: center;
-            color: #FFFFFF;
-            background-color:rgba(255,255,255,0.2);
-            border-radius:8px;
-            transition-duration:0.2s;
+            color: #C4C4C4;
+            background-color: #191A1A;
+            border-radius: 8px;
             cursor: pointer;
-            border:0.1em solid #FFFFFF;
+            border: none;
+        }
 
-        }
+
         .reset:hover {
-            background-color: rgba(255,255,255,0.9);
-            color:#FFFFFF;
+            background-color: #f8f8f8;
+            color: #404040;
         }
-        #logo{
-            position:absolute;
-            opacity:0.75;
+
+        #menu {
+            background: #C4C4C4;
+            position: relative;
+            border: none;
+            display: block;
+            z-index: 1;
+            margin-left: 20px;
+            padding: 0;
+            width: 200px;
+            height: 30px;
+            border-radius: 8px;
+            font-family: 'Helvetica', sans-serif;
+        }
+
+        #menu a {
+            font-size: 13px;
+            color: #C4C4C4;
+            background-color: #191a1a;
+            position: relative;
+            z-index: 1;
+            display: block;
+            margin: 0;
+            margin-top: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+
+        #menu a:hover {
+            background-color: #f8f8f8;
+            color: #404040;
+        }
+
+
+        #logo {
+            position: absolute;
+            opacity: 0.75;
             right: 20px;
             top: 30px;
-            border-radius:8px;
-            height:50px;
+            border-radius: 8px;
+            height: 50px;
         }
-        #logo:hover{
-            opacity:1;
-            transition-duration: 0.2s;
+
+        #logo:hover {
+            opacity: 1;
         }
-        body{
+
+        body {
             overflow: hidden;
+            background-color: #191A1A
         }
+
+        button>* {
+            pointer-events: none;
+        }
+
+        .rounded-rect {
+            background: #191A1A;
+            border-radius: 8px;
+            box-shadow: 0 0 50px -25px black;
+        }
+
+        .flex-center {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flex-center.left {
+            left: 0px;
+        }
+
+        .flex-center.right {
+            right: 0px;
+        }
+
+        .sidebar-content {
+            position: absolute;
+            width: 95%;
+            height: 95%;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 32px;
+            color: #C4C4C4;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            width: 1.3em;
+            height: 1.3em;
+            overflow: visible;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sidebar-toggle.left {
+            right: -1.5em;
+        }
+
+        .sidebar-toggle.right {
+            left: -1.5em;
+        }
+
+        .sidebar-toggle:hover {
+            color: #C4C4C4;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            transition: transform 0.5s;
+            z-index: 1;
+            width: 500px;
+            height: 100%;
+        }
+
+        #sidecontent{
+            position:absolute;
+            top:20px;
+        }
+        #side_lsoa{
+            position:absolute;
+            top:60px;
+        }
+        #side_msoa{
+            position:absolute;
+            top:100px;
+        }
+
+        /*
+The sidebar styling has them "expanded" by default, we use CSS transforms to push them offscreen
+The toggleSidebar() function removes this class from the element in order to expand it.
+*/
+        .left.collapsed {
+            transform: translateX(-495px);
+        }
+
+        .right.collapsed {
+            transform: translateX(495px);
+        }
+
     </style>
+
 
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 
 <body>
-    <div id='map'></div>
+    <div id="map">
+        <div id="right" class="sidebar flex-center right collapsed">
+            <div class="sidebar-content rounded-rect flex-center">
+                <div id='sidecontent'>
+            </div>
+                <div id='side_msoa'>
+            </div>
+                <div id='side_lsoa'>
+            </div>
+                <div class="sidebar-toggle rounded-rect right" onclick="toggleSidebar('right')">
+                    &larr;
+                </div>
+            </div>
+        </div>
+    </div>
+
     <h1 id='title'>
         Tom Savage - CoMo 2020
     </h1>
     <button id="reset" class="reset">Reset Camera</button>
-    <button id="but" class="reset" onclick="l_switch(light)">Light/Realistic Toggle</button>
-    <a href="https://como.ceb.cam.ac.uk/">
-    <img id='logo' src="https://como.ceb.cam.ac.uk/static/group/images/CoMo_Head_01.png" style="float:right">
-    </a>
+    <nav id='menu'></nav>
+    <!-- <a href="https://como.ceb.cam.ac.uk/">
+        <img id='logo' src="https://como.ceb.cam.ac.uk/static/group/images/CoMo_Head_01.png" style="float:right">
+    </a> -->
     <script src='mapping.js'></script>
 </body>
+
 </html>
