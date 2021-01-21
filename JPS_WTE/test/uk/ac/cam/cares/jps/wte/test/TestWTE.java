@@ -1,22 +1,20 @@
 package uk.ac.cam.cares.jps.wte.test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
 import org.json.JSONException;
 import org.json.JSONStringer;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WTESingleAgent;
@@ -80,46 +78,44 @@ public class TestWTE extends TestCase {
         System.out.println(Arrays.toString(resultList.get(0)));
 	
 	}
-	
+	/** Query Output data. In base scenario, it should be only one
+	 * 
+	 */
 	public void testWTEKBCreatorWasteSystemOutputQuery() {
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		
 		String query = WTESingleAgent.getWasteSystemOutputQuery();
 		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
 		System.out.println("size of result="+resultList.size()); 
+        assertEquals(1, resultList.size());
+        System.out.println(Arrays.toString(resultList.get(0)));
         
 	}
+	/** Query types of technology of offsite. Currently three (anerobic, incineration, co-digestion)
+	 * 
+	 */
 	public void testQueryTechOffsiteQuery() {
 	String query = FCQuerySource.getTechQuery() 
 			.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
 
 		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
-		FCQuerySource.queryResult(model,query);
+		List<String[]> resultList = FCQuerySource.queryResult(model,query);
+		System.out.println("size of result="+resultList.size()); 
+        assertEquals(3, resultList.size());
 	}
+	/** Query types of technology of onsite. Currently only one. 
+	 * 
+	 */
 	public void testQueryTechOnsiteQuery() {
 		String query = FCQuerySource.getTechQuery() 
-				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility").buildString();
+				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
+				.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
 
 			OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
-			FCQuerySource.queryResult(model,query);
+			List<String[]> resultList = FCQuerySource.queryResult(model,query);
+	        assertEquals(1, resultList.size());
 		}
-//	/** Query for costs after simulation finishes running
-//	 * 
-//	 */
-//	public void testQuerytopnode() {
-//		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-//		OntModel model=JenaHelper.createModel(iriofnetwork);
-//		String query= a.wasteSystemQuery;
-//		ResultSet resultSet = JenaHelper.query(model, query);
-//		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-//        String[] keys = JenaResultSetFormatter.getKeys(result);
-//        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-//        System.out.println("size of result="+resultList.size()); 
-////        assertEquals(1, resultList.size());
-//        System.out.println(Arrays.toString(keys));
-//        System.out.println(Arrays.toString(resultList.get(0)));
-//	
-//	}
+
 	
 	/** Run simulation via Scenario Client to get individual scenarios through agent
 	 * 
@@ -137,19 +133,36 @@ public class TestWTE extends TestCase {
 		System.out.println(result);
 		
 	}
-	/** Query in Directly (WTE Agent)
+	
+	private String enableScenario(String scenarioName) {
+		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
+		JPSHttpServlet.enableScenario(scenarioUrl);	
+		return scenarioUrl;
+	}
+	/** Query in Directly (WTE Agent) in a scenario called testScenariosWithWTE
 	 * 
 	 * @throws Exception
 	 */
 	public void testInSuccession() throws Exception {
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
+		
+		String scenarioUrl = enableScenario("testScenariosWithWTE");
+		String content = KnowledgeBaseClient.get(null, iriofnetwork, null);
 		String baseUrl = QueryBroker.getLocalDataPath();
 		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		ag.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
+		//test if Site_xy.csv is created (can't check if csv file is empty unfortunately)
+		File file = new File(baseUrl +  "/Site_xy.csv");
+		assertTrue(file.length() !=0);
 		String n_cluster= "40";
         new QueryBroker().putLocal(baseUrl + "/n_cluster.txt",n_cluster ); 
 		ag.prepareCSVWT("Location.csv", baseUrl,model); 
+		file = new File(baseUrl +  "/Location.csv");
+		assertTrue(file.length() !=0);
 		ag.prepareCSVTransport(WastetoEnergyAgent.getTransportQuery(),"transport.csv", baseUrl,model); 
+
+		file = new File(baseUrl +  "/transport.csv");
+		assertTrue(file.length() !=0);
 		ag.prepareCSVCompTECHBased(WastetoEnergyAgent.returnUpperBoundQuery(),baseUrl,model);
 		String WTFTechOffsiteQuery = FCQuerySource.getTechQuery() 
 				.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
@@ -162,59 +175,27 @@ public class TestWTE extends TestCase {
 		// Should need something like fullfile to use "readmatrix" to read an absolute path. 
 		ag.copyTemplate(baseUrl, "SphereDist.m");
 		ag.copyTemplate(baseUrl, "Main.m");
-		ag.copyTemplate(baseUrl, "D2R.m");
+		ag.copyTemplate(baseUrl, "D2R.m");		
+		ag.createBat(baseUrl, n_cluster);
+		TimeUnit.MINUTES.sleep(2);
+		System.out.println("Matlab simulation should have finished. ");
+//			Read for next agent
+		WTESingleAgent at = new WTESingleAgent();
+		List<String[]> resu =   FCQuerySource.queryResult(model,WastetoEnergyAgent.getFCQuery());
+		List<String[]> fcMapping = at.createFoodCourt(resu);
+		List<String[]> propertydataonsite = FCQuerySource.queryResult(model, WTFTechOnsiteQuery);
 		
-//		
-		try {
-			ag.createBat(baseUrl, n_cluster);
-			TimeUnit.MINUTES.sleep(2);
-			System.out.println("lnlnlnln");
-////            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
-////                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
-//			//read for FC details
-//			WTESingleAgent at = new WTESingleAgent();
-//			List<String[]> resu =  at.readAndDump(model,WastetoEnergyAgent.getFCQuery());
-//			//select in year 1
-//			List<String[]> fcMapping = at.createFoodCourt(resu);
-//			//properties of OnsiteTech
-//			//creates onsite WTF if indicated by the number of units (onsite).csv
-////			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
-//			List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
-//			List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );
-//			at.updateFCHelper(sitemapping);
-//			
-//			at.updateinOffsiteWT(inputoffsitedata,baseUrl,1);
-////			at.updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
-////			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system				
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	public void testReadResult() {
-		WTESingleAgent ag = new WTESingleAgent();
-		try {
-			List<String[]> ae = ag.readResult("C:\\Users\\ongajong\\4_30", "x_cluster_allocation.csv");
 
-			System.out.println(ae.get(0)[0]);
-			} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		//not the same result; as there should be more than one onsite
+	    assertNotSame(1, propertydataonsite.size());
+		List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
+		List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
+		List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );
+		at.updateFCHelper(sitemapping);
+		at.updateKBForSystem(iriofnetwork, baseUrl, WTESingleAgent.getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
+		at.updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		
 	}
-	public void testreadFC() {
-		WTESingleAgent ag = new WTESingleAgent();
-		
-		try {
-			String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testwaste2-7b54cb42-f420-4502-ad6c-cd4690901e22\\localhost_8080\\data\\74e7d60a-0c7f-4249-835c-29aef3006579";
-			List<String[]> inputoffsitedata = ag.readResult(baseUrl,"n_unit_max_offsite.csv");
-			List<String[]> sitemapping = ag.updateNewFC(baseUrl,inputoffsitedata );
-			ag.updateFCHelper( sitemapping);
-			} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
+	
 }

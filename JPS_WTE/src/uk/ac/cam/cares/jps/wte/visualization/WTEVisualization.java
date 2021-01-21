@@ -124,7 +124,8 @@ public class WTEVisualization extends JPSHttpServlet{
 				.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
 		List<String[]> resultList = FCQuerySource.queryResult(model, WTFTechOffsiteQuery);
 		String WTFTechOnsiteQuery = FCQuerySource.getTechQuery() 
-				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility").buildString();
+				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
+				.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
 
 		List<String[]> resultList2 = FCQuerySource.queryResult(model, WTFTechOnsiteQuery);
         List<String> res1 = modifyOutputs(resultList);

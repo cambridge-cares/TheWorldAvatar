@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.wte;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -9,29 +8,22 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import com.google.common.primitives.Ints; 
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Resource;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 @WebServlet(urlPatterns= {"/processresult"})
 public class WTESingleAgent extends JPSHttpServlet {
@@ -474,7 +466,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 				//0=incineration
 				//1=codigestion
 				//2=anaerobic
-				String result = new QueryBroker().queryFile(filtered.get(w)[1], Offsiteoutput);
+				String result = new QueryBroker().queryFile(filtered.get(w)[1], getOffsiteOutputQuery());
 				String[] keyswt = JenaResultSetFormatter.getKeys(result);
 				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
 				String techiri=resultList.get(Integer.valueOf(filtered.get(w)[0]))[1];
