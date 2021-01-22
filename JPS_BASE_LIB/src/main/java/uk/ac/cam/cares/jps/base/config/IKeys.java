@@ -27,6 +27,4 @@ public interface IKeys {
 	String PATH_KNOWLEDGEBASE_SHIPS = "path.knowledgebase.ships";
 	String URL_SCHEME = "url.scheme";
 	String LONG_NUCLEAR_GAMS="apply.longtime.nuclear.gams";
-	
-	String SPEED_LOAD_MAP_VENV_DIR = "speed.load.map.venv.dir";
 }
