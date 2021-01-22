@@ -21,7 +21,7 @@
 
 ## What to do for deployment? 
  - Have python installed. Have java installed. Both should be added to your system environment. 
- - mvn clean install JPS arbitrage
+ - mvn clean install JPS Arbitrage
  - open it in Chrome. The graphs don't display nicely in other browsers. 
  - Expected Result: After clicking on the button, two graphs and a paragraph is shown on the webpage
 
@@ -36,10 +36,10 @@ How do we know if it's not working? If the python logger logging to tomcat serve
  	- https://www.ema.gov.sg/Non_Residential_Programmes_Electricity_Tariffs.aspx
 
  2. exchange_rates.pyw
- 	-  http://apilayer.net/api/live?access_key=402d77f0850c35adfa5a797e325262dd&currencies=CNY,SGD&source=USD&format=1
+ 	- http://apilayer.net/api/live?access_key=402d77f0850c35adfa5a797e325262dd&currencies=CNY,SGD&source=USD&format=1
 
  3. FAME_download.pyw
- 	-  http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html 
+ 	- http://www.cmegroup.com/trading/energy/refined-products/fame-0-argus-biodiesel-fob-rdam-red-compliant-swap-futures.html 
  4. HNG_download.pyw
  	- http://www.cmegroup.com/trading/energy/natural-gas/natural-gas_quotes_globex.html 
  5. NG_to_MeOH_MoDS.py
@@ -66,4 +66,4 @@ How do we know if it's not working? If the python logger logging to tomcat serve
  	3. Then check if your python is able to download data. The way to do so is to check that after calling on the agent, see of your Map<String, String[]> variables are all non-null. If they're null, then your download of webpage using selenium is probably going haywire. 
  	
  	4. What if your TestMoDsAnalysis is not working? 
- 	- Check if you have your Mods API jar file in the right folder. I have it in Users\\.m2\repository\com\cmclinnovations\mods\MoDS_Java_API\0.3.3, and if yours doesn't have the jar file but a lastUpdated file, then it means you tried to download it via Maven. But you can't. 
+ 	- Check if you have your Mods API jar file in the right folder. I have it in `XX01\\.m2\repository\com\cmclinnovations\mods\MoDS_Java_API\0.3.3`, and if yours doesn't have the jar file but a lastUpdated file, then it means you tried to download it via Maven. But you can't. 
