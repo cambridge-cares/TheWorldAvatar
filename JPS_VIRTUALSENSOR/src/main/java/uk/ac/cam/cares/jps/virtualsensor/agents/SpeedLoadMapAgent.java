@@ -1,40 +1,33 @@
 package uk.ac.cam.cares.jps.virtualsensor.agents;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.SystemUtils;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 
 @WebServlet("/SpeedLoadMapAgent")
 public class SpeedLoadMapAgent extends HttpServlet {
 	private static final Path slmDir = Paths.get("python", "ADMS-speed-load-map");
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
-	private static final Path pyrelpath = SystemUtils.IS_OS_LINUX ? Paths.get("bin","python") : Paths.get("Scripts","python.exe");
-	//temporary hard code
-	private static final Path venvPath = Paths.get("D:","JPS","data","env",pyrelpath.toString()); 
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
 		Path slmWorkingDir =  Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), slmDir.toString());
 		ArrayList<String> args = new ArrayList<String>();
 
-		args.add(venvPath.toString());
+		args.add(SensorVenv.pyexe.toString());
 		args.add(slmScript);
 		args.add(inputs);
 

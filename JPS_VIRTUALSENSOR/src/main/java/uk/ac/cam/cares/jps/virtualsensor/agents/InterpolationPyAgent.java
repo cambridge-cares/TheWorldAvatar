@@ -8,14 +8,12 @@ import java.util.ArrayList;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
-import org.apache.commons.lang.SystemUtils;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 
 /**
  * Temporary interpolation agent that calls a python script instead of matlab
@@ -27,16 +25,13 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
  */
 @WebServlet(urlPatterns="/InterpolationPyAgent")
 public class InterpolationPyAgent extends JPSAgent {
-	private static Path pyrelpath = SystemUtils.IS_OS_LINUX ? Paths.get("bin","python") : Paths.get("Scripts","python.exe");	//temporary hard code
-	//temporary hard code
-	private static final Path venvPath = Paths.get("D:","JPS","data","env",pyrelpath.toString()); 
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject responseParams = new JSONObject();
         if (validateInput(requestParams)) {
 	        Path pyWorkingDir = Paths.get(AgentLocator.getCurrentJpsAppDirectory(this),"python","interpolation");
 	        ArrayList<String> args = new ArrayList<String>();
-			args.add(venvPath.toString());
+			args.add(SensorVenv.pyexe.toString());
 			args.add("interpolation.py");
 			args.add(requestParams.getString("filepath"));
 			args.add(String.valueOf(requestParams.getDouble("x")));
