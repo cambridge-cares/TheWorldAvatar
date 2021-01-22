@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
+import uk.ac.cam.cares.jps.dispersion.sparql.SensorSparql;
 
 @WebServlet("/SensorUpdaterAgent")
 public class SensorUpdaterAgent extends JPSAgent{
@@ -49,19 +49,24 @@ public class SensorUpdaterAgent extends JPSAgent{
         	Scope hkScope = new Scope(hkJo.getJSONObject(Region.keyRegion));
         	hkScope.transform(CRSTransformer.EPSG_4326);
 
-        	String resultlocation = "";
+        	JSONObject plyJo = new JSONObject();
+        	Region.putRegion(plyJo, 5);
+        	Scope plyScope = new Scope(plyJo.getJSONObject(Region.keyRegion));
+        	plyScope.transform(CRSTransformer.EPSG_4326);
+        	
         	JSONObject request = new JSONObject();
         	if (sgScope.isWithinScope(xy)) {
         		request.put(Region.keyCity, Region.SINGAPORE_IRI);
-        		resultlocation = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/results/latest", request.toString());
         	} else if (hkScope.isWithinScope(xy)) {
         		request.put(Region.keyCity, Region.HONG_KONG_IRI);
-        		resultlocation = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/results/latest", request.toString());
+        	} else if (plyScope.isWithinScope(xy)) {
+        		request.put(Region.keyCity,  Region.PLYMOUTH_IRI);
         	} else {
         		// do nothing if it's not in any simulated scopes
         		return responseParams;
         	}
         	
+        	String resultlocation = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/results/latest", request.toString());
         	// convert sensor coordinates to the local simulation coordinates 
         	// should be queried from the triple-store
         	double[] xy_local = CRSTransformer.transform(CRSTransformer.EPSG_4326, 

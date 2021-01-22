@@ -51,7 +51,7 @@ import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.dispersion.general.DispersionModellingAgent;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.WeatherStation;
+import uk.ac.cam.cares.jps.dispersion.sparql.WeatherStation;
 
 public class EpisodeAgent extends DispersionModellingAgent {
 	
