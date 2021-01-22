@@ -67,7 +67,7 @@ public class SemakauPV extends JPSHttpServlet {
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}
-	/** creates Query for PV variables
+	/** creates Query for PV variables/qualities
 	 * 
 	 * @return String Query
 	 */
@@ -101,7 +101,7 @@ public class SemakauPV extends JPSHttpServlet {
 	/** get Query from Irradiation OWL
 	 * @return String Query
 	 */
-	public String getSolarData() {
+	public static String getSolarData() {
 		WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
 	    			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
 	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
@@ -257,25 +257,19 @@ public class SemakauPV extends JPSHttpServlet {
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultListfromquery;
 	}
-	/** Updates OWL values in PV, and Bus 6
-	 * a. queries OWL files for pre-existing values
+	/** create specialized PVGenerator query, now ranked according to proptime
 	 * 
-	 * @param ans
-	 * @param prefix
-	 * @param genfilename
-	 * @param busfilename
-	 * @return
+	 * @return String 
 	 */
-	public JSONObject updateOWLValue(JSONObject ans,String prefix,String genfilename, String busfilename ) {
-		
-		JSONObject ans2= new JSONObject();
+	public static SelectBuilder preparePVGeneratorWithPropTime() {
 		SelectBuilder sb = TimeSeriesConverter.createQueryForPowerGeneratorPV();
 		WhereBuilder wb = new WhereBuilder().addPrefix("j6", "http://www.w3.org/2006/time#")
 				.addWhere("?vpg", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval")
 				.addWhere("?vqg", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
-		String genInfo = sb.addVar("?proptimeval").addWhere(wb).addOrderBy("?proptime").buildString();
-		List<String[]> resultListfromquerygen = queryResult(prefix+genfilename, genInfo);
-		
+		sb.addVar("?proptimeval").addWhere(wb).addOrderBy("?proptime");
+		return sb;
+	}
+	public static SelectBuilder prepareBusWithPropTime() {
 		SelectBuilder sb2 = TimeSeriesConverter.createQueryForBus() ;
 		WhereBuilder wb2 = new WhereBuilder().addPrefix("j6", "http://www.w3.org/2006/time#")
 				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
@@ -288,8 +282,25 @@ public class SemakauPV extends JPSHttpServlet {
 				.addWhere("?BKV", "j2:hasValue" ,"?vBKV")
 				.addWhere("?vBKV", "j2:numericalValue" ,"?BaseKVvalue");
 
-		String busInfo = sb2.addVar("?proptimeval").addVar("?BaseKVvalue").addWhere(wb2).addOrderBy("?proptime").buildString();
-		List<String[]>  resultListfromquerybus  = queryResult(prefix+busfilename, busInfo);
+		sb2.addVar("?proptimeval").addVar("?BaseKVvalue").addWhere(wb2).addOrderBy("?proptime").buildString();
+		return sb2;
+	}
+	/** Updates OWL values in PV, and Bus 6
+	 * a. queries OWL files for pre-existing values
+	 * 
+	 * @param ans
+	 * @param prefix
+	 * @param genfilename
+	 * @param busfilename
+	 * @return
+	 */
+	public JSONObject updateOWLValue(JSONObject ans,String prefix,String genfilename, String busfilename ) {
+		
+		JSONObject ans2= new JSONObject();
+		
+		List<String[]> resultListfromquerygen = queryResult(prefix+genfilename, preparePVGeneratorWithPropTime().buildString());
+		
+		List<String[]>  resultListfromquerybus  = queryResult(prefix+busfilename,prepareBusWithPropTime().buildString());
 		//postprocessing the merged query result //gen and bus must have 2 same time set element amount
 		List<String[]> readingFromCSV = new ArrayList<String[]>();
 		for (int d=0;d<resultListfromquerygen.size();d++) {
