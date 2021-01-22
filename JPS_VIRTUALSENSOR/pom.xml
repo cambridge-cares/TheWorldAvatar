@@ -30,20 +30,38 @@
         <version>3.2.1</version>
         <configuration>
            <webResources>
-                        <resource>
-                            <directory>workingdir</directory>
-                            <targetPath>workingdir</targetPath>
-                        </resource>
-                        <resource>
-           					<directory>python</directory>
-           					<targetPath>python</targetPath>
-           				</resource>
-
-                    </webResources>
-          <warName>${project.artifactId}##${project.version}</warName>
+                <resource>
+                    <directory>workingdir</directory>
+                    <targetPath>workingdir</targetPath>
+                </resource>
+                <resource>
+           			<directory>python</directory>
+           			<targetPath>python</targetPath>
+           		</resource>
+            </webResources>
+        <warName>${project.artifactId}##${project.version}</warName>
 		<outputDirectory>${tomcatPath}/webapps</outputDirectory>
         </configuration>
       </plugin>
+	  
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>exec-maven-plugin</artifactId>
+		<version>3.0.0</version>
+		<executions>
+			<execution>
+				<phase>install</phase>
+				<id>creating pyvenv</id>
+				<goals>
+					<goal>exec</goal>
+				</goals>
+				<configuration>
+					<executable>.\pyvenv.cmd</executable>
+					<workingDirectory>python_venv</workingDirectory>
+				</configuration>
+			</execution>
+		</executions>
+	</plugin>
     </plugins>
     </build>
 
