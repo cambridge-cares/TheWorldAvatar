@@ -9,7 +9,7 @@
  6. urllib
  7. selenium (and phantomJS/chromium webserver to do scraping. Recommend phantomJS because it's currently in the code despite being no longer maintained)
 
-## Java dependencies? 
+## Java Dependencies
 1. jps-base-lib
 2. Junit
 3. javax servlet
