@@ -27,16 +27,16 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
  */
 @WebServlet(urlPatterns="/InterpolationPyAgent")
 public class InterpolationPyAgent extends JPSAgent {
-	Path pyrelpath = SystemUtils.IS_OS_LINUX ? Paths.get("bin","python") : Paths.get("Scripts","python.exe");
+	private static Path pyrelpath = SystemUtils.IS_OS_LINUX ? Paths.get("bin","python") : Paths.get("Scripts","python.exe");	//temporary hard code
+	//temporary hard code
+	private static final Path venvPath = Paths.get("D:","JPS","data","env",pyrelpath.toString()); 
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject responseParams = new JSONObject();
         if (validateInput(requestParams)) {
 	        Path pyWorkingDir = Paths.get(AgentLocator.getCurrentJpsAppDirectory(this),"python","interpolation");
-	        Path pythonExe = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR),pyrelpath.toString());
-
 	        ArrayList<String> args = new ArrayList<String>();
-			args.add(pythonExe.toString());
+			args.add(venvPath.toString());
 			args.add("interpolation.py");
 			args.add(requestParams.getString("filepath"));
 			args.add(String.valueOf(requestParams.getDouble("x")));

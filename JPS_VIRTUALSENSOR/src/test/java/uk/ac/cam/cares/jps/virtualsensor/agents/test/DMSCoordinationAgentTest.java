@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.virtualsensor.agents.test;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
@@ -38,7 +36,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		Region.putRegionAndStation(jo,1);
 		jo.put(keyAgent,admsIRI);
 		jo.put(keyReactionmechanism, mech_none);
-		String resultStart = AgentCaller.executeGetWithJsonParameter(adms_url,jo.toString());
+		AgentCaller.executeGetWithJsonParameter(adms_url,jo.toString());
 	}
 
 	public void testSingaporeEpisode() {
@@ -47,7 +45,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		Region.putRegionAndStation(jo,2);
 		jo.put(keyAgent,episodeIRI);
 		jo.put(keyReactionmechanism, mech_none);
-		String resultStart = AgentCaller.executeGetWithJsonParameter(episode_url,jo.toString());
+		AgentCaller.executeGetWithJsonParameter(episode_url,jo.toString());
 	}
 
 	public void testHongKongADMS() {
@@ -56,7 +54,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		Region.putRegionAndStation(jo,3);
 		jo.put(keyAgent,admsIRI);
 		jo.put(keyReactionmechanism, mech_none);
-		String resultStart = AgentCaller.executeGetWithJsonParameter(adms_url,jo.toString());
+		AgentCaller.executeGetWithJsonParameter(adms_url,jo.toString());
 	}
 
 	public void testHongKongEpisode() {
@@ -65,7 +63,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		Region.putRegionAndStation(jo,4);
 		jo.put(keyAgent,episodeIRI);
 		jo.put(keyReactionmechanism, mech_none);
-		String resultStart = AgentCaller.executeGetWithJsonParameter(episode_url,jo.toString());
+		AgentCaller.executeGetWithJsonParameter(episode_url,jo.toString());
 	}
 	
 	public void testPlymouthEpisode() {

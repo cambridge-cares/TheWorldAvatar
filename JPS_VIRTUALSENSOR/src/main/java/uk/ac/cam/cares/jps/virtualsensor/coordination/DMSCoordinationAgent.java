@@ -42,7 +42,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 			jsonReactionShip.put("ship", ships.getJSONObject(i));
 
 			CompletableFuture<String> getAsync = CompletableFuture
-					.supplyAsync(() -> execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString()));
+					.supplyAsync(() -> execute("/JPS_VIRTUALSENSOR/ShipAgent", jsonReactionShip.toString()));
 
 			CompletableFuture<String> processAsync = getAsync
 					.thenApply(wasteResult -> new JSONObject(wasteResult).getString("waste"));
@@ -70,7 +70,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		String result;
 
 		// @TODO - improve weather update frequency
-		// temporary measure to avoid changing things on Claudius
 		result = execute("/JPS_VIRTUALSENSOR/WeatherAgent", requestParams.getJSONObject("region").toString());
 
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
