@@ -288,7 +288,7 @@ The toggleSidebar() function removes this class from the element in order to exp
         mapboxgl.accessToken = 'pk.eyJ1IjoidG9tc2F2YWdlIiwiYSI6ImNram01MDFvczI5aHUyeG83N21obzBrcWsifQ.T_j8LAT55g3kuwCQFlNPuA';
         var map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/dark-v9',
+            style: 'mapbox://styles/mapbox/satellite-streets-v11',
             zoom: 4.9,
             center: [-3, 54.25],
 
@@ -385,16 +385,7 @@ The toggleSidebar() function removes this class from the element in order to exp
 
             // When the mouse leaves the state-fill layer, update the feature state of the
             // previously hovered feature.
-            map.on('mouseleave', 'lsoa-data', function () {
-                sidebox_lsoa.textContent = '';
-                if (lsoahoveredStateId) {
-                    map.setFeatureState(
-                        { source: 'local-super', sourceLayer: 'LSOA', id: lsoahoveredStateId },
-                        { hover: false }
-                    );
-                }
-                lsoahoveredStateId = null;
-            });
+ 
 
             map.addSource('middle-super', {
                 type: 'vector',
@@ -441,16 +432,7 @@ The toggleSidebar() function removes this class from the element in order to exp
 
             // When the mouse leaves the state-fill layer, update the feature state of the
             // previously hovered feature.
-            map.on('mouseleave', 'msoa-data', function () {
-                sidebox_msoa.textContent = '';
-                if (msoahoveredStateId) {
-                    map.setFeatureState(
-                        { source: 'middle-super', sourceLayer: 'MSOA', id: msoahoveredStateId },
-                        { hover: false }
-                    );
-                }
-                msoahoveredStateId = null;
-            });
+
 
             // add a sky layer that will show when the map is highly pitched
             map.addLayer({
@@ -503,7 +485,7 @@ The toggleSidebar() function removes this class from the element in order to exp
                 data: 'https://tom-savage.co.uk/assets/geojson/local_dist_zones.geojson'
             });
 
-            pipe_color = '#c3e1e8';
+            pipe_color = 'red';
 
             map.addLayer({
                 'id': 'National Transmission System',
@@ -515,7 +497,7 @@ The toggleSidebar() function removes this class from the element in order to exp
                 },
                 'paint': {
                     'line-color': pipe_color,
-                    'line-opacity': 0.75,
+                    'line-opacity': 1,
                     'line-width': 2
                 }
             });
@@ -558,16 +540,7 @@ The toggleSidebar() function removes this class from the element in order to exp
 
             // When the mouse leaves the state-fill layer, update the feature state of the
             // previously hovered feature.
-            map.on('mouseleave', 'LocalDistributionZones', function () {
-                sidebox.textContent = '';
-                if (hoveredStateId) {
-                    map.setFeatureState(
-                        { source: 'LDZ', id: hoveredStateId },
-                        { hover: false }
-                    );
-                }
-                hoveredStateId = null;
-            });
+     
 
             // line_color = '#EBEBB9';
 

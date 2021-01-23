@@ -193,9 +193,28 @@
             font-size: 13px;
             color: #C4C4C4;
         }
+        #terminal_disp {
+            position: absolute;
+            top: 80px;
+            font-size: 13px;
+            color: #C4C4C4;
+        }
 
+        #offtake_disp {
+            position: absolute;
+            top: 100px;
+            font-size: 13px;
+            color: #C4C4C4;
+        }
+        #offtake_des {
+            position: absolute;
+            top: 120px;
+            font-size: 13px;
+            color: #C4C4C4;
+        }
+        
         #div_g1 {
-            position:absolute;
+            position: absolute;
             bottom: 40px;
             width: 80%;
         }
@@ -227,6 +246,12 @@ The toggleSidebar() function removes this class from the element in order to exp
                 <div id='side_msoa'>
                 </div>
                 <div id='side_lsoa'>
+                </div>
+                <div id='terminal_disp'>
+                </div>
+                <div id='offtake_disp'>
+                </div>
+                <div id='offtake_des'>
                 </div>
                 <div id="div_g1" style=" height:300px;">
                 </div>
@@ -279,7 +304,10 @@ The toggleSidebar() function removes this class from the element in order to exp
         sidebox = document.getElementById('sidecontent');
         sidebox_lsoa = document.getElementById('side_lsoa');
         sidebox_msoa = document.getElementById('side_msoa');
-        map_style = document.getElementById('map')
+        term_text = document.getElementById('terminal_disp');
+        offtake_text = document.getElementById('offtake_disp');
+        offtake_type = document.getElementById('offtake_des');
+        map_style = document.getElementById('map');
 
 
 
@@ -320,7 +348,57 @@ The toggleSidebar() function removes this class from the element in order to exp
         var hoveredStateId = null;
         map.on('load', function () {
 
+            map.addSource('LDZ', {
+                type: 'geojson',
+                data: 'https://tom-savage.co.uk/assets/geojson/local_dist_zones.geojson'
+            });
+            map.addLayer({
+                'id': 'LocalDistributionZones',
+                'type': 'fill',
+                'source': 'LDZ',
+                'layout': {},
+                'paint': {
+                    'fill-color': '#C4C4C4',
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        0.1,
+                        0
+                    ]
+                }
+            });
 
+
+            map.on('mousemove', 'LocalDistributionZones', function (e) {
+                sidebox.textContent = e.features[0].properties.Name + ' Local Distribution Zone';
+                if (e.features.length > 0) {
+                    if (hoveredStateId) {
+                        map.setFeatureState(
+                            { source: 'LDZ', id: hoveredStateId },
+                            { hover: false }
+
+                        );
+                    }
+                    hoveredStateId = e.features[0].id;
+                    map.setFeatureState(
+                        { source: 'LDZ', id: hoveredStateId },
+                        { hover: true }
+                    );
+                }
+            });
+
+            // When the mouse leaves the state-fill layer, update the feature state of the
+            // previously hovered feature.
+            map.on('mouseleave', 'LocalDistributionZones', function () {
+                sidebox.textContent = '';
+                if (hoveredStateId) {
+                    map.setFeatureState(
+                        { source: 'LDZ', id: hoveredStateId },
+                        { hover: false }
+                    );
+                }
+                hoveredStateId = null;
+            });
 
             map.addSource('local-super', {
                 type: 'vector',
@@ -338,7 +416,7 @@ The toggleSidebar() function removes this class from the element in order to exp
                     'fill-opacity': [
                         'case',
                         ['boolean', ['feature-state', 'hover'], false],
-                        0.8,
+                        0.1,
                         0
                     ]
                 }
@@ -394,7 +472,7 @@ The toggleSidebar() function removes this class from the element in order to exp
                     'fill-opacity': [
                         'case',
                         ['boolean', ['feature-state', 'hover'], false],
-                        0.4,
+                        0.1,
                         0
                     ]
                 }
@@ -434,6 +512,48 @@ The toggleSidebar() function removes this class from the element in order to exp
                 msoahoveredStateId = null;
             });
 
+            map.addSource('offtakes', {
+                type: 'geojson',
+                data: 'https://tom-savage.co.uk/assets/geojson/offtakes.geojson'
+            });
+
+            map.addLayer({
+                'id': 'offtakes_loc',
+                'type': 'circle',
+                'source': 'offtakes',
+                'paint': {
+                    'circle-radius': 6,
+                    'circle-color': '#B42222',
+                    'circle-opacity': 0.7
+                }
+            });
+
+            map.on('mouseenter', 'offtakes_loc', function (e) {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
+
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var name = e.features[0].properties["Offtake Point (Licence Name)"];
+                var type = e.features[0].properties["Type of Offtake"];
+
+                // Ensure that if the map is zoomed out such that multiple
+                // copies of the feature are visible, the popup appears
+                // over the copy being pointed to.
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+                // Populate the popup and set its coordinates
+                // based on the feature found.
+                offtake_text.textContent = 'Offtake Name: '.concat(name);
+                offtake_type.textContent = 'Offtake Type: '.concat(type);
+            });
+
+            map.on('mouseleave', 'offtakes_loc', function () {
+                map.getCanvas().style.cursor = '';
+                offtake_text.textContent = '';
+                offtake_type.textContent = '';
+            });
+          
             // add a sky layer that will show when the map is highly pitched
             map.addLayer({
                 'id': 'sky',
@@ -464,38 +584,71 @@ The toggleSidebar() function removes this class from the element in order to exp
                     if (error) throw error;
                     map.addImage('custom-marker', image);
 
-                    map.addSource('terminals', {
+                    map.addSource('terminals_s', {
                         'type': 'geojson',
                         'data': 'https://tom-savage.co.uk/assets/geojson/terminals.geojson'
                     });
                     term_name_color = '#C4C4C4'
                     term_outline_color = '#202028'
                     // Add a symbol layer
+
+                    // map.addLayer({
+                    //     'id': 'terminals',
+                    //     'type': 'symbol',
+                    //     'source': 'terminals',
+                    //     'layout': {
+
+                    //         'icon-image': 'custom-marker',
+                    //         // get the title name from the source's "name" property
+                    //         'text-field': ['format', ['get', 'name'], { 'font-scale': 0.85 }],
+                    //         'text-font': [
+                    //             'Open Sans Semibold',
+                    //             'Arial Unicode MS Bold'
+                    //         ],
+                    //         'text-offset': [0, 1.25],
+                    //         'text-anchor': 'top'
+                    //     },
+                    //     'paint': {
+                    //         'text-color': term_name_color,
+                    //         'text-halo-color': term_outline_color,
+                    //         'text-halo-width': 1
+                    //     }
+                    // });
                     map.addLayer({
                         'id': 'terminals',
-                        'type': 'symbol',
-                        'source': 'terminals',
-                        'layout': {
-
-                            'icon-image': 'custom-marker',
-                            // get the title name from the source's "name" property
-                            'text-field': ['format', ['get', 'name'], { 'font-scale': 0.85 }],
-                            'text-font': [
-                                'Open Sans Semibold',
-                                'Arial Unicode MS Bold'
-                            ],
-                            'text-offset': [0, 1.25],
-                            'text-anchor': 'top'
-                        },
+                        'type': 'circle',
+                        'source': 'terminals_s',
                         'paint': {
-                            'text-color': term_name_color,
-                            'text-halo-color': term_outline_color,
-                            'text-halo-width': 1
+                            'circle-radius': 8,
+                            'circle-color': '#108dcc',
+                            'circle-opacity': 0.6
                         }
                     });
                 }
             );
+            map.on('mouseenter', 'terminals', function (e) {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
 
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var description = e.features[0].properties.name;
+
+                // Ensure that if the map is zoomed out such that multiple
+                // copies of the feature are visible, the popup appears
+                // over the copy being pointed to.
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+
+                // Populate the popup and set its coordinates
+                // based on the feature found.
+                term_text.textContent = description;
+            });
+
+            map.on('mouseleave', 'terminals', function () {
+                map.getCanvas().style.cursor = '';
+                term_text.textContent = '';
+            });
 
             var layers = map.getStyle().layers;
             var labelLayerId;
@@ -517,10 +670,6 @@ The toggleSidebar() function removes this class from the element in order to exp
                 type: 'geojson',
                 data: 'https://tom-savage.co.uk/assets/geojson/OHL.geojson'
             });
-            map.addSource('LDZ', {
-                type: 'geojson',
-                data: 'https://tom-savage.co.uk/assets/geojson/local_dist_zones.geojson'
-            });
 
             pipe_color = '#c3e1e8';
 
@@ -540,53 +689,7 @@ The toggleSidebar() function removes this class from the element in order to exp
             });
 
 
-            map.addLayer({
-                'id': 'LocalDistributionZones',
-                'type': 'fill',
-                'source': 'LDZ',
-                'layout': {},
-                'paint': {
-                    'fill-color': '#C4C4C4',
-                    'fill-opacity': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        0.3,
-                        0
-                    ]
-                }
-            });
 
-
-            map.on('mousemove', 'LocalDistributionZones', function (e) {
-                sidebox.textContent = e.features[0].properties.Name + ' Local Distribution Zone';
-                if (e.features.length > 0) {
-                    if (hoveredStateId) {
-                        map.setFeatureState(
-                            { source: 'LDZ', id: hoveredStateId },
-                            { hover: false }
-
-                        );
-                    }
-                    hoveredStateId = e.features[0].id;
-                    map.setFeatureState(
-                        { source: 'LDZ', id: hoveredStateId },
-                        { hover: true }
-                    );
-                }
-            });
-
-            // When the mouse leaves the state-fill layer, update the feature state of the
-            // previously hovered feature.
-            map.on('mouseleave', 'LocalDistributionZones', function () {
-                sidebox.textContent = '';
-                if (hoveredStateId) {
-                    map.setFeatureState(
-                        { source: 'LDZ', id: hoveredStateId },
-                        { hover: false }
-                    );
-                }
-                hoveredStateId = null;
-            });
 
             // line_color = '#EBEBB9';
 
