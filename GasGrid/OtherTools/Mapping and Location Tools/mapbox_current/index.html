@@ -137,7 +137,8 @@
         .sidebar-content {
             position: absolute;
             width: 95%;
-            height: 95%;
+            height: 160px;
+            top: 20px;
             font-family: Arial, Helvetica, sans-serif;
             font-size: 32px;
             color: #C4C4C4;
@@ -149,8 +150,7 @@
             height: 1.3em;
             overflow: visible;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: left;
         }
 
         .sidebar-toggle.left {
@@ -169,13 +169,14 @@
         .sidebar {
             transition: transform 0.5s;
             z-index: 1;
-            width: 500px;
+            width: 400px;
             height: 100%;
         }
 
         #sidecontent {
             position: absolute;
             top: 20px;
+            left: 10px;
             font-size: 13px;
             color: #C4C4C4;
         }
@@ -183,6 +184,7 @@
         #side_lsoa {
             position: absolute;
             top: 60px;
+            left: 10px;
             font-size: 13px;
             color: #C4C4C4;
         }
@@ -190,12 +192,15 @@
         #side_msoa {
             position: absolute;
             top: 40px;
+            left: 10px;
             font-size: 13px;
             color: #C4C4C4;
         }
+
         #terminal_disp {
             position: absolute;
             top: 80px;
+            left: 10px;
             font-size: 13px;
             color: #C4C4C4;
         }
@@ -204,15 +209,18 @@
             position: absolute;
             top: 100px;
             font-size: 13px;
+            left: 10px;
             color: #C4C4C4;
         }
+
         #offtake_des {
             position: absolute;
+            left: 10px;
             top: 120px;
             font-size: 13px;
             color: #C4C4C4;
         }
-        
+
         #div_g1 {
             position: absolute;
             bottom: 40px;
@@ -255,9 +263,9 @@ The toggleSidebar() function removes this class from the element in order to exp
                 </div>
                 <div id="div_g1" style=" height:300px;">
                 </div>
-                <div class="sidebar-toggle rounded-rect right" onclick="toggleSidebar('right')">
+                <!-- <div class="sidebar-toggle rounded-rect right" onclick="toggleSidebar('right')">
                     &larr;
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -273,28 +281,28 @@ The toggleSidebar() function removes this class from the element in order to exp
     <script>
 
 
-        var data = [];
-        var t = new Date();
-        for (var i = 10; i >= 0; i--) {
-            var x = new Date(t.getTime() - i * 1000);
-            data.push([x, Math.random()]);
-        }
+        // var data = [];
+        // var t = new Date();
+        // for (var i = 10; i >= 0; i--) {
+        //     var x = new Date(t.getTime() - i * 1000);
+        //     data.push([x, Math.random()]);
+        // }
 
-        var g1 = new Dygraph(document.getElementById("div_g1"), data,
-            {
-                drawPoints: true,
-                showRoller: false,
-                showLabelsOnHighlight: false,
-                color: '#c4c4c4',
-                valueRange: [0.0, 1.2],
-            });
-        // It sucks that these things aren't objects, and we need to store state in window.
-        window.intervalId = setInterval(function () {
-            var x = new Date();  // current time
-            var y = Math.random();
-            data.push([x, y]);
-            g1.updateOptions({ 'file': data });
-        }, 1000);
+        // var g1 = new Dygraph(document.getElementById("div_g1"), data,
+        //     {
+        //         drawPoints: true,
+        //         showRoller: false,
+        //         showLabelsOnHighlight: false,
+        //         color: '#c4c4c4',
+        //         valueRange: [0.0, 1.2],
+        //     });
+        // // It sucks that these things aren't objects, and we need to store state in window.
+        // window.intervalId = setInterval(function () {
+        //     var x = new Date();  // current time
+        //     var y = Math.random();
+        //     data.push([x, y]);
+        //     g1.updateOptions({ 'file': data });
+        // }, 1000);
 
 
         var light = true;
@@ -348,6 +356,7 @@ The toggleSidebar() function removes this class from the element in order to exp
         var hoveredStateId = null;
         map.on('load', function () {
 
+            toggleSidebar('right');
             map.addSource('LDZ', {
                 type: 'geojson',
                 data: 'https://tom-savage.co.uk/assets/geojson/local_dist_zones.geojson'
@@ -370,7 +379,7 @@ The toggleSidebar() function removes this class from the element in order to exp
 
 
             map.on('mousemove', 'LocalDistributionZones', function (e) {
-                sidebox.textContent = e.features[0].properties.Name + ' Local Distribution Zone';
+                sidebox.textContent = 'Local Distribution Zone: '+e.features[0].properties.Name;
                 if (e.features.length > 0) {
                     if (hoveredStateId) {
                         map.setFeatureState(
@@ -390,7 +399,7 @@ The toggleSidebar() function removes this class from the element in order to exp
             // When the mouse leaves the state-fill layer, update the feature state of the
             // previously hovered feature.
             map.on('mouseleave', 'LocalDistributionZones', function () {
-                sidebox.textContent = '';
+                sidebox.textContent = sidebox.textContent.split(":")[0]+':';
                 if (hoveredStateId) {
                     map.setFeatureState(
                         { source: 'LDZ', id: hoveredStateId },
@@ -446,7 +455,7 @@ The toggleSidebar() function removes this class from the element in order to exp
             // When the mouse leaves the state-fill layer, update the feature state of the
             // previously hovered feature.
             map.on('mouseleave', 'lsoa-data', function () {
-                sidebox_lsoa.textContent = '';
+                sidebox_lsoa.textContent = sidebox_lsoa.textContent.split(":")[0]+':';
                 if (lsoahoveredStateId) {
                     map.setFeatureState(
                         { source: 'local-super', sourceLayer: 'LSOA', id: lsoahoveredStateId },
@@ -502,7 +511,7 @@ The toggleSidebar() function removes this class from the element in order to exp
             // When the mouse leaves the state-fill layer, update the feature state of the
             // previously hovered feature.
             map.on('mouseleave', 'msoa-data', function () {
-                sidebox_msoa.textContent = '';
+                sidebox_msoa.textContent = sidebox_msoa.textContent.split(":")[0]+':';
                 if (msoahoveredStateId) {
                     map.setFeatureState(
                         { source: 'middle-super', sourceLayer: 'MSOA', id: msoahoveredStateId },
@@ -550,10 +559,10 @@ The toggleSidebar() function removes this class from the element in order to exp
 
             map.on('mouseleave', 'offtakes_loc', function () {
                 map.getCanvas().style.cursor = '';
-                offtake_text.textContent = '';
-                offtake_type.textContent = '';
+                offtake_text.textContent = offtake_text.textContent.split(":")[0]+':';
+                offtake_type.textContent = offtake_type.textContent.split(":")[0]+':';
             });
-          
+
             // add a sky layer that will show when the map is highly pitched
             map.addLayer({
                 'id': 'sky',
@@ -565,7 +574,6 @@ The toggleSidebar() function removes this class from the element in order to exp
             });
 
             document.getElementById('reset').addEventListener('click', function () {
-                toggleSidebar('right');
                 map.flyTo({
                     center: [-3, 54.25],
                     curve: 2,
@@ -642,12 +650,12 @@ The toggleSidebar() function removes this class from the element in order to exp
 
                 // Populate the popup and set its coordinates
                 // based on the feature found.
-                term_text.textContent = description;
+                term_text.textContent = 'Gas Terminal: '+description;
             });
 
             map.on('mouseleave', 'terminals', function () {
                 map.getCanvas().style.cursor = '';
-                term_text.textContent = '';
+                term_text.textContent = term_text.textContent.split(":")[0]+':';
             });
 
             var layers = map.getStyle().layers;
