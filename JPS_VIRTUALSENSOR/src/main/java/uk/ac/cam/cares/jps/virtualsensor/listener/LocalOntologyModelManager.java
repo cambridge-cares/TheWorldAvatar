@@ -1,4 +1,4 @@
-package uk.ac.cares.jps.virtualsensor.listener;
+package uk.ac.cam.cares.jps.virtualsensor.listener;
 
 import org.apache.jena.ontology.OntModel;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;

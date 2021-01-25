@@ -25,7 +25,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cares.jps.virtualsensor.listener.LocalOntologyModelManager;
+import uk.ac.cam.cares.jps.virtualsensor.listener.LocalOntologyModelManager;
 
 /**
  * Servlet implementation class ShipAgent
