@@ -10,6 +10,10 @@ import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
 
 public class WeatherAgentTest extends TestCase {
 	
+	/**
+	 * You must have a weather station called http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1
+	 * instantiated in the triple store to run this test
+	 */
 	public void testUpdateWeatherStationWithAPI() {
 		WeatherStation ws = new WeatherStation();
 		String stationiri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1";
@@ -21,6 +25,9 @@ public class WeatherAgentTest extends TestCase {
 		wa.updateWeatherStationWithAPI(ws);
 	}
 	
+	/**
+	 * This will query for weather stations within the scope defined by the region class
+	 */
 	public void testWeatherAgentCall() {
 		JSONObject jo = new JSONObject();
 		Region.putRegion(jo,2);
