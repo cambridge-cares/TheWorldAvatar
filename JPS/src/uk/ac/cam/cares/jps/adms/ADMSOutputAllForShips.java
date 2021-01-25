@@ -82,12 +82,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
         	}else {
         		// it is a dat folder, trigger python
         		ArrayList<String> args = new ArrayList<String>();
-        		if (AgentLocator.isJPSRunningAtCMCL()) {
-        			Path pyexe = Paths.get(KeyValueMap.getInstance().get(IKeys.SPEED_LOAD_MAP_VENV_DIR),pyrelpath.toString());
-        			args.add(pyexe.toString());
-        		} else {
-        			args.add("python");
-        		}
+        		args.add("python");
         		args.add("dat_reader.py"); 
         		args.add(dat_files[0].getAbsolutePath());
         		String result = CommandHelper.executeCommands(targetFolder, args);
