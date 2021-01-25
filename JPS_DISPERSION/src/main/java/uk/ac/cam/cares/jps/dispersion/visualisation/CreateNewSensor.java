@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.SensorSparql;
+import uk.ac.cam.cares.jps.dispersion.sparql.SensorSparql;
 
 /**
  * This servlet is called from the javascript jpsShip.js code to create new air quality stations on the map.

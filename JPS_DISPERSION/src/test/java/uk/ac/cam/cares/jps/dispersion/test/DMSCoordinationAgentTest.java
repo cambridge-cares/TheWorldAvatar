@@ -90,12 +90,6 @@ public class DMSCoordinationAgentTest extends TestCase {
 
 	}
 
-	public void testvalidationWeather() {
-		String context = "http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-004.owl#WeatherStation-004";
-		boolean isValid = new DMSCoordinationAgent().validateWeatherInput(context);
-		System.out.println("is it valid= " + isValid);
-	}
-
 	public void testpersonalquery() {
 		String chimneyiriparticleInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
