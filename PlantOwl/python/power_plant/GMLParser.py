@@ -2,10 +2,12 @@
 # Author: Feroz Farazi (msff2@cam.ac.uk) #
 # Date: 17 Dec 2020                      #
 ##########################################
+import time
 from builtins import enumerate
 
 from filetype.types.image import Cr2
 from lxml import etree
+from rdflib.extras.infixowl import Ontology, OWL_NS
 
 from CropMap import CropMap
 from Envelope import Envelope
@@ -15,6 +17,8 @@ import PropertyReader as propread
 import GMLParserPropReader as gmlpropread
 import ABoxGeneration as aboxgen
 import EntityRDFizer as rdfizer
+
+import uuid
 
 OBJECT_ID = 'OBJECTID'
 CROME_ID = 'cromeid'
@@ -92,10 +96,10 @@ def get_crop_map(context):
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
                                       cropMap.cromeID)
                     if getcentre_point_from_crome_id(cropMap.cromeID) != None:
-                        aboxgen.link_data(g, URIRef(gmlpropread.getCentrePoint()),
+                        aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCentrePoint()),
                                       URIRef(gmlpropread.getABoxIRI()
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      getcentre_point_from_crome_id(cropMap.cromeID))
+                                      getcentre_point_from_crome_id(cropMap.cromeID), URIRef(gmlpropread.getDataTypeCoordinatePoint()))
 
                     #print('cromeid', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  LUCODE.lower():
@@ -174,12 +178,12 @@ def get_crop_map(context):
                                   + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)))
         map_counter += 1
         if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
-            save_into_disk(g, file_counter)
+            save_into_disk(g, str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
             file_counter += 1
             g = Graph()
             print('Total number of feature members processed:', map_counter)
     if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) != 0:
-        save_into_disk(g, file_counter)
+        save_into_disk(g, str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
         print('Total number of feature members processed:', map_counter)
 
 """Extracts the centre point from the CROME ID"""
@@ -192,9 +196,10 @@ def getcentre_point_from_crome_id(cromeID):
     return None
 
 """Saves a graph into the disk/file system"""
-def save_into_disk(g, file_counter):
-    g.serialize(destination=gmlpropread.getABoxFileName() + rdfizer.UNDERSCORE + str(
-        file_counter) + gmlpropread.getABoxFileExtension(),
+def save_into_disk(g, file_name):
+    # g.bind('owl:imports', 'http://theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl')
+    g.set((g.identifier, OWL_NS['imports'], URIRef(gmlpropread.getImportOntologyURL())))
+    g.serialize(destination=str(file_name) + gmlpropread.getABoxFileExtension(),
                 format="application/rdf+xml")
 
 

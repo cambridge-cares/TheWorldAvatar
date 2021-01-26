@@ -70,6 +70,9 @@ def getCentrePoint():
 def getBoundedBy():
     return config.get('TBOX', 'property.bounded.by')
 
+def getImportOntologyURL():
+    return config.get('ABOX', 'ontology.imports')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
