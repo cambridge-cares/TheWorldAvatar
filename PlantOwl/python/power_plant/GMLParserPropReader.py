@@ -2,6 +2,13 @@
 # Author: Feroz Farazi (msff2@cam.ac.uk) #
 # Date: 06 Jan 2021                      #
 ##########################################
+
+"""GMLParserPropReader is a module developed for enabling
+developers to read attributes provided in the property file
+instead of hardcoding them. For each attribute in the property
+file, a getter function is developed. The corresponding function
+needs to be called to read the value of an attribute."""
+
 import configparser
 
 config = configparser.RawConfigParser()
