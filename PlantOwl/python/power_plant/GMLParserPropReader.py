@@ -43,6 +43,9 @@ def getCromeIDVocabulary():
 def getObjectIDVocabulary():
     return config.get('TBOX', 'property.object.id')
 
+def getDataTypeCoordinatePoint():
+    return config.get('TBOX', 'data.type.coordinate.point')
+
 def getDataTypePolygonalPoints():
     return config.get('TBOX', 'data.type.hexagon.points')
 
