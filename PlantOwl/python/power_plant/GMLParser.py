@@ -2,6 +2,11 @@
 # Author: Feroz Farazi (msff2@cam.ac.uk) #
 # Date: 17 Dec 2020                      #
 ##########################################
+
+"""GMLParser is developed to parse crop map data encoded in GML,
+structure the data by following an ontological model, and finally
+represent the data using RDF."""
+
 import time
 from builtins import enumerate
 
