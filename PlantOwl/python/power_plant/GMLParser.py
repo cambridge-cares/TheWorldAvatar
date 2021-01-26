@@ -162,14 +162,14 @@ def get_crop_map(context):
                                         URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
                                         envelope.srsDimension)
-                aboxgen.link_data(g, URIRef(gmlpropread.getLowerCorner()),
+                aboxgen.link_data_with_type(g, URIRef(gmlpropread.getLowerCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.lowerCorner.replace(' ', '#'))
-                aboxgen.link_data(g, URIRef(gmlpropread.getUpperCorner()),
+                                        envelope.lowerCorner.replace(' ', '#'), gmlpropread.getDataTypeCoordinatePoint())
+                aboxgen.link_data_with_type(g, URIRef(gmlpropread.getUpperCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.upperCorner.replace(' ', '#'))
+                                        envelope.upperCorner.replace(' ', '#'), gmlpropread.getDataTypeCoordinatePoint())
             """Links each feature to the envelope"""
             aboxgen.link_instance(g, URIRef(gmlpropread.getBoundedBy()),
                                   URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
