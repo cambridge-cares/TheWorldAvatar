@@ -44,7 +44,7 @@ def getObjectIDVocabulary():
     return config.get('TBOX', 'property.object.id')
 
 def getDataTypePolygonalPoints():
-    return config.get('TBOX', 'data.type.polygon.points')
+    return config.get('TBOX', 'data.type.hexagon.points')
 
 def getClassEnvelope():
     return config.get('TBOX', 'class.envelope')
