@@ -36,7 +36,7 @@ public class SemakauPVCoordination extends JPSHttpServlet {
 		logger.info("sent to the IrradiationandWeather= "+jo.toString());
 		String result1= AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString()); //sensorirradiri
 	
-		String iriofirrad = new JSONObject(result1).getString("irradiationsensor");
+		String iriofirrad = new JSONObject(result1).optString("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
 		jo.put("irradiationsensor",iriofirrad);
 		
 		logger.info("started simulation");

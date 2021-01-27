@@ -250,9 +250,11 @@ public class TBoxManagement implements ITBoxManagement{
 	
 	/**
 	 * Decides the type of logical formula needs to be created.</br>
-	 * Currently, it supports formulas with the following two quantifiers:
-	 * - for all (only)
-	 * - exactly 1
+	 * Currently, it supports formulas with the following two quantifiers:<br>
+	 * - for all (only)<br>
+	 * - exactly 1<br>
+	 * - maximum 1<br>
+	 * - minimum 1<br>
 	 * 
 	 * @param objectProperty
 	 * @param rangeClass
@@ -266,12 +268,18 @@ public class TBoxManagement implements ITBoxManagement{
 			OWLObjectUnionOf objectUnionOfRanges, String quantifier, String singleDomain, String range)
 			throws TBoxManagementException {
 		OWLClass domainClass = createClass(singleDomain);
-		if (quantifier != null && !quantifier.isEmpty() && quantifier.equalsIgnoreCase("only")) {
+		if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("only")) {
 			addUniversalQuantification(objectProperty, domainClass, rangeClass, objectUnionOfRanges, range);
 		} else if (quantifier != null && !quantifier.isEmpty()
-				&& quantifier.equalsIgnoreCase("exactly 1")) {
+				&& quantifier.trim().equalsIgnoreCase("exactly 1")) {
 			addExactlyOneQuantification(objectProperty, domainClass, rangeClass);
-		}
+		} else if (quantifier !=null && !quantifier.isEmpty()
+				&& quantifier.trim().equalsIgnoreCase("minimum 1")){
+			addMinimumOneQuantification(objectProperty, domainClass, rangeClass);
+		} else if(quantifier !=null && !quantifier.isEmpty()
+				&& quantifier.trim().equalsIgnoreCase("maximum 1")){
+			addMaximumOneQuantification(objectProperty, domainClass, rangeClass);
+		} 
 	}
 	
 	/**
@@ -307,6 +315,31 @@ public class TBoxManagement implements ITBoxManagement{
 		manager.applyChange(
 				new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
 	}
+	
+	/**
+	 * Adds a logical formula with a minimum 1 quantifier.
+	 * 
+	 * @param objectProperty
+	 * @param domainClass
+	 * @param rangeClass
+	 */
+	private void addMinimumOneQuantification(OWLObjectProperty objectProperty, OWLClass domainClass, OWLClass rangeClass){
+		OWLObjectCardinalityRestriction restriction = dataFactory.getOWLObjectMinCardinality(1, objectProperty, rangeClass);
+		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
+	}
+	
+	/**
+	 * Adds a logical formula with a maximum 1 quantifier.
+	 * 
+	 * @param objectProperty
+	 * @param domainClass
+	 * @param rangeClass
+	 */
+	private void addMaximumOneQuantification(OWLObjectProperty objectProperty, OWLClass domainClass, OWLClass rangeClass){
+		OWLObjectCardinalityRestriction restriction = dataFactory.getOWLObjectMaxCardinality(1, objectProperty, rangeClass);
+		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
+	}
+
 	
 	/**
 	 * Creates a data property using the name provided. If the domain and range

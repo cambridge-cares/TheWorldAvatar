@@ -35,8 +35,9 @@ public class DESCoordination extends JPSHttpServlet{
  	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
  	        requestParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
  	        AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData", requestParams.toString());
- 	        String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", requestParams.toString());
- 	       
+// 	        String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", requestParams.toString());
+ 	        String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", requestParams.toString());
+ 	 	      
  			System.gc();
     	return requestParams;
     }

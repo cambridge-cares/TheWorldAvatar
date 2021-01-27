@@ -12,7 +12,7 @@ public interface IKeys {
 	
 	String URL_POSITIONQUERY = "url.positionquery";
 
-	String URL_SHIPSQUERY = "url.shipsquery";
+	String URL_VIRTUALSENSOR = "url.virtualsensor";
 
 	String DATASET_TEMPLATE_URL = "dataset.%s.url";
 	String DATASET_TEMPLATE_KBCLASS = "dataset.%s.kbclass";
@@ -27,6 +27,4 @@ public interface IKeys {
 	String PATH_KNOWLEDGEBASE_SHIPS = "path.knowledgebase.ships";
 	String URL_SCHEME = "url.scheme";
 	String LONG_NUCLEAR_GAMS="apply.longtime.nuclear.gams";
-	
-	String SPEED_LOAD_MAP_VENV_DIR = "speed.load.map.venv.dir";
 }

@@ -38,7 +38,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 @WebServlet(urlPatterns = { "/DESAgent"})
-/*
+/** Old method for DES; no longer used. 
  * Wrapper for the python agent and displaying the result
  */
 public class DistributedEnergySystem extends JPSHttpServlet {
@@ -183,7 +183,6 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     				logger.error(ex.getMessage());
     				ex.printStackTrace();
     			}
-    			responseParams = provideJSONResult(baseUrl);
     	
     		
 		return responseParams;
@@ -553,53 +552,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 	
 
-	public JSONObject provideJSONResult(String baseUrl) {
-		JSONObject responseParams;
-		String weatherdir = baseUrl + "/WeatherForecast.csv";
-		String content = new QueryBroker().readFileLocal(weatherdir);
-		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
-
-		String powerdir = baseUrl + "/totgen.csv";
-		String content2 = new QueryBroker().readFileLocal(powerdir);
-		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
-		JSONObject dataresult = new JSONObject();
-
-		String rhdir = baseUrl + "/rh1.csv";
-		String content3 = new QueryBroker().readFileLocal(rhdir);
-		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
-		
-		String timer = baseUrl + "/timer.csv";
-		String content4 = new QueryBroker().readFileLocal(timer);
-		List<String[]> timerResult = MatrixConverter.fromCsvToArray(content4);
-		
-		JSONArray temperature = new JSONArray();
-		JSONArray irradiation = new JSONArray();
-
-		// 25-48 (last 24)
-		int sizeofweather = weatherResult.size();
-		for (int x = sizeofweather - 24; x < sizeofweather; x++) {
-			temperature.put(weatherResult.get(x)[4]);
-			irradiation.put(weatherResult.get(x)[8]);
-		}
-
-		// log to check if it's reading the right one. x
-
-		dataresult.put("temperature", temperature);
-		dataresult.put("irradiation", irradiation);
-		dataresult.put("gridsupply", simulationResult.get(4));
-		dataresult.put("solar", simulationResult.get(3));
-		dataresult.put("residential", simulationResult.get(0));
-		dataresult.put("industrial", simulationResult.get(2));
-		dataresult.put("commercial", simulationResult.get(1));
-		dataresult.put("timer",timerResult.get(0));
-		dataresult.put("rh1", rhResult.subList(0, 3).toArray());
-		dataresult.put("rh2", rhResult.subList(3, 6).toArray());
-		dataresult.put("rh3", rhResult.subList(6, rhResult.size()).toArray());
-
-		responseParams = dataresult;
-		return responseParams;
-	}
-
+	
 	public void runOptimization(String baseUrl) throws Exception {
 
 		copyFromPython(baseUrl, "runpy.bat");
@@ -671,6 +624,57 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 		String destinationUrl = newdir + "/" + filename;
 		new QueryBroker().putLocal(destinationUrl, file);
+	}
+	
+	/** provides result in the response of a JSON form
+	 * 
+	 * @param baseUrl
+	 * @return
+	 */
+	public JSONObject provideJSONResult(String baseUrl) {
+		JSONObject responseParams;
+		String weatherdir = baseUrl + "/WeatherForecast.csv";
+		String content = new QueryBroker().readFileLocal(weatherdir);
+		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
+
+		String powerdir = baseUrl + "/totgen.csv";
+		String content2 = new QueryBroker().readFileLocal(powerdir);
+		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
+		JSONObject dataresult = new JSONObject();
+
+		String rhdir = baseUrl + "/rh1.csv";
+		String content3 = new QueryBroker().readFileLocal(rhdir);
+		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
+		
+		String timer = baseUrl + "/timer.csv";
+		String content4 = new QueryBroker().readFileLocal(timer);
+		List<String[]> timerResult = MatrixConverter.fromCsvToArray(content4);
+		
+		JSONArray temperature = new JSONArray();
+		JSONArray irradiation = new JSONArray();
+
+		// 25-48 (last 24)
+		int sizeofweather = weatherResult.size();
+		for (int x = sizeofweather - 24; x < sizeofweather; x++) {
+			temperature.put(weatherResult.get(x)[4]);
+			irradiation.put(weatherResult.get(x)[8]);
+		}
+
+		// log to check if it's reading the right one. x
+
+		dataresult.put("temperature", temperature);
+		dataresult.put("irradiation", irradiation);
+		dataresult.put("gridsupply", simulationResult.get(4));
+		dataresult.put("solar", simulationResult.get(3));
+		dataresult.put("residential", simulationResult.get(0));
+		dataresult.put("industrial", simulationResult.get(2));
+		dataresult.put("commercial", simulationResult.get(1));
+		dataresult.put("timer",timerResult.get(0));
+		dataresult.put("rh1", rhResult.subList(0, 3).toArray());
+		dataresult.put("rh2", rhResult.subList(3, 6).toArray());
+		dataresult.put("rh3", rhResult.subList(6, rhResult.size()).toArray());
+
+		return dataresult;
 	}
     
 	

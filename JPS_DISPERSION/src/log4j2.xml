@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="60" status="WARN">
+
+	<Appenders>		
+		<RollingFile name="JPSROLLING" fileName="C:/JPS_DATA/logs/jps.log" filePattern="C:/JPS_DATA/logs/rolling/jps-%i.log">
+			<!--  PatternLayout pattern="%d %p [%t] %C{1} %m%n"/-->
+			<PatternLayout pattern="%m%n"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="1MB"/>
+			</Policies>
+			<DefaultRolloverStrategy max="100"/>
+		</RollingFile>
+		
+		<Console name="STDOUT">
+			<PatternLayout pattern="%m%n"/>
+		</Console>
+		
+	</Appenders>
+	
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="STDOUT"/>
+			<AppenderRef ref="JPSROLLING"/>
+		</Root>
+	</Loggers>
+	
+</Configuration> 

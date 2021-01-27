@@ -262,7 +262,7 @@
     <j.0:hasValue>
       <j.0:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_USD_to_CNY">
         <j.0:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
-        >6.6063</j.0:numericalValue>
+        >6.578976</j.0:numericalValue>
         <j.0:hasUnitOfMeasure>
           <j.1:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/CNY">
             <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -366,7 +366,7 @@
     <j.0:hasValue>
       <j.0:ScalarValue rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#V_USD_to_SGD">
         <j.0:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double"
-        >1.35159</j.0:numericalValue>
+        >1.34029</j.0:numericalValue>
         <j.0:hasUnitOfMeasure>
           <j.1:SI_DerivedUnit rdf:about="http://www.semanticweb.org/janusz/ontologies/2018/3/untitled-ontology-15#USD/SGD">
             <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
