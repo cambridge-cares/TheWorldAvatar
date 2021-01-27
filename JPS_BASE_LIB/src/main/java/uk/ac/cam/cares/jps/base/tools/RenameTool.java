@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.base.tools;
 
 import java.sql.SQLException;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AbstractKnowledgeBaseClient;
 
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.E_Conditional;
@@ -38,7 +38,7 @@ public class RenameTool {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	public static void renameURIFragment(KnowledgeBaseClient kbClient, String target, String replacement, String graph) throws SQLException, ParseException {
+	public static void renameURIFragment(AbstractKnowledgeBaseClient kbClient, String target, String replacement, String graph) throws SQLException, ParseException {
 		
 		// Get sparql update as String 
 		String sparql = buildSparqlUpdateString(target, replacement, graph).toString();
@@ -56,7 +56,7 @@ public class RenameTool {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	public static void renameURIFragment(KnowledgeBaseClient kbClient, String target, String replacement) throws SQLException, ParseException {
+	public static void renameURIFragment(AbstractKnowledgeBaseClient kbClient, String target, String replacement) throws SQLException, ParseException {
 		renameURIFragment(kbClient, target, replacement, null);
 	}
 	
@@ -70,7 +70,7 @@ public class RenameTool {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	public static void renameURI(KnowledgeBaseClient kbClient, String target, String replacement, String graph) throws SQLException, ParseException {
+	public static void renameURI(AbstractKnowledgeBaseClient kbClient, String target, String replacement, String graph) throws SQLException, ParseException {
 		
 		// Get sparql update as String 
 		String sparql = buildSparqlUpdateURI(target, replacement, graph).toString();
@@ -88,7 +88,7 @@ public class RenameTool {
 	 * @throws SQLException
 	 * @throws ParseException
 	 */
-	public static void renameURI(KnowledgeBaseClient kbClient, String target, String replacement) throws SQLException, ParseException {
+	public static void renameURI(AbstractKnowledgeBaseClient kbClient, String target, String replacement) throws SQLException, ParseException {
 		renameURI(kbClient, target, replacement, null);
 	}
 	

@@ -19,7 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AbstractKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.tools.RenameTool;
 
@@ -65,7 +65,7 @@ public class RenameToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
+		AbstractKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
 		//perform update
 		RenameTool.renameURI(kbClient, target, replacement);
@@ -90,7 +90,7 @@ public class RenameToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
+		AbstractKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
 		//perform update
 		RenameTool.renameURIFragment(kbClient, target, replacement);

@@ -34,7 +34,7 @@ public class SparqlOverHttpService {
 	private String sparqlServiceURIForUpdate = null;
 	
 	// Declared the kbClient variable
-	private KnowledgeBaseClient kbClient;
+	private AbstractKnowledgeBaseClient kbClient;
 	
 	public SparqlOverHttpService(String datasetUrl) {
 		
