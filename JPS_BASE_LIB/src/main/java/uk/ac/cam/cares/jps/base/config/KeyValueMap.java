@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.config;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -15,11 +14,11 @@ public class KeyValueMap {
 
 	private static KeyValueMap instance = null;
 	public static Map<String, String> map = new ConcurrentHashMap<String, String>();
-	public static String propertiesFile = "/jps.properties";
-	public static String testPropertiesFile = "/jpstest.properties";
-	public static String FILE_DOES_NOT_EXIST = "Property file does not exist.";
-	public static String KEY_DOES_NOT_EXIST = "No such key in properties file.";
-	public static String NO_NULL_KEY_VALUE = "Null keys and values are not allowed.";
+	private static String propertiesFile = "/jps.properties";
+	private static String testPropertiesFile = "/jpstest.properties";
+	private static String FILE_DOES_NOT_EXIST = "Property file does not exist.";
+	private static String KEY_DOES_NOT_EXIST = "No such key in properties file.";
+	private static String NO_NULL_KEY_VALUE = "Null keys and values are not allowed.";
 
 	public static synchronized KeyValueMap getInstance() {
 		if (instance == null) {
@@ -72,21 +71,21 @@ public class KeyValueMap {
 	 * Russell
 	 */
 
-	private void init(String runningForTest) {
-		if (runningForTest != "true") {
-			loadProperties(propertiesFile);
-		} else {
+	private void init(Boolean runningForTest) {
+		if (runningForTest) {
 			loadProperties(testPropertiesFile);
+		} else {
+			loadProperties(propertiesFile);
 		}
 
 	}
 
 	/**
-	 * Checks properties file for test key. - Russell
+	 * Checks properties file for test key and returns true or false. - Russell
 	 */
 
-	private String runningForTest(String propertiesFile) {
-		String runningForTest = "false";
+	private Boolean runningForTest(String propertiesFile) {
+		Boolean runningForTest = false;
 
 		try {
 			loadProperties(propertiesFile);
@@ -95,13 +94,10 @@ public class KeyValueMap {
 		}
 
 		try {
-			runningForTest = map.get("test");
+			runningForTest = Boolean.valueOf(map.get("test"));
+			;
 		} catch (Exception e) {
 			throw new JPSRuntimeException(KEY_DOES_NOT_EXIST);
-		}
-
-		if (runningForTest == null) {
-			runningForTest = KEY_DOES_NOT_EXIST;
 		}
 
 		return runningForTest;
@@ -120,7 +116,7 @@ public class KeyValueMap {
 
 		InputStream fin = null;
 		Properties props = new Properties();
-		
+
 		try {
 			fin = KeyValueMap.class.getResourceAsStream(propertyFile); // this is a static function
 			props.load(fin);
