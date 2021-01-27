@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.FrontEndCoordination;
+import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
@@ -198,4 +199,5 @@ public class Test_AgentsNew extends TestCase{
 		assertNotNull(jo);
 		
 	}
+	
 }
