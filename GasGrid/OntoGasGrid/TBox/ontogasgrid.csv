@@ -1,25 +1,48 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe,Class,,,,,,A Pipe can be used to connect two geographically distinct nodes within a Gas Transmission Network ,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PipingNetwork,Class,,,,,,"A PipingNetwork is an agglomeration of Pipes, PipeFittings, and Transmission components that interact over a directed graph",http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl
-Gas Transmission Network ,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PipingNetwork,IS-A,,,,A GasTransmissionNetwork is a sub-class of PipingNetwork and specifically specifies a PipingNetwork for the purposes of transporting large volumes of gas over long distances.,http://www.theworldavatar.com/kb/ontogasnetwork/ontogasnetwork.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PipeSegment,Class,,,,,,A PipeSegment is the elementary part of Piping. A Pipe is assembled of a number of PipeSegments.,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#Compressor,Class,,,,,,A Compressor is used to induce an increase in pressure along a pipeline,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl
-http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,Class,,,,,,A DirectedConnection is derived from the meta-class DirectedArc and represents the connecting element between Devices,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Storage,Class,,,,,,A Storage device can hold material ,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#OutputProduct,Class,,,,,,An OutputProduct is Material that is output by a ProcessStep,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl
-http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,Class,,,,,,A Device is the physical realisation of a node within a directed graph ,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
-http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#EnvironmentConnection,Class,,,,,,An EnvironmentConnection specifies a connection on the edge of a direct graph to or from a single device,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
-Compression Station,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,IS-A,,,,A CompressionStation is the agglomeration of multiple compressors in a single geographical location ,http://www.theworldavatar.com/kb/ontogasnetwork/ontogasnetwork.owl
-Intake,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,IS-A,,,,An Intake is a Device through which material enters a network,http://www.theworldavatar.com/kb/ontogasnetwork/ontogasnetwork.owl
-Offtake,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,IS-A,,,,An Offtake is a Device through which material leaves a network,http://www.theworldavatar.com/kb/ontogasnetwork/ontogasnetwork.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Pipe,Class ,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,IS-A ,,,,A Pipe is a directed connection within a pipe network,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl
+http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem,Class,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
+http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,Class,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
+http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,Class,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
+Gas Network,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf, ,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Grid Component,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf, ,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Grid Pipeline,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf, ,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Storage,Class,Grid Component,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Intake,Class,Grid Component,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Offtake,Class,Grid Component,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Compression Station,Class,Grid Component,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
 http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount,Class,,,,,,,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#HomogeneousMaterialAmount,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount,IS-A,,,,,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl
 http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmountConnection,Class,,,,,,,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ValveConnection,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmountConnection,IS-A,,,,,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#PermeableValve,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ValveConnection,IS-A,,,,,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl
-http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ImpermeableValve,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ValveConnection,IS-A,,,,,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl
-http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#enters,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
-http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasOutput,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
-http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#hasInput,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
-http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#leaves,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
+Pipe Start,Class,,,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Pipe End,Class,,,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Pipe Void ,Class,,,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Gas Source ,Class,,,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Onshore Field ,Class,Gas Source ,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Offshore Field ,Class,Gas Source ,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Continental Pipeline ,Class,Gas Source ,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+LNG Import ,Class,Gas Source ,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Gas Terminal,Class,Grid Component,IS-A ,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Local Distribution,Class ,Offtake,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Power Station ,Class,Offtake,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+Industrial Use ,Class,Offtake,IS-A ,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+LNG Storage,Class ,Storage,IS-A ,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+HP Storage ,Class,Storage ,IS-A ,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem,Gas Network,,,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl
+http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,Grid Component,,,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl
+http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#representsRealizationOf,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,Grid Pipeline,,,http://www/theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl
+has Start ,Object Property,,,Grid Pipeline,Pipe Start,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+has End ,Object Property,,,Grid Pipeline,Pipe End ,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+has Void ,Object Property,,,Grid Pipeline,Pipe Void ,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+has GasFlow,Data Property ,,,Grid Component,String,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+has GasFlow,Data Property ,,,Grid Pipeline,String ,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+has Diameter,Data Property ,,,Grid Pipeline,String,,,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#enters,Object Property,,,Grid Pipeline,Grid Component ,,,http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl
+http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#leaves,Object Property,,,Grid Pipeline ,Grid Component ,,,http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl
+has Volume ,Data Property ,,,Grid Pipeline ,String ,,,http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
