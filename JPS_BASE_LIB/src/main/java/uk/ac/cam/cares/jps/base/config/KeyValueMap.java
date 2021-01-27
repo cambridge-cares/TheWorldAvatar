@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.base.config;
 
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -14,98 +14,159 @@ import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 public class KeyValueMap {
 
 	private static KeyValueMap instance = null;
-	private static Map<String, String> map = new ConcurrentHashMap<String, String>();
-	
+	public static Map<String, String> map = new ConcurrentHashMap<String, String>();
+	public static String propertiesFile = "/jps.properties";
+	public static String testPropertiesFile = "/jpstest.properties";
+	public static String FILE_DOES_NOT_EXIST = "Property file does not exist.";
+	public static String KEY_DOES_NOT_EXIST = "No such key in properties file.";
+	public static String NO_NULL_KEY_VALUE = "Null keys and values are not allowed.";
+
 	public static synchronized KeyValueMap getInstance() {
 		if (instance == null) {
 			instance = new KeyValueMap();
 		}
 		return instance;
 	}
-	
+
 	private KeyValueMap() {
-		init();
+		init(runningForTest(propertiesFile));
 	}
-	
-	public String get(String key) {
-		return map.get(key);
-	}
-	
-	public String put(String key, String value) {
-		return map.put(key, value);
-	}
-	
+
 	/**
-	 * Loads the property files. There is only one source for the property files, namely the config directory
-	 * within the deployed JPS_BASE app.
+	 * Takes in a key and returns value if the key exists in map. Returns
+	 * appropriate error message otherwise. - Russell
 	 */
-	private void init() {
-		
-		
+
+	public String get(String key) {
+		String value = "";
+
 		try {
-			loadProperties("/jps.properties");
-		}catch (FileNotFoundException exc) {
-			JPSBaseLogger.error(this, exc);
-			throw new JPSRuntimeException(exc.getMessage(), exc);
-		}
-		catch (IOException exc) {
-			JPSBaseLogger.error(this, exc);
-			throw new JPSRuntimeException(exc.getMessage(), exc);
+			value = map.get(key);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(NO_NULL_KEY_VALUE);
 		}
 
-		boolean runningForTest = Boolean.valueOf(map.get("test"));
-		JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
-		if (runningForTest)  {
-			try {
-				// if started on local server then overwrite values from jps.properties
-				loadProperties("/jpstest.properties");
-			}catch (FileNotFoundException exc) {
-				JPSBaseLogger.error(this, exc);
-				throw new JPSRuntimeException(exc.getMessage(), exc);
-			} catch (IOException exc) {
-				JPSBaseLogger.info(this, "jpstest.properties was not found");
-			}
+		if (value == null) {
+			value = KEY_DOES_NOT_EXIST;
 		}
+
+		return value;
 	}
-	/**  load all key value pairs 
+
+	/**
+	 * Puts in a key-value pair in map. Returns appropriate error message otherwise.
+	 * - Russell
+	 */
+
+	public void put(String key, String value) {
+		try {
+			map.put(key, value);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(NO_NULL_KEY_VALUE);
+		}
+
+	}
+
+	/**
+	 * Loads either jps.properties or jpstest.properties in src/main/resources. -
+	 * Russell
+	 */
+
+	private void init(String runningForTest) {
+		if (runningForTest != "true") {
+			loadProperties(propertiesFile);
+		} else {
+			loadProperties(testPropertiesFile);
+		}
+
+	}
+
+	/**
+	 * Checks properties file for test key. - Russell
+	 */
+
+	private String runningForTest(String propertiesFile) {
+		String runningForTest = "false";
+
+		try {
+			loadProperties(propertiesFile);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(FILE_DOES_NOT_EXIST);
+		}
+
+		try {
+			runningForTest = map.get("test");
+		} catch (Exception e) {
+			throw new JPSRuntimeException(KEY_DOES_NOT_EXIST);
+		}
+
+		if (runningForTest == null) {
+			runningForTest = KEY_DOES_NOT_EXIST;
+		}
+
+		return runningForTest;
+	}
+
+	/**
+	 * load all key value pairs
 	 * 
 	 * @param propertyFile
 	 * @throws IOException
 	 */
-	private void loadProperties(String propertyFile) throws IOException {
-	    
+
+	private void loadProperties(String propertyFile) {
+
 		JPSBaseLogger.info(this, "loading key-value pairs from " + propertyFile);
-		
-		InputStream fin=null;
+
+		InputStream fin = null;
 		Properties props = new Properties();
-		fin=KeyValueMap.class.getResourceAsStream(propertyFile); //this is a static function
-		props = new Properties();
-		props.load(fin); 	
 		
-		Set<String> keys = props.stringPropertyNames();
-		for (String key : keys) {
-			String value = props.getProperty(key);
-			put(key, value);
-			JPSBaseLogger.info(this, key + " = " + value);
+		try {
+			fin = KeyValueMap.class.getResourceAsStream(propertyFile); // this is a static function
+			props.load(fin);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(FILE_DOES_NOT_EXIST);
+		} finally {
+			Set<String> keys = props.stringPropertyNames();
+			for (String key : keys) {
+				String value = props.getProperty(key);
+				put(key, value);
+				JPSBaseLogger.info(this, key + " = " + value);
+			}
 		}
 	}
+
 	/**
-	 * static method of accessing a property from a given properties file in JPS BASE LIB
+	 * static method of accessing a property from a given properties file in JPS
+	 * BASE LIB
+	 * 
 	 * @param propertyFile
 	 * @param getKey
 	 * @return
 	 */
 	public static String getProperty(String propertyFile, String getKey) {
-		InputStream fin=null;
+		InputStream fin = null;
 		Properties props = new Properties();
-		fin=KeyValueMap.class.getResourceAsStream(propertyFile); //this is a static function
-		props = new Properties();
+		String value = "";
+
 		try {
-		props.load(fin);}
-		catch (IOException exc) {
-			JPSBaseLogger.info(KeyValueMap.class,  " properties was not loaded ");
+			fin = KeyValueMap.class.getResourceAsStream(propertyFile); // this is a static function
+			props.load(fin);
+		} catch (Exception e) {
+			JPSBaseLogger.info(KeyValueMap.class, " properties was not loaded ");
+			throw new JPSRuntimeException(FILE_DOES_NOT_EXIST);
 		}
-		String value = props.getProperty(getKey);
+
+		try {
+			value = props.getProperty(getKey);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(NO_NULL_KEY_VALUE);
+		}
+
+		if (value == null) {
+			value = KEY_DOES_NOT_EXIST;
+		}
+
 		return value;
 	}
 }
