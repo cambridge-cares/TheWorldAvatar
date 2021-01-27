@@ -41,7 +41,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
+public class RemoteKnowledgeBaseClient extends AbstractKnowledgeBaseClient {
 
 	private static final String HTTP_PROTOCOL= "http:";
 	private static final String HTTPS_PROTOCOL = "https:";

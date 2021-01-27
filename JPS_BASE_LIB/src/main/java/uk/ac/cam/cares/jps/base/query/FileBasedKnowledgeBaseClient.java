@@ -38,7 +38,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author Casper Lindberg
  *
  */
-public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
+public class FileBasedKnowledgeBaseClient extends AbstractKnowledgeBaseClient {
 
 	private Dataset dataset;
 	private RDFConnection conn;
