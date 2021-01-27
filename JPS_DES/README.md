@@ -76,10 +76,26 @@ Instead, follow this [guide](https://guides.library.illinois.edu/c.php?g=347520&
 		iv) industrial (24)
 		v) residential (24)
 	2. Three sets of residential type profiles (24)
-5. Front-End
+5. Front-End Coordination uses rdf4j to get the last complete run of DESCoordination. This is done by annotating the folder and keeping a record in runOptimization in DESAgentNew before querying it in FrontEndCoordination
+	1. Due to the large size of the JSON packet, the  agent reduces it to a JSON size of five, with each key having just 1 value. 
+	Then, it calls upon the BlockchainWrapper agent that communicates with the blockchain. 
+	2. Input: A JSON of five elements. 
+	3. Output: JSON of two keys
+		1. txHash, the list of transaction hashes. A transaction hash can be treated as a receipt. 
+		2. sandr, the list of senders and receivers. 
+	4. Coordination Agent can be tested by using "testStartCoordinationDESScenariobase()"
+	5. Weather Agent (RealTime) can be collected via testIrradiationRetrieverDirectCall() and testIrradiationRetrieverAgentCall()
+	6. Forecast Agent can be tested, but it's not recommended to do so. To test Forecast Agent, run the coordination agent by itself. 
+	7. BlockchainWrapper can be tested via testBlockchainWrapperDirectCall and testBlockchainWrapperAgentCall. 
 
 ### Websites referenced: 
 1. [Solar Repository Institute](https://www.solar-repository.sg/ftp_up/weather/500_Weather.png) for the solar weather near NUS (within NUS)
 2. [Solcast Forecast](https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN) for the solar forecast reading as well as weather data reading
 3. [Accuweather Singapore](http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true) for the first 12 hours accurate 
+
+### TODO: 
+ - [x] Finish backup of visualization
+ - [ ] \(Optional) virtual environment for python
+
+### What if the visualization isn't working?
 

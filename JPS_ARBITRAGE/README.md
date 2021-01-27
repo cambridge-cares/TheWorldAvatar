@@ -17,7 +17,7 @@
 5. com.cmclinnovations.mods **.Mods_Java_APIv0.3.3** (This jar file has to be downloaded from Claudius as it's proprietary. Hunt in the libraries in .m2 folder/repositories. )
 
 ## PhantomJS? 
- - You'll have to install phantomJS from this web address: [https://phantomjs.org/download.html ] and download from there. 
+ - You'll have to install phantomJS from this web address: [PhantomJS](https://phantomjs.org/download.html) and download from there. 
 
 ## What to do for deployment? 
  - Have python installed. Have java installed. Both should be added to your system environment. 
