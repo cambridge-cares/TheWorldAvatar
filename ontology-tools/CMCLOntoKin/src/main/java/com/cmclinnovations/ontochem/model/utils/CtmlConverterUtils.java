@@ -995,10 +995,13 @@ public class CtmlConverterUtils extends CtmlConverter{
 	 * @throws OntoException
 	 */
 	public static String gitCommitHash() throws OntoException{
+		commitValue = null;
+		try{
 		String USER_DIR = System.getProperty("user.dir");
 		Path directory = Paths.get(USER_DIR);
 		getCommitHash(directory, "git", "rev-parse", "HEAD");
-		return commitValue;
+		}catch(Exception e){}
+		return commitValue;		
 	}
 	
 	/**
