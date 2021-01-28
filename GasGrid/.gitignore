@@ -1,2 +1,6 @@
 /OtherTools/.vscode
 /.vscode
+
+.vscode/
+__pycache__/
+node_modules/
