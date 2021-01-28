@@ -109,10 +109,10 @@ def get_crop_map(context):
                     #print('cromeid', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  LUCODE.lower():
                     cropMap.luCode = attribute.text
-                    aboxgen.link_data(g, URIRef(gmlpropread.getLucodeVocabulary()),
+                    aboxgen.link_instance(g, URIRef(gmlpropread.getLucodeVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      cropMap.luCode)
+                                      URIRef(propread.getABoxIRI()+rdfizer.SLASH+cropMap.luCode))
                     #print('lucode', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  REF_DATE.lower():
                     cropMap.refDate = attribute.text
