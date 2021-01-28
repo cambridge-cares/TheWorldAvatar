@@ -895,22 +895,14 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void representCommitHash() throws TBoxManagementException{
-		try{
-		String commitHash = CtmlConverterUtils.gitCommitHash();
-		// If commit hash cannot be retrieved from the file system, 
-		// it will check the availability of commit hash in the property file.
-		if(commitHash == null || commitHash.isEmpty()){
-			commitHash = tBoxConfig.getGitCommitHashValue();
-		}
+		//String commitHash = CtmlConverterUtils.gitCommitHash();
+		String commitHash = tBoxConfig.getGitCommitHashValue();
 		if (commitHash != null && !commitHash.isEmpty()) {
 			OWLLiteral commitHashValue = dataFactory.getOWLLiteral(commitHash);
 			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
 					.gettBoxIri().concat("#").concat(appConfigOntoKin.getCompChemGitCommitHash())));
 			OWLAnnotation commitAttributeWithValue = dataFactory.getOWLAnnotation(commit, commitHashValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commitAttributeWithValue));
-		}
-		}catch(OntoException e){
-			throw new TBoxManagementException(e.getMessage());
 		}
 	}
 	
