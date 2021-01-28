@@ -880,7 +880,7 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void representComment() throws TBoxManagementException{
-		String comment = appConfigOntoKin.getAnnotationPropertyValueOfComment();
+		String comment = tBoxConfig.gettBoxComment();
 		if (comment != null && !comment.isEmpty()) {
 			OWLLiteral commentValue = dataFactory.getOWLLiteral(comment);
 			OWLAnnotationProperty commentProperty = dataFactory.getRDFSComment();

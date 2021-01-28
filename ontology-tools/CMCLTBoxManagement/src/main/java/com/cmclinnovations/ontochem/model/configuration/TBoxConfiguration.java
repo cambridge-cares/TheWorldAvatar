@@ -25,7 +25,13 @@ public class TBoxConfiguration {
 	
 	@Value("${tbox.comment}")
 	private String tBoxComment;
-				
+	
+	@Value("${tbox.git.commit.hash.value}")
+	private String gitCommitHashValue;
+	
+	@Value("${tbox.date.of.publication}")
+	private String tBoxCreationDate;
+	
 	public String gettBoxIri() {
 		return tBoxIri;
 	}
@@ -49,5 +55,20 @@ public class TBoxConfiguration {
 	public void settBoxComment(String tBoxComment) {
 		this.tBoxComment = tBoxComment;
 	}
-	
+
+	public String getGitCommitHashValue() {
+		return gitCommitHashValue;
+	}
+
+	public void setGitCommitHashValue(String gitCommitHashValue) {
+		this.gitCommitHashValue = gitCommitHashValue;
+	}
+
+	public String gettBoxCreationDate() {
+		return tBoxCreationDate;
+	}
+
+	public void settBoxCreationDate(String tBoxCreationDate) {
+		this.tBoxCreationDate = tBoxCreationDate;
+	}
 }
