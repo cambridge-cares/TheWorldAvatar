@@ -99,20 +99,13 @@ public class CoordinationDataCollection extends HttpServlet {
 		
 		//retrieveShipdata();
 		try {
-			if (AgentLocator.isJPSRunningAtCMCL()) {
-				JSONObject episode=executeSGDataEPISODE();
-				callAgent(episode);
-				JSONObject episodehk = executeHKDataEPISODE();
-				callAgent(episodehk);
-			} else {
-				JSONObject episode=executeSGDataEPISODE();
-				JSONObject adms=executeSGDataADMS();
-	//			JSONObject episodeHK=executeHKDataEPISODE();
-	//			JSONObject admsHK=executeHKDataADMS();
+			JSONObject episode=executeSGDataEPISODE();
+			JSONObject adms=executeSGDataADMS();
+//			JSONObject episodeHK=executeHKDataEPISODE();
+//			JSONObject admsHK=executeHKDataADMS();
 				
-				callAgent(adms,episode);
-	//			callAgent(admsHK,episodeHK);
-			}
+			callAgent(adms,episode);
+//			callAgent(admsHK,episodeHK);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

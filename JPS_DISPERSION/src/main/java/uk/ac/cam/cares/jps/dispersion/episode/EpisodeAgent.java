@@ -284,10 +284,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
             createEmissionInput(dataPath, "lines.csv",shipdata);
             try { //for control file
                 createControlTopologyFile(srtm, dataPath, "aermap.inp",sc);
-                if (!AgentLocator.isJPSRunningAtCMCL()) {
-                    createControlWeatherORCityChemFile(dataPath, "run_file.asc",stniri,sc);
-                    createControlWeatherORCityChemFile(dataPath, "citychem_restart.txt",stniri,sc);
-                }
+                createControlWeatherORCityChemFile(dataPath, "run_file.asc",stniri,sc);
+                createControlWeatherORCityChemFile(dataPath, "citychem_restart.txt",stniri,sc);
                 createControlEmissionFile(shipdata,dataPath,"cctapm_meta_LSE.inp",sc);
                 createControlEmissionFile(shipdata,dataPath,"cctapm_meta_PSE.inp",sc);
             } catch (IOException e) {
@@ -295,25 +293,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
                 e.printStackTrace();
             }
             createReceptorFile(dataPath,"receptor_input.txt",sc);
-            if (!AgentLocator.isJPSRunningAtCMCL()) {
-                createWeatherInput(dataPath,"mcwind_input.txt",stniri);
-            }
-
-            // temporary mess, will be merged after everything is tidied up!
-            if (AgentLocator.isJPSRunningAtCMCL()) {
-            	WeatherStation[] weatherStations = new WeatherStation[stnIRI.length()];
-	            // first station is the main station, second station only provides wind speed/direction
-	            for (int i=0; i<stnIRI.length(); i++) {
-	            	weatherStations[i] = new WeatherStation(stnIRI.getString(i));
-	            }
-	            try {
-	                createControlWeatherORCityChemFile(dataPath, "run_file.asc",weatherStations,sc);
-                    createControlWeatherORCityChemFile(dataPath, "citychem_restart.txt",weatherStations,sc);
-	            } catch (IOException e) {
-	            	e.printStackTrace();
-	            }
-                createWeatherInput(dataPath,"mcwind_input.txt",weatherStations);
-            }
+            createWeatherInput(dataPath,"mcwind_input.txt",stniri);
             
             //zip all the input file created
             File inputfile=null;
