@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.base.config;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
@@ -15,11 +13,11 @@ public class KeyValueMap {
 
 	private static KeyValueMap instance = null;
 	public static Map<String, String> map = new ConcurrentHashMap<String, String>();
-	public static String propertiesFile = "/jps.properties";
-	public static String testPropertiesFile = "/jpstest.properties";
-	public static String FILE_DOES_NOT_EXIST = "Property file does not exist.";
-	public static String KEY_DOES_NOT_EXIST = "No such key in properties file.";
-	public static String NO_NULL_KEY_VALUE = "Null keys and values are not allowed.";
+	private static String propertiesFile = "/jps.properties";
+	private static String testPropertiesFile = "/jpstest.properties";
+	private static String FILE_DOES_NOT_EXIST = "Properties file does not exist.";
+	private static String KEY_DOES_NOT_EXIST = "No such key in properties file.";
+	private static String NO_NULL_KEY_VALUE = "Null keys and values are not allowed.";
 
 	public static synchronized KeyValueMap getInstance() {
 		if (instance == null) {
@@ -33,10 +31,9 @@ public class KeyValueMap {
 	}
 
 	/**
-	 * Takes in a key and returns value if the key exists in map. Returns
-	 * appropriate error message otherwise. - Russell
+	 * Takes in a key and returns value if the key exists in map. Throws appropriate
+	 * error message otherwise. - Russell
 	 */
-
 	public String get(String key) {
 		String value = "";
 
@@ -52,41 +49,42 @@ public class KeyValueMap {
 
 		return value;
 	}
-
+	
 	/**
-	 * Puts in a key-value pair in map. Returns appropriate error message otherwise.
-	 * - Russell
+	 * Puts in a key-value pair into map. Returns previous value associated with key. 
+	 * Returns null if there was no previous association with key.
+	 * Throws appropriate error message otherwise. - Russell
 	 */
-
-	public void put(String key, String value) {
+	public String put(String key, String value) {	
+		String oldValue = "";
+		
 		try {
-			map.put(key, value);
+			oldValue = map.put(key, value);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(NO_NULL_KEY_VALUE);
 		}
-
+		
+		return oldValue;
 	}
 
 	/**
 	 * Loads either jps.properties or jpstest.properties in src/main/resources. -
 	 * Russell
 	 */
-
-	private void init(String runningForTest) {
-		if (runningForTest != "true") {
-			loadProperties(propertiesFile);
-		} else {
+	private void init(Boolean runningForTest) {
+		if (runningForTest) {
 			loadProperties(testPropertiesFile);
+		} else {
+			loadProperties(propertiesFile);
 		}
 
 	}
 
 	/**
-	 * Checks properties file for test key. - Russell
+	 * Checks properties file for test key and returns true or false. - Russell
 	 */
-
-	private String runningForTest(String propertiesFile) {
-		String runningForTest = "false";
+	private Boolean runningForTest(String propertiesFile) {
+		Boolean runningForTest = false;
 
 		try {
 			loadProperties(propertiesFile);
@@ -95,34 +93,26 @@ public class KeyValueMap {
 		}
 
 		try {
-			runningForTest = map.get("test");
+			runningForTest = Boolean.valueOf(map.get("test"));
 		} catch (Exception e) {
 			throw new JPSRuntimeException(KEY_DOES_NOT_EXIST);
-		}
-
-		if (runningForTest == null) {
-			runningForTest = KEY_DOES_NOT_EXIST;
 		}
 
 		return runningForTest;
 	}
 
 	/**
-	 * load all key value pairs
-	 * 
-	 * @param propertyFile
-	 * @throws IOException
+	 * Reads properties file and loads key-value pairs into map. -Russell
 	 */
+	private void loadProperties(String propertiesFile) {
 
-	private void loadProperties(String propertyFile) {
-
-		JPSBaseLogger.info(this, "loading key-value pairs from " + propertyFile);
+		JPSBaseLogger.info(this, "loading key-value pairs from " + propertiesFile);
 
 		InputStream fin = null;
 		Properties props = new Properties();
-		
+
 		try {
-			fin = KeyValueMap.class.getResourceAsStream(propertyFile); // this is a static function
+			fin = KeyValueMap.class.getResourceAsStream(propertiesFile); // this is a static function
 			props.load(fin);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(FILE_DOES_NOT_EXIST);
@@ -137,20 +127,15 @@ public class KeyValueMap {
 	}
 
 	/**
-	 * static method of accessing a property from a given properties file in JPS
-	 * BASE LIB
-	 * 
-	 * @param propertyFile
-	 * @param getKey
-	 * @return
+	 * Reads properties file and gets value of requested key. - Russell
 	 */
-	public static String getProperty(String propertyFile, String getKey) {
+	public static String getProperty(String propertiesFile, String key) {
 		InputStream fin = null;
 		Properties props = new Properties();
 		String value = "";
 
 		try {
-			fin = KeyValueMap.class.getResourceAsStream(propertyFile); // this is a static function
+			fin = KeyValueMap.class.getResourceAsStream(propertiesFile); // this is a static function
 			props.load(fin);
 		} catch (Exception e) {
 			JPSBaseLogger.info(KeyValueMap.class, " properties was not loaded ");
@@ -158,7 +143,7 @@ public class KeyValueMap {
 		}
 
 		try {
-			value = props.getProperty(getKey);
+			value = props.getProperty(key);
 		} catch (Exception e) {
 			throw new JPSRuntimeException(NO_NULL_KEY_VALUE);
 		}

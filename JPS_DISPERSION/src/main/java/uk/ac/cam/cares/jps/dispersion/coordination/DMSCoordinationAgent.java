@@ -76,12 +76,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		String result;
 
 		// @TODO - improve weather update frequency
-		// temporary measure to avoid changing things on Claudius
-		if (AgentLocator.isJPSRunningAtCMCL()) {
-			result = execute("/JPS_DISPERSION/WeatherAgent", requestParams.getJSONObject("region").toString());
-		} else {
-		    result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
-		}
+		result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
 		
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
 		requestParams.put("stationiri", stationiri);
