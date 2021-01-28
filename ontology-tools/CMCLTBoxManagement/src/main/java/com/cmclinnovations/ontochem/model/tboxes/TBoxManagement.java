@@ -897,6 +897,11 @@ public class TBoxManagement implements ITBoxManagement{
 	private void representCommitHash() throws TBoxManagementException{
 		try{
 		String commitHash = CtmlConverterUtils.gitCommitHash();
+		// If commit hash cannot be retrieved from the file system, 
+		// it will check the availability of commit hash in the property file.
+		if(commitHash == null || commitHash.isEmpty()){
+			commitHash = tBoxConfig.getGitCommitHashValue();
+		}
 		if (commitHash != null && !commitHash.isEmpty()) {
 			OWLLiteral commitHashValue = dataFactory.getOWLLiteral(commitHash);
 			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
