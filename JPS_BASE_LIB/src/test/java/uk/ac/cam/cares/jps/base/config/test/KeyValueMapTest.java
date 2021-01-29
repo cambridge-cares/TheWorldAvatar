@@ -211,6 +211,7 @@ public class KeyValueMapTest extends TestCase {
 
 		try {
 			fileName = " ";
+			key = "test";
 			kvm.getProperty(fileName, key);
 		} catch (JPSRuntimeException e) {
 			assertEquals(e.getMessage(), "Properties file does not exist.");
@@ -218,6 +219,7 @@ public class KeyValueMapTest extends TestCase {
 
 		try {
 			fileName = "/jps.properties";
+			key = null;
 			kvm.getProperty(fileName, key);
 		} catch (JPSRuntimeException e) {
 			assertEquals(e.getMessage(), "Null keys and values are not allowed.");
