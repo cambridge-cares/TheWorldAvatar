@@ -1,0 +1,8 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+GasNetworkSystemRealization,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemRealization,IS-A,,,,GasNetworkSystemRealization,"
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"
+GasNetworkSystem,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem,IS-A,,,,GasNetworkSystem,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
+GridPipeline,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,IS-A,,,,GridPipeline,"
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"
+GridComponent,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,IS-A,,,,GridComponent,"
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"
