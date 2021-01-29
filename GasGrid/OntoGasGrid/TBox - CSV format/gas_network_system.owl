@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:gas_network_system="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">29 January 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing gas network system.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+		<!-- Ontologies below are imported manually because tboxgenerator tool does not suport importing ontologies automatically. -->
+		<owl:imports rdf:resource="http://theworldavatar.com/ontology/meta_model/topology/topology.owl"/>
+	    <owl:imports rdf:resource="http://theworldavatar.com/ontology/ontocape/upper_level/network_system.owl"/>
+	    <owl:imports rdf:resource="http://theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+		
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemRealization -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemRealization"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasNetworkSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasNetworkSystem">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GasNetworkSystem</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasNetworkSystemRealization -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasNetworkSystemRealization">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#SystemRealization"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GasNetworkSystemRealization</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridComponent -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridComponent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GridComponent</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipeline -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipeline">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GridPipeline</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl</rdfs:isDefinedBy>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0) https://github.com/owlcs/owlapi/ -->
+
+
