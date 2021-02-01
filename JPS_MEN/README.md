@@ -23,6 +23,7 @@
 
 ### TODO: 
  - [x] Finish backup of visualization
+ - [ ] Once MEN fails, the other resources can't be accessed (i.e. once MEN stalls, I can't execute a call to Tomcat)
  - [ ] \(Optional) virtual environment for python
 
 ### What if the visualization isn't working?
