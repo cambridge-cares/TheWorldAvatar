@@ -27,12 +27,17 @@ public class SemakauPVCoordination extends JPSHttpServlet {
 			startSimulation(jo,response);
 		
 	}
-	
+	/** Main method coordinating both DES project and JPS Semakau Project
+	 * 
+	 * @param jo {"electricalnetwork":, "irradiation sensor"}
+	 * @param response
+	 * @throws IOException
+	 */
 	public void startSimulation(JSONObject jo,HttpServletResponse response) throws IOException {
 		
 		logger.info("starting the PV calling ");
 		
-		//retrofit the generator of solar
+		//Collects Irradiation, wind and temperature data via JPS_DES
 		logger.info("sent to the IrradiationandWeather= "+jo.toString());
 		String result1= AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString()); //sensorirradiri
 	

@@ -234,6 +234,9 @@ public class TestMarketPackage extends TestCase {
 		assertEquals(marketdataMeoh.get("arrayHeader")[0], "MeOH");
 
 	}
+	/** the direct calling method of the above agent function. 
+	 * 
+	 */
 	public void testretrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase() {
 		String value = "V_Price_Storage_NaturalGas_001,V_Price_CoolingWater_001,V_Price_Storage_Methanol_001,V_Price_Electricity_001,V_Price_Transport_SG-SC_Methanol_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_FuelGas_001";
 		Gson g = new Gson();
