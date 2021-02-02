@@ -2,6 +2,7 @@ import json
 
 from flask import Flask, request
 from flask import render_template
+from flask_cors import CORS
 from flask_socketio import SocketIO, send, emit
 import sys, os
 sys.path.insert(0, os.path.realpath(os.path.dirname(__file__)))
@@ -10,6 +11,7 @@ sys.path.append('/source')
 
 
 app = Flask(__name__)
+CORS(app)
 socketio = SocketIO(app)
 
 # @socketio.on('message')

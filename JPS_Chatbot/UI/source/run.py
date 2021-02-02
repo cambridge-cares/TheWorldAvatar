@@ -8,11 +8,13 @@ from pprint import pprint
 
 from flask import Flask, request
 from flask import render_template, send_from_directory
+from flask_cors import CORS
 from flask_socketio import SocketIO, send, emit
 from functools import lru_cache
 sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 sys.path.append('/source')
 app = Flask(__name__)
+CORS(app)
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
 

@@ -1,1 +1,0 @@
-docker run -d -p 5000:5000 --expose 5000 -it deploy:run bash -c "cd JParkSimulator-git/JPS_Chatbot/UI/source && python -m flask run --host=0.0.0.0"
