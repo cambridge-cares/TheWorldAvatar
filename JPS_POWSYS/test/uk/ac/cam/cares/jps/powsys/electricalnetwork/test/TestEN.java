@@ -489,6 +489,7 @@ public class TestEN extends TestCase {
 		//System.out.println(rList5.size());
 		//System.out.println(rList6.size());
 		assertEquals(rList5.size(), rList6.size());
+		
 	}
 	
 	public void testStartSimulationOPFDirectCallBaseScenario() throws IOException  {			
