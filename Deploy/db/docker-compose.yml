@@ -1,0 +1,66 @@
+version: "3.8"
+services:
+  blazegraph:
+    build: ./blazegraph
+    container_name: blazegraph
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    image: worldavatar/blazegraph
+    ports:
+      - "8889:8080"
+    restart: unless-stopped
+    secrets:
+      - blazegraph_password
+    volumes:
+      - blazegraph_data:/data
+  portainer:
+    container_name: portainer
+    image: portainer/portainer
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+  rdf4j:
+    build: ./rdf4j
+    container_name: rdf4j
+    environment:
+      RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
+      RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
+    image: worldavatar/rdf4j
+    ports:
+      - "8888:8080"
+    restart: unless-stopped
+    secrets:
+      - rdf4j_admin_password
+      - rdf4j_user_password
+    volumes:
+      - rdf4j_data:/var/rdf4j
+      - rdf4j_logs:/usr/local/tomcat/logs 
+
+networks:
+  default:
+    name: db
+
+secrets:
+  blazegraph_password:
+    file: blazegraph/secrets/blazegraph_password
+  rdf4j_admin_password:
+    file: rdf4j/secrets/rdf4j_admin_password
+  rdf4j_user_password:
+    file: rdf4j/secrets/rdf4j_user_password
+
+volumes:
+  blazegraph_data:
+    name: "blazegraph_data"
+    external: true
+  portainer_data:
+    name: "portainer_data"
+    external: true
+  rdf4j_data:
+    name: "rdf4j_data"
+    external: true
+  rdf4j_logs:
+    name: "rdf4j_logs"
+    external: true
