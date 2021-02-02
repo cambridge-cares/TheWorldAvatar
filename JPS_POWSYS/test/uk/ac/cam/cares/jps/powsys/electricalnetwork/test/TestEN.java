@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,6 +29,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 
 
@@ -434,6 +436,17 @@ public class TestEN extends TestCase {
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
 		System.out.println(resultStart);
 	}
+	
+	//This function is added to be used by the unit test below (JA-Tests check number of columns)
+	//This function reads the number of lines in a file (csv compatible) 
+	public List<String[]> readResult(String baseUrl,String filename) throws IOException {
+
+        String outputFile = baseUrl + "/"+filename;
+        String csv = new QueryBroker().readFileLocal(outputFile);
+        List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
+		
+		return simulationResult;
+	}
 		
 	public void testStartSimulationOPFDirectCallNonBaseScenario() throws IOException  {
 
@@ -447,6 +460,35 @@ public class TestEN extends TestCase {
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
 		JSONObject x=new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
 		System.out.println(x.toString());
+		
+		//JA-TESTS 2/02/2021 PyPower Checks
+		//Check that the output files are made (branch, bus, gen - in that order below). 
+		File file1 = new File(baseUrl +"\\outputBranchOPF.txt");
+		assertTrue(file1.exists());
+		File file2 = new File(baseUrl +"\\outputBusOPF.txt");
+		assertTrue(file2.exists());
+		File file3 = new File(baseUrl +"\\outputGenOPF.txt");
+		assertTrue(file3.exists());
+		
+		//Check the number of rows are the same for the inputs and outputs
+		//Check Branch In and Out rows are the same length
+		List<String[]> rList1 = readResult(baseUrl, "branch.txt"); 
+		List<String[]> rList2 = readResult(baseUrl, "outputBranchOPF.txt");
+		//System.out.println(rList1.size());
+		//System.out.println(rList2.size());
+		assertEquals(rList1.size(), rList2.size());
+		//Check Bus In and Out rows are the same length
+		List<String[]> rList3 = readResult(baseUrl, "bus.txt"); 
+		List<String[]> rList4 = readResult(baseUrl, "outputBusOPF.txt");
+		//System.out.println(rList3.size());
+		//System.out.println(rList4.size());
+		assertEquals(rList3.size(), rList4.size());
+		//Check Gen In and Out rows are the same length
+		List<String[]> rList5 = readResult(baseUrl, "Gen.txt"); 
+		List<String[]> rList6 = readResult(baseUrl, "outputGenOPF.txt");
+		//System.out.println(rList5.size());
+		//System.out.println(rList6.size());
+		assertEquals(rList5.size(), rList6.size());
 	}
 	
 	public void testStartSimulationOPFDirectCallBaseScenario() throws IOException  {			
