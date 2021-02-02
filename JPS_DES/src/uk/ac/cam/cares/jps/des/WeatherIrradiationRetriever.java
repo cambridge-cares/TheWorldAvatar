@@ -22,7 +22,6 @@ import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 @WebServlet(urlPatterns = {"/GetIrradiationandWeatherData" })
 public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	private static final long serialVersionUID = 1L;
-	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
 	@Override 
 	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 		String baseUrl = requestParams.optString("folder", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
@@ -47,7 +46,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		//TODO: I can't figure out how to get this to run without having to copy over a file to create
 		//the location within this folder. If I leave the line below commented
 		// the folder isn't created, and I get an error. 
-		new DistributedEnergySystem().copyFromPython(folder, "ocrv1.py");
+		new DESAgentNew().copyFromPython(folder, "ocrv1.py");
 		String res =  new DESAgentNew().runPythonScript("ocrv1.py",folder);
 
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");

@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.des.n;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -198,6 +199,19 @@ public class DESAgentNew extends JPSHttpServlet {
 
 		    }
 		new QueryBroker().putLocal(baseUrl +"/timer.csv", sj1.toString());
+	}
+	/** copy the file from workingdir and place it in folder
+	 * used because when I tried to run it without copying
+	 * 
+	 * 
+	 * @param baseUrl
+	 * @param filename
+	 */
+	public void copyFromPython(String baseUrl, String filename) {
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/python/" + filename);
+
+		String destinationUrl = baseUrl + "/" + filename;
+		new QueryBroker().putLocal(destinationUrl, file);
 	}
     
 }

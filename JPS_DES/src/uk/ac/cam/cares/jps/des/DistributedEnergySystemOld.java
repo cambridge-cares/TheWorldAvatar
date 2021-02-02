@@ -41,7 +41,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 /** Old method for DES; no longer used. 
  * Wrapper for the python agent and displaying the result
  */
-public class DistributedEnergySystem extends JPSHttpServlet {
+public class DistributedEnergySystemOld extends JPSHttpServlet {
 	public static final String SIM_START_PATH = "/DESAgent";
 	public static String schedule="ApplianceScheduleLoad1.csv";
 	
@@ -57,13 +57,13 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 	
     @Override
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(DistributedEnergySystem.class);
+        logger = LoggerFactory.getLogger(DistributedEnergySystemOld.class);
         super.doHttpJPS(request, response);
     }
 
     @Override
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(DistributedEnergySystem.class);
+        logger = LoggerFactory.getLogger(DistributedEnergySystemOld.class);
         super.doHttpJPS(request, response, reqBody);
     }
 

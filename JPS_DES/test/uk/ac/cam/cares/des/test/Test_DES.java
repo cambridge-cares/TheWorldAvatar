@@ -1,26 +1,9 @@
 package uk.ac.cam.cares.des.test;
 
-import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.json.JSONObject;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.response.EthGetBalance;
-import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.Transfer;
-import org.web3j.utils.Convert;
-
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.FrontEndCoordination;
@@ -73,45 +56,6 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
-	/**
-	 * Calls and runs the Blockchain transaction with test values
-	 */
-	public void testBlockchainWrapperDirectCall() throws IOException{
-		JSONObject jo = new JSONObject();
-		jo.put("industrial", "2.311116263469459966e+01");
-		jo.put("commercial", "5.000000000000000000e+01");
-		jo.put("residential","8.826121920185781278e+00");
-		jo.put("gridsupply","4.409266691007480290e+01");
-		jo.put("solar","3.784461764480557235e+01");
-		System.out.println(new BlockchainWrapper().calculateTrade(jo));
-	}
-	/** calls the last modified directory linked with Service__DES
-	 * 
-	 */
-	public String getLastModifiedDirectory() {
-    	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
-		List<String> lst = null;
-    	System.out.println(lst);
-    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
-		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
-		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
-    	return listmap.get(0)[0];
-    }
-	/**
-	 * Calls and runs the Blockchain transaction with test values (thru TOMCAT)
-	 */
-	public void testBlockchainWrapperAgentCall() throws IOException{
-		JSONObject jo = new JSONObject();
-		jo.put("industrial", "2.311116263469459966e+01");
-		jo.put("commercial", "5.000000000000000000e+01");
-		jo.put("residential","8.826121920185781278e+00");
-		jo.put("gridsupply","4.409266691007480290e+01");
-		jo.put("solar","3.784461764480557235e+01");
-		jo.put("directory",getLastModifiedDirectory());
-	    System.out.println(jo.toString());
-		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
-		System.out.println(v);
-	}
 	
 
 	/**
@@ -145,39 +89,37 @@ public class Test_DES extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 		System.out.println(resultStart);
 	}
+	/**
+	 * Calls and runs the Blockchain transaction directly
+	 */
+	public void testBlockchainWrapperDirectCall() throws IOException{
+		JSONObject jo = new JSONObject();
+		jo.put("industrial", "2.311116263469459966e+01");
+		jo.put("commercial", "5.000000000000000000e+01");
+		jo.put("residential","8.826121920185781278e+00");
+		jo.put("gridsupply","4.409266691007480290e+01");
+		jo.put("solar","3.784461764480557235e+01");
+		System.out.println(new BlockchainWrapper().calculateTrade(jo));
+	}
 
 	/**
-	 * Finds the latest directory, as part of the coordinate agent. 
+	 * Calls and runs the Blockchain transaction using Agent
 	 */
-	public void testfindlatestdirectory() {
-		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
-		 File baseUrl=new File(dir);
-		System.out.println("date latest directory= "+ new FrontEndCoordination().getLastModifiedDirectory());
+	public void testBlockchainWrapperAgentCall() throws IOException{
+		JSONObject jo = new JSONObject();
+		jo.put("industrial", "2.311116263469459966e+01");
+		jo.put("commercial", "5.000000000000000000e+01");
+		jo.put("residential","8.826121920185781278e+00");
+		jo.put("gridsupply","4.409266691007480290e+01");
+		jo.put("solar","3.784461764480557235e+01");
+		jo.put("directory",new FrontEndCoordination().getLastModifiedDirectory());
+	    System.out.println(jo.toString());
+		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
+		System.out.println(v);
 	}
-	/** test BlockchainWrapper directly
-	 * 
-	 * @throws IOException
-	 */
-	public static void testBlockchainInteraction() throws IOException {
-		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
-		Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
-		String clientVersion = web3ClientVersion.getWeb3ClientVersion();
-		System.out.println("Connected to Ethereum Client Version: " + clientVersion);
-		try {
-			//Get balance
-			EthGetBalance ethGetBalance=web3.ethGetBalance("0x1eD35d5845F8162B40df26c34562cFabd4892017", DefaultBlockParameterName.LATEST).sendAsync().get();
-			java.math.BigInteger wei = ethGetBalance.getBalance();
-			System.out.println(wei);
-			Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\Users\\LONG01\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\residential.json");
-			TransactionReceipt transactionReceipt = Transfer.sendFunds(
-			        web3, credentials, "0x9e64A50EfA603BCD127001b689635fca4669ba9d",
-			        BigDecimal.valueOf(1.0), Convert.Unit.ETHER).send();
-			System.out.println(transactionReceipt);
-		}catch (Exception ex) {
-			System.out.println(ex);
-		}
 	
-	}
+
+	
 
 	
 	

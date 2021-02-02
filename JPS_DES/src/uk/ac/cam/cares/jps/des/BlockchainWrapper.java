@@ -49,7 +49,6 @@ public class BlockchainWrapper extends JPSHttpServlet{
 			
 		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return graData;
@@ -100,7 +99,6 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		for (int i = 0; i< tim.length; i++) {
 			Date date1;
 				date1 = sdf.parse(tim[i]);
-				// TODO Auto-generated catch block
 			long difference = date2.getTime() - date1.getTime();
 			difference = difference/60000;
 			if (difference < 29) {

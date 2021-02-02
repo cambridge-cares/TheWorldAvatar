@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.des;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
@@ -13,81 +12,64 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns = {"/GetForecastData" })
-public class ForecastAgent extends JPSHttpServlet{
+public class ForecastAgent extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	private static String SolCastURL= "https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN";
 	private static String AccuWeatherURL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true";
-	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse res) {
-		JSONObject jo = AgentCaller.readJsonParameter(request);
-
-		String baseUrl = jo.optString("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
-		
-		JSONObject result=new JSONObject();
+	@Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+		validateInput(requestParams);
 		try {
 			forecastNextDay();
-//			result = forecastNextDay(baseUrl);
-//			readandwriteToFile(baseUrl);
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		AgentCaller.printToResponse(jo, res);
- 	
-	}
-	/** Runs python script and reads to JSON file. Rewriting in Java afterwards
+    	return requestParams;
+    }
+
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    	validateInput(requestParams);
+    	try {
+			forecastNextDay();
+		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return requestParams;
+    }
+	/** No validation of input here as requestParams is not needed. 
 	 * 
-	 * @param folder in which python files are stored. 
-	 * @return
-	 * @throws InterruptedException
-	 * @throws FileNotFoundException
 	 */
-	private JSONObject forecastNextDayOld(String folder) throws InterruptedException, FileNotFoundException{
-		new DistributedEnergySystem().copyFromPython(folder, "runpyforecast.bat");
-		new DistributedEnergySystem().copyFromPython(folder,"scrapy.py");
-		String startbatCommand =folder+"/runpyforecast.bat";
-		System.out.println(startbatCommand);
-		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
-		String jsonres=new QueryBroker().readFileLocal(folder+"/WeatherForecast.json");
-		//WeatherForecast.json may not be created if we run more than 10 times a day. 
-		JSONObject current= new JSONObject(jsonres);
-		return current;
-	}
-	/** read from csv and transform to List<String> to be converted to OWL file through WeatherTImeStampKB
-	 * 
-	 * @param folder file in which csv is stored. 
-	 * @throws Exception
-	 */
-	private static void readandwriteToFileOld(String folder) throws Exception { //initializing the forecast sensors. 
-		String csv=new QueryBroker().readFileLocal(folder+"/WeatherForecast.csv");
-		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
-		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		WeatherTimeStampKB converter = new WeatherTimeStampKB();
-		converter.startConversionForecast(readingFromCSV,"temperature", 4);
-		converter.startConversionForecast(readingFromCSV,"irradiation", 6);
-		converter.startConversionForecast(readingFromCSV,"windspeed", 8);
-	}
-	/**
-	 * 
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        return true;
+    }
+	/** use this method to 'GET' the results. 
+	 * 	the current AgentCaller.getRequestBody doesn't work because
+	 * 	it doesn't check for if HTTPUrlConnection is ok
 	 * @param url String of API
 	 * @return
 	 * @throws IOException
@@ -109,6 +91,7 @@ public class ForecastAgent extends JPSHttpServlet{
 		 return response.toString();
 	    }else {
 	    	throw new ConnectException("Request to "+ url + "failed; try again later. ");
+	    	
 	    }
 	}
 	
@@ -170,12 +153,12 @@ public class ForecastAgent extends JPSHttpServlet{
 	 static public String addOneDay(LocalDate date) {
 		    return date.plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		  }
-	 /** creates a list of times to be saved to OWL file
+	 /** creates a list of times to be saved to OWL file in OWL format
 	  * 
 	  * @return
 	  * @throws Exception
 	  */
-	public static ArrayList<String[]> createTimer() throws Exception {
+	public static ArrayList<String[]> createTimer() {
 		Date date = new Date();
 		Calendar calendar = GregorianCalendar.getInstance();
 		calendar.setTime(date);
@@ -200,35 +183,68 @@ public class ForecastAgent extends JPSHttpServlet{
 	 * 
 	 * @throws Exception
 	 */
-	public void forecastNextDay() throws Exception {
-		ArrayList<ArrayList<String>> accuArray = AccuRequest();
-		ArrayList<ArrayList<String>> solArray = SolCastRequest(); 
-		ArrayList<String[]> readingFromCSV = new ArrayList<String[]>(); 
-		//mash the two together
-		ArrayList<String[]> datetime = createTimer();
-		for (int i = 0; i<accuArray.size(); i++) {
-			ArrayList<String> ji =  solArray.get(i);
-			ji.set(0, accuArray.get(i).get(0));//set temperature
-			ji.add(accuArray.get(i).get(1));//set windspeed
-			ji.add(datetime.get(i)[0]);
-			ji.add(datetime.get(i)[1]);
-			String[] stringArray = ji.toArray(new String[0]);
-			readingFromCSV.add(stringArray);
+	public void forecastNextDay() throws Exception{
+		ArrayList<ArrayList<String>> accuArray, solArray ; 
+		try {
+			accuArray = AccuRequest();
+			solArray = SolCastRequest(); 
+		
+			ArrayList<String[]> readingFromCSV = new ArrayList<String[]>(); 
+			//mash the two together
+			ArrayList<String[]> datetime = createTimer();
+			for (int i = 0; i<accuArray.size(); i++) {
+				ArrayList<String> ji =  solArray.get(i);
+				ji.set(0, accuArray.get(i).get(0));//set temperature
+				ji.add(accuArray.get(i).get(1));//set windspeed
+				ji.add(datetime.get(i)[0]);
+				ji.add(datetime.get(i)[1]);
+				String[] stringArray = ji.toArray(new String[0]);
+				readingFromCSV.add(stringArray);
+			}
+			for (int i = 12; i < solArray.size(); i++) { //no windspeed, place in zero.
+				ArrayList<String> ji =  solArray.get(i); 
+				ji.add("0.0");
+				ji.add(datetime.get(i)[0]);
+				ji.add(datetime.get(i)[1]);
+				String[] stringArray = ji.toArray(new String[0]);
+				readingFromCSV.add(stringArray);
+			}
+			WeatherTimeStampKB converter = new WeatherTimeStampKB();
+			converter.startConversionForecast(readingFromCSV,"temperature", 0);
+			converter.startConversionForecast(readingFromCSV,"irradiation", 1);
+			converter.startConversionForecast(readingFromCSV,"windspeed", 2);
+		}catch (IOException e) {
+			//if either accuArray and solArray doesn't work, copy sample file
+			String path= AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\WeatherForecast";
+
+			List<String[]> readingFromCSV = readResult(path);
+			Date date = new Date();   // given date
+			Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+			calendar.setTime(date);   // assigns calendar to given date 
+			int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+			Collections.rotate(readingFromCSV,(24-h)); //rotate by number of hours
+			WeatherTimeStampKB converter = new WeatherTimeStampKB();
+			converter.startConversionForecast(readingFromCSV,"temperature", 0);
+			converter.startConversionForecast(readingFromCSV,"irradiation", 1);
+				        
+			e.printStackTrace();
 		}
-		for (int i = 12; i < solArray.size(); i++) { //no windspeed, place in zero.
-			ArrayList<String> ji =  solArray.get(i); 
-			ji.add("0.0");
-			ji.add(datetime.get(i)[0]);
-			ji.add(datetime.get(i)[1]);
-			String[] stringArray = ji.toArray(new String[0]);
-			readingFromCSV.add(stringArray);
-		}
-		WeatherTimeStampKB converter = new WeatherTimeStampKB();
-		converter.startConversionForecast(readingFromCSV,"temperature", 0);
-		converter.startConversionForecast(readingFromCSV,"irradiation", 1);
-		converter.startConversionForecast(readingFromCSV,"windspeed", 2);
-	}
 	
+	}
+	/** reads the result from the csv file produced and returns as List<String[]>
+	 * 
+	 * @param baseUrl String
+	 * @param filename name of the file. 
+	 * @return
+	 * @throws IOException
+	 */
+	public List<String[]> readResult(String fil) throws IOException {
+
+        String csv = new QueryBroker().readFileLocal(fil);
+        List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
+		
+		return simulationResult;
+	}
 	
 	
 }

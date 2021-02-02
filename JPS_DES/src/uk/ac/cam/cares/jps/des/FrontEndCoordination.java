@@ -27,19 +27,17 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 public class FrontEndCoordination extends JPSHttpServlet{
 
 	private static final long serialVersionUID = 1L;
-	private String cityiri = null;
 
 	@Override
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(DistributedEnergySystem.class);
+        logger = LoggerFactory.getLogger(FrontEndCoordination.class);
         super.doHttpJPS(request, response);
     }
 
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	 	JSONObject responseParams = requestParams;
-	    	cityiri = responseParams.optString("cityIRI", "http://dbpedia.org/page/Singapore");
-			String directorychosen= getLastModifiedDirectory();
+	    	String directorychosen= getLastModifiedDirectory();
 	    	logger.info("latest directory= "+directorychosen);
 	    	JSONObject jo = new JSONObject();
 	    	jo.put("directory", directorychosen);
