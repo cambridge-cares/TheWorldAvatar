@@ -36,6 +36,13 @@ public class InputValidator {
 			}
 		return !f;
 		}
-	
-	
+	/** check if file exists in computer
+	 * Can't be used if the directory is not established (aka created)
+	 * @param iri
+	 * @return
+	 */
+	public static boolean checkIfValidFile(String filePath) {
+		File file = new File(filePath);
+		return file.exists();
+	}
 }

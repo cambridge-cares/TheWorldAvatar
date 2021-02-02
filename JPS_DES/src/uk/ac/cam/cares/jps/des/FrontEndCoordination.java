@@ -40,7 +40,7 @@ public class FrontEndCoordination extends JPSHttpServlet{
 	    	String directorychosen= getLastModifiedDirectory();
 	    	logger.info("latest directory= "+directorychosen);
 	    	JSONObject jo = new JSONObject();
-	    	jo.put("directory", directorychosen);
+	    	jo.put("baseUrl", directorychosen);
  			String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
  			System.gc();
  			responseParams = new JSONObject(v);

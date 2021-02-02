@@ -36,14 +36,14 @@ public class DESAgentNew extends JPSAgent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public String cityIRI;
-	public static String producerdata="PV_parameters.csv";
-	public static String consumerdata1="FuelCell.csv";
-	public static String Pmin="Pmin.csv";
-	public static String Pmax="Pmax.csv";
-	public static String bcap="bcap.csv";
-	public static String unwill="unwill.csv";
-	public static String schedule="ApplianceScheduleLoad1.csv";
+	private String cityIRI;
+	private static String producerdata="PV_parameters.csv";
+	private static String consumerdata1="FuelCell.csv";
+	private static String Pmin="Pmin.csv";
+	private static String Pmax="Pmax.csv";
+	private static String bcap="bcap.csv";
+	private static String unwill="unwill.csv";
+	private static String schedule="ApplianceScheduleLoad1.csv";
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {

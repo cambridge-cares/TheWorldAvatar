@@ -33,17 +33,10 @@ public class ForecastAgent extends JPSAgent{
 	private static String SolCastURL= "https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN";
 	private static String AccuWeatherURL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true";
 	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-		validateInput(requestParams);
-		try {
-			forecastNextDay();
-		
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	return requestParams;
-    }
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -57,16 +50,7 @@ public class ForecastAgent extends JPSAgent{
 		}
     	return requestParams;
     }
-	/** No validation of input here as requestParams is not needed. 
-	 * 
-	 */
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (requestParams.isEmpty()) {
-            throw new BadRequestException();
-        }
-        return true;
-    }
+	
 	/** use this method to 'GET' the results. 
 	 * 	the current AgentCaller.getRequestBody doesn't work because
 	 * 	it doesn't check for if HTTPUrlConnection is ok

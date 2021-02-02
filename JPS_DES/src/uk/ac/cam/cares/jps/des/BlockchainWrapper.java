@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,23 +25,33 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns = {"/GetBlock" })
-public class BlockchainWrapper extends JPSHttpServlet{
+public class BlockchainWrapper extends JPSAgent{
 	private static String ElectricPublicKey = "0xCB37bDCAfb98463d5bfB573781f022Cd1D2EDB81";
 	private static String SolarPublicKey = "0xAf70f1C1D6B1c0C28cbDCa6b49217Aa6FA17b6A8";
 	private static String addrOfI = "industrial.json";
 	private static String addrOfC = "commercial.json";
 	private static String addrOfR = "residential.json";
 	private static final long serialVersionUID = 1L;
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+    }
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 
 		JSONObject result=new JSONObject();
 		JSONObject graData =new JSONObject();
-		graData = provideJSONResult(requestParams.getString("directory"));
+		graData = provideJSONResult(requestParams.getString("baseUrl"));
+
+		validateInput(requestParams);
 		JSONObject jo = determineValue (graData);
 		try {
 			result = calculateTrade(jo);
@@ -53,6 +64,15 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		}
 		return graData;
  
+	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        String filePath = requestParams.getString("baseUrl");
+        return InputValidator.checkIfValidFile(filePath);
+       
 	}
 	/** creates transaction between sender and receiver. 
 	 * 
