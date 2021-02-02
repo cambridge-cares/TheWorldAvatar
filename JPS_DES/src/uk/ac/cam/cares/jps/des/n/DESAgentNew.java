@@ -1,44 +1,41 @@
 package uk.ac.cam.cares.jps.des.n;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 import java.util.StringJoiner;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.sparql.core.Var;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.LoggerFactory;
-
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
+import uk.ac.cam.cares.jps.base.util.InputValidator;
+
+
 @WebServlet(urlPatterns = { "/DESAgentNew"})
 
-public class DESAgentNew extends JPSHttpServlet {
+public class DESAgentNew extends JPSAgent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public String cityIRI;
 	public static String producerdata="PV_parameters.csv";
 	public static String consumerdata1="FuelCell.csv";
@@ -47,20 +44,24 @@ public class DESAgentNew extends JPSHttpServlet {
 	public static String bcap="bcap.csv";
 	public static String unwill="unwill.csv";
 	public static String schedule="ApplianceScheduleLoad1.csv";
-    @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger( DESAgentNew.class);
-        super.doHttpJPS(request, response, reqBody);
-    }
-    protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+	
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	/** main Execution method for DESAgent
+	 * 
+	 */
+	@Override
+    public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	JSONObject responseParams = new JSONObject();	
-    	String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
-        String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
-        String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
-        String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
-        
-        cityIRI = requestParams.optString("cityIRI", "http://dbpedia.org/page/Singapore");
-        String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
+    	validateInput(requestParams);
+    	String iriofnetwork = requestParams.getString("electricalnetwork");
+        String iriofdistrict = requestParams.getString("district");
+        String irioftempF=requestParams.getString("temperatureforecast");
+        String iriofirrF=requestParams.getString("irradiationforecast");
+        String baseUrl = requestParams.getString("baseUrl"); //create unique uuid
         
         queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
         OntModel model = readModelGreedy(iriofnetwork);
@@ -73,14 +74,41 @@ public class DESAgentNew extends JPSHttpServlet {
 			String result = runPythonScript("system.py", baseUrl);
 			String agent = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
 			createTimer(baseUrl);
+			//TODO: This uses RDF4J metadata Annotator
 			MetaDataAnnotator.annotate(baseUrl, null, agent, true, null);
 
 			responseParams.put("result", result);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return responseParams;
+    }
+	
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("electricalnetwork");
+        boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
+
+        String iriofdistrict = requestParams.getString("district");
+        boolean w = InputValidator.checkIfValidIRI(iriofdistrict);
+        
+        String irioftempF=requestParams.getString("temperatureforecast");
+
+        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+        String iriofirrF=requestParams.getString("irradiationforecast");
+        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+        // Till now, there is no system independent to check if a file path is valid or not. 
+        
+        return q&w&e&r;
+        } catch (JSONException ex) {
+
+            return false;
+        }
+
     }
     /** Query OWL for Temperature and Radiation readings and place in csv file, return as List<String[]> of Temp followed by Irrad
      * 

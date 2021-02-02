@@ -1,10 +1,10 @@
 package uk.ac.cam.cares.jps.des.n;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -13,18 +13,22 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/IndustrialAgent"})
-public class IndustrialAgent extends JPSHttpServlet {
-
-	private JSONObject responseParams;
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+public class IndustrialAgent extends JPSAgent {
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
         String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
@@ -47,11 +51,28 @@ public class IndustrialAgent extends JPSHttpServlet {
 		}
 		return responseParams;
     }
+	/** uses Commercial Agent's validate Input method since they're 
+	 * using the same variables
+	 */
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        return new CommercialAgent().validateInput(requestParams);
+    }
+	/** submethod to call on Chemical and Fuel Cell constants
+	 * 
+	 * @param model
+	 * @param baseUrl
+	 */
 	public void queryForConstantsIndustrial(OntModel model, String baseUrl) {
 		queryForChemicalConstants(model, baseUrl);
         queryForFuelCellConstants(model, baseUrl);
         
 	}
+	/** Creates ElectrolyzerConstant.csv for IndustrialAgent to run 
+	 * 
+	 * @param model
+	 * @param baseUrl
+	 */
 	public void queryForChemicalConstants(OntModel model, String baseUrl) {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
@@ -79,6 +100,11 @@ public class IndustrialAgent extends JPSHttpServlet {
 		
 				
 	}
+	/** Creates FuelCell.csv for IndustrialAgent to run 
+	 * 
+	 * @param model
+	 * @param baseUrl
+	 */
 	public void queryForFuelCellConstants(OntModel model, String baseUrl) {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")

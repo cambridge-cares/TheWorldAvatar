@@ -6,32 +6,39 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
-import org.json.CDL;
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/CommercialAgent"})
-public class CommercialAgent extends JPSHttpServlet {
+public class CommercialAgent extends JPSAgent {
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
 	/** Main Function for processing Commercial Agent. 
 	 * Employs queryForWeather Forecast as well as building constants. 
 	 * @param requestParams
 	 * @param request
 	 * @return
 	 */
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	JSONObject responseParams = requestParams;	
         String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
@@ -52,6 +59,28 @@ public class CommercialAgent extends JPSHttpServlet {
 			ex.printStackTrace();
 		}
 		return responseParams;
+    }
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("electricalnetwork");
+        boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
+
+        String irioftempF=requestParams.getString("temperatureforecast");
+
+        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+        String iriofirrF=requestParams.getString("irradiationforecast");
+        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+        // Till now, there is no system independent to check if a file path is valid or not. 
+        
+        return q&e&r;
+        } catch (JSONException ex) {
+
+            return false;
+        }
     }
 	/** queries dynamically the Electrical network for Commercial Constants to be used by the Python
 	 * 

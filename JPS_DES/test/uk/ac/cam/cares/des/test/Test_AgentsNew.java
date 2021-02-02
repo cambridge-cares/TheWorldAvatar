@@ -5,9 +5,10 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.FrontEndCoordination;
-import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
@@ -15,12 +16,16 @@ import uk.ac.cam.cares.jps.des.n.ResidentialAgent;
 import uk.ac.cam.cares.jps.des.n.SolarAgent;
 
 public class Test_AgentsNew extends TestCase{
+	public String iriofnetworkdistrict =  "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
+	public String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
+    public String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
+    public String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
+	
 	/** tests if Residential Agent calls successfully. 
 	 * Residential Agent requires caresjpsutil library. 
 	 * 
 	 */
 	public void testResidentialAgent() {
-		String iriofnetworkdistrict =  "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 		new ResidentialAgent().extractResidentialData(iriofnetworkdistrict,"C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest");
 		try {
 			String result = new DESAgentNew().runPythonScript("residential.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest");
@@ -35,7 +40,8 @@ public class Test_AgentsNew extends TestCase{
 	 * dumps result in JPS Scenarios folder
 	 */
 	public void testResidentialAgentCaller() {
-		JSONObject jo = new JSONObject().put("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
+		JSONObject jo = new JSONObject()
+				.put("district",iriofnetworkdistrict);
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/ResidentialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
@@ -43,15 +49,14 @@ public class Test_AgentsNew extends TestCase{
 	 * 
 	 */
 	public void testCommercialAgent() {
-		String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
-	    String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
-	    String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial";
+		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial";
 	    new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
-		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 		OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
 		new CommercialAgent().queryForBuildingConstants(model, baseUrl);
         try {
-			String result = new DESAgentNew().runPythonScript("commercial.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial");
+			String result = new DESAgentNew()
+					.runPythonScript("commercial.py"
+							, baseUrl);
 			System.out.println(result);
 			assertNotNull(result);
 			}
@@ -63,9 +68,10 @@ public class Test_AgentsNew extends TestCase{
 	 * dumps result in JPS Scenarios folder
 	 */
 	public void testCommercialAgentCaller() {
-		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
-		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
-		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/CommercialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
@@ -75,10 +81,7 @@ public class Test_AgentsNew extends TestCase{
 	 */
 	public void testIndustrialAgent() {
 	    String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\industrial";
-		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
-		String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
-	    String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
-	    
+		 
 		new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
         
         OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
@@ -99,9 +102,10 @@ public class Test_AgentsNew extends TestCase{
 	 * dumps result in JPS Scenarios folder
 	 */
 	public void testIndustrialAgentCaller() {
-		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
-		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
-		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/IndustrialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
@@ -111,11 +115,7 @@ public class Test_AgentsNew extends TestCase{
 	 */
 	public void testSolarAgent() {
 		SolarAgent sa = new SolarAgent();
-		String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\solar";
-		String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
-	    String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
-	    
 		new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
         
 		OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
@@ -133,9 +133,10 @@ public class Test_AgentsNew extends TestCase{
 	 * dumps result in JPS Scenarios folder
 	 */
 	public void testSolarAgentCaller() {
-		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
-		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
-		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/SolarAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
@@ -145,16 +146,12 @@ public class Test_AgentsNew extends TestCase{
 	 */
 	public void testSystemAgent() {
 		try {
-			String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
-		    String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
-		    String iriofdistrict =  "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
-		    String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
-		    String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\Overall";
+			String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\Overall";
 			
 			new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
 			OntModel model = DESAgentNew.readModelGreedy(iriofnetwork);
 			new SolarAgent().provideGenlist(model, baseUrl); // create Parameters for Solar Cell
-			new ResidentialAgent().extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+			new ResidentialAgent().extractResidentialData(iriofnetworkdistrict, baseUrl); //csv for residential
 			new CommercialAgent().queryForBuildingConstants(model, baseUrl);;//csv for commercial
 			new IndustrialAgent().queryForConstantsIndustrial(model, baseUrl);;//csv for commercial
 			try {
@@ -175,9 +172,15 @@ public class Test_AgentsNew extends TestCase{
 	 * dumps result in JPS Scenarios folder
 	 */
 	public void testSystemAgentCaller() {
-		JSONObject jo = new JSONObject().put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
-		jo.put("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
-		jo.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
+		jo.put("district",iriofnetworkdistrict);
+	        
+		jo.put("cityIRI", "http://dbpedia.org/page/Singapore");
+	    jo.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
+	        
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", jo.toString());
 		assertNotNull(resultStart);
 		FrontEndTalk();
@@ -197,6 +200,42 @@ public class Test_AgentsNew extends TestCase{
 		System.out.println(jo.toString());
 		//TODO: later on, check value of data 
 		assertNotNull(jo);
+		
+	}
+	/** test if validateInput method is working in Commercial Agent
+	 * 
+	 */
+	public void testInputValidatorResidential() {
+		JSONObject jo = new JSONObject()
+				.put("district",iriofnetworkdistrict);
+		assertTrue(new ResidentialAgent().validateInput(jo));
+		
+		
+	}
+	/** test if validateInput method is working in Commercial Agent
+	 * 
+	 */
+	public void testInputValidatorCommercial() {
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		assertFalse(new CommercialAgent().validateInput(jo));
+		jo.put("irradiationforecast", iriofirrF);
+		assertTrue(new CommercialAgent().validateInput(jo));
+		
+		
+	}/** test if validateInput method is working in System Agent
+	 * 
+	 */
+	public void testInputValidatorSystem() {
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
+		assertFalse(new DESAgentNew().validateInput(jo));
+		jo.put("district",iriofnetworkdistrict);
+		assertTrue(new DESAgentNew().validateInput(jo));
+		
 		
 	}
 	
