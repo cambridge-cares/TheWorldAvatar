@@ -10,4 +10,6 @@ GasPipelineStart,Class,http://www.theworldavatar.com/ontology/ontocape/upper_lev
 GasPipelineEnd,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,IS-A,,,,GasPipelineEnd,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
 GasPipelineTube,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,IS-A,,,,GasPipelineTube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
 hasDiameter,Data Property,,,GasPipelineTube,String,,The diameter of gas pipeline,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
-hasName,Data Property,,,http://www.w3.org/2002/07/owl#Thing,String,,The name of anything,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
+hasObjectId,Data Property,,,GridPipeline,String,,The object id for each individual pipeline,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
+hasLatitude,Data Property,,,GridComponent,String,,"Geographical latitude of gird component, pipeline start, and pipeline end.",http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
+hasLongitude,Data Property,,,GridComponent,String,,"Geographical longitude of gird component, pipeline start, and pipeline end.",http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
