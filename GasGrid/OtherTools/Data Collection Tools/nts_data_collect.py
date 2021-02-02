@@ -139,6 +139,7 @@ def real_time_intakes():
 
         header = ['Zone Supply','Instananeous Flow (mcm/day)','Terminal Supply','Instananeous Flow (mcm/day)']
         print(tabulate(overall_df,headers=header,showindex="never"))
+        overall_df.to_excel('Intakedata.xlsx')
         for i in reversed(range(120)):
             print('TIME FOR NEXT UPDATE: ',i,' SECONDS',end='\r')
             time.sleep(1)
