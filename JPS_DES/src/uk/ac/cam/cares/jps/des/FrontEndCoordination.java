@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -24,18 +25,17 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns = { "/showDESResult"})
 
-public class FrontEndCoordination extends JPSHttpServlet{
+public class FrontEndCoordination  extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(FrontEndCoordination.class);
-        super.doHttpJPS(request, response);
-    }
-
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
     @Override
-    protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+    public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	 	JSONObject responseParams = requestParams;
 	    	String directorychosen= getLastModifiedDirectory();
 	    	logger.info("latest directory= "+directorychosen);

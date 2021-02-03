@@ -31,7 +31,8 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    requestParams = processRequestParameters(requestParams, null);
 	    return requestParams;
-	}@Override 
+	}
+	@Override 
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 
 		validateInput(requestParams);
@@ -41,7 +42,6 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	    	String iritempsensor=requestParams.getString("temperaturesensor");
 	    	String iriirradiationsensor=requestParams.getString("irradiationsensor");
 	    	String irispeedsensor=requestParams.getString("windspeedsensor");
-	    	System.out.println("tempsensor= "+iritempsensor);
 	    	readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
 
 			return requestParams;
