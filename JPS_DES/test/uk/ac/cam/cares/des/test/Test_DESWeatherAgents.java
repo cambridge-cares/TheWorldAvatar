@@ -1,17 +1,24 @@
 package uk.ac.cam.cares.des.test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import org.json.JSONObject;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
+import uk.ac.cam.cares.jps.des.ForecastAgent;
 import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 
-
-public class Test_DES extends TestCase{
+/** Note that forecast agents are disabled in response to restriction
+ * on number of solar calls
+ * 
+ * @author Laura Ong
+ */
+public class Test_DESWeatherAgents extends TestCase{
 	
 	private static String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
@@ -20,12 +27,33 @@ public class Test_DES extends TestCase{
     private String iriofirrS="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
     private String iriofwindS="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
     
+    
+
+	/** test if validateInput method is working in Forecast Agent
+	 * @throws IOException 
+	 * 
+	 */
+	public void testWeatherForecast() throws IOException {
+		ForecastAgent a = new ForecastAgent();
+		assertNotNull( ForecastAgent.GETReq(ENIRI));
+		ArrayList<ArrayList<String>>  result = ForecastAgent.AccuRequest();
+		assertNotNull(result.get(0).get(0));
+		System.out.println(result.get(0).get(0));
+		//Only enable this if the current test runs but Forecast Agent creates an error
+		//Because we have a limited number of API calls
+//		ArrayList<ArrayList<String>>  resultSun = ForecastAgent.SolCastRequest();
+//		assertNotNull(resultSun.get(0).get(0));
+		
+		
+		
+	}
 	/**
 	 * Periodic call to run the (Forecast+DESpython wrapper)
 	 * Every four hours, so six calls in a day this would be called
+	 * This test is disabled unless the entire process wants to be called. 
 	 * 
 	 */
-	public void testStartCoordinationDESScenariobase() throws IOException  {
+	public void xxtestStartCoordinationDESScenariobase() throws IOException  {
 		
 
 		JSONObject jo = new JSONObject();
@@ -37,9 +65,12 @@ public class Test_DES extends TestCase{
     	jo.put("windspeedsensor",iriofwindS);
 		
 		System.out.println(jo.toString());
+		//Disabling this because we don't want solcast to execute each time 
+		//We run a test
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESCoordination", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
+		
+//		System.out.println(resultStart);
+//		System.out.println("finished execute");
 
 	}
 	
@@ -101,14 +132,6 @@ public class Test_DES extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 		System.out.println(resultStart);
 	}
-	/** test if validateInput method is working in Blockchain
-	 * 
-	 */
-	public void testInputValidatorBlockchainWrapper() {
-		JSONObject jo = new JSONObject()
-				.put("baseUrl",new FrontEndCoordination().getLastModifiedDirectory());
-		assertTrue(new BlockchainWrapper().validateInput(jo));		
-	}
 	/**
 	 * Calls and runs the Blockchain transaction directly
 	 */
@@ -127,7 +150,7 @@ public class Test_DES extends TestCase{
 	 */
 	public void testBlockchainWrapperAgentCall() throws IOException{
 		JSONObject jo = new JSONObject();
-		jo.put("baseUrl",new FrontEndCoordination().getLastModifiedDirectory());
+		jo.put("baseUrl",new BlockchainWrapper().getLastModifiedDirectory());
 	    System.out.println(jo.toString());
 		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
 		System.out.println(v);

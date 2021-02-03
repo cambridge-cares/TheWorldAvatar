@@ -37,65 +37,15 @@ public class FrontEndCoordination  extends JPSAgent{
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	 	JSONObject responseParams = requestParams;
-	    	String directorychosen= getLastModifiedDirectory();
-	    	logger.info("latest directory= "+directorychosen);
-	    	JSONObject jo = new JSONObject();
-	    	jo.put("baseUrl", directorychosen);
- 			String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
+	    	String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", requestParams.toString());
  			System.gc();
  			responseParams = new JSONObject(v);
  	    		 
  			
     	return responseParams;
     }
-    /**
-     * Gets the latest file created using rdf4j
-     * @return last created file
-     */
-    public String getLastModifiedDirectory() {
-    	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
-		List<String> lst = null;
-    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
-		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
-		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
-    	return listmap.get(0)[0];
-    }
-
+   
     
-    /*
-     * Gets the latest file without using rdf4j. Needs to input the string location of the base folder
-     */
-    public static String getLastModifiedDirectoryOld(File directory) {
-		File[] files = directory.listFiles();
-		if (files.length == 0)
-			return directory.getAbsolutePath();
-		Arrays.sort(files, new Comparator<File>() {
-			public int compare(File o1, File o2) {
-				return new Long(o2.lastModified()).compareTo(o1.lastModified()); // latest 1st
-			}
-		});
-		File filechosen = new File("");
 
-		outerloop: for (File file : files) {
-			String[] x = file.list();
-			if (x[0].contentEquals("JPS_DES")) {
-				File[] childfile = file.listFiles();
-				for (File filex : childfile) {
-					String[] y = filex.list();
-					List<String> list = Arrays.asList(y);
-
-					// System.out.println("size= "+list.size()+" ,listcontent= "+list.get(0));
-					if (list.contains("totgen.csv") && list.contains("rh1.csv")) {
-						filechosen = file;
-						break outerloop;
-					}
-					// System.out.println("directory last date="+file.lastModified());
-
-				}
-				// break;
-			}
-		}
-		return filechosen.getAbsolutePath() + "/JPS_DES";
-	}
     
 }

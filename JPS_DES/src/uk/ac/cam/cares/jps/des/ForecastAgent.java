@@ -134,7 +134,7 @@ public class ForecastAgent extends JPSAgent{
 	 * @param date
 	 * @return
 	 */
-	 static public String addOneDay(LocalDate date) {
+	 public static String addOneDay(LocalDate date) {
 		    return date.plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		  }
 	 /** creates a list of times to be saved to OWL file in OWL format

@@ -26,7 +26,9 @@ import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
@@ -49,9 +51,8 @@ public class BlockchainWrapper extends JPSAgent{
 
 		JSONObject result=new JSONObject();
 		JSONObject graData =new JSONObject();
-		graData = provideJSONResult(requestParams.getString("baseUrl"));
+		graData = provideJSONResult(getLastModifiedDirectory());
 
-		validateInput(requestParams);
 		JSONObject jo = determineValue (graData);
 		try {
 			result = calculateTrade(jo);
@@ -65,15 +66,20 @@ public class BlockchainWrapper extends JPSAgent{
 		return graData;
  
 	}
-	@Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (requestParams.isEmpty()) {
-            throw new BadRequestException();
-        }
-        String filePath = requestParams.getString("baseUrl");
-        return InputValidator.checkIfValidFile(filePath);
-       
-	}
+	 /**
+     * Gets the latest file created using rdf4j
+     * @return last created file
+     */
+    public String getLastModifiedDirectory() {
+    	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
+		List<String> lst = null;
+    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
+		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
+		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
+    	return listmap.get(0)[0];
+    }
+
+	
 	/** creates transaction between sender and receiver. 
 	 * 
 	 * @param sender String address of Ethereum account
@@ -102,7 +108,7 @@ public class BlockchainWrapper extends JPSAgent{
     
 	/**
 	 * Derive and estimate the values to be transacted over the blockchain, to the closest half an hour. 
-     *
+     * calculates the power consumption for either the next hour or the current hour
 	 * @param basefold
 	 * @return
 	 * @throws JSONException
@@ -139,8 +145,7 @@ public class BlockchainWrapper extends JPSAgent{
 
 		return jo;
     }
-	/**
-     * helper function to determineValue()s
+	/** helper function to determineValue()s
 	 * 
 	 * @param index
 	 * @param inbetween
@@ -166,7 +171,14 @@ public class BlockchainWrapper extends JPSAgent{
         }
         return jo;
     }
-	public JSONObject calculateTrade(JSONObject jo) {
+	/** parse values of solar, grid supply for that hour, and 
+	 * sends value to doTransact to create Transaction as well as 
+	 * determineValue() to check the value in terms of Ether
+	 * 
+	 * @param jo
+	 * @return
+	 */
+    public JSONObject calculateTrade(JSONObject jo) {
 		double totalsolar = Double.parseDouble((String) jo.get("solar"));
 		double totalelectric =Double.parseDouble((String) jo.get("gridsupply"));
 		double totalindus = Double.parseDouble((String)jo.get("industrial"));

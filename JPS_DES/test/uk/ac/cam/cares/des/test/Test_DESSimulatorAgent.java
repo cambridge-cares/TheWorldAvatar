@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
 import uk.ac.cam.cares.jps.des.n.ResidentialAgent;
 import uk.ac.cam.cares.jps.des.n.SolarAgent;
 
-public class Test_AgentsNew extends TestCase{
+public class Test_DESSimulatorAgent extends TestCase{
 	private String iriofnetworkdistrict =  "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 	private String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
 	private String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
@@ -189,11 +189,10 @@ public class Test_AgentsNew extends TestCase{
 	 * 
 	 */
 	public void FrontEndTalk() {
-		FrontEndCoordination fec = new FrontEndCoordination();
-		//looks for last created directory through the Metadata Query
-		String directorychosen= fec.getLastModifiedDirectory();
-		System.out.println(directorychosen);
 		BlockchainWrapper bc = new BlockchainWrapper();
+		//looks for last created directory through the Metadata Query
+		String directorychosen= bc.getLastModifiedDirectory();
+		System.out.println(directorychosen);
 		//looks for the data according to the csvs stored
 		JSONObject graData  = bc.provideJSONResult(directorychosen);
 		JSONObject jo = bc.determineValue (graData);
