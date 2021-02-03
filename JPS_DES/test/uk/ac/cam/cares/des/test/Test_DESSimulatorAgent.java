@@ -218,7 +218,6 @@ public class Test_DESSimulatorAgent extends TestCase{
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", iriofnetwork);
 		jo.put("temperatureforecast", irioftempF);
-		assertFalse(new CommercialAgent().validateInput(jo));
 		jo.put("irradiationforecast", iriofirrF);
 		assertTrue(new CommercialAgent().validateInput(jo));
 		
@@ -231,7 +230,6 @@ public class Test_DESSimulatorAgent extends TestCase{
 				.put("electricalnetwork", iriofnetwork);
 		jo.put("temperatureforecast", irioftempF);
 		jo.put("irradiationforecast", iriofirrF);
-		assertFalse(new DESAgentNew().validateInput(jo));
 		jo.put("district",iriofnetworkdistrict);
 		assertTrue(new DESAgentNew().validateInput(jo));
 		

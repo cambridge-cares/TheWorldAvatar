@@ -86,7 +86,6 @@ public class Test_DESWeatherAgents extends TestCase{
 				.put("electricalnetwork", ENIRI);
 		jo.put("windspeedsensor", iriofwindS);
 		jo.put("temperaturesensor", irioftempS);
-		assertFalse(new WeatherIrradiationRetriever().validateInput(jo));
 		jo.put("irradiationsensor", iriofirrS);
 		assertTrue(new WeatherIrradiationRetriever().validateInput(jo));
 		
@@ -126,6 +125,11 @@ public class Test_DESWeatherAgents extends TestCase{
 
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 		System.out.println(resultStart);
+		JSONObject v = new JSONObject(resultStart);
+		assertNotNull(v.get("windspeedsensor"));
+		assertNotNull(v.get("baseUrl"));
+		assertTrue(InputValidator.checkIfValidIRI(v.getString("windspeedsensor")));
+		assertTrue(InputValidator.checkIfValidFile(v.getString("baseUrl")));
 	}
 	/**
 	 * Calls and runs the Blockchain transaction directly
