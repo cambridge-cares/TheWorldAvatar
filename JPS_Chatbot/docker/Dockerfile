@@ -10,7 +10,6 @@
 # The following stages are included:
 # 
 #	production			Required software only
-# 	development			Development tools (nano, firefox)
 #
 # NOTE: the below files are required to be in the same
 # directory as this file before execution (these files
