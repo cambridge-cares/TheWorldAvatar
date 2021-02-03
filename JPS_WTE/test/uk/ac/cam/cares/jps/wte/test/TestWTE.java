@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.JSONStringer;
 
 import junit.framework.TestCase;
@@ -129,11 +130,24 @@ public class TestWTE extends TestCase {
 				.key("n_cluster").value("40")
 				.endObject().toString();
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/startsimulationCoordinationWTE", json);
-		
+		assertNotNull(new JSONObject(result).getString("n_cluster"));
 		System.out.println(result);
 		
 	}
-	
+	/** checks input to see if user input was valid
+	 * 
+	 * @throws JSONException
+	 */
+	public void testInputValidatorWTEAgent() throws JSONException {
+		
+		JSONObject jo = new JSONObject().put("wastenetwork", iriofnetwork)
+				.put("n_cluster", "jk");
+		WastetoEnergyAgent j = new WastetoEnergyAgent();
+		assertFalse(j.validateInput(jo));
+		jo.put("n_cluster", "30");
+		assertTrue(j.validateInput(jo));
+		
+	}
 	private String enableScenario(String scenarioName) {
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		JPSHttpServlet.enableScenario(scenarioUrl);	

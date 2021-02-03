@@ -2,23 +2,21 @@ package uk.ac.cam.cares.jps.wte.visualization;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
-import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
@@ -30,15 +28,19 @@ public class WTEVisualization extends JPSHttpServlet{
 	private static final long serialVersionUID = 1L;
 	
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);
+//	@Override
+//	public JSONObject processRequestParameters(JSONObject requestParams) {
+//	    requestParams = processRequestParameters(requestParams, null);
+//	    return requestParams;
+//	}
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
 		
 		String path = request.getServletPath();
 		JSONObject joforEN = AgentCaller.readJsonParameter(request);
 		String iriofnetwork = joforEN.optString("wastenetwork",
 				"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork); //because this is a static method
-		logger.info("path called= "+path);
 		String g = "";
 		 if ("/WTEVisualization/createMarkers".equals(path)) {
 			logger.info("path called here= " + path);
@@ -54,6 +56,19 @@ public class WTEVisualization extends JPSHttpServlet{
 		System.gc();
 		return responseParams;
 	}
+//	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("wastenetwork");
+        return InputValidator.checkIfValidIRI(iriofnetwork);
+        } catch (JSONException ex) {
+
+            return false;
+        }
+    }
 	/** get wastesite arrangement in input
 	 * 
 	 * @param model

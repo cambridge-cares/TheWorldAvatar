@@ -62,4 +62,17 @@ public class InputValidator {
 			}else return false;
 		}return false;
 	}
+	/** checks if Integer by throwing exception otherwise
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static boolean checkIfInteger(String str)	 {
+	     try{
+	         Integer.parseInt(str);
+	         return true;
+	     }catch(NumberFormatException e){
+	         return false;
+	     }
+	 }
 }
