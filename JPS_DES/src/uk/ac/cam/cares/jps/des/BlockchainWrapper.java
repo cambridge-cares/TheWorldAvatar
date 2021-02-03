@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.des;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.net.ConnectException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,12 +59,13 @@ public class BlockchainWrapper extends JPSAgent{
 			result = calculateTrade(jo);
 			graData.put("txHash", result.get("txHash"));
 			graData.put("sandr", result.get("sandr"));
-			
+
+			return graData;
 		
 		} catch (Exception e) {
 			e.printStackTrace();
+			return graData;
 		}
-		return graData;
  
 	}
 	 /**

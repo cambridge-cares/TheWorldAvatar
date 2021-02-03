@@ -2,11 +2,15 @@ package uk.ac.cam.cares.des.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.json.JSONObject;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.ForecastAgent;
 import uk.ac.cam.cares.jps.des.FrontEndCoordination;
@@ -74,25 +78,6 @@ public class Test_DESWeatherAgents extends TestCase{
 
 	}
 	
-	/**
-	 * Calls upon the FrontEnd Coordination agent that would call the latest DES run (Forecast+DESpython wrapper)
-	 * And afterwards blockchain wrapper
-	 */
-	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success
-		
-
-		JSONObject jo = new JSONObject();
-	
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("district", DISIRI);
-		
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/showDESResult", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
-
-	}
-	
 	/** test if validateInput method is working in Weather Retriever
 	 * 
 	 */
@@ -111,9 +96,19 @@ public class Test_DESWeatherAgents extends TestCase{
 	 * Calls and runs the hourly weather retriever, that uses OCR
 	 */
 	public void testWeatherIrradiationDirect() {
-		
+		long timeLast = new Date().getTime();
 		try {
 			WeatherIrradiationRetriever.readWritedatatoOWL(baseUrl,irioftempS,iriofirrS,iriofwindS);
+			String destinationUrlWithoutHash = ScenarioHelper.cutHash(irioftempS);
+			String fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+			assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+			destinationUrlWithoutHash = ScenarioHelper.cutHash(iriofirrS);
+			fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+			assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+			destinationUrlWithoutHash = ScenarioHelper.cutHash(iriofwindS);
+			fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+			assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+			// check that OWL is updated
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -142,7 +137,9 @@ public class Test_DESWeatherAgents extends TestCase{
 		jo.put("residential","8.826121920185781278e+00");
 		jo.put("gridsupply","4.409266691007480290e+01");
 		jo.put("solar","3.784461764480557235e+01");
-		System.out.println(new BlockchainWrapper().calculateTrade(jo));
+		JSONObject v = new BlockchainWrapper().calculateTrade(jo);
+		assertNotNull(v.get("txHash"));
+		assertNotNull(v.get("sandr"));
 	}
 
 	/**
@@ -150,10 +147,9 @@ public class Test_DESWeatherAgents extends TestCase{
 	 */
 	public void testBlockchainWrapperAgentCall() throws IOException{
 		JSONObject jo = new JSONObject();
-		jo.put("baseUrl",new BlockchainWrapper().getLastModifiedDirectory());
-	    System.out.println(jo.toString());
 		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
-		System.out.println(v);
+		assertNotNull(new JSONObject(v).get("txHash"));
+		assertNotNull(new JSONObject(v).get("sandr"));
 	}
 	
 

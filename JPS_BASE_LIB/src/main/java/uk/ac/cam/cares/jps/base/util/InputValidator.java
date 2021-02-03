@@ -45,4 +45,21 @@ public class InputValidator {
 		File file = new File(filePath);
 		return file.exists();
 	}
+	/** check if file was recently modified. 
+	 * Second parameter should be time before simulation run
+	 * 
+	 * @param filePath location of file
+	 * @param timeLast the previous time it was modified (if applicable)
+	 * @return
+	 */
+	public static boolean checkIfFileGotUpdated(String filePath, long timeLast) {
+		if (checkIfValidFile(filePath)) {
+			
+			File file = new File(filePath);
+			long timeModified = file.lastModified();
+			if (timeModified > timeLast ) {
+				return true;
+			}else return false;
+		}return false;
+	}
 }
