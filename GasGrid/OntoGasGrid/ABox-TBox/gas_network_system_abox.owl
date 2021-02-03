@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF
-   xmlns:ns1="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
-   xmlns:ns2="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:owl="http://www.w3.org/2002/07/owl#"
    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
