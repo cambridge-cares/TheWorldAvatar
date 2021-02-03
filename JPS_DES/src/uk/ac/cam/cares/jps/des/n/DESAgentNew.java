@@ -105,8 +105,8 @@ public class DESAgentNew extends JPSAgent {
         
         return q&w&e&r;
         } catch (JSONException ex) {
-
-            return false;
+        	ex.printStackTrace();
+        	throw new JSONException("Forecast not present in getString");
         }
 
     }

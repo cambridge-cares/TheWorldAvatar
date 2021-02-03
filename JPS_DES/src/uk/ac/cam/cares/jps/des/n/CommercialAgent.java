@@ -78,8 +78,8 @@ public class CommercialAgent extends JPSAgent {
         
         return q&e&r;
         } catch (JSONException ex) {
-
-            return false;
+        	ex.printStackTrace();
+        	throw new JSONException("Sensor not present in getString");
         }
     }
 	/** queries dynamically the Electrical network for Commercial Constants to be used by the Python

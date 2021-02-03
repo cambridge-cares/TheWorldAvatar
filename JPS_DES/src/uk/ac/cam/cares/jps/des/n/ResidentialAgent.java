@@ -77,8 +77,8 @@ public class ResidentialAgent extends JPSAgent {
         String iriofdistrict = requestParams.getString("district");
         return InputValidator.checkIfValidIRI(iriofdistrict); 
         }catch (JSONException ex) {
-
-            return false;
+        	ex.printStackTrace();
+        	throw new JSONException("Sensor not present in getString");
         }
     }
 	/** general function for extracting Residential Data

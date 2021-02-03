@@ -70,8 +70,8 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	        
 	        return w&e&r;
         } catch (JSONException ex) {
-
-            return false;
+        	ex.printStackTrace();
+        	throw new JSONException("Sensor not present in getString");
         }
 
     }

@@ -148,6 +148,11 @@ public class TestWTE extends TestCase {
 		assertTrue(j.validateInput(jo));
 		
 	}
+	/** enables scenarioName in testInSuccession
+	 * 
+	 * @param scenarioName
+	 * @return
+	 */
 	private String enableScenario(String scenarioName) {
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		JPSHttpServlet.enableScenario(scenarioUrl);	
@@ -160,8 +165,8 @@ public class TestWTE extends TestCase {
 	public void testInSuccession() throws Exception {
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
 		
-		String scenarioUrl = enableScenario("testScenariosWithWTE");
-		String content = KnowledgeBaseClient.get(null, iriofnetwork, null);
+		enableScenario("testScenariosWithWTE");
+		KnowledgeBaseClient.get(null, iriofnetwork, null);
 		String baseUrl = QueryBroker.getLocalDataPath();
 		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		ag.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 

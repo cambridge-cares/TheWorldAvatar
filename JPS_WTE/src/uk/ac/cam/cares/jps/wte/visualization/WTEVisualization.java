@@ -65,8 +65,8 @@ public class WTEVisualization extends JPSHttpServlet{
         String iriofnetwork = requestParams.getString("wastenetwork");
         return InputValidator.checkIfValidIRI(iriofnetwork);
         } catch (JSONException ex) {
-
-            return false;
+        	ex.printStackTrace();
+        	throw new JSONException("wastenetwork not found");
         }
     }
 	/** get wastesite arrangement in input
