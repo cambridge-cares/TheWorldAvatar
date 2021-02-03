@@ -14,3 +14,4 @@ hasObjectId,Data Property,,,GridPipeline,String,,The object id for each individu
 hasLatitude,Data Property,,,GridComponent,String,,"Geographical latitude of gird component, pipeline start, and pipeline end.",http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
 hasLongitude,Data Property,,,GridComponent,String,,"Geographical longitude of gird component, pipeline start, and pipeline end.",http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
 hasOrder,Data Property,,,GasPipelineSegment,String,,The order that the GridPipelineSegment as within a GridPipeline,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
+GridPipelineSegment,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem,IS-A,,,,"Segment of a grid pipeline defined by a start, end, and tube.",http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
