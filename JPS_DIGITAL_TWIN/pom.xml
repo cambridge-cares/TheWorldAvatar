@@ -261,8 +261,9 @@
     <groupId>org.topbraid</groupId>
     <artifactId>spin</artifactId>
     <version>2.0.0</version>
+    <scope>system</scope>
+    <systemPath>C:/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/mvn/spin-2.0.0.jar</systemPath>
 </dependency>
-
 
 	</dependencies>
 
