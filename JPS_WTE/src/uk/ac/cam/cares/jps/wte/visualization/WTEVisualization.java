@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
@@ -55,7 +53,7 @@ public class WTEVisualization extends JPSAgent{
 		System.gc();
 		return responseParams;
 	}
-//	@Override
+	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
             throw new BadRequestException();
