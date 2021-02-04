@@ -18,3 +18,6 @@ GridPipelineSegment,Class,http://www.theworldavatar.com/ontology/ontocape/upper_
 hasStartPart,Object Property,http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart ,,GridPipelineSegment,GasPipelineStart,,Gas pipeline segment contains as a part gas pipeline start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
 hasEndPart,Object Property,http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart ,,GridPipelineSegment,GasPipelineEnd,,Gas pipeline segment contains as a part gas pipeline end,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
 hasTubePart,Object Property,http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart ,,GridPipelineSegment,GasPipelineTube,,Gas pipeline segment contains as a part gas pipeline end,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
+GasPipeConnection,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,IS-A,,,,Defines the connection between the start and end of two gas pipe segments,"
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"
+,,,,,,,,

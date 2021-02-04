@@ -1,7 +1,8 @@
 import pandas as pd 
 import numpy as np 
 from tqdm import tqdm
-
+import uuid
+ 
 pipelines = pd.read_csv('pipeline_split.csv').to_numpy()[:,:]
 
 abox_full = np.array([['Source','Type','Target','Relation','Value']])
@@ -26,15 +27,15 @@ for j in tqdm(range(len(unique_index)-1)):
         if i % opt_split != 0 and i != 0:
             i += unique_index[j]
             pipe_name = pipelines[i,3]
-            seg_name = pipe_name+' '+str(i+1)
+            seg_name = pipe_name+' '+str(pipelines[i,10])
             segment_add = np.array([[seg_name,'Instance','GridPipelineSegment','','']])
             subsys_add = np.array([[pipe_name,'Instance',seg_name,'http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem','']])
             start_add = np.array([[seg_name+' Start','Instance','GasPipelineStart','','']])
             end_add = np.array([[seg_name+' End','Instance','GasPipelineEnd','','']])
             tube_add = np.array([[seg_name+' Tube','Instance','GasPipelineTube','','']])
-            start_part = np.array([[seg_name,'Instance',seg_name+' Start','http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart','']])
-            end_part = np.array([[seg_name,'Instance',seg_name+' End','http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart','']])
-            tube_part = np.array([[seg_name,'Instance',seg_name+' Tube','http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart','']])
+            start_part = np.array([[seg_name,'Instance',seg_name+' Start','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasStartPart','']])
+            end_part = np.array([[seg_name,'Instance',seg_name+' End','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasEndPart','']])
+            tube_part = np.array([[seg_name,'Instance',seg_name+' Tube','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasTubePart','']])
             lat_start = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude','Data Property',seg_name+' Start','',pipelines[i,1]]])
             long_start = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude','Data Property',seg_name+' Start','',pipelines[i,0]]])
             lat_end = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude','Data Property',seg_name+' End','',pipelines[i+1,1]]])
@@ -61,15 +62,15 @@ for j in tqdm(range(len(unique_index)-1)):
                 abox = np.append(abox,abox_split,axis=0)
             i += unique_index[j]
             pipe_name = pipelines[i,3]
-            seg_name = pipe_name+' '+str(i+1)
+            seg_name = pipe_name+' '+str(pipelines[i,10])
             segment_add = np.array([[seg_name,'Instance','GridPipelineSegment','','']])
             subsys_add = np.array([[pipe_name,'Instance',seg_name,'http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem','']])
             start_add = np.array([[seg_name+' Start','Instance','GasPipelineStart','','']])
             end_add = np.array([[seg_name+' End','Instance','GasPipelineEnd','','']])
             tube_add = np.array([[seg_name+' Tube','Instance','GasPipelineTube','','']])
-            start_part = np.array([[seg_name,'Instance',seg_name+' Start','http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart','']])
-            end_part = np.array([[seg_name,'Instance',seg_name+' End','http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart','']])
-            tube_part = np.array([[seg_name,'Instance',seg_name+' Tube','http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart','']])
+            start_part = np.array([[seg_name,'Instance',seg_name+' Start','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasStartPart','']])
+            end_part = np.array([[seg_name,'Instance',seg_name+' End','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasEndPart','']])
+            tube_part = np.array([[seg_name,'Instance',seg_name+' Tube','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasTubePart','']])
             lat_start = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude','Data Property',seg_name+' Start','',pipelines[i,1]]])
             long_start = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude','Data Property',seg_name+' Start','',pipelines[i,0]]])
             lat_end = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude','Data Property',seg_name+' End','',pipelines[i+1,1]]])
@@ -94,8 +95,10 @@ for j in tqdm(range(len(unique_index)-1)):
            
     abox = np.append(abox,abox_split,axis=0)
     abox = abox[1:,:]
-    abox_full = np.append(abox_full,abox,axis=0)
+    abox_csv = pd.DataFrame(abox)
+    abox_csv.to_csv(str(objectids[j])+'.csv',index=False,header=False)
+#     abox_full = np.append(abox_full,abox,axis=0)
 
-abox_full = pd.DataFrame(abox_full)
-abox_full.to_csv('gas_network_system_abox_test.csv',index=False,header=False)
+# abox_full = pd.DataFrame(abox_full)
+# abox_full.to_csv('gas_network_system_abox_test.csv',index=False,header=False)
 
