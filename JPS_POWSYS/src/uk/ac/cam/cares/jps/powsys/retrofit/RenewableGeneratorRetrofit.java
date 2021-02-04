@@ -5,15 +5,18 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 
@@ -32,18 +35,44 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
     Logger logger = LoggerFactory.getLogger(RenewableGeneratorRetrofit.class);
     
 	@Override
-    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		
-		JSONObject jo = requestParams;
-		String electricalNetwork = jo.getString("electricalnetwork");
-		JSONArray ja = jo.getJSONArray("RenewableEnergyGenerator");
+		String electricalNetwork = requestParams.getString("electricalnetwork");
+		JSONArray ja = requestParams.getJSONArray("RenewableEnergyGenerator");
 		List<String> RenewableGenerators = MiscUtil.toList(ja);
 		retrofitGenerator(electricalNetwork, RenewableGenerators);
 		
-		return jo;
+		return requestParams;
 		
 	}
-
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);	        
+	        JSONArray ja =requestParams.getJSONArray("RenewableEnergyGenerator");
+			List<String> RenewableGenerators = MiscUtil.toList(ja);
+			if (ja.length()!= 0) {
+				for (int i = 0; i< RenewableGenerators.size(); i++) {
+					if (RenewableGenerators.get(i)!= null) {
+						boolean t = InputValidator.checkIfValidIRI(RenewableGenerators.get(i));
+						if (t == false) {
+							return false;
+						}
+					}
+				}
+			}else {
+				return false;
+			}
+	        return w;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
 	public void retrofitGenerator(String electricalNetwork, List<String> RenewableGenerators) {
 		logger.info("starting retrofit generator");
 		OntModel model = ENAgent.readModelGreedy(electricalNetwork);

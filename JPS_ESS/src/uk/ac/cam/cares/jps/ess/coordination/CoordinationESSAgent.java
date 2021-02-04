@@ -4,49 +4,66 @@ import java.io.IOException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 
 
 @WebServlet(urlPatterns = { "/startsimulationCoordinationESS" })
-public class CoordinationESSAgent extends JPSHttpServlet{
+public class CoordinationESSAgent extends JPSAgent {
 	
-    @Override
+	private static final long serialVersionUID = 1L;
+	@Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(CoordinationESSAgent.class);
     }
-    Logger logger = LoggerFactory.getLogger(CoordinationESSAgent.class);
     @Override
-   	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		JSONObject jo = AgentCaller.readJsonParameter(request);
-		String path = request.getServletPath();
-		
-		logger.info("jps request URL="+jo);
-		if ("/startsimulationCoordinationESS".equals(path)) {
-			
-			try {
-				return startSimulation(jo);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage());
-			}
-			
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+    }
+    @Override
+   	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		try {
+			return startSimulation(requestParams);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return null;
+		return requestParams;
 	}
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String iriofwindF = requestParams.getString("windspeedsensor");
+	        boolean w = InputValidator.checkIfValidIRI(iriofwindF);
+	        
+	        String irioftempF=requestParams.getString("temperaturesensor");
 	
+	        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+	        String iriofirrF=requestParams.getString("irradiationsensor");
+	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+	        // Till now, there is no system independent to check if a file path is valid or not. 
+	        
+	        return w&e&r;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        	throw new JSONException("Sensor not present in getString");
+        }
+
+    }
 	public JSONObject startSimulation(JSONObject jo) throws IOException {
 		
-		logger.info("starting the ESS ");
-		
 		//retrofit the generator of solar
-		logger.info("sent to the retrofit= "+jo.toString());
 		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/RenewableGenRetrofit", jo.toString());
 		
 		//run the opf
@@ -76,9 +93,6 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		
 		return finres;
 		
-//JSONObject finres= new JSONObject(resultStartLocator); 
-//		
-//		AgentCaller.writeJsonParameter(response, finres);
 
 		
 	}

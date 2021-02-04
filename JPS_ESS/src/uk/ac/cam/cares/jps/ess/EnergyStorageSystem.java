@@ -47,7 +47,9 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 
 		
 		logger.info("Start");
-		//logger.info("separator= "+File.separator);
+		//TODO-LO: Currently Claudius version of gams is 24; however, this requires at least a 26
+		//updating the version on Claudius would lead to us losing the version that has a license for minlp
+		//so we are stuck with this for now. 
 //        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
 		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl.replace("//", "/");
@@ -73,19 +75,16 @@ public class EnergyStorageSystem extends JPSHttpServlet {
                System.out.println(s);
             }
             p.waitFor();
-     }
-     catch (java.io.IOException e )
-     {
-            System.err.println(">>>>" + e.getMessage() );
-            e.printStackTrace();
-     }
-     catch (InterruptedException e )
-     {
-            System.err.println(">>>>" + e.getMessage() );
-            e.printStackTrace();
-     }
-		   System.out.println("Done Processing");
-	}
+	     }
+	     catch (java.io.IOException e )
+	     {
+	            e.printStackTrace();
+	     }
+	     catch (InterruptedException e )
+	     {
+	            e.printStackTrace();
+	     }
+		}
 	
 	public void modifyTemplate(String newdir, String filename) throws IOException {
 		//header that include the battery name hardcoded in the gams MUST BE THE SAME as the one in the input file
