@@ -23,7 +23,7 @@ public class BatteryRetrofit extends GeneralRetrofitAgent {
 	private static final long serialVersionUID = 1L;
 
     @Override
-    protected void setLogger() {
+    public void setLogger() {
         logger = LoggerFactory.getLogger(BatteryRetrofit.class);
     }
     Logger logger = LoggerFactory.getLogger(BatteryRetrofit.class);
@@ -49,7 +49,7 @@ public class BatteryRetrofit extends GeneralRetrofitAgent {
 	}
 
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		String electricalNetwork = jo.getString("electricalnetwork");
 

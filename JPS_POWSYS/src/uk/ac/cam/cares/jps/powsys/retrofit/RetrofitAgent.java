@@ -44,7 +44,7 @@ public class RetrofitAgent extends GeneralRetrofitAgent {
     }
     Logger logger = LoggerFactory.getLogger(RetrofitAgent.class);
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		String electricalNetwork = jo.getString("electricalnetwork");
 

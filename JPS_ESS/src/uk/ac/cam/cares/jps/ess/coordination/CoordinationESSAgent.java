@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.ess.coordination;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
 
@@ -40,26 +43,31 @@ public class CoordinationESSAgent extends JPSAgent {
 	}
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (requestParams.isEmpty()) {
+    	if (requestParams.isEmpty()) {
             throw new BadRequestException();
         }
         try {
-	        String iriofwindF = requestParams.getString("windspeedsensor");
-	        boolean w = InputValidator.checkIfValidIRI(iriofwindF);
-	        
-	        String irioftempF=requestParams.getString("temperaturesensor");
-	
-	        boolean e = InputValidator.checkIfValidIRI(irioftempF);
-	        String iriofirrF=requestParams.getString("irradiationsensor");
-	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
-	        // Till now, there is no system independent to check if a file path is valid or not. 
-	        
-	        return w&e&r;
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);	        
+	        JSONArray ja =requestParams.getJSONArray("RenewableEnergyGenerator");
+			List<String> RenewableGenerators = MiscUtil.toList(ja);
+			if (ja.length()!= 0) {
+				for (int i = 0; i< RenewableGenerators.size(); i++) {
+					if (RenewableGenerators.get(i)!= null) {
+						boolean t = InputValidator.checkIfValidIRI(RenewableGenerators.get(i));
+						if (t == false) {
+							return false;
+						}
+					}
+				}
+			}else {
+				return false;
+			}
+	        return w;
         } catch (JSONException ex) {
         	ex.printStackTrace();
-        	throw new JSONException("Sensor not present in getString");
         }
-
+        return false;
     }
 	public JSONObject startSimulation(JSONObject jo) throws IOException {
 		

@@ -20,6 +20,7 @@ import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
+import uk.ac.cam.cares.jps.powsys.retrofit.RenewableGeneratorRetrofit;
 import uk.ac.cam.cares.jps.powsys.retrofit.RetrofitAgent;
 
 public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
@@ -89,10 +90,15 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 	
 	public void testRenewableGeneratorRetrofitValidateInput() {
 		JSONObject jo = new JSONObject();
-		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		
-	}
+		jo.put("electricalnetwork",
+				"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+
+		JSONArray value1 = new JSONArray()
+				.put("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001");
+		jo.put("RenewableEnergyGenerator", value1);
+		assertTrue(new RenewableGeneratorRetrofit().validateInput(jo));
 	
+	}
 //	public void testretrofitnuclear() {
 //		JSONObject jo = new JSONObject();
 //		JSONArray value1 = new JSONArray();
