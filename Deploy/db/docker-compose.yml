@@ -6,8 +6,6 @@ services:
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     image: worldavatar/blazegraph
-    ports:
-      - "8889:8080"
     restart: unless-stopped
     secrets:
       - blazegraph_password
@@ -20,8 +18,6 @@ services:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
     image: worldavatar/rdf4j
-    ports:
-      - "8888:8080"
     restart: unless-stopped
     secrets:
       - rdf4j_admin_password

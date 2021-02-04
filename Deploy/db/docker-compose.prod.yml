@@ -1,11 +1,11 @@
 version: "3.8"
 services:
   blazegraph:
-    container_name: dev-blazegraph
+    container_name: prod-blazegraph
     ports:
       - "6889:8080"
   rdf4j:
-    container_name: dev-rdf4j
+    container_name: prod-rdf4j
     ports:
       - "6888:8080"
 
