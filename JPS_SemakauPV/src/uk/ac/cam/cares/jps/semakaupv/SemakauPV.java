@@ -10,32 +10,77 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns = { "/SemakauPV"})
 
-public class SemakauPV extends JPSHttpServlet {
+public class SemakauPV extends JPSAgent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(SemakauPV.class);
-	public static String root=AgentLocator.getProperty("absdir.root");
-	String Sim4 = root+"/Sim_PV1"; // THIS SIMULATION NEED TO BE EXIST 
+	public static String root=AgentLocator.getProperty(IKeys.ABSDIR_ROOT);
+	String Sim4 = root+"/Sim_PV1"; 
 
+	
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+    	validateInput(requestParams);
+    	String ENIRI=requestParams.getString("electricalnetwork");
+		String irradSensorIRI=requestParams.getString("irradiationsensor");
+		OntModel model = readModelGreedy(ENIRI);
+		JSONObject res=runMODS(model,irradSensorIRI);
+		//TODO: This is hardcoded; but I don't know what other PVs there could be. 
+		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/",
+				"PV-002.owl","EBus-006.owl");
+		return result;
+    }
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        } 
+        try {
+            String iriofnetwork = requestParams.getString("electricalnetwork");
+            boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
+            String iriofirrF=requestParams.getString("irradiationsensor");
+	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+            return q&r;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        	return false;
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+            return false;
+        }
+    }
 	/**
 	 * @param request HttpServletrequest, should contain responses from DES Solar Irradiation collection agent
 	 */

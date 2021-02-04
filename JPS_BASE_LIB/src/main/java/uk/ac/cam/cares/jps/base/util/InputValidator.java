@@ -1,5 +1,9 @@
 package uk.ac.cam.cares.jps.base.util;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -27,15 +31,26 @@ public class InputValidator {
 	public static boolean checkIfValidIRI(String iriStr) {
 		boolean f = true;
 		try {
+			//TODO: There is something wrong with checkIRI, because "abcd" passes just as well as irradiation sensor IRI
 			f = IRIResolver.checkIRI(iriStr);
+			
 			}catch (RiotException ex) {
 				throw new RiotException();
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		return !f;
+		return (!f& checkURLpattern(iriStr));
 		}
+	public static boolean checkURLpattern(String iriStr) {
+		try {
+			URL url = new URL(iriStr); 
+			URI uri = url.toURI(); 
+			return true;
+			} catch (MalformedURLException | URISyntaxException e) {
+				return false;
+				}
+	}
 	/** check if file exists in computer
 	 * Can't be used if the directory is not established (aka created)
 	 * @param iri
