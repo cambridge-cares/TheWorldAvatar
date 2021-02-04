@@ -1,12 +1,8 @@
 package uk.ac.cam.cares.jps.base.util;
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.system.IRIResolver;
 
@@ -31,7 +27,7 @@ public class InputValidator {
 	public static boolean checkIfValidIRI(String iriStr) {
 		boolean f = true;
 		try {
-			//TODO: There is something wrong with checkIRI, because "abcd" passes just as well as irradiation sensor IRI
+			//TODO-LO: There is something wrong with IRIResolver.checkIRI, because "abcd" passes just as well as irradiation sensor IRI
 			f = IRIResolver.checkIRI(iriStr);
 			
 			}catch (RiotException ex) {
@@ -45,7 +41,7 @@ public class InputValidator {
 	public static boolean checkURLpattern(String iriStr) {
 		try {
 			URL url = new URL(iriStr); 
-			URI uri = url.toURI(); 
+			url.toURI(); 
 			return true;
 			} catch (MalformedURLException | URISyntaxException e) {
 				return false;
