@@ -50,7 +50,7 @@ public class EnergyStorageSystemTest extends TestCase {
 		lstJA.add(pvGenIRI);
 		JSONArray ja = new JSONArray(lstJA);
         requestParam.put("RenewableEnergyGenerator", ja);
-		new CoordinationESSAgent().validateInput(requestParam);
+		assertTrue(new CoordinationESSAgent().validateInput(requestParam));
 	}
 	/** test the inputValidate method of Energy Storage System (aka GAMS runner)
 	 * 
@@ -58,7 +58,7 @@ public class EnergyStorageSystemTest extends TestCase {
 	public void testValidateInputEnergyStorageSystem() {
 		JSONObject requestParam = new JSONObject().put("electricalnetwork", ENIRI);
 		requestParam.put("BatteryCatalog", batIRI);
-		new EnergyStorageSystem().validateInput(requestParam);
+		assertTrue(new EnergyStorageSystem().validateInput(requestParam));
 		
 		
 	}
@@ -87,13 +87,15 @@ public class EnergyStorageSystemTest extends TestCase {
 	public void testEnergyStorageSystemprepareCSVRemaining() {
 		OntModel modelbattery=EnergyStorageSystem.readBatteryGreedy(batIRI);
 		
-		new EnergyStorageSystem(). prepareCSVRemaining( batIRI, baseUrl,modelbattery );
+		new EnergyStorageSystem(). prepareCSVRemaining( batIRI, baseUrl );
 		File file = new File( baseUrl + "/EnvironmentalScore.csv");
 		assertTrue(file.exists());
 		assertTrue(file.length()> 0);
 	}
+	/** test readOutput of EnergyStorageSystem
+	 * 
+	 */
 	public void testreadsolutionstocsv() {
-		//String outputfiledir="C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/eb00c933-2513-4b8a-8eac-29b6304bf184/solutions.csv";
 		String outputfiledir = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/solutions.csv";
 		List<Double[]> simulationResult=new EnergyStorageSystem().readOutput(outputfiledir);
 
@@ -103,6 +105,19 @@ public class EnergyStorageSystemTest extends TestCase {
 		assertEquals(61.0,simulationResult.get(0)[2]);
 		//ArrayList<String>removedplant=new ArrayList<String>();
 		JSONObject result = new JSONObject();
+	}
+	
+	public void testModifyTemplate() throws IOException, InterruptedException{
+		EnergyStorageSystem a = new EnergyStorageSystem();
+		try {
+			a.runGAMS(baseUrl);
+		   }
+		   catch (InterruptedException e) {
+		      e.printStackTrace();
+		   }
+		catch (Exception e) {
+			      e.printStackTrace();
+			   }
 	}
 	
 //	public void xxxtestgetbatterylocmethod() throws IOException {
@@ -230,25 +245,10 @@ public void testCallENAgentFromCreatedWorld() throws JSONException {
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_ESS";
 		a.prepareCSVPahigh(pvgeniris, baseUrl);	
-		a.prepareCSVRemaining(batIRI,baseUrl,modelbattery);
+		a.prepareCSVRemaining(batIRI,baseUrl);
 		pvgeniris.clear();
 	}
 	
 	
-	@SuppressWarnings("static-access")
-	public void testModifyTemplate() throws IOException, InterruptedException{
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_ESS";
-		EnergyStorageSystem a = new EnergyStorageSystem();
-//		a.runGAMS("D:\\Users\\LONG01\\Documents\\gamsdir\\projdir") ;
-		try {
-			a.runGAMS(baseUrl);
-		   }
-		   catch (InterruptedException e) {
-		      e.printStackTrace();
-		   }
-		catch (Exception e) {
-			      e.printStackTrace();
-			   }
-	}
+	
 }

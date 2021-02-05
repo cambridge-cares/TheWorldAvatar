@@ -1,9 +1,7 @@
 package uk.ac.cam.cares.jps.ess;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +23,7 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
@@ -61,11 +60,7 @@ public class EnergyStorageSystem extends JPSAgent {
 			String batIRI=requestParams.getString("BatteryCatalog");
 			String ENIRI=requestParams.getString("electricalnetwork");
 			
-			List<String> pvGenIRI=filterPV(ENIRI);
-			
-			//System.out.println("GENERATOR: " + pvGenIRI);
-			System.out.println("parameter got= "+requestParams.toString());
-						
+			List<String> pvGenIRI=filterPV(ENIRI);						
 			JSONObject resultofbattery = null;
 			try {
 				resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
@@ -122,29 +117,10 @@ public class EnergyStorageSystem extends JPSAgent {
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4]+" "+cmdArray[5]+" "+cmdArray[6];
         
+        CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
         System.out.println(cmdArrayinstring);
-        try {
-        	
-            Process p = Runtime.getRuntime().exec(cmdArray);
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String s = null;
-            while((s=stdInput.readLine()) !=null){
-               System.out.println(s);
-            }
-            p.waitFor();
-     }
-     catch (java.io.IOException e )
-     {
-            System.err.println(">>>>" + e.getMessage() );
-            e.printStackTrace();
-     }
-     catch (InterruptedException e )
-     {
-            System.err.println(">>>>" + e.getMessage() );
-            e.printStackTrace();
-     }
-		   System.out.println("Done Processing");
-	}
+   
+ 		}
 	
 	public void modifyTemplate(String newdir, String filename) throws IOException {
 		//header that include the battery name hardcoded in the gams MUST BE THE SAME as the one in the input file
@@ -206,8 +182,8 @@ public class EnergyStorageSystem extends JPSAgent {
 	}
 	/** prepare the max and min power generated as well as state of charge. 
 	 * 
-	 * @param pvGenIRI
-	 * @param baseUrl
+	 * @param pvGenIRI IRI of Solar generator
+	 * @param baseUrl folder where csv is dumped
 	 * @return
 	 */
 	public void prepareCSVPahigh(List<String> pvGenIRI, String baseUrl) {
@@ -260,7 +236,11 @@ public class EnergyStorageSystem extends JPSAgent {
 		String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
 		new QueryBroker().putLocal(baseUrl + "/Pa_high.csv", s);
 	}
-	
+	/** run through the characteristics of fifteen batteries and print out in csv format in folder baseUrl
+	 * 
+	 * @param batcal battery catalog IRI
+	 * @param baseUrl folder where this csv is dumped
+	 */
 	public void prepareCSVRemaining(String batcal, String baseUrl) {
 		OntModel model=readBatteryGreedy(batcal);		
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
@@ -336,8 +316,13 @@ public class EnergyStorageSystem extends JPSAgent {
 		new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultListforcsv));
 	}
 	
-	
-	public JSONObject giveResult(String outputfiledir,String batterycat,OntModel model) { //unfinished yet
+	/** battery select: Currently hardcoded
+	 * TODO: get a better method of selecting the result than a number comparison. 
+	 * @param outputfiledir
+	 * @param batterycat
+	 * @return
+	 */
+	public JSONObject giveResult(String outputfiledir,String batterycat) {
 		JSONObject result=new JSONObject();
 		List<Double[]> simulationResult=readOutput(outputfiledir);
 		String choseniri=null;
@@ -442,8 +427,6 @@ public class EnergyStorageSystem extends JPSAgent {
 	}
 	
 	public JSONObject optimizedBatteryMatching(String baseUrl, List<String> pvGenIRI, String batIRI) throws IOException {
-		OntModel modelbattery=readBatteryGreedy(batIRI);
-		
 		prepareCSVPahigh(pvGenIRI,baseUrl);
 		prepareCSVRemaining(batIRI,baseUrl);		
 		try {
@@ -453,7 +436,7 @@ public class EnergyStorageSystem extends JPSAgent {
 			System.out.println("gams cannot run completely");
 			logger.error(e.getMessage());
 		}
-		JSONObject result=giveResult(baseUrl+"/solutions.csv",batIRI,modelbattery);
+		JSONObject result=giveResult(baseUrl+"/solutions.csv",batIRI);
 		logger.info("selected battery = " + result.getString("storage"));
 		return result;
 	}
