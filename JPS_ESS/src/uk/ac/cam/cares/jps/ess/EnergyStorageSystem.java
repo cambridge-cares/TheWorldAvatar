@@ -118,10 +118,14 @@ public class EnergyStorageSystem extends JPSAgent {
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4]+" "+cmdArray[5]+" "+cmdArray[6];
         
         CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
-        System.out.println(cmdArrayinstring);
    
  		}
-	
+	/** modifies the GAMS code in workingdir folder to accept the file written in newdir
+	 * 
+	 * @param newdir location of simulation files
+	 * @param filename NESS.gms
+	 * @throws IOException
+	 */
 	public void modifyTemplate(String newdir, String filename) throws IOException {
 		//header that include the battery name hardcoded in the gams MUST BE THE SAME as the one in the input file
 		newdir = newdir.replace("//", "/");
@@ -317,6 +321,7 @@ public class EnergyStorageSystem extends JPSAgent {
 	}
 	
 	/** battery select: Currently hardcoded
+	 * batterylist was created in prepareCSVRemaining() earlier
 	 * TODO: get a better method of selecting the result than a number comparison. 
 	 * @param outputfiledir
 	 * @param batterycat
