@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.ess.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,11 +20,11 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
+import uk.ac.cam.cares.jps.ess.coordination.CoordinationESSAgent;
 
 
 public class EnergyStorageSystemTest extends TestCase {
 	
-	//public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PVSingaporeNetwork.owl#PVSingaporeNetwork";
 //	String dataPath = QueryBroker.getLocalDataPath();
 //	String baseUrl=dataPath+"/JPS_ESS";
 
@@ -30,6 +32,8 @@ public class EnergyStorageSystemTest extends TestCase {
 	private String ENIRI="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 	private String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
 	private String pvGenIRI="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001";
+	private String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\ESSTest";
+	
 	List<String>pvgeniris= new ArrayList<String>();
 	String usecaseID = UUID.randomUUID().toString();
 	
@@ -37,8 +41,57 @@ public class EnergyStorageSystemTest extends TestCase {
 		EnergyStorageSystem a = new EnergyStorageSystem();
 		a.runGAMS("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\c8e42983-320e-4748-84e0-a49b7628b9db");
 	}
-
+	/** test the inputValidate method of Energy Storage System Coordination Agent
+	 * 
+	 */
+	public void testValidateCoordinationESSAgent() {
+		JSONObject requestParam = new JSONObject().put("electricalnetwork", ENIRI);
+		List<String> lstJA = new ArrayList<String>();
+		lstJA.add(pvGenIRI);
+		JSONArray ja = new JSONArray(lstJA);
+        requestParam.put("RenewableEnergyGenerator", ja);
+		new CoordinationESSAgent().validateInput(requestParam);
+	}
+	/** test the inputValidate method of Energy Storage System (aka GAMS runner)
+	 * 
+	 */
+	public void testValidateInputEnergyStorageSystem() {
+		JSONObject requestParam = new JSONObject().put("electricalnetwork", ENIRI);
+		requestParam.put("BatteryCatalog", batIRI);
+		new EnergyStorageSystem().validateInput(requestParam);
+		
+		
+	}
+	/** test filterPV method of EnergyStorageSystem
+	 * 
+	 */
+	public void testEnergyStorageSystemFilterPV() {
+		List<String> ja = new EnergyStorageSystem().filterPV (ENIRI);
+		assertNotNull(ja.size());
+	}
+	/** test prepareCSVPahigh of EnergyStorageSystem
+	 * 
+	 */
+	public void testEnergyStorageSystemprepareCSVPahigh() {
+		List<String> lstJA = new ArrayList<String>();
+		lstJA.add(pvGenIRI);
+		new EnergyStorageSystem(). prepareCSVPahigh( lstJA , baseUrl);
+		File file = new File( baseUrl + "/Pa_high.csv");
+		assertTrue(file.exists());
+		assertTrue(file.length()> 0);
+	}
 	
+	/** test prepareCSVRemaining of EnergyStorageSystem
+	 * 
+	 */
+	public void testEnergyStorageSystemprepareCSVRemaining() {
+		OntModel modelbattery=EnergyStorageSystem.readBatteryGreedy(batIRI);
+		
+		new EnergyStorageSystem(). prepareCSVRemaining( batIRI, baseUrl,modelbattery );
+		File file = new File( baseUrl + "/EnvironmentalScore.csv");
+		assertTrue(file.exists());
+		assertTrue(file.length()> 0);
+	}
 	public void testreadsolutionstocsv() {
 		//String outputfiledir="C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/eb00c933-2513-4b8a-8eac-29b6304bf184/solutions.csv";
 		String outputfiledir = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/solutions.csv";
@@ -113,15 +166,6 @@ public class EnergyStorageSystemTest extends TestCase {
 		pvgeniris.clear();
 	}
 	
-public static OntModel readModelGreedy(String iriofnetwork) {
-	String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "SELECT ?component "
-			+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
-
-	QueryBroker broker = new QueryBroker();
-	return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
-}
 
 public void testCoordinationStartSimulationESSScenario() throws IOException  {
 	
