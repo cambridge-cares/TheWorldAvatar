@@ -107,8 +107,12 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONObject result = new JSONObject();
 	}
 	
+	@SuppressWarnings("static-access")
 	public void testModifyTemplate() throws IOException, InterruptedException{
+		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = dataPath + "/JPS_ESS";
 		EnergyStorageSystem a = new EnergyStorageSystem();
+//		a.runGAMS("D:\\Users\\LONG01\\Documents\\gamsdir\\projdir") ;
 		try {
 			a.runGAMS(baseUrl);
 		   }
