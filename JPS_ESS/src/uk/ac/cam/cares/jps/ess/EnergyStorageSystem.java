@@ -96,7 +96,8 @@ public class EnergyStorageSystem extends JPSAgent {
 		//updating the version on Claudius would lead to us losing the version that has a license for minlp
 		//so we are stuck with this for now. 
 //        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
-		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
+		
+		String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl.replace("//", "/");
         String[] cmdArray = new String[7];
         

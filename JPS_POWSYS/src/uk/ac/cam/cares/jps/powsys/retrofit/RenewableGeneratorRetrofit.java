@@ -36,7 +36,8 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
     
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		
+
+		validateInput(requestParams);
 		String electricalNetwork = requestParams.getString("electricalnetwork");
 		JSONArray ja = requestParams.getJSONArray("RenewableEnergyGenerator");
 		List<String> RenewableGenerators = MiscUtil.toList(ja);
@@ -45,7 +46,7 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
 		return requestParams;
 		
 	}
-	@Override
+//	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
             throw new BadRequestException();
