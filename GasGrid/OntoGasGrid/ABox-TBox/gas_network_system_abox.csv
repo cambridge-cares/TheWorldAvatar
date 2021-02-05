@@ -9,10 +9,12 @@ GRAVESEND THAMES SOUTH TO TATSFIELD 1 Tube,Instance,GasPipelineTube,,
 GRAVESEND THAMES SOUTH TO TATSFIELD 1 ,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 Start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasStartPart,
 GRAVESEND THAMES SOUTH TO TATSFIELD 1 ,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 End,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasEndPart,
 GRAVESEND THAMES SOUTH TO TATSFIELD 1 ,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 Tube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasTubePart,
-http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 1 Start,,51.44549758
-http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 1 Start,,0.433416648
-GRAVESEND THAMES SOUTH TO TATSFIELD 1 Start,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 Tube,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system#enters,
-GRAVESEND THAMES SOUTH TO TATSFIELD 1 Tube,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 End,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system#hasOutput,
+GRAVESEND THAMES SOUTH TO TATSFIELD 0 CONNECTION,Instance,GasPipeConnection,,
+GRAVESEND THAMES SOUTH TO TATSFIELD 0 CONNECTION,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 Start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasPipeConnectionOutput,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 0 CONNECTION,,51.44549758
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 0 CONNECTION,,0.433416648
+GRAVESEND THAMES SOUTH TO TATSFIELD 1 Start,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 Tube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersSegmentPart,
+GRAVESEND THAMES SOUTH TO TATSFIELD 1 Tube,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 End,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasSegmentPartOutput,
 GRAVESEND THAMES SOUTH TO TATSFIELD 1 CONNECTION,Instance,GasPipeConnection,,
 GRAVESEND THAMES SOUTH TO TATSFIELD 1 End,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 1 CONNECTION,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersPipeConnection,
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 1 CONNECTION,,51.44557659
@@ -27,8 +29,8 @@ GRAVESEND THAMES SOUTH TO TATSFIELD 2 Tube,Instance,GasPipelineTube,,
 GRAVESEND THAMES SOUTH TO TATSFIELD 2,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 Start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasStartPart,
 GRAVESEND THAMES SOUTH TO TATSFIELD 2,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 End,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasEndPart,
 GRAVESEND THAMES SOUTH TO TATSFIELD 2,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 Tube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasTubePart,
-GRAVESEND THAMES SOUTH TO TATSFIELD 2 Start,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 Tube,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system#enters,
-GRAVESEND THAMES SOUTH TO TATSFIELD 2 Tube,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 End,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system#hasOutput,
+GRAVESEND THAMES SOUTH TO TATSFIELD 2 Start,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 Tube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersSegmentPart,
+GRAVESEND THAMES SOUTH TO TATSFIELD 2 Tube,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 End,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasSegmentPartOutput,
 GRAVESEND THAMES SOUTH TO TATSFIELD 2 CONNECTION,Instance,GasPipeConnection,,
 GRAVESEND THAMES SOUTH TO TATSFIELD 1 CONNECTION,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 Start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasPipeConnectionOutput,
 GRAVESEND THAMES SOUTH TO TATSFIELD 2 End,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 2 CONNECTION,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersPipeConnection,
@@ -44,8 +46,8 @@ GRAVESEND THAMES SOUTH TO TATSFIELD 3 Tube,Instance,GasPipelineTube,,
 GRAVESEND THAMES SOUTH TO TATSFIELD 3,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 Start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasStartPart,
 GRAVESEND THAMES SOUTH TO TATSFIELD 3,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 End,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasEndPart,
 GRAVESEND THAMES SOUTH TO TATSFIELD 3,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 Tube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasTubePart,
-GRAVESEND THAMES SOUTH TO TATSFIELD 3 Start,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 Tube,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system#enters,
-GRAVESEND THAMES SOUTH TO TATSFIELD 3 Tube,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 End,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system#hasOutput,
+GRAVESEND THAMES SOUTH TO TATSFIELD 3 Start,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 Tube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersSegmentPart,
+GRAVESEND THAMES SOUTH TO TATSFIELD 3 Tube,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 End,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasSegmentPartOutput,
 GRAVESEND THAMES SOUTH TO TATSFIELD 3 CONNECTION,Instance,GasPipeConnection,,
 GRAVESEND THAMES SOUTH TO TATSFIELD 2 CONNECTION,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 Start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasPipeConnectionOutput,
 GRAVESEND THAMES SOUTH TO TATSFIELD 3 End,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 3 CONNECTION,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersPipeConnection,
@@ -61,10 +63,12 @@ GRAVESEND THAMES SOUTH TO TATSFIELD 4 Tube,Instance,GasPipelineTube,,
 GRAVESEND THAMES SOUTH TO TATSFIELD 4,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 Start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasStartPart,
 GRAVESEND THAMES SOUTH TO TATSFIELD 4,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 End,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasEndPart,
 GRAVESEND THAMES SOUTH TO TATSFIELD 4,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 Tube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasTubePart,
-GRAVESEND THAMES SOUTH TO TATSFIELD 4 Start,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 Tube,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system#enters,
-GRAVESEND THAMES SOUTH TO TATSFIELD 4 Tube,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 End,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system#hasOutput,
+GRAVESEND THAMES SOUTH TO TATSFIELD 4 Start,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 Tube,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersSegmentPart,
+GRAVESEND THAMES SOUTH TO TATSFIELD 4 Tube,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 End,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasSegmentPartOutput,
 GRAVESEND THAMES SOUTH TO TATSFIELD 3 CONNECTION,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 Start,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasPipeConnectionOutput,
-http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 4 End,,51.44562101
-http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 4 End,,0.432834497
+GRAVESEND THAMES SOUTH TO TATSFIELD 4 CONNECTION,Instance,GasPipeConnection,,
+GRAVESEND THAMES SOUTH TO TATSFIELD 4 End,Instance,GRAVESEND THAMES SOUTH TO TATSFIELD 4 CONNECTION,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersPipeConnection,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 4 CONNECTION,,51.44562101
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 4 CONNECTION,,0.432834497
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasDiameter,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 4 Tube,,750
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasOrder,Data Property,GRAVESEND THAMES SOUTH TO TATSFIELD 4,,4

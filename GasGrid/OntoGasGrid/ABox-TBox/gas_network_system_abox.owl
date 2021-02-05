@@ -13,132 +13,142 @@
 </owl:Ontology>
 
  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1">
-    <ns1:hasStartPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1Start"/>
     <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipelineSegment"/>
+    <ns1:hasOrder>1</ns1:hasOrder>
     <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 1 </rdfs:label>
     <ns1:hasTubePart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1Tube"/>
-    <ns1:hasOrder>1</ns1:hasOrder>
+    <ns1:hasStartPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1Start"/>
     <ns1:hasEndPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1End"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1Start">
+    <ns1:entersSegmentPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1Tube"/>
     <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineStart"/>
-    <ns1:hasLatitude>51.44549758</ns1:hasLatitude>
-    <ns3:enters rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1Tube"/>
     <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 1 Start</rdfs:label>
-    <ns1:hasLongitude>0.433416648</ns1:hasLongitude>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2End">
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2 End</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineEnd"/>
+    <ns1:entersPipeConnection rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2CONNECTION"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipelineSegment"/>
+    <ns1:hasStartPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Start"/>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 3</rdfs:label>
+    <ns1:hasTubePart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Tube"/>
+    <ns1:hasEndPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3End"/>
+    <ns1:hasOrder>3</ns1:hasOrder>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3CONNECTION">
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 3 CONNECTION</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection"/>
+    <ns1:hasLongitude>0.432856237</ns1:hasLongitude>
+    <ns1:hasLatitude>51.44561705</ns1:hasLatitude>
+    <ns1:hasPipeConnectionOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Start"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4CONNECTION">
+    <ns1:hasLongitude>0.432834497</ns1:hasLongitude>
+    <ns1:hasLatitude>51.44562101</ns1:hasLatitude>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 4 CONNECTION</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2">
+    <ns1:hasTubePart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Tube"/>
+    <ns1:hasOrder>2</ns1:hasOrder>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipelineSegment"/>
+    <ns1:hasEndPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2End"/>
+    <ns1:hasStartPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Start"/>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1CONNECTION">
+    <ns1:hasLatitude>51.44557659</ns1:hasLatitude>
+    <ns1:hasLongitude>0.433078598</ns1:hasLongitude>
+    <ns1:hasPipeConnectionOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Start"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection"/>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 1 CONNECTION</rdfs:label>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Tube">
-    <ns3:hasOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4End"/>
+    <ns1:hasSegmentPartOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4End"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineTube"/>
     <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 4 Tube</rdfs:label>
     <ns1:hasDiameter>750</ns1:hasDiameter>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineTube"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD0CONNECTION">
+    <ns1:hasPipeConnectionOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1Start"/>
+    <ns1:hasLatitude>51.44549758</ns1:hasLatitude>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection"/>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 0 CONNECTION</rdfs:label>
+    <ns1:hasLongitude>0.433416648</ns1:hasLongitude>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1Tube">
     <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 1 Tube</rdfs:label>
-    <ns3:hasOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1End"/>
     <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineTube"/>
     <ns1:hasDiameter>750</ns1:hasDiameter>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4">
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 4</rdfs:label>
-    <ns1:hasOrder>4</ns1:hasOrder>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipelineSegment"/>
-    <ns1:hasStartPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Start"/>
-    <ns1:hasEndPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4End"/>
-    <ns1:hasTubePart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Tube"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3CONNECTION">
-    <ns1:hasLongitude>0.432856237</ns1:hasLongitude>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 3 CONNECTION</rdfs:label>
-    <ns1:hasPipeConnectionOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Start"/>
-    <ns1:hasLatitude>51.44561705</ns1:hasLatitude>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Tube">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineTube"/>
-    <ns3:hasOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2End"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2 Tube</rdfs:label>
-    <ns1:hasDiameter>750</ns1:hasDiameter>
+    <ns1:hasSegmentPartOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1End"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3End">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineEnd"/>
     <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 3 End</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineEnd"/>
     <ns1:entersPipeConnection rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3CONNECTION"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD">
-    <ns2:hasSubsystem rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3"/>
-    <ns2:hasSubsystem rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4"/>
-    <ns1:hasObjectId>993</ns1:hasObjectId>
-    <ns2:hasSubsystem rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1"/>
-    <ns2:hasSubsystem rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipeline"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4End">
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 4 End</rdfs:label>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineEnd"/>
-    <ns1:hasLatitude>51.44562101</ns1:hasLatitude>
-    <ns1:hasLongitude>0.432834497</ns1:hasLongitude>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3">
-    <ns1:hasEndPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3End"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 3</rdfs:label>
-    <ns1:hasTubePart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Tube"/>
-    <ns1:hasStartPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Start"/>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4">
+    <ns1:hasStartPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Start"/>
+    <ns1:hasOrder>4</ns1:hasOrder>
+    <ns1:hasEndPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4End"/>
     <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipelineSegment"/>
-    <ns1:hasOrder>3</ns1:hasOrder>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 4</rdfs:label>
+    <ns1:hasTubePart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Tube"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Tube">
     <ns1:hasDiameter>750</ns1:hasDiameter>
     <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 3 Tube</rdfs:label>
     <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineTube"/>
-    <ns3:hasOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3End"/>
+    <ns1:hasSegmentPartOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3End"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2">
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2</rdfs:label>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipelineSegment"/>
-    <ns1:hasOrder>2</ns1:hasOrder>
-    <ns1:hasStartPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Start"/>
-    <ns1:hasTubePart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Tube"/>
-    <ns1:hasEndPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2End"/>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD">
+    <ns2:hasSubsystem rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2"/>
+    <ns1:hasObjectId>993</ns1:hasObjectId>
+    <ns2:hasSubsystem rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4"/>
+    <ns2:hasSubsystem rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridPipeline"/>
+    <ns2:hasSubsystem rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3"/>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2End">
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Start">
+    <ns1:entersSegmentPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Tube"/>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 4 Start</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineStart"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Start">
+    <ns1:entersSegmentPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Tube"/>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2 Start</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineStart"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1End">
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 1 End</rdfs:label>
+    <ns1:entersPipeConnection rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1CONNECTION"/>
     <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineEnd"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2 End</rdfs:label>
-    <ns1:entersPipeConnection rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2CONNECTION"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Tube">
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2 Tube</rdfs:label>
+    <ns1:hasDiameter>750</ns1:hasDiameter>
+    <ns1:hasSegmentPartOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2End"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineTube"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Start">
     <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineStart"/>
-    <ns3:enters rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Tube"/>
+    <ns1:entersSegmentPart rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Tube"/>
     <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 3 Start</rdfs:label>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2CONNECTION">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2 CONNECTION</rdfs:label>
-    <ns1:hasLatitude>51.44558508</ns1:hasLatitude>
-    <ns1:hasPipeConnectionOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Start"/>
     <ns1:hasLongitude>0.433031963</ns1:hasLongitude>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Start">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineStart"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2 Start</rdfs:label>
-    <ns3:enters rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Tube"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1End">
-    <ns1:entersPipeConnection rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1CONNECTION"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineEnd"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 1 End</rdfs:label>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Start">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineStart"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 4 Start</rdfs:label>
-    <ns3:enters rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4Tube"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD1CONNECTION">
-    <ns1:hasLatitude>51.44557659</ns1:hasLatitude>
-    <ns1:hasPipeConnectionOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD2Start"/>
-    <ns1:hasLongitude>0.433078598</ns1:hasLongitude>
     <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection"/>
-    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 1 CONNECTION</rdfs:label>
+    <ns1:hasLatitude>51.44558508</ns1:hasLatitude>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 2 CONNECTION</rdfs:label>
+    <ns1:hasPipeConnectionOutput rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD3Start"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4End">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipelineEnd"/>
+    <ns1:entersPipeConnection rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/GRAVESENDTHAMESSOUTHTOTATSFIELD4CONNECTION"/>
+    <rdfs:label>GRAVESEND THAMES SOUTH TO TATSFIELD 4 End</rdfs:label>
   </rdf:Description>
 </rdf:RDF>
