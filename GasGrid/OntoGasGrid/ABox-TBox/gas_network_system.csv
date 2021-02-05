@@ -20,4 +20,5 @@ hasEndPart,Object Property,http://www.theworldavatar.com/ontology/meta_model/mer
 hasTubePart,Object Property,http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart ,,GridPipelineSegment,GasPipelineTube,,Gas pipeline segment contains as a part gas pipeline end,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
 GasPipeConnection,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,IS-A,,,,Defines the connection between the start and end of two gas pipe segments,"
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"
-,,,,,,,,
+entersPipeConnection,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
+hasPipeConnectionOutput,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#Device,http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
