@@ -10,8 +10,6 @@
 #   docker-compose.dev.yml
 #   docker-compose.test.yml
 #   docker-compose.prod.yml
-#   check_secrets.sh
-#   check_volumes.sh
 #
 # Run this script with no arguments for usage instructions.
 
