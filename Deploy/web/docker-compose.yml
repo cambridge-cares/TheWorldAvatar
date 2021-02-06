@@ -9,5 +9,3 @@ services:
     image: "${MODE}-website-${HASH}"
     container_name: "${MODE}-website-${HASH}"
     restart: unless-stopped
-    volumes:
-      - webroot:/var/www/html
