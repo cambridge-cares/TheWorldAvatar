@@ -52,6 +52,10 @@ RUN pecl install apcu \
     && pecl install yaml-2.0.4 \
     && docker-php-ext-enable apcu yaml
 	
+# Set file permissions
+RUN chown -R www-data:www-data /var/www/html/
+RUN chmod -R 775 /var/www/html/
+
 
 ##### Production configuration #####
 FROM base as production
@@ -60,8 +64,5 @@ FROM base as production
 COPY site /var/www/html/
 
 # Set file permissions
-RUN chown -R www-data:www-data ./*
-RUN chmod -R 775 ./*
-
-# Install Grav Admin plugin
-#RUN /var/www/html/bin/gpm install admin
+RUN chown -R www-data:www-data /var/www/html/
+RUN chmod -R 775 /var/www/html/

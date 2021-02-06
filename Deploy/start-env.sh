@@ -70,6 +70,7 @@ printf "Building the $env environment in $mode mode\n\n"
 pushd $env > /dev/null
 
 # Get the current git hash and write to a temporary env file
+# Note that this file shouldn't be deleted or down commands will fail
 printf "Generating environment variables file...\n"
 hash="$(git rev-parse --short=6 HEAD)"
 echo "HASH=$hash" >> "env.txt"
@@ -114,9 +115,6 @@ echo "Running $docker_compose_cmd in ./$env ..."
 $docker_compose_cmd
 compose_exit_code=$?
 echo Done
-
-# Clean up the environment file
-rm env.txt
 
 # Return from environment dir
 popd > /dev/null
