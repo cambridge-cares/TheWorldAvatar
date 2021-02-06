@@ -64,8 +64,6 @@ public class TBoxManagement implements ITBoxManagement{
 	public String BACKSLASH = "\\";
 	public String FILE_EXT_OWL = ".owl";
 	public String FILE_EXT_RDF = ".rdf";
-	public String HTTP_PROTOCOL = "http://";
-	public String HTTPS_PROTOCOL = "https://";
 	
 	public static final String HTTP_PROTOCOL="http://";
 	public static final String HTTPS_PROTOCOL="https://";			
