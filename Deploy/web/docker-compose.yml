@@ -1,5 +1,13 @@
 version: "3.8"
 
-networks:
-  default:
-    name: web
+# Services
+services:
+
+  # Knowledge Graph Website
+  website:
+    build: "./website"
+    image: "${MODE}-website-${HASH}"
+    container_name: "${MODE}-website-${HASH}"
+    restart: unless-stopped
+    volumes:
+      - webroot:/var/www/html

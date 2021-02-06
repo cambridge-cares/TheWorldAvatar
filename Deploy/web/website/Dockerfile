@@ -1,5 +1,7 @@
-FROM php:7.4-apache as production
+##### Base configuration #####
+FROM php:7.4-apache as base
 
+# Meta data
 LABEL authors = "support@cmclinnovations.com"
 LABEL version = "0.0.1"
 LABEL description = "KG Website"
@@ -50,13 +52,16 @@ RUN pecl install apcu \
     && pecl install yaml-2.0.4 \
     && docker-php-ext-enable apcu yaml
 	
+
+##### Production configuration #####
+FROM base as production
+
 # Copy in site files
 COPY site /var/www/html/
-
-# Install Grav Admin plugin
-WORKDIR /var/www/html
-RUN ./bin/gpm install admin
 
 # Set file permissions
 RUN chown -R www-data:www-data ./*
 RUN chmod -R 775 ./*
+
+# Install Grav Admin plugin
+#RUN /var/www/html/bin/gpm install admin

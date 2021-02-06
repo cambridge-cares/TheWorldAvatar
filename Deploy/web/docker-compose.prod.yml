@@ -1,5 +1,14 @@
 version: "3.8"
 
+# Services
+services:
+
+  # Knowledge Graph Website
+  website:
+    ports:
+      - "80:80"        
+
+# Production network    
 networks:
   default:
     name: prod-web

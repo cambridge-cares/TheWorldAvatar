@@ -69,9 +69,18 @@ printf "Building the $env environment in $mode mode\n\n"
 # Build in environment dir
 pushd $env > /dev/null
 
+# Get the current git hash and write to a temporary env file
+printf "Generating environment variables file...\n"
+hash="$(git rev-parse --short=6 HEAD)"
+echo "HASH=$hash" >> "env.txt"
+echo "MODE=$mode" >> "env.txt"
+printf "Environment variables file generated.\n"
+
 # Loop over volumes listed in the compose files, creating them if they don't exist already
 echo "Checking/creating required Docker volumes..."
-vol_names="$(docker-compose $compose_file_args config --volumes|tr '\n' ' ')"
+vol_names="$(docker-compose $compose_file_args --env-file env.txt config --volumes|tr '\n' ' ')"
+vol_names=${vol_names//$'\r'}
+
 for vol_name in $vol_names; do
   docker volume create $vol_name
 done
@@ -100,11 +109,14 @@ done
 printf "Done\n\n"
 
 # Run docker-compose
-docker_compose_cmd="docker-compose $compose_file_args -p $mode-$env up $compose_opts"
+docker_compose_cmd="docker-compose $compose_file_args -p $mode-$env --env-file env.txt up $compose_opts"
 echo "Running $docker_compose_cmd in ./$env ..."
 $docker_compose_cmd
 compose_exit_code=$?
 echo Done
+
+# Clean up the environment file
+rm env.txt
 
 # Return from environment dir
 popd > /dev/null
@@ -114,6 +126,7 @@ if [ $compose_exit_code -eq 0 ]; then
 else
   printf "\nFailed to build the $env environment in $mode mode\n"
 fi
+
 printf "==========================================================================================\n"
 
 exit $compose_exit_code

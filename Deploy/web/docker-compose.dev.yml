@@ -1,48 +1,21 @@
 version: "3.8"
 
+# Services
 services:
-
-  # Knowledge Graph Website
-  website:
-    build:
-      context: "./website"
-      dockerfile: "./docker/Dockerfile"
-    image: "website:${HASH}"
-    container_name: "website:${MODE}-${HASH}"
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - webroot:/var/www/html
-      
-  # FTP Server for volume access (DEV ONLY)
-  ftp-server:
-    image: stilliard/pure-ftpd
-    restart: unless-stopped
-    ports:
-      - "21:21"
-      - "30000-30009:30000-30009"
-    environment:
-      PUBLICHOST: "localhost"
-      FTP_USER_HOME: /mnt
-      FTP_USER_NAME: /run/secrets/ftp_user_name
-      FTP_USER_PASS: /run/secrets/ftp_user_pass
-    secrets:
-      - ftp_user_name
-      - ftp_user_pass
-    volumes:
-      - webroot:/mnt/webroot
-      
-secrets:
-  ftp_user_name:
-    file: website/secrets/ftp_user_name
-  ftp_user_pass:
-    file: website/secrets/ftp_user_pass
     
+  # Knowledge Graph Website (Port 81)
+  website:
+    build: 
+      context: "./website"
+      target: base
+    ports:
+      - "81:80"
+    volumes:
+      - type: bind
+        source: "./website/site"
+        target: "/var/www/html"
+   
+# Development network    
 networks:
   default:
     name: dev-web
-    
-volumes:
-  webroot:
-    name: "webroot"
