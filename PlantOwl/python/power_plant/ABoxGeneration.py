@@ -12,9 +12,8 @@ from rdflib.namespace import RDF, RDFS, XSD
 """Creates an instance"""
 def create_instance(graph, class_iri, instance_iri, instance_name):
     instance = URIRef(instance_iri)
-    name = Literal(instance_name)
     graph.add((instance, RDF.type, class_iri))
-    graph.add((instance, RDFS.label, name))
+    link_data_with_type(graph, RDFS.label, instance, instance_name, XSD.string)
     return graph
 
 """Links a source instance with a target instance"""

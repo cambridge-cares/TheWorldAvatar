@@ -67,6 +67,9 @@ public class TBoxManagement implements ITBoxManagement{
 	public String HTTP_PROTOCOL = "http://";
 	public String HTTPS_PROTOCOL = "https://";
 	
+	public static final String HTTP_PROTOCOL="http://";
+	public static final String HTTPS_PROTOCOL="https://";			
+	
 	/**
 	 * Creates an OWL class using the name provided. If the name of the parent 
 	 * class is also provided, it creates the subClassOf relation as well.
@@ -499,8 +502,13 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void addSingleDataTypeRange(OWLDataProperty dataProperty, String range) throws TBoxManagementException{
-		manager.applyChange(new AddAxiom(ontology,
+		if(range.trim().startsWith(HTTP_PROTOCOL) || range.trim().startsWith(HTTPS_PROTOCOL)){
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLDataPropertyRangeAxiom(dataProperty, dataFactory.getOWLDatatype(range))));
+		}else{
+			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLDataPropertyRangeAxiom(dataProperty, getRange(range))));
+		}
 	}
 	
 	/**
@@ -702,7 +710,7 @@ public class TBoxManagement implements ITBoxManagement{
 		for (String classLabel : classLabels) {
 			if (++labelSequence < 2) {
 				checkClassName(classLabel);
-				if (classLabel.contains("http://")) {
+				if (classLabel.trim().startsWith(HTTP_PROTOCOL)||classLabel.trim().startsWith(HTTPS_PROTOCOL)) {
 					classInOwl = dataFactory.getOWLClass(classLabel.replace(" ", ""));
 				} else {
 					classInOwl = dataFactory.getOWLClass(
@@ -722,7 +730,7 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private OWLDataProperty createDataProperty(String propertyLabel) throws TBoxManagementException {
-		if(propertyLabel.contains("http://")){
+		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLDataProperty(propertyLabel.replace(" ", ""));
 		}
 		return dataFactory.getOWLDataProperty(
@@ -738,7 +746,7 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private OWLObjectProperty createObjectProperty(String propertyLabel) throws TBoxManagementException {
-		if(propertyLabel.contains("http://")){
+		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLObjectProperty(propertyLabel.replace(" ", ""));
 		}
 		return dataFactory.getOWLObjectProperty(
