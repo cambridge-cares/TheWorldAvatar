@@ -3,8 +3,8 @@
 # Wrapper script for docker-compose that builds/starts the requested environment in one of three
 # modes (dev/test/prod).
 #
-# Each environment has its own dev, test and prod configuration files, as well as scripts to
-# check volumes and secrets. See the following files for more info:
+# Each environment has its own dev, test and prod configuration files. See the following files for
+# more info:
 # ./<env_name>/
 #   docker-compose.yml
 #   docker-compose.dev.yml
@@ -26,7 +26,7 @@ if [ "$#" -lt 2 ]; then
   exit 1
 fi
 
-# Read env and mode from the first two args then discard them
+# Read env and mode from the first two args
 env=$1
 mode=$2
 shift
@@ -42,11 +42,11 @@ case $env in
     exit 2
 esac
 
-# Check that a valid mode was supplied and set corresponding docker-compose files and options
-compose_opts_default="-d"
+# Check that a valid mode was supplied and set default options for 'docker-compose up'
+up_default_opts="-d"
 case $mode in
   dev)
-    compose_opts_default="$compose_opts_default --force-recreate --build"
+    up_default_opts="$up_default_opts --force-recreate --build"
     ;;
   test)
     ;;
@@ -57,11 +57,16 @@ case $mode in
     exit 3
     ;;
 esac
-compose_files="docker-compose.yml docker-compose.$mode.yml"
-compose_file_args=$(echo $compose_files |sed -e 's/ / -f /' -e 's/^/-f /')
 
-# Store remaining args to pass to docker-compose
-compose_opts="$compose_opts_default $*"
+# Set compose files for this mode
+compose_files="docker-compose.yml docker-compose.$mode.yml"
+
+# Set args to docker-compose itself, including the file specifiers
+compose_file_args=$(echo $compose_files |sed -e 's/ / -f /' -e 's/^/-f /')
+compose_opts="$compose_file_args -p $mode-$env"
+
+# Set options for 'docker-compose up', including any additional args passed to this script
+up_opts="$up_default_opts $*"
 
 printf "\n==========================================================================================\n"
 printf "Building the $env environment in $mode mode\n\n"
@@ -71,7 +76,7 @@ pushd $env > /dev/null
 
 # Loop over volumes listed in the compose files, creating them if they don't exist already
 echo "Checking/creating required Docker volumes..."
-vol_names="$(docker-compose $compose_file_args config --volumes|tr '\n' ' ')"
+vol_names="$(docker-compose $compose_opts config --volumes|tr '\n' ' ')"
 for vol_name in $vol_names; do
   docker volume create $vol_name
 done
@@ -100,20 +105,20 @@ done
 printf "Done\n\n"
 
 # Run docker-compose
-docker_compose_cmd="docker-compose $compose_file_args -p $mode-$env up $compose_opts"
+docker_compose_cmd="docker-compose $compose_opts up $up_opts"
 echo "Running $docker_compose_cmd in ./$env ..."
 $docker_compose_cmd
-compose_exit_code=$?
+compose_up_exit_code=$?
 echo Done
 
 # Return from environment dir
 popd > /dev/null
 
-if [ $compose_exit_code -eq 0 ]; then
-  printf "\nFinished building the $env environment in $mode mode\n"
+if [ $compose_up_exit_code -eq 0 ]; then
+  printf "\n$env environment started in $mode mode\n"
 else
-  printf "\nFailed to build the $env environment in $mode mode\n"
+  printf "\n'docker-compose up' failed with exit code $compose_up_exit_code\n"
 fi
 printf "==========================================================================================\n"
 
-exit $compose_exit_code
+exit $compose_up_exit_code
