@@ -83,14 +83,6 @@ echo "HASH=$hash" >> "$env_filename"
 echo "MODE=$mode" >> "$env_filename"
 printf "Done\n\n"
 
-# Loop over volumes listed in the compose files, creating them if they don't exist already
-echo "Checking/creating required Docker volumes..."
-vol_names="$(docker-compose $compose_opts config --volumes|tr '\n' ' ')"
-for vol_name in $vol_names; do
-  docker volume create $vol_name
-done
-printf "Done\n\n"
-
 # Loop over secret files listed in the compose files, ensuring that they all exist, and have exactly one word on one linea
 echo "Checking required Docker secrets..."
 for compose_file in $compose_files; do

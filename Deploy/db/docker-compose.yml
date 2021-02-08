@@ -47,10 +47,7 @@ secrets:
 volumes:
   blazegraph_data:
     name: "blazegraph_data"
-    external: true
   rdf4j_data:
     name: "rdf4j_data"
-    external: true
   rdf4j_logs:
     name: "rdf4j_logs"
-    external: true
