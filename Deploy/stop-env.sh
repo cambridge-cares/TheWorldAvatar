@@ -45,19 +45,29 @@ case $mode in
     ;;
 esac
 compose_files="docker-compose.yml docker-compose.$mode.yml"
+
+# Set args to docker-compose itself, including the file specifiers
 compose_file_args=$(echo $compose_files |sed -e 's/ / -f /' -e 's/^/-f /')
+env_filename="env.txt"
+compose_opts="$compose_file_args -p $mode-$env --env-file $env_filename"
 
 printf "Stopping the $mode-$env environment\n\n"
 
-# Run docker-compose (switch to environment dir to simplify finding config files)
+# Switch to environment dir to simplify finding config files
 pushd $env > /dev/null
-docker_compose_cmd="docker-compose $compose_file_args -p $mode-$env down"
+
+if [ ! -e $env_filename ]; then
+  echo "Warning: no env vars file at $env/$env_filename, '$env' environment may not have been started. Trying to stop it anyway..."
+fi
+
+# Run docker-compose
+docker_compose_cmd="docker-compose $compose_opts down"
 $docker_compose_cmd
-compose_exit_code=$?
+compose_down_exit_code=$?
 popd > /dev/null
 
-if [ $compose_exit_code -eq 0 ]; then
+if [ $compose_down_exit_code -eq 0 ]; then
   printf "\nDone\n"
 else
-  printf "\n'docker-compose down' failed with exit code $compose_exit_code\n"
+  printf "\n'docker-compose down' failed with exit code $compose_down_exit_code\n"
 fi

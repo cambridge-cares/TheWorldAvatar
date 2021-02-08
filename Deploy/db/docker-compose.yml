@@ -1,8 +1,11 @@
 version: "3.8"
 services:
   blazegraph:
-    build: ./blazegraph
-    container_name: blazegraph
+    build:
+      args:
+        - HASH=$HASH
+      context: blazegraph
+    container_name: "blazegraph_${MODE}-${HASH}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     image: worldavatar/blazegraph
@@ -12,8 +15,11 @@ services:
     volumes:
       - blazegraph_data:/data
   rdf4j:
-    build: ./rdf4j
-    container_name: rdf4j
+    build:
+      args:
+        - HASH=$HASH
+      context: rdf4j
+    container_name: "rdf4j_${MODE}-${HASH}" 
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password

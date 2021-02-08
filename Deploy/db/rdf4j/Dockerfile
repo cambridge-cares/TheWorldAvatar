@@ -2,6 +2,12 @@ FROM eclipse/rdf4j-workbench:amd64-3.5.0
 MAINTAINER oparry@cmclinnovations.com
 EXPOSE 8080
 
+# Arguments
+ARG HASH
+
+# Labels
+LABEL hash = $HASH
+
 # Install zip in order to modify .war files (need to be root)
 USER root
 RUN apk update && apk add zip
