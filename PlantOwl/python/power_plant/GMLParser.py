@@ -12,6 +12,8 @@ from builtins import enumerate
 
 from filetype.types.image import Cr2
 from lxml import etree
+from pandas.io.json import _json_normalize
+from pyproj import Proj, transform
 from rdflib.extras.infixowl import Ontology, OWL_NS
 
 from CropMap import CropMap
@@ -43,6 +45,7 @@ ENVELOPE_LOWER_CORNER = 'lowerCorner'
 ENVELOPE_UPPER_CORNER = 'upperCorner'
 
 ENVELOPE_INSTANCE_PREFIX = 'Envelope_of_'
+EPSG_4326 = 'epsg:4326'
 
 """Declared a variable for creating a graph model"""
 g = Graph()
@@ -150,7 +153,8 @@ def get_crop_map(context):
                                             aboxgen.link_data_with_type(g, URIRef(gmlpropread.getPropertyPosList()),
                                                               URIRef(gmlpropread.getABoxIRI()
                                                                      + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                                              posList.text.replace(" ", "#"), URIRef(gmlpropread.getDataTypePolygonalPoints()))
+                                                                     convert_polygon_from_epsg27700_to_wgs84(" ", 2, posList.text).replace(" ", "#"),
+                                                                     URIRef(gmlpropread.getDataTypePolygonalPoints()))
                                             #print(cropMap.polygon)
             """Adds data and metadata to the envelope"""
             if map_counter == 0:
@@ -191,13 +195,32 @@ def get_crop_map(context):
         save_into_disk(g, str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
         print('Total number of feature members processed:', map_counter)
 
+"""Converts polygon coordinates represented in EPSG 27700 into WGS84"""
+def convert_polygon_from_epsg27700_to_wgs84(delimiter, span, string):
+    wgs84_coordinates = ''
+    flag = True
+    for token in split_at_span(delimiter, span, string):
+        if flag:
+            wgs84_coordinates = wgs84_coordinates + convert_epsg27700_to_wgs84(token, delimiter)
+        else:
+            wgs84_coordinates = wgs84_coordinates + delimiter + convert_epsg27700_to_wgs84(token, delimiter)
+        flag = False
+    return wgs84_coordinates
+
+"""Converts coordinates represented in EPSG 27700 into WGS84, which is equivalent to EPSG 4326"""
+def convert_epsg27700_to_wgs84(coordinate_String, delimiter):
+    from pyproj import Transformer
+    transformer = Transformer.from_crs("epsg:27700", "epsg:4326")
+    x2, y2 = transformer.transform(coordinate_String.split(delimiter)[0], coordinate_String.split(delimiter)[1])
+    return str(x2) + delimiter + str(y2)
+
 """Extracts the centre point from the CROME ID"""
 def getcentre_point_from_crome_id(cromeID):
     coordinates = cromeID[3:]
     if len(coordinates) % 2 == 0:
-        latitude = coordinates[:int(len(coordinates)/2)+1]
-        longitude = coordinates[int(len(coordinates)/2):]
-        return latitude+'#'+longitude
+        easting = coordinates[:int(len(coordinates)/2)]
+        northing = coordinates[int(len(coordinates)/2):]
+        return easting+'#'+northing
     return None
 
 """Saves a graph into the disk/file system"""
