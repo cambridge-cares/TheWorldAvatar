@@ -1,26 +1,20 @@
 package uk.ac.cam.cares.jps.ess;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
@@ -48,7 +42,10 @@ public class OptimizationAgent extends JPSAgent {
 				.addWhere("?entity","j6:hasStateOfCharge", "?dt")
 				.addWhere("?class", "rdfs:subClassOf","?parent")
 				.buildString();
-		
+		boolean validity = validateInput(requestParams);
+		if (validity == false) {
+			throw new JSONException("INPUT no longer valid");
+		}
 		String batIRI=requestParams.getString("storage");		
 		String localUrl = ScenarioHelper.cutHash(batIRI);
 		localUrl = ResourcePathConverter.convert(localUrl);

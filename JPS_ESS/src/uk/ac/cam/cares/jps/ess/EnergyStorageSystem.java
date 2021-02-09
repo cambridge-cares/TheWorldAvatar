@@ -56,7 +56,10 @@ public class EnergyStorageSystem extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 			System.out.println("baseURL: " + baseUrl);
-			validateInput(requestParams);
+			boolean v = validateInput(requestParams);
+			if (v == false) {
+				throw new JSONException("INPUT no longer valid");
+			}
 			String batIRI=requestParams.getString("BatteryCatalog");
 			String ENIRI=requestParams.getString("electricalnetwork");
 			

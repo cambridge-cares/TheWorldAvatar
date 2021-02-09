@@ -1,20 +1,23 @@
 package uk.ac.cam.cares.ess.test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.ess.BatteryEntityCreator;
+import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
 
 public class EnergyStorageLocatorTest extends TestCase {
 	
 	
 	public static String ENIRI = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
-	OntModel model = BatteryEntityCreator.readModelGreedy(ENIRI);
+	OntModel model = EnergyStorageSystem.readModelGreedy(ENIRI);
 	
 	public void testprepareSelectedBranch() {
 		
@@ -31,28 +34,28 @@ public class EnergyStorageLocatorTest extends TestCase {
 	}
 	
 	public void testQueryparentclass() {
-		String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-				+ "SELECT ?entity ?class ?parent "
-				+ "WHERE {?entity  a  ?class ."
-				+ "?entity   j6:hasStateOfCharge ?dt ." 
-				+ "?class rdfs:subClassOf ?parent ."
-				+ "}";
-		 
+		String branchoutputInfo  = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
+				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j4", "http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#")
+				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
+				.addVar("?entity").addVar("?vplossvalue").addVar("?bus1").addVar("?bus2")
+				.addWhere("?entity" ,"a", "j1:UndergroundCable")
+				.addWhere("?entity" ,"j2:isModeledBy", "?model")
+				.addWhere("?model" ,"j5:hasModelVariable", "?ploss")
+				
+				.addWhere("?ploss" ,"a", "j3:PLoss")
+				.addWhere("?ploss" ,"j2:hasValue", "?vploss")
+				.addWhere("?vploss" ,"j2:numericalValue", "?vplossvalue")
+				
+				.addWhere("?entity" ,"j4:hasInput", "?bus1")
+				.addWhere("?entity" ,"j4:hasOutput", "?bus2").buildString();
 		
-		String batIRI="http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";
-		 String result = new QueryBroker().queryFile(batIRI, gencoordinate);
-		 String[] keys = {"entity", "class","parent"};
-		 List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		 System.out.println(resultList.size());
-		 System.out.println("classtype= "+resultList.get(0)[2]);
+		
+		
+		List<String[]> newresult= new ArrayList<String[]>();
+		List<String[]> resultList= EnergyStorageSystem.queryResult(model,branchoutputInfo  );
+		System.out.println(resultList.size());
 	}
 
 }
