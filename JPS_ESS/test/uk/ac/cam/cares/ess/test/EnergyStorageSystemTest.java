@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,11 +16,15 @@ import org.json.JSONObject;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
 import uk.ac.cam.cares.jps.ess.coordination.CoordinationESSAgent;
 
@@ -139,6 +145,13 @@ public class EnergyStorageSystemTest extends TestCase {
 		System.out.println("result battery= "+testres.getString("storage"));
 		pvgeniris.clear();
 		assertEquals("http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB", testres.getString("storage"));
+		
+	}
+	public void testOptimizationAgentInputValidation() {
+		JSONObject jo = new JSONObject();
+		String batIRI = "http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";
+		jo.put("storage", batIRI);
+		assertTrue(new EnergyStorageSystem().validateInput(jo));
 		
 	}
 	/** calls ESSCoordinate through Agent

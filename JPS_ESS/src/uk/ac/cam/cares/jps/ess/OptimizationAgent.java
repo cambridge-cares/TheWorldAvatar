@@ -9,14 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/OptimizationAgent"})
@@ -35,18 +40,23 @@ public class OptimizationAgent extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 		String path="JPS_ESS/LocateBattery"; //later can be queried from the agent descriptions
 		
-		String gencoordinate =  "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-				+ "SELECT ?entity ?class ?parent "
-				+ "WHERE {?entity  a  ?class ."
-				+ "?entity   j6:hasStateOfCharge ?dt ." 
-				+ "?class rdfs:subClassOf ?parent ."
-				+ "}";
-		 
+		String gencoordinate = new SelectBuilder()
+				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
+				.addVar("?entity").addVar("?class").addVar("?parent")
+				.addWhere("?entity", "a","?class")
+				.addWhere("?entity","j6:hasStateOfCharge", "?dt")
+				.addWhere("?class", "rdfs:subClassOf","?parent")
+				.buildString();
 		
-		String batIRI=requestParams.getString("storage");
-		OntModel model=EnergyStorageSystem.readModelGreedy(batIRI);			
-		List<String[]> resultList = EnergyStorageSystem.queryResult(model, gencoordinate);
+		String batIRI=requestParams.getString("storage");		
+		String localUrl = ScenarioHelper.cutHash(batIRI);
+		localUrl = ResourcePathConverter.convert(localUrl);
+		ResultSet resultSet = JenaHelper.queryUrl(localUrl, gencoordinate);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);System.out.println(result);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		
 		if(resultList.get(0)[2].toLowerCase().contains("battery")) {
 			path="JPS_ESS/LocateBattery";

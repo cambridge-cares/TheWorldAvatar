@@ -99,7 +99,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		logger.info("Start");
 		//If user does not have GAMSDIR on, replace the following with the location of his GAMS
 //		String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
-		String gamsLocation = System.getenv("GAMSDIR").split(";")[0];
+		String gamsLocation = "C:\\GAMS\\32";
 
 		gamsLocation =gamsLocation.replace("\\", "/");
 		gamsLocation =gamsLocation.replace("//", "/");
