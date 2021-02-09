@@ -52,17 +52,17 @@ RUN pecl install apcu \
     && pecl install yaml-2.0.4 \
     && docker-php-ext-enable apcu yaml
 	
-# Set file permissions
-RUN chown -R www-data:www-data /var/www/html/
-RUN chmod -R 775 /var/www/html/
+# Install sendmail
+RUN apt-get update && apt-get install -y sendmail sendmail-cf m4
 
+# Install bash
+RUN apt-get update && apt-get install -y bash
+
+# Set file permissions on boot (so it's after mounting)
+ENTRYPOINT "chown -R www-data:www-data /var/www/ && chmod -R 775 /var/www/ && /bin/bash"
 
 ##### Production configuration #####
 FROM base as production
 
 # Copy in site files
 COPY site /var/www/html/
-
-# Set file permissions
-RUN chown -R www-data:www-data /var/www/html/
-RUN chmod -R 775 /var/www/html/

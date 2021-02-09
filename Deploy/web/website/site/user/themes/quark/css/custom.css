@@ -1,0 +1,230 @@
+/* ========== Common HTML elements========== */
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+	color: #338cea;
+	margin-top: 0em;
+}
+
+/* Lists */
+ol li, ul li {
+	margin-top: 0em;
+}
+
+/* Tables */
+td p {
+	margin-bottom: 0em;
+}
+td img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+/* Horizontal rules */
+hr {
+	border-color: #dcdcdc;
+	border-width: 1px;
+	border-style: solid;
+}
+
+/* ========== Common custom classes ========== */
+
+/* Site logo in header */
+#header .logo img, #header .logo svg {
+    display: inherit;
+    height: 65px;
+}
+
+/* Full width element */
+.full-width {
+  width: 100vw !important;
+  position: relative !important;
+  margin-left: -50vw !important;
+  left: 50% !important;
+}
+
+/* Featured images in service pages */
+.header-image {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	vertical-align: middle;
+}
+
+/* Custom buttons */
+.mybutton {
+	outline: 0;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    padding: 0 0 0 0;
+    background-color: rgb(125, 125, 125);
+	border: none !important;
+	 margin-right: 5px;
+}
+.mybutton:hover {
+    background-color: rgb(175, 175, 175);
+}
+
+/* Custom text inputs */
+#input-field {
+    display: inline-block;
+    width: calc(100% - 90px);
+    height: 40px;
+    margin-right: 5px;
+	border: none;
+	padding: 0px 10px;
+}
+#input-field:focus {
+	outline-width: 0;
+} 
+
+/* Autocomplete for input fields */
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 20px;
+} 
+
+/* Accordian buttons */
+.accordion {
+	outline: 0;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #dcdcdc;
+	border-radius: 6px;
+	margin-top: 6px;
+	padding-left: 12px;
+	background-color: white;
+	cursor: pointer;
+	text-align: left;
+	width: 100%;
+	height: 50px;
+	overflow: hidden;
+}
+.accordion.active {
+	border-radius: 6px 6px 0px 0px;
+}
+.active, .accordion:hover {
+  background-color: #dcdcdc;
+}
+.accordion-panel {
+	border-style: solid;
+	border-width: 0px 1px 1px 1px;
+	border-color: #dcdcdc;
+	border-radius: 0px 0px 6px 6px;
+	
+	padding: 8px 16px;
+	background-color: white;
+	display: none;
+	overflow: hidden;
+}
+
+/* Table for partner logos */
+.partner-table {
+	margin-left: auto;
+	margin-right: auto;
+	table-layout: fixed;
+	width: 75%;
+	text-align: center;
+}
+
+
+/* ========== Marie chatbot classes ========== */
+
+/* Container around Marie input fields */
+.marie-input-container {
+	margin-top: 50px;
+	margin-bottom: 50px;
+	height: 240px;
+	background-image: url('/user/images/chemical-background-green.png');
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+/* Wrapper for Marie buttons */
+.input-group {
+  max-width: 900px;
+  width: 75%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+/* Sample Marie chatbot question */
+.sample-question {
+    color: #0cb4ce;
+}
+.sample-question:hover {
+    color: #ce9e0c;
+    cursor: pointer;
+}
+
+/* Chatbot results table */
+.chatbot-table {
+    margin: auto;
+    width: 90% !important;
+    border: 1px solid #a3a3a3 !important;
+    background-color: white;
+	border-collapse: collapse;
+}
+.chatbot-table  th {
+    font-weight: bold;
+    background-color: rgb(242, 242, 242);
+	border: 1px solid #a3a3a3 !important;
+}
+.chatbot-table  td {
+	border: 1px solid #a3a3a3 !important;
+}
+
+/* Container for results */
+.results-container {
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(242, 242, 242);
+    background-color: rgb(252, 252, 252);
+    margin-top: 10px;
+    margin-right: auto;
+    margin-bottom: 10px;
+    margin-left: auto;
+    padding: 10px;
+    width: 90% !important;
+}
+.results-container a {
+    color: #0cb4ce !important;
+}
+
+/* Classes for google results */
+.google_result .main_result {
+    text-align: center;
+    margin-top: 10px;
+    margin-left: 25px;
+    margin-right: 25px;
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    border-color: rgb(242, 242, 242);
+}
+.google_result .sideways-container {
+    width: 50%;
+    text-align: center;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.google_result .extra {
+    margin-top: 10px;
+}
+.google_result .sideways-container .sideways {
+    text-align: center;
+    width: 33% !important;
+    display: inline-block;
+}
+
+/* ========== Contact page classes ========== */
+
+form[name="contact-us-form"] {
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+}
