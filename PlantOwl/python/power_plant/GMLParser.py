@@ -106,8 +106,9 @@ def get_crop_map(context):
                     if getcentre_point_from_crome_id(cropMap.cromeID) != None:
                         aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCentrePoint()),
                                       URIRef(gmlpropread.getABoxIRI()
-                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      getcentre_point_from_crome_id(cropMap.cromeID), URIRef(gmlpropread.getDataTypeCoordinatePoint()))
+                                      + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                      convert_epsg27700_to_wgs84(getcentre_point_from_crome_id(cropMap.cromeID), "#"),
+                                      URIRef(gmlpropread.getDataTypeCoordinatePoint()))
 
                     #print('cromeid', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  LUCODE.lower():
@@ -174,11 +175,13 @@ def get_crop_map(context):
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getLowerCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.lowerCorner.replace(' ', '#'), gmlpropread.getDataTypeCoordinatePoint())
+                                        convert_epsg27700_to_wgs84(envelope.lowerCorner.replace(' ', '#'), '#'),
+                                        gmlpropread.getDataTypeCoordinatePoint())
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getUpperCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.upperCorner.replace(' ', '#'), gmlpropread.getDataTypeCoordinatePoint())
+                                        convert_epsg27700_to_wgs84(envelope.upperCorner.replace(' ', '#'), '#'),
+                                        gmlpropread.getDataTypeCoordinatePoint())
             """Links each feature to the envelope"""
             aboxgen.link_instance(g, URIRef(gmlpropread.getBoundedBy()),
                                   URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
