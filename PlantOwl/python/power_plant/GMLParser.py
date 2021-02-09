@@ -45,7 +45,8 @@ ENVELOPE_LOWER_CORNER = 'lowerCorner'
 ENVELOPE_UPPER_CORNER = 'upperCorner'
 
 ENVELOPE_INSTANCE_PREFIX = 'Envelope_of_'
-EPSG_4326 = 'epsg:4326'
+EPSG_4326 = 'EPSG:4326'
+EPSG_27700 = 'EPSG:27700'
 
 """Declared a variable for creating a graph model"""
 g = Graph()
@@ -167,7 +168,7 @@ def get_crop_map(context):
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getSrsName()),
                                         URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.srsName, XSD.string)
+                                        EPSG_4326, XSD.string)
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getSrsDimension()),
                                         URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
