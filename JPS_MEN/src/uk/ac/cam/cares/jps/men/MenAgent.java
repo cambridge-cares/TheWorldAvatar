@@ -31,7 +31,7 @@ import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 
 @WebServlet(urlPatterns = {"/MENAgent"})
 
-public class MenAgent extends JPSHttpServlet {
+public class MenAgent extends JPSAgent {
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	private List<String> cpirilist = new ArrayList<String>();

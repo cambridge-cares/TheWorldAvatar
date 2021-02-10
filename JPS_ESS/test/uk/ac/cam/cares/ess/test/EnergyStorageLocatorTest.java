@@ -25,7 +25,10 @@ public class EnergyStorageLocatorTest extends TestCase {
 		System.out.println("size= "+SelectedBranch.size()); //assume size=7
 			
 	}
-	
+	/** test createBatteryOwlFile() of BatteryEntityCreator
+	 * 
+	 * @throws IOException
+	 */
 	public void testcreateOwl() throws IOException {
 		
 		String resultofbattery="http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";

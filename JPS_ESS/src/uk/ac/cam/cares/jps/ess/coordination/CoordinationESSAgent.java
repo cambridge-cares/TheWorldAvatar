@@ -87,7 +87,7 @@ public class CoordinationESSAgent extends JPSAgent {
 		//jo.put("optimization",optimizationresult);
 		
 		logger.info("starting the method selected"); //in this case OPF
-		
+		//calls on locatebattery
 		String resultStart = AgentCaller.executeGetWithJsonParameter(optimizationresult, jo.toString());
 		
 		logger.info("optimatization end result= "+resultStart);

@@ -19,7 +19,11 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/OptimizationAgent"})
-
+/** returns appropriate Battery Agent based on criteria
+ * 
+ * @author Laura Ong
+ *
+ */
 public class OptimizationAgent extends JPSAgent {
 	
 	//suggesting the optimization model used based on storage technology chosen

@@ -11,12 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +33,11 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 
 @WebServlet(urlPatterns = { "/CreateBattery" })
+/** creates appropriate battery OWL based on LocateBattery
+ * 
+ * @author Laura Ong
+ *
+ */
 public class BatteryEntityCreator extends JPSAgent {
 	
 	
@@ -114,6 +121,9 @@ public class BatteryEntityCreator extends JPSAgent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return batterylist;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return batterylist;
 		}
 		
 	}
@@ -134,7 +144,12 @@ public class BatteryEntityCreator extends JPSAgent {
         }
         return false;
 	}	
-	
+	/** queries for Electric cable, and returns electric line, loss, and connected buses
+	 * 
+	 * @param model OntModel of electrical network
+	 * @param valueboundary mark at which to query. If larger, add to list
+	 * @return List<String[]>
+	 */
 	public List<String[]> prepareSelectedBranch(OntModel model, double valueboundary){
 		String branchoutputInfo  = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
@@ -166,7 +181,13 @@ public class BatteryEntityCreator extends JPSAgent {
 		return newresult;
 		
 	}
-	
+	/** Selects the respective buses, and return their midpoint locations
+	 * 
+	 * @param model
+	 * @param busirichosen
+	 * @param busirichosen2
+	 * @return
+	 */
 	public double[] prepareStorageLocation(OntModel model,String busirichosen,String busirichosen2){
 		
 		List<double[]>group= new ArrayList<double[]>();
@@ -176,24 +197,20 @@ public class BatteryEntityCreator extends JPSAgent {
 			if(x==1) {
 				iri=busirichosen2;
 			}
-			
-			String buscoordinate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-					+ "SELECT ?valueofx ?valueofy "
-					+ "WHERE {"
-					+ "<"+iri+">   j7:hasGISCoordinateSystem ?coorsys ."
-					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-					+ "?y  j2:hasValue ?vy ." 
-					+ "?vy  j2:numericalValue ?valueofy ."
+			//requires iri to be allocated first as a Node, rather than copying and pasting in iri
+			SelectBuilder sb = new SelectBuilder();
+			sb.setVar(Var.alloc( "?iri" ), NodeFactory.createURI( iri ) ) ;
 
-					+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-					+ "?x  j2:hasValue ?vx ." 
-					+ "?vx  j2:numericalValue ?valueofx ."
-					+ "}";
-			ResultSet resultSet = JenaHelper.query(model, buscoordinate);
-			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-			String[] keys = JenaResultSetFormatter.getKeys(result);
-			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+			String buscoordinate  = sb.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+					.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+					.addVar("?valueofx").addVar("?valueofy")
+					.addWhere("?iri" ,"j7:hasGISCoordinateSystem", "?coorsys")
+					.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
+					.addWhere("?x" ,"j2:hasValue", "?xval").addWhere("?xval" ,"j2:numericalValue", "?valueofx")
+					.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_y", "?y")
+					.addWhere("?y" ,"j2:hasValue", "?yval").addWhere("?yval" ,"j2:numericalValue", "?valueofy")
+					.buildString();
+			List<String[]> resultList = EnergyStorageSystem.queryResult(model, buscoordinate);
 			double[]coordinatebusresult= new double[2];
 			coordinatebusresult[0]=Double.valueOf(resultList.get(0)[0]);
 			coordinatebusresult[1]=Double.valueOf(resultList.get(0)[1]);
@@ -216,7 +233,14 @@ public class BatteryEntityCreator extends JPSAgent {
 		
 	}
 	
-	
+	/** generates the OWL files for the batteries
+	 * 
+	 * @param model
+	 * @param resultofbattery
+	 * @param valueboundary
+	 * @return
+	 * @throws IOException
+	 */
 	public JSONArray createBatteryOwlFile(OntModel model, String resultofbattery,double valueboundary) throws IOException {
 		//ArrayList<String[]> resultfrommodelbranch = readResultfromtxt(dir + "/outputBranch" + "OPF" + ".txt", 6);
 		List<String[]> resultfrommodelbranch = prepareSelectedBranch(model, valueboundary);
@@ -226,8 +250,6 @@ public class BatteryEntityCreator extends JPSAgent {
 		QueryBroker broker=new QueryBroker();
 		JSONArray listofbat= new JSONArray();
 			while(d<size) {
-					//JSONArray indbat= new JSONArray();
-					//double[]coordinate=prepareBatteryLocationData(resultfrommodelbranch.get(d)[0],dir,model);
 					double[]coordinate=prepareStorageLocation(model,resultfrommodelbranch.get(d)[2],resultfrommodelbranch.get(d)[3]);
 					double x=coordinate[0];
 					double y=coordinate[1];

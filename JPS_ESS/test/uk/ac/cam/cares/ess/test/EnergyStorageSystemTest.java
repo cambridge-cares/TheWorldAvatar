@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.ess.BatteryEntityCreator;
@@ -21,11 +22,6 @@ import uk.ac.cam.cares.jps.ess.coordination.CoordinationESSAgent;
 
 
 public class EnergyStorageSystemTest extends TestCase {
-	
-//	String dataPath = QueryBroker.getLocalDataPath();
-//	String baseUrl=dataPath+"/JPS_ESS";
-
-	private String modelname="NESS.gms";
 	private String ENIRI="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 	private String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
 	private String pvGenIRI="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001";
@@ -159,11 +155,10 @@ public class EnergyStorageSystemTest extends TestCase {
 
 			assertNotNull(listbat);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	/**
+	/** test validateInput() of BatteryEntityCreator
 	 * 
 	 */
 	public void testBatteryEntityCreatorInputValidation() {
@@ -171,6 +166,23 @@ public class EnergyStorageSystemTest extends TestCase {
 		jo.put("storage", storageIRI);
 		assertTrue(new BatteryEntityCreator().validateInput(jo));
 		
+	}
+	/** test BatteryEntityCreator as an agent
+	 * 
+	 */
+	public void testBatteryEntityCreatorAgentCall() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
+		jo.put("storage", storageIRI);
+		String testres = AgentCaller.executeGetWithJsonParameter("JPS_ESS/CreateBattery" , jo.toString());
+		JSONArray ja = new  JSONObject(testres).getJSONArray("batterylist" );
+		assertTrue(ja.length() > 0);
+	}
+	public void testBatteryLocatorAgentCall() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
+		jo.put("storage", storageIRI);
+		String testres = AgentCaller.executeGetWithJsonParameter("JPS_ESS/LocateBattery" , jo.toString());
+		JSONArray ja = new  JSONObject(testres).getJSONArray("batterylist" );
+		assertTrue(ja.length() > 0);
 	}
 	/** calls ESSCoordinate through Agent
 	 * 
