@@ -7,6 +7,13 @@ import java.sql.Statement;
 
 import org.apache.jena.jdbc.JenaDriver;
 import org.apache.jena.jdbc.remote.RemoteEndpointDriver;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.TxnType;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.rdfconnection.RDFConnectionRemote;
+import org.apache.jena.rdfconnection.RDFConnectionRemoteBuilder;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +49,9 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	private String queryEndpoint;
 	private String updateEndpoint;
 	private String query;
+	// Authentication properties
+	private String userName;
+	private String password;
 	
 	///////////////////////////
 	// Constructors
@@ -77,16 +87,43 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
+	 * A constructor defined to initialise the query EndPoint URL, user name and password.
+	 * 
+	 * @param queryEndpoint
+	 * @param user
+	 * @param password
+	 */
+	public RemoteKnowledgeBaseClient(String queryEndpoint, String user, String password){
+		this.queryEndpoint = queryEndpoint;
+	}
+	
+	/**
 	 * A constructor defined to initialise the query EndPoint URL, update<p>
-	 * EndPoint URL and a set of graphs to send a data retrieval or update<p>
-	 * query.    
+	 * EndPoint URL, user name and password.    
+	 * 
+	 * @param queryEndpoint
+	 * @param updateEndpoint
+	 * @param user
+	 * @param password
+	 */
+	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String user, String password){
+		this.queryEndpoint = queryEndpoint;
+		this.updateEndpoint = updateEndpoint;
+	}
+	
+	/**
+	 * A constructor defined to initialise the query EndPoint URL, update<p>
+	 * EndPoint URL, user name and password and a data retrieval or update<p>
+	 * query.
 	 * 
 	 * @param queryEndpoint
 	 * @param updateEndpoint
 	 * @param query
+	 * @param user
+	 * @param password 
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query){
-		this.query = query; // query variable in super class
+	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query, String user, String password){
+		this.query = query;
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
@@ -168,6 +205,42 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 		return this.updateEndpoint;
 	}
 	
+	/**
+	 * Returns the user name to access the current EndPoint.
+	 * 
+	 * @return
+	 */
+	public String getUser() {
+		return userName;
+	}
+
+	/**
+	 * Sets the user name to access the current EndPoint.
+	 * 
+	 * @param userName
+	 */
+	public void setUser(String userName) {
+		this.userName = userName;
+	}
+	
+	/**
+	 * Returns the user password to access the current EndPoint.
+	 * 
+	 * @return
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * Sets the user password to access the current EndPoint.
+	 * 
+	 * @param password
+	 */
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
 	///////////////////////////
 	// Sparql query and update
 	///////////////////////////
@@ -228,7 +301,6 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * Execute sparql query using the query variable
 	 * 
 	 * @return JSONArray as String 
-	 * @throws SQLException
 	 */
 	public String execute(){
 		return execute(this.query);
@@ -239,7 +311,6 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * 
 	 * @param sparql
 	 * @return JSONArray as String
-	 * @throws SQLException
 	 */
 	public String execute(String query){
 		JSONArray result = executeQuery(query);
@@ -296,14 +367,16 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Generates the URL of the remote data repository's EndPoint either to<p>
-	 * perform a data retrieval or an update query.  
+	 * Generates the URL of the remote data repository's EndPoint, which<br>
+	 * might require authentication either to perform a data retrieval or<br>
+	 * an update query.  
 	 * 
 	 * @return
 	 */
 	public String getConnectionUrl() {
 		StringBuilder sb = new StringBuilder();
 		boolean queryFlag = false;
+		boolean updateFlag = false;
 		sb.append(JenaDriver.DRIVER_PREFIX);
 		sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
 		if (this.queryEndpoint != null) {
@@ -311,10 +384,23 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
 		}
 		if (this.updateEndpoint != null) {
+			updateFlag = true;
 			if(queryFlag){
 				sb.append("&");
 			}
 			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
+		}
+		if (this.userName != null) {
+			if(queryFlag || updateFlag){
+				sb.append("&");
+			}
+			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_USERNAME, this.userName));
+		}
+		if (this.password != null) {
+			if(queryFlag || updateFlag){
+				sb.append("&");
+			}
+			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_PASSWORD, this.password));
 		}
 		return sb.toString();
 	}
@@ -490,5 +576,43 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 		return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
 				.concat("=");
 	}
-
+	
+	/**
+	 * Return RDFConnection to sparql query endpoint
+	 * @return
+	 */
+	private RDFConnection connectQuery() {
+		
+		RDFConnectionRemoteBuilder builder = null;
+		if(queryEndpoint != null) {
+			builder = RDFConnectionRemote.create().destination(queryEndpoint);
+		}else {
+			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
+		}
+		
+		return builder.build();
+	}
+	
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
+	@Override
+	public Model queryConstruct(Query sparql) {
+		
+		RDFConnection conn = connectQuery();
+		
+		if (conn != null) {
+			conn.begin( TxnType.READ );	
+			try {
+				QueryExecution queryExec = conn.query(sparql);
+				Model results = queryExec.execConstruct();
+				return results;
+			} finally {
+				conn.end();
+			}
+		} else {
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
+		}
+	}
 }

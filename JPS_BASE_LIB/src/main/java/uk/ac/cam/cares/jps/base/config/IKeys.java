@@ -12,6 +12,8 @@ public interface IKeys {
 	
 	String URL_POSITIONQUERY = "url.positionquery";
 
+	String URL_VIRTUALSENSOR = "url.virtualsensor";
+
 	String DATASET_TEMPLATE_URL = "dataset.%s.url";
 	String DATASET_TEMPLATE_KBCLASS = "dataset.%s.kbclass";
 	String DATASET_TEMPLATE_ENDPOINT_URL = "dataset.%s.endpoint.url";

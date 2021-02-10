@@ -92,6 +92,7 @@ public class Dialogs {
     
     public static synchronized File selectFileDialog(File dir, String name, FileFilter[] fileFilter, boolean save) {
         JFileChooser fChooser = getFileChooser(dir, fileFilter);
+        fChooser.setDialogTitle("Select a TBox CSV template file.");
         fChooser.setCurrentDirectory(lastAccess);
         fChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fChooser.setAcceptAllFileFilterUsed(false);

@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.adms;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.SystemUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
@@ -34,7 +39,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static Logger logger = LoggerFactory.getLogger(ADMSOutputAllForShips.class);
 	String targetFolder = AgentLocator.getNewPathToPythonScript("caresjpsadmsinputs", this);
-
+	Path pyrelpath = SystemUtils.IS_OS_LINUX ? Paths.get("bin","python") : Paths.get("Scripts","python.exe");
 
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -45,7 +50,12 @@ public class ADMSOutputAllForShips extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         // String folder = null;
         String folderfilename = joforEN.getString("folder");
-        
+
+        // this is required because unix file paths do not appear as IRIs to the triple store
+        // so we have to add file:/ in front of the path
+        if (!CommandHelper.isWindows()) {
+            folderfilename = folderfilename.split("file:/")[1];
+        }
         // X.Zhou@2020.5.9 Implemented an extra mechanism to identify the extension of the target file and trigger different conversion script 
         // accordingly. I also suggest a future clean up/ restructure of the GST conversion script. I personally suspect the maintainability 
         // and extensibility of this script 

@@ -48,7 +48,17 @@ public class OntoChemExpKBConfig {
 	@Value("${ontochemexp.namespace}")
 	private String ontoChemNamespace;	
 	
+	@Value("${ontochemexp.kb.file.head.comment}")
+	private String ontoChemExpHeadComment;
 	
+	@Value("${ontospecies.uniquespeciesiri.kb.server.url}")
+	private String ontoSpeciesUniqueSpeciesIRIKBServerURL;
+	
+	@Value("${ontospecies.uniquespeciesiri.kb.repository.id}")
+	private String ontoSpeciesUniqueSpeciesIRIKBRepositoryID;
+	
+	@Value("${ontospecies.uniquespeciesiri.kb.abox.iri}")
+	private String ontoSpeciesUniqueSpeciesIRIKBAboxIRI;
 	
 	public String getOntoChemNamespace() {
 		return ontoChemNamespace;
@@ -132,5 +142,37 @@ public class OntoChemExpKBConfig {
 
 	public void setOntoChemExpKBFileName(String ontoChemExpKBFileName) {
 		this.ontoChemExpKBFileName = ontoChemExpKBFileName;
+	}
+	
+	public String getOntoChemExpHeadComment() {
+		return ontoChemExpHeadComment;
+	}
+
+	public void setOntoChemExpHeadComment(String ontoChemExpHeadComment) {
+		this.ontoChemExpHeadComment = ontoChemExpHeadComment;
+	}
+
+	public String getOntoSpeciesUniqueSpeciesIRIKBServerURL() {
+		return ontoSpeciesUniqueSpeciesIRIKBServerURL;
+	}
+
+	public void setOntoSpeciesUniqueSpeciesIRIKBServerURL(String ontoSpeciesUniqueSpeciesIRIKBServerURL) {
+		this.ontoSpeciesUniqueSpeciesIRIKBServerURL = ontoSpeciesUniqueSpeciesIRIKBServerURL;
+	}
+
+	public String getOntoSpeciesUniqueSpeciesIRIKBRepositoryID() {
+		return ontoSpeciesUniqueSpeciesIRIKBRepositoryID;
+	}
+
+	public void setOntoSpeciesUniqueSpeciesIRIKBRepositoryID(String ontoSpeciesUniqueSpeciesIRIKBRepositoryID) {
+		this.ontoSpeciesUniqueSpeciesIRIKBRepositoryID = ontoSpeciesUniqueSpeciesIRIKBRepositoryID;
+	}
+
+	public String getOntoSpeciesUniqueSpeciesIRIKBAboxIRI() {
+		return ontoSpeciesUniqueSpeciesIRIKBAboxIRI;
+	}
+
+	public void setOntoSpeciesUniqueSpeciesIRIKBAboxIRI(String ontoSpeciesUniqueSpeciesIRIKBAboxIRI) {
+		this.ontoSpeciesUniqueSpeciesIRIKBAboxIRI = ontoSpeciesUniqueSpeciesIRIKBAboxIRI;
 	}
 }

@@ -37,7 +37,7 @@ public class DataDownload {
 	public static final String ZCE_PAGE = "http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm";
 	
 	public static final String HNG_DOWNLOAD = "caresjpsarbitrage/HNG_download.pyw";
-	public static final String HNG_PAGE = "http://www.cmegroup.com/trading/energy/natural-gas/natural-gas.html";
+	public static final String HNG_PAGE = "https://www.cmegroup.com/trading/energy/natural-gas/natural-gas_quotes_globex.html";
 	
 	// URIs of ontologies used to define KBs in which market data will be stored
 	public static final String ONTO_PATH_ELEC_MARKETS = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";	
@@ -181,7 +181,7 @@ public class DataDownload {
 			throws Exception {
 
 		String currency_download = new String(
-				"caresjpsarbitrage/exchange_rates.py");
+				"caresjpsarbitrage/exchange_rates.pyw");
 		String path = AgentLocator.getCurrentJpsAppDirectory(new DataDownload());
 		String command = "python " + path+ "/python/" +currency_download;
 		String result = CommandHelper.executeSingleCommand( path, command);
