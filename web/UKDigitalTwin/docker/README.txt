@@ -19,3 +19,8 @@ To build the image:
 To run the image and generate a container:
 	docker run -d -p 3001:3001 --restart always --name "uk-digital-twin" -it uk-digital-twin:`git rev-parse --short HEAD`
 	
+	
+	
+Once running, you should be able to access the tool at localhost:3001/ontotwinuk (note that the port may change depending
+on the NODE_ENV variable).
+	

@@ -40,7 +40,6 @@ WORKDIR /usr/local/uk-digital-twin
 
 # Copy in the UKDigitalTwin folder
 COPY . .
-RUN chmod +x docker/start-twin.sh
 
 ENV NODE_ENV=CMCLDeploy
 RUN npm install
