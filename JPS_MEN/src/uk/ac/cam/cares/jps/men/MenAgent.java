@@ -10,9 +10,11 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.validator.routines.DoubleValidator;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Resource;
@@ -61,12 +63,13 @@ public class MenAgent extends JPSAgent{
 			cpirilist.addAll(Arrays.asList(arr));
 		} else {
 			String ecoindustrialpark = requestParams.getString("ecoindustrialpark");
-			String chemicalplantInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> " 
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "SELECT ?iri "
-					+ "WHERE {?entity  a  cp:Eco-industrialPark  ." 
-					+ "?entity   j2:hasSubsystem ?iri ."
-					+ "}";
+			String chemicalplantInfo = new SelectBuilder()
+					.addPrefix("cp", "http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#")
+					.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+					.addVar("?iri").addWhere("?entity", "a", "cp:Eco-industrialPark")
+					.addWhere("?entity", "j2:hasSubsystem", "?iri")
+					.buildString();
+			
 	
 			ResultSet rs_plant = MenDataProvider.sparql(ecoindustrialpark, chemicalplantInfo); 
 			
@@ -119,13 +122,15 @@ public class MenAgent extends JPSAgent{
 	 * @return
 	 */
 	public boolean validateInput(JSONObject args) {
+		if (args.isEmpty()) {
+            throw new BadRequestException();
+        }
         boolean transport_opt,chemical_opt,bool_opt,impf_opt, comp_opt; 
         transport_opt= chemical_opt =bool_opt= impf_opt = comp_opt= true; //set default value to true
         DoubleValidator doubleValidator = new DoubleValidator();
-        UrlValidator urlValidator = new UrlValidator();
     	try {
         if (args.has("transportationmodes")) {//string of url representing transport
-        	transport_opt = urlValidator.isValid(args.get("transportationmodes").toString() );
+        	transport_opt = InputValidator.checkIfValidIRI(args.get("transportationmodes").toString() );
         	
         }
         if (args.has("chemicalplants")) {//optional value
@@ -133,7 +138,7 @@ public class MenAgent extends JPSAgent{
         	String[] arr = plantLists.split(",");
         	//test all members of array
         	for (int i = 0; i< arr.length; i++) {
-        		if (urlValidator.isValid(arr[i]) == false) {
+        		if (InputValidator.checkIfValidIRI(arr[i]) == false) {
         			chemical_opt = false;
         		}
         	}

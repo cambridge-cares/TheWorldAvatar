@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.validator.routines.DoubleValidator;
 import org.apache.commons.validator.routines.IntegerValidator;
@@ -190,6 +191,9 @@ public class MenTableAgent extends JPSAgent{
 	 * @return
 	 */
 	public boolean validateInput(JSONObject args) {
+		if (args.isEmpty()) {
+            throw new BadRequestException();
+        }
 		boolean yrBool,intMarketBool,carbBool,intBool;
 		yrBool=intMarketBool=carbBool=intBool = true;
         DoubleValidator doubleValidator = new DoubleValidator();
