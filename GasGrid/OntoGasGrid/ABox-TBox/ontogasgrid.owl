@@ -12,6 +12,7 @@
      xmlns:gas_network_system="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl">
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl"/>
         <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">02 February 2021</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing gas grid system in the UK.</rdfs:comment>

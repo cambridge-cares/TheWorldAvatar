@@ -1,0 +1,1240 @@
+Source,Type,Target,Relation,Value
+Bacton,Instance,LocalDistribution,,
+Bacton,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Bacton,,1.46089155
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Bacton,,52.85443098
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Bacton,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Bacton,,E18
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Bacton,,8.0
+Brisley,Instance,LocalDistribution,,
+Brisley,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Brisley,,0.87814288
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Brisley,,52.76603091
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Brisley,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Brisley,,E13
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Brisley,,5.0
+Great Wilbraham,Instance,LocalDistribution,,
+Great Wilbraham,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Great Wilbraham,,0.270338029
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Great Wilbraham,,52.18456636
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Great Wilbraham,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Great Wilbraham,,E08
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Great Wilbraham,,8.0
+Matching Green,Instance,LocalDistribution,,
+Matching Green,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Matching Green,,0.219979659
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Matching Green,,51.78277179
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Matching Green,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Matching Green,,E10
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Matching Green,,10.0
+Peterborough Eye/Tee,Instance,LocalDistribution,,
+Peterborough Eye/Tee,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Peterborough Eye/Tee,,-0.200458517
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Peterborough Eye/Tee,,52.57576614
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Peterborough Eye/Tee,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Peterborough Eye/Tee,,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Peterborough Eye/Tee,,5.0
+Roudham Heath,Instance,LocalDistribution,,
+Roudham Heath,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Roudham Heath,,0.841981154
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Roudham Heath,,52.46049641
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Roudham Heath,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Roudham Heath,,E08
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Roudham Heath,,8.0
+Royston,Instance,LocalDistribution,,
+Royston,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Royston,,-0.010426712
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Royston,,52.03290968
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Royston,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Royston,,E08
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Royston,,8.0
+West Winch,Instance,LocalDistribution,,
+West Winch,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,West Winch,,0.378914579
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,West Winch,,52.72610888
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,West Winch,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,West Winch,,E13
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,West Winch,,5.0
+Whitwell,Instance,LocalDistribution,,
+Whitwell,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Whitwell,,-0.558308459
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Whitwell,,52.60032753
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Whitwell,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Whitwell,,E08
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Whitwell,,8.0
+Yelverton,Instance,LocalDistribution,,
+Yelverton,Instance,EA,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Yelverton,,1.380698437
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Yelverton,,52.58354577
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Yelverton,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Yelverton,,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Yelverton,,9.0
+Alrewas,Instance,LocalDistribution,,
+Alrewas,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Alrewas,,-1.775106267
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Alrewas,,52.74021612
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Alrewas,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Alrewas,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Alrewas,,4.0
+Blaby,Instance,LocalDistribution,,
+Blaby,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Blaby,,-1.17728498
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Blaby,,52.54598408
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Blaby,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Blaby,,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Blaby,,5.0
+Blyborough,Instance,LocalDistribution,,
+Blyborough,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Blyborough,,-0.58161699
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Blyborough,,53.44445483
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Blyborough,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Blyborough,,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Blyborough,,3.0
+Caldecott,Instance,LocalDistribution,,
+Caldecott,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Caldecott,,-0.719830985
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Caldecott,,52.54299981
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Caldecott,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Caldecott,,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Caldecott,,5.0
+Drointon,Instance,LocalDistribution,,
+Drointon,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Drointon,,-1.774846543
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Drointon,,52.74000026
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Drointon,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Drointon,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Drointon,,4.0
+Gosberton,Instance,LocalDistribution,,
+Gosberton,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Gosberton,,-0.106742682
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Gosberton,,52.88607104
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Gosberton,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Gosberton,,E15
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Gosberton,,7.0
+Kirkstead,Instance,LocalDistribution,,
+Kirkstead,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Kirkstead,,-0.252475542
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Kirkstead,,53.14400048
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Kirkstead,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Kirkstead,,E15
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Kirkstead,,7.0
+Market Harborough,Instance,LocalDistribution,,
+Market Harborough,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Market Harborough,,-0.92919987
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Market Harborough,,52.49929888
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Market Harborough,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Market Harborough,,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Market Harborough,,5.0
+Silk Willoughby,Instance,LocalDistribution,,
+Silk Willoughby,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Silk Willoughby,,-0.387292307
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Silk Willoughby,,52.98003463
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Silk Willoughby,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Silk Willoughby,,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Silk Willoughby,,5.0
+Sutton Bridge,Instance,LocalDistribution,,
+Sutton Bridge,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Sutton Bridge,,0.164681077
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Sutton Bridge,,52.72326779
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Sutton Bridge,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Sutton Bridge,,E15
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Sutton Bridge,,7.0
+Thornton Curtis (DN),Instance,LocalDistribution,,
+Thornton Curtis (DN),Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Thornton Curtis (DN),,-0.282928273
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Thornton Curtis (DN),,53.69252148
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Thornton Curtis (DN),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Thornton Curtis (DN),,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Thornton Curtis (DN),,3.0
+Tur Langton,Instance,LocalDistribution,,
+Tur Langton,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Tur Langton,,-0.94839713
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Tur Langton,,52.55290532
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Tur Langton,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Tur Langton,,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Tur Langton,,5.0
+Walesby,Instance,LocalDistribution,,
+Walesby,Instance,EM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Walesby,,-0.272044354
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Walesby,,53.42221618
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Walesby,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Walesby,,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Walesby,,3.0
+Asselby,Instance,LocalDistribution,,
+Asselby,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Asselby,,-0.939939442
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Asselby,,53.737022
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Asselby,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Asselby,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Asselby,,3.0
+Baldersby,Instance,LocalDistribution,,
+Baldersby,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Baldersby,,-1.419054888
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Baldersby,,54.22450724
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Baldersby,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Baldersby,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Baldersby,,3.0
+Burley Bank,Instance,LocalDistribution,,
+Burley Bank,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Burley Bank,,-1.602649055
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Burley Bank,,54.00428352
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Burley Bank,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Burley Bank,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Burley Bank,,3.0
+Ganstead,Instance,LocalDistribution,,
+Ganstead,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ganstead,,-0.235665281
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ganstead,,53.8147688
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ganstead,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ganstead,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ganstead,,3.0
+Pannal,Instance,LocalDistribution,,
+Pannal,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Pannal,,-1.617592619
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Pannal,,53.95230966
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Pannal,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Pannal,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Pannal,,3.0
+Paull,Instance,LocalDistribution,,
+Paull,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Paull,,-0.232850846
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Paull,,53.74114289
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Paull,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Paull,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Paull,,3.0
+Pickering,Instance,LocalDistribution,,
+Pickering,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Pickering,,-0.762520795
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Pickering,,54.2353496
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Pickering,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Pickering,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Pickering,,3.0
+Rawcliffe,Instance,LocalDistribution,,
+Rawcliffe,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Rawcliffe,,-0.911712604
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Rawcliffe,,53.69452372
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Rawcliffe,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Rawcliffe,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Rawcliffe,,3.0
+Towton,Instance,LocalDistribution,,
+Towton,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Towton,,-1.305146694
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Towton,,53.86343424
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Towton,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Towton,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Towton,,3.0
+Bishop Auckland,Instance,LocalDistribution,,
+Bishop Auckland,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Bishop Auckland,,-1.566847585
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Bishop Auckland,,54.67138019
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Bishop Auckland,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Bishop Auckland,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Bishop Auckland,,3.0
+Coldstream,Instance,LocalDistribution,,
+Coldstream,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Coldstream,,-2.220684073
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Coldstream,,55.67065459
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Coldstream,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Coldstream,,E02
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Coldstream,,1.0
+Corbridge,Instance,LocalDistribution,,
+Corbridge,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Corbridge,,-1.948578716
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Corbridge,,54.95942521
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Corbridge,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Corbridge,,E02
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Corbridge,,2.0
+Cowpen Bewley,Instance,LocalDistribution,,
+Cowpen Bewley,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Cowpen Bewley,,-1.261854428
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Cowpen Bewley,,54.5989719
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Cowpen Bewley,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Cowpen Bewley,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Cowpen Bewley,,3.0
+Elton,Instance,LocalDistribution,,
+Elton,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Elton,,-1.40115491
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Elton,,54.55289053
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Elton,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Elton,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Elton,,3.0
+Guyzance,Instance,LocalDistribution,,
+Guyzance,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Guyzance,,-1.700285235
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Guyzance,,55.32629698
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Guyzance,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Guyzance,,E02
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Guyzance,,2.0
+Humbleton,Instance,LocalDistribution,,
+Humbleton,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Humbleton,,-0.145387926
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Humbleton,,53.79857018
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Humbleton,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Humbleton,,E02
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Humbleton,,1.0
+Keld,Instance,LocalDistribution,,
+Keld,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Keld,,-2.666836645
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Keld,,54.5184604
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Keld,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Keld,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Keld,,1.0
+Little Burdon,Instance,LocalDistribution,,
+Little Burdon,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Little Burdon,,-1.494083118
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Little Burdon,,54.55110941
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Little Burdon,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Little Burdon,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Little Burdon,,3.0
+Melkinthorpe,Instance,LocalDistribution,,
+Melkinthorpe,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Melkinthorpe,,-2.674451533
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Melkinthorpe,,54.59454406
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Melkinthorpe,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Melkinthorpe,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Melkinthorpe,,1.0
+Thrintoft,Instance,LocalDistribution,,
+Thrintoft,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Thrintoft,,-1.484032384
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Thrintoft,,54.33844536
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Thrintoft,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Thrintoft,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Thrintoft,,3.0
+Towlaw,Instance,LocalDistribution,,
+Towlaw,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Towlaw,,-1.890999936
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Towlaw,,54.78308083
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Towlaw,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Towlaw,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Towlaw,,1.0
+Wetheral,Instance,LocalDistribution,,
+Wetheral,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Wetheral,,-2.845568273
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Wetheral,,54.89495154
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Wetheral,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Wetheral,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Wetheral,,1.0
+Horndon,Instance,LocalDistribution,,
+Horndon,Instance,NT,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Horndon,,0.393326624
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Horndon,,51.52933566
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Horndon,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Horndon,,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Horndon,,9.0
+Luxborough Lane,Instance,LocalDistribution,,
+Luxborough Lane,Instance,NT,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Luxborough Lane,,0.062717127
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Luxborough Lane,,51.61571227
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Luxborough Lane,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Luxborough Lane,,E10
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Luxborough Lane,,9.0
+Peters Green,Instance,LocalDistribution,,
+Peters Green,Instance,NT,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Peters Green,,-0.36079031
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Peters Green,,51.85675075
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Peters Green,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Peters Green,,E08
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Peters Green,,8.0
+Peters Green South Mimms,Instance,LocalDistribution,,
+Peters Green South Mimms,Instance,NT,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Peters Green South Mimms,,-0.295193227
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Peters Green South Mimms,,51.88303519
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Peters Green South Mimms,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Peters Green South Mimms,,E08
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Peters Green South Mimms,,8.0
+Winkfield,Instance,LocalDistribution,,
+Winkfield,Instance,NT,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Winkfield,,-0.688756004
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Winkfield,,51.44921969
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Winkfield,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Winkfield,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Winkfield,,7.0
+Audley,Instance,LocalDistribution,,
+Audley,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Audley,,-2.35529551
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Audley,,53.05785883
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Audley,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Audley,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Audley,,4.0
+Blackrod,Instance,LocalDistribution,,
+Blackrod,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Blackrod,,-2.597963933
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Blackrod,,53.60202952
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Blackrod,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Blackrod,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Blackrod,,4.0
+Ecclestone,Instance,LocalDistribution,,
+Ecclestone,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ecclestone,,-2.750757647
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ecclestone,,53.61961025
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ecclestone,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ecclestone,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ecclestone,,4.0
+Holmes Chapel,Instance,LocalDistribution,,
+Holmes Chapel,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Holmes Chapel,,-2.385779315
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Holmes Chapel,,53.20128945
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Holmes Chapel,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Holmes Chapel,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Holmes Chapel,,4.0
+Lupton,Instance,LocalDistribution,,
+Lupton,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Lupton,,-2.652054605
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Lupton,,54.2175077
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Lupton,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Lupton,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Lupton,,4.0
+Malpas,Instance,LocalDistribution,,
+Malpas,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Malpas,,-2.833150384
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Malpas,,53.02654411
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Malpas,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Malpas,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Malpas,,4.0
+Mickle Trafford,Instance,LocalDistribution,,
+Mickle Trafford,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Mickle Trafford,,-2.821248625
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Mickle Trafford,,53.22347232
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Mickle Trafford,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Mickle Trafford,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Mickle Trafford,,4.0
+Partington,Instance,LocalDistribution,,
+Partington,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Partington,,-2.411283982
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Partington,,53.42211487
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Partington,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Partington,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Partington,,4.0
+Samlesbury,Instance,LocalDistribution,,
+Samlesbury,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Samlesbury,,-2.636491408
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Samlesbury,,53.75175861
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Samlesbury,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Samlesbury,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Samlesbury,,4.0
+Warburton,Instance,LocalDistribution,,
+Warburton,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Warburton,,-2.482456208
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Warburton,,53.4090024
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Warburton,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Warburton,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Warburton,,4.0
+Weston Point,Instance,LocalDistribution,,
+Weston Point,Instance,NW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Weston Point,,-2.717170246
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Weston Point,,53.31462443
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Weston Point,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Weston Point,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Weston Point,,4.0
+Aberdeen,Instance,LocalDistribution,,
+Aberdeen,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Aberdeen,,-2.383099662
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Aberdeen,,57.13682874
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Aberdeen,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Aberdeen,,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Aberdeen,,0.0
+Armadale,Instance,LocalDistribution,,
+Armadale,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Armadale,,-3.744028434
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Armadale,,55.91836067
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Armadale,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Armadale,,E02
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Armadale,,1.0
+Balgray,Instance,LocalDistribution,,
+Balgray,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Balgray,,-2.95175581
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Balgray,,56.54967363
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Balgray,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Balgray,,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Balgray,,0.0
+Bathgate,Instance,LocalDistribution,,
+Bathgate,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Bathgate,,-3.744387102
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Bathgate,,55.91785855
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Bathgate,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Bathgate,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Bathgate,,1.0
+Broxburn,Instance,LocalDistribution,,
+Broxburn,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Broxburn,,-3.455414104
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Broxburn,,55.92172244
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Broxburn,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Broxburn,,E02
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Broxburn,,1.0
+Burnhervie,Instance,LocalDistribution,,
+Burnhervie,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Burnhervie,,-2.466060143
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Burnhervie,,57.28353928
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Burnhervie,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Burnhervie,,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Burnhervie,,2.0
+Careston,Instance,LocalDistribution,,
+Careston,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Careston,,-2.726519436
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Careston,,56.73503023
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Careston,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Careston,,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Careston,,0.0
+Drum,Instance,LocalDistribution,,
+Drum,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Drum,,-2.383427147
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Drum,,57.13592317
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Drum,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Drum,,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Drum,,0.0
+Glenmavis,Instance,LocalDistribution,,
+Glenmavis,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Glenmavis,,-4.00945623
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Glenmavis,,55.89109364
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Glenmavis,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Glenmavis,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Glenmavis,,0.0
+Hume,Instance,LocalDistribution,,
+Hume,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Hume,,-2.419757729
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Hume,,55.66964615
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Hume,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Hume,,E02
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Hume,,1.0
+Kinknockie,Instance,LocalDistribution,,
+Kinknockie,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Kinknockie,,-1.896472391
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Kinknockie,,57.47372062
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Kinknockie,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Kinknockie,,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Kinknockie,,0.0
+Langholm,Instance,LocalDistribution,,
+Langholm,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Langholm,,-2.933008983
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Langholm,,55.04513307
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Langholm,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Langholm,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Langholm,,1.0
+Lockerbie,Instance,LocalDistribution,,
+Lockerbie,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Lockerbie,,-3.294234097
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Lockerbie,,55.20031459
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Lockerbie,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Lockerbie,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Lockerbie,,1.0
+Pitcairngreen,Instance,LocalDistribution,,
+Pitcairngreen,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Pitcairngreen,,-3.517581191
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Pitcairngreen,,56.43665055
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Pitcairngreen,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Pitcairngreen,,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Pitcairngreen,,0.0
+Soutra,Instance,LocalDistribution,,
+Soutra,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Soutra,,-2.882228825
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Soutra,,55.80583881
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Soutra,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Soutra,,E02
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Soutra,,1.0
+St Fergus,Instance,LocalDistribution,,
+St Fergus,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,St Fergus,,-1.858131089
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,St Fergus,,57.55787533
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,St Fergus,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,St Fergus,,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,St Fergus,,0.0
+Stranraer,Instance,LocalDistribution,,
+Stranraer,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Stranraer,,-3.440224012
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Stranraer,,55.27741371
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Stranraer,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Stranraer,,E01
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Stranraer,,1.0
+Farningham,Instance,LocalDistribution,,
+Farningham,Instance,SE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Farningham,,0.265450299
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Farningham,,51.38033612
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Farningham,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Farningham,,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Farningham,,9.0
+Farningham B,Instance,LocalDistribution,,
+Farningham B,Instance,SE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Farningham B,,0.266858584
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Farningham B,,51.38097116
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Farningham B,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Farningham B,,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Farningham B,,9.0
+Shorne,Instance,LocalDistribution,,
+Shorne,Instance,SE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Shorne,,0.427266595
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Shorne,,51.43027059
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Shorne,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Shorne,,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Shorne,,9.0
+Tatsfield,Instance,LocalDistribution,,
+Tatsfield,Instance,SE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Tatsfield,,0.006066007
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Tatsfield,,51.28593318
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Tatsfield,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Tatsfield,,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Tatsfield,,9.0
+Winkfield,Instance,LocalDistribution,,
+Winkfield,Instance,SE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Winkfield,,-0.688943145
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Winkfield,,51.44900144
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Winkfield,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Winkfield,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Winkfield,,7.0
+Braishfield A,Instance,LocalDistribution,,
+Braishfield A,Instance,SO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Braishfield A,,-1.484453101
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Braishfield A,,51.02372422
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Braishfield A,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Braishfield A,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Braishfield A,,7.0
+Braishfield B,Instance,LocalDistribution,,
+Braishfield B,Instance,SO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Braishfield B,,-1.497727186
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Braishfield B,,51.04192942
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Braishfield B,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Braishfield B,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Braishfield B,,7.0
+Crawley Down,Instance,LocalDistribution,,
+Crawley Down,Instance,SO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Crawley Down,,0.00636798
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Crawley Down,,51.28601926
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Crawley Down,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Crawley Down,,E07
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Crawley Down,,7.0
+Hardwick,Instance,LocalDistribution,,
+Hardwick,Instance,SO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Hardwick,,-0.843043632
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Hardwick,,51.86937202
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Hardwick,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Hardwick,,E08
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Hardwick,,7.0
+Ipsden,Instance,LocalDistribution,,
+Ipsden,Instance,SO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ipsden,,-1.102623317
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ipsden,,51.56517267
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ipsden,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ipsden,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ipsden,,7.0
+Ipsden 2,Instance,LocalDistribution,,
+Ipsden 2,Instance,SO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ipsden 2,,-1.056123562
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ipsden 2,,51.58454122
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ipsden 2,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ipsden 2,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ipsden 2,,7.0
+Mappowder,Instance,LocalDistribution,,
+Mappowder,Instance,SO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Mappowder,,-2.376353254
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Mappowder,,50.84825376
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Mappowder,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Mappowder,,E07
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Mappowder,,7.0
+Winkfield,Instance,LocalDistribution,,
+Winkfield,Instance,SO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Winkfield,,-0.68870932
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Winkfield,,51.44920611
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Winkfield,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Winkfield,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Winkfield,,7.0
+Aylesbeare,Instance,LocalDistribution,,
+Aylesbeare,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Aylesbeare,,-3.35282883
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Aylesbeare,,50.70930806
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Aylesbeare,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Aylesbeare,,E07
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Aylesbeare,,7.0
+Cirencester,Instance,LocalDistribution,,
+Cirencester,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Cirencester,,-1.965841543
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Cirencester,,51.69864842
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Cirencester,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Cirencester,,E14
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Cirencester,,6.0
+Coffinswell,Instance,LocalDistribution,,
+Coffinswell,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Coffinswell,,-3.567900601
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Coffinswell,,50.49944896
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Coffinswell,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Coffinswell,,E07
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Coffinswell,,7.0
+Easton Grey,Instance,LocalDistribution,,
+Easton Grey,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Easton Grey,,-2.150057277
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Easton Grey,,51.58984199
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Easton Grey,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Easton Grey,,E14
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Easton Grey,,6.0
+Evesham,Instance,LocalDistribution,,
+Evesham,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Evesham,,-1.926927131
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Evesham,,52.03005225
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Evesham,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Evesham,,E06
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Evesham,,6.0
+Ilchester,Instance,LocalDistribution,,
+Ilchester,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ilchester,,-2.701567198
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ilchester,,51.00394026
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ilchester,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ilchester,,E07
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ilchester,,7.0
+Littleton Drew,Instance,LocalDistribution,,
+Littleton Drew,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Littleton Drew,,-2.252245404
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Littleton Drew,,51.51623487
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Littleton Drew,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Littleton Drew,,E14
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Littleton Drew,,6.0
+Lyneham (Choakford),Instance,LocalDistribution,,
+Lyneham (Choakford),Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Lyneham (Choakford),,-3.985544773
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Lyneham (Choakford),,50.37498448
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Lyneham (Choakford),,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Lyneham (Choakford),,E07
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Lyneham (Choakford),,7.0
+Pucklechurch,Instance,LocalDistribution,,
+Pucklechurch,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Pucklechurch,,-2.416381642
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Pucklechurch,,51.47936788
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Pucklechurch,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Pucklechurch,,E14
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Pucklechurch,,6.0
+Ross,Instance,LocalDistribution,,
+Ross,Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ross,,-2.618863741
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ross,,51.93123695
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ross,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ross,,E17
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ross,,6.0
+Seabank (DN),Instance,LocalDistribution,,
+Seabank (DN),Instance,SW,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Seabank (DN),,-2.670927143
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Seabank (DN),,51.53797595
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Seabank (DN),,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Seabank (DN),,E14
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Seabank (DN),,6.0
+Alrewas,Instance,LocalDistribution,,
+Alrewas,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Alrewas,,-1.775052644
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Alrewas,,52.73993349
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Alrewas,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Alrewas,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Alrewas,,4.0
+Aspley,Instance,LocalDistribution,,
+Aspley,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Aspley,,-0.530853689
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Aspley,,51.99779966
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Aspley,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Aspley,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Aspley,,4.0
+Audley,Instance,LocalDistribution,,
+Audley,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Audley,,-2.355600664
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Audley,,53.05774762
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Audley,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Audley,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Audley,,4.0
+Austrey,Instance,LocalDistribution,,
+Austrey,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Austrey,,-1.57899115
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Austrey,,52.6430366
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Austrey,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Austrey,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Austrey,,4.0
+Leamington,Instance,LocalDistribution,,
+Leamington,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Leamington,,-1.492639011
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Leamington,,52.2689849
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Leamington,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Leamington,,E06
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Leamington,,6.0
+Lower Quinton,Instance,LocalDistribution,,
+Lower Quinton,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Lower Quinton,,-1.737572473
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Lower Quinton,,52.13155053
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Lower Quinton,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Lower Quinton,,E06
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Lower Quinton,,6.0
+Milwich,Instance,LocalDistribution,,
+Milwich,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Milwich,,-2.043089807
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Milwich,,52.8944863
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Milwich,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Milwich,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Milwich,,4.0
+Ross,Instance,LocalDistribution,,
+Ross,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ross,,-2.618878731
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ross,,51.9312255
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ross,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ross,,E14
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ross,,6.0
+Rugby,Instance,LocalDistribution,,
+Rugby,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Rugby,,-1.270195638
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Rugby,,52.4130366
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Rugby,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Rugby,,E17
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Rugby,,6.0
+Shustoke,Instance,LocalDistribution,,
+Shustoke,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Shustoke,,-1.679692707
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Shustoke,,52.51727406
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Shustoke,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Shustoke,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Shustoke,,4.0
+Stratford-upon-Avon,Instance,LocalDistribution,,
+Stratford-upon-Avon,Instance,WM,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Stratford-upon-Avon,,-1.699864445
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Stratford-upon-Avon,,52.16726884
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Stratford-upon-Avon,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Stratford-upon-Avon,,E06
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Stratford-upon-Avon,,6.0
+Maelor,Instance,LocalDistribution,,
+Maelor,Instance,WN,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Maelor,,-2.921304202
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Maelor,,53.02676147
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Maelor,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Maelor,,E12
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Maelor,,4.0
+Dowlais,Instance,LocalDistribution,,
+Dowlais,Instance,WS,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Dowlais,,-3.35393229
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Dowlais,,51.77963606
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Dowlais,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Dowlais,,E17
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Dowlais,,6.0
+Dyffryn Clydach,Instance,LocalDistribution,,
+Dyffryn Clydach,Instance,WS,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Dyffryn Clydach,,-3.835389581
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Dyffryn Clydach,,51.68469457
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Dyffryn Clydach,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Dyffryn Clydach,,E17
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Dyffryn Clydach,,6.0
+Gilwern,Instance,LocalDistribution,,
+Gilwern,Instance,WS,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Gilwern,,-3.137542277
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Gilwern,,51.82772132
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Gilwern,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Gilwern,,E17
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Gilwern,,6.0
+Abson (Seabank Power Station phase I),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Abson (Seabank Power Station phase I),,-2.416472622
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Abson (Seabank Power Station phase I),,51.47929839
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Abson (Seabank Power Station phase I),,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Abson (Seabank Power Station phase I),,E14
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Abson (Seabank Power Station phase I),,6.0
+Bacton (Great Yarmouth),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Bacton (Great Yarmouth),,1.462380785
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Bacton (Great Yarmouth),,52.85405951
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Bacton (Great Yarmouth),,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Bacton (Great Yarmouth),,E08
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Bacton (Great Yarmouth),,8.0
+Barking (Horndon),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Barking (Horndon),,0.062708816
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Barking (Horndon),,51.61565261
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Barking (Horndon),,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Barking (Horndon),,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Barking (Horndon),,9.0
+Barrow (Black Start),Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Barrow (Black Start),,-3.176123215
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Barrow (Black Start),,54.09740568
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Barrow (Black Start),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Barrow (Black Start),,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Barrow (Black Start),,4.0
+Billingham ICI (Terra Billingham),Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Billingham ICI (Terra Billingham),,-1.196672088
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Billingham ICI (Terra Billingham),,54.6104779
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Billingham ICI (Terra Billingham),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Billingham ICI (Terra Billingham),,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Billingham ICI (Terra Billingham),,3.0
+Bishop Auckland (test facility),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Bishop Auckland (test facility),,-1.564424452
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Bishop Auckland (test facility),,54.671681
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Bishop Auckland (test facility),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Bishop Auckland (test facility),,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Bishop Auckland (test facility),,3.0
+Blackness (BP Grangemouth),Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Blackness (BP Grangemouth),,-3.542225448
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Blackness (BP Grangemouth),,56.00168461
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Blackness (BP Grangemouth),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Blackness (BP Grangemouth),,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Blackness (BP Grangemouth),,0.0
+Blyborough (Brigg),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Blyborough (Brigg),,-0.501709718
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Blyborough (Brigg),,53.54194779
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Blyborough (Brigg),,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Blyborough (Brigg),,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Blyborough (Brigg),,3.0
+Blyborough (Cottam),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Blyborough (Cottam),,-0.581514541
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Blyborough (Cottam),,53.44438524
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Blyborough (Cottam),,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Blyborough (Cottam),,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Blyborough (Cottam),,3.0
+Brine Field (Teesside Power Station),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Brine Field (Teesside Power Station),,-1.196606366
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Brine Field (Teesside Power Station),,54.61044188
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Brine Field (Teesside Power Station),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Brine Field (Teesside Power Station),,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Brine Field (Teesside Power Station),,3.0
+Burton Point (Connahs Quay),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Burton Point (Connahs Quay),,-3.053587662
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Burton Point (Connahs Quay),,53.23736766
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Burton Point (Connahs Quay),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Burton Point (Connahs Quay),,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Burton Point (Connahs Quay),,4.0
+Caldecott (Corby Power Station),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Caldecott (Corby Power Station),,-0.682033399
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Caldecott (Corby Power Station),,52.51152688
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Caldecott (Corby Power Station),,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Caldecott (Corby Power Station),,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Caldecott (Corby Power Station),,5.0
+Carrington (Partington) Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Carrington (Partington) Power Station,,-2.411343929
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Carrington (Partington) Power Station,,53.42204053
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Carrington (Partington) Power Station,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Carrington (Partington) Power Station,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Carrington (Partington) Power Station,,4.0
+Centrax Industrial,Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Centrax Industrial,,-3.576090592
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Centrax Industrial,,50.52499709
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Centrax Industrial,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Centrax Industrial,,E07
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Centrax Industrial,,7.0
+Coryton 2 (Thames Haven) Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Coryton 2 (Thames Haven) Power Station,,0.430335165
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Coryton 2 (Thames Haven) Power Station,,51.46076039
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Coryton 2 (Thames Haven) Power Station,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Coryton 2 (Thames Haven) Power Station,,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Coryton 2 (Thames Haven) Power Station,,9.0
+Deeside,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Deeside,,-3.05332832
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Deeside,,53.2372021
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Deeside,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Deeside,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Deeside,,4.0
+Didcot,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Didcot,,-1.261920576
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Didcot,,51.62320336
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Didcot,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Didcot,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Didcot,,7.0
+Drakelow Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Drakelow Power Station,,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Drakelow Power Station,,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Drakelow Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Drakelow Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Drakelow Power Station,,nan
+Eastoft (Keadby Blackstart),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Eastoft (Keadby Blackstart),,-0.751473551
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Eastoft (Keadby Blackstart),,53.59404984
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Eastoft (Keadby Blackstart),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Eastoft (Keadby Blackstart),,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Eastoft (Keadby Blackstart),,3.0
+Eastoft (Keadby),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Eastoft (Keadby),,-0.751473551
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Eastoft (Keadby),,53.59404984
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Eastoft (Keadby),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Eastoft (Keadby),,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Eastoft (Keadby),,3.0
+Enron Billingham,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Enron Billingham,,-1.261878837
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Enron Billingham,,54.59898992
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Enron Billingham,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Enron Billingham,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Enron Billingham,,3.0
+"Epping Green (Enfield Energy, aka Brimsdown)",Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Epping Green (Enfield Energy, aka Brimsdown)",,0.062678154
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Epping Green (Enfield Energy, aka Brimsdown)",,51.61575598
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Epping Green (Enfield Energy, aka Brimsdown)",,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Epping Green (Enfield Energy, aka Brimsdown)",,E10
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Epping Green (Enfield Energy, aka Brimsdown)",,10.0
+Ferny Knoll (AM Paper) (Connection decommissioned),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ferny Knoll (AM Paper) (Connection decommissioned),,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ferny Knoll (AM Paper) (Connection decommissioned),,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ferny Knoll (AM Paper) (Connection decommissioned),,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ferny Knoll (AM Paper) (Connection decommissioned),,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ferny Knoll (AM Paper) (Connection decommissioned),,nan
+Goole (Guardian Glass),Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Goole (Guardian Glass),,-0.911912944
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Goole (Guardian Glass),,53.69447398
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Goole (Guardian Glass),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Goole (Guardian Glass),,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Goole (Guardian Glass),,3.0
+Gowkhall (Longannet),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Gowkhall (Longannet),,-3.519298815
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Gowkhall (Longannet),,56.07753909
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Gowkhall (Longannet),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Gowkhall (Longannet),,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Gowkhall (Longannet),,0.0
+Grain Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Grain Power Station,,0.712108789
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Grain Power Station,,51.44534627
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Grain Power Station,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Grain Power Station,,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Grain Power Station,,9.0
+"Harwarden (Shotton, aka Shotton Paper)",Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Harwarden (Shotton, aka Shotton Paper)",,-3.053472934
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Harwarden (Shotton, aka Shotton Paper)",,53.23737171
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Harwarden (Shotton, aka Shotton Paper)",,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Harwarden (Shotton, aka Shotton Paper)",,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Harwarden (Shotton, aka Shotton Paper)",,4.0
+Hatfield Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Hatfield Power Station,,-0.792264364
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Hatfield Power Station,,53.60108104
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Hatfield Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Hatfield Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Hatfield Power Station,,nan
+Hollingsgreen (Hays Chemicals),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Hollingsgreen (Hays Chemicals),,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Hollingsgreen (Hays Chemicals),,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Hollingsgreen (Hays Chemicals),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Hollingsgreen (Hays Chemicals),,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Hollingsgreen (Hays Chemicals),,4.0
+Langage Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Langage Power Station,,-3.985603786
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Langage Power Station,,50.37492788
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Langage Power Station,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Langage Power Station,,E07
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Langage Power Station,,7.0
+Marchwood Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Marchwood Power Station,,-1.484462179
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Marchwood Power Station,,51.02371979
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Marchwood Power Station,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Marchwood Power Station,,E16
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Marchwood Power Station,,7.0
+"Medway (aka Isle of Grain Power Station, NOT Grain Power)",Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Medway (aka Isle of Grain Power Station, NOT Grain Power)",,0.688116148
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Medway (aka Isle of Grain Power Station, NOT Grain Power)",,51.44083131
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Medway (aka Isle of Grain Power Station, NOT Grain Power)",,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Medway (aka Isle of Grain Power Station, NOT Grain Power)",,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Medway (aka Isle of Grain Power Station, NOT Grain Power)",,9.0
+"Middle Stoke (Damhead Creek, aka  Kingsnorth Power Station)",Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Middle Stoke (Damhead Creek, aka  Kingsnorth Power Station)",,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Middle Stoke (Damhead Creek, aka  Kingsnorth Power Station)",,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Middle Stoke (Damhead Creek, aka  Kingsnorth Power Station)",,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Middle Stoke (Damhead Creek, aka  Kingsnorth Power Station)",,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Middle Stoke (Damhead Creek, aka  Kingsnorth Power Station)",,9.0
+Pembroke Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Pembroke Power Station,,-4.992543837
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Pembroke Power Station,,51.68451934
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Pembroke Power Station,,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Pembroke Power Station,,E17
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Pembroke Power Station,,11.0
+Peterborough (Peterborough Power Station),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Peterborough (Peterborough Power Station),,-0.200531456
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Peterborough (Peterborough Power Station),,52.57573962
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Peterborough (Peterborough Power Station),,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Peterborough (Peterborough Power Station),,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Peterborough (Peterborough Power Station),,5.0
+"Phillips Petroleum, Teesside",Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Phillips Petroleum, Teesside",,-1.196503798
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Phillips Petroleum, Teesside",,54.61043959
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Phillips Petroleum, Teesside",,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Phillips Petroleum, Teesside",,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Phillips Petroleum, Teesside",,3.0
+"Pickmere (Winnington Power, aka Brunner Mond)",Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Pickmere (Winnington Power, aka Brunner Mond)",,-2.443722908
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Pickmere (Winnington Power, aka Brunner Mond)",,53.27277806
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Pickmere (Winnington Power, aka Brunner Mond)",,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Pickmere (Winnington Power, aka Brunner Mond)",,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Pickmere (Winnington Power, aka Brunner Mond)",,4.0
+Roosecote (Roosecote Power Station),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Roosecote (Roosecote Power Station),,-3.176413415
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Roosecote (Roosecote Power Station),,54.09718078
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Roosecote (Roosecote Power Station),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Roosecote (Roosecote Power Station),,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Roosecote (Roosecote Power Station),,4.0
+Rosehill (Saltend Power Station),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Rosehill (Saltend Power Station),,-0.232921429
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Rosehill (Saltend Power Station),,53.74096936
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Rosehill (Saltend Power Station),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Rosehill (Saltend Power Station),,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Rosehill (Saltend Power Station),,3.0
+Ryehouse,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Ryehouse,,0.01063627
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Ryehouse,,51.76401997
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Ryehouse,,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Ryehouse,,E10
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Ryehouse,,10.0
+Saddle Bow (Kings Lynn),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Saddle Bow (Kings Lynn),,0.378975224
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Saddle Bow (Kings Lynn),,52.72605028
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Saddle Bow (Kings Lynn),,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Saddle Bow (Kings Lynn),,E13
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Saddle Bow (Kings Lynn),,5.0
+Saltend BPHP (BP Saltend HP),Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Saltend BPHP (BP Saltend HP),,-0.232379709
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Saltend BPHP (BP Saltend HP),,53.73972932
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Saltend BPHP (BP Saltend HP),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Saltend BPHP (BP Saltend HP),,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Saltend BPHP (BP Saltend HP),,3.0
+"Sandy Lane (Blackburn CHP, aka Sappi Paper Mill)",Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Sandy Lane (Blackburn CHP, aka Sappi Paper Mill)",,-2.636209797
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Sandy Lane (Blackburn CHP, aka Sappi Paper Mill)",,53.75172116
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Sandy Lane (Blackburn CHP, aka Sappi Paper Mill)",,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Sandy Lane (Blackburn CHP, aka Sappi Paper Mill)",,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Sandy Lane (Blackburn CHP, aka Sappi Paper Mill)",,4.0
+Seabank (Seabank Power Station phase II),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Seabank (Seabank Power Station phase II),,-2.670832752
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Seabank (Seabank Power Station phase II),,51.53799244
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Seabank (Seabank Power Station phase II),,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Seabank (Seabank Power Station phase II),,E14
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Seabank (Seabank Power Station phase II),,6.0
+Sellafield Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Sellafield Power Station,,-3.482476119
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Sellafield Power Station,,54.41467134
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Sellafield Power Station,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Sellafield Power Station,,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Sellafield Power Station,,4.0
+"Shellstar (aka Kemira, not Kemira CHP)",Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Shellstar (aka Kemira, not Kemira CHP)",,-2.791962874
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Shellstar (aka Kemira, not Kemira CHP)",,53.28085867
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Shellstar (aka Kemira, not Kemira CHP)",,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Shellstar (aka Kemira, not Kemira CHP)",,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Shellstar (aka Kemira, not Kemira CHP)",,4.0
+Shotwick (Bridgewater Paper),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Shotwick (Bridgewater Paper),,-3.011112557
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Shotwick (Bridgewater Paper),,53.23679922
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Shotwick (Bridgewater Paper),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Shotwick (Bridgewater Paper),,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Shotwick (Bridgewater Paper),,4.0
+Spalding 2 (South Holland) Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Spalding 2 (South Holland) Power Station,,-0.106613948
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Spalding 2 (South Holland) Power Station,,52.88605029
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Spalding 2 (South Holland) Power Station,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Spalding 2 (South Holland) Power Station,,E15
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Spalding 2 (South Holland) Power Station,,7.0
+St Fergus (Peterhead),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,St Fergus (Peterhead),,-1.855907807
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,St Fergus (Peterhead),,57.55970732
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,St Fergus (Peterhead),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,St Fergus (Peterhead),,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,St Fergus (Peterhead),,0.0
+St. Fergus (Shell Blackstart),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,St. Fergus (Shell Blackstart),,-1.841808743
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,St. Fergus (Shell Blackstart),,57.57698343
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,St. Fergus (Shell Blackstart),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,St. Fergus (Shell Blackstart),,E00
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,St. Fergus (Shell Blackstart),,0.0
+St. Neots (Little Barford),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,St. Neots (Little Barford),,-0.26850753
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,St. Neots (Little Barford),,52.20401915
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,St. Neots (Little Barford),,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,St. Neots (Little Barford),,E10
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,St. Neots (Little Barford),,10.0
+Stallingborough,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Stallingborough,,-0.144662357
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Stallingborough,,53.60318718
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Stallingborough,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Stallingborough,,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Stallingborough,,3.0
+Stanford Le Hope (Coryton),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Stanford Le Hope (Coryton),,0.393622873
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Stanford Le Hope (Coryton),,51.52925153
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Stanford Le Hope (Coryton),,East
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Stanford Le Hope (Coryton),,E09
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Stanford Le Hope (Coryton),,9.0
+Staythorpe,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Staythorpe,,-0.862375685
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Staythorpe,,53.07050331
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Staythorpe,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Staythorpe,,E05
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Staythorpe,,5.0
+Sutton Bridge Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Sutton Bridge Power Station,,0.164655677
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Sutton Bridge Power Station,,52.72318656
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Sutton Bridge Power Station,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Sutton Bridge Power Station,,E15
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Sutton Bridge Power Station,,7.0
+"Teesside (BASF, aka BASF Teesside)",Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Teesside (BASF, aka BASF Teesside)",,-1.187161347
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Teesside (BASF, aka BASF Teesside)",,54.60955127
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Teesside (BASF, aka BASF Teesside)",,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Teesside (BASF, aka BASF Teesside)",,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Teesside (BASF, aka BASF Teesside)",,3.0
+Teesside Hydrogen,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Teesside Hydrogen,,-1.195387967
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Teesside Hydrogen,,54.59917641
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Teesside Hydrogen,,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Teesside Hydrogen,,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Teesside Hydrogen,,3.0
+"Terra Nitrogen (aka ICI, Terra Severnside) (Connection decommissioned)",Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Terra Nitrogen (aka ICI, Terra Severnside) (Connection decommissioned)",,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Terra Nitrogen (aka ICI, Terra Severnside) (Connection decommissioned)",,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Terra Nitrogen (aka ICI, Terra Severnside) (Connection decommissioned)",,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Terra Nitrogen (aka ICI, Terra Severnside) (Connection decommissioned)",,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Terra Nitrogen (aka ICI, Terra Severnside) (Connection decommissioned)",,nan
+Thornton Curtis (Humber Refinery,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Thornton Curtis (Humber Refinery,,-0.281174925
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Thornton Curtis (Humber Refinery,,53.60657533
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Thornton Curtis (Humber Refinery,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Thornton Curtis (Humber Refinery,,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Thornton Curtis (Humber Refinery,,3.0
+Thornton Curtis (Killingholme),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Thornton Curtis (Killingholme),,-0.292530209
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Thornton Curtis (Killingholme),,53.63044988
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Thornton Curtis (Killingholme),,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Thornton Curtis (Killingholme),,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Thornton Curtis (Killingholme),,3.0
+Tilbury Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Tilbury Power Station,,0.430147848
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Tilbury Power Station,,51.46088631
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Tilbury Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Tilbury Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Tilbury Power Station,,nan
+Tonna (Baglan Bay),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Tonna (Baglan Bay),,-3.835409121
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Tonna (Baglan Bay),,51.68477376
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Tonna (Baglan Bay),,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Tonna (Baglan Bay),,E17
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Tonna (Baglan Bay),,6.0
+Upper Neeston (Milford Haven Refinery),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Upper Neeston (Milford Haven Refinery),,-5.020254136
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Upper Neeston (Milford Haven Refinery),,51.68901946
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Upper Neeston (Milford Haven Refinery),,West
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Upper Neeston (Milford Haven Refinery),,E17
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Upper Neeston (Milford Haven Refinery),,11.0
+West Burton Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,West Burton Power Station,,-0.581858645
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,West Burton Power Station,,53.44421195
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,West Burton Power Station,,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,West Burton Power Station,,E11
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,West Burton Power Station,,3.0
+"Weston Point (Castner Kelner, aka ICI Runcorn)",Instance,IndustrialUser,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Weston Point (Castner Kelner, aka ICI Runcorn)",,-2.743900555
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Weston Point (Castner Kelner, aka ICI Runcorn)",,53.31574513
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Weston Point (Castner Kelner, aka ICI Runcorn)",,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Weston Point (Castner Kelner, aka ICI Runcorn)",,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Weston Point (Castner Kelner, aka ICI Runcorn)",,4.0
+Weston Point (Rocksavage),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Weston Point (Rocksavage),,-2.729016767
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Weston Point (Rocksavage),,53.31383275
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Weston Point (Rocksavage),,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Weston Point (Rocksavage),,E04
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Weston Point (Rocksavage),,4.0
+Willington Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Willington Power Station,,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Willington Power Station,,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Willington Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Willington Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Willington Power Station,,nan
+Wragg Marsh (Spalding),Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Wragg Marsh (Spalding),,-0.057979679
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Wragg Marsh (Spalding),,52.85237533
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Wragg Marsh (Spalding),,Central
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Wragg Marsh (Spalding),,E15
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Wragg Marsh (Spalding),,7.0
+Wyre Power Station,Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,Wyre Power Station,,-2.839326144
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,Wyre Power Station,,53.86822014
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Wyre Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Wyre Power Station,,nan
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Wyre Power Station,,nan
+"Zeneca (ICI Avecia, aka 'Zenica')",Instance,PowerStation,,
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLongitude,Data Property,"Zeneca (ICI Avecia, aka 'Zenica')",,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasLatitude,Data Property,"Zeneca (ICI Avecia, aka 'Zenica')",,#VALUE!
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,"Zeneca (ICI Avecia, aka 'Zenica')",,North
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,"Zeneca (ICI Avecia, aka 'Zenica')",,E03
+http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,"Zeneca (ICI Avecia, aka 'Zenica')",,3.0
