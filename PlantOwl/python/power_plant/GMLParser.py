@@ -16,7 +16,7 @@ from rdflib.extras.infixowl import Ontology, OWL_NS
 
 from CropMap import CropMap
 from Envelope import Envelope
-from rdflib import Graph, URIRef
+from rdflib import Graph, URIRef, XSD
 
 import PropertyReader as propread
 import GMLParserPropReader as gmlpropread
@@ -89,17 +89,17 @@ def get_crop_map(context):
                     continue
                 if get_tag_name(attribute.tag.lower()) ==  OBJECT_ID.lower():
                     cropMap.objectID = attribute.text
-                    aboxgen.link_data(g, URIRef(gmlpropread.getObjectIDVocabulary()),
+                    aboxgen.link_data_with_type(g, URIRef(gmlpropread.getObjectIDVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      cropMap.objectID)
+                                      cropMap.objectID, XSD.integer)
                     #print('OBJECT_ID', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  CROME_ID.lower():
                     cropMap.cromeID = attribute.text
-                    aboxgen.link_data(g, URIRef(gmlpropread.getCromeIDVocabulary()),
+                    aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCromeIDVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      cropMap.cromeID)
+                                      cropMap.cromeID, XSD.string)
                     if getcentre_point_from_crome_id(cropMap.cromeID) != None:
                         aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCentrePoint()),
                                       URIRef(gmlpropread.getABoxIRI()
@@ -116,24 +116,24 @@ def get_crop_map(context):
                     #print('lucode', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  REF_DATE.lower():
                     cropMap.refDate = attribute.text
-                    aboxgen.link_data(g, URIRef(gmlpropread.getRefDateVocabulary()),
+                    aboxgen.link_data_with_type(g, URIRef(gmlpropread.getRefDateVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      cropMap.refDate)
+                                      cropMap.refDate, XSD.integer)
                     #print('refdate', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  SHAPE_LENGTH.lower():
                     cropMap.shapeLength = attribute.text
-                    aboxgen.link_data(g, URIRef(gmlpropread.getShapeLengthVocabulary()),
+                    aboxgen.link_data_with_type(g, URIRef(gmlpropread.getShapeLengthVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      cropMap.shapeLength)
+                                      cropMap.shapeLength, XSD.double)
                     #print('Shape_Length', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  SHAPE_AREA.lower():
                     cropMap.shapeArea = attribute.text
-                    aboxgen.link_data(g, URIRef(gmlpropread.getShapeAreaVocabulary()),
+                    aboxgen.link_data_with_type(g, URIRef(gmlpropread.getShapeAreaVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      cropMap.shapeArea)
+                                      cropMap.shapeArea, XSD.double)
                     #print('Shape_Area', attribute.text)
                 if get_tag_name(attribute.tag.lower()) == SURFACE_PROPERTY.lower():
                     for surface in attribute:
@@ -159,14 +159,14 @@ def get_crop_map(context):
                                         gmlpropread.getABoxIRI() + rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name),
                                         ENVELOPE_INSTANCE_PREFIX+cropMap.name)
-                aboxgen.link_data(g, URIRef(gmlpropread.getSrsName()),
+                aboxgen.link_data_with_type(g, URIRef(gmlpropread.getSrsName()),
                                         URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.srsName)
-                aboxgen.link_data(g, URIRef(gmlpropread.getSrsDimension()),
+                                        envelope.srsName, XSD.string)
+                aboxgen.link_data_with_type(g, URIRef(gmlpropread.getSrsDimension()),
                                         URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.srsDimension)
+                                        envelope.srsDimension, XSD.integer)
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getLowerCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
