@@ -21,8 +21,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
@@ -31,7 +30,7 @@ import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 
 @WebServlet(urlPatterns = {"/MENAgent"})
 
-public class MenAgent extends JPSAgent {
+public class MenAgent extends JPSAgent{
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	private List<String> cpirilist = new ArrayList<String>();
@@ -39,25 +38,29 @@ public class MenAgent extends JPSAgent {
 	Logger logger = LoggerFactory.getLogger(MenAgent.class);
 	
 	@Override
-	protected void doGetJPS(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	    
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+			
 		
 		logger.info("MENAgent start");
-		
-		JSONObject jo = AgentCaller.readJsonParameter(req);	
-		boolean validInputs = validateInput(jo);
+		boolean validInputs = validateInput(requestParams);
 		if (validInputs == false) {
-			AgentCaller.printToResponse("Error caused by problematic inputs", resp);
+			throw new JSONException("Error caused by problematic inputs");
 		}
-		String transportationModes = jo.optString("transportationmodes", "http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl");
+		String transportationModes = requestParams.optString("transportationmodes", "http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl");
 		
-		if (jo.has("chemicalplants")) {
+		if (requestParams.has("chemicalplants")) {
 			
-			String chemicalPlants = jo.getString("chemicalplants");			
+			String chemicalPlants = requestParams.getString("chemicalplants");			
 			String[] arr=chemicalPlants.split(",");
 			cpirilist.addAll(Arrays.asList(arr));
 		} else {
-			String ecoindustrialpark = jo.getString("ecoindustrialpark");
+			String ecoindustrialpark = requestParams.getString("ecoindustrialpark");
 			String chemicalplantInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> " 
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "SELECT ?iri "
@@ -81,11 +84,11 @@ public class MenAgent extends JPSAgent {
 			}
 		}
 		
-		String carbonTax = "" + jo.getDouble("carbontax");
-		String interestFactor = "" + jo.getDouble("interestfactor");
-		String annualCostFactor = "" + jo.getDouble("annualcostfactor");
-		String internationalMarketPriceFactor = "" + jo.optDouble("internationalmarketpricefactor", 1.05);
-		String internationalMarketLowestPriceApplied = jo.optString("internationalmarketlowestpriceapplied", "false");
+		String carbonTax = "" + requestParams.getDouble("carbontax");
+		String interestFactor = "" +requestParams.getDouble("interestfactor");
+		String annualCostFactor = "" + requestParams.getDouble("annualcostfactor");
+		String internationalMarketPriceFactor = "" + requestParams.optDouble("internationalmarketpricefactor", 1.05);
+		String internationalMarketLowestPriceApplied =requestParams.optString("internationalmarketlowestpriceapplied", "false");
 		
 		MenCalculationParameters parameters = new MenCalculationParameters(Double.parseDouble(carbonTax), Double.parseDouble(interestFactor), Double.parseDouble(annualCostFactor), Double.parseDouble(internationalMarketPriceFactor), Boolean.parseBoolean(internationalMarketLowestPriceApplied));
 		MenDataProvider converter = new MenDataProvider();
@@ -105,11 +108,10 @@ public class MenAgent extends JPSAgent {
 		double totalCost = actual.totalMaterialPurchaseCost + actual.totalMaterialPurchaseCostInternationalMarket 
 				+ actual.totalTransportationCost + actual.totalC02EmissionCost + actual.totalInstallationCost;
 		result.put("totalcost", totalCost);
-			
-		AgentCaller.printToResponse(result.toString(), resp);
 
 		cpirilist.clear();
 		logger.info("MENAgent exit");
+		return result;
 	}
 	/** validate input for args in input from Table Agent
 	 * 
