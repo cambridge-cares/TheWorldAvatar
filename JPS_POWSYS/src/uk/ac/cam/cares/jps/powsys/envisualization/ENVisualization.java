@@ -53,8 +53,8 @@ public class ENVisualization extends JPSHttpServlet {
 	private Logger logger = LoggerFactory.getLogger(ENVisualization.class);
 	String SCENARIO_NAME_TEST = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
 	
-	/**
-	 * Create a KML object.
+	/** Called by createfinalKML()
+	 * Create a KML object and assign to root
 	 */
 	public  ENVisualization() {
 		try {
