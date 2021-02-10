@@ -110,21 +110,17 @@ public class BatteryEntityCreator extends JPSAgent {
 		OntModel model = EnergyStorageSystem.readModelGreedy(ENIRI);
 		
 		JSONArray listbat;
-		JSONObject batterylist=new JSONObject ();
 		try {
 			listbat = createBatteryOwlFile(model, storagetype,valueboundary);
 
 			
-			batterylist.put("batterylist", listbat);
-			return batterylist;
+			requestParams.put("batterylist", listbat);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return batterylist;
 		}catch (Exception e) {
 			e.printStackTrace();
-			return batterylist;
 		}
+		return requestParams;
 		
 	}
 	@Override
