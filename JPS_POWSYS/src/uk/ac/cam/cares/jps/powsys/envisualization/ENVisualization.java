@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -29,6 +30,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -44,8 +47,9 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 @WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" ,"/ENVisualization/readGenerator/*"})
-public class ENVisualization extends JPSHttpServlet {
+public class ENVisualization extends JPSAgent{
 	
 	private static final long serialVersionUID = 1446386963475656702L;
 	private Document doc;
@@ -90,56 +94,86 @@ public class ENVisualization extends JPSHttpServlet {
 		}
 	}
 	
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		String path = request.getServletPath();
-		JSONObject joforEN = AgentCaller.readJsonParameter(request);
-
-		String iriofnetwork = joforEN.getString("electricalnetwork");
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
+		boolean v = validateInput(requestParams);
+		System.gc();
+		if (v == false) {
+			throw new JSONException("Input parameters invalid!");
+		}
+		String path = requestParams.getString("path");
+		String iriofnetwork = requestParams.getString("electricalnetwork");
 		OntModel model = readModelGreedy(iriofnetwork);
 		logger.info("path called= "+path);
-		if ("/ENVisualization/createLineJS".equals(path)) {
+		if (path.contains("/ENVisualization/createLineJS")) {
 			String g=createLineJS(model);
-			AgentCaller.printToResponse(g, response);
+			return new JSONObject(g);
 			
-		} else if ("/ENVisualization/createKMLFile".equals(path)) {
-			String flag = joforEN.getString("flag");
+		} else if (path.contains("/ENVisualization/createKMLFile")) {
+			String flag = requestParams.getString("flag");
 			String b = null;
 			String root = KeyValueManager.get(IKeys.ABSDIR_ROOT);
-			try (FileWriter writer = new FileWriter(root + "/OntoEN/testfinal" + flag +".kml");
-		             BufferedWriter bw = new BufferedWriter(writer)) {
+			
+			try {
+				FileWriter writer = new FileWriter(root + "/OntoEN/testfinal" + flag +".kml");
+		        BufferedWriter bw = new BufferedWriter(writer);
 				b = createfinalKML(model);
 
-	           bw.write(b);
+				bw.write(b);
 				
 				
-				if (true) {
-//					writeToResponse(response, b,n);
-					return;
+				} catch (TransformerException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				
-			} catch (TransformerException e) {
-				e.printStackTrace();
-			}
-			AgentCaller.printToResponse(b, response);
+			
+			return new JSONObject();
 		}
 		
-		else if ("/ENVisualization/createMarkers".equals(path)) {
+		else if (path.contains("/ENVisualization/createMarkers")) {
 
 			logger.info("path called here= " + path);
 			String g=createMarkers(model);
 			
-			AgentCaller.printToResponse(g, response);
+			return new JSONObject(g);
 		}
-		else if ("/ENVisualization/readGenerator".equals(path)) {
+		else if (path.contains("/ENVisualization/readGenerator")) {
 
 			logger.info("path called here= " + path);
 			String g=readGenerator( model);
-			AgentCaller.printToResponse(g, response);
+
+			return new JSONObject(g);
 		}
 		System.gc();
+		return new JSONObject();
 	}
+	@Override
+	/** validates input by checking if path and electricalnetwork parameters are present
+	 * 
+	 */
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("electricalnetwork");
+        String path = requestParams.getString("path");
+        boolean relevant = path.contains("createMarkers") 
+        		|| path.contains("createLineJS") ||
+        		path.contains("readGenerator")||
+        		path.contains("createKMLFile");
+        return InputValidator.checkIfValidIRI(iriofnetwork) & relevant;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        	throw new JSONException("wastenetwork not found");
+        }
+    }
 	
 	public void writeToResponse(HttpServletResponse response, String content,String n) {
 		try {
@@ -604,7 +638,7 @@ public class ENVisualization extends JPSHttpServlet {
 	
 	return resultList;
 	}
-	public String createMarkers(OntModel model) throws IOException {
+	public String createMarkers(OntModel model)  {
 		ArrayList<String>textcomb=new ArrayList<String>();
 		List<String[]> pplants = queryPowerPlant(model);
 		for (int i = 0; i < pplants.size(); i++) {
@@ -677,7 +711,7 @@ public class ENVisualization extends JPSHttpServlet {
 
 			return plantDict;
 	}
-	public String createLineJS(OntModel model) throws IOException {
+	public String createLineJS(OntModel model) {
 		String branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
