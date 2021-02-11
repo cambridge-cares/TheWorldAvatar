@@ -1,11 +1,11 @@
 #!/bin/sh
 
-# Wrapper script for docker-compose that builds/starts the requested environment in one of three
+# Wrapper script for docker-compose that builds/starts the requested stack in one of three
 # modes (dev/test/prod).
 #
-# Each environment has its own dev, test and prod configuration files. See the following files for
+# Each stack has its own dev, test and prod configuration files. See the following files for
 # more info:
-# ./<env_name>/
+# ./<stack_name>/
 #   docker-compose.yml
 #   docker-compose.dev.yml
 #   docker-compose.test.yml
@@ -14,31 +14,31 @@
 # Run this script with no arguments for usage instructions.
 
 
-# Bail out if the environment name and mode weren't supplied
+# Bail out if the stack name and mode weren't supplied
 if [ "$#" -lt 2 ]; then
   echo "============================================================================="
   echo " Usage:"
-  echo "  $0 [env_name] [mode] <additional_args_for_docker_compose>"
+  echo "  $0 [stack_name] [mode] <additional_args_for_docker_compose>"
   echo ""
-  echo "  [env_name] : the environment to start (agent/db/web)"
-  echo "      [mode] : configuration mode name (dev/test/prod)"
+  echo " [stack_name] : the stack to start (agent/db/web)"
+  echo "       [mode] : configuration mode name (dev/test/prod)"
   echo "============================================================================="
   exit 1
 fi
 
-# Read env and mode from the first two args
-env=$1
+# Read stack and mode from the first two args
+stack=$1
 mode=$2
 shift
 shift
 
-# Check that a valid env name was supplied
-case $env in
+# Check that a valid stack name was supplied
+case $stack in
   db) ;;
   agent) ;;
   web) ;;
   *)
-    echo "[$env] is not a recognised environment name; choose 'agent', 'db', or 'web'."
+    echo "[$stack] is not a recognised stack name; choose 'agent', 'db', or 'web'."
     exit 2
 esac
 
@@ -64,16 +64,16 @@ compose_files="docker-compose.yml docker-compose.$mode.yml"
 # Set args to docker-compose itself, including the file specifiers
 compose_file_args=$(echo $compose_files |sed -e 's/ / -f /' -e 's/^/-f /')
 env_filename="env.txt"
-compose_opts="$compose_file_args -p $mode-$env --env-file $env_filename"
+compose_opts="$compose_file_args -p $mode-$stack --env-file $env_filename"
 
 # Set options for 'docker-compose up', including any additional args passed to this script
 up_opts="$up_default_opts $*"
 
 printf "\n==========================================================================================\n"
-printf "Building the $env environment in $mode mode\n\n"
+printf "Building the $stack stack in $mode mode\n\n"
 
-# Build in environment dir
-pushd $env > /dev/null
+# Build in stack dir
+pushd $stack > /dev/null
 
 # Write some properties (e.g. the current git hash) to a temporary env file so that they can be used
 # in the compose config files
@@ -97,7 +97,7 @@ for compose_file in $compose_files; do
         exit 2
       fi
     else
-      echo Expected secret file not found at $env/$secret_file_path
+      echo Expected secret file not found at $stack/$secret_file_path
       popd > /dev/null
       exit 1
     fi
@@ -107,16 +107,16 @@ printf "Done\n\n"
 
 # Run docker-compose
 docker_compose_cmd="docker-compose $compose_opts up $up_opts"
-echo "Running $docker_compose_cmd in ./$env ..."
+echo "Running $docker_compose_cmd in ./$stack ..."
 $docker_compose_cmd
 compose_up_exit_code=$?
 echo Done
 
-# Return from environment dir
+# Return from stack dir
 popd > /dev/null
 
 if [ $compose_up_exit_code -eq 0 ]; then
-  printf "\n$env environment started in $mode mode\n"
+  printf "\n$stack stack started in $mode mode\n"
 else
   printf "\n'docker-compose up' failed with exit code $compose_up_exit_code\n"
 fi
