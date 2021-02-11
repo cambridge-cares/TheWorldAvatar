@@ -56,7 +56,7 @@ public class ENVisualization extends JPSHttpServlet {
 	/** Called by createfinalKML()
 	 * Create a KML object and assign to root
 	 */
-	public  ENVisualization() {
+	public void createKML() {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -186,15 +186,15 @@ public class ENVisualization extends JPSHttpServlet {
 	}
 	
 	public String createfinalKML(OntModel model) throws TransformerException {
-		ENVisualization a = new ENVisualization();
+		createKML();
 
 		// ------------FOR GENERATORS-----------------
 		String type="PowerGenerator";
-		List<String[]> generators = a.queryElementCoordinate(model, type);
+		List<String[]> generators = queryElementCoordinate(model, type);
 		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
 		ArrayList<String> coorddata = new ArrayList<String>();
 		for (int e = 0; e < generators.size(); e++) {
-			StaticobjectgenClass gh = a.new StaticobjectgenClass();
+			StaticobjectgenClass gh = new StaticobjectgenClass();
 			gh.setnamegen("[" + generators.get(e)[0] );
 			gh.setx(generators.get(e)[1]);
 			gh.sety(generators.get(e)[2]);
@@ -213,17 +213,17 @@ public class ENVisualization extends JPSHttpServlet {
 		for (int g = 0; g < gensmerged.size(); g++) {
 			MapPoint c = new MapPoint(Double.valueOf(gensmerged.get(g).gety()),
 					Double.valueOf(gensmerged.get(g).getx()), 0.0, gensmerged.get(g).getnamegen());
-			a.addMark(c, type);
+			addMark(c, type);
 		}
 		
 		
 		
 		// ------------FOR Batteries-----------------	
-		List<String[]> batteries = a.queryElementCoordinate(model, "Battery");
+		List<String[]> batteries = queryElementCoordinate(model, "Battery");
 		ArrayList<ENVisualization.StaticobjectgenClass> batmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
 		ArrayList<String> coorddatabat = new ArrayList<String>();
 		for (int e = 0; e < batteries.size(); e++) {
-			StaticobjectgenClass gh = a.new StaticobjectgenClass();
+			StaticobjectgenClass gh = new StaticobjectgenClass();
 			gh.setnamegen("[" + batteries.get(e)[0] );
 			gh.setx(batteries.get(e)[1]);
 			gh.sety(batteries.get(e)[2]);
@@ -242,15 +242,15 @@ public class ENVisualization extends JPSHttpServlet {
 		for (int g = 0; g < batmerged.size(); g++) {
 			MapPoint c = new MapPoint(Double.valueOf(batmerged.get(g).gety()),
 					Double.valueOf(batmerged.get(g).getx()), 0.0, batmerged.get(g).getnamegen());
-			a.addMark(c, "Battery");
+			addMark(c, "Battery");
 		}
 	
 		// ------------FOR BUS-----------------
-		List<String[]> bus = a.queryElementCoordinate(model, "BusNode");
+		List<String[]> bus = queryElementCoordinate(model, "BusNode");
 		ArrayList<ENVisualization.StaticobjectgenClass> bussesmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
 		ArrayList<String> coorddatabus = new ArrayList<String>();
 		for (int e = 0; e < bus.size(); e++) {
-			StaticobjectgenClass gh = a.new StaticobjectgenClass();
+			StaticobjectgenClass gh = new StaticobjectgenClass();
 			gh.setnamegen("[" + bus.get(e)[0] );
 			gh.setx(bus.get(e)[1]);
 			gh.sety(bus.get(e)[2]);
@@ -269,11 +269,11 @@ public class ENVisualization extends JPSHttpServlet {
 		for (int g = 0; g < bussesmerged.size(); g++) {
 			MapPoint c = new MapPoint(Double.valueOf(bussesmerged.get(g).gety()),
 					Double.valueOf(bussesmerged.get(g).getx()), 0.0, bussesmerged.get(g).getnamegen());
-			a.addMark(c, "BusNode");
+			addMark(c, "BusNode");
 		}
 
 
-		return a.writeFiletoString();
+		return writeFiletoString();
 	}
 	
 	public class StaticobjectgenClass {

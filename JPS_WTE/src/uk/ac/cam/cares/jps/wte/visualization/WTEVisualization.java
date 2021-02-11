@@ -35,8 +35,9 @@ public class WTEVisualization extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
 		validateInput(requestParams);
-		String path = requestParams.getString("scenarioagentoperation");
 		String iriofnetwork = requestParams.getString("wastenetwork");
+
+		String path = requestParams.getString("path");
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork); //because this is a static method
 		String g = "";
 		 if (path.contains("/WTEVisualization/createMarkers")) {

@@ -172,6 +172,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      */
     protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
         JSONObject responseParams;
+        requestParams.put("path", request.getServletPath());
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
             responseParams = processRequestParameters(requestParams, request);

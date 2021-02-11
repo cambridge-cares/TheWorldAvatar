@@ -46,14 +46,32 @@ public class TestAggregation extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
 		System.out.println("result end="+resultStart);
 	}
-	
+	/** calls aggregateEmissionAgent within Scenario. 
+	 * Should be different from regular as it possesses Nuclear generators. 
+	 * Only successful if simulation is stored
+	 */
 	public void testcallscenario(){
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		String scenarioName = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10";
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
-		System.out.println(result);
+		System.out.println("Emission generated via Nuclear Scenario " + result);
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
+		System.out.println("Emission generated via Base Scenario "+resultStart);
+		JSONObject nucEm = new JSONObject(result);
+		JSONObject baseEm = new JSONObject(resultStart);
+		assertNotNull(nucEm.getString("actual")); 
+		assertNotNull(nucEm.getString("design")); 
+		assertNotNull(baseEm.getString("actual")); 
+		assertNotNull(baseEm.getString("design"));
+		
+		//nucEM would be the same as base if it has not been simulated
+		assertNotSame(nucEm.getString("actual"), baseEm.getString("actual"));
+		assertNotSame(nucEm.getString("design"), baseEm.getString("design"));
 	}
+	/** test validateInput() of AggregationEmissionAgent
+	 * 
+	 */
 	public void testInputValidationAggregationEmissionAgent() {
 
 		JSONObject jo = new JSONObject().put("electricalnetwork",  TestEN.ELECTRICAL_NETWORK);

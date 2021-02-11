@@ -68,11 +68,9 @@ public class AggregationEmissionAgent extends JPSAgent{
 
     String plantInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
             + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-            + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
             + "SELECT ?chimney "
             + "WHERE {?entity  a  j1:PowerPlant  ."
             + "?entity   j2:hasSubsystem ?chimney ."
-           // + "?chimney  a j3:Pipe ."
             + "}";
     
     String chimneyiriInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
