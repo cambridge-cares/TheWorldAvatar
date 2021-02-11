@@ -1,15 +1,10 @@
 package uk.ac.cam.cares.jps.wte.test;
 
-import java.io.IOException;
-
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONStringer;
-
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 import uk.ac.cam.cares.jps.wte.visualization.WTEVisualization;
 

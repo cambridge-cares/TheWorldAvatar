@@ -61,7 +61,11 @@ public class WTEVisualization extends JPSAgent{
         }
         try {
         String iriofnetwork = requestParams.getString("wastenetwork");
-        return InputValidator.checkIfValidIRI(iriofnetwork);
+        String path = requestParams.getString("path");
+        boolean relevant = path.contains("createMarkers") 
+        		|| path.contains("readInputs") ||
+        		path.contains("queryOnsite");
+        return InputValidator.checkIfValidIRI(iriofnetwork) & relevant;
         } catch (JSONException ex) {
         	ex.printStackTrace();
         	throw new JSONException("wastenetwork not found");
