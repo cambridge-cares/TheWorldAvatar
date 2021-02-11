@@ -25,6 +25,11 @@ var UKontoTwinMap = require('./routes/ontoTwinUK');
 var app = express(); // this object app has methods 
                      //for routing HTTP requests, configuring middleware, rendering HTML views, 
                     //registering a template engine, and modifying application settings that control how the application behaves.
+
+// Enable cross-domain requests
+const cors = require('cors');
+app.use(cors());			
+					
 var port = config.port;
 process.env.UV_THREADPOOL_SIZE = 128;
 
