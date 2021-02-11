@@ -27,6 +27,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
@@ -712,29 +713,19 @@ public class ENVisualization extends JPSAgent{
 			return plantDict;
 	}
 	public String createLineJS(OntModel model) {
-		String branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX j9: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "SELECT ?entity ?busa ?busb "
-
-				+ "WHERE {?entity  a  j1:UndergroundCable  ." 
-				+ "?entity j9:hasInput ?busa ."
-				+ "?entity j9:hasOutput ?busb ."
-
-				+ "}";
+		System.gc();
+		String branchInfo = new SelectBuilder()
+				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				.addPrefix("j9","http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#")
+				.addVar("?entity").addVar("?busa").addVar("?busb")
+				.addWhere("?entity", "a", "j1:UndergroundCable")
+				.addWhere("?entity", "j9:hasInput", "?busa")
+				.addWhere("?entity", "j9:hasOutput", "?busb")
+				.buildString();
 		
-		ResultSet resultSet = JenaHelper.query(model, branchInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListbranch = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		List<String[]> resultListbranch = queryResult(model, branchInfo);
 		ArrayList<String> busdata= new ArrayList<String>();
-		
+		System.gc();
 	    ArrayList<String>textcomb=new ArrayList<String>();
 		
 		//for the first line branch only 
@@ -783,10 +774,7 @@ public class ENVisualization extends JPSAgent{
 
 
 					+ "}";
-			ResultSet resultSet2 = JenaHelper.query(model, busInfo);
-			String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
-			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-			List<String[]> resultListbus1 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+			List<String[]> resultListbus1 = queryResult(model, busInfo);
 			busdata.add(iri);
 			busdata.add(resultListbus1.get(0)[0]);
 			busdata.add(resultListbus1.get(0)[1]);
@@ -862,10 +850,7 @@ public class ENVisualization extends JPSAgent{
 						+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
 
 						+ "}";
-				ResultSet resultSet2 = JenaHelper.query(model, busInfo);
-				String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
-				String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-				List<String[]> resultListbus1 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+				List<String[]> resultListbus1 = queryResult(model, busInfo);
 				busdata.add(iri);
 				busdata.add(resultListbus1.get(0)[0]);
 				busdata.add(resultListbus1.get(0)[1]);
@@ -903,7 +888,20 @@ public class ENVisualization extends JPSAgent{
 	    return jo.toString();
 		
 	}
-
+	/** feeds a query and gets a result
+	 * 
+	 * @param model
+	 * @param query
+	 * @return
+	 */
+	public static List<String[]> queryResult(OntModel model, String query) {
+		
+		ResultSet resultSet = JenaHelper.query(model, query);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		return resultListfromquery;
+	}
 
 
 }
