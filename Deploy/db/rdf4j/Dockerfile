@@ -1,6 +1,13 @@
 FROM eclipse/rdf4j-workbench:amd64-3.5.0
-MAINTAINER oparry@cmclinnovations.com
 EXPOSE 8080
+
+# Arguments
+ARG HASH
+
+# Labels
+LABEL authors = "support@cmclinnovations.com"
+LABEL description = "RDF4J with BASIC authentication for the server and workbench."
+LABEL hash = $HASH
 
 # Install zip in order to modify .war files (need to be root)
 USER root
