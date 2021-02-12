@@ -18,5 +18,4 @@ http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data
 buildingsthehague,Instance,Target Resource,,
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,buildingsthehague,,http://theworldavatar.com/blazegraph/namespace/buildingsthehague/sparql
 airqualitystation,Instance,Target Resource,,
-http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,airqualitystation,,"http://theworldavatar.com/blazegraph/namespace/
-airqualitystation/sparql"
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,airqualitystation,,"http://theworldavatar.com/blazegraph/namespace/airqualitystation/sparql"
