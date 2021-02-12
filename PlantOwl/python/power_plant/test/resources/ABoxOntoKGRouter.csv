@@ -1,0 +1,22 @@
+Source,Type,Target,Relation,Value
+ontokin,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,ontokin,,http://theworldavatar.com/blazegraph/namespace/ontokin/sparql
+ontospecies,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,ontospecies,,http://theworldavatar.com/blazegraph/namespace/ontospecies/sparql
+ships,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,ships,,http://theworldavatar.com/blazegraph/namespace/ships/sparql
+weatherstation,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,weatherstation,,http://theworldavatar.com/blazegraph/namespace/weatherstation/sparql
+ontocropmapgml,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,ontocropmapgml,,http://theworldavatar.com/blazegraph/namespace/ontocropmapgml/sparql
+ontocompchem,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,ontocompchem,,http://theworldavatar.com/blazegraph/namespace/ontocompchem/sparql
+matpp,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,matpp,,http://theworldavatar.com/blazegraph/namespace/matpp/sparql
+jpsmetadata,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,jpsmetadata,,http://theworldavatar.com/blazegraph/namespace/jpsmetadata/sparql
+buildingsthehague,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,buildingsthehague,,http://theworldavatar.com/blazegraph/namespace/buildingsthehague/sparql
+airqualitystation,Instance,Target Resource,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasIRI,Data Property,airqualitystation,,"http://theworldavatar.com/blazegraph/namespace/
+airqualitystation/sparql"
