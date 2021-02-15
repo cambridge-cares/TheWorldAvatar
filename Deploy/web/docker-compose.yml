@@ -6,6 +6,6 @@ services:
   # Knowledge Graph Website
   website:
     build: "./website"
-    image: "${MODE}-website-${HASH}"
+    image: docker.cmclinnovations.com/website:v1.0
     container_name: "${MODE}-website-${HASH}"
     restart: unless-stopped
