@@ -6,7 +6,7 @@
 """This module is defined to convert coordinates from a Coordinate Reference System (CRS)
 into another. Currently, it supports the following features:
 - EPSG:27700 to WGS84"""
-from math import sin, cos
+from math import sin, cos, sqrt, tan
 
 """Coordinate conversion constants are defined here to convert from EPSG:27700 to WGS84"""
 """Semi-major axis, a"""
@@ -26,6 +26,29 @@ DecimalLAM0 = -2.00000000
 """Mathematical Constant, Pi"""
 Pi = 3.14159265358979
 
+"""Converts from the Easting and Northing coordinates to Latitude"""
+def e_n_to_lat(easting, northing):
+    """Convert an angle measure from decimal to radian"""
+    RadPHI0 = DecimalPHI0 * (Pi / 180)
+
+    """Compute values of some intermediate variables"""
+    aF0 = a * F0
+    bF0 = b * F0
+    e2 = ((aF0^2) - (bF0^2)) / (aF0^2)
+    n = (aF0-bF0) / (aF0 + bF0)
+    Et = easting - E0
+    """Compute the value of PHI in radians"""
+    PHId = initial_lat(northing, aF0, RadPHI0, n, bF0)
+    """"Calculate some intermediate variables using PHId"""
+    nu = aF0 / (sqrt(1 - (e2 * ((sin(PHId)) ^ 2))))
+    rho = (nu * (1 - e2)) / (1 - (e2 * (sin(PHId)) ^ 2))
+    eta2 = (nu / rho) - 1
+    """Calculate latitiude"""
+    VII = (tan(PHId)) / (2 * rho * nu)
+    VIII = ((tan(PHId)) / (24 * rho * (nu ^ 3))) * (5 + (3 * ((tan(PHId)) ^ 2)) + eta2 - (9 * eta2 * ((tan(PHId)) ^ 2)))
+    IX = ((tan(PHId)) / (720 * rho * (nu ^ 5))) * (61 + (90 * ((tan(PHId)) ^ 2)) + (45 * ((tan(PHId)) ^ 4)))
+
+    return (180 / Pi) * (PHId - ((Et ^ 2) * VII) + ((Et ^ 4) * VIII) - ((Et ^ 6) * IX))
 
 def initial_lat(northing, aF0, RadPHI0, n, bF0):
     PHI1 = ((northing - N0) / aF0) + DecimalPHI0
