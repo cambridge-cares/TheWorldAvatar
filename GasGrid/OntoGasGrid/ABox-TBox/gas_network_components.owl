@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl">
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">10 February 2021</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">11 February 2021</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing major infrastructure that interfaces with a gas network</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
@@ -351,6 +351,26 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LongTermStoredGas -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LongTermStoredGas">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#StoredGas"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#MediumTermStoredGas -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#MediumTermStoredGas">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#StoredGas"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#Offtake -->
 
 
@@ -379,6 +399,16 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#PowerStation">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#Offtake"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power station user of gas</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#ShortTermStoredGas -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#ShortTermStoredGas">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#StoredGas"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
     </owl:Class>
     

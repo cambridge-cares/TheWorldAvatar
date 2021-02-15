@@ -17,6 +17,9 @@ Gas,Class,,,,,,Gas to be used within the gas grid.,http://www.theworldavatar.com
 OfftakenGas,Class,Gas,IS-A,,,,Gas offtaken by a grid offtake,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
 StoredGas,Class,Gas,IS-A,,,,Gas stored by grid storage,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
 IntakenGas,Class,Gas,IS-A,,,,Gas admitted to the grid via an intake,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+ShortTermStoredGas,Class,StoredGas,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+MediumTermStoredGas,Class,StoredGas,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+LongTermStoredGas,Class,StoredGas,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
 hasUsed,Object Property,,,Offtake,OfftakenGas,,Represents the relation between an offtake and the gas it has used.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
 hasStored,Object Property,,,Storage,StoredGas,,Represents the relation between gas storage and the gas it holds,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
 hasTaken,Object Property,,,Intake,IntakenGas,,Represents the relation between and intake and the gas it has taken in.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
