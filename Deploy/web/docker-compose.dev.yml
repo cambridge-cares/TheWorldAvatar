@@ -1,5 +1,21 @@
 version: "3.8"
 
+# Services
+services:
+    
+  # Knowledge Graph Website (Port 81)
+  website:
+    build: 
+      context: "./website"
+      target: base
+    ports:
+      - "81:80"
+    volumes:
+      - type: bind
+        source: "./website/site"
+        target: "/var/www/html"
+   
+# Development network    
 networks:
   default:
     name: dev-web

@@ -77,6 +77,7 @@ pushd $stack > /dev/null
 
 # Write some properties (e.g. the current git hash) to a temporary env file so that they can be used
 # in the compose config files
+# Note that this file shouldn't be deleted or down commands will fail
 echo "Generating environment variables file..."
 hash="$(git rev-parse --short=6 HEAD)"
 echo "HASH=$hash" >> "$env_filename"
@@ -120,6 +121,7 @@ if [ $compose_up_exit_code -eq 0 ]; then
 else
   printf "\n'docker-compose up' failed with exit code $compose_up_exit_code\n"
 fi
+
 printf "==========================================================================================\n"
 
 exit $compose_up_exit_code

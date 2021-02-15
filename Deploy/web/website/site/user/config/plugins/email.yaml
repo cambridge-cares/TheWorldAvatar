@@ -1,0 +1,30 @@
+enabled: true
+from: kg-website@cmclinnovations.com
+from_name: 'KG Website'
+to: enquiries@cmclinnovations.com
+to_name: 'CMCL Enquiries'
+queue:
+  enabled: false
+  flush_frequency: '* * * * *'
+  flush_msg_limit: 10
+  flush_time_limit: 100
+mailer:
+  engine: smtp
+  smtp:
+    server: mail.cmclinnovations.com
+    port: 465
+    encryption: ssl
+    user: kgwebsite@cmclinnovations.com
+    password: 45vItoo4-4Vr8ekjyRBS
+    auth_mode: login
+  sendmail:
+    bin: '/usr/sbin/sendmail -bs'
+content_type: text/html
+debug: false
+charset: null
+cc: null
+cc_name: null
+bcc: null
+reply_to: null
+reply_to_name: null
+body: null

@@ -1,0 +1,11 @@
+# Set line endings to Unix style
+* text eol=lf 
+
+*.png binary
+*.jpg binary
+*.bin binary
+*.lock binary
+*.tar binary
+*.zip binary
+*.gz binary
+*.7z binary

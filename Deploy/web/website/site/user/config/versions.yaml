@@ -1,0 +1,4 @@
+core:
+  grav:
+    version: 1.7.5
+    schema: 1.7.0_2020-11-20_1
