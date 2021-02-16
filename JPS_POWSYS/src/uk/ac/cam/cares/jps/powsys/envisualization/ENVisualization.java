@@ -175,7 +175,20 @@ public class ENVisualization extends JPSAgent{
         	throw new JSONException("wastenetwork not found");
         }
     }
-	
+	public static SelectBuilder createLocationQuery() {
+		SelectBuilder sb = new SelectBuilder();
+		sb.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+		.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+		.addVar("?entity").addVar("?xvalue").addVar("?yvalue")
+		.addWhere("?entity" ,"j7:hasGISCoordinateSystem", "?coorsys")
+		.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
+		.addWhere("?x" ,"j2:hasValue", "?xval").addOptional("?xval" ,"j2:numericalValue", "?xvalue")
+		.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_y", "?y")
+		.addWhere("?y" ,"j2:hasValue", "?yval").addOptional("?yval" ,"j2:numericalValue", "?yvalue");
+		;
+		
+		return sb;
+	}
 	public void writeToResponse(HttpServletResponse response, String content,String n) {
 		try {
 			
@@ -579,7 +592,30 @@ public class ENVisualization extends JPSAgent{
 	public List<String[]> queryElementCoordinate(OntModel model,String type) {
 	//String[]typelist= {"PowerGenerator","BusNode"};
 		
-	String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+		String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?entity ?valueofx ?valueofy "
+				+ "WHERE {?entity  a  j1:"+type+"  ." 
+				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
+	
+				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+				+ "?y  j2:hasValue ?vy ." 
+				+ "?vy  j2:numericalValue ?valueofy ."
+	
+				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+				+ "?x  j2:hasValue ?vx ." 
+				+ "?vx  j2:numericalValue ?valueofx ."
+				
+				+ "}";
+		
+		if (type.toLowerCase().contains("battery")) {
+			gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
 			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -587,65 +623,47 @@ public class ENVisualization extends JPSAgent{
 			+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
 			+ "SELECT ?entity ?valueofx ?valueofy "
-			+ "WHERE {?entity  a  j1:"+type+"  ." 
+			+ "WHERE {?entity  a  ?class ."
+			+ "?class rdfs:subClassOf j1:Battery ." 
 			+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-
+	
 			+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
 			+ "?y  j2:hasValue ?vy ." 
 			+ "?vy  j2:numericalValue ?valueofy ."
-
+	
 			+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
 			+ "?x  j2:hasValue ?vx ." 
 			+ "?vx  j2:numericalValue ?valueofx ."
-			
+			+ " {?class rdfs:subClassOf j1:Battery ."
+			+ "} "
+			+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
 			+ "}";
-	
-	if (type.toLowerCase().contains("battery")) {
-		gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-		+ "SELECT ?entity ?valueofx ?valueofy "
-		+ "WHERE {?entity  a  ?class ."
-		+ "?class rdfs:subClassOf j1:Battery ." 
-		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-
-		+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-		+ "?y  j2:hasValue ?vy ." 
-		+ "?vy  j2:numericalValue ?valueofy ."
-
-		+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-		+ "?x  j2:hasValue ?vx ." 
-		+ "?vx  j2:numericalValue ?valueofx ."
-		+ " {?class rdfs:subClassOf j1:Battery ."
-		+ "} "
-		+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
-		+ "}";
+			
+		}
 		
+	
+		
+		ResultSet resultSet = JenaHelper.query(model, gencoordinate);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		
+		return resultList;
 	}
-	
-
-	
-	ResultSet resultSet = JenaHelper.query(model, gencoordinate);
-	String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-	String[] keys = JenaResultSetFormatter.getKeys(result);
-	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-	
-	return resultList;
-	}
+	/** creates markers for PowerPlant (icon) visualization
+	 * 
+	 * @param model
+	 * @return
+	 */
 	public String createMarkers(OntModel model)  {
 		ArrayList<String>textcomb=new ArrayList<String>();
 		List<String[]> pplants = queryPowerPlant(model);
 		for (int i = 0; i < pplants.size(); i++) {
-			String content="{\"coors\": {\"lat\": "+pplants.get(i)[3]+", \"lng\": "+pplants.get(i)[2]
+			String content="{\"coors\": {\"lat\": "+pplants.get(i)[2]+", \"lng\": "+pplants.get(i)[1]
 					+ "},  \"fueltype\": \""
-					+ pplants.get(i)[1].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0]+"\"}";
+					+ pplants.get(i)[3].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0]+"\"}";
 			textcomb.add(content);
 		}
 		JSONArray jsArray = new JSONArray(textcomb);
@@ -653,53 +671,25 @@ public class ENVisualization extends JPSAgent{
 	    jo.put("result", jsArray);
 		return jo.toString();
 	}
-	
+	/** helper function for createMarkers()
+	 * 
+	 * @param model
+	 * @return
+	 */
 	public static List<String[]> queryPowerPlant(OntModel model) {
-		String genInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "SELECT DISTINCT ?entity ?valueofx ?valueofy "
-				+ "WHERE {?entity  a  j1:PowerGenerator ."
-				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?valueofy ."
-//
-				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?valueofx ."
-				
-				+ "}";
-			
-			
-			ResultSet resultSet = JenaHelper.query(model, genInfo);
-			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-			String[] keys = JenaResultSetFormatter.getKeys(result);
-			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		SelectBuilder sb = createLocationQuery()
+				.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				;
+		String genInfo = sb.setDistinct(true)
+				.addWhere("?entity", "a", "j1:PowerGenerator").buildString();
+		List<String[]> resultListfromquery = queryResult(model, genInfo);
 			//used to get distinct emissions and fuel types
-			String plantinfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-					+ "SELECT ?entity ?generation ?valueofx ?valueofy  "
-					+ "WHERE {?entity  a  j1:PowerGenerator ."
-					+ "?entity   j3:realizes ?generation ."
-					
-					+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-					+ "?y  j2:hasValue ?vy ." 
-					+ "?vy  j2:numericalValue ?valueofy ."
-					+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-					+ "?x  j2:hasValue ?vx ." 
-					+ "?vx  j2:numericalValue ?valueofx ."
-
-					+ "}";
+		String plantinfo = sb.addVar("?generation")
+				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+				.addWhere("?entity", "a", "j1:PowerGenerator")
+				.addWhere("?entity","j3:realizes", "?generation")
+				.buildString();
+		
 			QueryBroker broker = new QueryBroker();
 			List<String[]> plantDict = new ArrayList<String[]>();
 			for (int i=0; i<resultListfromquery.size(); i++) {
@@ -712,8 +702,12 @@ public class ENVisualization extends JPSAgent{
 
 			return plantDict;
 	}
-	public String createLineJS(OntModel model) {
-		System.gc();
+	/** Create Line to be rendered in map js
+	 * 
+	 * @param model OntModel created from electrical network IRI
+	 * @return String converted from JSONArray of lat, lng, name, volume of each ELine
+	 */
+	public String createLineJS(OntModel model){
 		String branchInfo = new SelectBuilder()
 				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
 				.addPrefix("j9","http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#")
@@ -722,10 +716,10 @@ public class ENVisualization extends JPSAgent{
 				.addWhere("?entity", "j9:hasInput", "?busa")
 				.addWhere("?entity", "j9:hasOutput", "?busb")
 				.buildString();
-		
+				
 		List<String[]> resultListbranch = queryResult(model, branchInfo);
-		ArrayList<String> busdata= new ArrayList<String>();
 		System.gc();
+		ArrayList<String> busdata= new ArrayList<String>();		
 	    ArrayList<String>textcomb=new ArrayList<String>();
 		
 		//for the first line branch only 
@@ -741,12 +735,8 @@ public class ENVisualization extends JPSAgent{
 			String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
 					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-					+ "PREFIX j9: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
 					+ "SELECT ?VoltMagvalue ?valueofx ?valueofy ?BaseKVvalue "
 					
 					+ "WHERE {"+iri+"  a  j1:BusNode  ." 
@@ -774,7 +764,10 @@ public class ENVisualization extends JPSAgent{
 
 
 					+ "}";
-			List<String[]> resultListbus1 = queryResult(model, busInfo);
+			ResultSet resultSet2 = JenaHelper.query(model, busInfo);
+			String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
+			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+			List<String[]> resultListbus1 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
 			busdata.add(iri);
 			busdata.add(resultListbus1.get(0)[0]);
 			busdata.add(resultListbus1.get(0)[1]);
@@ -850,7 +843,10 @@ public class ENVisualization extends JPSAgent{
 						+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
 
 						+ "}";
-				List<String[]> resultListbus1 = queryResult(model, busInfo);
+				ResultSet resultSet2 = JenaHelper.query(model, busInfo);
+				String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
+				String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+				List<String[]> resultListbus1 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
 				busdata.add(iri);
 				busdata.add(resultListbus1.get(0)[0]);
 				busdata.add(resultListbus1.get(0)[1]);
