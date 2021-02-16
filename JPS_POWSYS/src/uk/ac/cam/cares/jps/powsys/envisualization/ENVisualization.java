@@ -708,6 +708,28 @@ public class ENVisualization extends JPSAgent{
 	 * @return String converted from JSONArray of lat, lng, name, volume of each ELine
 	 */
 	public String createLineJS(OntModel model){
+		SelectBuilder sb = new SelectBuilder()
+				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addVar("?VoltMagvalue").addVar("?xvalue").addVar("?yvalue").addVar("?BaseKVvalue")
+				.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
+				.addWhere("?x" ,"j2:hasValue", "?xval").addOptional("?xval" ,"j2:numericalValue", "?xvalue")
+				.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_y", "?y")
+				.addWhere("?y" ,"j2:hasValue", "?yval").addOptional("?yval" ,"j2:numericalValue", "?yvalue")
+				
+		        .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+		        .addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+		        .addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+		        
+		        .addWhere("?model", "j5:hasModelVariable", "?VM")
+		        .addWhere("?VM","a","j3:Vm")
+		        .addWhere("?VM","j2:hasValue", "?vVM")
+		        .addWhere("?vVM","j2:numericalValue", "?VoltMagvalue")
+		        .addWhere("?model", "j5:hasModelVariable", "?BKV")
+		        .addWhere("?BKV","a","j3:baseKV")
+		        .addWhere("?BKV","j2:hasValue", "?vBKV")
+		        .addWhere("?vBKV","j2:numericalValue", "?BaseKVvalue")
+		        ;
 		String branchInfo = new SelectBuilder()
 				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
 				.addPrefix("j9","http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#")
@@ -732,42 +754,14 @@ public class ENVisualization extends JPSAgent{
 				iri="<"+resultListbranch.get(0)[2]+">";
 			}
 			
-			String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-					+ "SELECT ?VoltMagvalue ?valueofx ?valueofy ?BaseKVvalue "
-					
-					+ "WHERE {"+iri+"  a  j1:BusNode  ." 
-					+ iri+"   j2:isModeledBy ?model ."
-
-					
-					+ "?model   j5:hasModelVariable ?VM ." 
-					+ "?VM  a  j3:Vm  ." 
-					+ "?VM  j2:hasValue ?vVM ."
-					+ "?vVM   j2:numericalValue ?VoltMagvalue ." // Vm
-					
-					+ iri+"   j7:hasGISCoordinateSystem ?coorsys ."
-					+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-					+ "?x  j2:hasValue ?vx ." 
-					+ "?vx  j2:numericalValue ?valueofx ."
-					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-					+ "?y  j2:hasValue ?vy ." 
-					+ "?vy  j2:numericalValue ?valueofy ."
-					
-					+ "?model   j5:hasModelVariable ?BKV ." 
-					+ "?BKV  a  j3:baseKV  ." 
-					+ "?BKV  j2:hasValue ?vBKV ."
-					+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV1
-
-
-
-					+ "}";
-			ResultSet resultSet2 = JenaHelper.query(model, busInfo);
-			String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
-			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-			List<String[]> resultListbus1 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+			SelectBuilder sb2 = sb.clone();
+		    String busInfo = sb2.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
+		          .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+		          .addWhere(iri, "a", "j1:BusNode")
+		          .addWhere(iri, "j2:isModeledBy", "?model")
+		          .addWhere(iri, "j7:hasGISCoordinateSystem", "?coorsys")
+		          .buildString();
+		    List<String[]> resultListbus1 = queryResult(model, busInfo);
 			busdata.add(iri);
 			busdata.add(resultListbus1.get(0)[0]);
 			busdata.add(resultListbus1.get(0)[1]);
@@ -807,46 +801,15 @@ public class ENVisualization extends JPSAgent{
 				}
 				else {
 					iri="<"+resultListbranch.get(a)[2]+">";
-				}
-				
-				String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-						+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-						+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-						+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-						+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-						+ "PREFIX j9: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-						+ "SELECT ?VoltMagvalue ?valueofx ?valueofy ?BaseKVvalue "
-						
-						+ "WHERE {"+iri+"  a  j1:BusNode  ." 
-						+ iri+"   j2:isModeledBy ?model ."
-
-						
-						+ "?model   j5:hasModelVariable ?VM ." 
-						+ "?VM  a  j3:Vm  ." 
-						+ "?VM  j2:hasValue ?vVM ."
-						+ "?vVM   j2:numericalValue ?VoltMagvalue ." // Vm
-						
-						+ iri+"   j7:hasGISCoordinateSystem ?coorsys ."
-						+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-						+ "?x  j2:hasValue ?vx ." 
-						+ "?vx  j2:numericalValue ?valueofx ."
-						+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-						+ "?y  j2:hasValue ?vy ." 
-						+ "?vy  j2:numericalValue ?valueofy ."						
-						
-						+ "?model   j5:hasModelVariable ?BKV ." 
-						+ "?BKV  a  j3:baseKV  ." 
-						+ "?BKV  j2:hasValue ?vBKV ."
-						+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
-
-						+ "}";
-				ResultSet resultSet2 = JenaHelper.query(model, busInfo);
-				String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
-				String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-				List<String[]> resultListbus1 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+				}				
+				SelectBuilder sb2 = sb.clone();
+			    String busInfo = sb2.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
+			          .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+			          .addWhere(iri, "a", "j1:BusNode")
+			          .addWhere(iri, "j2:isModeledBy", "?model")
+			          .addWhere(iri, "j7:hasGISCoordinateSystem", "?coorsys")
+			          .buildString();
+			    List<String[]> resultListbus1 = queryResult(model, busInfo);
 				busdata.add(iri);
 				busdata.add(resultListbus1.get(0)[0]);
 				busdata.add(resultListbus1.get(0)[1]);
