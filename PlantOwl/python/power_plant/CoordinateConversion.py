@@ -8,6 +8,8 @@ into another. Currently, it supports the following features:
 - EPSG:27700 to WGS84"""
 from math import sin, cos, sqrt, tan
 
+from GMLParser import convert_epsg27700_to_wgs84
+
 """Coordinate conversion constants are defined here to convert from EPSG:27700 to WGS84"""
 """Semi-major axis, a"""
 a = 6377563.396
@@ -75,6 +77,7 @@ def e_n_to_long(easting, northing):
 
     return (180 / Pi) * (RadLAM0 + (Et * X) - (pow(Et, 3) * XI) + (pow(Et, 5) * XII) - (pow(Et, 7) * XIIA))
 
+"""Calculates the initial value for latitude in radian"""
 def initial_lat(northing, aF0, RadPHI0, n, bF0):
     PHI1 = ((northing - N0) / aF0) + DecimalPHI0
     M = marc(bF0, n, RadPHI0, PHI1)
@@ -86,6 +89,7 @@ def initial_lat(northing, aF0, RadPHI0, n, bF0):
         PHI1 = PHI2
     return PHI2
 
+"""Calculate the meridional arc"""
 def marc(bF0, n, RadPHI0, PHI1):
     return bF0 * (((1 + n + ((5 / 4) * pow(n, 2)) + ((5 / 4) * pow(n, 3))) * (PHI1 - RadPHI0))
                   - (((3 * n) + (3 * pow(n, 2)) + ((21 / 8) * pow(n, 3))) * (sin(PHI1 - RadPHI0)) * (cos(PHI1 + RadPHI0)))
@@ -95,3 +99,25 @@ def marc(bF0, n, RadPHI0, PHI1):
 if __name__ == '__main__':
     print(e_n_to_lat(651409.903, 313177.270))
     print(e_n_to_long(651409.903, 313177.270))
+    print(e_n_to_lat(495783, 143522))
+    print(e_n_to_long(495783, 143522))
+    print(e_n_to_lat(539686, 309714)) #52.66676759829613
+    print(e_n_to_long(539686, 309714)) #0.06588493447562084
+    print(convert_epsg27700_to_wgs84("539686#309714", "#"))
+    print(convert_epsg27700_to_wgs84("374477#267522", "#"))
+    print(e_n_to_lat(374477, 267522))
+    print(e_n_to_long(374477, 267522))
+    print(e_n_to_lat (539706.3125999998,309679.06259999983))
+    print(e_n_to_long(539706.3125999998,309679.06259999983))
+    print(e_n_to_lat(539666.3125999998, 309679.06259999983))
+    print(e_n_to_long(539666.3125999998, 309679.06259999983))
+    print(e_n_to_lat(539646.3125999998, 309713.68759999983))
+    print(e_n_to_long(539646.3125999998, 309713.68759999983))
+    print(e_n_to_lat(539666.3125999998, 309748.34380000085))
+    print(e_n_to_long(539666.3125999998, 309748.34380000085))
+    print(e_n_to_lat(539706.3125999998, 309748.34380000085))
+    print(e_n_to_long(539706.3125999998, 309748.34380000085))
+    print(e_n_to_lat(539726.3125999998, 309713.68759999983))
+    print(e_n_to_long(539726.3125999998, 309713.68759999983))
+    print(e_n_to_lat(539706.3125999998, 309679.06259999983))
+    print(e_n_to_long(539706.3125999998, 309679.06259999983))
