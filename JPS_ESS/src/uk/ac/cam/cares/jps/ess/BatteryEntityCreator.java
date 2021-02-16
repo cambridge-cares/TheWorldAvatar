@@ -189,12 +189,11 @@ public class BatteryEntityCreator extends JPSAgent {
 			}
 			//requires iri to be allocated first as a Node, rather than copying and pasting in iri
 			SelectBuilder sb = new SelectBuilder();
-			sb.setVar(Var.alloc( "?iri" ), NodeFactory.createURI( iri ) ) ;
-
+			
 			String buscoordinate  = sb.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 					.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
 					.addVar("?valueofx").addVar("?valueofy")
-					.addWhere("?iri" ,"j7:hasGISCoordinateSystem", "?coorsys")
+					.addWhere("<"+iri+">" ,"j7:hasGISCoordinateSystem", "?coorsys")
 					.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
 					.addWhere("?x" ,"j2:hasValue", "?xval").addWhere("?xval" ,"j2:numericalValue", "?valueofx")
 					.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_y", "?y")
