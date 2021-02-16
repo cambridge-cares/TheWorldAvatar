@@ -34,21 +34,21 @@ def e_n_to_lat(easting, northing):
     """Compute values of some intermediate variables"""
     aF0 = a * F0
     bF0 = b * F0
-    e2 = ((aF0^2) - (bF0^2)) / (aF0^2)
+    e2 = ((aF0 * aF0) - (bF0 * bF0)) / (aF0 * aF0)
     n = (aF0-bF0) / (aF0 + bF0)
     Et = easting - E0
     """Compute the value of PHI in radian"""
     PHId = initial_lat(northing, aF0, RadPHI0, n, bF0)
     """"Calculate some intermediate variables using PHId"""
-    nu = aF0 / (sqrt(1 - (e2 * ((sin(PHId)) ^ 2))))
-    rho = (nu * (1 - e2)) / (1 - (e2 * (sin(PHId)) ^ 2))
+    nu = aF0 / (sqrt(1 - (e2 * pow(sin(PHId), 2))))
+    rho = (nu * (1 - e2)) / (1 - (e2 * pow(sin(PHId), 2)))
     eta2 = (nu / rho) - 1
     """Calculate latitiude"""
     VII = (tan(PHId)) / (2 * rho * nu)
-    VIII = ((tan(PHId)) / (24 * rho * (nu ^ 3))) * (5 + (3 * ((tan(PHId)) ^ 2)) + eta2 - (9 * eta2 * ((tan(PHId)) ^ 2)))
-    IX = ((tan(PHId)) / (720 * rho * (nu ^ 5))) * (61 + (90 * ((tan(PHId)) ^ 2)) + (45 * ((tan(PHId)) ^ 4)))
+    VIII = ((tan(PHId)) / (24 * rho * pow(nu, 3))) * (5 + (3 * pow((tan(PHId)), 2)) + eta2 - (9 * eta2 * pow((tan(PHId)), 2)))
+    IX = ((tan(PHId)) / (720 * rho * pow(nu, 5))) * (61 + (90 * pow((tan(PHId)), 2)) + (45 * pow((tan(PHId)), 4)))
 
-    return (180 / Pi) * (PHId - ((Et ^ 2) * VII) + ((Et ^ 4) * VIII) - ((Et ^ 6) * IX))
+    return (180 / Pi) * (PHId - (pow(Et, 2) * VII) + (pow(Et, 4) * VIII) - (pow(Et, 6) * IX))
 
 """Converts from the easting and northing coordinates to longitude"""
 def e_n_to_long(easting, northing):
@@ -58,26 +58,26 @@ def e_n_to_long(easting, northing):
     """Evaluates some intermediate variables"""
     aF0 = a * F0
     bF0 = b * F0
-    e2 = ((aF0 ^ 2) - (bF0 ^ 2)) / (aF0 ^ 2)
+    e2 = (pow(aF0, 2) - pow(bF0, 2)) / pow(aF0, 2)
     n = (aF0 - bF0) / (aF0 + bF0)
     Et = easting - E0
     """Compute the value of PHI in radian"""
     PHId = initial_lat(northing, aF0, RadPHI0, n, bF0)
     """Evaluate some intermediate variables that rely on PHId"""
-    nu = aF0 / (sqrt(1 - (e2 * ((sin(PHId)) ^ 2))))
-    rho = (nu * (1 - e2)) / (1 - (e2 * (sin(PHId)) ^ 2))
+    nu = aF0 / (sqrt(1 - (e2 * pow((sin(PHId)), 2))))
+    rho = (nu * (1 - e2)) / (1 - pow(e2 * (sin(PHId)), 2))
     eta2 = (nu / rho) - 1
     """Calculate longitude"""
-    X = ((cos(PHId)) ^ -1) / nu
-    XI = (((cos(PHId)) ^ -1) / (6 * (nu ^ 3))) * ((nu / rho) + (2 * ((tan(PHId)) ^ 2)))
-    XII = (((cos(PHId)) ^ -1) / (120 * (nu ^ 5))) * (5 + (28 * ((tan(PHId)) ^ 2)) + (24 * ((tan(PHId)) ^ 4)))
-    XIIA = (((cos(PHId)) ^ -1) / (5040 * (nu ^ 7))) * (61 + (662 * ((tan(PHId)) ^ 2)) + (1320 * ((tan(PHId)) ^ 4)) + (720 * ((tan(PHId)) ^ 6)))
+    X = pow((cos(PHId)), -1) / nu
+    XI = (pow((cos(PHId)), -1) / (6 * pow(nu, 3))) * ((nu / rho) + (2 * pow((tan(PHId)), 2)))
+    XII = (pow((cos(PHId)), -1) / (120 * pow(nu, 5))) * (5 + (28 * pow((tan(PHId)), 2)) + (24 * pow((tan(PHId)), 4)))
+    XIIA = (pow((cos(PHId)), -1) / (5040 * pow(nu, 7))) * (61 + (662 * pow((tan(PHId)), 2)) + (1320 * pow((tan(PHId)), 4)) + (720 * pow((tan(PHId)), 6)))
 
-    return (180 / Pi) * (RadLAM0 + (Et * X) - ((Et ^ 3) * XI) + ((Et ^ 5) * XII) - ((Et ^ 7) * XIIA))
+    return (180 / Pi) * (RadLAM0 + (Et * X) - (pow(Et, 3) * XI) + (pow(Et, 5) * XII) - (pow(Et, 7) * XIIA))
 
 def initial_lat(northing, aF0, RadPHI0, n, bF0):
     PHI1 = ((northing - N0) / aF0) + DecimalPHI0
-    M = marc(bF0, n, PHI1)
+    M = marc(bF0, n, RadPHI0, PHI1)
     PHI2 = ((northing - N0 - M) / aF0) + PHI1
     """Calculate the final value of initial latitude"""
     while abs(northing - N0 - M) > 0.00001:
@@ -87,7 +87,11 @@ def initial_lat(northing, aF0, RadPHI0, n, bF0):
     return PHI2
 
 def marc(bF0, n, RadPHI0, PHI1):
-    return bF0 * (((1 + n + ((5 / 4) * (n ^ 2)) + ((5 / 4) * (n ^ 3))) * (PHI1 - RadPHI0))
-                  - (((3 * n) + (3 * (n ^ 2)) + ((21 / 8) * (n ^ 3))) * (sin(PHI1 - RadPHI0)) * (cos(PHI1 + RadPHI0)))
-                  + ((((15 / 8) * (n ^ 2)) + ((15 / 8) * (n ^ 3))) * (sin(2 * (PHI1 - RadPHI0))) * (cos(2 * (PHI1 + RadPHI0))))
-                  - (((35 / 24) * (n ^ 3)) * (sin(3 * (PHI1 - RadPHI0))) * (cos(3 * (PHI1 + RadPHI0)))))
+    return bF0 * (((1 + n + ((5 / 4) * pow(n, 2)) + ((5 / 4) * pow(n, 3))) * (PHI1 - RadPHI0))
+                  - (((3 * n) + (3 * pow(n, 2)) + ((21 / 8) * pow(n, 3))) * (sin(PHI1 - RadPHI0)) * (cos(PHI1 + RadPHI0)))
+                  + ((((15 / 8) * pow(n, 2)) + ((15 / 8) * pow(n, 3))) * (sin(2 * (PHI1 - RadPHI0))) * (cos(2 * (PHI1 + RadPHI0))))
+                  - (((35 / 24) * pow(n, 3)) * (sin(3 * (PHI1 - RadPHI0))) * (cos(3 * (PHI1 + RadPHI0)))))
+
+if __name__ == '__main__':
+    print(e_n_to_lat(651409.903, 313177.270))
+    print(e_n_to_long(651409.903, 313177.270))
