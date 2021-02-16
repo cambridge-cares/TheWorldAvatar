@@ -58,9 +58,6 @@ RUN apt-get update && apt-get install -y sendmail sendmail-cf m4
 # Install bash
 RUN apt-get update && apt-get install -y bash
 
-# Set file permissions on boot (so it's after mounting)
-ENTRYPOINT "chown -R www-data:www-data /var/www/ && chmod -R 775 /var/www/ && /bin/bash"
-
 ##### Production configuration #####
 FROM base as production
 

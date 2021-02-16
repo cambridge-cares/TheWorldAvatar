@@ -18,5 +18,3 @@ This service was developed, tested, and documented by the following commercial a
 		<td width="33%">Cambridge CARES<br><a href="https://cares.cam.ac.uk">cares.cam.ac.uk</a></td>
 	<tr>
 </table>
-
-

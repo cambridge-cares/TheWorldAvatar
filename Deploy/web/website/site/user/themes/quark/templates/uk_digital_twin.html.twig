@@ -8,6 +8,9 @@
 	
 	{# Theme provided JS #}
     {% do assets.addJs('theme://js/site.js', {group:'bottom'}) %}
+	
+	{# Custom JS #}
+	{% do assets.addJs('theme://js/uk-digital-twin.js', {group:'bottom'}) %}
 {% endblock %}
 	
 {% block content %}
