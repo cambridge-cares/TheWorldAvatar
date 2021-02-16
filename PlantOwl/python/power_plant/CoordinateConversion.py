@@ -26,7 +26,7 @@ DecimalLAM0 = -2.00000000
 """Mathematical Constant, Pi"""
 Pi = 3.14159265358979
 
-"""Converts from the Easting and Northing coordinates to Latitude"""
+"""Converts from the Easting and Northing coordinates to latitude"""
 def e_n_to_lat(easting, northing):
     """Convert an angle measure from decimal to radian"""
     RadPHI0 = DecimalPHI0 * (Pi / 180)
@@ -37,7 +37,7 @@ def e_n_to_lat(easting, northing):
     e2 = ((aF0^2) - (bF0^2)) / (aF0^2)
     n = (aF0-bF0) / (aF0 + bF0)
     Et = easting - E0
-    """Compute the value of PHI in radians"""
+    """Compute the value of PHI in radian"""
     PHId = initial_lat(northing, aF0, RadPHI0, n, bF0)
     """"Calculate some intermediate variables using PHId"""
     nu = aF0 / (sqrt(1 - (e2 * ((sin(PHId)) ^ 2))))
@@ -49,6 +49,31 @@ def e_n_to_lat(easting, northing):
     IX = ((tan(PHId)) / (720 * rho * (nu ^ 5))) * (61 + (90 * ((tan(PHId)) ^ 2)) + (45 * ((tan(PHId)) ^ 4)))
 
     return (180 / Pi) * (PHId - ((Et ^ 2) * VII) + ((Et ^ 4) * VIII) - ((Et ^ 6) * IX))
+
+"""Converts from the easting and northing coordinates to longitude"""
+def e_n_to_long(easting, northing):
+    """Convert an angle measure from decimal to radian"""
+    RadPHI0 = DecimalPHI0 * (Pi / 180)
+    RadLAM0 = DecimalLAM0 * (Pi / 180)
+    """Evaluates some intermediate variables"""
+    aF0 = a * F0
+    bF0 = b * F0
+    e2 = ((aF0 ^ 2) - (bF0 ^ 2)) / (aF0 ^ 2)
+    n = (aF0 - bF0) / (aF0 + bF0)
+    Et = easting - E0
+    """Compute the value of PHI in radian"""
+    PHId = initial_lat(northing, aF0, RadPHI0, n, bF0)
+    """Evaluate some intermediate variables that rely on PHId"""
+    nu = aF0 / (sqrt(1 - (e2 * ((sin(PHId)) ^ 2))))
+    rho = (nu * (1 - e2)) / (1 - (e2 * (sin(PHId)) ^ 2))
+    eta2 = (nu / rho) - 1
+    """Calculate longitude"""
+    X = ((cos(PHId)) ^ -1) / nu
+    XI = (((cos(PHId)) ^ -1) / (6 * (nu ^ 3))) * ((nu / rho) + (2 * ((tan(PHId)) ^ 2)))
+    XII = (((cos(PHId)) ^ -1) / (120 * (nu ^ 5))) * (5 + (28 * ((tan(PHId)) ^ 2)) + (24 * ((tan(PHId)) ^ 4)))
+    XIIA = (((cos(PHId)) ^ -1) / (5040 * (nu ^ 7))) * (61 + (662 * ((tan(PHId)) ^ 2)) + (1320 * ((tan(PHId)) ^ 4)) + (720 * ((tan(PHId)) ^ 6)))
+
+    return (180 / Pi) * (RadLAM0 + (Et * X) - ((Et ^ 3) * XI) + ((Et ^ 5) * XII) - ((Et ^ 7) * XIIA))
 
 def initial_lat(northing, aF0, RadPHI0, n, bF0):
     PHI1 = ((northing - N0) / aF0) + DecimalPHI0
