@@ -10,9 +10,11 @@ title: UK Digital Twin
 </table>
 <br><br>
 
-<div id="map" style="position: relative; overflow: hidden;">
+<div id="map-container" class="full-width" style="height: 800px;">
+	<div id="map-inner" style="width: 75%; height: 100%; margin: 0 auto; position: relative; border: 1px solid red;">
+		<iframe id="map-frame" width="100%" height="100%" src="SET-IN-JS" />
+	</div>
 </div>
+<br>
 
-
-<br><br>
 [plugin:page-inject](/modular/partners)
