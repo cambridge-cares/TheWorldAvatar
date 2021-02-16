@@ -1,23 +1,29 @@
 version: "3.8"
 services:
   blazegraph:
-    build: ./blazegraph
-    container_name: blazegraph
+    build:
+      args:
+        - HASH=$HASH
+      context: blazegraph
+    container_name: "blazegraph_${MODE}-${HASH}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
-    image: worldavatar/blazegraph
+    image: docker.cmclinnovations.com/blazegraph:v1.0
     restart: unless-stopped
     secrets:
       - blazegraph_password
     volumes:
       - blazegraph_data:/data
   rdf4j:
-    build: ./rdf4j
-    container_name: rdf4j
+    build:
+      args:
+        - HASH=$HASH
+      context: rdf4j
+    container_name: "rdf4j_${MODE}-${HASH}" 
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
-    image: worldavatar/rdf4j
+    image: docker.cmclinnovations.com/rdf4j:v1.0
     restart: unless-stopped
     secrets:
       - rdf4j_admin_password
@@ -41,10 +47,7 @@ secrets:
 volumes:
   blazegraph_data:
     name: "blazegraph_data"
-    external: true
   rdf4j_data:
     name: "rdf4j_data"
-    external: true
   rdf4j_logs:
     name: "rdf4j_logs"
-    external: true

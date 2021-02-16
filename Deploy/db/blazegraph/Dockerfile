@@ -1,5 +1,12 @@
 FROM tomcat:9.0
-MAINTAINER oparry@cmclinnovations.com
+
+# Arguments
+ARG HASH
+
+# Labels
+LABEL authors = "support@cmclinnovations.com"
+LABEL description = "Blazegraph with BASIC authentication, based on the official Tomcat 9 image."
+LABEL hash = $HASH
 
 # Download Blazegraph .war file
 RUN wget -O /usr/local/tomcat/webapps/blazegraph.war https://github.com/blazegraph/database/releases/download/BLAZEGRAPH_2_1_6_RC/blazegraph.war

@@ -2,7 +2,7 @@ version: "3.8"
 services:
   portainer:
     container_name: portainer
-    image: portainer/portainer
+    image: portainer/portainer:1.24.1
     ports:
       - "9000:9000"
     restart: unless-stopped
@@ -17,4 +17,3 @@ networks:
 volumes:
   portainer_data:
     name: "portainer_data"
-    external: true
