@@ -179,6 +179,9 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONArray ja = new  JSONObject(testres).getJSONArray("batterylist" );
 		assertTrue(ja.length() > 0);
 	}
+	/** test BatteryLocator as an agent
+	 * 
+	 */
 	public void testBatteryLocatorAgentCall() {
 		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
 		jo.put("storage", storageIRI);
@@ -204,9 +207,12 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONArray ja = testres.getJSONArray("batterylist" );
 		assertTrue(ja.length() > 0);
 	}
-	
+	/** call ESSCoordinate directly
+	 * 
+	 * @throws JSONException
+	 */
 	public void testCreateScenarioAndCallESSCoordinateDirect() throws JSONException {
-		String scenarioName = "testESSTRIAL01";	
+		String scenarioName = "testESSTRIAL01"+usecaseID;	
 		JSONObject jo = new JSONObject();
 		pvgeniris.add(pvGenIRI);
 		jo.put("electricalnetwork", ENIRI);
@@ -215,7 +221,20 @@ public class EnergyStorageSystemTest extends TestCase {
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/RenewableGenRetrofit", jo.toString());
 		String usecaseUrl = JPSContext.getUsecaseUrl();	
 		result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/ESSAgent", jo.toString());
-		System.out.println(result);
+		JSONObject res1=new JSONObject(result);
+		jo.put("storage",res1.getString("storage"));
+		String result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/OptimizationAgent", jo.toString());
+		JSONObject res2=new JSONObject(result2);		
+		String optimizationresult=res2.getString("optimization");
+		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/"+optimizationresult, jo.toString());
+		jo.put("batterylist",new JSONObject(result2).getJSONArray("batterylist"));
+		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
+		File file = new File( baseUrl + "\\"+scenarioName+".json");
+		assertTrue(file.exists()); //check that scenario exists
+		File file2 = new File(baseUrl +"\\localhost_8080");
+		assertTrue(file2.exists());
+		File file3 = new File(baseUrl +"\\www_jparksimulator_com");
+		assertTrue(file3.exists());
 	}
 	
 	

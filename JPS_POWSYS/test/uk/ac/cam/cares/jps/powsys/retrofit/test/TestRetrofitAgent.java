@@ -23,6 +23,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
+import uk.ac.cam.cares.jps.powsys.retrofit.BatteryRetrofit;
 import uk.ac.cam.cares.jps.powsys.retrofit.RenewableGeneratorRetrofit;
 import uk.ac.cam.cares.jps.powsys.retrofit.RetrofitAgent;
 
@@ -33,6 +34,9 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 			.put("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001");
 	private String scenarioName = "testESSTRIAL01";	
 	private String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testESSTRIAL01";
+	private JSONArray batteryiris = new JSONArray()
+			.put("http://localhost:8080/jps/kb/f288d618-e936-448b-8582-57cfc1ca827f/sgp/jurongisland/jurongislandpowernetwork/VRB-059.owl#VRB-059")
+			.put("http://localhost:8080/jps/kb/f288d618-e936-448b-8582-57cfc1ca827f/sgp/jurongisland/jurongislandpowernetwork/VRB-011.owl#VRB-011.owl");
 	private void assertPropertyValue(double expected, String url, String... path) {
 		OntModel model = JenaHelper.createModel(url);
 		JenaModelWrapper w = new JenaModelWrapper(model, null);
@@ -114,12 +118,21 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		jo.put("electricalnetwork", ENIRI);
 		jo.put("RenewableEnergyGenerator", pvgeniris);
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/RenewableGenRetrofit", jo.toString());
-		File file = new File( baseUrl + "\\testESSTRIAL01.json");
-		assertTrue(file.exists()); //check that scenario exists
 		File file2 = new File(baseUrl +"\\localhost_8080");
 		assertTrue(file2.exists());
 		File file3 = new File(baseUrl +"\\www_jparksimulator_com");
 		assertTrue(file3.exists());
 		System.out.println(result);
 	}
+	/** test validateInput() of BatteryRetrofitAgent()
+	 * 
+	 */
+	public void testBatteryRetrofitValidateInput() {
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork",ENIRI);
+		jo.put("batterylist", batteryiris);
+		assertTrue(new BatteryRetrofit().validateInput(jo));
+	
+	}
+	
 }
