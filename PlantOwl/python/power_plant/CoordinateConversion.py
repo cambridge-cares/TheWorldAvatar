@@ -96,6 +96,25 @@ def marc(bF0, n, RadPHI0, PHI1):
                   + ((((15 / 8) * pow(n, 2)) + ((15 / 8) * pow(n, 3))) * (sin(2 * (PHI1 - RadPHI0))) * (cos(2 * (PHI1 + RadPHI0))))
                   - (((35 / 24) * pow(n, 3)) * (sin(3 * (PHI1 - RadPHI0))) * (cos(3 * (PHI1 + RadPHI0)))))
 
+"""A single point converter that converts from easting and northing coordinates to
+latitude and longitude coordinates"""
+def e_n_to_lat_long(coordinates, delimeter):
+    return ""+e_n_to_lat(coordinates.split(delimeter)[0], coordinates.split(delimeter)[1])\
+           +delimeter+e_n_to_long(coordinates.split(delimeter)[0], coordinates.split(delimeter)[1])
+
+"""A multiple point converter that converts from easting and northing coordinates to
+latitude and longitude coordinates"""
+def e_n_to_lat_long_multiple(coordinates, delimeter, n_of_points):
+    point_list_lat_long = ""
+    point_list_e_n = coordinates.split(delimeter)
+    for i in range(0, n_of_points*2, 2):
+        if i == 0:
+            point_list_lat_long = point_list_lat_long + str(e_n_to_lat(float(point_list_e_n[i]), float(point_list_e_n[i+1])))\
+                              +delimeter+str(e_n_to_long(float(point_list_e_n[i]), float(point_list_e_n[i+1])))
+        else:
+            point_list_lat_long = point_list_lat_long + delimeter +str(e_n_to_lat(float(point_list_e_n[i]), float(point_list_e_n[i+1])))\
+                              +delimeter+str(e_n_to_long(float(point_list_e_n[i]), float(point_list_e_n[i+1])))
+    return point_list_lat_long
 if __name__ == '__main__':
     print(e_n_to_lat(651409.903, 313177.270))
     print(e_n_to_long(651409.903, 313177.270))
@@ -121,3 +140,10 @@ if __name__ == '__main__':
     print(e_n_to_long(539726.3125999998, 309713.68759999983))
     print(e_n_to_lat(539706.3125999998, 309679.06259999983))
     print(e_n_to_long(539706.3125999998, 309679.06259999983))
+    print(e_n_to_lat_long_multiple(
+        "549266.3125999998#303443.68759999983#549246.3125999998"
+        "#303409.03119999915#549206.3125999998#303409.03119999915"
+        "#549186.3125999998#303443.68759999983#549206.3125999998"
+        "#303478.31259999983#549246.3125999998#303478.31259999983"
+        "#549266.3125999998#303443.68759999983",
+        "#", 7))
