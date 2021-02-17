@@ -44,7 +44,12 @@ import uk.ac.cam.cares.jps.powsys.util.Util;
 public class RetrofitAgent extends JPSAgent implements Prefixes, Paths {
 	
 	private static final long serialVersionUID = 6859324316966357379L;
-    @Override
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	@Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(RetrofitAgent.class);
     }
@@ -56,10 +61,6 @@ public class RetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		}
 		
 		String electricalNetwork = requestParams.getString("electricalnetwork");
-
-
-		String path = request.getServletPath();
-		logger.info("path= "+path);
 		JSONArray ja2 = requestParams.getJSONArray("substitutionalgenerators");
 		List<String> substitutionalGenerators = MiscUtil.toList(ja2);
 		JSONArray ja = requestParams.getJSONArray("plants");
@@ -68,7 +69,7 @@ public class RetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		
 		return requestParams;
 	}
-
+	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
             throw new BadRequestException();
