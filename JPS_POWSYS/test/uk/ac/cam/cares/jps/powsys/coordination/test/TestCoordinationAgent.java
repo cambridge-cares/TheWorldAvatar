@@ -27,8 +27,8 @@ import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 import uk.ac.cam.cares.jps.powsys.retrofit.RetrofitAgent;
 
 public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
-	
-	
+	private static String electricalnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+	private CoordinationAgent a = new CoordinationAgent();
 	private void copy(String sourceScenarioName, String destinationScenarioName) throws IOException {
 		
 		String src = ScenarioHelper.getScenarioBucket(sourceScenarioName);
@@ -218,5 +218,13 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/startsimulation", jo.toString());
 		System.out.println(result);
+	}
+	/** test validateInput() of CoordinationAgent
+	 * 
+	 */
+	public void testInputValidatorENVisualization() {
+		JSONObject jo = new JSONObject().put("path","localhost:8080/ENVisualization/" );
+		jo.put("electricalnetwork", electricalnetwork);
+		assertTrue(a.validateInput(jo));
 	}
 } 

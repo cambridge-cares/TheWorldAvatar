@@ -102,7 +102,7 @@ public class ENVisualization extends JPSAgent{
     boolean v = validateInput(requestParams);
     System.gc();
     if (v == false) {
-      throw new JSONException("Input parameters invalid!");
+      throw new JSONException("ENVisualization Agent input parameters invalid!");
     }
     String path = requestParams.getString("path");
     String iriofnetwork = requestParams.getString("electricalnetwork");
@@ -161,15 +161,10 @@ public class ENVisualization extends JPSAgent{
         }
         try {
         String iriofnetwork = requestParams.getString("electricalnetwork");
-        String path = requestParams.getString("path");
-        boolean relevant = path.contains("createMarkers") 
-            || path.contains("createLineJS") ||
-            path.contains("readGenerator")||
-            path.contains("createKMLFile");
-        return InputValidator.checkIfValidIRI(iriofnetwork) & relevant;
+        return InputValidator.checkIfValidIRI(iriofnetwork);
         } catch (JSONException ex) {
           ex.printStackTrace();
-          throw new JSONException("wastenetwork not found");
+          throw new JSONException("electrical network not found");
         }
     }
   public static SelectBuilder createLocationQuery() {

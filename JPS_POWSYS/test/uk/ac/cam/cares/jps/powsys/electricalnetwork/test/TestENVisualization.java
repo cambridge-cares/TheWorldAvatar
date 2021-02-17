@@ -99,10 +99,7 @@ public class TestENVisualization extends TestCase {
 	 * 
 	 */
 	public void testInputValidatorENVisualization() {
-		JSONObject jo = new JSONObject().put("path","localhost:8080/ENVisualization/" );
-		jo.put("electricalnetwork", electricalnetwork);
-		assertFalse(a.validateInput(jo));
-		jo.put("path", "localhost:8080/ENVisualization/createMarkers");
+		JSONObject jo = new JSONObject().put("electricalnetwork", electricalnetwork);
 		assertTrue(a.validateInput(jo));
 	}
 	/** Present Generator markers via Scenario Client to get individual displays through agent

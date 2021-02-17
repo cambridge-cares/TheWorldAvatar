@@ -162,7 +162,7 @@ public class AggregationEmissionAgent extends JPSAgent{
         }
     }
     
-
+    //also used in CarbonTaxAgent
     public static List<String[]> provideGenlist(String iriofnetwork) {
         String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
                 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
