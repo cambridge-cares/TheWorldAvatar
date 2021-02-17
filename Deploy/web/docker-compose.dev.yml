@@ -7,14 +7,8 @@ services:
   website:
     build: 
       context: "./website"
-      target: base
-    user: "www-data:www-data"
     ports:
       - "81:80"
-    volumes:
-      - type: bind
-        source: "./website/site"
-        target: "/var/www/html"
    
 # Development network    
 networks:

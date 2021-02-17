@@ -3,10 +3,12 @@ version: "3.8"
 # Services
 services:
 
-  # Knowledge Graph Website
+  # Knowledge Graph Website (Port 80)
   website:
+    build: 
+      context: "./website"
     ports:
-      - "80:80"        
+      - "80:80"     
 
 # Production network    
 networks:

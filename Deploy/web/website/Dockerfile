@@ -58,9 +58,6 @@ RUN apt-get update && apt-get install -y sendmail sendmail-cf m4
 # Install bash
 RUN apt-get update && apt-get install -y bash
 
-##### Production configuration #####
-FROM base as production
-
 # Copy in site files
 COPY site /var/www/html/
 
