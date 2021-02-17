@@ -16,6 +16,7 @@ from pandas.io.json import _json_normalize
 from pyproj import Proj, transform
 from rdflib.extras.infixowl import Ontology, OWL_NS
 
+import CoordinateConversion as coord_convert
 from CropMap import CropMap
 from Envelope import Envelope
 from rdflib import Graph, URIRef, XSD
@@ -106,10 +107,10 @@ def get_crop_map(context):
                                       cropMap.cromeID, XSD.string)
                     if getcentre_point_from_crome_id(cropMap.cromeID) != None:
                         aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCentrePoint()),
-                                      URIRef(gmlpropread.getABoxIRI()
+                                                    URIRef(gmlpropread.getABoxIRI()
                                       + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      getcentre_point_from_crome_id(cropMap.cromeID),
-                                      URIRef(gmlpropread.getDataTypeCoordinatePoint()))
+                                                    coord_convert.e_n_to_lat_long(getcentre_point_from_crome_id(cropMap.cromeID), "#"),
+                                                    URIRef(gmlpropread.getDataTypeCoordinatePoint()))
 
                     #print('cromeid', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  LUCODE.lower():
@@ -153,10 +154,13 @@ def get_crop_map(context):
                                                                     + rdfizer.format_iri(cropMap.id),
                                                                     cropMap.name)
                                             aboxgen.link_data_with_type(g, URIRef(gmlpropread.getPropertyPosList()),
-                                                              URIRef(gmlpropread.getABoxIRI()
-                                                                     + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                                                     posList.text.replace(" ", "#"),
-                                                                     URIRef(gmlpropread.getDataTypePolygonalPoints()))
+                                                                        URIRef(gmlpropread.getABoxIRI()
+                                                                               + rdfizer.SLASH + rdfizer.format_iri(
+                                                                            cropMap.id)),
+                                                                        coord_convert.e_n_to_lat_long_multiple(
+                                                                            posList.text.replace(" ", "#"), "#", 7),
+                                                                        URIRef(
+                                                                            gmlpropread.getDataTypePolygonalPoints()))
                                             #print(cropMap.polygon)
             """Adds data and metadata to the envelope"""
             if map_counter == 0:
@@ -176,12 +180,12 @@ def get_crop_map(context):
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getLowerCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.lowerCorner.replace(' ', '#'),
+                                        coord_convert.e_n_to_lat_long(envelope.lowerCorner.replace(' ', '#'), "#"),
                                         gmlpropread.getDataTypeCoordinatePoint())
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getUpperCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.upperCorner.replace(' ', '#'),
+                                        coord_convert.e_n_to_lat_long(envelope.upperCorner.replace(' ', '#'), "#"),
                                         gmlpropread.getDataTypeCoordinatePoint())
             """Links each feature to the envelope"""
             aboxgen.link_instance(g, URIRef(gmlpropread.getBoundedBy()),
