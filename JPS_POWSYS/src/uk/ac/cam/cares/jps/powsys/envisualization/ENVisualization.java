@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +29,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,13 +41,11 @@ import org.w3c.dom.Node;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 @WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" ,"/ENVisualization/readGenerator/*"})
 public class ENVisualization extends JPSAgent{
   
@@ -127,7 +123,7 @@ public class ENVisualization extends JPSAgent{
         b = createfinalKML(model);
 
         bw.write(b);
-        
+        bw.close();
         
         } catch (TransformerException e) {
           e.printStackTrace();
@@ -611,7 +607,7 @@ public class ENVisualization extends JPSAgent{
       
     }
     
-    List<String[]> resultList = queryResult(model, gencoordinate);
+    List<String[]> resultList = Util.queryResult(model, gencoordinate);
     
     return resultList;
   }
@@ -645,7 +641,7 @@ public class ENVisualization extends JPSAgent{
         ;
     String genInfo = sb.setDistinct(true)
         .addWhere("?entity", "a", "j1:PowerGenerator").buildString();
-    List<String[]> resultListfromquery = queryResult(model, genInfo);
+    List<String[]> resultListfromquery = Util.queryResult(model, genInfo);
       //used to get distinct emissions and fuel types
     String plantinfo = sb.addVar("?generation")
         .addPrefix("j3", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
@@ -702,7 +698,7 @@ public class ENVisualization extends JPSAgent{
         .addWhere("?entity", "j9:hasOutput", "?busb")
         .buildString();
         
-    List<String[]> resultListbranch = queryResult(model, branchInfo);
+    List<String[]> resultListbranch = Util.queryResult(model, branchInfo);
     System.gc();
     ArrayList<String> busdata= new ArrayList<String>();   
       ArrayList<String>textcomb=new ArrayList<String>();
@@ -724,7 +720,7 @@ public class ENVisualization extends JPSAgent{
               .addWhere(iri, "j2:isModeledBy", "?model")
               .addWhere(iri, "j7:hasGISCoordinateSystem", "?coorsys")
               .buildString();
-        List<String[]> resultListbus1 = queryResult(model, busInfo);
+        List<String[]> resultListbus1 = Util.queryResult(model, busInfo);
       busdata.add(iri);
       busdata.add(resultListbus1.get(0)[0]);
       busdata.add(resultListbus1.get(0)[1]);
@@ -772,7 +768,7 @@ public class ENVisualization extends JPSAgent{
                 .addWhere(iri, "j2:isModeledBy", "?model")
                 .addWhere(iri, "j7:hasGISCoordinateSystem", "?coorsys")
                 .buildString();
-          List<String[]> resultListbus1 = queryResult(model, busInfo);
+          List<String[]> resultListbus1 = Util.queryResult(model, busInfo);
         busdata.add(iri);
         busdata.add(resultListbus1.get(0)[0]);
         busdata.add(resultListbus1.get(0)[1]);
@@ -810,20 +806,7 @@ public class ENVisualization extends JPSAgent{
       return jo.toString();
     
   }
-  /** feeds a query and gets a result
-   * 
-   * @param model
-   * @param query
-   * @return
-   */
-  public static List<String[]> queryResult(OntModel model, String query) {
-    
-    ResultSet resultSet = JenaHelper.query(model, query);
-    String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-    String[] keys = JenaResultSetFormatter.getKeys(result);
-    List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-    return resultListfromquery;
-  }
+  
 
 
 }

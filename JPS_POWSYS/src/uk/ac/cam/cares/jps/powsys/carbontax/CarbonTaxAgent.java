@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
@@ -30,6 +31,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearGenType;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/optimizeforcarbontax" })
 public class CarbonTaxAgent extends JPSAgent {
@@ -163,15 +165,15 @@ public class CarbonTaxAgent extends JPSAgent {
 	
 	
 	public static List<String[]> provideGenlist(String iriofnetwork) {
+		//Filter Exists doesn't occur in SelectBuilder. 
+//		String gennodeInfo = new SelectBuilder()
+//				.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+//				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+//				.addVar("?entity").addWhere("?entity", "a", "j1:PowerGenerator")
+//				.addWhere("?entity", "j2:isSubsystemOf", "?plant")
+//				.buildString();
 		String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
 				+ "SELECT ?entity " 
 				+ "WHERE {?entity  a  j1:PowerGenerator  ."
 				+ "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
@@ -179,10 +181,7 @@ public class CarbonTaxAgent extends JPSAgent {
 		
 
 		OntModel model = ENAgent.readModelGreedy(iriofnetwork);
-		ResultSet resultSet = JenaHelper.query(model, gennodeInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		List<String[]> resultListfromquery = Util.queryResult(model, gennodeInfo);
 
 		return resultListfromquery;
 	}
@@ -190,30 +189,46 @@ public class CarbonTaxAgent extends JPSAgent {
 	public void prepareCSVGeneratorParameterUpdatedGenScale(String ENiri, String baseUrl) {
 
 		// updated version so that plant owl file won't be used
-		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "SELECT ?entity ?Pmaxvalue ?emissionfactor " // add the emission value as optional
-				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
-				//+ "?entity   j2:isSubsystemOf ?plant ." // plant
-				+ "?entity   j2:isModeledBy ?model ." 
-				+ "?model   j5:hasModelVariable ?pmax ." 
-				+ "?pmax  a  j3:PMax  ."
-				+ "?pmax  j2:hasValue ?vpmax ." 
-				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
-
-				+ "?entity j4:realizes ?genprocess ." 
-				+ "?genprocess j9:usesGenerationTechnology ?tech ."
-				+ "?tech j9:hasEmissionFactor ?emm ."
-				+ "?emm j2:hasValue ?valueemm ."
-				+ "?valueemm j2:numericalValue ?emissionfactor ." 
-				+ "}";
+		String genInfo = new SelectBuilder()
+		.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+		.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+		.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+		.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+		.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+		.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#")
+		.addVar("?entity").addVar("?Pmaxvalue").addVar("?entity")
+		.addWhere("?entity", "a", "j1:PowerGenerator")
+		.addWhere("?entity", "j2:isModeledBy", "?model")
+		.addWhere("?model", "j5:hasModelVariable", "?pmax")
+        .addWhere("?pmax","a","j3:PMax")
+        .addWhere("?pmax","j2:hasValue", "?vpmax")
+        .addWhere("?vpmax","j2:numericalValue", "?Pmaxvalue")
+		.addWhere("?entity", "j4:realizes", "?genprocess")
+		.addWhere("?genprocess", "j9:usesGenerationTechnology", "?tech")
+        .addWhere("?tech","j9:hasEmissionFactor","?emm")
+        .addWhere("?emm","j2:hasValue", "?valueemm")
+        .addWhere("?valueemm","j2:numericalValue", "?emissionfactor")
+		.buildString();
+//		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+//				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+//				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+//				+ "SELECT ?entity ?Pmaxvalue ?emissionfactor " // add the emission value as optional
+//				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
+//				+ "?entity   j2:isModeledBy ?model ." 
+//				+ "?model   j5:hasModelVariable ?pmax ." 
+//				+ "?pmax  a  j3:PMax  ."
+//				+ "?pmax  j2:hasValue ?vpmax ." 
+//				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
+//
+//				+ "?entity j4:realizes ?genprocess ." 
+//				+ "?genprocess j9:usesGenerationTechnology ?tech ."
+//				+ "?tech j9:hasEmissionFactor ?emm ."
+//				+ "?emm j2:hasValue ?valueemm ."
+//				+ "?valueemm j2:numericalValue ?emissionfactor ." 
+//				+ "}";
 
 
 
