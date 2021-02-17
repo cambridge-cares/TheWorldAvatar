@@ -10,33 +10,39 @@ import java.util.Map;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.sparql.JenaModelWrapper;
+import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
+import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns ="/retrofit")
-public class RetrofitAgent extends GeneralRetrofitAgent {
-
+public class RetrofitAgent extends JPSAgent implements Prefixes, Paths {
+	
 	private static final long serialVersionUID = 6859324316966357379L;
     @Override
     protected void setLogger() {
@@ -45,24 +51,64 @@ public class RetrofitAgent extends GeneralRetrofitAgent {
     Logger logger = LoggerFactory.getLogger(RetrofitAgent.class);
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		JSONObject jo = AgentCaller.readJsonParameter(request);
-		String electricalNetwork = jo.getString("electricalnetwork");
+		if (!validateInput(requestParams)) {
+			throw new JSONException("RetrofitAgent input parameters invalid");
+		}
+		
+		String electricalNetwork = requestParams.getString("electricalnetwork");
 
 
 		String path = request.getServletPath();
 		logger.info("path= "+path);
-		if ("/retrofit".equals(path)) {
-			JSONArray ja2 = jo.getJSONArray("substitutionalgenerators");
-			List<String> substitutionalGenerators = MiscUtil.toList(ja2);
-			JSONArray ja = jo.getJSONArray("plants");
-			List<String> nuclearPowerPlants = MiscUtil.toList(ja);
-			retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
-		}
-		// TODO Auto-generated method stub
-		return jo;
+		JSONArray ja2 = requestParams.getJSONArray("substitutionalgenerators");
+		List<String> substitutionalGenerators = MiscUtil.toList(ja2);
+		JSONArray ja = requestParams.getJSONArray("plants");
+		List<String> nuclearPowerPlants = MiscUtil.toList(ja);
+		retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
+		
+		return requestParams;
 	}
 
-
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);	        
+	        JSONArray ja =requestParams.getJSONArray("substitutionalgenerators");
+	        List<String> gen = MiscUtil.toList(ja);
+	        JSONArray ja2 = requestParams.getJSONArray("plants");
+			List<String> nuclearPowerPlants = MiscUtil.toList(ja2);
+			if (ja.length()!= 0) {
+				for (int i = 0; i< gen.size(); i++) {
+					if (gen.get(i)!= null) {
+						boolean t = InputValidator.checkIfValidIRI(gen.get(i));
+						if (t == false) {
+							return false;
+						}
+					}
+				}
+			}
+			if (ja2.length()!= 0) {
+				for (int i = 0; i< nuclearPowerPlants.size(); i++) {
+					if (nuclearPowerPlants.get(i)!= null) {
+						boolean t = InputValidator.checkIfValidIRI(nuclearPowerPlants.get(i));
+						if (t == false) {
+							return false;
+						}
+					}
+				}
+			}
+			else {
+				return false;
+			}
+	        return w;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
 	public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants, List<String> substitutionalGenerators) {
 		
 		// the hasSubsystem triples of the electrical network top node itself are not part of the model

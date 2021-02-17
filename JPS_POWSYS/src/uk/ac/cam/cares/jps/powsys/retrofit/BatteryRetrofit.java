@@ -35,7 +35,13 @@ public class BatteryRetrofit extends JPSAgent {
         logger = LoggerFactory.getLogger(BatteryRetrofit.class);
     }
     Logger logger = LoggerFactory.getLogger(BatteryRetrofit.class);
-	public void retrofitEnergyStorage(String electricalNetwork, List<String> BatteryList) {
+	/** creates a list of batteries, 
+	 * adds the batteries to the electrical network
+	 * 
+	 * @param electricalNetwork
+	 * @param BatteryList
+	 */
+    public void retrofitEnergyStorage(String electricalNetwork, List<String> BatteryList) {
 		List<GeneratorInfo> batteries = new ArrayList<GeneratorInfo>();
 		for (String currentGen : BatteryList) {
 			String batIri = currentGen;

@@ -88,12 +88,16 @@ public class RenewableGeneratorRetrofit extends JPSAgent{
         }
         return false;
     }
+	/** Queries for list of buses
+	 * Find the slack Bus (aka the one where the PV can be connected to
+	 * Adds the PV generator to the electrical network
+	 * @param electricalNetwork
+	 * @param RenewableGenerators
+	 */
 	public void retrofitGenerator(String electricalNetwork, List<String> RenewableGenerators) {
-		JPSBaseLogger.info(this,"starting retrofit generator");
 		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
 		List<BusInfo> buses = gRA.queryBuses(model);
 		BusInfo slackBus = gRA.findFirstSlackBus(buses);
-		JPSBaseLogger.info(this,"Reached ProcessRequestParameters");
 		//assuming the pv owl file is exist and matched the criteria to be used in OPF simulation
 		List<GeneratorInfo> newGenerators = new ArrayList<GeneratorInfo>();
 		QueryBroker broker = new QueryBroker();
@@ -118,7 +122,6 @@ public class RenewableGeneratorRetrofit extends JPSAgent{
 		
 		gRA.connectGeneratorToOptimalBus(buses, newGenerators, slackBus);
 
-		JPSBaseLogger.info(this,"finished retrofitting");
 		
 	}
 	

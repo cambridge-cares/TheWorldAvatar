@@ -83,22 +83,18 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		String expectedPowerPlant = "http://localhost:8080/jps/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucPP_1.owl#NucPP_1";
 		assertPropertyValue(expectedPowerPlant, powerGenerator, path);
 	}
-	
+	//This test doesn't pass because QueryBroker().updateFile, when
+	//running in the original scenario (aka base scenario)
+	// Can't update to a URL that has not been converted. 
 	public void testretrofitgen() {
 		JSONObject jo = new JSONObject();
-		JSONArray value1 = new JSONArray();
 		JSONArray value2 = new JSONArray();
-		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
-		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
-		value1.put("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001");
-		jo.put("RenewableEnergyGenerator", value1);
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("RenewableEnergyGenerator", pvgeniris);
 		jo.put("substitutionalgenerators", value2);
-		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
-		List<String> RenewableGenerators = MiscUtil.toList(value1);
+		List<String> RenewableGenerators = MiscUtil.toList(pvgeniris);
 		new RetrofitAgent().retrofitGenerator(jo.getString("electricalnetwork"), RenewableGenerators);
-		//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
-	}
+		}
 	/** test validateInput() of RenewableGeneratorRetrofitAgent()
 	 * 
 	 */
