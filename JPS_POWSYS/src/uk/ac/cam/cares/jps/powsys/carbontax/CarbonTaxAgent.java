@@ -8,26 +8,31 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearGenType;
 
 @WebServlet(urlPatterns = { "/optimizeforcarbontax" })
-public class CarbonTaxAgent extends JPSHttpServlet {
+public class CarbonTaxAgent extends JPSAgent {
 
 	private static final long serialVersionUID = -2354646810093235777L;
 	List<NuclearGenType>plant =new ArrayList<NuclearGenType>();	
@@ -40,28 +45,45 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
     }
 	Logger logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
-	 @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    	if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
+			BigDecimal batIRI=requestParams.getBigDecimal("carbontax");	
+	        return w;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 
-		JSONObject jo = requestParams;
-
+		if (!validateInput(requestParams)) {
+			throw new JSONException ("CarbonTaxAgent input parameters invalid");
+		}
 		// put the template file
 		String newdir = QueryBroker.getLocalDataPath() + "/GAMS_CarbonTaxAgent";
 		copyTemplate(newdir, "time_profile.csv");
 		// prepareCSVGeneratorParameter(jo.getString("electricalnetwork"),newdir);
-		prepareCSVGeneratorParameterUpdatedGenScale(jo.getString("electricalnetwork"), newdir);
+		prepareCSVGeneratorParameterUpdatedGenScale(requestParams.getString("electricalnetwork"), newdir);
 
-		BigDecimal carbontax = jo.getBigDecimal("carbontax");
+		BigDecimal carbontax = requestParams.getBigDecimal("carbontax");
 		prepareConstantCSV(carbontax, newdir);
 
 		logger.info("start optimization for carbon tax = " + carbontax);
-		// if (!AgentLocator.isJPSRunningForTest()) {
-		// runGAMS(newdir);
-		// }else { //18 oct 19
 		try {
 			runGAMS(newdir);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			logger.error(e1.getMessage());
 		} 
 		catch (IOException e2) {
@@ -70,8 +92,6 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		}
 		
 		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results.csv";
-		// String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir"
-		// + "/results2.csv";
 		File file = new File(source);
 		String destinationUrl = newdir + "/results.csv";
 		new QueryBroker().putLocal(destinationUrl, file);
@@ -102,10 +122,6 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         fileContext = fileContext.replaceAll("Generator_Parameters.csv",newdir+"/Generator_Parameters.csv output="+newdir+"/Generator_Parameters.gdx");
         fileContext = fileContext.replaceAll("time_profile.csv",newdir+"/time_profile.csv output="+newdir+"/time_profile.gdx");
        
-
-        //FileUtils.write(file, fileContext);
- 
-		
 		new QueryBroker().putLocal(destinationUrl, fileContext);
 	}
 	
@@ -113,20 +129,19 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	
 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 
 		
-		//copyTemplate(baseUrl,"constants.gdx");
-		//copyTemplate(baseUrl,"Generator_Parameters.gdx");
-		//copyTemplate(baseUrl,"time_profile.gdx");
-		//copyTemplate(baseUrl,"Final_parallel_wrld.gms");
-		//copyTemplate(baseUrl,"gmsproj.gpr");
-		
 		
 		modifyTemplate(baseUrl,modelname);
 
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-        String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
-        String folderlocation =baseUrl; //+"/";
+		String gamsLocation = System.getenv("GAMSDIR").split(";")[0];
+
+
+		gamsLocation =gamsLocation.replace("\\", "/");
+		gamsLocation =gamsLocation.replace("//", "/");
+		String executablelocation = gamsLocation+"/gams.exe";
+		String folderlocation =baseUrl; //+"/";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[7];
         
@@ -141,11 +156,9 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
         
-        logger.info(cmdArrayinstring);
-        Process p = Runtime.getRuntime().exec(cmdArray);
-		   p.waitFor();
-         
-		   logger.info("Done");
+        CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
+     
+        logger.info("Done");
 	}
 	
 	

@@ -137,6 +137,8 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 	/** this test works ONLY when you have the 
 	 * scenario testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10
 	 * in your JPS_DATA folder. 
+	 * If you have a suitable file (i.e. simulation completed) then change
+	 * the name accordingly
 	 */
 	public void testretrofitNucScenarioAgent() {
 		JSONObject jo = new JSONObject();
