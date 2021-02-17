@@ -129,6 +129,15 @@ hr {
 	text-align: center;
 }
 
+/* Page footers */
+.footer {
+	background-color: black;
+	width: 100vw !important;
+	position: relative !important;
+	margin-left: -50vw !important;
+	left: 50% !important;
+}
+
 
 /* ========== Marie chatbot classes ========== */
 
@@ -224,7 +233,20 @@ hr {
 /* ========== Contact page classes ========== */
 
 form[name="contact-us-form"] {
-	width: 50%;
+	max-width: 488px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+textarea[name="data[message]"] {
+	height: 175px;
+}
+
+.form-container {
+	padding-top: 50px;
+	padding-bottom: 50px;
+	height: auto;
+	background-image: url('/user/images/chemical-background-blue.png');
+	background-size: cover;
+	background-repeat: no-repeat;
 }

@@ -1,5 +1,4 @@
 ---
-title: Contact
 form:
     name: contact-us-form
     fields:

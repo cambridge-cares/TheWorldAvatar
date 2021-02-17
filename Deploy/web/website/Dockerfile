@@ -63,3 +63,7 @@ FROM base as production
 
 # Copy in site files
 COPY site /var/www/html/
+
+# Update permissions
+RUN chown -R www-data:www-data /var/www/
+RUn chmod -R 775 /var/www/

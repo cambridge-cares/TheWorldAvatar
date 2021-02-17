@@ -8,6 +8,7 @@ services:
     build: 
       context: "./website"
       target: base
+    user: "www-data:www-data"
     ports:
       - "81:80"
     volumes:
