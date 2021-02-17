@@ -37,6 +37,11 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 	private JSONArray batteryiris = new JSONArray()
 			.put("http://localhost:8080/jps/kb/f288d618-e936-448b-8582-57cfc1ca827f/sgp/jurongisland/jurongislandpowernetwork/VRB-059.owl#VRB-059")
 			.put("http://localhost:8080/jps/kb/f288d618-e936-448b-8582-57cfc1ca827f/sgp/jurongisland/jurongislandpowernetwork/VRB-011.owl#VRB-011.owl");
+	private JSONArray nucgeniris = new JSONArray()
+			.put("http://localhost:8080/jps/kb/337ad6e8-6e9b-4d30-b0aa-dfda02e80a1f/nuclearpowerplants/NucGenerator_3_B3.owl#NucGenerator_3_B3")
+			.put("http://localhost:8080/jps/kb/337ad6e8-6e9b-4d30-b0aa-dfda02e80a1f/nuclearpowerplants/NucGenerator_3_B0.owl#NucGenerator_3_B0");
+	private JSONArray nucPPiris = new JSONArray()
+			.put("http://localhost:8080/jps/kb/337ad6e8-6e9b-4d30-b0aa-dfda02e80a1f/nuclearpowerplants/NucPP_3.owl#NucPP_3");
 	private void assertPropertyValue(double expected, String url, String... path) {
 		OntModel model = JenaHelper.createModel(url);
 		JenaModelWrapper w = new JenaModelWrapper(model, null);
@@ -52,7 +57,6 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		String actualUrl = o.asResource().getURI();
 		assertEquals(expectedUrl, actualUrl);
 	}
-	
 	public void testCompleteOnePowerGenerator() {
 		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSCoordinateCompleteOnePowerGenerator"); 
@@ -128,6 +132,31 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		jo.put("electricalnetwork",ENIRI);
 		jo.put("batterylist", batteryiris);
 		assertTrue(new BatteryRetrofit().validateInput(jo));
+	
+	}
+	/** this test works ONLY when you have the 
+	 * scenario testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10
+	 * in your JPS_DATA folder. 
+	 */
+	public void testretrofitNucScenarioAgent() {
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("plants", nucPPiris);
+		jo.put("substitutionalgenerators", nucgeniris);
+		String result = new ScenarioClient()
+				.call("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10"
+						, "http://localhost:8080/JPS_POWSYS/retrofit", jo.toString());
+		
+	}
+	/** test validateInput() of RetrofitAgent()
+	 * 
+	 */
+	public void testRetrofitValidateInput() {
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("plants", nucPPiris);
+		jo.put("substitutionalgenerators", nucgeniris);
+		assertTrue(new RetrofitAgent().validateInput(jo));
 	
 	}
 	
