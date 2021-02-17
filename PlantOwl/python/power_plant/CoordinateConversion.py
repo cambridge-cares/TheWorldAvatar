@@ -99,8 +99,8 @@ def marc(bF0, n, RadPHI0, PHI1):
 """A single point converter that converts from easting and northing coordinates to
 latitude and longitude coordinates"""
 def e_n_to_lat_long(coordinates, delimeter):
-    return ""+e_n_to_lat(coordinates.split(delimeter)[0], coordinates.split(delimeter)[1])\
-           +delimeter+e_n_to_long(coordinates.split(delimeter)[0], coordinates.split(delimeter)[1])
+    return str(e_n_to_lat(float(coordinates.split(delimeter)[0]), float(coordinates.split(delimeter)[1])))\
+           +delimeter+str(e_n_to_long(float(coordinates.split(delimeter)[0]), float(coordinates.split(delimeter)[1])))
 
 """A multiple point converter that converts from easting and northing coordinates to
 latitude and longitude coordinates"""
