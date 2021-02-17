@@ -14,30 +14,44 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 
 @WebServlet("/RenewableGenRetrofit")
-public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
+public class RenewableGeneratorRetrofit extends JPSAgent{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private GeneralRetrofitAgent gRA;
 	
+	public RenewableGeneratorRetrofit(){
+		gRA = new GeneralRetrofitAgent();
+	}
     @Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(RenewableGeneratorRetrofit.class);
     }
     Logger logger = LoggerFactory.getLogger(RenewableGeneratorRetrofit.class);
-    
+    @Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 
-		validateInput(requestParams);
+		if (validateInput(requestParams) == false) {
+			throw new JSONException("RenewableGenerator Retrofit Input Parameters invalid");
+		}
+		JPSBaseLogger.info(this,"Reached ProcessRequestParameters");
 		String electricalNetwork = requestParams.getString("electricalnetwork");
 		JSONArray ja = requestParams.getJSONArray("RenewableEnergyGenerator");
 		List<String> RenewableGenerators = MiscUtil.toList(ja);
@@ -46,7 +60,7 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
 		return requestParams;
 		
 	}
-//	@Override
+	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
             throw new BadRequestException();
@@ -75,11 +89,11 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
         return false;
     }
 	public void retrofitGenerator(String electricalNetwork, List<String> RenewableGenerators) {
-		logger.info("starting retrofit generator");
+		JPSBaseLogger.info(this,"starting retrofit generator");
 		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
-		List<BusInfo> buses = queryBuses(model);
-		BusInfo slackBus = findFirstSlackBus(buses);
-		
+		List<BusInfo> buses = gRA.queryBuses(model);
+		BusInfo slackBus = gRA.findFirstSlackBus(buses);
+		JPSBaseLogger.info(this,"Reached ProcessRequestParameters");
 		//assuming the pv owl file is exist and matched the criteria to be used in OPF simulation
 		List<GeneratorInfo> newGenerators = new ArrayList<GeneratorInfo>();
 		QueryBroker broker = new QueryBroker();
@@ -87,7 +101,7 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
 			String generatorIri = currentGen;
 			GeneratorInfo info = new GeneratorInfo();
 			info.generatorIri = generatorIri;
-			String queryGenerator = getQueryForGenerator();
+			String queryGenerator = gRA.getQueryForGenerator();
 			System.out.println("myquery= "+queryGenerator);
 			String resultGen = broker.queryFile(generatorIri, queryGenerator);
 			List<String[]> resultGenAsList = JenaResultSetFormatter.convertToListofStringArrays(resultGen, "entity", "x", "y", "busnumber");
@@ -100,12 +114,12 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
 			newGenerators.add(info);
 		}
 		
-		addGeneratorsToElectricalNetwork(electricalNetwork,newGenerators);
+		gRA.addGeneratorsToElectricalNetwork(electricalNetwork,newGenerators);
 		
-		connectGeneratorToOptimalBus(buses, newGenerators, slackBus);
+		gRA.connectGeneratorToOptimalBus(buses, newGenerators, slackBus);
 
-		logger.info("finished retrofitting");
+		JPSBaseLogger.info(this,"finished retrofitting");
 		
 	}
-
+	
 }

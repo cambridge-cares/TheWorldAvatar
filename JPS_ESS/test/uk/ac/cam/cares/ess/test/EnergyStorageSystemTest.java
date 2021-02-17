@@ -15,9 +15,11 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.ess.BatteryEntityCreator;
 import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
+import uk.ac.cam.cares.jps.ess.OptimizationAgent;
 import uk.ac.cam.cares.jps.ess.coordination.CoordinationESSAgent;
 
 
@@ -139,7 +141,7 @@ public class EnergyStorageSystemTest extends TestCase {
 	public void testOptimizationAgentInputValidation() {
 		JSONObject jo = new JSONObject();
 		jo.put("storage", storageIRI);
-		assertTrue(new EnergyStorageSystem().validateInput(jo));
+		assertTrue(new OptimizationAgent().validateInput(jo));
 		
 	}
 	/** test createBatteryOwlFile() of BatteryEntityCreator
@@ -202,6 +204,20 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONArray ja = testres.getJSONArray("batterylist" );
 		assertTrue(ja.length() > 0);
 	}
+	
+	public void testCreateScenarioAndCallESSCoordinateDirect() throws JSONException {
+		String scenarioName = "testESSTRIAL01";	
+		JSONObject jo = new JSONObject();
+		pvgeniris.add(pvGenIRI);
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("BatteryCatalog", batIRI);
+		jo.put("RenewableEnergyGenerator", pvgeniris);
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/RenewableGenRetrofit", jo.toString());
+		String usecaseUrl = JPSContext.getUsecaseUrl();	
+		result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/ESSAgent", jo.toString());
+		System.out.println(result);
+	}
+	
 	
 	
 	
