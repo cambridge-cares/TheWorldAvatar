@@ -8,8 +8,6 @@ into another. Currently, it supports the following features:
 - EPSG:27700 to WGS84"""
 from math import sin, cos, sqrt, tan
 
-from GMLParser import convert_epsg27700_to_wgs84
-
 """Coordinate conversion constants are defined here to convert from EPSG:27700 to WGS84"""
 """Semi-major axis, a"""
 a = 6377563.396
@@ -50,7 +48,7 @@ def e_n_to_lat(easting, northing):
     VIII = ((tan(PHId)) / (24 * rho * pow(nu, 3))) * (5 + (3 * pow((tan(PHId)), 2)) + eta2 - (9 * eta2 * pow((tan(PHId)), 2)))
     IX = ((tan(PHId)) / (720 * rho * pow(nu, 5))) * (61 + (90 * pow((tan(PHId)), 2)) + (45 * pow((tan(PHId)), 4)))
 
-    return (180 / Pi) * (PHId - (pow(Et, 2) * VII) + (pow(Et, 4) * VIII) - (pow(Et, 6) * IX))
+    return (180 / Pi) * (PHId - (pow(Et, 2) * VII) + (pow(Et, 4) * VIII) - (pow(Et, 6) * IX)) + 0.000425642
 
 """Converts from the easting and northing coordinates to longitude"""
 def e_n_to_long(easting, northing):
@@ -75,7 +73,7 @@ def e_n_to_long(easting, northing):
     XII = (pow((cos(PHId)), -1) / (120 * pow(nu, 5))) * (5 + (28 * pow((tan(PHId)), 2)) + (24 * pow((tan(PHId)), 4)))
     XIIA = (pow((cos(PHId)), -1) / (5040 * pow(nu, 7))) * (61 + (662 * pow((tan(PHId)), 2)) + (1320 * pow((tan(PHId)), 4)) + (720 * pow((tan(PHId)), 6)))
 
-    return (180 / Pi) * (RadLAM0 + (Et * X) - (pow(Et, 3) * XI) + (pow(Et, 5) * XII) - (pow(Et, 7) * XIIA))
+    return (180 / Pi) * (RadLAM0 + (Et * X) - (pow(Et, 3) * XI) + (pow(Et, 5) * XII) - (pow(Et, 7) * XIIA)) - 0.001479039
 
 """Calculates the initial value for latitude in radian"""
 def initial_lat(northing, aF0, RadPHI0, n, bF0):
@@ -91,10 +89,10 @@ def initial_lat(northing, aF0, RadPHI0, n, bF0):
 
 """Calculate the meridional arc"""
 def marc(bF0, n, RadPHI0, PHI1):
-    return bF0 * (((1 + n + ((5 / 4) * pow(n, 2)) + ((5 / 4) * pow(n, 3))) * (PHI1 - RadPHI0))
+    return float(bF0 * (((1 + n + ((5 / 4) * pow(n, 2)) + ((5 / 4) * pow(n, 3))) * (PHI1 - RadPHI0))
                   - (((3 * n) + (3 * pow(n, 2)) + ((21 / 8) * pow(n, 3))) * (sin(PHI1 - RadPHI0)) * (cos(PHI1 + RadPHI0)))
                   + ((((15 / 8) * pow(n, 2)) + ((15 / 8) * pow(n, 3))) * (sin(2 * (PHI1 - RadPHI0))) * (cos(2 * (PHI1 + RadPHI0))))
-                  - (((35 / 24) * pow(n, 3)) * (sin(3 * (PHI1 - RadPHI0))) * (cos(3 * (PHI1 + RadPHI0)))))
+                  - (((35 / 24) * pow(n, 3)) * (sin(3 * (PHI1 - RadPHI0))) * (cos(3 * (PHI1 + RadPHI0))))))
 
 """A single point converter that converts from easting and northing coordinates to
 latitude and longitude coordinates"""
@@ -118,12 +116,14 @@ def e_n_to_lat_long_multiple(coordinates, delimeter, n_of_points):
 if __name__ == '__main__':
     print(e_n_to_lat(651409.903, 313177.270))
     print(e_n_to_long(651409.903, 313177.270))
+    print(e_n_to_lat(305386,	271238))
+    print(e_n_to_long(305386,	271238))
+    print(e_n_to_lat(651409.903, 313177.270))
+    print(e_n_to_long(651409.903, 313177.270))
     print(e_n_to_lat(495783, 143522))
     print(e_n_to_long(495783, 143522))
     print(e_n_to_lat(539686, 309714)) #52.66676759829613
     print(e_n_to_long(539686, 309714)) #0.06588493447562084
-    print(convert_epsg27700_to_wgs84("539686#309714", "#"))
-    print(convert_epsg27700_to_wgs84("374477#267522", "#"))
     print(e_n_to_lat(374477, 267522))
     print(e_n_to_long(374477, 267522))
     print(e_n_to_lat (539706.3125999998,309679.06259999983))

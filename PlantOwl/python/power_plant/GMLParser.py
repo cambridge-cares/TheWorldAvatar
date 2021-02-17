@@ -7,13 +7,7 @@
 structure the data by following an ontological model, and finally
 represent the data using RDF."""
 
-import time
-from builtins import enumerate
-
-from filetype.types.image import Cr2
 from lxml import etree
-from pandas.io.json import _json_normalize
-from pyproj import Proj, transform
 from rdflib.extras.infixowl import Ontology, OWL_NS
 
 import CoordinateConversion as coord_convert
