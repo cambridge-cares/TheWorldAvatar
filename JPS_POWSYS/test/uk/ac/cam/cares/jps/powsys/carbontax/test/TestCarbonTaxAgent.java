@@ -16,14 +16,12 @@ import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 
 public class TestCarbonTaxAgent extends TestCase {
 	CarbonTaxAgent a= new CarbonTaxAgent();
-	// this takes more than 20 minutes to run; check how long with Aravind
 	public void testLocalRun() throws IOException, InterruptedException { //warning, need to put owl file in root localhost
 		
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
 		System.out.println("what is dataPath="+dataPath);
 		
-		CarbonTaxAgent a= new CarbonTaxAgent();
 		a.prepareCSVGeneratorParameterUpdatedGenScale(iriofnetwork,dataPath);
 		String filename="time_profile.csv";
 		a.copyTemplate(dataPath, filename);
@@ -66,10 +64,8 @@ public class TestCarbonTaxAgent extends TestCase {
 		JSONObject jo = new JSONObject();
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		BigDecimal a;
-		a= new BigDecimal("170"); 
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		jo.put("carbontax",a );
+		jo.put("carbontax",new BigDecimal("170") );
 		String resultProcess=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
 		System.out.println("output= "+resultProcess);
 		assertNotNull(new JSONObject(resultProcess).get("substitutionalgenerators"));

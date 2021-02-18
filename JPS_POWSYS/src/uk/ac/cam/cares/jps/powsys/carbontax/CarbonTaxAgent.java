@@ -69,7 +69,6 @@ public class CarbonTaxAgent extends JPSAgent {
     }
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-
 		if (!validateInput(requestParams)) {
 			throw new JSONException ("CarbonTaxAgent input parameters invalid");
 		}
@@ -137,14 +136,9 @@ public class CarbonTaxAgent extends JPSAgent {
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-		String gamsLocation = System.getenv("GAMSDIR").split(";")[0];
-
-
-		gamsLocation =gamsLocation.replace("\\", "/");
-		gamsLocation =gamsLocation.replace("//", "/");
-		String executablelocation = gamsLocation+"/gams.exe";
 		String folderlocation =baseUrl; //+"/";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
+		String executablelocation = Util.getGAMSLocation();
         String[] cmdArray = new String[7];
         
         cmdArray[0] = executablelocation;
@@ -157,10 +151,14 @@ public class CarbonTaxAgent extends JPSAgent {
 
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
+        //TODO: Disable this until we get a waitFor run time
+//        CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
         
-        CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
-     
-        logger.info("Done");
+        logger.info(cmdArrayinstring);
+        Process p = Runtime.getRuntime().exec(cmdArray);
+		p.waitFor();
+         
+		logger.info("Done");
 	}
 	
 	
