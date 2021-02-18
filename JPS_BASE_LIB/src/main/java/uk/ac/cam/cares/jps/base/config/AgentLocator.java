@@ -3,9 +3,11 @@ package uk.ac.cam.cares.jps.base.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -18,221 +20,170 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.SystemPropertyUtils;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentLocator {
 
+	private static AgentLocator instance = null;
+	private String jpsBaseDirectory = null;
+	private String url = null;
 	private static String JPS_CONFIG_ENVIRONMENT_TEST_KEY = "test";
-    private static AgentLocator instance = null;
+	private static String REL_DIR_PYTHON = "reldir.python";
+	private static String REL_DIR_WORKINGDIR = "reldir.workingdir";
+	private static String ABS_JPSDATA_WORKINGDIR = "absdir.jpsdata.workingdir";
+	private static String INVALID_CLASS = "Invalid class.";
+	private static String INVALID_PATH = "Path could not be constructed.";
+	private static String INVALID_URL = "URL could not be constructed.";
+	private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
 
-    private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
-    private static final String[] SUBDIRECTORIES_FOR_COMPILED_CLASSES = new String[]{
-            "/WEB-INF/classes", "\\WEB-INF\\classes", "/bin", "\\bin", "/build/classes", "\\build\\classes",
-            "target/classes", "\\target\\classes", "target/test-classes", "\\target\\test-classes"
-    };
-    private String jpsBaseDirectory = null;
-    private String url = null;
+	public static synchronized AgentLocator getSingleton() {
+		if (instance == null) {
+			instance = new AgentLocator();
+		}
 
-    private AgentLocator() {
-    }
+		return instance;
 
-    private static synchronized AgentLocator getSingleton() {
-        if (instance == null) {
-            instance = new AgentLocator();
-            instance.init();
-        }
-        return instance;
-    }
+	}
 
-    /**
-     * Loads the property files. There is only one source for the property files, namely the config directory
-     * within the deployed JPS_BASE app.
-     */
-    private void init() {
+	private AgentLocator() {
+		init();
+	}
 
-        String path = getCurrentJpsAppDirectory(this);
-        jpsBaseDirectory = createJpsBaseDirectory(path);
-        logger.info("JPS_BASE directory = " + jpsBaseDirectory);
-    }
-    /** previously used to determine the location of JPS BASE CONFIG as part of JPS BASE webapp
-     * Now config file is stored in JPS BASE LIB/src/main/resources
-     *  
-     * @param currentJpsAppDirectory
-     * @return
-     */
-    public static String createJpsBaseDirectory(String currentJpsAppDirectory) {
-    	return "/";
-//        String result = null;
-//        
-//        String path = currentJpsAppDirectory.replace("\\", "/");
-//        int index = path.lastIndexOf("/");
-//        String firstPart = path.substring(0, index);
-//        System.out.println("jps base dir first part = " + firstPart);
-//        File dir = new File(firstPart);
-//
-//        // there might be several webapps with name of form JPS_BASE##x.y.z
-//        // find the one with the largest version x.y.z
-//        String highestVersion = null;
-//        for (File current : dir.listFiles()) {
-//            if (!current.isDirectory()) {
-//                continue;
-//            }
-//            path = current.getAbsolutePath().replace("\\", "/");
-//            index = path.lastIndexOf("/");
-//            String secondPart = path.substring(index + 1);
-//            System.out.println("jps base dir second part = " + secondPart);
-//            if (secondPart.startsWith("JPS_BASE")) {
-//                String version = null;
-//                index = secondPart.lastIndexOf("##");
-//                if (index >= 0) {
-//                    version = secondPart.substring(index + 2);
-//                }
-//                if (result == null || isVersionLargerThan(version, highestVersion)) {
-//                    result = path;
-//                    highestVersion = version;
-//                    System.out.println("jps base dir current path candidate = " + path);
-//                }
-//            }
-//        }
-//        if (result == null) {
-//            result = path + "/../../../JPS_BASE";
-//            if (!Files.isDirectory(Paths.get(result))) {
-//                result = path + "/../../JPS_BASE";
-//            }
-//        }
-//        return result;
-    }
+	/**
+	 * Assigns values to jpsBaseDirectory and url. - Russell
+	 */
+	private void init() {
+		jpsBaseDirectory = getCurrentJpsAppDirectory(this);
+		logger.info("JPS_BASE directory = " + jpsBaseDirectory);
+		url = getUrl(getProperty("host"), getProperty("port"));
+	}
 
-    public static boolean isVersionLargerThan(String v1, String v2) {
+	/**
+	 * Obtains the working directory of given class. e.g.
+	 * getCurrentJpsAppDirectory(this) returns
+	 * /Users/russ1337/Desktop/JPS/workarea/JParkSimulator-git/JPS_BASE_LIB -
+	 * Russell
+	 */
+	public static String getCurrentJpsAppDirectory(Object thisClass) {
+		String thisFile;
 
-        if (v1 == null) {
-            return false;
-        }
-        if (v2 == null) {
-            return true;
-        }
-        StringTokenizer t1 = new StringTokenizer(v1, ".");
-        StringTokenizer t2 = new StringTokenizer(v2, ".");
-        while (t1.hasMoreTokens()) {
+		try {
+			thisFile = new File(thisClass.toString()).getAbsolutePath();
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_CLASS);
+		}
 
-            if (!t2.hasMoreTokens()) {
-                return true;
-            }
+		String appPath = Paths.get(thisFile).getParent().toString();
 
-            int i1 = Integer.valueOf(t1.nextToken());
-            int i2 = Integer.valueOf(t2.nextToken());
-            if (i1 < i2) {
-                return false;
-            }
-            if (i1 > i2) {
-                return true;
-            }
-        }
+		return appPath;
 
-        return false;
-    }
+	}
 
-    public static String getCurrentJpsAppDirectory(Object thisObject) {
-        String path;
-        URL appURL = thisObject.getClass().getClassLoader().getResource("");
-        String classDir = appURL.getPath();
-        try {
-            path = Paths.get(appURL.toURI()).toFile().getPath();
-        } catch (URISyntaxException e) {
-            throw new JPSRuntimeException(e);
-        }
+	/**
+	 * Obtains the working directory of JPS_BASE_LIB - Russell
+	 */
+	public static String getJPSBaseDirectory() {
+		return getSingleton().jpsBaseDirectory;
 
-        int index = -1;
-        for (String current : SUBDIRECTORIES_FOR_COMPILED_CLASSES) {
-            index = path.lastIndexOf(current);
-            if (index > +0) {
-                break;
-            }
-        }
+	}
 
-        if (index == -1) {
-            String message = "current JPS app directory was not found, class directory = " + classDir;
-            logger.error(message);
-            throw new JPSRuntimeException(message);
-        }
-        path = path.substring(0, index);
-        logger.info("current JPS app directory = " + path + " , class directory = " + classDir);
-        return path;
-    }
+	/**
+	 * Checks properties file for test key and returns true or false. - Russell
+	 */
+	public static boolean isJPSRunningForTest() {
+		Boolean testMode = false;
 
-    public static String getJPSBaseDirectory() {
-        return getSingleton().jpsBaseDirectory;
-    }
+		testMode = Boolean.valueOf(getProperty(JPS_CONFIG_ENVIRONMENT_TEST_KEY));
 
-    /**
-     * This method is used to determine which enviroment JPS agents should operate in:
-     * development/testing or production.
-     *
-     * @return Boolean testMode
-     */
-    public static boolean isJPSRunningForTest() {
-        Boolean testMode = false;
-        testMode = Boolean.valueOf(KeyValueMap.getInstance().get(JPS_CONFIG_ENVIRONMENT_TEST_KEY));
-        return testMode;
-    }
+		return testMode;
 
-    public static String getAbsolutePath(String keyForRelativePath, Object thisObject) {
-        String relativePath = getProperty(keyForRelativePath);
-        return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath;
-    }
+	}
 
-    /**
-     * @param pythonScriptName (including package name followed by script name and .py extension, e.g. caresjpsadmsinputs/ADMSGeoJsonGetter.py)
-     * @return
-     */
-    //TODO-AE replace original methods after Janusz checked that this method is working
-    public static String getNewPathToPythonScript(String pythonScriptName, Object thisObject) {
-        String relativePath = getProperty("reldir.python");
-        return Paths.get(getCurrentJpsAppDirectory(thisObject), relativePath, pythonScriptName).toString();
-    }
+	/**
+	 * Creates path to python scripts found in the python folder in working
+	 * directory of given object. e.g. getNewPathToPythonScript("python_script.py",
+	 * this) returns
+	 * /Users/russ1337/Desktop/JPS/workarea/JParkSimulator-git/JPS_BASE_LIB/python/python_script.py
+	 * - Russell
+	 */
+	public static String getNewPathToPythonScript(String pythonScriptName, Object thisObject) {
+		String pathToPy;
+		String relativePath = getProperty(REL_DIR_PYTHON);
 
-    public static String getPathToWorkingDir(Object thisObject) {
-        String relativePath = getProperty("reldir.workingdir");
-        return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath;
-    }
+		try {
+			pathToPy = Paths.get(getCurrentJpsAppDirectory(thisObject), relativePath, pythonScriptName).toString();
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_PATH);
+		}
 
-    public static String getPathToJpsWorkingDir() {
-        return getProperty("absdir.jpsdata.workingdir");
-    }
+		return pathToPy;
 
-    /**
-     * If there is a test property file with the key then its value is returned.
-     * Otherwise the value specified in the application property file or null is
-     * returned.
-     *
-     * @param key
-     * @return
-     */
-    public static String getProperty(String key) {
+	}
 
-        return KeyValueMap.getInstance().get(key);
-    }
+	/**
+	 * Creates path to workingdir folder in working directory of given object. e.g.
+	 * getPathToWorkingDir(this) returns
+	 * /Users/russ1337/Desktop/JPS/workarea/JParkSimulator-git/JPS_BASE_LIB/python/python_script.py
+	 * - Russell
+	 */
+	public static String getPathToWorkingDir(Object thisObject) {
+		String pathToPyDir;
+		String relativePath = getProperty(REL_DIR_WORKINGDIR);
 
-    public static String callAgent(String agentKey) throws ClientProtocolException, IOException {
-        return getSingleton().callAgentInternally(agentKey);
-    }
+		try {
+			pathToPyDir = Paths.get(getCurrentJpsAppDirectory(thisObject), relativePath).toString();
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_PATH);
+		}
 
-    private String callAgentInternally(String agentKey) throws ClientProtocolException, IOException {
-        String combinedUrl = getUrl() + AgentLocator.getProperty(agentKey);
-        logger.info("calling agent " + combinedUrl);
-        HttpUriRequest request = new HttpGet(combinedUrl);
-        HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);
-        String response = EntityUtils.toString(httpResponse.getEntity());
-        return response;
-    }
+		return pathToPyDir;
 
-    private String getUrl() {
-        if (url == null) {
-            url = "http://" + getProperty("host") + ":" + getProperty("port");
-            logger.info("created url from properties: " + url);
-        }
+	}
 
-        return url;
-    }
+	/**
+	 * Obtains path to JPS data working directory e.g. C:/JPS_DATA/workingdir -
+	 * Russell
+	 */
+	public static String getPathToJpsWorkingDir() {
+		String absPath = getProperty(ABS_JPSDATA_WORKINGDIR);
+		String pathToJpsDir = Paths.get(absPath).toString();
+
+		return pathToJpsDir;
+
+	}
+
+	/**
+	 * Takes in a key and returns value if the key exists in map. Throws appropriate
+	 * error message otherwise. - Russell
+	 */
+	public static String getProperty(String key) {
+		String property = KeyValueMap.getInstance().get(key);
+
+		return property;
+
+	}
+
+	/**
+	 * Contructs url using host and port values from either jps.properties or
+	 * jpstest.properties. The later argument(s) will only be appended accordingly
+	 * if the previous argument(s) is not null. e.g. getUrl(null, "123") returns
+	 * "http:" - Russell
+	 */
+	private String getUrl(String host, String port) {
+		String protocol = "http";
+		String path = "";
+		String url;
+
+		try {
+			url = new URL(protocol, host, Integer.valueOf(port), path).toString();
+			logger.info("created url from properties: " + url);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(INVALID_URL);
+		}
+
+		return url;
+	}
+
 }
