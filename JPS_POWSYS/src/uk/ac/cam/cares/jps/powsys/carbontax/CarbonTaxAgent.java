@@ -60,7 +60,6 @@ public class CarbonTaxAgent extends JPSAgent {
         try {
 	        String ENIRI = requestParams.getString("electricalnetwork");
 	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
-			BigDecimal batIRI=requestParams.getBigDecimal("carbontax");	
 	        return w;
         } catch (JSONException ex) {
         	ex.printStackTrace();

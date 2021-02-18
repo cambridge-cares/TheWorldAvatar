@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,30 +19,34 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
-public class ENAgent extends JPSHttpServlet {
+public class ENAgent extends JPSAgent {
 	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
@@ -55,18 +60,24 @@ public class ENAgent extends JPSHttpServlet {
 		return jenaOwlModel.getDatatypeProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	}
-	
-	 @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		JSONObject joforEN=requestParams;
-		String iriofnetwork = joforEN.getString("electricalnetwork");
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		if (!validateInput(requestParams)) {
+			throw new JSONException("ENAgent input parameters invalid");
+		}
+		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = null;
 
-		String path = request.getServletPath();
+		String path = requestParams.getString("path");
 
-		if ("/ENAgent/startsimulationPF".equals(path)) {
+		if (path.contains("/ENAgent/startsimulationPF")) {
 			modeltype = "PF";// PF or OPF
-		} else if ("/ENAgent/startsimulationOPF".equals(path)) {
+		} else if (path.contains("/ENAgent/startsimulationOPF")) {
 			modeltype = "OPF";
 		}
 
@@ -1010,4 +1021,18 @@ public class ENAgent extends JPSHttpServlet {
 		
 		
 	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    	if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
+	        return w;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
 }
