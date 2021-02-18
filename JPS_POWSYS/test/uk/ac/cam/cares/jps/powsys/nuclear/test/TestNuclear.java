@@ -34,7 +34,8 @@ public class TestNuclear extends TestCase {
 		}
 		return ja;
 	}
-
+	// No longer works for base scenario due to KnowledgeBaseClient bug, see trello card 
+	//https://trello.com/c/zyELPCCl/918-jps-base-lib-knowledge-base-client-not-writing-to-base-scenario
 	public void testStartSimulationAndProcessResultDirectCallForBaseScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException { //not tested yet
 		JSONObject jofornuc = new JSONObject();
 		JSONArray ja = new JSONArray();
@@ -62,7 +63,13 @@ public class TestNuclear extends TestCase {
 		System.out.println("result from processsimulationresult=" + result);
 		assertEquals(4, result.size());
 	}
-	
+	/** test startSimulation() and processSimulationResult() of NuclearAgent
+	 * 
+	 * @throws NumberFormatException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws InterruptedException
+	 */
 	public void testProcessResultDirectCallForScenarioaasc5() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
 		
 		String scenarioUrl = BucketHelper.getScenarioUrl("aasc5"); 
@@ -170,6 +177,9 @@ public void testCoordinateRetroFitNuclearDirectCall() throws NumberFormatExcepti
 		assertTrue(file.exists());
 
 	}
+	/** test validateInput() of NuclearAgent
+	 * 
+	 */
 	public void testInputValidatorNuclearAgent() {
 		JSONObject result = new JSONObject();
 		JSONArray ja = new JSONArray();
@@ -185,7 +195,9 @@ public void testCoordinateRetroFitNuclearDirectCall() throws NumberFormatExcepti
 		assertTrue(agent.validateInput(result));
 		
 	}
-	
+	/** test processRequestParameters() of NuclearAgent
+	 * 
+	 */
 	public void testNuclearAgentRequestProcess() {
 		JSONObject result = new JSONObject();
 		JSONArray ja = new JSONArray();

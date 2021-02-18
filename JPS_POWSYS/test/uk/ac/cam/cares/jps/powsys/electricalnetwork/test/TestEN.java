@@ -20,6 +20,7 @@ import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -40,6 +41,7 @@ public class TestEN extends TestCase {
 	public static String SGELECTRICAL_NETWORK = "http://localhost:8080/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 	String dataPath = QueryBroker.getLocalDataPath();
 	String baseUrl=dataPath+"/JPS_POWSYS_EN";
+	private ENAgent agent =new ENAgent();
 	
 	String genInfocost= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -657,4 +659,13 @@ public class TestEN extends TestCase {
 		OntModel jenaOwlModel = JenaHelper.createModel("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl");
 		new ENAgent().updateGeneratorEmission(jenaOwlModel);
 	}
+	/** tests validateInput() of ENAgent
+	 * 
+	 */
+	public void testInputValidatorENAgent() {
+		JSONObject result = new JSONObject();
+		result.put("electricalnetwork", ELECTRICAL_NETWORK);
+		
+		assertTrue(agent.validateInput(result));
+		}
 }
