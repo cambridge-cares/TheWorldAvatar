@@ -2,7 +2,7 @@ version: "3.8"
 
 # Services
 services:
-  # Certbot; handles certificate renewal
+  # Run Certbot in prod mode to handle certificate renewal
   certbot:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     image: docker.cmclinnovations.com/certbot/certbot:v1.12.0
@@ -15,17 +15,14 @@ services:
         source: certbot-challenge
         target: /var/www/certbot
 
-  # nginx, configured as a reverse proxy for all eternally available web services
+  # Have reverse proxy serve http, https over standard ports in prod mode
   reverse_proxy:
-    container_name: reverse_proxy
-    image: docker.cmclinnovations.com/nginx:1.19.6
+    build:
+      target: with_ssl
     ports:
       - 80:80
       - 443:443
     volumes:
-      - type: bind
-        source: ./reverse_proxy/nginx.conf
-        target: /etc/nginx/nginx.conf
       - type: bind
         source: /etc/letsencrypt
         target: /etc/letsencrypt
@@ -33,12 +30,14 @@ services:
         source: certbot-challenge
         target: /var/www/certbot
 
-# Production network    
+
+# Production network
 networks:
   default:
     name: prod-web
 
+
 # Volumes
 volumes:
   certbot-challenge:
-    name: "certbot-challenge"
+    name: certbot-challenge
