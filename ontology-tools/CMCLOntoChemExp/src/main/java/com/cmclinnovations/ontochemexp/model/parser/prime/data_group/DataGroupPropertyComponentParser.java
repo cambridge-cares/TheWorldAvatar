@@ -8,6 +8,8 @@ import java.util.List;
 import org.xml.sax.Attributes;
 
 import com.cmclinnovations.ontochemexp.model.converter.prime.PrimeConverter;
+import com.cmclinnovations.ontochemexp.model.exception.OntoChemExpException;
+import com.cmclinnovations.ontochemexp.model.utils.PrimeConverterUtils;
 import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
 
 public class DataGroupPropertyComponentParser extends PrimeConverter implements IDataGroupPropertyComponentParser {
@@ -69,10 +71,25 @@ public class DataGroupPropertyComponentParser extends PrimeConverter implements 
 			
 			if (dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
 					&& !dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
-						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
+//				iABoxManagement.addProperty(
+//						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
+//						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
+				
+				String uniqueSpeciesIRI;
+				try {
+					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
+							.concat(dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID()));
+					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
+						iABoxManagement.addProperty(
+								"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
+								ontoChemExpVocabulary.getDataPropertyhasUniqueSpeciesIRI(),
+								uniqueSpeciesIRI, STRING);
+					}
+				} catch (OntoChemExpException e) {
+					logger.error("The uniqueSpeciesIRI could not be retrieved.");
+					e.printStackTrace();
+				}
 			}
 		} catch (ABoxManagementException e) {
 			logger.error("An individual of PropertyComponentSpeciesLink could not be created.");

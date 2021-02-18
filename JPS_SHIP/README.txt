@@ -1,14 +1,14 @@
-A Python Virtual Environment will now be created during 'mvn clean install' on the JPS_SHIP project. 
+A Python Virtual Environment will now be created in the ROOT folder of your Tomcat directory during 'mvn clean install' for the JPS_SHIP project.  
 
-To use this virtual environment for testing, please do the following:
-1) cd to JParkSimulator-git\JPS_SHIP\python\ADMS-speed-load-map in your workarea.
-2) Execute the command 'pipenv run python'.
-3) Once you're in the python shell, execute the following commands:
-	import sys
-	sys.executable
-4) You should now see a path to where the python is executed from the virtual environment. 
-5) Copy the path, excluding '\\Scripts\\python.exe' on Windows or 'bin/python' on Unix-like OS.
-6) Replace the value of speed.load.map.venv.dir in jpstest.properties located in JPS_BASE_LIB.
-	e.g. speed.load.map.venv.dir = C:\\Users\\RFOO01\\.virtualenvs\\ADMS-speed-load-map-KcR3PzvU
-7) Run 'mvn clean install' on JPS_BASE_LIB.
+Prerequisite for non-Windows user:
+Please install Python 3.6.8 via preferred download management tool (e.g. Homebrew for MacOS) or the installer available on https://www.python.org/downloads/release/python-368/ before running 'mvn clean install' on the JPS_SHIP project. 
 
+To use this virtual environment for SpeedLoadMapWrapper, please do the following:
+1) Change the directory of the virtual environment in JPS_SHIP/src/resources/jpsship.properties to that of your local Tomcat directory. 
+
+	speed.load.map.venv.dir = ${tomcatPath}/webapps/ROOT/pyvenv/PYVENV_JPS_SHIP/.venv
+
+e.g.
+	speed.load.map.venv.dir = /Users/russ1337/apache-tomcat-8.5.59/webapps/ROOT/pyvenv/PYVENV_JPS_SHIP/.venv
+
+2. Run the command 'mvn clean install' in the JPS_SHIP project directory. 

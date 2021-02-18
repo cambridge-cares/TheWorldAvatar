@@ -13,7 +13,9 @@ const retrieveSelectedPlantParams = () => {
             }, data => {
                 let dataObj = JSON.parse(data);
                 $("#plantSpecificParam").val(dataObj['V_massF_CrudePalmOilInput_001']);
-            });
+            }).fail(function(){
+				$("#plantSpecificParam").val("24220.0656");
+			});
     } else {
         $("#labelPlantSpecificParam").find("span").text("Flow-rate of Natural Gas (kmol/s):");
         $("#plantSpecificParam").val("");
@@ -23,7 +25,10 @@ const retrieveSelectedPlantParams = () => {
             }, data => {
                 let dataObj = JSON.parse(data);
                 $("#plantSpecificParam").val(dataObj['V_moleF_NaturalGasInput_001']);
-            });
+            }).fail(function(){
+				$("#plantSpecificParam").val("0.5527777778");
+	
+			});
     }
 };
 
