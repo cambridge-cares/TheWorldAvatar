@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.base.config.test;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
@@ -110,7 +112,8 @@ public class AgentLocatorTest extends TestCase {
 
 		pyScript = "python_script.py";
 		obj = this;
-		assertTrue(al.getNewPathToPythonScript(pyScript, obj).contains("JPS_BASE_LIB/python/python_script.py"));
+		String substring = Paths.get("JPS_BASE_LIB/python/python_script.py").toString();
+		assertTrue(al.getNewPathToPythonScript(pyScript, obj).contains(substring));
 
 	}
 
@@ -126,14 +129,16 @@ public class AgentLocatorTest extends TestCase {
 		}
 
 		obj = this;
-		assertTrue(al.getPathToWorkingDir(obj).contains("JPS_BASE_LIB/workingdir"));
+		String substring = Paths.get("JPS_BASE_LIB/workingdir").toString();
+		assertTrue(al.getPathToWorkingDir(obj).contains(substring));
 
 	}
 
 	public void testGetPathToJpsWorkingDir() throws NoSuchMethodException, SecurityException {
 		AgentLocator al = AgentLocator.getSingleton();
 		assertNotNull(al.getClass().getDeclaredMethod("getPathToJpsWorkingDir"));
-		assertTrue(al.getPathToJpsWorkingDir().contains("JPS_DATA/workingdir"));
+		String substring = Paths.get("JPS_DATA/workingdir").toString();
+		assertTrue(al.getPathToJpsWorkingDir().contains(substring));
 
 	}
 
