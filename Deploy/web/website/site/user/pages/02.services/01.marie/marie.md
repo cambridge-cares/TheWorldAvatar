@@ -25,19 +25,19 @@ title: Marie
 	<h3>Results</h3>
 	<br/>
 	<b><u>From the World Avatar</u></b>
-	<div id="chatbot-results" class="results-container"><img src="http://kg.cmclinnovations.com:81/wp-content/uploads/2021/01/Spinner-1s-200px.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
+	<div id="chatbot-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
 	</div>
 	<br/>
 	<hr/>
 	<br/>
 	<b><u>From Google Knowledge Graph</u></b>
-	<div id="google-results" class="results-container"><img src="http://kg.cmclinnovations.com:81/wp-content/uploads/2021/01/Spinner-1s-200px.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
+	<div id="google-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
 	</div>
 	<br/>
 	<hr/>
 	<br/>
 	<b><u>From Wolfram Alpha</u></b>
-	<div id="wolfram-results" class="results-container"><img src="http://kg.cmclinnovations.com:81/wp-content/uploads/2021/01/Spinner-1s-200px.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
+	<div id="wolfram-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
 	</div>
 	<br/>
 	<br/>
