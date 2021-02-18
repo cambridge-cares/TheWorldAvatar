@@ -1,11 +1,12 @@
 version: "3.8"
 
-# Test network
-networks:
-  default:
-    name: test-web
-
+services:
   # Have reverse proxy serve http over port 82 in test mode
   reverse_proxy:
     ports:
       - 82:80
+
+# Test network
+networks:
+  default:
+    name: test-web
