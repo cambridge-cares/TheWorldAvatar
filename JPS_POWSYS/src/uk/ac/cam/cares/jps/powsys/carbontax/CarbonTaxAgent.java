@@ -196,7 +196,7 @@ public class CarbonTaxAgent extends JPSAgent {
 		.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
 		.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
 		.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#")
-		.addVar("?entity").addVar("?Pmaxvalue").addVar("?entity")
+		.addVar("?entity").addVar("?Pmaxvalue").addVar("?emissionfactor")
 		.addWhere("?entity", "a", "j1:PowerGenerator")
 		.addWhere("?entity", "j2:isModeledBy", "?model")
 		.addWhere("?model", "j5:hasModelVariable", "?pmax")
@@ -209,26 +209,6 @@ public class CarbonTaxAgent extends JPSAgent {
         .addWhere("?emm","j2:hasValue", "?valueemm")
         .addWhere("?valueemm","j2:numericalValue", "?emissionfactor")
 		.buildString();
-//		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-//				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-//				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-//				+ "SELECT ?entity ?Pmaxvalue ?emissionfactor " // add the emission value as optional
-//				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
-//				+ "?entity   j2:isModeledBy ?model ." 
-//				+ "?model   j5:hasModelVariable ?pmax ." 
-//				+ "?pmax  a  j3:PMax  ."
-//				+ "?pmax  j2:hasValue ?vpmax ." 
-//				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
-//
-//				+ "?entity j4:realizes ?genprocess ." 
-//				+ "?genprocess j9:usesGenerationTechnology ?tech ."
-//				+ "?tech j9:hasEmissionFactor ?emm ."
-//				+ "?emm j2:hasValue ?valueemm ."
-//				+ "?valueemm j2:numericalValue ?emissionfactor ." 
-//				+ "}";
 
 
 

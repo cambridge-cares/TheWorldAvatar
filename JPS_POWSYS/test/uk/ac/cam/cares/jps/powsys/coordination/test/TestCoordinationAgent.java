@@ -222,7 +222,7 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 	/** test validateInput() of CoordinationAgent
 	 * 
 	 */
-	public void testInputValidatorENVisualization() {
+	public void testInputValidatorCoordination() {
 		JSONObject jo = new JSONObject().put("path","localhost:8080/ENVisualization/" );
 		jo.put("electricalnetwork", electricalnetwork);
 		assertTrue(a.validateInput(jo));

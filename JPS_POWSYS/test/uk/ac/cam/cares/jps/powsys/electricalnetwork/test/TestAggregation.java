@@ -12,7 +12,7 @@ import uk.ac.cam.cares.jps.powsys.electricalnetwork.AggregationEmissionAgent;
 
 
 public class TestAggregation extends TestCase{
-
+	// This test doesn't run. 
 	public void testsumagg() {
 		JSONObject x= new AggregationEmissionAgent().sumEmissionResult("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		int size=x.getJSONArray("plant").length();
@@ -30,6 +30,10 @@ public class TestAggregation extends TestCase{
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
 		System.out.println("result end="+resultStart);
+		jo = new JSONObject(resultStart);
+		assertNotNull(jo.get("actual"));
+		assertNotNull(jo.get("design"));
+		assertTrue(jo.getDouble("design")> jo.getDouble("actual"));
 	}
 
 	
