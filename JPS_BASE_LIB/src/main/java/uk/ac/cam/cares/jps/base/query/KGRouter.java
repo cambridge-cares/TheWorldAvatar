@@ -30,7 +30,12 @@ public class KGRouter{
 			if(kgRouter==null){
 				kgRouter = new KGRouter();
 			}
-			
+			if(isQueryOperation){
+				queryIRI = kgRouter.getQueryIRI(KGROUTER_ENDPOINT, targetResource.replace(HTTP, EMPTY));
+			}
+			if(isUpdateOperation){
+				updateIRI = kgRouter.getUpdateIRI(KGROUTER_ENDPOINT, targetResource.replace(HTTP, EMPTY));
+			}
 		}
 		return null;
 	}
