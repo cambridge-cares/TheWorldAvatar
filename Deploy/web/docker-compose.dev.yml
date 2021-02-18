@@ -7,14 +7,16 @@ services:
   website:
     build: 
       context: "./website"
-      target: base
-    user: "www-data:www-data"
+    ports:
+      - "82:80"
+  
+  # Reverse Proxy Server
+  reverse-proxy:
+    build: 
+      context: "./reverse-proxy"
     ports:
       - "81:80"
-    volumes:
-      - type: bind
-        source: "./website/site"
-        target: "/var/www/html"
+      - "443:443"
    
 # Development network    
 networks:
