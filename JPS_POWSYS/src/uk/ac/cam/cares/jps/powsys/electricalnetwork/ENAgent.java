@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,30 +19,35 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
-public class ENAgent extends JPSHttpServlet {
+public class ENAgent extends JPSAgent {
 	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
@@ -55,18 +61,24 @@ public class ENAgent extends JPSHttpServlet {
 		return jenaOwlModel.getDatatypeProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	}
-	
-	 @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		JSONObject joforEN=requestParams;
-		String iriofnetwork = joforEN.getString("electricalnetwork");
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		if (!validateInput(requestParams)) {
+			throw new JSONException("ENAgent input parameters invalid");
+		}
+		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = null;
 
-		String path = request.getServletPath();
+		String path = requestParams.getString("path");
 
-		if ("/ENAgent/startsimulationPF".equals(path)) {
+		if (path.contains("/ENAgent/startsimulationPF")) {
 			modeltype = "PF";// PF or OPF
-		} else if ("/ENAgent/startsimulationOPF".equals(path)) {
+		} else if (path.contains("/ENAgent/startsimulationOPF")) {
 			modeltype = "OPF";
 		}
 
@@ -96,14 +108,20 @@ public class ENAgent extends JPSHttpServlet {
 		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
 		
 		logger.info("running PyPower simulation");
-		runModel(baseUrl);
+		try {
+			runPythonScript("PyPower-PF-OPF-JA-9-Java-1.py", baseUrl);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+//		runModel(baseUrl);
 		
-		String fileName = baseUrl+"/outputstatus.txt";
+		String fileName = baseUrl+"/outputStatus.txt";
 		Path path = Paths.get(fileName);
 		byte[] bytes = Files.readAllBytes(path);
 		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
 		if(allLines.get(2).contains("Converged!")) {
-			resjo.put("status", "converged");
+			resjo.put("status", "Converged");
 			try {
 				logger.info("converting PyPower results to OWL files");
 				doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
@@ -113,10 +131,10 @@ public class ENAgent extends JPSHttpServlet {
 			}
 			
 		}else {
-			resjo.put("status", "Not Converged");
+			resjo.put("status", "Diverged");
 			//return null;
 		}
-			
+		
 
 		
 		
@@ -513,8 +531,8 @@ public class ENAgent extends JPSHttpServlet {
 
 //		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
 //		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
-		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/SGPowergrid.py");
-		broker.putLocal(baseUrl + "/SGPowergrid.py", file2);
+		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-9-Java-1.py");
+		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-9-Java-1.py", file2);
 		
 		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
 		broker.putLocal(baseUrl + "/runpy.bat", file3);
@@ -697,14 +715,35 @@ public class ENAgent extends JPSHttpServlet {
 		
 		return resultString; 
 	}
-
+	
+	/*
 	public void runModel(String baseUrl) throws IOException {
 		//String result = CommandHelper.executeCommands(baseUrl, args);
 		String startbatCommand =baseUrl+"/runpy.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);
 		logger.info("final after calling: "+result);
 	}
-
+	*/
+	 /** run Python Script in folder
+		 * 
+		 * @param script
+		 * @param folder
+		 * @return
+		 * @throws Exception
+		 */
+	public String runPythonScript(String script, String folder) throws Exception {
+			String result = "";
+				String path = AgentLocator.getCurrentJpsAppDirectory(this);
+				String command = "python " + path+ "/python/model/" +script 
+						+ " baseMVA.txt" +" bus.txt"+ " gen.txt"+ " branch.txt" 
+						+" 1" +  " outputBusOPF.txt"+ " outputBranchOPF.txt"
+						+" outputGenOPF.txt"+ " 1" + " 1" + " areas.txt"+ " genCost.txt" +"outputStatus.txt";
+				System.out.println(command);
+				result = CommandHelper.executeSingleCommand( path, command);
+			
+			
+				return result;
+		}
 	public ArrayList<String[]> readResult(String outputfiledir, int colnum) throws IOException {
 		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
 		
@@ -1010,4 +1049,18 @@ public class ENAgent extends JPSHttpServlet {
 		
 		
 	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    	if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
+	        return w;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
 }
