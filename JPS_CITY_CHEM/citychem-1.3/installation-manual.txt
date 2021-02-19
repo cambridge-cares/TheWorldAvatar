@@ -1,0 +1,186 @@
+Title: EPISODE CityChem Installation Manual.
+
+1. Introduction: The objective of this manual is to write the precise details of
+all steps for installing EPISODE CityChem on an HPC server, e.g. CSD3. This software
+has dependency on seven different tools, which are being used when it runs, hence,
+this manual also provides instructions on how to install them.
+
+2. Dependency Tool Installation: In this section, we will give step-by-step instruction
+to install the following tools:
+	- zlib
+	- szip
+	- hdf5
+	- netcdf-c
+	- netcdf-fortran
+	- proj
+	- gdal
+Create a folder called episode under your user home using the following command:
+
+mkdir ${HOME}/episode
+
+For example, for the user with the name msff2, the user home on CSD3 is /home/msff2. Following
+the creation of the episode folder, the following path will be available: /home/msff2/episode.
+To make all commands equally applicable on any HPC server, we will use ${HOME} instead
+of any specific user.
+
+2.1 Zlib installation
+Download zlib-1.2.11.tar.gz from here http://www.zlib.net/. This version might be available
+here http://www.zlib.net/zlib-1.2.11.tar.gz. After the download, put zlib-1.2.11.tar.gz under
+the path of episode. Go to the episode directory (/home/msff2/episode) and run the following commands.
+tar -xvzf zlib-1.2.11.tar.gz
+cd zlib-1.2.11/
+mkdir ${HOME}/zlib
+./configure -prefix=${HOME}/zlib
+make
+make install
+cd ..
+
+2.2 Szip installation
+Download szip-2.1.1.tar.gz from here https://support.hdfgroup.org/doc_resource/SZIP/. This 
+version might be available here
+https://support.hdfgroup.org/ftp/lib-external/szip/2.1.1/src/szip-2.1.1.tar.gz. After the
+download, put szip-2.1.1.tar.gz under the path of episode. Go to the episode directory
+(${HOME}/episode) and run the following commands.
+tar -xvzf szip-2.1.1.tar.gz
+cd szip-2.1.1/
+mkdir ${HOME}/szip
+./configure -prefix=${HOME}/szip
+make
+make install
+cd ..
+
+2.3 Hdf5 installation
+Download hdf5-1.8.21.tar.gz from here https://www.hdfgroup.org/downloads/hdf5/. This 
+version might be available here
+https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.21/src/hdf5-1.8.21.tar.gz.
+After the download, put hdf5-1.8.21.tar.gz under the path of episode. Go to the episode
+directory (${HOME}/episode) and run the following commands.
+tar -xvzf hdf5-1.8.21.tar.gz
+cd hdf5-1.8.21/
+mkdir ${HOME}/hdf5
+./configure --with-zlib=${HOME}/zlib --prefix=${HOME}/hdf5
+make check install
+make
+make install
+cd ..
+
+2.4 Netcdf-c installation
+Download netcdf-c-4.7.4.tar.gz from here https://www.unidata.ucar.edu/downloads/netcdf/. This 
+version might be available here
+ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-c-4.7.4.tar.gz.
+After the download, put netcdf-c-4.7.4.tar.gz under the path of episode. Go to the episode
+directory (${HOME}/episode) and run the following commands.
+tar -xvzf netcdf-c-4.7.4.tar.gz
+cd netcdf-c-4.7.4/
+mkdir ${HOME}/netcdf4
+LD_LIBRARY_PATH=${HOME}/netcdf4/lib
+./configure --prefix=${HOME}/netcdf4 --enable-shared CPPFLAGS="-I${HOME}/szip/include -I${HOME}/hdf5/include -I${HOME}/netcdf4/include" LDFLAGS="-L${HOME}/szip/lib -L${HOME}/hdf5/lib -L${HOME}/netcdf4/lib"
+make
+make install
+cd ..
+
+2.5 Netcdf-fortran installation
+Download netcdf-fortran-4.5.2.tar.gz from here https://www.unidata.ucar.edu/downloads/netcdf/. 
+This version might be available here
+ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-fortran-4.5.2.tar.gz.
+After the download, put netcdf-fortran-4.5.2.tar.gz under the path of episode. 
+Go to the episode directory (${HOME}/episode) and run the following commands.
+tar -xvzf netcdf-fortran-4.5.2.tar.gz
+cd netcdf-fortran-4.5.2/
+NCDIR=${HOME}/netcdf4
+CC=${HOME}/netcdf4/cc
+FC=${HOME}/netcdf4/fortran
+export LD_LIBRARY_PATH=${NCDIR}/lib:${LD_LIBRARY_PATH}
+NFDIR=${HOME}/netcdf4
+CPPFLAGS=-I${NCDIR}/include LDFLAGS=-L${NCDIR}/lib
+./configure --prefix=${HOME}/netcdf4 --enable-shared CPPFLAGS="-I${HOME}/szip/include -I${HOME}/hdf5/include -I${HOME}/netcdf4/include" LDFLAGS="-L${HOME}/szip/lib -L${HOME}/hdf5/lib -L${HOME}/netcdf4/lib"
+
+make
+make install
+cd ..
+
+2.6 Proj installation
+Download proj-6.0.0.tar.gz from here 
+https://www.osgeo.org/foundation-news/announcing-proj-6-0-0/. This version might be available
+here https://download.osgeo.org/proj/proj-6.0.0.tar.gz.
+After the download, put proj-6.0.0.tar.gz under the path of episode. Go to the episode
+directory (${HOME}/episode) and run the following commands.
+tar -zxvf proj-6.0.0.tar.gz
+cd proj-6.0.0/
+mkdir ${HOME}/proj
+
+On CSD3, to configure run the following command:
+./configure --prefix=${HOME}/proj
+
+On HPC1, to configure follow the instructions below:
+
+Download sqlite3 from https://www.sqlite.org/snapshot/sqlite-snapshot-202004061816.tar.gz
+After the download, put sqlite-snapshot-202004061816.tar.gz under the path of episode.
+Go to the episode directory (${HOME}/episode) and run the following commands.
+tar -zxvf sqlite-snapshot-202004061816.tar.gz
+cd sqlite-snapshot-202004061816/
+mkdir ${HOME}/sqlite3
+export SQLITE3_LIBS=${HOME}/sqlite3/lib
+export SQLITE3_CFLAGS=${HOME}/sqlite3/include
+./configure --prefix=${HOME}/sqlite3 --enable-shared SQLITE3_CFLAGS="-I${HOME}/sqlite3/include" SQLITE3_LIBS="-L${HOME}/sqlite3/lib"
+make
+make install
+cd ..
+cd ${HOME}/proj-6.0.0
+./configure --prefix=${HOME}/proj --enable-shared CPPFLAGS="-I${HOME}/sqlite3/include" LDFLAGS="-L${HOME}/sqlite3/lib"
+
+After this on both CSD3 and HPC1, run the following commands:
+make
+make install
+LD_LIBRARY_PATH=${HOME}/proj/lib
+PROJ_DIR=${HOME}/proj
+cd ..
+
+2.7 Gdal installation
+Known issue for kinetics users: you need to remove the line 'module load python/3.7/' from your bashrc and use the default option in CSD3. A copy of the bashrc file that worked can be found at JPS_CITY_CHEM\src\main\resources
+
+Download gdal-3.0.4.tar.gz from here https://gdal.org/download.html. This 
+version might be available here
+https://github.com/OSGeo/gdal/releases/download/v3.0.4/gdal-3.0.4.tar.gz.
+After the download, put gdal-3.0.4.tar.gz under the path of episode. Go to the episode
+directory (${HOME}/episode) and run the following commands.
+tar -zxvf gdal-3.0.4.tar.gz
+cd gdal-3.0.4/
+mkdir ${HOME}/gdal
+./configure --prefix=${HOME}/gdal --enable-shared CPPFLAGS="-I${HOME}/proj/include" LDFLAGS="-L${HOME}/proj/lib"
+make
+make install
+cd $HOME
+vi .bashrc
+
+To edit the .bashrc file, press the key I, add the following export instruction as the last
+line to this file.
+
+export PATH=${HOME}/gdal/bin:$PATH
+
+Following the addition, press the ESC key. Type colon, w and q (:wq) and press Enter.
+
+3. EPISODE CityChem installation
+Remember to logout and login again for changes to bashrc to take effect.
+
+WARNING: Do not copy the folder from Windows to Linux to compile the code, they will have messed up line endings!
+Assuming you have a folder called '~/Codes/' in your home directory, perform the following commands:
+cd Codes
+git clone ssh://USERNAME@vienna.cheng.cam.ac.uk/home/userspace/CoMoCommon/Codes/CARES/JParkSimulator-git
+cp -r ~/Codes/JParkSimulator-git/JPS_CITY_CHEM/citychem-1.3/ ~/
+cd ~/citychem-1.3/
+chmod +x ~/citychem-1.3/installcc.csh
+
+Then, execute the following commands:
+
+./installcc.csh city example
+./installcc.csh util example
+cd ${HOME}/citychem-1.3/src
+make –f Makefile.mk
+cd ../SIMU
+ln -s ../bin/citychem.exe
+
+This is the end of the installation of EPISODE CityChem.
+
+4. Run test cases
+There are three test cases available to test your installation. They are saved at JPS_CITY_CHEM\src\main\resources, there is a readme file at that location with instructions on how to run the tests

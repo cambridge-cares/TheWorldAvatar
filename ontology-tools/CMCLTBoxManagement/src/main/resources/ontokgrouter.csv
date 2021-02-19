@@ -1,0 +1,4 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+Target Resource,Class,,,,,,A target resource refers to a repository or an ontology file located in any file system.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl
+hasQueryEndpoint,Data Property,,,Target Resource,String,,Defines the query endpoint of a repository.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl
+hasUpdateEndpoint,Data Property,,,Target Resource,String,,Defines the upate endpoint of a repository.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl

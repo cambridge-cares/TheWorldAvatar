@@ -51,28 +51,28 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElement -->
+    <!-- http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElement">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that defines that a species or molecular entity contains a chemical element.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElementNumber -->
+    <!-- http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElementNumber">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that defines a combined representation of a number indicating the amount of an element in a species and the element.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.theworldavatar.com/kb/ontokin/ontokin.owl#indicatesNumberOf -->
+    <!-- http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#indicatesNumberOf">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontokin/ontokin.owl</rdfs:isDefinedBy>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
@@ -180,9 +180,9 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasNumberOfElement -->
+    <!-- http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement -->
 
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasNumberOfElement">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement">
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A number that indicates the amount of an element in a species.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
@@ -342,22 +342,22 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Element -->
+    <!-- http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Element">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An atom or isotope.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/kb/ontokin/ontokin.owl#ElementNumber -->
+    <!-- http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#ElementNumber">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#indicatesNumberOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Element"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A combined representation of the quantity indicating the amount of a chemical element in a species and the element itself.</rdfs:comment>
@@ -377,14 +377,14 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#EmpiricalFormula">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElement"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Element"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElementNumber"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kb/ontokin/ontokin.owl#ElementNumber"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A chemical formula that indicates the relative number of each constituting chemical element of a species or molecular entity.</rdfs:comment>

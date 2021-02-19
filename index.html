@@ -1,0 +1,549 @@
+<html>
+
+ 
+ 
+ 
+ <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+     <link rel="stylesheet" type="text/css"href="index.css">
+
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>J-Park Simulator</title>
+     <style>
+
+         .thumbcontainer {
+             position: relative;
+         }
+
+         .thumbimage {
+             opacity: 0.3;
+             transition: .9s ease;
+             max-height: 106.45px;
+         }
+
+         .thumbmiddle {
+             transition: .5s ease;
+             opacity: 1;
+             position: absolute;
+             top: 40%;
+             left: 50%;
+             transform: translate(-50%, -40%);
+             -ms-transform: translate(-50%, -40%);
+             text-align: center;
+             backface-visibility: hidden;
+
+         }
+
+         .thumbcontainer:hover .thumbimage {
+             opacity: 0.9;
+         }
+
+         .thumbcontainer:hover .thumbmiddle {
+             opacity: 0.3;
+         }
+
+         .thumbtext {
+             color: black;
+             font-size: 20px;
+             font-weight: bold;
+             font-family: "Century Gothic";
+         }
+
+
+     </style>
+</head>
+ 
+ <div class="jumbotron text-center" id="topBanner">
+ 
+ 
+ <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+ <img  src="cam_lang_negativ1%20NEW_0.png">
+ </a>
+ 
+  <h1 id="head1">J-Park Simulator</h1>
+  <h2 id="head2" style="color:#FFFFFF"> A Part of The World Avatar Project</h2>
+  <p id="description">The J-Park Simulator is a research activity with the ultimate goal of showing how various scenarios affect the real world, in particular carbon emissions in Singapore. The reduction of carbon emissions is a complex multi-dimensional problem and one of the greatest challenges is low interoperability between different domains: as data and software from various domains may be significantly different due to different definitions or standards etc. The J-Park Simulator aims to increase this interoperability by utilising latest ideas from semantic web technologies and Industry 4.0 to describe and model real entities from different dimensions e.g. economic, technological, environmental and social, to fulfil objectives such as simulation and optimisation in cross-domain and multi-level scenarios. This research will allow stakeholders to have a holistic approach to solving complex multi-dimensional problems. </p>
+</div>
+  
+<div class="container">
+
+  
+ <!--
+
+  <div class="col-sm-4">
+      <h3>Access the world node</h3>
+     <a target="_blank" href = "http://www.theworldavatar.com/TheWorld.owl">The World Node @theworldavatar.com/TheWorld.owl</a><br/>
+
+    </div>
+   <div class="col-sm-4">
+      <h3>Start/Stop sevices here:</h3>
+        <a href = "http://www.theworldavatar.com/GodServiceWeb/TurnOnAllServices">TurnOnAllServices</a><br/>
+        <a href = "http://www.theworldavatar.com/GodServiceWeb/TurnOffAll">TurnOffAllServices</a><br/>
+
+    </div> -->
+    <div class=" row">
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/visualizeWorld" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Visualization-World</div>
+                </div>
+                <img class="thumbimage" src="/images/visual.JPG" alt="">
+
+            </a>
+        </div>
+
+
+
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/visualizeJurong" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Visualization-JurongIsland</div>
+                </div>
+                <img class="thumbimage" src="/images/visual.JPG" alt="">
+
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/visualizeSemakau" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Visualization-SemakauIsland</div>
+                </div>
+                <img class="thumbimage" src="/images/visual.JPG" alt="">
+
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/visualizeBms" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Visualization-Cares Lab</div>
+                </div>
+                <img class="thumbimage" src="/images/visual.JPG" alt="">
+
+            </a>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/visualizeOntoEN" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Visualization-OntoEN</div>
+                </div>
+                <img class="thumbimage" src="/images/visual.JPG" alt="">
+
+            </a>
+        </div>
+        
+                 <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/visualizeAgent" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Visualization-Agent</div>
+                </div>
+                <img class="thumbimage" src="/images/visual.JPG" alt="">
+
+            </a>
+        </div>
+        
+                 <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/visualizeOntokinRemote" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Visualization-Ontokin</div>
+                </div>
+                <img class="thumbimage" src="/images/visual.JPG" alt="">
+
+            </a>
+        </div>
+        
+                <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/essmap" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Energy Storage System</div>
+                </div>
+                <img class="thumbimage" src="/images/CaptureESS.JPG" alt="">
+
+            </a>
+        </div>
+        
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/JPS_SemakauPV/" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Semakau Simulator</div>
+                </div>
+                <img class="thumbimage" src="/images/semakausim.JPG" alt="">
+
+            </a>
+        </div>
+        
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/desplot/" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Distribution Energy System</div>
+                </div>
+                <img class="thumbimage" src="/images/DES.JPG" alt="">
+
+            </a>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.jparksimulator.com:82/wteMap" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Waste To Energy Scenario</div>
+                </div>
+                <img class="thumbimage" src="/images/WTE.PNG" alt="">
+
+            </a>
+        </div>
+        
+    </div>
+
+
+
+    <div class = "row">
+    
+    
+            <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/JPS" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">3D ADMS</div>
+                </div>
+                <img class="thumbimage" src="/images/3dadms.JPG" alt="">
+
+            </a>
+        </div>
+        
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/ADMSTEST" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Atmospheric Dispersion Modelling System</div>
+                </div>
+                <img class="thumbimage" src="/images/adms.JPG" alt="">
+
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer" >
+            <a href="http://www.theworldavatar.com/ADMSWITHINPUT" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Interactive ADMS</div>
+                </div>
+                <img class="thumbimage" src="/images/adms.JPG" alt="">
+
+            </a>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer"  >
+            <a href="http://www.theworldavatar.com:82/JurongIsland.owl/showCO2" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">CO<sub>2</sub> Emission Meter</div>
+                </div>
+                <img class="thumbimage" src="/images/jco2.JPG" alt="">
+
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/PowerPlantCO2" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">World Power Plant CO2 Emission</div>
+                </div>
+                <img class="thumbimage" src="/images/wco2.JPG" alt="">
+
+            </a>
+        </div>
+        
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:81/JPS_EMISSIONS" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">CO<sub>2</sub> Emissions</div>
+                </div>
+                <img class="thumbimage" src="/images/co2emissions.JPG" alt="">
+
+            </a>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/BMSMap/dist" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">CARES Lab Layout</div>
+                </div>
+                <img class="thumbimage" src="/images/lab.JPG" alt="">
+
+            </a>
+        </div>
+        
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/bmsplot" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Lab Sensors data Plot</div>
+                </div>
+                <img class="thumbimage" src="/images/plot.JPG" alt="">
+
+            </a>
+        </div> 
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <!--a href="http://47.74.244.61:8000/main-query/" class="thumbnail" target="_blank"-->
+            <a href="http://www.theworldavatar.com/JPS_NLP/" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Natural Language Query</div>
+                </div>
+                <img class="thumbimage" src="/images/nlq.JPG" alt="">
+
+            </a>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/JPS_ARBITRAGE" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Arbitrage</div>
+                </div>
+                <img class="thumbimage" src="/images/arbitrage.JPG" alt="">
+
+            </a>
+        </div>
+         
+            <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/JPS_COMPOSITION" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Semantic web service composition</div>
+                </div>
+                <img class="thumbimage" src="/Composition.png" alt="">
+
+            </a>
+            </div>  
+
+            
+            <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/molhub" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Quantum Chemistry</div>
+                </div>
+                <img class="thumbimage" src="/molhub-title-photo.png" alt="">
+
+            </a>
+            </div>  
+            
+            <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://theworldavatar.com/graph/statisticsAction" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Knowledge-graph statistics</div>
+                </div>
+                <img class="thumbimage" src="/molhub-title-photo.png" alt="">
+
+            </a>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/RDF4J_SPARQL_GUI" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">SPARQL Query GUI</div>
+                </div>
+                <img class="thumbimage" src="/images/sparqlgui.JPG" alt="">
+
+            </a>
+        </div><div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="https://kg.cmclinnovations.com/chemistry_chatbot" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Chemistry Search</div>
+                </div>
+                <img class="thumbimage" src="/images/Chemistry_Chatbot.PNG" alt="">
+
+            </a>
+        </div>
+            
+            
+    </div>
+    <div class = 'row'>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/b2map" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">JurongIsland Map with Simulation</div>
+                </div>
+                <img class="thumbimage" src="/images/jurongmap.JPG" alt="">
+
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/ppalt" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Nuclear Power Plant simulation</div>
+                </div>
+                <img class="thumbimage" src="/images/nucmap.JPG" alt="">
+            </a>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/ppmap" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">World Power Plant Map</div>
+                </div>
+                <img class="thumbimage" src="/images/worldmap.JPG" alt="">
+
+            </a>
+        </div>
+ 
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/semakaumap" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Semakau Map</div>
+                </div>
+                <img class="thumbimage" src="/images/semakaumap.JPG" alt="">
+
+            </a>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/JPS_SHIP/episode" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">EPISODE SHIP</div>
+                </div>
+                <img class="thumbimage" src="/images/sensormap.PNG" alt="">
+
+            </a>
+        </div>
+        
+        
+        
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/JPS_SHIP/adms" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">3D ADMS SHIP</div>
+                </div>
+                <img class="thumbimage" src="/images/thumbnailship.JPG" alt="">
+
+            </a>
+        </div>
+               
+    </div>
+
+
+    <div class = 'row'>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/hw" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Heat Waste Network</div>
+                </div>
+                <img class="thumbimage" src="/images/heatwaste.JPG" alt="">
+
+            </a>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <!--a href="http://www.theworldavatar.com/JPS_POWSYS" class="thumbnail" target="_blank"-->
+            <a href="http://www.theworldavatar.com:82/pwscenario" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Electricity Network</div>
+                </div>
+                <img class="thumbimage" src="/images/electricity.JPG" alt="">
+
+            </a>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/JPS_MEN/" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Mass Exchange Network</div>
+                </div>
+                <img class="thumbimage" src="/images/MENthumbnail.JPG" alt="">
+
+            </a>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com:82/mauplot" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">MAU Plot</div>
+                </div>
+                <img class="thumbimage" src="/images/plot.JPG" alt="">
+
+            </a>
+        </div>
+        
+                <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/JPS_CO2EMISSIONS/" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">Power Plant CO2 Calculation Agent</div>
+                </div>
+                <img class="thumbimage" src="/images/wco2.JPG" alt="">
+
+            </a>
+        </div>
+        
+                
+                <div class="col-xs-12 col-sm-6 col-md-2 col-lg-2 thumbcontainer">
+            <a href="http://www.theworldavatar.com/ontokin" class="thumbnail" target="_blank">
+                <div class="thumbmiddle">
+                    <div class="thumbtext">OntokinUI</div>
+                </div>
+                <img class="thumbimage" src="/images/wco2.JPG" alt="">
+
+            </a>
+        </div>
+    </div>
+
+
+    <!--
+   <a target="_blank" href = "http://www.theworldavatar.com/Semakau2/">Semakau Simulator</a>        <br/>
+
+
+
+
+
+   <a target="_blank" href = "http://www.theworldavatar.com:82/mauplot">MAU Plot</a>        <br/>
+   <a target="_blank" href = "http://www.theworldavatar.com:82/hw">Heat Waste Network</a>       <br/>
+-->
+
+
+
+
+
+
+    </div>
+
+
+
+
+ <div id="footer" style="color: grey; text-align:center;    padding-top: 48px;padding-bottom: 48px; position: absolute; left: 20%; width: 60% " >This website only contains information from public domain. No proprietary or confidential information has been utilized in creating this website.<br/> If you are interested in our research, data source, models or assumptions, please visit us at <a target="_blank" href = "http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">our official website</a> or contact us at cares@hermes.cam.ac.uk.</div>
+ 
+
+<script>
+function start()
+{
+url = 'http://137.132.22.161:81/GodServiceWeb/TurnOnAllServices';
+var request = new XMLHttpRequest();
+request.onreadystatechange = function() {
+    if (request.readyState === 4) {
+        if (request.status === 200) {
+           alert('ok',request.responseText);
+           document.getElementById('result').innerHTML = request.responseText;
+           
+        } else {
+           alert('error');
+
+        }
+    }
+};
+request.open("GET", url , true);
+request.send(null);
+}
+
+function stop()
+{
+url = 'http://137.132.22.161:81/GodServiceWeb/TurnOffAll';
+var request = new XMLHttpRequest();
+request.onreadystatechange = function() {
+    if (request.readyState === 4) {
+        if (request.status === 200) {
+           alert('ok');
+           document.getElementById('result').innerHTML = request.responseText;
+           
+        } else {
+           alert('error');
+
+        }
+    }
+};
+request.open("GET", url , true);
+request.send(null);
+}
+
+</script>
+
+
+</html>

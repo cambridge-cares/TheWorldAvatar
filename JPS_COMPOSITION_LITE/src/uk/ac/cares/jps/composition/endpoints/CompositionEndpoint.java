@@ -24,15 +24,25 @@ public class CompositionEndpoint extends HttpServlet {
 		super();
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		String input_request = request.getParameter("query");
-		parse_requirements_and_start_composition(new JSONObject(input_request), response);
+		
+		// Display the user requirements from the users ... 
+		
+		System.out.print("--------------- the input request received  -----------------\n");
+		System.out.print(input_request);
+		System.out.print("\n-------------------------------------------------------------");
+		
+		
+		JSONObject composition_result = parse_requirements_and_start_composition(new JSONObject(input_request), response);
+		
+		response.getWriter().write(composition_result.toString());
 
 	}
 
-	private static void parse_requirements_and_start_composition(JSONObject requirements, HttpServletResponse response)
+	private static JSONObject parse_requirements_and_start_composition(JSONObject requirements, HttpServletResponse response)
 			throws IOException {
 
 		JSONObject the_operation = requirements.getJSONArray("operations").getJSONObject(0);
@@ -71,7 +81,9 @@ public class CompositionEndpoint extends HttpServlet {
 		System.out.println("--------------------------------------------------------------------");
 
 		CompositionAgent composition_agent = new CompositionAgent();
-		composition_agent.compose(inputs, outputs);
+		return composition_agent.compose(inputs, outputs);
+		
+		
 
 	}
 

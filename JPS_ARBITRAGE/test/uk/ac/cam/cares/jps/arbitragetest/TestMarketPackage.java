@@ -84,6 +84,7 @@ public class TestMarketPackage extends TestCase {
 	public void testBio() throws Exception {
 		
 		DataDownload.downloadingAndSavingMarketDataInTheKnowledgeBase("Biodiesel");
+		DataDownload.downloadingAndSavingMarketDataInTheKnowledgeBase("Methanol");
 		
 	}
 	
@@ -99,7 +100,7 @@ public class TestMarketPackage extends TestCase {
 			String result = g.toJson(DataDownload
 					.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
 							jsonString.split(",")));
-
+			System.out.println(result);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -233,7 +234,66 @@ public class TestMarketPackage extends TestCase {
 		assertEquals(marketdataMeoh.get("arrayHeader")[0], "MeOH");
 
 	}
+	/** the direct calling method of the above agent function. 
+	 * 
+	 */
+	public void testretrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase() {
+		String value = "V_Price_Storage_NaturalGas_001,V_Price_CoolingWater_001,V_Price_Storage_Methanol_001,V_Price_Electricity_001,V_Price_Transport_SG-SC_Methanol_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_Transport_USGC-NEA_NaturalGas_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_FuelGas_001";
+		Gson g = new Gson();
+		try {
+			String result = g.toJson(DataDownload
+					.retrievingUtilityPricesByProvidingTheirLocationsAndHNGAndZCEMarketPricesFromTheKnowledgeBase(
+							value.split(",")));
+			
+			
+			Gson objGson = new GsonBuilder().setPrettyPrinting().create();
+			Type listTypeStringString = new TypeToken<Map<String, String>>(){}.getType();
+			Type listTypeStringArray = new TypeToken<Map<String, String[]>>(){}.getType();
+					
+			String[] utilitiesMarketdataArray = g.fromJson(g.fromJson(result, String.class), String[].class);
+			
+			Map<String, String> utilities = objGson.fromJson(utilitiesMarketdataArray[0], listTypeStringString);
+			Map<String, String[]> marketdataNg = objGson.fromJson(utilitiesMarketdataArray[1], listTypeStringArray);
+			Map<String, String[]> marketdataMeoh = objGson.fromJson(utilitiesMarketdataArray[2], listTypeStringArray);
+			assertTrue(utilities.containsKey("V_Price_Storage_Methanol_001"));
+			assertNotNull(utilities.get("V_Price_Storage_Methanol_001"));
+					
+			assertEquals(marketdataNg.get("arrayHeader")[0], "NG");
+			assertEquals(marketdataMeoh.get("arrayHeader")[0], "MeOH");
 
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public void testretrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase() {
+		String value = "V_Price_CoolingWater_001,V_Price_Storage_Biodiesel_001,V_Price_Storage_CrudePalmOil_001,V_Costs_Storage_CrudePalmOil_001,V_Price_Transport_Malaysia-SG_CrudePalmOil_001,V_Price_Electricity_001,V_USD_to_SGD,V_Price_ProcessWater_001,V_Price_HighPressureSteam_001,V_USD_to_CNY,V_Price_MediumPressureSteam_001,V_Price_LowPressureSteam_001,V_Price_Transport_SEA-SC_Biodiesel_001,V_Price_FuelGas_001";
+		Gson g = new Gson();
+		try {
+			String actual = g.toJson(DataDownload
+					.retrievingUtilityPricesByProvidingTheirLocationsAndCPOAndFAMEMarketPricesFromTheKnowledgeBase(
+							value.split(",")));
+			
+			
+			Gson objGson = new GsonBuilder().setPrettyPrinting().create();
+			Type listTypeStringString = new TypeToken<Map<String, String>>(){}.getType();
+			Type listTypeStringArray = new TypeToken<Map<String, String[]>>(){}.getType();
+					
+			String[] utilitiesMarketdataArray = g.fromJson(g.fromJson(actual, String.class), String[].class);
+			
+			Map<String, String> utilities = objGson.fromJson(utilitiesMarketdataArray[0], listTypeStringString);
+			Map<String, String[]> marketdataCpo = objGson.fromJson(utilitiesMarketdataArray[1], listTypeStringArray);
+			Map<String, String[]> marketdataFame = objGson.fromJson(utilitiesMarketdataArray[2], listTypeStringArray);
+			
+			assertTrue(utilities.containsKey("V_Price_Storage_Biodiesel_001"));
+			assertNotNull(utilities.get("V_Price_Storage_Biodiesel_001"));
+					
+			assertEquals(marketdataCpo.get("arrayHeader")[0], "CPO");
+			assertEquals(marketdataFame.get("arrayHeader")[0], "FAME");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	public void testdownloadingAndSavingExchangeRatesInTheKnowledgeBaselocal() throws Exception {
 		Gson g = new Gson();
 		String result = g.toJson(DataDownload

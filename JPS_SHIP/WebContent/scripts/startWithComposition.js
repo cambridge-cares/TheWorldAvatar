@@ -1,4 +1,8 @@
 let osmbGlobal;
+let originRatio = 1;
+metaEndpoint = "http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation";
+//metaEndpoint = "http://localhost:8080/rdf4j-server/repositories/airqualitystation";
+let sensorIRIs;
 
 $(function(){
 
@@ -56,9 +60,144 @@ $(function(){
         effects: [], // effects: ['shadows']
         attribution: '� 3D <a href="https://osmbuildings.org/copyright/">OSM Buildings</a>'
     }).appendTo('map');
+    //TODO: add: init attribute table****************************************************
+    $( document ).ready(function ()
+        {
+        let tableTop = $('#map').position().top + $('#map').height() - $('#sensorTable').height();
+    console.log($('#map').height);
+    $('#sensorTable').css("top", tableTop);
+    $('#sensorTable').css("display", "block");
+    });
+    //****TODO: add render table function*************************************************************
+   function renderAttributeTable(attrs){
+       let tableDiv = $("#sensorTable").empty();
+       let tableStr= "<table class='table'><tr>";
+       for (let tab of attrs.names){
+           tableStr+="<th>"+tab+"</th>";
+       }
+       tableStr+="</tr>";
+       for(let row of attrs.data){
+           tableStr+="<tr>"
+           for(let col of row){
+               tableStr+="<td>"+col+"</td>"
+           }
+           tableStr+="</tr>"
+       };
+       tableStr+="</table>"
+       tableDiv.append(tableStr);
+   }
+   /*****TODO: function: querySensor***/
+   function renderSensorStations( sensorLocs) {
+       let markers = [];
+       //TODO: mock data
+       for (let sIRI of sensorLocs){
+           console.log("render sensor")
+           console.log(sIRI)
+           //TODO: after query the position
+           let obj = osmbGlobal.addOBJ('/images/tinker.obj', {longitude: sIRI[1],latitude: sIRI[2] },{id: "marker_"+sIRI[0], scale : 1, elevation :70, rotation : 120 , color: 'red'});
+           markers.push(obj);
+       }
+   }
+
+    function querySensor(sensorIRIs, callback){
+        let qstr = `
+    PREFIX s:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
+    PREFIX t:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+   PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    SELECT Distinct ?graph ?x ?y 
+    {graph ?graph {
+        ?s t:hasGISCoordinateSystem ?gs.
+         ?gs t:hasProjectedCoordinate_y ?cy.
+         ?cy sys:hasValue ?yv.
+         ?yv sys:numericalValue ?y.
+         ?gs t:hasProjectedCoordinate_x ?cx.
+         ?cx sys:hasValue ?xv.
+         ?xv sys:numericalValue ?x.
+    }
+    }
+    `;
+
+        $.get({
+            url:metaEndpoint,
+            'Content-Type':"application/json",
+            data: { query: qstr,format:'json'}
+        })
+            .done(function( msg ) {
+                console.log( "query result: " );
+                let result =queryProcessor(msg).data
+                let searched = []
+                console.log(result)
+                console.log(sensorIRIs)
+                for (let item of result){
+                    console.log(item[0])
+                    if(sensorIRIs.includes(item[0])){
+                        searched.push(item)
+                        console.log('found location for virtual sensor: '+item[0])
+                    }
+                }
+                callback(null, result)
+            });
+    }
+
+    function querySensorAttributes(stationIRI, callback) {
+       let qstrT = `PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+ PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>
+ PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
+ PREFIX j6:<http://www.w3.org/2006/time#>
+ PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+ SELECT Distinct ?prop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?unit
+ {graph stationIRI
+ {
+  ?graph j4:hasOverallPSI ?allpsi .
+ ?prop   j2:hasValue ?vprop .
+    ?prop j4:hasMeasuredPropertyMean ?mean .
+    ?prop j4:hasMeasuredPropertyMax ?max .
+    ?prop j4:hasMeasuredPropertyMin ?min .
+    ?prop j4:hasPSI ?individualpsi .
+?vprop   j4:prescaledNumValue ?propval .
+    ?vprop   j2:hasUnitOfMeasure ?unit .
+  ?vprop   j6:hasTime ?proptime .
+  ?proptime   j6:inXSDDateTime ?proptimeval .
+}}
+ ORDER BY DESC(?proptimeval) LIMIT10`;
+       // stationIRI = "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001"
+   let qstr = qstrT.replace('stationIRI', '<'+stationIRI+'>');
+            console.log(qstr);
+        $.get({
+            url:metaEndpoint,
+            'Content-Type':"application/json",
+            data: { query: qstr,format:'json'}
+        })
+            .done(function( strresult ) {
+                console.log( "query sensor station result: " );
+                console.log(strresult);
+                console.log(typeof  strresult);
+                let processed = queryProcessor(strresult);
+                callback(null, processed);
+            })
+            .fail(function(err) {
+                console.log( "query sensor attributes failed bc: ");
+                console.log(err);
+            });
+    }
+    function queryProcessor(str){
+       let lines = str.split('\n');
+       let results = [];
+        let names = lines[0].split(',');
+        for (let i =1; i< lines.length-1;i++){//remove last one which should be empty
+            let vs = lines[i].split(',')
+            results.push(vs)
+        }
+        return {data:results, names:names};
+    }
+
     //***************************************************************************
 	osmbGlobal = osmb;
-	
+
+//console.log('test query sensor attributes:')
+ //TODO:delete local testing
+    querySensorAttributes("http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001",function (err, result) {
+console.log(result)});
     //***************************************************************************
     // buttons to tilt camera angle, rotate the map, and zoom in/out
     controlButtonsSetter(osmb);
@@ -104,6 +243,45 @@ $(function(){
 
                 console.log(coordinatesArray);
             }
+            //TODO: here, add the event listener for clicking on a object
+            if(id && id.includes("marker")){//=>sensor marker query event
+                //TODO: sensor query is added here
+                let stationIRI = id.split('_')[1];
+                console.log('clicked on station: '+stationIRI)
+                querySensorAttributes(stationIRI, function (err, sensorAttributes) {
+                    if (err){console.log(err)}
+                    console.log('got sensor attributes to show');
+                    console.log(sensorAttributes);
+                    sensorAttributes.names= ['pollutant', 'concentration','time','allpsi','mean','max','min','individualpsi']
+                    sensorAttributes.data.forEach(item=>{
+                        let name = item[0].split('/');
+                        name = name[name.length-1]
+                        name = name.split('.owl')[0]
+                        item[0] = name
+                        let unit = item.splice(-1)[0]
+                        let unitArr = unit.split('#')
+                        unit = unitArr.splice(-1)
+                        item[1] = parseFloat(item[1]).toFixed(2)+' '+unit
+                        item[4] = parseFloat(item[4]).toFixed(2)+' '+unit
+                        item[5] = parseFloat(item[5]).toFixed(2)+' '+unit
+                        item[6] = parseFloat(item[6]).toFixed(2)+' '+unit
+                        item[7] = parseFloat(item[7]).toFixed(2)
+
+                    })
+                    sensorAttributes.data.sort(function(a, b) {
+                        var nameA = a[0].toUpperCase(); // ignore upper and lowercase
+                        var nameB = b[0].toUpperCase(); // ignore upper and lowercase
+                        if (nameA < nameB) {
+                            return -1;
+                        }
+                        if (nameA > nameB) {
+                            return 1;
+                        }
+                    });
+                    renderAttributeTable(sensorAttributes);
+                })
+                   // });
+            }
         });
     });
 
@@ -125,185 +303,103 @@ $(function(){
     };
     
 
-    $('#start').click(function(){
+    function startSimulation(){
     	//$('#start').attr("disabled", true);
     	
 		console.log('button clicked')
 		
 		$('#inputFields').append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>'
 );
-		
-        
-        let xmax = parseInt($('#xupper').val());
-        let xmin = parseInt($('#xlower').val());
-        let ymax = parseInt($('#yupper').val());
-        let ymin = parseInt($('#ylower').val());
-        
-        const reactionmechanism = $("#reaction-select option:selected").val();
-  
-        console.log(reactionmechanism);
-        
-//        approximate becasue texture only work on power2(has to be 1:1,1:2,1:4...)
-//        [xmin, xmax, ymin, ymax] = appro2ratio(xmin, xmax, ymin, ymax);
-        [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
-        //   
-        const lowerx = xmin;
-        const lowery = ymin;
-        const upperx = xmax;
-        const uppery = ymax;
 
-      	console.log('result')
-        var canvas = $('#drawcanvas'); canvas.width(1024*ratio).height(1024); // 28 Aug 18
-        var svg = $('contoursvg');svg.width(1024*ratio).height(1024); // 28 Aug 18
+		let keyvendor=window.location.pathname.split('/')[2];
+		console.log("Keyvendor= "+keyvendor);
+        var locationIRI =  mlocation = $('#location').val();
+        let folder;
+        console.log('locationIRI '+locationIRI);
+        let agentScenario =  "/JPS_DISPERSION/" + keyvendor + "/results/latest";
 
-        const location = $("#location option:selected").text();
-        
-        const coordinatesMin = getOSMPoint(lowerx, lowery);
-		const coordinatesMax = getOSMPoint(upperx, uppery);
-        
-		let locationIRI;
-//		let plant;
-		if (location === "Hong Kong") {
-        	locationIRI = "http://dbpedia.org/resource/Hong_Kong";
-//        	plant = "http://www.theworldavatar.com/kb/nld/thehague/powerplants/Plant-001.owl#Plant-001";
-        } else if (location === "Singapore" || location === "Singapore_2") {
-        	locationIRI = "http://dbpedia.org/resource/Singapore";
-//        	plant = "http://www.theworldavatar.com/kb/deu/berlin/powerplants/Heizkraftwerk_Mitte.owl#Plant-002";
-        }
+        let agentInformation =  "/JPS_SHIP/GetExtraInfo";//"/info"
+        //TODO:determine what sequence to query;
+        $.get(agentScenario, {city:locationIRI}).done(function (data) {
+            console.log('requested Scenario Agent for folder: '+data);
+        folder = data;
+        $.get(agentInformation, {path:folder}).done(function (info) {
+            info=JSON.parse(info);
+        	console.log('requested info agent for:');
+            console.log(info);
+            var buildingIRIs = info.building;
+            var shipIRIs = info.ship;
+            
+            console.log("info="+info.region)
+            
+            var xmin = parseInt(info.region.lowercorner.lowerx);
+            var xmax = parseInt(info.region.uppercorner.upperx);
+            var ymin = parseInt(info.region.lowercorner.lowery);
+            var ymax = parseInt(info.region.uppercorner.uppery);
+            $('#xlower').val(xmin)
+            $('#xupper').val(xmax)
+            $('#ylower').val(ymin)
+            $('#yupper').val(ymax)
+            originRatio = (xmax-xmin)/(ymax-ymin);
+            let ratio;
+            [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
+ 
+            var canvas = $('#drawcanvas'); canvas.width(1024*ratio).height(1024); // 28 Aug 18
+            var svg = $('#contoursvg');svg.attr('width',1024*originRatio).attr('height',1024); // 28 Aug 18
+            console.log(xmin+" "+xmax+" "+ymin+" "+ymax)
+            const coordinatesMin = getOSMPoint(xmin, ymin);
+            const coordinatesMax = getOSMPoint(xmax, ymax);
+            const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
+            console.log("buildingIRIs = " + buildingIRIs);
+            console.log("shipIRIs = " + shipIRIs);
+            $("#myProgressBar").remove();
+            sensorIRIs = info.airStationIRI;
+            //TODO: sensor rendering is added here
+            querySensor(sensorIRIs, function (err, senesorData) {
+                if(err || !senesorData){
+                    console.log(error);
+                } else{
+                    renderSensorStations(senesorData);
+                }
+            });
+                console.log("sensorIRIs = " + sensorIRIs);
 
-        const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
-        
-        let agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
-        
-        var query = {
-        	agent, 
-			"region": {
-				//"srsname": "EPSG:4326",
-				"srsname": "EPSG:3857",
-				"lowercorner": {
-					lowerx,
-					lowery
-				},
-				"uppercorner": {
-					upperx,
-					uppery
-				}
-			},
-        	location,
-        	reactionmechanism
-        }
-        console.log(query);
-		query = JSON.stringify(query);        
-		
-//		$.ajax({
-//			url: '/JPS_SHIP/UpdateShipCoordinates',
-//			method: 'GET',
-//		}).done(data => {
-//			console.log(data);
-//		})
-		
-        const getCoordinationResult = (query) => {
-        	
-        	var result = "hello";
-        		
-//        	if (document.getElementById("compose").checked) {
-//        		result =  $.getJSON('/JPS_COMPOSITION/execute',
-//        				{
-//	        				query
-//        				});
-//        	} else {
-        	
-        	
-        	if (document.getElementById("mock").checked) {
-    		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutCompositionWithMocks',
-    				{
-        				query
-    				});
-    	} else {
-//        		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition',
-    		result =  $.getJSON('/JPS_DMS/DMSCoordinationAgent',
-        				{
-	        				query
-        				});
-        	}        	
-  	
-        	return result;
-        };
-        
-        console.log(locationIRI);
-        $.when(getCoordinationResult(query)).done(coordResult => {
-            		
-			var buildingIRIs = coordResult.building;
-			var shipIRIs = coordResult.ship;
-			var folder = coordResult.folder;
-			console.log(coordResult);
-			console.log("buildingIRIs = " + buildingIRIs);
-			console.log("shipIRIs = " + shipIRIs);
-			
-			$("#myProgressBar").remove()
-        	initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, location, coordinatesMid, locationIRI, shipIRIs, folder);
-			
-			
-			
-        });
+            initadms3dmap(buildingIRIs, [xmin, xmax, ymin, ymax], osmb, mlocation, coordinatesMid, locationIRI, shipIRIs, folder);
+        })
+        })
 
-    });
+
+    };
     //***************************************************************************
 
     
     //***************************************************************************
     // Sets position of camera at selected location
     $("#location").on("change", () => {
-        const location = $("#location option:selected").text();
-
-        if (location === "Singapore") {
-        	document.getElementById("optmsg").innerHTML="";
-        	osmb.setPosition({
-                latitude: 1.262008,
-                longitude: 103.850973
+        const mlocation = $("#location option:selected").text();
+        if (mlocation === "Singapore") {
+            startSimulation();
+            document.getElementById("optmsg").innerHTML = "";
+            osmb.setPosition({
+                latitude: 1.27993,//1.262008,
+                longitude: 103.859//103.850973
             });
 //            $("#xlower").val("11558666.37");
 //            $("#xupper").val("11562079.502");
 //            $("#ylower").val("139186.423");
 //            $("#yupper").val("141908.33");
-        	
-        	$("#xlower").val("11560879.832");
-            $("#xupper").val("11563323.926");
-            $("#ylower").val("140107.739");
-            $("#yupper").val("143305.896");
-            
+
             osmb.setZoom(14.5);
             osmb.setTilt(20.6);
             osmb.setRotation(-45.6);
-        } else if (location === "Singapore_2") {  //singapore 2 is unused
-        	osmb.setPosition({
-                latitude: 1.262008,
-                longitude: 103.850973
-            });
-            $("#xlower").val("11560879.832");
-            $("#xupper").val("11563323.926");
-            $("#ylower").val("140107.739");
-            $("#yupper").val("143305.896");
-            
-            osmb.setZoom(14.5);
-            osmb.setTilt(20.6);
-            osmb.setRotation(-45.6);
-        } else if (location === "Hong Kong") {
+
+        }else if (mlocation === "Hong Kong") {
+            startSimulation();
         	document.getElementById("optmsg").innerHTML="Buildings are projected down directly above the ground although elevation is considered in the calculations.";
             osmb.setPosition({
                 longitude: 114.1491155592187,
                 latitude: 22.28911086466781
             });
-//          $("#xlower").val("12693826.33");
-//          $("#xupper").val("12720831.57");
-//          $("#ylower").val("2535141.08");
-//          $("#yupper").val("2562311.02"); 
-          $("#xlower").val("12706630.262");
-          $("#xupper").val("12708200.45");
-          $("#ylower").val("2545539.172");
-          $("#yupper").val("2546850.028");
-          
-            
             osmb.setZoom(14.5);
             osmb.setTilt(14.5);
             osmb.setRotation(20.9);

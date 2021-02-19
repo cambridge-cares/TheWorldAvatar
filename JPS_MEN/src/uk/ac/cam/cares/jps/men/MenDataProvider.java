@@ -30,8 +30,8 @@ public class MenDataProvider {
 	private Logger logger = LoggerFactory.getLogger(MenDataProvider.class);	
 
 
-	public MenResult startCalculation(MenCalculationParameters parameters, String transportationIRI, List<String> chemicalPlantIRIs) {
-	
+	public MenResult startCalculation(MenCalculationParameters parameters, String transportationIRI, List<String> chemicalPlantIRIs)  {
+		
 		getData(transportationIRI, chemicalPlantIRIs);
 
 		logger.debug("Number of sources = " + totalsources.size());
@@ -45,11 +45,9 @@ public class MenDataProvider {
 	    logger.debug("transportations = " + transportations);  
 	    
 	    MenGamsConverter converter = new MenGamsConverter();
-
-	    
 	    return converter.calculate(totalsources, totalsinks, feasibleConnections, transportations, parameters);
+		 
 	}
-	
 	private void getData(String Transport_OKB,List<String>plantkb)  {
 
 

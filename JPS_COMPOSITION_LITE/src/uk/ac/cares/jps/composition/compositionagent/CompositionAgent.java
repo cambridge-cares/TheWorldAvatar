@@ -20,11 +20,24 @@ import uk.ac.cares.jps.composition.utils.Convertor;
 
 public class CompositionAgent {
 
+	
+	
+	// 
 	public JSONObject compose(JSONArray inputs, JSONArray outputs) throws JSONException, JsonProcessingException {
 
+		
+		
+		
 		ArrayList<ArrayList<String>> layers = new ArrayList<ArrayList<String>>();
 
 		Map<String, Map<String, String>> agents_and_inputs_mapping = query_sparql_endpoint_for_inputs();
+		
+		// 
+		
+		
+		
+		
+		
 		System.out.println("------------------------agents_and_inputs_mapping ---------------------------");
 		System.out.println(agents_and_inputs_mapping);
 		System.out.println("-----------------------------------------------------------------------------");
@@ -63,6 +76,9 @@ public class CompositionAgent {
 				agents_and_outputs_mapping, layers);
 
 		JSONObject composition_result_in_JSON = Convertor.serialize_composition_result(composition_result);
+		
+		composition_result_in_JSON.put("initialInputs", inputs_list);
+		
 		System.out.println("------------------------- composition result ---------------------------");
 		System.out.println(composition_result_in_JSON.toString(4));
 		System.out.println("------------------------------------------------------------------------");

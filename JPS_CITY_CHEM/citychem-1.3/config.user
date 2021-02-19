@@ -1,0 +1,11 @@
+#... change this if intel fortran is used
+
+set F90         = gfortran
+set F90FLAGS    = '-g -u -C -cpp -pedantic -ffpe-trap=invalid,underflow,zero -ftrapv -fbounds-check -finit-real=nan -fbacktrace -fimplicit-none -finit-integer=n -ffree-form'
+set F90OPTFLAGS = '-O2 -cpp -fbacktrace -ffree-form -fimplicit-none -finit-integer=n -ffast-math -funroll-loops -m64 -dynamic'
+set NCLIB       = '-L${HOME}/netcdf4/lib -lnetcdf -lnetcdff' 
+set NCINC       = '-I${HOME}/netcdf4/include'
+set HOMEPATH    = ${HOME}/citychem-1.3/
+set IOAPI       = Linux2_x86_64gfort
+set IOAPIDIR    = ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/
+

@@ -1,0 +1,15 @@
+<http://purl.org/dc/elements/1.1/identifier> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> <http://example.com/context> .
+<http://www.w3.org/2008/05/skos#altLabel> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#AnnotationProperty> <http://example.com/context> .
+<http://www.w3.org/2008/05/skos#altLabel> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2000/01/rdf-schema#label> <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://purl.org/dc/elements/1.1/identifier> "species_10" <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> "Ar" <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_7> <http://purl.org/dc/elements/1.1/identifier> "species_7" <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_7> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_7> <http://www.w3.org/2008/05/skos#altLabel> "H2O" <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_8> <http://purl.org/dc/elements/1.1/identifier> "species_8" <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_8> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> <http://example.com/context2> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_8> <http://www.w3.org/2008/05/skos#altLabel> "H2O2" <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_9> <http://purl.org/dc/elements/1.1/identifier> "species_9" <http://example.com/context> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_9> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Thing> <http://example.com/context2> .
+<http://www.theworldavatar.com/kb/species/species.owl#species_9> <http://www.w3.org/2008/05/skos#altLabel> "H2" <http://example.com/context> .

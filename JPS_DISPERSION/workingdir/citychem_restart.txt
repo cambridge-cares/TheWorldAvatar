@@ -463,6 +463,16 @@
 *../testdata/cmaq/cbg_isoprene.fld
 *../testdata/cmaq/cbg_pm25.fld
 *../testdata/cmaq/cbg_pm10.fld
+100.0
+760.0
+40.0
+0.0
+0.0
+0.0
+0.0
+15.0
+0.0
+10000.0
 0.0
 0.0
 0.0
@@ -473,18 +483,8 @@
 0.0
 0.0
 0.0
-0.0
-0.0
-0.0
-0.0
-0.0
-0.0
-0.0
-0.0
-0.0
-0.0
-0.0
-0.0
+12.0
+20.0
 *
 * OFFSET Ozone (O3) in BCON file in ug/m^3 for callibration purpose
 0.0
@@ -499,11 +499,11 @@
 * INPUT Old 3D concentrations files
 * Must be provided if Restart option is 1
 * If Restart option is 0 or files are missing, background values are used
-../INPUT/other/icmhour_2019_moving03.nc
+../INPUT/other/icmhour.nc
 *
 * Last simulation hour instantaneous concentration 3D-field C()
 * THIS WILL BE THE IC FILE FOR THE RESTART
-../OUTPUT/icmhour_2019_moving04.nc
+../OUTPUT/icmhour.nc
 *
 * DIAGNOSTIC Output of photochemistry on main grid
 ../OUTPUT/photmhour.nc
@@ -534,7 +534,7 @@
  ../INPUT/emis/asrc_domestic_hono_20191118_20191118.txt
  ../INPUT/emis/asrc_domestic_ch3cho_20191118_20191118.txt
  ../INPUT/emis/asrc_domestic_c2h4_20191118_20191118.txt
-  emis_xxxnn/asrc_domestic_uple_20130701_20131231_pan.txt
+  emis_xxxnn/asrc_domestic_uple_20191118_20191118_pan.txt
  ../INPUT/emis/asrc_domestic_nc4h10_20191118_20191118.txt
  ../INPUT/emis/asrc_domestic_ch3coc2h5_20191118_20191118.txt
  ../INPUT/emis/asrc_domestic_c3h6_20191118_20191118.txt
