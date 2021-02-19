@@ -28,6 +28,12 @@
 /JPS_ARBITRAGE/build/*
 target
 *.jar
+*.tar
+*.tar.gz
+*.gz
+*.pkl
+*.pyc
+*.index
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/MANIFEST.MF
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/maven/uk.ac.cam.cares.jps/JPS_COMPOSITION_LITE/pom.properties
 *.class
@@ -40,3 +46,5 @@ target
 .project
 /JPS_BIODIESELPLANT3/.settings
 /JPS_Version_0/ADMS/ADMS_JAVA_END/ADMS-Java-11-10-17/ADMS/ADMS_1/src/kb_dev
+*.data-00000-of-00001
+/JPS_Chatbot/UI/source/rasa_jps/models/nlu/component_6_EmbeddingIntentClassifier.tf_model.data-00000-of-00001
