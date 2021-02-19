@@ -126,4 +126,4 @@ title: Marie
 </div>
 <br>
 
-[plugin:page-inject](/modular/partners)
+[plugin:content-inject](/modular/partners)
