@@ -1,0 +1,35 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+Storage,Class,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridComponent,IS-A,,,,Storage of Gas within a Gas Grid,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+Intake,Class,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridComponent,IS-A,,,,Intake of gas into a gas grid,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+Offtake,Class,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridComponent,IS-A,,,,Offtake of gas off of a gas grid,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+Compression Station,Class,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridComponent,IS-A,,,,Compression station in a gas grid,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+LiquefiedNaturalGasStorage,Class,Storage,IS-A,,,,Liquefied Natural Gas Storage within a gas grid.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+HighPressureStorage,Class,Storage,IS-A,,,,High pressure gas storage within a gas grid.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+CavernStorage,Class,Storage,IS-A,,,,Cavernous storage of any type within a gas grid.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+GasTerminal,Class,Intake,IS-A,,,,"Indicates an intake that collates a single or multiple sources of gas, for distribution into a gas grid.",http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+ContinentalPipeline,Class,Intake,IS-A,,,,Pipeline between continents for example the UK and Europe,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+LiquefiedNaturalGasImport,Class,Intake,IS-A,,,,An LNG import from elsewhere,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+LocalDistribution,Class,Offtake,IS-A,,,,"Offtake to local distribution for use in district heating within and buildings, i.e. the low-pressure gas network",http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+IndustrialUser,Class,Offtake,IS-A,,,,Industrial User of gas,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+PowerStation,Class,Offtake,IS-A,,,,Power station user of gas,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+Export,Class,Offtake,IS-A,,,,Gas export to another country,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+Gas,Class,,,,,,Gas to be used within the gas grid.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+OfftakenGas,Class,Gas,IS-A,,,,Gas offtaken by a grid offtake,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+StoredGas,Class,Gas,IS-A,,,,Gas stored by grid storage,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+IntakenGas,Class,Gas,IS-A,,,,Gas admitted to the grid via an intake,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+ShortTermStoredGas,Class,StoredGas,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+MediumTermStoredGas,Class,StoredGas,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+LongTermStoredGas,Class,StoredGas,IS-A,,,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasUsed,Object Property,,,Offtake,OfftakenGas,,Represents the relation between an offtake and the gas it has used.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasStored,Object Property,,,Storage,StoredGas,,Represents the relation between gas storage and the gas it holds,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasTaken,Object Property,,,Intake,IntakenGas,,Represents the relation between and intake and the gas it has taken in.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasEndUTC,Data Property,,,Thing,String,,Indicates the validity of a class instance before an end time.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+atUTC,Data Property,,,Thing,String,,Indicates the state of an instance at a specific UTC.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasGasVolume,Data Property,,,Gas,String,,Represents a unit of gas on a volumetric basis.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasGasEnergy,Data Property,,,Gas,String,,Represents an amount of gas on an energy basis,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasNTSExitArea,Data Property,,,Offtake,String,,"The NTS exit area as divided into North, South, East, West and Central by the UK National Grid",http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasNTSExitZone,Data Property,,,Offtake,String,,The NTS exit zone partitioned by the UK National Grid,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasLinepackZone,Data Property,,,Offtake,String,,The Linepack zone each offtake is in as designated by the UK National Grid.,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+isConnectedToPipeline,Object Property,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridComponent,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection,,Describes the connection between a Component and the Grid,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasConnectedComponent,Object Property,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GasPipeConnection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#GridComponent,,Describes the connection between the Grid and a Grid Component,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
+hasLocalDistributionZone,Data Property,,,LocalDistribution,String,,,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl
