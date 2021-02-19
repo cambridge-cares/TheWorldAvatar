@@ -6,6 +6,7 @@
 """GMLParser is developed to parse crop map data encoded in GML,
 structure the data by following an ontological model, and finally
 represent the data using RDF."""
+from pathlib import Path
 
 from lxml import etree
 from rdflib.extras.infixowl import Ontology, OWL_NS
@@ -72,16 +73,18 @@ def get_envelope(context):
 def get_crop_map(context):
     map_counter = 0
     file_counter = 0
+    flag = False
     global g
     for event, elem in context:
         #print(elem)
+        map_counter += 1
+        """Following two conditional statements enables the processing of feature maps within a specified range"""
+        if map_counter < int(gmlpropread.getStartFeatureMember()):
+            continue
+        if int(gmlpropread.getUpperLimit()) !=-9999 and map_counter > int(gmlpropread.getUpperLimit()):
+            flag = True
+            break
         for map in elem:
-            map_counter += 1
-            """Following two conditional statements enables the processing of feature maps within a specified range"""
-            if map_counter < gmlpropread.getStartFeatureMember():
-                continue
-            if map_counter > gmlpropread.getUpperLimit():
-                break
             #print(get_tag_name(map.tag))
             cropMap = CropMap()
             cropMap.name = get_tag_name(map.tag)
@@ -196,13 +199,23 @@ def get_crop_map(context):
             print('Total number of feature members processed:', map_counter)
 
         if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
-            save_into_disk(g, str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+            if '/' in gmlpropread.getOutputFilePath():
+                save_into_disk(g, gmlpropread.getOutputFilePath()+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+            else:
+                save_into_disk(g, gmlpropread.getOutputFilePath() + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
+                    file_counter))
             file_counter += 1
             g = Graph()
             print('Total number of feature members processed:', map_counter)
 
+    if flag:
+        map_counter = map_counter -1
     if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) != 0:
-        save_into_disk(g, str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+        if '/' in gmlpropread.getOutputFilePath():
+            save_into_disk(g, gmlpropread.getOutputFilePath()+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+        else:
+            save_into_disk(g, gmlpropread.getOutputFilePath() + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
+                file_counter))
         print('Total number of feature members processed:', map_counter)
 
 """Converts polygon coordinates represented in EPSG 27700 into WGS84"""
@@ -256,6 +269,9 @@ def get_tag_name(url):
 
 """Parses a standard GML file consisting of an Envelope and a set of feature members"""
 def parse_gml(file_name):
+    p = Path(gmlpropread.getOutputFilePath())
+    if not p.exists():
+        print('The following file output path is not valid:', p)
     print('Parsing in progress...')
     context = get_context(file_name, URL_ENVELOPE)
     get_envelope(context)
