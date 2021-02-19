@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,12 @@ public abstract class JPSHttpServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         handleRequest(request, response);
     }
+    /**
+     * @see HttpServlet#doPut(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        handleRequest(request, response);
+    }
 
     /**
      * Handles GET and POST requests processing
@@ -68,6 +75,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
                 doGetJPS(request, response);
             } else if ((request.getMethod().equals(HttpPost.METHOD_NAME))) {
                 doPostJPS(request, response, reqBody);
+            }else if ((request.getMethod().equals(HttpPut.METHOD_NAME))) {
+                doPutJPS(request, response, reqBody);
             }
         } catch (Exception e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -102,6 +111,14 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPostJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws ServletException, IOException {
+        doHttpJPS(request, response, reqBody);
+    }
+    /**
+     * JPS wrapper for HttpServlet#doPut
+     *
+     * @see HttpServlet#doPut(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPutJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws ServletException, IOException {
         doHttpJPS(request, response, reqBody);
     }
 
