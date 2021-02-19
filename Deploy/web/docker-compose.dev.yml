@@ -8,15 +8,7 @@ services:
     build: 
       context: "./website"
     ports:
-      - "82:80"
-  
-  # Reverse Proxy Server
-  reverse-proxy:
-    build: 
-      context: "./reverse-proxy"
-    ports:
       - "81:80"
-      - "443:443"
    
 # Development network    
 networks:
