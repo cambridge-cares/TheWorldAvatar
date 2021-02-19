@@ -25,7 +25,7 @@ var scriptDir = scriptURL.substring(0, scriptURL.lastIndexOf("/") + 1);
 var imageDir = "/user/images/";
 
 // Location of the chatbot itself
-var botURL = "http://192.168.1.143/marie/request/";
+var botURL = "/marie/request/";
 
 // Hide the results row by default
 var resultsRow = document.getElementById("results-row");

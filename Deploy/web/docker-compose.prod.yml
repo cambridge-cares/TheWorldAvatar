@@ -2,15 +2,42 @@ version: "3.8"
 
 # Services
 services:
+  # Run Certbot in prod mode to handle certificate renewal
+  certbot:
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    image: docker.cmclinnovations.com/certbot/certbot:v1.12.0
+    container_name: certbot
+    volumes:
+      - type: bind
+        source: /etc/letsencrypt
+        target: /etc/letsencrypt
+      - type: volume
+        source: certbot-challenge
+        target: /var/www/certbot
 
-  # Knowledge Graph Website (Port 80)
-  website:
-    build: 
-      context: "./website"
+  # Have reverse proxy serve http, https over standard ports in prod mode
+  reverse_proxy:
+    build:
+      target: with_ssl
     ports:
-      - "80:80"     
+      - 80:80
+      - 443:443
+    volumes:
+      - type: bind
+        source: /etc/letsencrypt
+        target: /etc/letsencrypt
+      - type: volume
+        source: certbot-challenge
+        target: /var/www/certbot
 
-# Production network    
+
+# Production network
 networks:
   default:
     name: prod-web
+
+
+# Volumes
+volumes:
+  certbot-challenge:
+    name: certbot-challenge

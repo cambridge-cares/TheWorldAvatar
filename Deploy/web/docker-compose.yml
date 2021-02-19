@@ -6,6 +6,14 @@ services:
   # Knowledge Graph Website
   website:
     build: "./website"
-    image: "${MODE}-website-${HASH}"
+    image: docker.cmclinnovations.com/website:v1.0
     container_name: "${MODE}-website-${HASH}"
     restart: unless-stopped
+
+  # nginx, configured as a reverse proxy for all externally-available web services
+  reverse_proxy:
+    image: docker.cmclinnovations.com/reverse_proxy:v1.0
+    build:
+      context: ./reverse_proxy
+      target: no_ssl
+    container_name: "${MODE}-reverse_proxy-${HASH}"
