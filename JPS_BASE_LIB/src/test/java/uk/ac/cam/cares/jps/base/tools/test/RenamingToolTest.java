@@ -16,6 +16,9 @@ import java.util.Iterator;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.apache.jena.arq.querybuilder.ExprFactory;
+import org.apache.jena.sparql.expr.Expr;
+import org.apache.jena.sparql.expr.ExprVar;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +26,7 @@ import org.junit.rules.TemporaryFolder;
 
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.tools.RenameTool;
+import uk.ac.cam.cares.jps.base.tools.RenamingTool;
 
 /**
  * JUnit tests for RenameTool
@@ -31,9 +34,9 @@ import uk.ac.cam.cares.jps.base.tools.RenameTool;
  * @author Casper Lindberg
  *
  */
-public class RenameToolTest {
+public class RenamingToolTest {
 
-	private RenameTool renameTool;
+	private RenamingTool renamingTool;
 	
 	private String sparqlQueryP = "SELECT ?s  ?p  ?o" +
 			"WHERE\n" +  
@@ -52,6 +55,9 @@ public class RenameToolTest {
 	// temporary folder for testing
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+	
+	
+	
 	
 	/**
 	 * Test renameURI on an owl file. 
@@ -76,7 +82,8 @@ public class RenameToolTest {
 		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
 		//perform update
-		RenameTool.renameURI(kbClient, target, replacement);
+		renamingTool = new RenamingTool(target, replacement);
+		renamingTool.renameURI(kbClient);
 		
 		//select query to check result: predicate renamed
 		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
@@ -124,7 +131,8 @@ public class RenameToolTest {
 		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
 		//perform update
-		RenameTool.renameURIFragment(kbClient, target, replacement);
+		renamingTool = new RenamingTool(target, replacement);
+		renamingTool.renameString(kbClient);
 		
 		//select query to check result: predicate renamed
 		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
@@ -177,19 +185,19 @@ public class RenameToolTest {
 		"        BIND(<http://example.com/test/target> AS ?targetURI)\n" +
 		"        BIND(<http://example.com/test/replacement> AS ?replacementURI)\n" +
 		"        FILTER ( ( ?s = ?targetURI ) || ( ( ?p = ?targetURI ) || ( ?o = ?targetURI ) ) )\n" +
-		"        BIND(if(( ?s = ?targetURI ), ?replacementURI, ?s) AS ?newS)\n" +
-		"        BIND(if(( ?p = ?targetURI ), ?replacementURI, ?p) AS ?newP)\n" +
-		"        BIND(if(( ?o = ?targetURI ), ?replacementURI, ?o) AS ?newO)\n" +
+		"        BIND(if(isBlank(?s), ?s, if(( ?s = ?targetURI ), ?replacementURI, ?s)) AS ?newS)\n" +
+        "        BIND(if(isBlank(?p), ?p, if(( ?p = ?targetURI ), ?replacementURI, ?p)) AS ?newP)\n" +
+        "        BIND(if(isBlank(?o), ?o, if(( ?o = ?targetURI ), ?replacementURI, ?o)) AS ?newO)\n" +
 		"      }\n" +
 		"  }\n";
 		
 		// access private method
-		renameTool = new RenameTool();
-		assertNotNull(renameTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class, String.class, String.class));
-		Method buildSparqlUpdateURI = renameTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class, String.class, String.class);
+		renamingTool = new RenamingTool("http://example.com/test/target", "http://example.com/test/replacement");
+		assertNotNull(renamingTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class));
+		Method buildSparqlUpdateURI = renamingTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class);
 		buildSparqlUpdateURI.setAccessible(true);
 		
-		UpdateRequest sparql = (UpdateRequest) buildSparqlUpdateURI.invoke(renameTool, "http://example.com/test/target", "http://example.com/test/replacement", "http://example.com/test");
+		UpdateRequest sparql = (UpdateRequest) buildSparqlUpdateURI.invoke(renamingTool, "http://example.com/test");
 		
 		String strSparql = sparql.toString();
 		
@@ -219,18 +227,18 @@ public class RenameToolTest {
 		"    BIND(<http://example.com/test/target> AS ?targetURI)\n" +
 		"    BIND(<http://example.com/test/replacement> AS ?replacementURI)\n" +
 		"    FILTER ( ( ?s = ?targetURI ) || ( ( ?p = ?targetURI ) || ( ?o = ?targetURI ) ) )\n" +
-		"    BIND(if(( ?s = ?targetURI ), ?replacementURI, ?s) AS ?newS)\n" +
-		"    BIND(if(( ?p = ?targetURI ), ?replacementURI, ?p) AS ?newP)\n" +
-		"    BIND(if(( ?o = ?targetURI ), ?replacementURI, ?o) AS ?newO)\n" +
+	    "    BIND(if(isBlank(?s), ?s, if(( ?s = ?targetURI ), ?replacementURI, ?s)) AS ?newS)\n" +
+	    "    BIND(if(isBlank(?p), ?p, if(( ?p = ?targetURI ), ?replacementURI, ?p)) AS ?newP)\n" +
+	    "    BIND(if(isBlank(?o), ?o, if(( ?o = ?targetURI ), ?replacementURI, ?o)) AS ?newO)\n" +
 		"  }\n";
 		
 		// access private method
-		renameTool = new RenameTool();
-		assertNotNull(renameTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class, String.class, String.class));
-		Method buildSparqlUpdateURI = renameTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class, String.class, String.class);
+		renamingTool = new RenamingTool("http://example.com/test/target", "http://example.com/test/replacement");
+		assertNotNull(renamingTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class));
+		Method buildSparqlUpdateURI = renamingTool.getClass().getDeclaredMethod("buildSparqlUpdateURI", String.class);
 		buildSparqlUpdateURI.setAccessible(true);
 		
-		UpdateRequest sparql = (UpdateRequest) buildSparqlUpdateURI.invoke(renameTool, "http://example.com/test/target", "http://example.com/test/replacement", null);
+		UpdateRequest sparql = (UpdateRequest) buildSparqlUpdateURI.invoke(renamingTool, new Object[]{ null });
 		
 		String strSparql = sparql.toString();
 		
@@ -262,27 +270,40 @@ public class RenameToolTest {
 		"WHERE\n" +
 		"  { GRAPH <http://example.com/test>\n" +
 		"      { ?s  ?p  ?o\n" +
-		"        BIND(regex(str(?s), \"/test/target\") AS ?matchS)\n" +
-		"        BIND(regex(str(?p), \"/test/target\") AS ?matchP)\n" +
-		"        BIND(regex(str(?o), \"/test/target\") AS ?matchO)\n" +
+		"        FILTER strstarts(str(?s), \"http://www.theworldavatar.com/\")\n" +
+		"        BIND(regex(str(?s), \"/test/match\") AS ?matchS)\n" +
+		"        BIND(regex(str(?p), \"/test/match\") AS ?matchP)\n" +
+		"        BIND(regex(str(?o), \"/test/match\") AS ?matchO)\n" +
 		"        FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n" +
-		"        BIND(if(?matchS, uri(replace(str(?s), \"/test/target\", \"/test/replacement\")), ?s) AS ?newS)\n" +
-		"        BIND(if(?matchP, uri(replace(str(?p), \"/test/target\", \"/test/replacement\")), ?p) AS ?newP)\n" +
-		"        BIND(if(?matchO, uri(replace(str(?o), \"/test/target\", \"/test/replacement\")), ?o) AS ?newO)\n" +
+		"        BIND(if(isBlank(?s), ?s, if(?matchS, uri(replace(str(?s), \"/test/target\", \"/test/replacement\")), ?s)) AS ?newS)\n" +
+		"        BIND(if(isBlank(?p), ?p, if(?matchP, uri(replace(str(?p), \"/test/target\", \"/test/replacement\")), ?p)) AS ?newP)\n" +
+		"        BIND(if(isBlank(?o), ?o, if(?matchO, uri(replace(str(?o), \"/test/target\", \"/test/replacement\")), ?o)) AS ?newO)\n" +
 		"      }\n" +
 		"  }\n";
 		
 		// access private method
-		renameTool = new RenameTool();
-		assertNotNull(renameTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class, String.class, String.class));
-		Method buildSparqlUpdateString = renameTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class, String.class, String.class);
+		renamingTool = new RenamingTool("/test/match", "/test/target", "/test/replacement");
+		renamingTool.setFilter(getFilterExpression());
+		assertNotNull(renamingTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class));
+		Method buildSparqlUpdateString = renamingTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class);
 		buildSparqlUpdateString.setAccessible(true);
 		
-		UpdateRequest sparql = (UpdateRequest) buildSparqlUpdateString.invoke(renameTool, "/test/target", "/test/replacement", "http://example.com/test");
+		UpdateRequest sparql = (UpdateRequest) buildSparqlUpdateString.invoke(renamingTool,  "http://example.com/test");
 		
 		String strSparql = sparql.toString();
 		
 		assertEquals(expected, strSparql);
+	}
+	
+	/**
+	 * Return filter expression for unit test
+	 */
+	private Expr getFilterExpression() {
+		
+		ExprFactory exprFactory = new ExprFactory();
+		ExprVar exprOldS = RenamingTool.exprS;
+		
+		return exprFactory.strstarts(exprFactory.str(exprOldS), exprFactory.asExpr("http://www.theworldavatar.com/"));
 	}
 	
 	/**
@@ -305,22 +326,22 @@ public class RenameToolTest {
 		"}\n"+ 
 		"WHERE\n" +
 		"  { ?s  ?p  ?o\n" +
-		"    BIND(regex(str(?s), \"/test/target\") AS ?matchS)\n" +
-		"    BIND(regex(str(?p), \"/test/target\") AS ?matchP)\n" +
-		"    BIND(regex(str(?o), \"/test/target\") AS ?matchO)\n" +
+		"    BIND(regex(str(?s), \"/test/match\") AS ?matchS)\n" +
+		"    BIND(regex(str(?p), \"/test/match\") AS ?matchP)\n" +
+		"    BIND(regex(str(?o), \"/test/match\") AS ?matchO)\n" +
 		"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n" +
-		"    BIND(if(?matchS, uri(replace(str(?s), \"/test/target\", \"/test/replacement\")), ?s) AS ?newS)\n" +
-		"    BIND(if(?matchP, uri(replace(str(?p), \"/test/target\", \"/test/replacement\")), ?p) AS ?newP)\n" +
-		"    BIND(if(?matchO, uri(replace(str(?o), \"/test/target\", \"/test/replacement\")), ?o) AS ?newO)\n" +
+		"    BIND(if(isBlank(?s), ?s, if(?matchS, uri(replace(str(?s), \"/test/target\", \"/test/replacement\")), ?s)) AS ?newS)\n" +
+		"    BIND(if(isBlank(?p), ?p, if(?matchP, uri(replace(str(?p), \"/test/target\", \"/test/replacement\")), ?p)) AS ?newP)\n" +
+		"    BIND(if(isBlank(?o), ?o, if(?matchO, uri(replace(str(?o), \"/test/target\", \"/test/replacement\")), ?o)) AS ?newO)\n" +
 		"  }\n";
 		
 		// access private method
-		renameTool = new RenameTool();
-		assertNotNull(renameTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class, String.class, String.class));
-		Method buildSparqlUpdateString = renameTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class, String.class, String.class);
+		renamingTool = new RenamingTool("/test/match", "/test/target", "/test/replacement");
+		assertNotNull(renamingTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class));
+		Method buildSparqlUpdateString = renamingTool.getClass().getDeclaredMethod("buildSparqlUpdateString", String.class);
 		buildSparqlUpdateString.setAccessible(true);
 		
-		UpdateRequest sparql = (UpdateRequest) buildSparqlUpdateString.invoke(renameTool, "/test/target", "/test/replacement", null);
+		UpdateRequest sparql = (UpdateRequest) buildSparqlUpdateString.invoke(renamingTool, new Object[]{ null });
 		
 		String strSparql = sparql.toString();
 		
