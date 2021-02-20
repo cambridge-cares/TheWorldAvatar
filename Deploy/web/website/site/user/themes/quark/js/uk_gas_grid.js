@@ -19,8 +19,7 @@
 
 // Determine the original page location (in it's container)
 var root = window.location.hostname;
-var port = "3001";
-var originalPage = "http://" + root + ":" + port + "/ontotwinuk";
+var originalPage = "http://" + root + "/digital-twin/power/ontotwinuk";
 
 if(!originalPage.startsWith("http")) {
 	originalPage = "http://" + originalPage;
