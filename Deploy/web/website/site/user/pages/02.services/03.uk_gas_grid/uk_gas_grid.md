@@ -5,7 +5,7 @@ title: UK Gas Grid
 <table>
 	<tr>
 		<td width="25%" style="text-align: center;" markdown="1">[![UK](image://gas-grid.jpg?forceResize=150,200&classes=header-image)](https://commons.wikimedia.org/wiki/File:National_Grid_LNG_Tank.jpg)</td>
-		<td width="75%"><h2>UK Gas Grid</h2>The module of the UK Digital Twin provides a map visualisation of the Knowledge Graph containing data on UK power plants. The Knowledge Graph is also queried to provide meta-data on each individual power plant; select a node on the map to view it. Please note that there may be some loading time before nodes are shown on the map.</td>
+		<td width="75%"><h2>UK Gas Grid</h2>This module of the UK Digital Twin provides a map visualisation of the Knowledge Graph containing data on UK power plants. The Knowledge Graph is also queried to provide meta-data on each individual power plant; select a node on the map to view it. Please note that there may be some loading time before nodes are shown on the map.</td>
 	</tr>
 </table>
 <br><br>
