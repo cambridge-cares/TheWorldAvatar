@@ -19,11 +19,13 @@
 
 // Determine the original page location (in it's container)
 var root = window.location.hostname;
-var originalPage = "http://" + root + "/digital-twin/power/ontotwinuk";
+var port = window.location.port;
+var originalPage = "http://" + root + ":" + port + "/digital-twin/power/ontotwinuk";
 
 if(!originalPage.startsWith("http")) {
 	originalPage = "http://" + originalPage;
 }
+console.log("Pulling map element from: " + originalPage);
 
 // Pipe into iframe
 let mapFrame = document.getElementById("map-frame");
