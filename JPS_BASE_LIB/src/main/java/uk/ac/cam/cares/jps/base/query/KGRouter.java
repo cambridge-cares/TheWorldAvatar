@@ -26,7 +26,7 @@ public class KGRouter{
 	public static final String LABEL = "label";
 	public static final String QUERY_ENDPOINT = "queryEndpoint";
 	public static final String HAS_QUERY_ENDPOINT = "hasQueryEndpoint";
-	public static final String UPDATE_ENDPOINT = "queryEndpoint";
+	public static final String UPDATE_ENDPOINT = "updateEndpoint";
 	public static final String HAS_UPDATE_ENDPOINT = "hasUpdateEndpoint";
 	public static final String COLON = ":";
 	public static final String QUESTION_MARK = "?";
@@ -119,6 +119,39 @@ public class KGRouter{
 	}
 	
 	/**
+	 * Retrieves the update IRI of the target repository/namespace. 
+	 * 
+	 * @param kgrouterEndpoint
+	 * @param targetResourceName
+	 * @return
+	 * @throws Exception
+	 */
+	private String getUpdateIRI(String kgrouterEndpoint, String targetResourceName) throws Exception{
+		SelectBuilder builder = new SelectBuilder()
+				.addPrefix( RDFS_PREFIX,  RDFS )
+				.addPrefix( RDF_PREFIX,  RDF )
+				.addPrefix( ONTOKGROUTER_PREFIX,  ONTOKGROUTER )
+				.addVar( QUESTION_MARK.concat(RESOURCE))
+				.addVar( QUESTION_MARK.concat(LABEL) )
+				.addVar( QUESTION_MARK.concat(UPDATE_ENDPOINT) )
+				.addWhere( getCommonKGRouterWhereBuilder() )
+			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT) );
+		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(kgrouterEndpoint);
+		System.out.println(builder.toString());
+		String json = rKBClient.execute(builder.toString());
+		JSONArray jsonArray = new JSONArray(json);
+		for (int i = 0; i<jsonArray.length(); i++){
+			JSONObject obj = jsonArray.getJSONObject(i);
+			if(obj.getString(LABEL).equals(targetResourceName)){
+				System.out.println(obj.get(UPDATE_ENDPOINT));
+				return obj.getString(UPDATE_ENDPOINT);
+			}
+		}
+		return null;
+	}
+
+	
+	/**
 	 * Created to put the generic part of the SPARQL query commands using the Jena Query Builder.
 	 * 
 	 * @return
@@ -134,19 +167,6 @@ public class KGRouter{
 	
 	public static void main(String[] args) throws Exception{
 		KGRouter kgRouter = new KGRouter();
-		System.out.println(kgRouter.getQueryIRI(KGROUTER_ENDPOINT, "ontokin"));
-	}
-	
-	/**
-	 * Retrieves the update IRI of the target repository/namespace.
-	 * 
-	 * @param kgrouterEndpoint
-	 * @param targetResourceName
-	 * @return
-	 */
-	private String getUpdateIRI(String kgrouterEndpoint, String targetResourceName){
-	
-		return null;
-	}
-	
+		System.out.println(kgRouter.getUpdateIRI(KGROUTER_ENDPOINT, "ontokin"));
+	}	
 }
