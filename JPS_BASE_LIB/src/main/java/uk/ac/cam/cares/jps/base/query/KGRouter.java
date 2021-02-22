@@ -18,7 +18,8 @@ public class KGRouter{
 	public static final String RDFS_PREFIX = "rdfs";
 	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	public static final String RDF_PREFIX = "rdf";
-	public static final String RDF = "rdf";
+	public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+	public static final String RDF_TYPE = "type";
 	public static final String ONTOKGROUTER_PREFIX = "ontokgrouter";
 	public static final String ONTOKGROUTER = "http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#";
 	public static final String RESOURCE = "resource";
@@ -29,6 +30,7 @@ public class KGRouter{
 	public static final String HAS_UPDATE_ENDPOINT = "hasUpdateEndpoint";
 	public static final String COLON = ":";
 	public static final String QUESTION_MARK = "?";
+	public static final String TARGET_RESOURCE = "TargetResource";
 	
 	static KGRouter kgRouter = null;
 	
@@ -89,15 +91,14 @@ public class KGRouter{
 	 * 
 	 * @param kgrouterEndpoint
 	 * @param targetResourceName
-	 * @param isQueryOperation
-	 * @param isUpdateOperation
 	 * @return
+	 * @throws Exception
 	 */
 	private String getQueryIRI(String kgrouterEndpoint, String targetResourceName) throws Exception{
 		SelectBuilder builder = new SelectBuilder()
-			    .addPrefix( RDFS_PREFIX,  RDFS )
-			    .addPrefix( RDF_PREFIX,  RDF )
-			    .addPrefix( ONTOKGROUTER_PREFIX,  ONTOKGROUTER )
+				.addPrefix( RDFS_PREFIX,  RDFS )
+				.addPrefix( RDF_PREFIX,  RDF )
+				.addPrefix( ONTOKGROUTER_PREFIX,  ONTOKGROUTER )
 				.addVar( QUESTION_MARK.concat(RESOURCE))
 				.addVar( QUESTION_MARK.concat(LABEL) )
 				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
@@ -109,23 +110,31 @@ public class KGRouter{
 		JSONArray jsonArray = new JSONArray(json);
 		for (int i = 0; i<jsonArray.length(); i++){
 			JSONObject obj = jsonArray.getJSONObject(i);
-			System.out.println(obj.get(QUERY_ENDPOINT));
+			if(obj.getString(LABEL).equals(targetResourceName)){
+				System.out.println(obj.get(QUERY_ENDPOINT));
+				return obj.getString(QUERY_ENDPOINT);
+			}
 		}
-		return json;
+		return null;
 	}
 	
+	/**
+	 * Created to put the generic part of the SPARQL query commands using the Jena Query Builder.
+	 * 
+	 * @return
+	 */
 	private WhereBuilder getCommonKGRouterWhereBuilder(){
 		return new WhereBuilder()
-			    .addPrefix( "rdfs",  RDFS )
-			    .addPrefix( "rdf",  RDF )
-			    .addPrefix( "ontokgrouter",  ONTOKGROUTER )
-			    .addWhere( "?resource", "rdf:type", "ontokgrouter:TargetResource" )
-			    .addWhere( "?resource", "rdfs:label", "?label" );
-	}
+				.addPrefix( RDFS_PREFIX,  RDFS )
+				.addPrefix( RDF_PREFIX,  RDF )
+				.addPrefix( ONTOKGROUTER_PREFIX,  ONTOKGROUTER )
+			    .addWhere( QUESTION_MARK.concat(RESOURCE), RDF_PREFIX.concat(COLON).concat(RDF_TYPE), ONTOKGROUTER_PREFIX.concat(COLON).concat(TARGET_RESOURCE) )
+			    .addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), QUESTION_MARK.concat(LABEL) );
+		}
 	
 	public static void main(String[] args) throws Exception{
 		KGRouter kgRouter = new KGRouter();
-		System.out.println(kgRouter.getQueryIRI(KGROUTER_ENDPOINT, null));
+		System.out.println(kgRouter.getQueryIRI(KGROUTER_ENDPOINT, "ontokin"));
 	}
 	
 	/**
