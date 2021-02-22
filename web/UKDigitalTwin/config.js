@@ -64,7 +64,8 @@ function configDeployCMCL() {
     config.logDir = "/home/user/logs"
     config.port = 3001;
     config.registerUrl = "http://localhost:";
-    config.RDF4j = "https://kg.cmclinnovations.com/rdf4j-server/repositories/UKPowerPlant"
+    //config.RDF4j = "https://kg.cmclinnovations.com/rdf4j-server/repositories/UKPowerPlant"
+	config.RDF4j = "http://kg.cmclinnovations.com:6888/rdf4j-server/repositories/UKPowerPlant"
 }
 
 function configCoMoCommon() {

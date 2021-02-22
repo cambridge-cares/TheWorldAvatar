@@ -4,22 +4,8 @@ block title
 	title  UK Digital Twin
 
 block sheets
-	link(rel="stylesheet" href='/stylesheets/mpage.css')
+	link(rel="stylesheet" href='/powersys/stylesheets/mpage.css')
 	link(href='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css', rel='stylesheet')
-
-block subtitle
-
-	| UK power plants map
-	
-block readme
-	span#readme-button
-		| ?    
-	span#readme-text
-		|This shows a map of UK power plants. 
-		br
-block description
-	
-
 
 block content
 	style.
@@ -66,10 +52,10 @@ block content
 
 	script(src="https://code.jquery.com/jquery-2.2.0.min.js")
 	script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
-	script(src="/javascripts/PopUpmap.js")
-	script(src="/javascripts/line.js")
-	script(src="/javascripts/gridLayer.js")
-	script(src="/javascripts/UKontoTwin.js")
+	script(src="/powersys/javascripts/PopUpmap.js")
+	script(src="/powersys/javascripts/line.js")
+	script(src="/powersys/javascripts/gridLayer.js")
+	script(src="/powersys/javascripts/UKontoTwin.js")
 	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&libraries=visualization&callback=initMap")
 	script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous")
 	script(src='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js')
