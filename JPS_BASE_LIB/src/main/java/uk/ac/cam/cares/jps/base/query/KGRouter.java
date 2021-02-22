@@ -46,7 +46,7 @@ public class KGRouter{
 					kgRouter = new KGRouter();
 				}
 				if (isQueryOperation) {
-//					queryIRI = kgRouter.getQueryIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP, EMPTY));
+					queryIRI = kgRouter.getQueryIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP, EMPTY));
 				}
 				if (isUpdateOperation) {
 					updateIRI = kgRouter.getUpdateIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP, EMPTY));
@@ -69,11 +69,41 @@ public class KGRouter{
 		}
 		return kbClient;
 	}
-
+	
+	/**
+	 * Retrieves the query IRI of the target repository/namespace. 
+	 * 
+	 * @param kgrouterEndpoint
+	 * @param targetResourceName
+	 * @param isQueryOperation
+	 * @param isUpdateOperation
+	 * @return
+	 */
+	private String getQueryIRI(String kgrouterEndpoint, String targetResourceName) throws Exception{
+		WhereBuilder whereBuilder = new WhereBuilder()
+			    .addPrefix( "rdfs",  RDFS )
+			    .addPrefix( "rdf",  RDF )
+			    .addPrefix( "ontokgrouter",  ONTOKGROUTER )
+			    .addWhere( "?resource", "rdf:type", "ontokgrouter:TargetResource" )
+			    .addWhere( "?resource", "rdfs:label", "?label" )
+			    .addWhere( "?resource", "ontokgrouter:hasQueryEndpoint", "?queryEndpoint" )
+			    .addWhere( "?resource", "ontokgrouter:hasUpdateEndpoint", "?updateEndpoint" );
+		
+		SelectBuilder builder = new SelectBuilder()
+			    .addPrefix( "rdfs",  RDFS )
+			    .addPrefix( "rdf",  RDF )
+			    .addPrefix( "ontokgrouter",  ONTOKGROUTER )
+				.addVar( "?resource")
+				.addVar( "?label" )
+				.addVar( "?queryEndpoint" )
+				.addVar( "?updateEndpoint" )
+				.addWhere( whereBuilder );
+		return builder.toString();
+	}
 	
 	public static void main(String[] args) throws Exception{
 		KGRouter kgRouter = new KGRouter();
-//		System.out.println(kgRouter.getQueryIRI(null, null));
+		System.out.println(kgRouter.getQueryIRI(null, null));
 	}
 	
 	/**
