@@ -32,5 +32,8 @@ COPY docker/httpd.conf /usr/local/apache2/conf/httpd.conf
 RUN chown -R www-data:www-data /var/www/
 RUN chmod -R 775 /var/www/
 
+# Expose port 80
+EXPOSE 80
+
 # Finish
 RUN echo -e "Image installation completed."
