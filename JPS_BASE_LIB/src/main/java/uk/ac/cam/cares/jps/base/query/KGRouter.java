@@ -1,21 +1,33 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import java.io.File;
-
+import java.util.Map;
 
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class KGRouter{
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
 	public static final String EMPTY = "";
 	private static final String KGROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
+	public static final String RDFS_PREFIX = "rdfs";
 	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
-	public static final String RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+	public static final String RDF_PREFIX = "rdf";
+	public static final String RDF = "rdf";
+	public static final String ONTOKGROUTER_PREFIX = "ontokgrouter";
 	public static final String ONTOKGROUTER = "http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#";
+	public static final String RESOURCE = "resource";
+	public static final String LABEL = "label";
+	public static final String QUERY_ENDPOINT = "queryEndpoint";
+	public static final String HAS_QUERY_ENDPOINT = "hasQueryEndpoint";
+	public static final String UPDATE_ENDPOINT = "queryEndpoint";
+	public static final String HAS_UPDATE_ENDPOINT = "hasUpdateEndpoint";
+	
 	static KGRouter kgRouter = null;
 	
 	/**
@@ -80,15 +92,6 @@ public class KGRouter{
 	 * @return
 	 */
 	private String getQueryIRI(String kgrouterEndpoint, String targetResourceName) throws Exception{
-		WhereBuilder whereBuilder = new WhereBuilder()
-			    .addPrefix( "rdfs",  RDFS )
-			    .addPrefix( "rdf",  RDF )
-			    .addPrefix( "ontokgrouter",  ONTOKGROUTER )
-			    .addWhere( "?resource", "rdf:type", "ontokgrouter:TargetResource" )
-			    .addWhere( "?resource", "rdfs:label", "?label" )
-			    .addWhere( "?resource", "ontokgrouter:hasQueryEndpoint", "?queryEndpoint" )
-			    .addWhere( "?resource", "ontokgrouter:hasUpdateEndpoint", "?updateEndpoint" );
-		
 		SelectBuilder builder = new SelectBuilder()
 			    .addPrefix( "rdfs",  RDFS )
 			    .addPrefix( "rdf",  RDF )
@@ -96,14 +99,31 @@ public class KGRouter{
 				.addVar( "?resource")
 				.addVar( "?label" )
 				.addVar( "?queryEndpoint" )
-				.addVar( "?updateEndpoint" )
-				.addWhere( whereBuilder );
-		return builder.toString();
+				.addWhere( getCommonKGRouterWhereBuilder() )
+			    .addWhere( "?resource", "ontokgrouter:hasQueryEndpoint", "?queryEndpoint" );
+		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(kgrouterEndpoint);
+		System.out.println(builder.toString());
+		String json = rKBClient.execute(builder.toString());
+		JSONArray jsonArray = new JSONArray(json);
+		for (int i = 0; i<jsonArray.length(); i++){
+			JSONObject obj = jsonArray.getJSONObject(i);
+			System.out.println(obj.get("queryEndpoint"));
+		}
+		return json;
+	}
+	
+	private WhereBuilder getCommonKGRouterWhereBuilder(){
+		return new WhereBuilder()
+			    .addPrefix( "rdfs",  RDFS )
+			    .addPrefix( "rdf",  RDF )
+			    .addPrefix( "ontokgrouter",  ONTOKGROUTER )
+			    .addWhere( "?resource", "rdf:type", "ontokgrouter:TargetResource" )
+			    .addWhere( "?resource", "rdfs:label", "?label" );
 	}
 	
 	public static void main(String[] args) throws Exception{
 		KGRouter kgRouter = new KGRouter();
-		System.out.println(kgRouter.getQueryIRI(null, null));
+		System.out.println(kgRouter.getQueryIRI(KGROUTER_ENDPOINT, null));
 	}
 	
 	/**
