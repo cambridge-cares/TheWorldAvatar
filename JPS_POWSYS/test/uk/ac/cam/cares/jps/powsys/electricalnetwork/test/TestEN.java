@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -23,6 +25,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -656,5 +659,43 @@ public class TestEN extends TestCase {
 	public void xxxtestquerygen() {
 		OntModel jenaOwlModel = JenaHelper.createModel("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl");
 		new ENAgent().updateGeneratorEmission(jenaOwlModel);
+	}
+	
+	public void copyFromFolder(String baseUrl, String filename) {
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sample_input/" + filename);
+
+		String destinationUrl = baseUrl + "/" + filename;
+		new QueryBroker().putLocal(destinationUrl, file);
+	}
+	public void testRunPythonScript() {
+		String script = "PyPower-PF-OPF-JA-9-Java-1.py";
+		String folder = QueryBroker.getLocalDataPath();
+		System.out.println(folder);
+		//Create new txt Files here: I'm just copying over from a single folder
+		//but create it in this location
+		copyFromFolder(folder, "baseMVA.txt");
+		copyFromFolder(folder, "branch.txt");
+		copyFromFolder(folder, "bus.txt");
+		copyFromFolder(folder, "gen.txt");
+		copyFromFolder(folder, "genCost.txt");
+		
+		try {
+			new ENAgent().runPythonScript(script, folder);
+			String fileName = folder+"/outputStatus.txt";
+//			Path path = Paths.get(fileName);
+//			List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+//			assertTrue(allLines.get(2).contains("Converged!")); 
+			BufferedReader input = new BufferedReader(new FileReader(fileName));
+		    String last, line;
+		    last = "";
+		    while ((line = input.readLine()) != null) { 
+		        last = line;
+		    }
+		    assertTrue(last.contains("Converged")); 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }
