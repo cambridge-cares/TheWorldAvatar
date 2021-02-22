@@ -124,7 +124,7 @@ function askQuestion() {
 		// Show an error
 		$('#input-field').val("Please enter a question before submitting.");
 		$('#input-field').css("color", "red");
-		imgTags.item(0).src = scriptDir + "search.svg";
+		imgTags.item(0).src = imageDir + "search.svg";
 		return;
 	}
 
@@ -148,7 +148,7 @@ function askQuestion() {
 		// Revert button to search icon
 		let askButton = document.getElementById("ask-button");
 		let imgTags = askButton.getElementsByTagName("img");
-		imgTags.item(0).src = scriptDir + "search.svg";
+		imgTags.item(0).src = imageDir + "search.svg";
 		$('#input-field').css("color", "inherit");
 	}, function() {
 		// Error occurred, dealt with elsewhere
