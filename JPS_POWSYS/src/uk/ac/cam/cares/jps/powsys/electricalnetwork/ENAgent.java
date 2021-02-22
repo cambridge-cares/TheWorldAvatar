@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -114,13 +115,16 @@ public class ENAgent extends JPSAgent {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-//		runModel(baseUrl);
 		
 		String fileName = baseUrl+"/outputStatus.txt";
 		Path path = Paths.get(fileName);
-		byte[] bytes = Files.readAllBytes(path);
-		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
-		if(allLines.get(2).contains("Converged!")) {
+		BufferedReader input = new BufferedReader(new FileReader(fileName));
+	    String last, line;
+	    last = "";
+	    while ((line = input.readLine()) != null) { 
+	        last = line;
+	    }
+		if (last.contains("Converged")) {
 			resjo.put("status", "Converged");
 			try {
 				logger.info("converting PyPower results to OWL files");
@@ -534,8 +538,8 @@ public class ENAgent extends JPSAgent {
 		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-9-Java-1.py");
 		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-9-Java-1.py", file2);
 		
-		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
-		broker.putLocal(baseUrl + "/runpy.bat", file3);
+//		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
+//		broker.putLocal(baseUrl + "/runpy.bat", file3);
 		
 		
 		return buslist;
@@ -735,9 +739,14 @@ public class ENAgent extends JPSAgent {
 			String result = "";
 				String path = AgentLocator.getCurrentJpsAppDirectory(this);
 				String command = "python " + path+ "/python/model/" +script 
-						+ " baseMVA.txt" +" bus.txt"+ " gen.txt"+ " branch.txt" 
-						+" 1" +  " outputBusOPF.txt"+ " outputBranchOPF.txt"
-						+" outputGenOPF.txt"+ " 1" + " 1" + " areas.txt"+ " genCost.txt" +"outputStatus.txt";
+						+ " " +folder +"/baseMVA.txt" + " " +folder 
+						+"/bus.txt"+ " " +folder +"/gen.txt"+ " " 
+						+folder +"/branch.txt" +" 1" + " " +folder 
+						+"/outputBusOPF.txt"+ " " +folder 
+						+"/outputBranchOPF.txt"+ " " +folder 
+						+"/outputGenOPF.txt"+ " 1" + " 1" 
+						+ " " +folder +"/areas.txt"+ " " +folder 
+						+"/genCost.txt" + " " +folder +"/outputStatus.txt";
 				System.out.println(command);
 				result = CommandHelper.executeSingleCommand( path, command);
 			
