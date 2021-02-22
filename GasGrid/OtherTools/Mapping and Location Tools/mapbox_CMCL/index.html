@@ -81,7 +81,7 @@
 
 
 
-        mapboxgl.accessToken = 'pk.eyJ1IjoidG9tc2F2YWdlIiwiYSI6ImNram01MDFvczI5aHUyeG83N21obzBrcWsifQ.T_j8LAT55g3kuwCQFlNPuA';
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/satellite-v9',
@@ -93,7 +93,7 @@
         map.on('load', function () {
             map.addSource('National Transmission System', {
                 type: 'geojson',
-                data: 'https://tom-savage.co.uk/assets/geojson/pipe_network.geojson'
+                data: 'http://localhost/geoJSON_assets/pipe_network.geojson'
             });
 
             pipe_color = '#FFFFFF';
@@ -116,7 +116,7 @@
 
             map.addSource('Pipe Buffer', {
                 type: 'geojson',
-                data: 'https://tom-savage.co.uk/assets/geojson/pipe_buffer.geojson'
+                data: 'http://localhost/geoJSON_assets/pipe_buffer.geojson'
             });
 
             map.addLayer({
@@ -143,7 +143,7 @@
 
             map.addSource('offtakes', {
                 type: 'geojson',
-                data: 'https://tom-savage.co.uk/assets/geojson/offtakes.geojson'
+                data: 'http://localhost/geoJSON_assets/offtakes.geojson'
             });
 
             map.addLayer({
@@ -218,7 +218,7 @@
 
             map.addSource('terminals_s', {
                 'type': 'geojson',
-                'data': 'https://tom-savage.co.uk/assets/geojson/terminals.geojson'
+                'data': 'http://localhost/geoJSON_assets/terminals.geojson'
             });
             term_name_color = '#C4C4C4'
             term_outline_color = '#202028'
@@ -273,6 +273,13 @@
             }
 
             // Loading 3D buildings when zoomed in close enough 
+			if (!map.getSource('composite')) {
+				map.addSource('composite', {
+					type: 'vector', 
+					url: 'mapbox://mapbox.mapbox-streets-v7'}
+				);
+			} 
+			
             map.addLayer(
                 {
                     'id': '3d-buildings',
@@ -304,7 +311,7 @@
                             15.05,
                             ['get', 'max_height']
                         ],
-                        'fill-extrusion-opacity': 0.2
+                        'fill-extrusion-opacity': 0.75
                     }
                 },
                 labelLayerId
