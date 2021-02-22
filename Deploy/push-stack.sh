@@ -33,8 +33,7 @@ compose_files="docker-compose.yml"
 
 # Set args to docker-compose itself, including the file specifiers
 compose_file_args=$(echo $compose_files |sed -e 's/ / -f /' -e 's/^/-f /')
-env_filename="env.txt"
-compose_opts="$compose_file_args --env-file $env_filename"
+compose_opts="$compose_file_args"
 
 printf "Pushing all images in the $stack stack\n\n"
 

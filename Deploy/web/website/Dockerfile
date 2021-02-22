@@ -64,3 +64,6 @@ COPY site /var/www/html/
 # Update permissions
 RUN chown -R www-data:www-data /var/www/
 RUN chmod -R 775 /var/www/
+
+# Expose port 80
+EXPOSE 80

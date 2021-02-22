@@ -48,8 +48,7 @@ compose_files="docker-compose.yml docker-compose.$mode.yml"
 
 # Set args to docker-compose itself, including the file specifiers
 compose_file_args=$(echo $compose_files |sed -e 's/ / -f /' -e 's/^/-f /')
-env_filename="env.txt"
-compose_opts="$compose_file_args -p $mode-$stack --env-file $env_filename"
+compose_opts="$compose_file_args -p $mode-$stack"
 
 printf "Stopping the $mode-$stack stack\n\n"
 
