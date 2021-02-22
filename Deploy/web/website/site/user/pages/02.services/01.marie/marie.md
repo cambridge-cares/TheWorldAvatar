@@ -110,7 +110,7 @@ title: Marie
 		<li><div class="sample-question">What is the molecular weight of c1ccccc1</div></li>
 		<li><div class="sample-question">Show me the molecular model of CH2=CHCHO</div></li>
 		<li><div class="sample-question">Show me the ionization energy of C1=CC=CC=C1</div></li>
-		<li><div class="sample-question">Qhat is the heat capacity of c1=cc=cc=c1</div></li>
+		<li><div class="sample-question">What is the heat capacity of c1=cc=cc=c1</div></li>
 	</ul>
 </div>
 
