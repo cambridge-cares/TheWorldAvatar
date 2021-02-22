@@ -270,7 +270,7 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
         f = open(outputBranchName, 'w')
         i = 0
         while (i < branchCount):
-            f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14])) + '\n')
+            f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14]))+ splitCharacter + str(PAve) + splitCharacter + str(QAve) + splitCharacter + str(SAve) + '\n')
             i += 1
         f.close()
     
