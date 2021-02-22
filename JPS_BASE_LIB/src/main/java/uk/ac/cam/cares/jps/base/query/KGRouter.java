@@ -27,6 +27,8 @@ public class KGRouter{
 	public static final String HAS_QUERY_ENDPOINT = "hasQueryEndpoint";
 	public static final String UPDATE_ENDPOINT = "queryEndpoint";
 	public static final String HAS_UPDATE_ENDPOINT = "hasUpdateEndpoint";
+	public static final String COLON = ":";
+	public static final String QUESTION_MARK = "?";
 	
 	static KGRouter kgRouter = null;
 	
@@ -93,21 +95,21 @@ public class KGRouter{
 	 */
 	private String getQueryIRI(String kgrouterEndpoint, String targetResourceName) throws Exception{
 		SelectBuilder builder = new SelectBuilder()
-			    .addPrefix( "rdfs",  RDFS )
-			    .addPrefix( "rdf",  RDF )
-			    .addPrefix( "ontokgrouter",  ONTOKGROUTER )
-				.addVar( "?resource")
-				.addVar( "?label" )
-				.addVar( "?queryEndpoint" )
+			    .addPrefix( RDFS_PREFIX,  RDFS )
+			    .addPrefix( RDF_PREFIX,  RDF )
+			    .addPrefix( ONTOKGROUTER_PREFIX,  ONTOKGROUTER )
+				.addVar( QUESTION_MARK.concat(RESOURCE))
+				.addVar( QUESTION_MARK.concat(LABEL) )
+				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
-			    .addWhere( "?resource", "ontokgrouter:hasQueryEndpoint", "?queryEndpoint" );
+			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) );
 		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(kgrouterEndpoint);
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
 		JSONArray jsonArray = new JSONArray(json);
 		for (int i = 0; i<jsonArray.length(); i++){
 			JSONObject obj = jsonArray.getJSONObject(i);
-			System.out.println(obj.get("queryEndpoint"));
+			System.out.println(obj.get(QUERY_ENDPOINT));
 		}
 		return json;
 	}
