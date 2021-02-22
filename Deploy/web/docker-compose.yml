@@ -39,3 +39,11 @@ services:
     restart: unless-stopped
     ports:
       - 3001:3001 
+    
+    
+  # UK Gas Grid
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  uk-gas-grid:
+    image: docker.cmclinnovations.com/uk-gas-grid:b26a022
+    container_name: "uk-gas-grid"
+    restart: unless-stopped
