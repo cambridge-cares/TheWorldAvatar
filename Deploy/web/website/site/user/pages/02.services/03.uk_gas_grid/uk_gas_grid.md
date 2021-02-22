@@ -12,7 +12,7 @@ title: UK Gas Grid
 
 <div id="map-container" class="full-width" style="height: 800px;">
 	<div id="map-inner" style="width: 75%; height: 100%; margin: 0 auto; position: relative;">
-		<iframe id="map-frame" width="100%" height="100%" src="http://localhost:3001/ontotwinuk" />
+		<iframe id="map-frame" width="100%" height="100%" src="http://localhost:4001/" />
 	</div>
 </div>
 <br>
