@@ -1,11 +1,6 @@
 ##### Base configuration #####
 FROM php:7.4-apache as base
 
-# Meta data
-LABEL authors = "support@cmclinnovations.com"
-LABEL version = "0.0.1"
-LABEL description = "KG Website"
-
 # Enable Apache Rewrite + Expires Module
 RUN a2enmod rewrite expires && \
     sed -i 's/ServerTokens OS/ServerTokens ProductOnly/g' \

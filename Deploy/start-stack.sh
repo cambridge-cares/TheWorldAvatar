@@ -78,10 +78,14 @@ pushd $stack > /dev/null
 # Write some properties (e.g. the current git hash) to a temporary env file so that they can be used
 # in the compose config files
 # Note that this file shouldn't be deleted or down commands will fail
+rm env.txt
+
 echo "Generating environment variables file..."
 hash="$(git rev-parse --short=6 HEAD)"
+builder="$(git config user.name)"
 echo "HASH=$hash" >> "$env_filename"
 echo "MODE=$mode" >> "$env_filename"
+echo "BUILDER=$builder" >> "$env_filename"
 printf "Done\n\n"
 
 # Loop over secret files listed in the compose files, ensuring that they all exist, and have exactly one word on one linea
