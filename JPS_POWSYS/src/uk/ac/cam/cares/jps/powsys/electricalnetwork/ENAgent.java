@@ -48,7 +48,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
-public class ENAgent extends JPSAgent {
+public class ENAgent extends JPSAgent{
 	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
@@ -72,6 +72,7 @@ public class ENAgent extends JPSAgent {
 		if (!validateInput(requestParams)) {
 			throw new JSONException("ENAgent input parameters invalid");
 		}
+		System.out.println("Reached here!");
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = null;
 
@@ -1067,7 +1068,7 @@ public class ENAgent extends JPSAgent {
 		
 		
 	}
-	@Override
+//	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
     	if (requestParams.isEmpty()) {
             throw new BadRequestException();

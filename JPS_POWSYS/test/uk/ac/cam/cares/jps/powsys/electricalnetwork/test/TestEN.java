@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,12 +21,10 @@ import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
@@ -438,8 +435,7 @@ public class TestEN extends TestCase {
 		//JPSContext.putUsecaseUrl(jo, usecaseUrl); //if it is used, then the data will be moved to the base
 
 		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
-		System.out.println(resultStart);
+		String resultStart = new ScenarioClient().call(scenarioname, "JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
 	}
 	
 	//This function is added to be used by the unit test below (JA-Tests check number of columns)
