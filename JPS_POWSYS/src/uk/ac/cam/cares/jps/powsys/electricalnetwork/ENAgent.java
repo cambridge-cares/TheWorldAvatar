@@ -48,7 +48,7 @@ import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
-public class ENAgent extends JPSAgent {
+public class ENAgent extends JPSHttpServlet {
 	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
@@ -75,13 +75,14 @@ public class ENAgent extends JPSAgent {
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = null;
 
-		String path = requestParams.getString("path");
+		/*String path = request.getServletPath();
 
 		if (path.contains("/ENAgent/startsimulationPF")) {
 			modeltype = "PF";// PF or OPF
 		} else if (path.contains("/ENAgent/startsimulationOPF")) {
 			modeltype = "OPF";
-		}
+		}*/
+		modeltype = "OPF";
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		
@@ -110,7 +111,8 @@ public class ENAgent extends JPSAgent {
 		
 		logger.info("running PyPower simulation");
 		try {
-			runPythonScript("PyPower-PF-OPF-JA-9-Java-1.py", baseUrl);
+			String[] fileNames = {"/baseMVA.txt", "/bus.txt", "/gen.txt", "/branch.txt", "/outputBusOPF.txt", "/outputBranchOPF.txt", "/outputGenOPF.txt", "/areas.txt", "/genCost.txt", "/outputStatus.txt"};
+			runPythonScript("PyPower-PF-OPF-JA-9-Java-1.py", baseUrl, fileNames);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -735,18 +737,27 @@ public class ENAgent extends JPSAgent {
 		 * @return
 		 * @throws Exception
 		 */
-	public String runPythonScript(String script, String folder) throws Exception {
+	public String runPythonScript(String script, String folder, String[] fileNames) throws Exception {
 			String result = "";
 				String path = AgentLocator.getCurrentJpsAppDirectory(this);
 				String command = "python " + path+ "/python/model/" +script 
-						+ " " +folder +"/baseMVA.txt" + " " +folder 
-						+"/bus.txt"+ " " +folder +"/gen.txt"+ " " 
-						+folder +"/branch.txt" +" 1" + " " +folder 
-						+"/outputBusOPF.txt"+ " " +folder 
-						+"/outputBranchOPF.txt"+ " " +folder 
-						+"/outputGenOPF.txt"+ " 1" + " 1" 
-						+ " " +folder +"/areas.txt"+ " " +folder 
-						+"/genCost.txt" + " " +folder +"/outputStatus.txt";
+						+ " " +folder +fileNames[0] + " " +folder 
+						+fileNames[1] + " " +folder +fileNames[2] + " " 
+						+folder +fileNames[3] +" 1" + " " +folder 
+						+fileNames[4] + " " +folder 
+						+fileNames[5] + " " +folder 
+						+fileNames[6] + " 1" + " 1" 
+						+ " " +folder +fileNames[7] + " " +folder 
+						+fileNames[8] + " " +folder +fileNames[9];
+				/*String command = "python " + path+ "/python/model/" +script 
+				+ " " +folder +"/baseMVA.txt" + " " +folder 
+				+"/bus.txt"+ " " +folder +"/gen.txt"+ " " 
+				+folder +"/branch.txt" +" 1" + " " +folder 
+				+"/outputBusOPF.txt"+ " " +folder 
+				+"/outputBranchOPF.txt"+ " " +folder 
+				+"/outputGenOPF.txt"+ " 1" + " 1" 
+				+ " " +folder +"/areas.txt"+ " " +folder 
+				+"/genCost.txt" + " " +folder +"/outputStatus.txt";*/
 				System.out.println(command);
 				result = CommandHelper.executeSingleCommand( path, command);
 			
@@ -1058,7 +1069,7 @@ public class ENAgent extends JPSAgent {
 		
 		
 	}
-	@Override
+//	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
     	if (requestParams.isEmpty()) {
             throw new BadRequestException();
