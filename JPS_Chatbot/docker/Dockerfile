@@ -27,11 +27,6 @@
 FROM ubuntu:20.04 as production
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Meta data
-LABEL authors = "xz378@cam.ac.uk, support@cmclinnovations.com"
-LABEL version = "0.0.1"
-LABEL description = "JPS Chatbot"
-
 # Updates and software installation
 RUN echo -e "Installing required software..."
 RUN apt-get update
