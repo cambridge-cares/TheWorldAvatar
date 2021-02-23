@@ -1,18 +1,27 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import java.io.File;
-import java.util.Map;
-
-import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.query.Query;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * This class is developed to work as an instance factory for KnowledgeBaseClient.<br>
+ * It reduces the burden of users to modify the SPARQL Endpoints for different<br>
+ * knowledge bases when the web server changes. The users will always refer to<br>
+ * the knowledge bases using the same IRI. For example, for ontokin the IRI will be<be>
+ * http://kb/ontokin.
+ * 
+ * @author Feroz Farazi (msff2@cam.ac.uk)
+ *
+ */
 public class KGRouter{
+	private static Logger logger = LoggerFactory.getLogger(KGRouter.class);
 	public static final String HTTP="http://";
-	public static final String HTTPS="https://";
+	public static final String HTTP_KB_PREFIX = HTTP + "kb/";
 	public static final String EMPTY = "";
 	private static final String KGROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
 	public static final String RDFS_PREFIX = "rdfs";
@@ -36,36 +45,38 @@ public class KGRouter{
 	
 	/**
 	 * Based on a target resource IRI or path provided as the input, it returns the<br>
-	 * corresponding KnowledgeBaseClient. It supports two types of resources:<br>
-	 * a) a repository/namespace and b) an ontology file. Some examples of these<br>
-	 * resources are provided below:<br>
+	 * corresponding KnowledgeBaseClient. For query and/or update operations, it<br>
+	 * supports two types of resources: a) a repository/namespace and b) an ontology<br>
+	 * file. Some examples of these resources are provided below:<br>
 	 * a) Example repositories/namespaces are:<br>
-	 *    - http://ontokin
-	 *    - http://ontospecies
-	 *    - http://ontocompchem
+	 *    - http://kb/ontokin
+	 *    - http://kb/ontospecies
+	 *    - http://kb/ontocompchem
 	 * b) Example ontology files are:<br>
 	 *    - C://path/to/an/abox.owl (On Windows)
 	 *    - /home/path/to/an/abox.owl (On Linux)
 	 * 
-	 * @param targetResourceIRIOrPath the IRI of an RDF/OWL repository/namespace or the path to an RDF/OWL file. 
+	 * @param targetResourceIRIOrPath the IRI of an RDF/OWL repository/namespace<br>
+	 *  or the path to an RDF/OWL file. 
 	 * @param isQueryOperation true/false
-	 * @param isUpdateOperation true/false
+	 * @param isUpdateOperation true/false. Note: both query and update operations<br>
+	 *  can be true at the same time.
 	 * @return
 	 */
-	public static KnowledgeBaseClient getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) throws Exception{
+	public static KnowledgeBaseClient getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
 		String queryIRI = null;
 		String updateIRI = null;
 		KnowledgeBaseClient kbClient = null;
 		if (targetResourceIRIOrPath != null && !targetResourceIRIOrPath.isEmpty()) {
-			if (targetResourceIRIOrPath.trim().startsWith(HTTP)) {
+			if (targetResourceIRIOrPath.trim().startsWith(HTTP_KB_PREFIX)) {
 				if (kgRouter == null) {
 					kgRouter = new KGRouter();
 				}
 				if (isQueryOperation) {
-					queryIRI = kgRouter.getQueryIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP, EMPTY));
+					queryIRI = kgRouter.getQueryIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
 				}
 				if (isUpdateOperation) {
-					updateIRI = kgRouter.getUpdateIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP, EMPTY));
+					updateIRI = kgRouter.getUpdateIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
 					kbClient = new RemoteKnowledgeBaseClient(queryIRI);
@@ -75,6 +86,12 @@ public class KGRouter{
 						kbClient = new RemoteKnowledgeBaseClient();
 					}
 					kbClient.setUpdateEndpoint(updateIRI);
+				}
+				if(queryIRI==null && updateIRI==null){
+					logger.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceIRIOrPath);
+				}
+				if(isQueryOperation == false && isUpdateOperation == false){
+					logger.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
 				}
 			}else{
 				File file = new File(targetResourceIRIOrPath);
@@ -94,7 +111,7 @@ public class KGRouter{
 	 * @return
 	 * @throws Exception
 	 */
-	private String getQueryIRI(String kgrouterEndpoint, String targetResourceName) throws Exception{
+	private String getQueryIRI(String kgrouterEndpoint, String targetResourceName){
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -126,7 +143,7 @@ public class KGRouter{
 	 * @return
 	 * @throws Exception
 	 */
-	private String getUpdateIRI(String kgrouterEndpoint, String targetResourceName) throws Exception{
+	private String getUpdateIRI(String kgrouterEndpoint, String targetResourceName){
 		SelectBuilder builder = new SelectBuilder()
 				.addPrefix( RDFS_PREFIX,  RDFS )
 				.addPrefix( RDF_PREFIX,  RDF )
@@ -164,9 +181,4 @@ public class KGRouter{
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), RDF_PREFIX.concat(COLON).concat(RDF_TYPE), ONTOKGROUTER_PREFIX.concat(COLON).concat(TARGET_RESOURCE) )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), RDFS_PREFIX.concat(COLON).concat(LABEL), QUESTION_MARK.concat(LABEL) );
 		}
-	
-	public static void main(String[] args) throws Exception{
-		KGRouter kgRouter = new KGRouter();
-		System.out.println(kgRouter.getUpdateIRI(KGROUTER_ENDPOINT, "ontokin"));
-	}	
 }
