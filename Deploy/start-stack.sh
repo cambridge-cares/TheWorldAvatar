@@ -63,7 +63,8 @@ compose_files="docker-compose.yml docker-compose.$mode.yml"
 
 # Set args to docker-compose itself, including the file specifiers
 compose_file_args=$(echo $compose_files |sed -e 's/ / -f /' -e 's/^/-f /')
-compose_opts="$compose_file_args -p $mode-$stack"
+env_filename="env.txt"
+compose_opts="$compose_file_args -p $mode-$stack --env-file $env_filename"
 
 # Set options for 'docker-compose up', including any additional args passed to this script
 up_opts="$up_default_opts $*"
@@ -73,6 +74,15 @@ printf "Building the $stack stack in $mode mode\n\n"
 
 # Build in stack dir
 pushd $stack > /dev/null
+
+# Write some properties (e.g. the current git hash) to a temporary env file so that they can be used
+# in the compose config files
+# Note that this file shouldn't be deleted or down commands will fail
+echo "Generating environment variables file..."
+hash="$(git rev-parse --short=6 HEAD)"
+echo "HASH=$hash" >> "$env_filename"
+echo "MODE=$mode" >> "$env_filename"
+printf "Done\n\n"
 
 # Loop over secret files listed in the compose files, ensuring that they all exist, and have exactly one word on one linea
 echo "Checking required Docker secrets..."
