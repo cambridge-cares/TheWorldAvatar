@@ -81,7 +81,7 @@ public class ENAgent extends JPSAgent {
 			modeltype = "PF";// PF or OPF
 		} else if (path.contains("/ENAgent/startsimulationOPF")) {
 			modeltype = "OPF";
-		}*/
+		}
 		modeltype = "OPF";
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
@@ -537,9 +537,7 @@ public class ENAgent extends JPSAgent {
 
 //		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
 //		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
-		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-9-Java-1.py");
-		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-9-Java-1.py", file2);
-		
+
 //		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
 //		broker.putLocal(baseUrl + "/runpy.bat", file3);
 		
