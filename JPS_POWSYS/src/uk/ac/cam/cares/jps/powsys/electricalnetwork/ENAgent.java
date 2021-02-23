@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -39,6 +40,7 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
@@ -79,7 +81,8 @@ public class ENAgent extends JPSAgent {
 			modeltype = "PF";// PF or OPF
 		} else if (path.contains("/ENAgent/startsimulationOPF")) {
 			modeltype = "OPF";
-		}
+		}*/
+		modeltype = "OPF";
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		
@@ -107,14 +110,24 @@ public class ENAgent extends JPSAgent {
 		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
 		
 		logger.info("running PyPower simulation");
-		runModel(baseUrl);
+		try {
+			String[] fileNames = {"/baseMVA.txt", "/bus.txt", "/gen.txt", "/branch.txt", "/outputBusOPF.txt", "/outputBranchOPF.txt", "/outputGenOPF.txt", "/areas.txt", "/genCost.txt", "/outputStatus.txt"};
+			runPythonScript("PyPower-PF-OPF-JA-9-Java-1.py", baseUrl, fileNames);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
-		String fileName = baseUrl+"/outputstatus.txt";
+		String fileName = baseUrl+"/outputStatus.txt";
 		Path path = Paths.get(fileName);
-		byte[] bytes = Files.readAllBytes(path);
-		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
-		if(allLines.get(2).contains("Converged!")) {
-			resjo.put("status", "converged");
+		BufferedReader input = new BufferedReader(new FileReader(fileName));
+	    String last, line;
+	    last = "";
+	    while ((line = input.readLine()) != null) { 
+	        last = line;
+	    }
+		if (last.contains("Converged")) {
+			resjo.put("status", "Converged");
 			try {
 				logger.info("converting PyPower results to OWL files");
 				doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
@@ -124,10 +137,10 @@ public class ENAgent extends JPSAgent {
 			}
 			
 		}else {
-			resjo.put("status", "Not Converged");
+			resjo.put("status", "Diverged");
 			//return null;
 		}
-			
+		
 
 		
 		
@@ -524,11 +537,11 @@ public class ENAgent extends JPSAgent {
 
 //		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
 //		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
-		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/SGPowergrid.py");
-		broker.putLocal(baseUrl + "/SGPowergrid.py", file2);
+		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-9-Java-1.py");
+		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-9-Java-1.py", file2);
 		
-		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
-		broker.putLocal(baseUrl + "/runpy.bat", file3);
+//		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
+//		broker.putLocal(baseUrl + "/runpy.bat", file3);
 		
 		
 		return buslist;
@@ -708,14 +721,49 @@ public class ENAgent extends JPSAgent {
 		
 		return resultString; 
 	}
-
+	
+	/*
 	public void runModel(String baseUrl) throws IOException {
 		//String result = CommandHelper.executeCommands(baseUrl, args);
 		String startbatCommand =baseUrl+"/runpy.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);
 		logger.info("final after calling: "+result);
 	}
-
+	*/
+	 /** run Python Script in folder
+		 * 
+		 * @param script
+		 * @param folder
+		 * @return
+		 * @throws Exception
+		 */
+	public String runPythonScript(String script, String folder, String[] fileNames) throws Exception {
+			String result = "";
+				String path = AgentLocator.getCurrentJpsAppDirectory(this);
+				String command = "python " + path+ "/python/model/" +script 
+						+ " " +folder +fileNames[0] + " " +folder 
+						+fileNames[1] + " " +folder +fileNames[2] + " " 
+						+folder +fileNames[3] +" 1" + " " +folder 
+						+fileNames[4] + " " +folder 
+						+fileNames[5] + " " +folder 
+						+fileNames[6] + " 1" + " 1" 
+						+ " " +folder +fileNames[7] + " " +folder 
+						+fileNames[8] + " " +folder +fileNames[9];
+				/*String command = "python " + path+ "/python/model/" +script 
+				+ " " +folder +"/baseMVA.txt" + " " +folder 
+				+"/bus.txt"+ " " +folder +"/gen.txt"+ " " 
+				+folder +"/branch.txt" +" 1" + " " +folder 
+				+"/outputBusOPF.txt"+ " " +folder 
+				+"/outputBranchOPF.txt"+ " " +folder 
+				+"/outputGenOPF.txt"+ " 1" + " 1" 
+				+ " " +folder +"/areas.txt"+ " " +folder 
+				+"/genCost.txt" + " " +folder +"/outputStatus.txt";*/
+				System.out.println(command);
+				result = CommandHelper.executeSingleCommand( path, command);
+			
+			
+				return result;
+		}
 	public ArrayList<String[]> readResult(String outputfiledir, int colnum) throws IOException {
 		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
 		
