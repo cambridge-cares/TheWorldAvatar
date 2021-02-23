@@ -17,11 +17,6 @@
 # Use the Node as a base
 FROM node:current-alpine3.12 as production
 
-# Meta data
-LABEL authors = "wx243@cam.ac.uk, support@cmclinnovations.com"
-LABEL version = "0.9.2"
-LABEL description = "UK Digital Twin"
-
 # Updates and software installation
 RUN echo -e "Installing required software..."
 RUN apk update
