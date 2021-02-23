@@ -21,7 +21,7 @@ def remove_duplicates(seq):
 
 ##this function downloads natural gas futures prices for a gas delivered by Henry Hub pipeline; it is done by downloading their page source and parsing through it as if it was an XML file
 def HNG(url_address, driver):
-	#url_address = 'http://www.cmegroup.com/trading/energy/natural-gas/natural-gas.html'
+	#url_address = 'http://www.cmegroup.com/trading/energy/natural-gas/natural-gas_quotes_globex.html'
 	#downloading source code
 	driver.get(url_address)
 	tree = html.fromstring(driver.page_source)

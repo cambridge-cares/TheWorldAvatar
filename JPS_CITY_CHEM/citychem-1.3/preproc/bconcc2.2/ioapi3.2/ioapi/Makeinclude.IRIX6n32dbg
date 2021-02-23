@@ -1,0 +1,35 @@
+# VERSION "$Id: Makeinclude.IRIX6n32dbg 1 2017-06-10 18:05:20Z coats $"
+#
+#       Note:  there are problems with -TARG: need to be fixed-up
+#       on a system-by-system basis, due to inconsistencies in SGI
+#       V7.3.x and V7.4.x compiler command-line behaviors.
+#
+AR   = ar
+CC   = cc
+FC   = f90
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+MFLAGS     = -n32 -align64 -mips4 -r12000 \
+ -OPT:Olimit=0 -TARG:platform=ip27 -TARG:processor=r12000
+ 
+# OMPFLAGS  = -mp -mpio -MP:old_mp=OFF
+# OMPLIBS   = -mp -mpio -lmp
+OMPFLAGS  = 
+OMPLIBS   = 
+COPTFLAGS = -g ${MFLAGS}
+FOPTFLAGS = -g -C -DEBUG:trap_uninitialized=ON:subscript_check:verbose_runtime ${MFLAGS}
+FPPFLAGS  = -DF90=1 -cpp -macro_expand
+FSFLAGS   = -static
+ARCHFLAGS = -DAUTO_ARRAYS=1 -DF90=1 -DSTAR=101 -DBIN3_DEBUG=1
+PARFLAGS  =
+ARCHLIB   = 
+
+#  Override PVM_ARCH to get 32-bit libs and definitions.
+
+PVM_ARCH  = SGI6
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

@@ -91,6 +91,129 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#gasProtocolVersion -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#gasProtocolVersion">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#gasState -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#gasState">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMax -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMax">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>8hr</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMean -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMean">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>8 hr duration</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMin -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMin">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>8hr</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyVariance -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyVariance">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasOverallPSI -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasOverallPSI">
+        <rdfs:comment>8 hr for each weather station</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasPSI -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasPSI">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>8hr for each pollutant</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#locationName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#locationName"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#particleProtocolVersion -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#particleProtocolVersion">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#particleState -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#particleState">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#podSerialNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#podSerialNumber"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#prescaledNumValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#prescaledNumValue">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#scaledNumValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#scaledNumValue">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -295,6 +418,14 @@ The conditions specified here are those that affect the measurement properties, 
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirProperties"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirPrecipitation -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirPrecipitation">
@@ -331,6 +462,110 @@ The conditions specified here are those that affect the measurement properties, 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirTemperature">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirProperties"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideCO2Concentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideCO2Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideCOConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideCOConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideHCConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideHCConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideNO2Concentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideNO2Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideNOConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideNOConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideNOxConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideNOxConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideO3Concentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideO3Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM10Concentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM10Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideParticleConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM1Concentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM1Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideParticleConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM2.5Concentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM2.5Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideParticleConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideParticleConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideParticleConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideSO2Concentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideSO2Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
     </owl:Class>
     
 

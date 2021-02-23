@@ -1,0 +1,524 @@
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+     <link rel="stylesheet" type="text/css"href="http://www.theworldavatar.com/index.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>Natural Language Query</title>
+    <style>
+        #input-field {
+            width: auto;
+        }
+
+        .link_button {
+
+            background: none !important;
+            border: none;
+            padding: 0 !important;
+
+            /*optional*/
+            font-family: arial, sans-serif; /*input has OS specific font-family*/
+            color: #069;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+         .thumbcontainer {
+             position: relative;
+         }
+
+         .thumbimage {
+             opacity: 0.3;
+             transition: .9s ease;
+         }
+
+         .thumbmiddle {
+             transition: .5s ease;
+             opacity: 1;
+             position: absolute;
+             top: 40%;
+             left: 50%;
+             transform: translate(-50%, -40%);
+             -ms-transform: translate(-50%, -40%);
+             text-align: center;
+             backface-visibility: hidden;
+
+         }
+
+         .thumbcontainer:hover .thumbimage {
+             opacity: 0.9;
+         }
+
+         .thumbcontainer:hover .thumbmiddle {
+             opacity: 0.3;
+         }
+
+         .thumbtext {
+             color: black;
+             font-size: 20px;
+             font-weight: bold;
+             font-family: "Century Gothic";
+         }
+
+ #readme-button {
+    float: right;
+    cursor: pointer;
+    color: white;
+    background: transparent;
+
+    /*position: absolute;*/
+    /*top: 55px;*/
+    /*right: 690px;*/
+    font-size: 20px;
+    width: 30px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+    margin: 0px 100px 0px 0px;
+}
+
+#readme-text {
+    display: none;
+    box-sizing: border-box;
+    height: 271px;
+    width: 709px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin: 0px 100px 0px 0px;
+
+    position: absolute;
+    /*top: 32px;*/
+    /*right: 6px;*/
+
+    background: white;
+    z-index: 1;
+
+    text-align: left;
+    overflow-y: scroll;
+}
+
+
+
+    </style>
+</head>
+ <div class="jumbotron text-center" id="topBanner">
+ 
+ 
+ <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+ <img  src="http://www.theworldavatar.com/cam_lang_negativ1%20NEW_0.png">
+ </a>
+
+<span id="readme-button">?</span>
+<span id="readme-text">
+This agent is a semantic-based Natural Language Query interface that allows users to access data across multiple knowledge bases simultaneously (dbpedia and JPS). Semantic-based Natural Language Query is a method that converts human-readable natural languages such as English, Spanish, Chinese etc. into SPARQL or other equivalent semantic query languages in order to retrieve or verify information from a semantic database. 
+<br/><br/>
+Such method usually leverages Natural Language Processing (NLP) tools using vast lexicons of trained language data and statistical analysis to break down grammatical structure of sentences. This agent uses the NLTK package and Stanford NLP tools. For different grammatical structure, the system will search for matching predefined SPARQL templates. 
+<br/><br/>
+The lookup modules will subsequently convert recognised named-entities into URIs or IRIs and populate the SPARQL templates to form the SPARQL query. The user can either choose from the list of predefined queries or repeat the predefined queries in the query box with the keywords (bold) being modified. For example, London can be modified to Berlin or any other cities. </span>
+
+
+
+ 
+  <h1 id="head1">Natural Language Query</h1>
+  <p id="description">A semantic web based natural language query interface that allows users to access data across multiple knowledge bases simultaneously.(For example, dbpedia and JPS)
+	<br/> Among the predefined questions, the key words that have been highlighted can be changed. For example, in question: Show me all museums in London, London can be changed to Berlin or Beijing or other cities
+	<br/> In question: Show me all power plants in Singapore, Singapore can be changed to Other countries as well. e.g. Germany
+	<br/> However due to the limitation of the knowledge base, some query may not return answer.
+
+</p>
+</div>
+
+<body>
+<p id="result" style="margin-left: 10%">Write your query right here</p>
+
+<input style="margin-left: 10%" id="input-field" size="55"
+       placeholder="What is the number of power plants versus the gdp ppp total of all countries"/>
+<button onclick="ask_question()">Query</button>
+<div id='progress_bar' hidden="true"><img src="http://www.theworldavatar.com/WebResource/loading.gif"></div>
+<br/><br/><br/>
+<div id="questions" style="margin-left: 10%">
+    <button class="link_button" data = 0> Show me all chemical plants on Jurong Island</button>
+    <br/>
+    <button class="link_button" data = 1> Show me all rooms in cares lab</button>
+    <br/>
+    <button class="link_button" data = 2> Show me all temperature sensors in dry lab</button>
+    <br/>
+    <button class="link_button" data = 3> Show me all power plants in <b>Singapore</b></button>
+    <br/>
+    <button class="link_button" data = 4> What is the number of power plants in <b>Singapore</b></button>
+    <br/>
+    <button class="link_button" data = 5> Show me the gdp nominal rank of all countries</button>
+    <br/>
+    <button class="link_button" data = 6> Show me all museums in <b>London</b></button>
+    <br/>
+    <button class="link_button" data = 7> Who is the wife of <b>Abraham Lincoln</b></button>
+    <br/>
+    <button class="link_button" data = 8> What is the sum of design capacity of power plants versus area total of all countries
+    </button>
+    <br/>
+    <button class="link_button" data = 9> What is the sum of design capacity of power plants versus area total of <b>Singapore</b>
+    </button>
+    <br/>
+    <button class="link_button" data = 10> What is the number of power plants versus the gdp ppp total of all countries</button>
+    <br/>
+
+</div>
+<br/><br/>
+<div id="table_div"></div><!--
+<button onclick="drawRegionsMap()">Show Geochart</button>
+<select id="drop-down"></select>-->
+<div id="regions_div" style="width: auto; height: 500px;">
+</div>
+
+
+<script>
+
+
+        const toggleDisplay = elemId => {
+        let x = document.getElementById(elemId);
+        if (x.style.display !== 'block') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    };
+
+    $("#readme-button").click(function() {
+        toggleDisplay("readme-text");
+    });
+
+    document.addEventListener("click", function(evt) {
+        var readmeButtonElement = document.getElementById('readme-button'),
+            readmeTextElement = document.getElementById('readme-text'),
+            targetElement = evt.target;  // clicked element
+
+        if (targetElement == readmeButtonElement || targetElement == readmeTextElement) {
+            return; //readme-button or readme-text is clicked. do nothing.
+        }
+
+        if(readmeTextElement.style.display === 'block') {
+            readmeTextElement.style.display = 'none';
+        }
+    });
+
+
+    var current_data_object = {};
+    google.charts.load('current', {'packages': ['table']});
+    google.charts.setOnLoadCallback(drawTable);
+    var current_converted_data = [];
+    document.getElementById('table_div').hidden = true;
+
+    var that = this;
+
+    var buttons = document.getElementsByClassName('link_button');
+    console.log(buttons)
+    for (var idx in buttons) {
+
+        var btn = buttons[idx];
+        if (btn.innerText !== undefined) {
+            console.log('innerText', btn.innerText)
+            btn.addEventListener('click', that.ask_question.bind(that, btn.innerText, btn.getAttribute('data')));
+        }
+
+    }
+
+    function ask_question_old(question) {
+        current_data_object = {};
+        current_converted_data = [];
+
+        var progress_bar = document.getElementById('progress_bar');
+        progress_bar.hidden = false;
+
+        console.log('question', question);
+        if (!question) {
+            var sentence = document.getElementById('input-field').value
+            if (sentence) {
+                console.log(sentence)
+            }
+            else {
+                sentence = document.getElementById('input-field').placeholder
+                console.log(sentence)
+            }
+        }
+        else {
+            var sentence = question;
+            document.getElementById('input-field').value = question
+
+        }
+
+
+        var url = 'http://47.74.244.61:8000/jps-nlq/' + sentence;
+        $.ajax({
+            url: url, success: function (result) {
+                //  process_response_for_geo(JSON.parse(result))
+                convert_json_to_table(JSON.parse(result))
+				
+            }
+        });
+    }
+
+	
+	    function ask_question(question, index) {
+		
+		
+	 
+		
+        current_data_object = {};
+        current_converted_data = [];
+
+        var progress_bar = document.getElementById('progress_bar');
+        progress_bar.hidden = false;
+
+        console.log('question', question);
+        if (!question) {
+            var sentence = document.getElementById('input-field').value
+            if (sentence) {
+                console.log(sentence)
+            }
+            else {
+                sentence = document.getElementById('input-field').placeholder
+                console.log(sentence)
+            }
+        }
+        else {
+            var sentence = question;
+            document.getElementById('input-field').value = question
+        }
+
+		
+		//var query = query_list[sentence];
+		//console.log('The query is ', query);
+		
+		const sample_query =   'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> SELECT DISTINCT ?sumofnvOfdesigncapacity ?areaTotal ?country WHERE{ SERVICE <http://dbpedia.org/sparql> { ?country rdf:type <http://dbpedia.org/ontology/Country> . ?country <http://dbpedia.org/ontology/PopulatedPlace/areaTotal> ?areaTotal } { SELECT DISTINCT ?country (SUM(?nvOfdesigncapacity) as ?sumofnvOfdesigncapacity) WHERE { ?powerplants rdf:type <http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl#PowerGenerator> . ?powerplants ?p22 ?country . ?powerplants <http://www.theworldavatar.com/OntoEIP/system_aspects/system_realization.owl#designCapacity> ?designcapacity . ?designcapacity <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue> ?value58 . ?value58 <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue> ?nvOfdesigncapacity } GROUP BY ?country } }';
+
+		$.getJSON( "scripts/assets/templates.json", function(query_array) {
+		
+		var query = query_array[index];
+		console.log('query', query);
+		
+		var url = 'http://www.theworldavatar.com/damecoolquestion/nlp/query?&output=json&query=' + encodeURIComponent(query);
+        $.ajax({
+            url: url, success: function (result) {
+                //  process_response_for_geo(JSON.parse(result))
+				console.log('result', JSON.stringify(result))
+                //convert_json_to_table(JSON.parse(result))
+				convert_json_to_table(result)
+				
+				
+            }
+        });
+		
+		
+		
+		
+		
+		});
+		
+		
+		
+
+		
+		
+		
+		
+		
+		
+    }
+	
+	
+    function process_response_for_geo(_result) {
+        var time = _result['time'];
+        var body = _result['result'];
+        var vars = body['head']['vars'];
+        var results = body['results']['bindings'];
+        console.log(results);
+        var countries = [];
+        var data_array_dict = {};
+        var option_names = vars.slice(1);
+        for (var idx in results) {
+            var result = results[idx];
+            // assume 'a' for the country
+            var country_name = result['a']['value'].split('/').slice(-1)[0].replace(/_/g, ' ');
+
+            var name_of_value_array_1 = vars[1];
+            var name_of_value_array_2 = vars[2];
+
+
+            // ============== first array of data =====================
+            if (name_of_value_array_1 in data_array_dict) {
+                data_array_dict[name_of_value_array_1].push(result[name_of_value_array_1]['value'])
+            }
+            else {
+                data_array_dict[name_of_value_array_1] = [result[name_of_value_array_1]['value']]
+            }
+            // ========================================================
+
+            // ============== second array of data ====================
+            if (name_of_value_array_2 in data_array_dict) {
+                data_array_dict[name_of_value_array_2].push(result[name_of_value_array_2]['value'])
+            }
+            else {
+                data_array_dict[name_of_value_array_2] = [result[name_of_value_array_2]['value']]
+            }
+            // ========================================================
+
+            countries.push(country_name);
+        }
+
+        current_data_object = {'ref_col': countries, 'data_dict': data_array_dict};
+        make_drop_down_list(option_names);
+
+
+    }
+
+
+    function convert_json_to_table(json) {
+        console.log('json', json);
+        var vars = json['head']['vars'];
+        console.log('vars ', vars);
+        var results = json['results']['bindings'];
+        console.log('result ', results);
+
+        var vars_types = {}
+
+        for (var idx in results) {
+            row = [];
+            var result = results[idx];
+            for (var row_idx in vars) {
+                var _var = vars[row_idx];
+                var single_data = result[_var];
+                var type = single_data['type'];
+
+
+                switch (type) {
+                    case 'uri':
+                        row.push(single_data['value'])
+                        vars_types[_var] = 'string';
+                        break;
+                    case "typed-literal":
+                        vars_types[_var] = 'number';
+                        var value = {
+                            v: parseFloat(single_data['value']),
+                            f: single_data['value'] + ' ' + single_data['datatype'].replace('http://dbpedia.org/datatype/', '')
+                        }
+                        row.push(value)
+                        break;
+
+                    case "literal":
+                        var f = '';
+                        if ('datatype' in single_data) {
+
+                            vars_types[_var] = 'number';
+
+                            if (single_data['datatype'].includes('http://dbpedia.org/datatype/')) {
+                                f = single_data['datatype'].replace('http://dbpedia.org/datatype/', '')
+                            }
+
+                            var value = {
+                                v: parseFloat(single_data['value']),
+                                f: single_data['value'] + ' ' + f
+                            }
+
+                        }
+                        else {
+                            vars_types[_var] = 'string';
+                            var value = {
+                                v: single_data['value'],
+                                f: single_data['value']
+                            }
+
+                        }
+
+                        row.push(value)
+                        break;
+                    default:
+
+                }
+
+
+            }
+            current_converted_data.push(row)
+
+        }
+
+
+        drawTable(vars, vars_types);
+
+        document.getElementById('table_div').hidden = false;
+
+
+    }
+
+
+    function drawTable(vars, vars_types) {
+        var data = new google.visualization.DataTable();
+
+
+        console.log('types ', vars_types)
+        console.log('data ', current_converted_data)
+
+        for (var idx in vars) {
+            var v = vars[idx];
+            data.addColumn(vars_types[v], v);
+        }
+        data.addRows(current_converted_data);
+
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+        var progress_bar = document.getElementById('progress_bar');
+        progress_bar.hidden = true;
+    }
+
+
+    function make_drop_down_list(option_names) {
+
+        $.each(option_names, function (i, item) {
+            $('#drop-down').append($('<option>', {
+                value: item,
+                text: item
+            }));
+        });
+
+        $("#drop-down").change(function () {
+            // TODO: Change the array to be combined with country names
+
+            make_data_array($(this).val())
+        });
+    }
+
+
+    function make_data_array(option_name) {
+        var final_data_table = [['Country', option_name]];
+        var data_array = current_data_object['data_dict'][option_name];
+        var ref_col = current_data_object['ref_col'];
+        for (var i = 0; i < data_array.length; i++) {
+            if (!isNaN(data_array[i])) {
+                var temp = [ref_col[i], parseFloat(data_array[i])];
+                final_data_table.push(temp)
+            }
+
+        }
+        console.log(final_data_table)
+        drawRegionsMap(final_data_table)
+
+    }
+
+
+    function drawRegionsMap(final_data_table) {
+        var data = google.visualization.arrayToDataTable(final_data_table);
+        var options = {};
+        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+        chart.draw(data, options);
+    }
+
+</script>
+
+
+</body>
+</html>
+

@@ -1,0 +1,246 @@
+
+
+PROBLEMS WITH DRAFT CODE:
+
+    * Modularity, Correctness, Completeness,  Robustness, Transparency,
+      Extensibility, Standards-Compliance.
+
+      In particular, MODULE PN_MODULE does NOT do a proper job of
+      encapsulation and modularity.
+
+    * Need (better) documentation of the PN_* data structures
+
+    * The code supports only one master grid [is this wise??].  There
+      need to be checks that the files match it (else there can/will be
+      terrible, hard-to-diagnose errors).
+
+    * Should be a *extension* of the I/O API (the same way Coupling
+      Mode, Binary Mode,  and Buffered Mode are).  In particular, the
+      implementation needs to be "complete", "transparent", and
+      "correct", following the mandates of the Models-3 Standard:
+
+        > If an operation is not appropriate, then the code should
+          detect that fact and write a responsive error-message.
+          This is COMPLETELY missing.
+
+        > support all file modes FSCREA3, FSNEW3, FSUNKN3, FSRDWR3,
+          FSREAD3
+
+        > support all variable-types:  M3INT, M3REAL, M3DBLE, M3INT8
+
+        > applications should NOT need to embed MPI-distributed-or-not
+          properties in their source code.  In particular,
+          MPI-distributed should NOT be a file type; it should be a
+          run-time file property.
+
+        > support all primary file-operations correctly:  for each
+          file, it should use either netCDF operations or PnetCDF
+          operations exclusively, without any possibility of mixing
+          the two (which may lead to obscure errors).
+
+        > Should detect all unsupported operations and write an
+          informative error message in that case.
+
+        > If an operation fails, then the code should detect that fact
+          and write a responsive error-message.  THIS IS PERVASIVELY
+          MISSING, especially for ALLOCATEs and MPI operations.
+
+        > Code WILL BE OpenMP thread-safe.
+
+    * Starting with Version 1.4.0 (November 17, 2013), pnetcdf does
+      NOT define Fortran type NFMPI_OFFSET.
+      
+      USING NFMPI_OFFSET in PN_CRTFIL3(), PN_WRTGRDDED(), PN_WRVARS(),
+      WRTFLAG() IS AN ERROR
+
+    * What are "clean" formulas using Fortran intrinsic function MOD()
+      for the arithmetic in SETUP_DECOMP() ??
+
+    * 1_MPI_OFFSET_KIND and 80_MPI_OFFSET_KIND are obscure at best.
+      NOTE: having too many characters in an identifier GREATLY
+      decreases readability, and eighteen is too many.
+
+    * A number of "dimension-extent" arguments in PN_CRTFIL3() and
+      PN_OPNFIL3() were incorrect and/or of incorrect types.
+
+    * Must clearly separate netCDF and PnetCDF operations:  because
+      both of these systems maintain "state" in local variables, mixing
+      calls to the two on the same file will lead to incorrect,
+      hard-to-diagnose problems.
+
+    * There are inconsistencies between netCDF "netcdf.inc" and
+      PnetCDF "pnetcdf.inc" INCLUDE-files:  most of the netCDF
+      declarations show up in "pnetcdf.inc", but not all -- in
+      particular, all of the netCDF "attribute" routines are missing
+      from the latter.
+
+    * Need to have a clearly thought-out separation of responsibilities,
+      e.g., PN_MODE should not "take over" DESC3() for all files (this
+      is a particular example of the above).
+
+    * Code should use "auto" variables where possible, instead of
+      explicit ALLOCATE/DEALLOCATE.
+
+    * Need (consistent) return-values, on all PE's.
+
+    * There must NOT be argument-list errors:  note that there are
+      pervasive errors with M3EXIT() arguments in David's "pn_module.F".
+
+    * MODULE code must follow I/O API coding standards for
+      PUBLIC / PRIVATE / PROTECTED.
+
+    * PN_WRVARS() is dangerously bogus for variables of types M3INT
+      and M3DBLE, and doesn't pretend to support M3INT8.  This needs
+      to be fixed.
+
+    * I'm very suspicious of MPI_COMM_WORLD in PN_WRVARS and elsewhere:
+      should these be PN_COL_IO_COMM ??
+
+    * New Fortran code should use free format, not fixed format.
+      Code should use Fortran-standard INCLUDE, as opposed to CPP
+      "#include.
+
+    * It would have been nice if the I/O API coding style (which is
+      quite well-defined) had been followed ;-(  In particular:
+
+        UN-INDENTED LOOP BODIES AND IF-BLOCK BODIES ARE UNACCEPTABLE!
+
+
+PROPOSAL:
+
+    * All of this needs to be documented.
+
+    * All of this needs to be tested:  there is no set of test cases
+      provided.
+
+    * All MPI_COMM_ arguments need to be checked.  I strongly suspect
+      errors here, especially since David did not document what is
+      going on here.
+
+    * Should the code support only one master grid?  If so, there need
+      to be checks comparing it with the file-descriptions for MPIGRD3
+      files. If not, then the data-distribution info needs to be
+      calculated on a file-by-file basis (as things generally are,
+      in I/O API internals elsewhere...).
+
+        [Mostly] DONE, assuming "yes, only one master grid", which
+        follows the mode found in David's  "pn_opnfil3.F and
+        "pn_wrvars.F".  On the other hand, it seems a rather restrictive
+        assumption, probably supporting CMAQ only.  In general, one
+        would expect data-distribution to be specified by the calling
+        model, probably by some variant of INIT3().
+
+    * David's MODULE PN_MODULE becomes MODULE MODPDATA  (fitting I/O API
+      naming conventions, etc.), and is found in file "modpdata.F90".
+      Likewise, pre-processor symbol "parallel_io" becomes "IOAPI_PNCF.
+
+    * Judging from David's "pn_opnfil3.F", distributed files should be
+      NFMPI-opened with original status on I/O PEs, and NFMPI-opened
+      read-only on other PE's.  WRITE-transactions filter through I/O
+      PE's; READ- transactions proceed normally everywhere (but factored
+      through PnetCDF).
+
+    * Distributed-access is only available for GRIDDED OUTPUT files;
+      this will be implemented internally by a new data type MPIGRD3.
+      These files may be opened with the usual output-file states
+      FSCREA3, FSNEW3, FSUNKN3, FSRDWR3 (we need to add support for
+      FSCREA3 and FSUNKN3).
+
+    * Distributed-access file status should be triggered by the
+      environment-variable prefix (as it is for BUFFERED, BINARY,
+      and VIRTUAL/PVM types), as in the following:
+
+        setenv FNAME  MPI:/somewhere/somefile
+
+        DONE
+
+      Note that this is transparent for the calling model, which should
+      not need to know what kind of data access it is getting.  All it
+      should need to know is "It just works!"
+
+        DONE
+
+    * "Module MODNCFIO, file "modncfio.F90" will be a merge of netCDF
+      and pnetcdf declarattions, fixing the current situation where
+      "pnetcdf.inc" is a *partial* merge, with inconsistencies between
+      them.  All the INCLUDE-references will be changed to "USE
+      MODNCFIO"
+
+        DONE
+
+    * Unless PMPI-mode is turned on, all codes doing MPI or PnetCDF
+      operations are no-ops returning FALSE.
+
+        DONE
+
+    * PN_CRTFIL3() needs to handle the non-I/O-PE situation correctly,
+      optimially using PN_OPNFIL3() for that task.  This is quite
+      tricky, and needs an MPI_BARRIER().
+
+        DONE
+
+    * All access-operations for MPIGRD3 files use PnetCDF routines; all
+      other access-operations use "normal" netCDF.  This requires at
+      least new PnetCDF support for READ3(), CHECK3(), DDTVAR3(),
+      INTERP3(), INTERPX(), XTRACT3(), CLOSE3(), SHUT3(), INQATT3(),
+      RDATT3() and RDATTC(), WRATT3() and WRATTC(), and for new I/O
+      API v-3.2 routines INITCF(), GETCF(), SETCF(), ENDCF(), INITCMAQ(),
+      GETCMAQ(), SETCMAQ(), and ENDCMAQ().
+
+        DONE
+
+    * Fix PN_WRVARS() WRTFLAG();  replace PN_WRGRDDED() by WRMPIGRD()
+
+        DONE:  WRTFLAG(), WRMPIGRD(). PN_WRVARS becomes a 4-tuple of
+        type specific routines, PN_WRINT(), PN_WRREAL(), PN_WRDBLE(),
+        PN_WRINT8() placed in file "pn_wrvars.F90".
+
+    * There is over 6000 lines of new code here.  Given the industry
+      experience of "at least 4 errors per 1000 lines of new code",
+      etc., we can expect at least 12-48 bugs.
+
+        THIS CODE NEEDS A TEST-SET AND NEEDS THOROUGH TESTING !!
+
+    * Still needs to be integrated into the version-control and
+      distribution systems (svn + git + CEMPD-.tar.gz-files). Also
+      need to update the "Makefile.*"
+
+
+MANIFEST:
+
+    New files:
+
+        modncfio.F90, modpdata.F90, pn_crtfil3.F90, pn_opnfil3.F90,
+        pn_wrvars.F90, pnetcdf.inc, wrmpigrd.F90
+
+    Modified files:  now F90 free-format source
+
+        chkfil3.f~~>chkfil3.f90, close3.f~~>close3.f90,
+        desc3.F~~>desc3.F90, init3.F~~>init3.F90,
+        inqatt3.f~~>inqatt3.F90, modatts3.f90~~>modatts3.F90,
+        open3.F~~>open3.F90, opnlog3.F~~>opnlog3.F90,
+        rdatt3.f~~>rdatt3.F90, rdtflag.f~~>rdtflag.F90,
+        rdvars.F~~>rdvars.F90, shut3.F~~>shut3.F90, sync3.f~~>sync3.f90,
+        syncfid.f~~>syncfid.F90, wratt3.f~~>wratt3.F90,
+        wrtflag.f~~>wrtflag.F90, xtract3.f~~>xtract3.f90
+
+
+    Modified files:
+
+        Makefile, Makefile.cpl, Makefile.cpl.sed, Makefile.cpphack,
+        Makefile.nocpl, Makefile.nocpl.sed,
+        Makeinclude.Linux2_x86_64gfortmpi,
+        Makeinclude.Linux2_x86_64ifortmpi,
+        Makeinclude.Linux2_x86_64pgmpi, Makeinclude.Linux2_x86_64sunmpi,
+        PARMS3.EXT, STATE3.EXT, check3.F, ckdesc3.f, ckfile3.f,
+        cktflag3.f, crdict3.f, crtbuf3.f, crtfil3.F, crtkf.F, ddtvar3.F,
+        filchk3.f, flush3.f, initlog3.F, interp3.F, kfindx.f, kfopen.f,
+        kfread.F, kfwrite.F, m3abort.F, opnfil3.F, opnkf.F, opnlist3.f,
+        rdbndary.f, rdcustom.f, rddict3.f, rdgrdded.f, rdgrnest.F,
+        rdiddata.f, rdprofil.F, rdsmatrx.f, read3.F, read4d.F,
+        wrbndary.f, wrbuf3.f, wrcustom.f, wrdict3.f, wrgrdded.f,
+        wrgrnest.F, wriddata.f, write3.F, write4d.F, wrpatch.F,
+        wrprofil.F, wrsmatrx.f, wrvars.F
+
+
+

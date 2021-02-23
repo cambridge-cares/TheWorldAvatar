@@ -1,0 +1,104 @@
+# MAKEFILE FOR MC WIND
+# debugging: gdb maforv1x.exe, then 'run' and 'bt'
+
+#F77 = g77
+#F90 = g95
+#F90 = gfortran
+F90 =  @{F90}
+#flags for debugging (use for the test examples)
+#F90FLAGS =  -ggdb -u -C -cpp -pedantic -ffpe-trap=invalid,underflow,zero -ftrapv -fbounds-check -finit-real=nan -fbacktrace -fimplicit-none -finit-integer=n
+#flags for optimum runtime (use for upload to mafor.nilu.no)
+#F90FLAGS =  -g -u -C -cpp -ffree-form
+#-Wall
+#F90FLAGS = -g -Wall -i8 -r8 -d8
+# linux 32-bit: F90FLAGS =  -O1 -g -u -C -cpp -Wall -m32
+
+F90FLAGS = @{F90FLAGS}
+
+SRCDIR = ./src/
+RUNDIR = ./bin/
+TARGET = $(RUNDIR)MCWIND.exe
+
+MCW_FOR =		$(SRCDIR)module_mc_wind_files.for   \
+			$(SRCDIR)module_mc_wind_domain.for    \
+			$(SRCDIR)construct_domain.for    \
+			$(SRCDIR)module_mc_wind_met.for  \
+			$(SRCDIR)module_mc_wind_winds.for    \
+			$(SRCDIR)profile_initial_surface_wind.for     \
+			$(SRCDIR)ref_wind_to_grid.for       \
+			$(SRCDIR)comp_vel.for     \
+			$(SRCDIR)get_model_depth.for       \
+			$(SRCDIR)construct_initial_wind.for   \
+			$(SRCDIR)module_mc_wind_adjust.for     \
+			$(SRCDIR)depthxy.for  \
+			$(SRCDIR)get_surf_ref_obs.for    \
+			$(SRCDIR)get_user_input.for   \
+			$(SRCDIR)get_observations.for        \
+			$(SRCDIR)get_alfa.for     \
+			$(SRCDIR)use_first_guess_wfield.for       \
+			$(SRCDIR)initialize_dynamic.for      \
+			$(SRCDIR)initialize_static.for         \
+			$(SRCDIR)tridiag_sor_solver.for        \
+			$(SRCDIR)adjust_wfield.for \
+			$(SRCDIR)calculate_adjusted_wfield.for    \
+			$(SRCDIR)calculate_3D_divergence.for     \
+			$(SRCDIR)export_results.for    \
+			$(SRCDIR)cleanup_adjust.for   \
+			$(SRCDIR)cleanup_domain.for      \
+			$(SRCDIR)cleanup_winds.for         \
+			$(SRCDIR)cleanup_met.for    \
+			$(SRCDIR)mc_wind.for
+
+
+
+
+MCW_OBJ =		$(SRCDIR)module_mc_wind_files.o   \
+			$(SRCDIR)module_mc_wind_domain.o    \
+			$(SRCDIR)construct_domain.o    \
+			$(SRCDIR)module_mc_wind_met.o  \
+			$(SRCDIR)module_mc_wind_winds.o    \
+			$(SRCDIR)profile_initial_surface_wind.o     \
+			$(SRCDIR)ref_wind_to_grid.o       \
+			$(SRCDIR)comp_vel.o     \
+			$(SRCDIR)get_model_depth.o       \
+			$(SRCDIR)construct_initial_wind.o   \
+			$(SRCDIR)module_mc_wind_adjust.o     \
+			$(SRCDIR)depthxy.o  \
+			$(SRCDIR)get_surf_ref_obs.o    \
+			$(SRCDIR)get_user_input.o   \
+			$(SRCDIR)get_observations.o        \
+			$(SRCDIR)get_alfa.o    \
+			$(SRCDIR)use_first_guess_wfield.o        \
+			$(SRCDIR)initialize_dynamic.o      \
+			$(SRCDIR)initialize_static.o         \
+			$(SRCDIR)tridiag_sor_solver.o        \
+			$(SRCDIR)adjust_wfield.o \
+			$(SRCDIR)calculate_adjusted_wfield.o    \
+			$(SRCDIR)calculate_3D_divergence.o     \
+			$(SRCDIR)export_results.o    \
+			$(SRCDIR)cleanup_adjust.o   \
+			$(SRCDIR)cleanup_domain.o      \
+			$(SRCDIR)cleanup_winds.o         \
+			$(SRCDIR)cleanup_met.o    \
+			$(SRCDIR)mc_wind.o
+
+
+$(TARGET) : $(MCW_OBJ)
+	$(F90) $(FFLAGS) $(MCW_OBJ) -o $@
+
+.SUFFIXES: .for .o
+
+.for.o:
+	$(F90) $(F90FLAGS) -c $< -o $@
+
+.SUFFIXES: .F90 .o
+
+.F90.o:
+	$(F90) -c $(F90FLAGS) $*.F90
+
+
+# Explicit rules and targets
+
+clean:
+	rm -f $(TARGET) core a.out
+	rm -f $(SRCDIR)*.o $(SRCDIR)*.mod *.mod

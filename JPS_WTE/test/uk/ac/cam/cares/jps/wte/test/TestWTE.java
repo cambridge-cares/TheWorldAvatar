@@ -1,181 +1,219 @@
 package uk.ac.cam.cares.jps.wte.test;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.wte.FCQuerySource;
+import uk.ac.cam.cares.jps.wte.WTESingleAgent;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 public class TestWTE extends TestCase {
 	static String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+	static String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
 	String usecaseID = UUID.randomUUID().toString();
+	/** test the FCQuery creation by 
+	 * a. reading the model and getting the number of FC *number of years of waste levels 
+	 * b. creating the csv file of site locations, and waste levels of those FoodCourts per year
+	 * c. test presence of file there. 
+	 * 
+	 */
 	public void testQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
-		String query= a.FCQuery;
-		ResultSet resultSet = JenaHelper.query(model, query);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-        String[] keys = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-        System.out.println("size of result="+resultList.size()); //should be 109*15
-		
-	}
-	
-	public void testQuerytopnode() {
-		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		OntModel model=JenaHelper.createModel(iriofnetwork);
-		String query= a.wasteSystemQuery;
-		ResultSet resultSet = JenaHelper.query(model, query);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-        String[] keys = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-        System.out.println("size of result="+resultList.size()); 
-        assertEquals(1, resultList.size());
-        System.out.println(Arrays.toString(keys));
-        System.out.println(Arrays.toString(resultList.get(0)));
-	
-	}
-	
-	public void testQuerytransport() {
-		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
-		String query= a.transportQuery;
-		ResultSet resultSet = JenaHelper.query(model, query);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-        String[] keys = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-        System.out.println("size of result="+resultList.size()); 
-        assertEquals(1, resultList.size());
-        System.out.println(Arrays.toString(keys));
-        System.out.println(Arrays.toString(resultList.get(0)));
-	
-	}
-	
-	
-	
-	public void testQueryFC2() {
 		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
-		String baseUrl= QueryBroker.getLocalDataPath();
-		new WastetoEnergyAgent().prepareCSVFC(WastetoEnergyAgent.FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model);
-		new WastetoEnergyAgent().prepareCSVWT(WastetoEnergyAgent.WTquery,"Location.csv",baseUrl,model);
-		new WastetoEnergyAgent().prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
-		new WastetoEnergyAgent().prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model,"offsite");
+		int noOfYears = 15;
+		a.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model, noOfYears);
+		File file = new File( baseUrl + "\\Site_xy.csv");
+		assertTrue(file.exists());
+		File file2 = new File(baseUrl +"\\Waste.csv");
+		assertTrue(file2.exists());
+	}
+	/** get Offsite WTF locations and save in csv file
+	 * 
+	 */
+	public void testQueryOffsiteWT() {
+		WastetoEnergyAgent a= new WastetoEnergyAgent ();
+		
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		a.prepareCSVWT("Location.csv", baseUrl,model); 
+		File file = new File(baseUrl +  "\\Location.csv");
+		assertTrue(file.exists());
+	}
+	/** get Transport costs and save in a csv files
+	 * should display four results, all non-null
+	 */
+	public void testQueryTransportQuery() {
+		WastetoEnergyAgent a= new WastetoEnergyAgent ();
+		
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		a.prepareCSVTransport(WastetoEnergyAgent.getTransportQuery(),"transport.csv", baseUrl,model); 
+
+		File file = new File(baseUrl +  "\\transport.csv");
+		assertTrue(file.exists());
+		//TODO:check that file has no null value
 	}
 	
-	public void testCreateBatchFile() {
-		String baseUrl= QueryBroker.getLocalDataPath();
-		try {
-			new WastetoEnergyAgent().createBat(baseUrl);
-			//new WastetoEnergyAgent().runModel(baseUrl);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	/** Query transport data and check only one result is returned. 
+	 * 
+	 */
+	public void testQuerytransport() {
+		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		String query=WastetoEnergyAgent.getTransportQuery();
+		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
+        System.out.println("size of result="+resultList.size()); 
+        assertEquals(1, resultList.size());
+        System.out.println(Arrays.toString(resultList.get(0)));
+	
+	}
+	/** Query Output data. In base scenario, it should be only one
+	 * 
+	 */
+	public void testWTEKBCreatorWasteSystemOutputQuery() {
+		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		
+		String query = WTESingleAgent.getWasteSystemOutputQuery();
+		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
+		System.out.println("size of result="+resultList.size()); 
+        assertEquals(1, resultList.size());
+        System.out.println(Arrays.toString(resultList.get(0)));
+        
+	}
+	/** Query types of technology of offsite. Currently three (anerobic, incineration, co-digestion)
+	 * 
+	 */
+	public void testQueryTechOffsiteQuery() {
+	String query = FCQuerySource.getTechQuery() 
+			.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
+
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		List<String[]> resultList = FCQuerySource.queryResult(model,query);
+		System.out.println("size of result="+resultList.size()); 
+        assertEquals(3, resultList.size());
+	}
+	/** Query types of technology of onsite. Currently only one. 
+	 * 
+	 */
+	public void testQueryTechOnsiteQuery() {
+		String query = FCQuerySource.getTechQuery() 
+				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
+				.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
+
+			OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+			List<String[]> resultList = FCQuerySource.queryResult(model,query);
+	        assertEquals(1, resultList.size());
 		}
-		
-	}
+
 	
-	public void testDirectCall() {
-		new WastetoEnergyAgent().runTestInSequence(iriofnetwork);
-		
-	}
-	
-	public void xxxtestAgentCall() {
-		/**
-		 * not working anymore because in knowledgebaseclient, 
-		 * ResourcePathConverter.convertToLocalPath(requestUrl) is replaced with ResourcePathConverter.convert(requestUrl);
-		 * for the update function
-		 */
-		JSONObject jo = new JSONObject();
-		jo.put("wastenetwork", iriofnetwork);
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_WTE/WastetoEnergyAgent", jo.toString());
-		
-	}
-	
+	/** Run simulation via Scenario Client to get individual scenarios through agent
+	 * 
+	 * @throws JSONException
+	 */
 	public void testCreateScenarioAndCallWTEAgent() throws JSONException {
 		
 		String scenarioName = "testwaste2-"+usecaseID;
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(iriofnetwork)
-				.endObject().toString();
-		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/WastetoEnergyAgent/startsimulation", json);
-		
-		System.out.println(result);
-		
-	}
-	
-	public void testQueryScenarioWTEAgent() throws JSONException {
-		 String wasteSystemQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-				+ "SELECT ?entity ?comp " 
-				+ "WHERE {"
-				+ "?entity  a j2:CompositeSystem ."
-				+ "?entity   j2:hasSubsystem ?comp ." 
-				
-				+ "}";
-		String path = "http://localhost:8080/jps/scenario/testwaste2"; //the scenario name must be existed in the first place!!!
-		System.out.println("path= "+path);
-		String result = new ScenarioClient().query(path, iriofnetwork, wasteSystemQuery);
-		
-		System.out.println(result);
-		
-	}
-	
-	public void testQueryBaseWTEAgent() throws JSONException {
-		 String wasteSystemQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-				+ "SELECT ?entity ?comp " 
-				+ "WHERE {"
-				+ "?entity  a j2:CompositeSystem ."
-				+ "?entity   j2:hasSubsystem ?comp ." 
-				
-				+ "}";
-		String path = "http://localhost:8080/jps/scenario/base"; //the scenario name must be existed in the first place!!!
-		System.out.println("path= "+path);
-		String result = new ScenarioClient().query(path, iriofnetwork, wasteSystemQuery);
-		
-		System.out.println(result);
-		
-	}
-	
-	public void testquery() throws IOException { 
-		String result = new QueryBroker().queryFile(iriofnetwork,WastetoEnergyAgent.wasteSystemOutputQuery);
-		String[] keyswt = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
-		System.out.println("answer number= "+resultList.size());
-	}
-	public void testScenarioCoordination() throws IOException { 
-		String scenarioName = "testwaste2-"+usecaseID;
-		String json = new JSONStringer().object()
-				.key("wastenetwork").value(iriofnetwork)
+				.key("n_cluster").value("40")
 				.endObject().toString();
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/startsimulationCoordinationWTE", json);
+		assertNotNull(new JSONObject(result).getString("n_cluster"));
 		System.out.println(result);
+		
 	}
+	/** checks input to see if user input was valid
+	 * 
+	 * @throws JSONException
+	 */
+	public void testInputValidatorWTEAgent() throws JSONException {
+		
+		JSONObject jo = new JSONObject().put("wastenetwork", iriofnetwork)
+				.put("n_cluster", "jk");
+		WastetoEnergyAgent j = new WastetoEnergyAgent();
+		assertFalse(j.validateInput(jo));
+		jo.put("n_cluster", "30");
+		assertTrue(j.validateInput(jo));
+		
+	}
+	/** enables scenarioName in testInSuccession
+	 * 
+	 * @param scenarioName
+	 * @return
+	 */
+	private String enableScenario(String scenarioName) {
+		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
+		JPSHttpServlet.enableScenario(scenarioUrl);	
+		return scenarioUrl;
+	}
+	/** Query in Directly (WTE Agent) in a scenario called testScenariosWithWTE
+	 * 
+	 * @throws Exception
+	 */
+	public void testInSuccession() throws Exception {
+		WastetoEnergyAgent ag = new WastetoEnergyAgent();
+		
+		enableScenario("testScenariosWithWTE");
+		KnowledgeBaseClient.get(null, iriofnetwork, null);
+		String baseUrl = QueryBroker.getLocalDataPath();
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		ag.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
+		//test if Site_xy.csv is created (can't check if csv file is empty unfortunately)
+		File file = new File(baseUrl +  "/Site_xy.csv");
+		assertTrue(file.length() !=0);
+		String n_cluster= "40";
+        new QueryBroker().putLocal(baseUrl + "/n_cluster.txt",n_cluster ); 
+		ag.prepareCSVWT("Location.csv", baseUrl,model); 
+		file = new File(baseUrl +  "/Location.csv");
+		assertTrue(file.length() !=0);
+		ag.prepareCSVTransport(WastetoEnergyAgent.getTransportQuery(),"transport.csv", baseUrl,model); 
 
+		file = new File(baseUrl +  "/transport.csv");
+		assertTrue(file.length() !=0);
+		ag.prepareCSVCompTECHBased(WastetoEnergyAgent.returnUpperBoundQuery(),baseUrl,model);
+		String WTFTechOffsiteQuery = FCQuerySource.getTechQuery() 
+				.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
+		ag.prepareCSVTECHBased(WTFTechOffsiteQuery,baseUrl,model,"offsite");
+		String WTFTechOnsiteQuery = FCQuerySource.getTechQuery() 
+				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
+				.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
+		ag.prepareCSVTECHBased(WTFTechOnsiteQuery,baseUrl,model,"onsite");
+		//TODO: should be able to run Main.m without needing to copy over, but I don't know Matlab well enough how to avoid doing so. 
+		// Should need something like fullfile to use "readmatrix" to read an absolute path. 
+		ag.copyTemplate(baseUrl, "SphereDist.m");
+		ag.copyTemplate(baseUrl, "Main.m");
+		ag.copyTemplate(baseUrl, "D2R.m");		
+		ag.createBat(baseUrl, n_cluster);
+		TimeUnit.MINUTES.sleep(1);
+		System.out.println("Matlab simulation should have finished. ");
+//			Read for next agent
+		WTESingleAgent at = new WTESingleAgent();
+		List<String[]> resu =   FCQuerySource.queryResult(model,WastetoEnergyAgent.getFCQuery());
+		List<String[]> fcMapping = at.createFoodCourt(resu);
+		List<String[]> propertydataonsite = FCQuerySource.queryResult(model, WTFTechOnsiteQuery);
+		
+
+		model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		//only one year (first year) to minimize the number of OnsiteWTF being created. 15 in the actual site
+		List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
+		List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
+		List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );
+		at.updateFCHelper(sitemapping);
+		at.updateKBForSystem(iriofnetwork, baseUrl, WTESingleAgent.getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
+		at.updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
+		
+	}
+	
 }

@@ -131,7 +131,7 @@ public class QueryString {
 		String query = "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>" + 
 				"SELECT  ?speciesUri " + 
 				"WHERE { " + 
-				"<"+gaussianIRI+"> <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpeciesIRI> ?speciesUri . " +
+				"<"+gaussianIRI+"> ontocompchem:hasUniqueSpecies ?speciesUri . " +
 				"}";
 		
 		return query ;

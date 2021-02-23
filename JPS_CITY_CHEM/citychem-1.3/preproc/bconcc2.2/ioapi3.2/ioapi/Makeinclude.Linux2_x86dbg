@@ -1,0 +1,43 @@
+# Version "$Id: Makeinclude.Linux2_x86dbg 1 2017-06-10 18:05:20Z coats $"
+#
+#  12/2013 by CJC: Conditional preprocessor-code "-DNEED_ARGS=1"
+#  to implement  IARGC() and GETARG() for compilers
+#  ("gfortran" version 4.8 or later to be exact) that insist on
+#  enforcing F2003-only with no backwards nor industry-standards compatibility.
+#
+#  Remove "-DNEED_ARGS=1" from ARCHFLAGS for version 4.7.x and earlier
+#
+# Use "-march=native -mtune=native" if compile-platform and compute-platform
+# are the same.
+# Use "-Wall -Wsurprising" for full diagnostics.
+
+AR   = ar
+CC   = gcc
+CXX  = g++
+FC   = gfortran
+M4   = m4
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -I
+E132 = -ffixed-line-length-132
+
+MFLAGS    = -Wsurprising -fbounds-check -finit-real=snan -ffpe-trap
+
+OMPFLAGS  = -fopenmp
+OMPLIBS   = -fopenmp
+COPTFLAGS = -g ${MFLAGS}
+FOPTFLAGS = -g ${MFLAGS}
+FPPFLAGS  = -DF90=1
+FSFLAGS   = -fno-automatic
+ARCHFLAGS = \
+ -DAUTO_ARRAYS=1 \
+ -DF90=1 -DFLDMN=1 \
+ -DFSTR_L=int \
+ -DIOAPI_NO_STDOUT=1 \
+ -DNEED_ARGS=1
+PARFLAGS  =
+ARCHLIB   = -dynamic -L/usr/lib64 -lm -lpthread -lc
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -lpvm3

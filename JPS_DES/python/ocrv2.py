@@ -1,3 +1,4 @@
+# redundant method if ocrv1.py is not in use (ie method has changed for solar repository IRP
 from PIL import Image
 from pytesseract import *
 import urllib.request
