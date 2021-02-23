@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -62,11 +64,11 @@ public class BaseOntologyModelManager {
         return conceptMap.get(name);
     }
 
-    public static void save(OntModel jenaOwlModel, String iriOfChimney) {
+    public static void save(OntModel jenaOwlModel, String iriOfChimney, String mmsi) {
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readWriteLock.writeLock().lock();
         try {
-            saveToOwl(jenaOwlModel, iriOfChimney);
+            saveToOwl(jenaOwlModel, iriOfChimney, mmsi);
         } catch (IOException e) {
             throw new JPSRuntimeException(EX_SAVE_OWL + iriOfChimney);
         } finally {
@@ -74,12 +76,12 @@ public class BaseOntologyModelManager {
         }
     }
 
-    public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney) throws IOException {
+    public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
         String filePath2;
         if (!AgentLocator.isJPSRunningForTest()) {
             filePath2= iriOfChimney.replaceAll(IRI_KB, ABSDIR_KB).split("#")[0];
         } else {
-            filePath2= iriOfChimney.replaceAll(IRI_KB_TEST, ABSDIR_KB_TEST).split("#")[0];
+            filePath2= Paths.get(ABSDIR_KB_TEST,"ships",mmsi,"Chimney-1.owl").toString();
         }
         logger.info("the filepath created= "+filePath2);
 

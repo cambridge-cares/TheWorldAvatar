@@ -27,9 +27,11 @@ public enum Property {
 	RDF4J_ONTOKIN_REPOSITORY_ID("ontokin"),
 	PREFIX_BINDING_ONTOSPECIES("PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n"), // prefix ontochemexp
 	PREFIX_BINDING_ONTOCHEMEXP("PREFIX OntoChemExp: <http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#> \n"),
-	PREFIX_BINDING_ONTOKIN("PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> \n"),
+	PREFIX_BINDING_ONTOKIN("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \n"),
 	PREFIX_BINDING_RDFS("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"),
 	PREFIX_BINDING_RDF("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"),
+	PREFIX_BINDING_DC("PREFIX dc: <http://purl.org/dc/elements/1.1/> \n"),
+	PREFIX_BINDING_REACTION_MECHANISM("PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> \n"),
 	PREFIX_BINDING_MSM("PREFIX msm: <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>"), // double check
 	PREFIX_BINDING_RAM("PREFIX ram: <http://cookingbigdata.com/linkeddata/ccinstances#>"), // double check
 	PREFIX_MSM("msm"),

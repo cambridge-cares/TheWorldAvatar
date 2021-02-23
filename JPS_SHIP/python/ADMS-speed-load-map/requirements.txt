@@ -4,8 +4,5 @@ macholib==1.9
 numpy==1.14.5
 pefile==2017.11.5
 PyInstaller==3.3.1
-pypiwin32==223; sys_platform == 'win32'
-pywin32==223; sys_platform == 'win32'
-https://download.pytorch.org/whl/cpu/torch-0.4.1-cp36-cp36m-win_amd64.whl; sys_platform == 'win32'
-https://download.pytorch.org/whl/cpu/torch-0.4.1-cp36-cp36m-linux_x86_64.whl; sys_platform == 'linux'
-git+https://github.com/cornellius-gp/gpytorch@alpha
+torch==0.4.1
+git+https://github.com/cornellius-gp/gpytorch@alpha#egg=gpytorch

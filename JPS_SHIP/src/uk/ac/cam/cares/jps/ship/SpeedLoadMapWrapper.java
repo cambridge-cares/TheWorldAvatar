@@ -1,12 +1,13 @@
 package uk.ac.cam.cares.jps.ship;
 
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
-
+import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,20 +23,49 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 @WebServlet("/SLMAgent")
 public class SpeedLoadMapWrapper extends HttpServlet {
 	private static final String slmDir = "\\python\\ADMS-speed-load-map";
-	private static final String slmPython = "\\env\\Scripts\\python.exe";
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
+	private static final String jpsShipProperties = "\\WEB-INF\\classes\\resources\\jpsship.properties";
+	private static final String pypathUnix = "bin/python";
+	private static final String pypathWindows = "\\Scripts\\python.exe";
+	private static final String slmPyvenv = "speed.load.map.venv.dir";
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
-		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
-		String pythonExec = smlWorkingDir + slmPython;
-
+		String slmWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
+		String jpsShipPropertiesDir = AgentLocator.getCurrentJpsAppDirectory(this) + jpsShipProperties;
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(pythonExec);
-        args.add(slmScript);
+		Path venvPath;
+		InputStream input = null;
+		Properties jpsProperties = new Properties();
+		
+		try {
+			if (CommandHelper.isWindows()) {
+				input = new FileInputStream(jpsShipPropertiesDir);
+			} else {
+				input = new FileInputStream(jpsShipPropertiesDir.replace("\\", "/"));
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			jpsProperties.load(input);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+				
+		if (CommandHelper.isWindows()) {
+			venvPath = Paths.get(jpsProperties.getProperty(slmPyvenv), pypathWindows);
+		} else {
+			slmWorkingDir = AgentLocator.getCurrentJpsAppDirectory(this) +  slmDir.replace("\\", "/");
+			venvPath = Paths.get(jpsProperties.getProperty(slmPyvenv), pypathUnix);
+		}
+		
+		args.add(venvPath.toString());
+		args.add(slmScript);
 		args.add(inputs);
 
-		return CommandHelper.executeCommands(smlWorkingDir, args);
+		return CommandHelper.executeCommands(slmWorkingDir, args);
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -43,6 +73,16 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		JSONObject in= new JSONObject();
+		/*
+		 * http://betterboat.com/average-boat-speed/ assume fastest medium boat 
+		 * max speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
+		 * https://www.marineinsight.com/shipping-news/worlds-fastest-ship-built-tasmania-christened-argentinas-president/->fastest=58.1 knot
+		 * knot*2500/58.1 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
+		 * kg/h NO2 (comparison of NO2
+		 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
+		 * 1 boat mass flux=0.0192143028723584 kg/s 
+
+		 */
 		double valuecalc=jo.getDouble("speed")*2500/58.1;
 		if(valuecalc>2500) {
 			valuecalc=2500;
@@ -66,7 +106,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 	private JSONObject crankUpRealShipModel(String type, String newjsonfile) {
 		JSONObject json = new JSONObject(newjsonfile);
 		
-		
+		// these scaling factors are purely to make the results fall within the reasonable range
 		for(int gas=0;gas<json.getJSONArray("pollutants").length();gas++) {
 			JSONObject pollutantmass=json.getJSONArray("pollutants").getJSONObject(gas);
 			Double oldvaluemixmass= pollutantmass.getDouble("value");

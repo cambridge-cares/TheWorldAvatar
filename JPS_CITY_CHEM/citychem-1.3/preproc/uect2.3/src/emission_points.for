@@ -59,6 +59,20 @@
 !***********************************************************************
 !***  Subroutine emision_points converts the emission totals (kg/year)
 !***  to hourly emissions (g/s) for point sources
+!!!!!!!
+!!!  modified by Kang @ Jan. 22, 2020 @ Cambridge CARES for moving point source (circular or straight line) and building parameters, and emission rate calculation
+!!! a, add 5 more columns for moving points:  vec (m/s), direction (0-360), circ_ang (>0, clockwise, <0, counter-colockwise, =0, striaght line), t_start_moving(s),t_stop_moving(s). 
+!!! b, read the building height and width from input excel file (2 more columns), intead of default definition in "emission_point.for"
+!!! will read into "in_array_pse(:,7-13)". So for emission indicator, it needs be adding 7. 
+!!! other varibles: new_array_pse(:,7-13), out_params_pse() 
+!!  3, change start and end simulation date value so that the correct date (hour) can be 
+!!      used for estimating the time factor for default long-term emission rate conversion. 
+!!     For simulation with known emission data, time factor is not used. 
+!!!
+!!! Note: for moving point source, it needs to update the location and emissions rate and other parameters
+!!        of point sources every hour.  Otherwise, the point source location and emission rate will be reset
+!!        every hour, which is not accurate. 
+!***********************************************************************
 !***********************************************************************
 
 !     Declarations of variables by using the MODULES feature:
@@ -118,11 +132,21 @@
 
 ! *** Get source parameters
 ! *** xcor;ycor;Hi;Vi;Ti;radi
-! *** 1    2    3  4  5  6     
+! *** 1    2    3  4  5  6  
+!!!!============================================================================= 
+!!*** changed by kang for adding 6 more variables for moving point and building: 
+!!*** Bheight, Bwidth, Pvec (m/s), Pdir (deg), cir_ang(deg),Pstart(s), Pend(s)
+!!*** 7      , 8     , 9,        , 10        , 11          , 12      , 13
+!!!!============================================================================= 
 ! *** X-coor  Y-coor  Z-coor  Hstack   Hdiam   Bheigth Bwidth  Qenergy Qtemp   Qvelo
 ! *** 1       2       3       4        5       6       7       8       9       10
 ! *** QXV     QYV     QZV     QHSV     QDIV    QHBV    QWBV    QIEV    QTGV    QVGV
- 
+!!!!============================================================================= 
+!!*** changed by kang for adding 4 more variables for moving point (building height and width have been defined as 6 and 7): 
+!!*** Pvec (m/s), Pdir (deg), cir_ang(deg), Pstart(s), Pend(s)
+!!*** 11        , 12        , 13            , 14      ,15  
+! *** vel_point(n),dd_point(n),t_mpoint1(n),t_mpoint2(n)
+!!!!============================================================================= 
         if (data_array(n,1).gt.missval) then
           pse_src_param(n, 1) = data_array(n,1)
         else
@@ -138,8 +162,66 @@
 
 ! Default values for some of the required stack parameters
         pse_src_param(n, 3) = 0.0
-        pse_src_param(n, 6) = 10.0
-        pse_src_param(n, 7) = 20.0
+
+!!!        
+!!!================================================================
+!!! changed by Kang @ CARES for building parameters (height and width @m)
+!!! orig:
+!        pse_src_param(n, 6) = 10.0
+!        pse_src_param(n, 7) = 20.0
+!!!!!
+        if (data_array(n,7).gt.missval) then      
+          pse_src_param(n, 6) = data_array(n,7)   !!! building height @ m
+        else
+          print *,'Building height missing for point source ',n
+          call stopit('Point source with missing Building height')
+        endif
+        
+        if (data_array(n,8).gt.missval) then
+          pse_src_param(n, 7) = data_array(n,8) !!! building width @ m
+        else
+          print *,'Building width missing for point source ',n
+          call stopit('Point source with missing Building width')
+        endif
+!!!! then for moving sources:
+        if (data_array(n,9).gt.missval) then
+          pse_src_param(n,11) = data_array(n,9)   !!! point source moving speed @ m/s
+        else
+          print *,'moving speed missing for point source ',n
+          call stopit('Point source with missing - moving speed')
+        endif
+        
+        if (data_array(n,10).gt.missval) then
+          pse_src_param(n,12) = data_array(n,10)   !!! point source moving direction @ degree (0-360):  0: moving north, 90: east; 180: south.
+        else
+          print *,'moving direction missing for point source ',n
+          call stopit('Point source with missing - moving direction')
+        endif 
+
+        if (data_array(n,11).gt.missval) then
+          pse_src_param(n,13) = data_array(n,11)   !!! point source moving circular angle.  >0, clockwise, <0, counter-clockwise.  =0, straight line. 
+        else
+          print *,'moving starttime missing for point source ',n
+          call stopit('Point source with missing - moving starttime')
+        endif    
+
+        if (data_array(n,12).gt.missval) then
+          pse_src_param(n,14) = data_array(n,12)   !!! point source moving start time in current hour @ s (=0~3600 s)
+        else
+          print *,'moving starttime missing for point source ',n
+          call stopit('Point source with missing - moving starttime')
+        endif  
+
+        if (data_array(n,13).gt.missval) then
+          pse_src_param(n,15) = data_array(n,13)   !!! point source moving end time in current hour @ s (=0~3600 s)
+        else
+          print *,'moving endtime missing for point source ',n
+          call stopit('Point source with missing - moving endtime')
+        endif  
+!!!        
+!!!! end of change.               
+!!!================================================================
+!!!
         pse_src_param(n, 8) = -9900
 
         ! stack height
@@ -217,13 +299,30 @@
           endif         
         endif
 
-
+!!!        
+!!!================================================================
+!!! changed by Kang @ CARES after adding moving point parameters and building parameters in input excel file
+!!
 ! *** Get total emissions
-! *** data_array(n,7:13)
+! *** orignally, data_array(n,7:13)
+!!*** now, should be data_array(n,13:19) as 4 moving parameters and 2 building parameters are added.
+!!***
 ! *** NOx     NMVOC   CO     SO2     NH3    PM25    PM10
 ! *** 1       2       3      4       5      6       7
+!!!!!!
+!!! orignal:
+!        j = 1
+!        do i = 13, 19  !!! changed by kang from i=7, 13 to i=13, 19
+!          if (data_array(n, i).gt.missval) then
+!            pse_src_qemvec(n, j) = data_array(n, i) * pse_funit
+!          else
+!            pse_src_qemvec(n, j) = 0.0
+!          endif
+!          j = j +1
+!        enddo
+
         j = 1
-        do i = 7, 13
+        do i = 14, 20  !!! changed by kang from i=7, 13 to i=14, 20
           if (data_array(n, i).gt.missval) then
             pse_src_qemvec(n, j) = data_array(n, i) * pse_funit
           else
@@ -231,6 +330,7 @@
           endif
           j = j +1
         enddo
+!===================++++++++++++++++++++++++++++++++++++++++++++
 
 
 ! *** Split VOC and NOx to CityChem / TAPM specific emissions
@@ -259,7 +359,12 @@
 ! *** houd - hour of day   (1-24) h=1 is first hour
 ! *** dayw - day of week   (1-7 )
 ! *** mony - month of year (1-12)
-        houd  = 1
+!!!==============================================
+!!! changed by Kang @ CARES
+!!! change the simluation time appeared in point source output file  
+!!! orig:        houd  = 1
+        houd  = hour+1
+!!!==================================================        
         daymm = daym
         dayw  = dayweek
         mony  = mnth
@@ -284,6 +389,16 @@
             ! daily variation of T, hourly variation of P
             timedis( snap(n) ) = gammat_dayy(dayy,1,1) * scaleisop(dayy,houd)
           endif
+
+
+!!!!==============================================================================
+!!! changed by kang @ CARES.  
+!!! dont need time factor if hourly or accurate emission data is known. 
+
+!!! read from input control file - 'cctamp.inp'
+           if(ntime_factor .eq. 0) timedis( snap(n))= 1.0
+!!!!==============================================================================
+
 
         ! original pollutants
           pse_src_qemhour(n, 1,h) = pse_src_qemvec(n,1) * timedis(snap(n))

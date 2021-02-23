@@ -239,7 +239,7 @@ public class ShipAgent extends HttpServlet {
 
         doConversion(jenaOwlModel, iriOfChimney, jsonresultstring);
         // save the updated model
-        LocalOntologyModelManager.save(jenaOwlModel, iriOfChimney);
+        LocalOntologyModelManager.save(jenaOwlModel, iriOfChimney, mmsi);
 
     }
 

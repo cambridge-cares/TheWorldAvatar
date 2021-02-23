@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 public class DataDownload {
@@ -36,7 +37,7 @@ public class DataDownload {
 	public static final String ZCE_PAGE = "http://english.czce.com.cn/enportal/DFSStaticFiles/Future/EnglishFutureQuotesMA.htm";
 	
 	public static final String HNG_DOWNLOAD = "caresjpsarbitrage/HNG_download.pyw";
-	public static final String HNG_PAGE = "http://www.cmegroup.com/trading/energy/natural-gas/natural-gas.html";
+	public static final String HNG_PAGE = "https://www.cmegroup.com/trading/energy/natural-gas/natural-gas_quotes_globex.html";
 	
 	// URIs of ontologies used to define KBs in which market data will be stored
 	public static final String ONTO_PATH_ELEC_MARKETS = "http://www.mascem.gecad.isep.ipp.pt/ontologies/electricity-markets.owl";	
@@ -51,7 +52,9 @@ public class DataDownload {
 	public static String downloadMarketData(String script, String source) throws Exception {
 		String result = "";
 		do {
-			result = PythonHelper.callPython(script, source, new DataDownload());
+			String path = AgentLocator.getCurrentJpsAppDirectory(new DataDownload());
+			String command = "python " + path+ "/python/" +script + " " + source;
+			result = CommandHelper.executeSingleCommand( path, command);
 		} while (result.equals("retry"));
 		
 		return result;
@@ -179,10 +182,9 @@ public class DataDownload {
 
 		String currency_download = new String(
 				"caresjpsarbitrage/exchange_rates.pyw");
-
-		String result = PythonHelper.callPython(
-				currency_download, "whatever",
-				new DataDownload());
+		String path = AgentLocator.getCurrentJpsAppDirectory(new DataDownload());
+		String command = "python " + path+ "/python/" +currency_download;
+		String result = CommandHelper.executeSingleCommand( path, command);
 		logger.info(result);
 
 		/**
@@ -214,7 +216,6 @@ public class DataDownload {
 		 */
 		String filePath = AgentLocator.getPathToWorkingDir(new DataDownload()) + "/OntoArbitrage_PlantInfo_KB.owl";
 		
-		System.out.println("My filepath = " + filePath);
 		OntModel jenaOwlModel1 = ModelFactory.createOntologyModel();
 		jenaOwlModel1.read(filePath);
 
@@ -330,7 +331,6 @@ public class DataDownload {
 			addresses[i] = new String[] {
 					ONTO_PATH_ONTOCAPE + "#" + "numericalValue",
 					ONTO_PATH_KB_UTIL_EXRATES + "#" + headers[i] };
-			logger.info(addresses[i][1]);
 		}
 		
 	logger.info("My retreive prices function");

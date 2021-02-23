@@ -95,7 +95,7 @@ public class OntoKinEndpointProxy extends HttpServlet {
 //	public static String formRateConstantComparisonQuery(){
 //		String queryString = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
 //		queryString = queryString.concat("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
-//		queryString = queryString.concat("PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#> \n");
+//		queryString = queryString.concat("PREFIX ontochem: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \n");
 //		queryString = queryString.concat("SELECT distinct ?mechanism1 ?mechanism2 ?reaction1 ?reaction2 ?activationEnergy1 ?activationEnergy2 ?preExpFactor1 ?preExpFactor2 \n");
 //		queryString = queryString.concat("WHERE { \n");
 //		queryString = queryString.concat("    ?reaction1 ontochem:hasEquation \"O + C3H4 [=] CH3 + HCCO\" . \n");

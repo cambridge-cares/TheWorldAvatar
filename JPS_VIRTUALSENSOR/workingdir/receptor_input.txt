@@ -1,0 +1,10 @@
+simid     {Citychem-Singapore--testnotapm-00001}
+nstation  0
+nx_rec    aaa
+ny_rec    bbb
+dx_rec    ccc
+dy_rec    ddd
+z_rec     eee
+xsw_main  fff
+ysw_main  ggg
+rcmax     -9900

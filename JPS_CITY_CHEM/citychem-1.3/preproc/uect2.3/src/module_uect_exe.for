@@ -56,6 +56,18 @@
 !***********************************************************************
 !***  Module module_uect_exe declares variables and parameters
 !***  for controlling the program flow of UECT
+
+
+!!!!!!!
+!!!  modified by Kang @ Jan. 22, 2020 @ Cambridge CARES for moving point source (circular or straight line) and building parameters, and emission rate calculation
+!!! a, add 5 more columns for moving points:  vec (m/s), direction (0-360), circ_ang (>0, clockwise, <0, counter-colockwise, =0, striaght line), t_start_moving(s),t_stop_moving(s). 
+!!! b, read the building height and width from input excel file (2 more columns), intead of default definition in "emission_point.for"
+!!! will read into "in_array_pse(:,7-13)". So for emission indicator, it needs be adding 7. 
+!!! other varibles: new_array_pse(:,7-13), out_params_pse() 
+!!! c, define a new variable to control if using time factor for emission rate calculation on different date.  
+!!!    time_factor=0, dont use time factor; =1, use time factor esimated in CityChem on different date; 
+!!!    time_factor will be read from input file.
+!***********************************************************************
 !***********************************************************************
 
       implicit none
@@ -100,7 +112,18 @@
       integer, parameter   :: ncc    = 22
       integer, parameter   :: nctapm = 4
       
-      integer,parameter    :: n_pse_params = 10
+!!!!!===========================================
+!!!! for moving point source by Kang @ CARES
+!!! orig:       integer, parameter  :: n_pse_params = 10      
+      integer,parameter    :: n_pse_params = 15 
+      !!! add 4 more columns for moving points:  vec (m/s), direction (0-360), circ_ang (>0, clockwise, <0, counter-colockwise, =0, striaght line)
+      !!! , t_start_moving(s),t_stop_moving(s)  will output into out_params_pse(:,11-14).
+      !!!  building height and width are already defined as out_params_pse(:,6-7).
+
+!!!  also define a new variable to control if using time factor for emission rate calculation on different date
+      integer            :: ntime_factor  !! =0, dont use time factor;  !! =1, use the default time factor calculated in CityChem for different date.
+      
+!!!!===============================================      
       integer,parameter    :: n_lse_params =  9
       integer,parameter    :: n_ase_params =  8
 

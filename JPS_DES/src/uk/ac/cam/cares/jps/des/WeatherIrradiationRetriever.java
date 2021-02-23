@@ -7,67 +7,85 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.query.Query;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
+import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 
 @WebServlet(urlPatterns = {"/GetIrradiationandWeatherData" })
-public class WeatherIrradiationRetriever extends JPSHttpServlet {
+public class WeatherIrradiationRetriever extends JPSAgent{
 	private static final long serialVersionUID = 1L;
-	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
 	@Override 
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse res) {
-		JSONObject jo = AgentCaller.readJsonParameter(request);
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 
-		String baseUrl = jo.optString("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
-		
-		JSONObject result=new JSONObject();
+		validateInput(requestParams);
+		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
+        
 		try {
-	    	String iritempsensor=jo.optString("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
-	    	String iriirradiationsensor=jo.optString("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
-	    	String irispeedsensor=jo.optString("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-		 System.out.println("tempsensor= "+iritempsensor);
-	    	result=readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
-		
+	    	String iritempsensor=requestParams.getString("temperaturesensor");
+	    	String iriirradiationsensor=requestParams.getString("irradiationsensor");
+	    	String irispeedsensor=requestParams.getString("windspeedsensor");
+	    	readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
+
+			return requestParams;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		AgentCaller.printToResponse(result, res);
- 
-		logger.info("return the result from weather agent");		
+		return requestParams;
+ 		
 	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String iriofwindF = requestParams.getString("windspeedsensor");
+	        boolean w = InputValidator.checkIfValidIRI(iriofwindF);
+	        
+	        String irioftempF=requestParams.getString("temperaturesensor");
 	
-	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
-		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
-		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
-		String startbatCommand =folder+"/runpyocr.bat";
-		System.out.println(startbatCommand);
-		try {
-			String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			logger.error(e1.getMessage()+"python is not running interrupted");
-			//later need default file data.json to substitute the loss
-			new DistributedEnergySystem().copyFromPython(folder,"data.json");
-		} catch (Exception ex) {
-			logger.error(ex.getMessage()+"python is not running");
-			new DistributedEnergySystem().copyFromPython(folder,"data.json");
-		}
-		logger.info("OCR finished");
+	        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+	        String iriofirrF=requestParams.getString("irradiationsensor");
+	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+	        // Till now, there is no system independent to check if a file path is valid or not. 
+	        
+	        return w&e&r;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        	throw new JSONException("Sensor not present in getString");
+        }
 
-		   DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-		   LocalDateTime now = LocalDateTime.now();
-		   String com=dtf.format(now);
-		   String date=com.split("/")[2].split(" ")[0];
+    }
+	public static void readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
+		//TODO: I can't figure out how to get this to run without having to copy over a file to create
+		//the location within this folder. If I leave the line below commented
+		// the folder isn't created, and I get an error. 
+		new DESAgentNew().copyFromPython(folder, "ocrv1.py");
+		String res =  new DESAgentNew().runPythonScript("ocrv1.py",folder);
+
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		LocalDateTime now = LocalDateTime.now();
+		String com=dtf.format(now);
+		String date=com.split("/")[2].split(" ")[0];
 		   
 		String jsonres=new QueryBroker().readFileLocal(folder+"/data.json");
 		JSONObject current= new JSONObject(jsonres);
@@ -81,39 +99,45 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		WeatherTimeStampKB converter = new WeatherTimeStampKB();		
 		//query the data from the existing owl file
 		
-		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
-				+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
-
-		String result = new QueryBroker().queryFile(iritempsensor, sensorinfo);
+		 
+    	WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+    			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
+    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+    			.addPrefix("j6", "http://www.w3.org/2006/time#").addWhere("?entity", "j4:observes", "?prop")
+    			.addWhere("?prop", "j2:hasValue", "?vprop").addWhere("?vprop", "j2:numericalValue", "?propval")
+    			.addWhere("?vprop", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
+   
+    	
+    	SelectBuilder sensorTemp = new SelectBuilder()
+    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+    			.addVar("?entity").addVar("?propval")
+    			.addVar("?proptimeval").addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+    	Query q= sensorTemp.build(); 
+    	String sensorInfo = q.toString();
+    	SelectBuilder sensorIrrad = new SelectBuilder()
+    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+    			.addVar("?entity").addVar("?propval")
+    			.addVar("?proptimeval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+    	
+    	q= sensorIrrad.build(); 
+    	String sensorInfo2 = q.toString();
+    	SelectBuilder sensorWind = new SelectBuilder()
+    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+    			.addVar("?entity").addVar("?propval")
+    			.addVar("?proptimeval").addWhere("?entity","a", "j5:F-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+    	
+    	q= sensorWind.build(); 
+    	String sensorInfo3 = q.toString();
+		
+		String result = new QueryBroker().queryFile(iritempsensor, sensorInfo);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 
-		String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
-				+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
-
-		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorinfo2);
+		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorInfo2);
 		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
 		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
 		
-		String sensorinfo3 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
-				+ "WHERE { ?entity a j5:F-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
-
-		String result3 = new QueryBroker().queryFile(irispeedsensor, sensorinfo3);
+		String result3 = new QueryBroker().queryFile(irispeedsensor, sensorInfo3);
 		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
 		List<String[]> resultListfromqueryspeed = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
 		
@@ -137,7 +161,6 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		readingFromCSV.add(newline);
 		List<String[]> actualWeather = new ArrayList<String[]>();
 		actualWeather.add(newline);
-		new QueryBroker().putLocal(folder + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(actualWeather));
 		
 		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
@@ -145,16 +168,9 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(irifortemp+" is updated");
 		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation","001","SG");
 		System.out.println(iriforirradiation+" is updated");
-		String iriforwind=converter.startConversion(readingFromCSV,"windpseed","001","SG");
+		String iriforwind=converter.startConversion(readingFromCSV,"windspeed","001","SG");
 		System.out.println(iriforwind+" is updated");
-		JSONObject resultweather = new JSONObject();
-		//resultweather.put("folder",folder );
-		resultweather.put("temperaturesensor",irifortemp );
-		resultweather.put("irradiationsensor",iriforirradiation );
-		resultweather.put("windspeedsensor",iriforwind );
 		
-		
-		return resultweather;
 	}
 	
 

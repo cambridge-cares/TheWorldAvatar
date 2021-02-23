@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import uk.ac.cam.cares.jps.agent.configuration.AutoMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.InitMoDSInputs;
 import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
 import uk.ac.cam.cares.jps.agent.file_management.mods.MoDS;
@@ -41,9 +42,10 @@ import uk.ac.cam.cares.jps.agent.mechanism.coordination.AutoMechCalibAgentExcept
 public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	public List<String> caseNameList = new ArrayList<>();
 	private static Logger logger = LoggerFactory.getLogger(MoDSMarshaller.class);
-
-	public static void main(String[] args) throws IOException, AutoMechCalibAgentException {
-		
+	private AutoMechCalibAgentProperty autoMechCalibAgentProperty;
+	
+	public MoDSMarshaller(AutoMechCalibAgentProperty autoMechCalibAgentProperty) {
+		this.autoMechCalibAgentProperty = autoMechCalibAgentProperty;
 	}
 	
 	public void initialise(String jobFolderName) throws IOException, AutoMechCalibAgentException {
@@ -101,7 +103,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	@Override
 	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, AutoMechCalibAgentException {
 		// TODO Auto-generated method stub
-		ModelKineticsSRM kineticsSRM = new ModelKineticsSRM();
+		ModelKineticsSRM kineticsSRM = new ModelKineticsSRM(autoMechCalibAgentProperty);
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		kineticsSRM.formFiles(exeModel, otherOptions);
 		kineticsSRM.setUpMoDS();
@@ -113,7 +115,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	@Override
 	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, AutoMechCalibAgentException {
 		// TODO Auto-generated method stub
-		ModelCanteraLFS canteraLFS = new ModelCanteraLFS();
+		ModelCanteraLFS canteraLFS = new ModelCanteraLFS(autoMechCalibAgentProperty);
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		canteraLFS.formFiles(exeModel, otherOptions);
 		canteraLFS.setUpMoDS();
@@ -143,7 +145,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}
 	
 	private void init() {
-		initMoDSInputs = new InitMoDSInputs();
+		initMoDSInputs = new InitMoDSInputs(autoMechCalibAgentProperty);
 		initMoDSInputs.init();
 	}
 	

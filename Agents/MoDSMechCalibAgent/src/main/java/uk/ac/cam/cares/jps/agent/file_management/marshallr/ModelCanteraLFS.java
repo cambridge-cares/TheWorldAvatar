@@ -53,6 +53,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	private String rangeOfMultipliers = "100.0";
 	private String flameSpdScaling = "linear";
 	private String activeParamScaling = "logarithmic";
+	private String responseRatio = "1.0";
 	
 	public String getTranModel() {
 		return tranModel;
@@ -84,6 +85,14 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 
 	public void setActiveParamScaling(String activeParamScaling) {
 		this.activeParamScaling = activeParamScaling;
+	}
+
+	public String getResponseRatio() {
+		return responseRatio;
+	}
+
+	public void setResponseRatio(String responseRatio) {
+		this.responseRatio = responseRatio;
 	}
 
 	public ModelCanteraLFS(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -219,6 +228,12 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		String activeParamScaling = JSonRequestParser.getActiveParamScaling(otherOptions);
 		if (activeParamScaling != null && !activeParamScaling.isEmpty()) {
 			setActiveParamScaling(activeParamScaling);
+		}
+		
+		// set up response ratio
+		String responseRatio = JSonRequestParser.getFlameSpdResponseRatio(otherOptions);
+		if (responseRatio != null && !responseRatio.isEmpty()) {
+			setResponseRatio(responseRatio);
 		}
 		
 		// process the active parameters to be only the equation of reactions
@@ -375,12 +390,12 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		String row = "";
 		String lbAbs = "";
 		String ubAbs = "";
-		double sqrtN = Math.sqrt(caseNames.size());
+		double sqrtRatio = Math.sqrt(Double.parseDouble(getResponseRatio()));
 		List<Double> lb_abs = new ArrayList<>();
 		List<Double> ub_abs = new ArrayList<>();
 		for (int idx = 0; idx < caseNames.size(); idx++) {
-			lb_abs.add(-1*Double.parseDouble(outputErrs.get(idx))*sqrtN);
-			ub_abs.add(Double.parseDouble(outputErrs.get(idx))*sqrtN);
+			lb_abs.add(-1*Double.parseDouble(outputErrs.get(idx))/sqrtRatio);
+			ub_abs.add(Double.parseDouble(outputErrs.get(idx))/sqrtRatio);
 		}
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
