@@ -463,16 +463,6 @@
 *../testdata/cmaq/cbg_isoprene.fld
 *../testdata/cmaq/cbg_pm25.fld
 *../testdata/cmaq/cbg_pm10.fld
-100.0
-760.0
-40.0
-0.0
-0.0
-0.0
-0.0
-15.0
-0.0
-10000.0
 0.0
 0.0
 0.0
@@ -483,8 +473,18 @@
 0.0
 0.0
 0.0
-12.0
-20.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
 *
 * OFFSET Ozone (O3) in BCON file in ug/m^3 for callibration purpose
 0.0
