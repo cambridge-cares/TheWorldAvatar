@@ -1,5 +1,5 @@
 ##### Base configuration #####
-FROM php:7.4-apache as base
+FROM docker.cmclinnovations.com/php:7.4-apache as base
 
 # Enable Apache Rewrite + Expires Module
 RUN a2enmod rewrite expires && \

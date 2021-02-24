@@ -15,7 +15,7 @@ services:
         source: certbot-challenge
         target: /var/www/certbot
 
-  # Have reverse proxy serve http, https over standard ports in prod mode
+  # In prod mode, enable ssl for the reverse_proxy and map http and https to standard ports
   reverse_proxy:
     build:
       target: with_ssl

@@ -1,4 +1,4 @@
-FROM tomcat:9.0
+FROM docker.cmclinnovations.com/tomcat:9.0
 
 # Arguments
 ARG HASH
