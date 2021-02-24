@@ -113,7 +113,7 @@ public class ENAgent extends JPSAgent{
 		logger.info("running PyPower simulation");
 		try {
 			String[] fileNames = {"/baseMVA.txt", "/bus.txt", "/gen.txt", "/branch.txt", "/outputBusOPF.txt", "/outputBranchOPF.txt", "/outputGenOPF.txt", "/areas.txt", "/genCost.txt", "/outputStatus.txt"};
-			runPythonScript("PyPower-PF-OPF-JA-9-Java-1.py", baseUrl, fileNames);
+			runPythonScript("PyPower-PF-OPF-JA-9-Java-2.py", baseUrl, fileNames);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
