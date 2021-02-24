@@ -78,7 +78,9 @@ pushd $stack > /dev/null
 # Write some properties (e.g. the current git hash) to a temporary env file so that they can be used
 # in the compose config files
 # Note that this file shouldn't be deleted or down commands will fail
-rm env.txt
+if [ -e "$env_filename" ]; then
+  rm "$env_filename"
+fi
 
 echo "Generating environment variables file..."
 hash="$(git rev-parse --short=6 HEAD)"
