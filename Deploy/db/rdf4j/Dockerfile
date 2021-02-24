@@ -1,4 +1,4 @@
-FROM eclipse/rdf4j-workbench:amd64-3.5.0
+FROM docker.cmclinnovations.com/eclipse/rdf4j-workbench:amd64-3.5.0
 EXPOSE 8080
 
 # Arguments
