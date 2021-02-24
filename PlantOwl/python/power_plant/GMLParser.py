@@ -7,13 +7,10 @@
 structure the data by following an ontological model, and finally
 represent the data using RDF."""
 
-import time
-from builtins import enumerate
-
-from filetype.types.image import Cr2
 from lxml import etree
 from rdflib.extras.infixowl import Ontology, OWL_NS
 
+import CoordinateConversion as coord_convert
 from CropMap import CropMap
 from Envelope import Envelope
 from rdflib import Graph, URIRef, XSD
@@ -43,6 +40,8 @@ ENVELOPE_LOWER_CORNER = 'lowerCorner'
 ENVELOPE_UPPER_CORNER = 'upperCorner'
 
 ENVELOPE_INSTANCE_PREFIX = 'Envelope_of_'
+EPSG_4326 = 'EPSG:4326'
+EPSG_27700 = 'EPSG:27700'
 
 """Declared a variable for creating a graph model"""
 g = Graph()
@@ -102,9 +101,10 @@ def get_crop_map(context):
                                       cropMap.cromeID, XSD.string)
                     if getcentre_point_from_crome_id(cropMap.cromeID) != None:
                         aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCentrePoint()),
-                                      URIRef(gmlpropread.getABoxIRI()
-                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      getcentre_point_from_crome_id(cropMap.cromeID), URIRef(gmlpropread.getDataTypeCoordinatePoint()))
+                                                    URIRef(gmlpropread.getABoxIRI()
+                                      + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                                    coord_convert.e_n_to_lat_long(getcentre_point_from_crome_id(cropMap.cromeID), "#"),
+                                                    URIRef(gmlpropread.getDataTypeCoordinatePoint()))
 
                     #print('cromeid', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  LUCODE.lower():
@@ -148,9 +148,13 @@ def get_crop_map(context):
                                                                     + rdfizer.format_iri(cropMap.id),
                                                                     cropMap.name)
                                             aboxgen.link_data_with_type(g, URIRef(gmlpropread.getPropertyPosList()),
-                                                              URIRef(gmlpropread.getABoxIRI()
-                                                                     + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                                              posList.text.replace(" ", "#"), URIRef(gmlpropread.getDataTypePolygonalPoints()))
+                                                                        URIRef(gmlpropread.getABoxIRI()
+                                                                               + rdfizer.SLASH + rdfizer.format_iri(
+                                                                            cropMap.id)),
+                                                                        coord_convert.e_n_to_lat_long_multiple(
+                                                                            posList.text.replace(" ", "#"), "#", 7),
+                                                                        URIRef(
+                                                                            gmlpropread.getDataTypePolygonalPoints()))
                                             #print(cropMap.polygon)
             """Adds data and metadata to the envelope"""
             if map_counter == 0:
@@ -162,7 +166,7 @@ def get_crop_map(context):
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getSrsName()),
                                         URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.srsName, XSD.string)
+                                        EPSG_4326, XSD.string)
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getSrsDimension()),
                                         URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
@@ -170,11 +174,13 @@ def get_crop_map(context):
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getLowerCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.lowerCorner.replace(' ', '#'), gmlpropread.getDataTypeCoordinatePoint())
+                                        coord_convert.e_n_to_lat_long(envelope.lowerCorner.replace(' ', '#'), "#"),
+                                        gmlpropread.getDataTypeCoordinatePoint())
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getUpperCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        envelope.upperCorner.replace(' ', '#'), gmlpropread.getDataTypeCoordinatePoint())
+                                        coord_convert.e_n_to_lat_long(envelope.upperCorner.replace(' ', '#'), "#"),
+                                        gmlpropread.getDataTypeCoordinatePoint())
             """Links each feature to the envelope"""
             aboxgen.link_instance(g, URIRef(gmlpropread.getBoundedBy()),
                                   URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
@@ -191,13 +197,32 @@ def get_crop_map(context):
         save_into_disk(g, str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
         print('Total number of feature members processed:', map_counter)
 
+"""Converts polygon coordinates represented in EPSG 27700 into WGS84"""
+def convert_polygon_from_epsg27700_to_wgs84(delimiter, span, string):
+    wgs84_coordinates = ''
+    flag = True
+    for token in split_at_span(delimiter, span, string):
+        if flag:
+            wgs84_coordinates = wgs84_coordinates + convert_epsg27700_to_wgs84(token, delimiter)
+        else:
+            wgs84_coordinates = wgs84_coordinates + delimiter + convert_epsg27700_to_wgs84(token, delimiter)
+        flag = False
+    return wgs84_coordinates
+
+"""Converts coordinates represented in EPSG 27700 into WGS84, which is equivalent to EPSG 4326"""
+def convert_epsg27700_to_wgs84(coordinate_String, delimiter):
+    from pyproj import Transformer
+    transformer = Transformer.from_crs("epsg:27700", "epsg:4326")
+    x2, y2 = transformer.transform(coordinate_String.split(delimiter)[0], coordinate_String.split(delimiter)[1])
+    return str(x2) + delimiter + str(y2)
+
 """Extracts the centre point from the CROME ID"""
 def getcentre_point_from_crome_id(cromeID):
     coordinates = cromeID[3:]
     if len(coordinates) % 2 == 0:
-        latitude = coordinates[:int(len(coordinates)/2)+1]
-        longitude = coordinates[int(len(coordinates)/2):]
-        return latitude+'#'+longitude
+        easting = coordinates[:int(len(coordinates)/2)]
+        northing = coordinates[int(len(coordinates)/2):]
+        return easting+'#'+northing
     return None
 
 """Saves a graph into the disk/file system"""
