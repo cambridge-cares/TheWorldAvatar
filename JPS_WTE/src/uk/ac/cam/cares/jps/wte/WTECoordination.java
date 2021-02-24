@@ -26,7 +26,7 @@ public class WTECoordination extends JPSAgent{
 		String baseUrl= QueryBroker.getLocalDataPath();
 		//check name of scenario: 
 		requestParams.put("baseUrl", baseUrl);
-		AgentCaller.executeGetWithJsonParameter("JPS_WTE/startsimulation", requestParams.toString()); //I pray hard that this works
+		AgentCaller.executeGetWithJsonParameter("JPS_WTE/startSimulationAgent", requestParams.toString()); //I pray hard that this works
 		return requestParams;
 	}
 

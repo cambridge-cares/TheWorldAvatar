@@ -1,69 +1,85 @@
 package uk.ac.cam.cares.jps.ess;
 
-import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/OptimizationAgent"})
-
-public class OptimizationAgent extends JPSHttpServlet {
+/** returns appropriate Battery Agent based on criteria
+ * 
+ * @author Laura Ong
+ *
+ */
+public class OptimizationAgent extends JPSAgent {
 	
 	//suggesting the optimization model used based on storage technology chosen
 	
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		JSONObject joforess = AgentCaller.readJsonParameter(request);
-		
+	private static final long serialVersionUID = 1L;
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 		String path="JPS_ESS/LocateBattery"; //later can be queried from the agent descriptions
 		
-		String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-				+ "SELECT ?entity ?class ?parent "
-				+ "WHERE {?entity  a  ?class ."
-				+ "?entity   j6:hasStateOfCharge ?dt ." 
-				+ "?class rdfs:subClassOf ?parent ."
-				+ "}";
-		 
+		String gencoordinate = new SelectBuilder()
+				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
+				.addVar("?entity").addVar("?class").addVar("?parent")
+				.addWhere("?entity", "a","?class")
+				.addWhere("?entity","j6:hasStateOfCharge", "?dt")
+				.addWhere("?class", "rdfs:subClassOf","?parent")
+				.buildString();
+		boolean validity = validateInput(requestParams);
+		if (validity == false) {
+			throw new JSONException("INPUT no longer valid");
+		}
+		String batIRI=requestParams.getString("storage");		
+		String localUrl = ScenarioHelper.cutHash(batIRI);
+		localUrl = ResourcePathConverter.convert(localUrl);
+		ResultSet resultSet = JenaHelper.queryUrl(localUrl, gencoordinate);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);System.out.println(result);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
 		
-		String batIRI=joforess.getString("storage");
-		 String result = new QueryBroker().queryFile(batIRI, gencoordinate);
-		 String[] keys = {"entity", "class","parent"};
-		 List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		 System.out.println("classtype= "+resultList.get(0)[2]);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		
-			if(resultList.get(0)[2].toLowerCase().contains("battery")) {
-				path="JPS_ESS/LocateBattery";
+		if(resultList.get(0)[2].toLowerCase().contains("battery")) {
+			path="JPS_ESS/LocateBattery";
 			}		
-//		if(batIRI.contains("VRB")) {
-//			path="JPS_ESS/LocateBattery";
-//		}
-		
-		
-		
 		JSONObject resultofOptimization=new JSONObject();
 		resultofOptimization.put("optimization",path);
-		AgentCaller.printToResponse(resultofOptimization, response);
+		return resultofOptimization;
 		
 		
 	}
-
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String storageFormat = requestParams.getString("storage");
+	        boolean q = InputValidator.checkIfValidIRI(storageFormat);
+	        return q;
+        }catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+	}	
 }

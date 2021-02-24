@@ -274,10 +274,13 @@ public class AgentCaller {
                 json = IOUtils.toString(request.getReader());
             } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
                 json = request.getParameter(JSON_PARAMETER_KEY);
+            }else if (request.getMethod().equals(HttpPut.METHOD_NAME)) {
+                json = IOUtils.toString(request.getReader());
             }
 
             if (json != null) {
-                return new JSONObject(json);
+            	JSONObject jo = new JSONObject(json).put("method", request.getMethod());
+                return jo;
             }
 
             JSONObject jsonobject = new JSONObject();
