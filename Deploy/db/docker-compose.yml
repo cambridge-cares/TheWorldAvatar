@@ -8,7 +8,7 @@ services:
     container_name: "blazegraph-${MODE}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
-    image: docker.cmclinnovations.com/blazegraph:v1.0
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
     restart: unless-stopped
     secrets:
       - blazegraph_password
@@ -23,7 +23,7 @@ services:
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
-    image: docker.cmclinnovations.com/rdf4j:v1.0
+    image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
     restart: unless-stopped
     secrets:
       - rdf4j_admin_password
