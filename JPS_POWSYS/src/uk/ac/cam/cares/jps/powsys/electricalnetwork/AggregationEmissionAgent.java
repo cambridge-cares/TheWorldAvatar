@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
@@ -30,6 +31,7 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.powsys.listener.LocalOntologyModelManager;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = {"/AggregationEmissionAgent/aggregateemission"})
 public class AggregationEmissionAgent extends JPSAgent{
@@ -39,72 +41,63 @@ public class AggregationEmissionAgent extends JPSAgent{
 	private static final long serialVersionUID =  6859324316966357379L;;
     private static final String EM_RATE = "_EmissionRate";
     //both only called by front end javascript; update to chimney, then query to sum to give to front end
-
-    String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-            + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-            + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-            + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-            + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-            + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-            + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-            + "SELECT ?entity ?V_Actual_CO2_Emission ?V_Design_CO2_Emission ?plant "
-
-            + "WHERE {?entity  a  j1:PowerGenerator  ."
-            + "?entity   j2:isSubsystemOf ?plant ." // plant
-            + "?entity   technical_system:realizes ?generation ."
-            + "?generation j9:hasEmission ?emission ."
-
-            + "?emission a j9:Actual_CO2_Emission ."
-            + "?emission   j2:hasValue ?valueemission ."
-            + "?valueemission   j2:numericalValue ?V_Actual_CO2_Emission ." //
-
-
-            + "?generation j9:hasEmission ?v_emission ."
-            + "?v_emission a j9:CO2_emission ."
-            + "?v_emission   j2:hasValue ?valueemission_d ."
-            + "?valueemission_d   j2:numericalValue ?V_Design_CO2_Emission ." //
-			+ "Filter (?V_Actual_CO2_Emission > 0.0 && ?V_Design_CO2_Emission > 0.0) ." //eliminate generator with 0 emission
-            + "}";
-
-    String plantInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-            + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-            + "SELECT ?chimney "
-            + "WHERE {?entity  a  j1:PowerPlant  ."
-            + "?entity   j2:hasSubsystem ?chimney ."
-            + "}";
     
-    String chimneyiriInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-            + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-            + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
-            + "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-            + "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-            + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
-            + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-            + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
-            + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-            + "SELECT ?vheightchimney ?vdiameterchimney ?vmassf ?vtemp ?vdens "
-            + "WHERE {?entity  a  j3:Pipe  ."
-            + "?entity   j3:hasHeight ?heightchimney ."
-            + "?heightchimney  j2:hasValue ?vheightchimney ."
-            + "?entity   j3:hasInsideDiameter ?diameterchimney ."
-            + "?diameterchimney  j2:hasValue ?vdiameterchimney ."
-            + "?entity   j4:realizes ?proc ."
-            + "?proc j5:hasOutput ?waste ."
-            + "?waste j6:refersToGeneralizedAmount ?genwaste ."
-            + "?genwaste   j2:hasProperty ?massf ."
-            + "?massf   j2:hasValue ?vmassf ."
-            + "?genwaste   j2:hasSubsystem ?matamount ."
-            + "?matamount   j7:refersToMaterial ?mat ."
-            + "?mat   j8:thermodynamicBehavior ?thermo ."
-            + "?thermo   j9:has_temperature ?temp ."
-            + "?temp  j2:hasValue ?vtemp ."
-            + "?thermo   j9:has_density ?dens ."
-            + "?dens  j2:hasValue ?vdens ."
-            
-            + "}";
+    private String getGenInfo() {
+    	try {
+    	String genInfo = Util.getGenEmission().addVar("?plant")
+    			.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+    			.addWhere("?entity", "j2:isSubsystemOf", "?plant")
+        		.addFilter("?V_Actual_CO2_Emission > 0.0")
+        		.addFilter("?V_Design_CO2_Emission > 0.0")
+    			.buildString();
+    	return genInfo;}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    		return "";
+    	}
+    }
+    		
+    private String getPlantInfo() {
 
+    	try {
+    	SelectBuilder sb = new  SelectBuilder().addPrefix("j1", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#")
+    			.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+    			.addVar("chimney").addWhere("?entity", "a", "j1:PowerPlant").addWhere("?entity" ,"j2:hasSubsystem", "?chimney");
+    	return sb.buildString();
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    		return "";
+    	}
+    }
+    private String getChimneyInfo() {
+    	String sb = new SelectBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+	            .addPrefix("j3", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#")
+	            .addPrefix("j4", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+	            .addPrefix("j5", "http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#")
+	            .addPrefix("j6", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#")
+    	        .addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#")
+    	        .addPrefix("j8", "http://www.theworldavatar.com/ontology/ontocape/material/material.owl#")
+	            .addPrefix("j9","http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#")
+    	        .addVar("?vheightchimney").addVar("?vdiameterchimney").addVar("?vmassf").addVar("?vtemp").addVar("?vdens")
+    	        .addWhere("?entity", "a", "j3:Pipe")
+    	        .addWhere("?entity", "j3:hasHeight", "?heightchimney")
+    	        .addWhere("?heightchimney", "j2:hasValue", "?vheightchimney")
+    	        .addWhere("?entity", "j3:hasInsideDiameter", "?diameterchimney")
+    	        .addWhere("?diameterchimney", "j2:hasValue", "?vdiameterchimney")
+    	        
+	            .addWhere("?entity","j4:realizes", "?proc").addWhere("?proc","j5:hasOutput", "?waste")
+    	        .addWhere("?waste" ,"j6:refersToGeneralizedAmount", "?genwaste")
+    	        .addWhere("?genwaste" ,"j2:hasProperty", "?massf").addOptional("?massf" ,"j2:hasValue", "?vmassf")
+    	        .addWhere("?genwaste" ,"j2:hasSubsystem", "?matamount").addWhere("?matamount" ,"j7:refersToMaterial", "?mat")
+    	        .addWhere("?mat" ,"j8:thermodynamicBehavior", "?thermo").addOptional("?thermo" ,"j9:has_temperature", "?temp")
+    	        .addWhere("?temp","j2:hasValue", "?vtemp")
+    	        .addWhere("?thermo","j9:has_density", "?dens").addWhere("?dens","j2:hasValue", "?vdens")
+    	        .buildString();
+    	     
+    	return sb;
+    }
     
-
     @Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
@@ -162,33 +155,17 @@ public class AggregationEmissionAgent extends JPSAgent{
         }
     }
     
-    //also used in CarbonTaxAgent
-    public static List<String[]> provideGenlist(String iriofnetwork) {
-        String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-                + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-                + "SELECT ?entity "
-                + "WHERE {?entity  a  j1:PowerGenerator  ."
-                + "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
-                + "}";
-
-
-        OntModel model = ENAgent.readModelGreedy(iriofnetwork);
-        ResultSet resultSet = JenaHelper.query(model, gennodeInfo);
-        String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-        String[] keys = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-
-        return resultListfromquery;
-    }
+    
 
     public JSONObject sumEmissionResult(String ENIRI) {
-        List<String[]> genList = provideGenlist(ENIRI);
+        List<String[]> genList = Util.provideGenlist(ENIRI);
         QueryBroker broker = new QueryBroker();
         List<String> plantunique = new ArrayList<String>();
         List<String> emplantunique = new ArrayList<String>();
 
         for (int d = 0; d < genList.size(); d++) {
-        	String result = broker.queryFile(genList.get(d)[0], genInfo);
+        	String genInfo = getGenInfo();
+        	String result = broker.queryFile(genList.get(d)[0], genInfo );
             String[] keys = JenaResultSetFormatter.getKeys(result);
             List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 			if (resultList.size() > 0) {
@@ -231,7 +208,7 @@ public class AggregationEmissionAgent extends JPSAgent{
         JSONArray emission = new JSONArray();
         JSONArray desemission = new JSONArray();
         for (int f = 0; f < plantunique.size(); f++) {
-            String result = broker.queryFile(plantunique.get(f), plantInfo);
+            String result = broker.queryFile(plantunique.get(f),  getPlantInfo());
             System.out.println("filequery= "+plantunique.get(f));
             String[] keys = JenaResultSetFormatter.getKeys(result);
             List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
@@ -340,7 +317,7 @@ public class AggregationEmissionAgent extends JPSAgent{
                     jenaOwlModel.createTypedLiteral(parametervalue));
         }
 
-        ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
+        ResultSet resultSet = JenaHelper.query(jenaOwlModel, getChimneyInfo());
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);

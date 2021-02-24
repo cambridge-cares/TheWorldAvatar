@@ -322,7 +322,7 @@ public class NuclearAgent extends JPSAgent {
 
 
     public void prepareCSVPartialRemaining(List<String> plantlist, String iriofnetwork, String baseUrl) throws IOException {
-        OntModel model = ENAgent.readModelGreedy(iriofnetwork);
+        OntModel model = Util.readModelGreedy(iriofnetwork);
         String genplantinfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
                 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
                 + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "

@@ -53,7 +53,6 @@ public class ENVisualization extends JPSAgent{
   private Document doc;
   private Element root;
   private Logger logger = LoggerFactory.getLogger(ENVisualization.class);
-  String SCENARIO_NAME_TEST = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
   
   /** Called by createfinalKML()
    * Create a KML object and assign to root
@@ -106,7 +105,7 @@ public class ENVisualization extends JPSAgent{
     }
     String path = requestParams.getString("path");
     String iriofnetwork = requestParams.getString("electricalnetwork");
-    OntModel model = readModelGreedy(iriofnetwork);
+    OntModel model = Util.readModelGreedy(iriofnetwork);
     logger.info("path called= "+path);
     if (path.contains("/ENVisualization/createLineJS")) {
       String g=createLineJS(model);
@@ -347,18 +346,7 @@ public class ENVisualization extends JPSAgent{
     
   }
   
-  /** reads the topnode into an OntModel of all its subsystems. 
-   * @param iriofnetwork
-   * @return
-   */
-  public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
-    SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-        .addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
-    String wasteInfo = sb.build().toString();
-
-    QueryBroker broker = new QueryBroker();
-    return broker.readModelGreedy(iriofnetwork, wasteInfo);
-  }
+  
     
   public ArrayList <Double[]> estimateSquare(double x,double y,double constant){
     ArrayList<Double[]>squrepoints = new ArrayList<Double[]>();
@@ -534,22 +522,7 @@ public class ENVisualization extends JPSAgent{
    */
   public  String readGenerator(OntModel model) {
     
-    String genInfo = new SelectBuilder()
-        .addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
-        .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-        .addPrefix("technical_system","http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
-        .addVar("?entity").addVar("?V_Actual_CO2_Emission").addVar("?V_Design_CO2_Emission")
-        .addWhere("?entity", "a", "j1:PowerGenerator")
-        .addWhere("?entity", "technical_system:realizes", "?generation")
-        .addWhere("?generation", "j9:hasEmission", "?emission")
-        .addWhere("?emission", "a", "j9:Actual_CO2_Emission")
-        .addWhere("?emission","j2:hasValue", "?valueemission")
-        .addWhere("?valueemission" ,"j2:numericalValue", "?V_Actual_CO2_Emission")
-        .addWhere("?generation", "j9:hasEmission", "?v_emission")
-        .addWhere("?v_emission", "a", "j9:CO2_emission")
-        .addWhere("?v_emission","j2:hasValue", "?valueemission_d")
-        .addWhere("?valueemission_d" ,"j2:numericalValue", "?V_Design_CO2_Emission")
-        .buildString();
+    String genInfo = Util.getGenEmission().buildString();
         
         
     QueryBroker broker  = new QueryBroker();
@@ -665,25 +638,21 @@ public class ENVisualization extends JPSAgent{
     SelectBuilder sb = new SelectBuilder()
         .addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
         .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+        .addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+        .addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
         .addVar("?VoltMagvalue").addVar("?xvalue").addVar("?yvalue").addVar("?BaseKVvalue")
         .addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
         .addWhere("?x" ,"j2:hasValue", "?xval").addOptional("?xval" ,"j2:numericalValue", "?xvalue")
         .addWhere("?coorsys" ,"j7:hasProjectedCoordinate_y", "?y")
-        .addWhere("?y" ,"j2:hasValue", "?yval").addOptional("?yval" ,"j2:numericalValue", "?yvalue")
-        
-            .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-            .addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-            .addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
-            
-            .addWhere("?model", "j5:hasModelVariable", "?VM")
-            .addWhere("?VM","a","j3:Vm")
-            .addWhere("?VM","j2:hasValue", "?vVM")
-            .addWhere("?vVM","j2:numericalValue", "?VoltMagvalue")
-            .addWhere("?model", "j5:hasModelVariable", "?BKV")
-            .addWhere("?BKV","a","j3:baseKV")
-            .addWhere("?BKV","j2:hasValue", "?vBKV")
-            .addWhere("?vBKV","j2:numericalValue", "?BaseKVvalue")
-            ;
+        .addWhere("?y" ,"j2:hasValue", "?yval").addOptional("?yval" ,"j2:numericalValue", "?yvalue")            
+        .addWhere("?model", "j5:hasModelVariable", "?VM")
+        .addWhere("?VM","a","j3:Vm")
+        .addWhere("?VM","j2:hasValue", "?vVM")
+        .addWhere("?vVM","j2:numericalValue", "?VoltMagvalue")
+        .addWhere("?model", "j5:hasModelVariable", "?BKV")
+        .addWhere("?BKV","a","j3:baseKV")
+        .addWhere("?BKV","j2:hasValue", "?vBKV")
+        .addWhere("?vBKV","j2:numericalValue", "?BaseKVvalue");
     String branchInfo = new SelectBuilder()
         .addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
         .addPrefix("j9","http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#")

@@ -22,6 +22,7 @@ import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet("/RenewableGenRetrofit")
 public class RenewableGeneratorRetrofit extends JPSAgent{
@@ -95,7 +96,7 @@ public class RenewableGeneratorRetrofit extends JPSAgent{
 	 * @param RenewableGenerators
 	 */
 	public void retrofitGenerator(String electricalNetwork, List<String> RenewableGenerators) {
-		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
+		OntModel model = Util.readModelGreedy(electricalNetwork);
 		List<BusInfo> buses = gRA.queryBuses(model);
 		BusInfo slackBus = gRA.findFirstSlackBus(buses);
 		//assuming the pv owl file is exist and matched the criteria to be used in OPF simulation

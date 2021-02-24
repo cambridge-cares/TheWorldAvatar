@@ -33,6 +33,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 
 public class TestEN extends TestCase {
@@ -380,7 +381,7 @@ public class TestEN extends TestCase {
 		ENAgent b= new ENAgent ();
 			//List<String[]>buslist= b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfo,baseUrl);
 			// List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,branchInfo,"branch",baseUrl);
-			List<String[]>buslist=b.extractOWLinArray(b.readModelGreedy(ELECTRICAL_NETWORK),ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
+			List<String[]>buslist=b.extractOWLinArray(Util.readModelGreedy(ELECTRICAL_NETWORK),ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
 			//List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfocost,"generatorcost",baseUrl);
 			//assertEquals(208, buslist.size());
 	}
@@ -392,7 +393,7 @@ public class TestEN extends TestCase {
 		ENAgent b= new ENAgent ();
 		
 	String busmapurl=baseUrl+"/mappingforbus.csv";
-	OntModel model = ENAgent.readModelGreedy(ELECTRICAL_NETWORK);
+	OntModel model = Util.readModelGreedy(ELECTRICAL_NETWORK);
 		List<String[]>list=b.extractOWLinArray(model,ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
 	List<String[]>list2=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfo,"generator",baseUrl);
 	List<String[]>list3=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfocost,"generatorcost",baseUrl);

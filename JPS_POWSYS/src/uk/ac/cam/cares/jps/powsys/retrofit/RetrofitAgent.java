@@ -113,7 +113,7 @@ public class RetrofitAgent extends JPSAgent implements Prefixes, Paths {
 	public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants, List<String> substitutionalGenerators) {
 		
 		// the hasSubsystem triples of the electrical network top node itself are not part of the model
-		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
+		OntModel model = Util.readModelGreedy(electricalNetwork);
 		
 		List<BusInfo> buses = queryBuses(model);
 		
@@ -140,7 +140,7 @@ public class RetrofitAgent extends JPSAgent implements Prefixes, Paths {
 	}
 	
 	public void retrofitGenerator(String electricalNetwork, List<String> RenewableGenerators) {
-		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
+		OntModel model = Util.readModelGreedy(electricalNetwork);
 		
 		List<BusInfo> buses = queryBuses(model);
 		

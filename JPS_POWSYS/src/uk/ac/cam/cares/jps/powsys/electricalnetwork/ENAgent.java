@@ -105,7 +105,7 @@ public class ENAgent extends JPSAgent{
 		
 		logger.info("starting simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
-		OntModel model = readModelGreedy(iriofnetwork);	
+		OntModel model = Util.readModelGreedy(iriofnetwork);	
 		
 		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
 		
@@ -545,15 +545,6 @@ public class ENAgent extends JPSAgent{
 		return buslist;
 	}
 
-	public static OntModel readModelGreedy(String iriofnetwork) {
-		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "SELECT ?component "
-				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
-
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
-	}
 	
 	public List<String[]> extractOWLinArray(OntModel model, String iriofnetwork, String busInfo, String context, String baseUrl)
 			throws IOException {
