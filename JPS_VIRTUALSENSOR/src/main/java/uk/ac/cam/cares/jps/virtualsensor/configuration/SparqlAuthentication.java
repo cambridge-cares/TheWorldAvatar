@@ -1,8 +1,8 @@
 package uk.ac.cam.cares.jps.virtualsensor.configuration;
 
 public class SparqlAuthentication {
-    private static String user = "bg_user";
-    private static String password = "123456";
+    private static String user = "";
+    private static String password = "";
 
 	public static String getUser() {
 		return user;
