@@ -1,10 +1,14 @@
 version: "3.8"
 
+# Services
 services:
-  # Map reverse_proxy http to port 82 in test mode
+
+  # Reverse Proxy
   reverse_proxy:
+    # Map http to port 82
     ports:
       - 82:80
+
 
 # Test network
 networks:
