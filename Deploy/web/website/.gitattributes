@@ -6,6 +6,7 @@
 *.bin binary
 *.lock binary
 *.tar binary
+*.ttf binary
 *.zip binary
 *.gz binary
 *.7z binary
