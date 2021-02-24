@@ -1,0 +1,18 @@
+Source,Type,Target,Relation,Value
+00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Species,,
+http://purl.org/dc/elements/1.1/identifier,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,00b7e248-ae24-35bf-b7a0-b470b923ddf6
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,CO2,,
+http://www.w3.org/2004/02/skos/core#altLabel,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Carbon dioxide
+http://www.w3.org/2004/02/skos/core#altLabel,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Dry ice
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,124-38-9
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,C(=O)=O
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasAtomicBond,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,1 2 2 1 3 2
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometry,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,C 17.0000 10.0000 0.0000 O 18.0221 10.5679 0.0000 O 15.9779 9.4321 0.0000
+StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,StandardEnthalpyOfFormation,,
+00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasStandardEnthalpyOfFormation,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,-393.51 ± 0.13
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,kJ/mol
+Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Temperature,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,298.15
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,K
+StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasReferenceTemperature,
