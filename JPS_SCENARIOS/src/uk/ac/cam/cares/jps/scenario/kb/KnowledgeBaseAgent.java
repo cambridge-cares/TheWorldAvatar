@@ -2,30 +2,51 @@ package uk.ac.cam.cares.jps.scenario.kb;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.http.HttpHeaders;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 @WebServlet(urlPatterns = {"/kb/*", "/data/*", "/dataset/*"})
-public class KnowledgeBaseAgent extends HttpServlet {
+public class KnowledgeBaseAgent extends JPSAgent {
 
 	private static final long serialVersionUID = -4195274773048314961L;
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseAgent.class);
 	
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	@Override
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+
+        String path = requestParams.getString("scenarioagentoperation");
+
+        System.out.println("path= " + path);
+        
+        return new JSONObject();
+        }
+		
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
