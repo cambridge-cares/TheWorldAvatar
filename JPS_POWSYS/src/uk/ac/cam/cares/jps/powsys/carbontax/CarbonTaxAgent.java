@@ -177,7 +177,7 @@ public class CarbonTaxAgent extends JPSAgent {
 				+ "}";
 		
 
-		OntModel model = ENAgent.readModelGreedy(iriofnetwork);
+		OntModel model = Util.readModelGreedy(iriofnetwork);
 		List<String[]> resultListfromquery = Util.queryResult(model, gennodeInfo);
 
 		return resultListfromquery;

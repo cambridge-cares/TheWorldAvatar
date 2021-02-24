@@ -13,11 +13,12 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 public class TestENVisualization extends TestCase {
 	private static ENVisualization a = new ENVisualization();
 	private static String electricalnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
-	private OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+	private OntModel model = Util.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 	public void testcreateKML() throws TransformerException {
 		String b= a.createfinalKML(model);
 	}
@@ -86,15 +87,6 @@ public class TestENVisualization extends TestCase {
 	}
 	
 	
-	public void testKMLFile() {
-		
-		String url = "http://www.theworldavatar.com/OntoEN/test2.kml";
-		
-		String result = AgentCaller.executeGetWithURL(url);
-		
-		System.out.println(result);
-		
-	}
 	/** test validateInput() of ENVisualization
 	 * 
 	 */
