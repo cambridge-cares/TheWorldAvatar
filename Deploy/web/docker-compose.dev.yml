@@ -3,10 +3,10 @@ version: "3.8"
 # Services
 services:
 
-  # Have reverse proxy serve http over port 80 in dev mode
+  # Map reverse_proxy http to port 81 in dev mode
   reverse_proxy:
     ports:
-      - 80:80
+      - 81:80
 
 # Development network
 networks:
