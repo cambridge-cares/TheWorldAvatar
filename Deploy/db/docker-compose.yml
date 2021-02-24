@@ -5,7 +5,7 @@ services:
       args:
         - HASH=$HASH
       context: blazegraph
-    container_name: "blazegraph_${MODE}-${HASH}"
+    container_name: "blazegraph-${MODE}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     image: docker.cmclinnovations.com/blazegraph:v1.0
@@ -19,7 +19,7 @@ services:
       args:
         - HASH=$HASH
       context: rdf4j
-    container_name: "rdf4j_${MODE}-${HASH}" 
+    container_name: "rdf4j-${MODE}"
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password

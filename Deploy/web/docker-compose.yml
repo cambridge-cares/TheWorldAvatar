@@ -7,7 +7,7 @@ services:
   website:
     image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT
     build: "./website"
-    container_name: "website"
+    container_name: "website-${MODE}"
     restart: unless-stopped
     labels:
       description: "HTTPD hosted static Grav website containing Knowledge Graph content."
@@ -22,7 +22,7 @@ services:
     build:
       context: "./reverse_proxy"
       target: no_ssl
-    container_name: "reverse_proxy"
+    container_name: "reverse_proxy-${MODE}"
     restart: always
     labels:
       description: "Nginx configured as a reverse proxy for SSL handling and redirects."
@@ -35,7 +35,7 @@ services:
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   jps-chatbot:
     image: docker.cmclinnovations.com/jps-chatbot:6c73b9ff4
-    container_name: "jps-chatbot"
+    container_name: "jps-chatbot-${MODE}"
     restart: unless-stopped
     ports:
       - 5000:5000 
@@ -50,7 +50,7 @@ services:
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-power-system:
     image: docker.cmclinnovations.com/uk-power-system:e1ce3d6
-    container_name: "uk-power-system"
+    container_name: "uk-power-system-${MODE}"
     restart: unless-stopped
     ports:
       - 3001:3001 
@@ -65,7 +65,7 @@ services:
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-gas-grid:
     image: docker.cmclinnovations.com/uk-gas-grid:3b27c1d
-    container_name: "uk-gas-grid"
+    container_name: "uk-gas-grid-${MODE}"
     restart: unless-stopped
     ports:
       - 4001:80
