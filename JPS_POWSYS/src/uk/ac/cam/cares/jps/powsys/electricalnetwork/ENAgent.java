@@ -72,7 +72,6 @@ public class ENAgent extends JPSAgent{
 		if (!validateInput(requestParams)) {
 			throw new JSONException("ENAgent input parameters invalid");
 		}
-		System.out.println("Reached here!");
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = null;
 
