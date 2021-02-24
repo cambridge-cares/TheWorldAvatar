@@ -4,28 +4,57 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/SemakauVisualization"})
-public class SemakauVisualization extends JPSHttpServlet {
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-		
-		String path = request.getServletPath();
-		JSONObject jo= AgentCaller.readJsonParameter(request);
-		String irradiationsensorIRI=jo.optString("irradiationsensor",
-				"http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
-		String pvgeneratorIRI=jo.optString("pvgenerator","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl#PV-002");
-		String busIRI=jo.optString("ebus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl#EBus-006");
+public class SemakauVisualization extends JPSAgent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
+		validateInput(requestParams);
+		String irradiationsensorIRI=requestParams.getString("irradiationsensor");
+		String pvgeneratorIRI=requestParams.optString("pvgenerator","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl#PV-002");
+		String busIRI=requestParams.optString("ebus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl#EBus-006");
 		JSONObject responseParams =  graphDataPoints(irradiationsensorIRI, pvgeneratorIRI, busIRI);
 		System.gc();
 		return responseParams;
 	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        } 
+        try {
+            String pvgeneratorIRI = requestParams.getString("pvgenerator");
+            boolean q = InputValidator.checkIfValidIRI(pvgeneratorIRI);
+            String iriofirrF=requestParams.getString("irradiationsensor");
+	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+            String busIRI=requestParams.getString("ebus");
+	        boolean w = InputValidator.checkIfValidIRI(busIRI);
+            return q&r&w;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
 	/** extracts all graph data from IRIs and dumps in JSON Object
 	 * 
 	 * @param irradiationsensorIRI

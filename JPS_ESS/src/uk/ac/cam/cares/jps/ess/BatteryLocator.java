@@ -2,16 +2,20 @@ package uk.ac.cam.cares.jps.ess;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/LocateBattery" })
-public class BatteryLocator extends JPSHttpServlet {
+public class BatteryLocator extends JPSAgent {
 	
     @Override
     protected void setLogger() {
@@ -19,24 +23,41 @@ public class BatteryLocator extends JPSHttpServlet {
     }
     Logger logger = LoggerFactory.getLogger(BatteryLocator.class);
     
-    
     @Override
-   	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+    @Override
+   	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     	
-    	JSONObject jo = AgentCaller.readJsonParameter(request);
-	
+    	boolean validity = validateInput(requestParams);
+		if (validity == false) {
+			throw new JSONException("INPUT no longer valid");
+		}
 		//run the opf
-		String result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", requestParams.toString());
     	
-		String resultStartLocator = AgentCaller.executeGetWithJsonParameter("JPS_ESS/CreateBattery", jo.toString());
-    	JSONObject ans=new JSONObject(resultStartLocator); 
-		jo.put("batterylist",ans.get("batterylist"));
+		String resultStartLocator = AgentCaller.executeGetWithJsonParameter("JPS_ESS/CreateBattery", requestParams.toString());
+    	
 		
-		return jo;
-    	
-    	
-    	
-    	
+		return new JSONObject(resultStartLocator);
     }
-
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    	if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String storageFormat = requestParams.getString("storage");
+	        boolean q = InputValidator.checkIfValidIRI(storageFormat);
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean v = InputValidator.checkIfValidIRI(ENIRI);
+	        
+	        return q&v;
+        }catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
 }

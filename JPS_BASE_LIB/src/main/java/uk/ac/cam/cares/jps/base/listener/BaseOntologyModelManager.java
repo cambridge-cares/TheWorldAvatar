@@ -37,10 +37,10 @@ public class BaseOntologyModelManager {
     private static final String IRI_BASE = "http://www.theworldavatar.com";
     protected static final String IRI_KB = IRI_BASE + "/kb/";
     private static final String EX_SAVE_OWL =  "Saving OWL failed: ";
-    static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
+    static final String ABSDIR_ROOT = "/Applications/Tomcat/webapps/ROOT";
     private static final String ABSDIR_KB = ABSDIR_ROOT + "/kb/";
     // now reading from JPS_BASE_LIB/src/main/resources in jpstest.properties
-    protected static final String ABSDIR_ROOT_TEST =  KeyValueMap.getProperty("/jpstest.properties",IKeys.ABSDIR_ROOT);
+    protected static final String ABSDIR_ROOT_TEST =  "/Applications/Tomcat/webapps/ROOT";
     private static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
     private static final String IRI_BASE_TEST = "http://localhost:8080";
     protected static final String IRI_KB_TEST = IRI_BASE_TEST + "/kb/";
