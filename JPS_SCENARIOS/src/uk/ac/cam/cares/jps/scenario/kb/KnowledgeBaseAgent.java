@@ -43,7 +43,18 @@ public class KnowledgeBaseAgent extends JPSAgent {
         String path = requestParams.getString("scenarioagentoperation");
 
         System.out.println("path= " + path);
-        
+        String sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
+		String paramDatasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);
+		String paramResourceUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_RESOURCE);
+		String method = requestParams.getString("method");
+		try {
+			
+			
+		}catch (JPSRuntimeException e) {
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
         return new JSONObject();
         }
 		
