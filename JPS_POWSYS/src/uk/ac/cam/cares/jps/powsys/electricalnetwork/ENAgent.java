@@ -3,10 +3,12 @@ package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,30 +20,36 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
-public class ENAgent extends JPSHttpServlet {
+public class ENAgent extends JPSAgent{
 	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
@@ -55,20 +63,27 @@ public class ENAgent extends JPSHttpServlet {
 		return jenaOwlModel.getDatatypeProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	}
-	
-	 @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		JSONObject joforEN=requestParams;
-		String iriofnetwork = joforEN.getString("electricalnetwork");
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		if (!validateInput(requestParams)) {
+			throw new JSONException("ENAgent input parameters invalid");
+		}
+		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = null;
 
-		String path = request.getServletPath();
+		String path = requestParams.getString("path");
 
-		if ("/ENAgent/startsimulationPF".equals(path)) {
+		if (path.contains("/ENAgent/startsimulationPF")) {
 			modeltype = "PF";// PF or OPF
-		} else if ("/ENAgent/startsimulationOPF".equals(path)) {
+		} else if (path.contains("/ENAgent/startsimulationOPF")) {
 			modeltype = "OPF";
 		}
+		modeltype = "OPF";
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		
@@ -91,19 +106,29 @@ public class ENAgent extends JPSHttpServlet {
 		
 		logger.info("starting simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
-		OntModel model = readModelGreedy(iriofnetwork);	
+		OntModel model = Util.readModelGreedy(iriofnetwork);	
 		
 		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
 		
 		logger.info("running PyPower simulation");
-		runModel(baseUrl);
+		try {
+			String[] fileNames = {"/baseMVA.txt", "/bus.txt", "/gen.txt", "/branch.txt", "/outputBusOPF.txt", "/outputBranchOPF.txt", "/outputGenOPF.txt", "/areas.txt", "/genCost.txt", "/outputStatus.txt"};
+			runPythonScript("PyPower-PF-OPF-JA-9-Java-1.py", baseUrl, fileNames);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
-		String fileName = baseUrl+"/outputstatus.txt";
+		String fileName = baseUrl+"/outputStatus.txt";
 		Path path = Paths.get(fileName);
-		byte[] bytes = Files.readAllBytes(path);
-		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
-		if(allLines.get(2).contains("Converged!")) {
-			resjo.put("status", "converged");
+		BufferedReader input = new BufferedReader(new FileReader(fileName));
+	    String last, line;
+	    last = "";
+	    while ((line = input.readLine()) != null) { 
+	        last = line;
+	    }
+		if (last.contains("Converged")) {
+			resjo.put("status", "Converged");
 			try {
 				logger.info("converting PyPower results to OWL files");
 				doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
@@ -113,10 +138,10 @@ public class ENAgent extends JPSHttpServlet {
 			}
 			
 		}else {
-			resjo.put("status", "Not Converged");
+			resjo.put("status", "Diverged");
 			//return null;
 		}
-			
+		
 
 		
 		
@@ -513,25 +538,14 @@ public class ENAgent extends JPSHttpServlet {
 
 //		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
 //		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
-		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/SGPowergrid.py");
-		broker.putLocal(baseUrl + "/SGPowergrid.py", file2);
-		
-		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
-		broker.putLocal(baseUrl + "/runpy.bat", file3);
+
+//		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
+//		broker.putLocal(baseUrl + "/runpy.bat", file3);
 		
 		
 		return buslist;
 	}
 
-	public static OntModel readModelGreedy(String iriofnetwork) {
-		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "SELECT ?component "
-				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
-
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
-	}
 	
 	public List<String[]> extractOWLinArray(OntModel model, String iriofnetwork, String busInfo, String context, String baseUrl)
 			throws IOException {
@@ -697,14 +711,49 @@ public class ENAgent extends JPSHttpServlet {
 		
 		return resultString; 
 	}
-
+	
+	/*
 	public void runModel(String baseUrl) throws IOException {
 		//String result = CommandHelper.executeCommands(baseUrl, args);
 		String startbatCommand =baseUrl+"/runpy.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);
 		logger.info("final after calling: "+result);
 	}
-
+	*/
+	 /** run Python Script in folder
+		 * 
+		 * @param script
+		 * @param folder
+		 * @return
+		 * @throws Exception
+		 */
+	public String runPythonScript(String script, String folder, String[] fileNames) throws Exception {
+			String result = "";
+				String path = AgentLocator.getCurrentJpsAppDirectory(this);
+				String command = "python " + path+ "/python/model/" +script 
+						+ " " +folder +fileNames[0] + " " +folder 
+						+fileNames[1] + " " +folder +fileNames[2] + " " 
+						+folder +fileNames[3] +" 1" + " " +folder 
+						+fileNames[4] + " " +folder 
+						+fileNames[5] + " " +folder 
+						+fileNames[6] + " 1" + " 1" 
+						+ " " +folder +fileNames[7] + " " +folder 
+						+fileNames[8] + " " +folder +fileNames[9];
+				/*String command = "python " + path+ "/python/model/" +script 
+				+ " " +folder +"/baseMVA.txt" + " " +folder 
+				+"/bus.txt"+ " " +folder +"/gen.txt"+ " " 
+				+folder +"/branch.txt" +" 1" + " " +folder 
+				+"/outputBusOPF.txt"+ " " +folder 
+				+"/outputBranchOPF.txt"+ " " +folder 
+				+"/outputGenOPF.txt"+ " 1" + " 1" 
+				+ " " +folder +"/areas.txt"+ " " +folder 
+				+"/genCost.txt" + " " +folder +"/outputStatus.txt";*/
+				System.out.println(command);
+				result = CommandHelper.executeSingleCommand( path, command);
+			
+			
+				return result;
+		}
 	public ArrayList<String[]> readResult(String outputfiledir, int colnum) throws IOException {
 		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
 		
@@ -965,39 +1014,61 @@ public class ENAgent extends JPSHttpServlet {
 	}
 
 	public void updateGeneratorEmission(OntModel model) {
-		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-				+ "PREFIX j10:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "SELECT ?entity ?Pvalue ?valueemm ?emissionfactor " 
-				+ "WHERE {?entity  a  j1:PowerGenerator  ."
-				+ "?entity   j2:isModeledBy ?model ."
-				+ "?model   j5:hasModelVariable ?p ." 
-				+ "?p  a  j3:Pg  ." 
-				+ "?p  j2:hasValue ?vp ."
-				+ "?vp   j2:numericalValue ?Pvalue ." // p
-				+" ?entity j6:realizes ?genprocess ."
-				+ "?genprocess j9:hasEmission ?emm ."
-				+ "?emm a j9:Actual_CO2_Emission ."
-				+ "?emm j2:hasValue ?valueemm ." //iriofco2 emission
-				
-				+ "?genprocess j10:usesGenerationTechnology ?tech ."
-				+ "?tech j10:hasEmissionFactor ?emmfac ."
-				+ "?emmfac j2:hasValue ?valueemmfac ."
-				+ "?valueemmfac j2:numericalValue ?emissionfactor ." //emission factor 
-				
-				+ "}";
-		
-		ResultSet resultSet = JenaHelper.query(model, genInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+//		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+//				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+//				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+//				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+//				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+//				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+//				+ "PREFIX j10:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+//				+ "SELECT ?entity ?Pvalue ?valueemm ?emissionfactor " 
+//				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+//				+ "?entity   j2:isModeledBy ?model ."
+//				+ "?model   j5:hasModelVariable ?p ." 
+//				+ "?p  a  j3:Pg  ." 
+//				+ "?p  j2:hasValue ?vp ."
+//				+ "?vp   j2:numericalValue ?Pvalue ." // p
+//				+" ?entity j6:realizes ?genprocess ."
+//				+ "?genprocess j9:hasEmission ?emm ."
+//				+ "?emm a j9:Actual_CO2_Emission ."
+//				+ "?emm j2:hasValue ?valueemm ." //iriofco2 emission
+//				
+//				+ "?genprocess j10:usesGenerationTechnology ?tech ."
+//				+ "?tech j10:hasEmissionFactor ?emmfac ."
+//				+ "?emmfac j2:hasValue ?valueemmfac ."
+//				+ "?valueemmfac j2:numericalValue ?emissionfactor ." //emission factor 
+//				
+//				+ "}";
+		String genInfo = new SelectBuilder()
+				.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#")
+				.addPrefix("j10", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#")
+				.addVar("?entity").addVar("?Pvalue").addVar("?valueemm").addVar("?emissionfactor")
+				.addWhere("?entity", "a", "j1:PowerGenerator")
+				.addWhere("?entity", "j2:isModeledBy", "?model")
+				.addWhere("?model", "j5:hasModelVariable", "?p")
+		        .addWhere("?p","a","j3:Pg")
+		        .addWhere("?p","j2:hasValue", "?vp")
+		        .addWhere("?vp","j2:numericalValue", "?Pvalue")
+		        
+				.addWhere("?entity", "j4:realizes", "?genprocess")
+		        .addWhere( "?genprocess", "j9:hasEmission", "?emission")
+		        .addWhere("?emission", "a", "j9:Actual_CO2_Emission")
+		        .addWhere("?emission","j2:hasValue", "?valueemission")	
+		        
+				.addWhere("?genprocess", "j10:usesGenerationTechnology", "?tech")
+		        .addWhere("?tech","j10:hasEmissionFactor","?emm")
+		        .addWhere("?emm","j2:hasValue", "?valueemm")
+		        .addWhere("?valueemm","j2:numericalValue", "?emissionfactor")
+				.buildString();
+		List<String[]> resultListfromquery = Util.queryResult(model, genInfo);
 		DatatypeProperty numval = getNumericalValueProperty(model);
 		for (int c = 0; c < resultListfromquery.size(); c++) {
 		double pvalue=	Double.valueOf(resultListfromquery.get(c)[1]);
@@ -1010,4 +1081,18 @@ public class ENAgent extends JPSHttpServlet {
 		
 		
 	}
+//	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    	if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
+	        return w;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
 }

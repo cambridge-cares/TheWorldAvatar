@@ -3,7 +3,7 @@ import sys
 import numpy
 import scipy
 import pypower
-import xlsxwriter
+#import xlsxwriter
 
 from pypower.api import ppoption, runpf, runopf, printpf
 from numpy import array
