@@ -6,7 +6,7 @@ services:
   certbot:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     image: docker.cmclinnovations.com/certbot/certbot:v1.12.0
-    container_name: certbot
+    container_name: "certbot-${MODE}"
     volumes:
       - type: bind
         source: /etc/letsencrypt
