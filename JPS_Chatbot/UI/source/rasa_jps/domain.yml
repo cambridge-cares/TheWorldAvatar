@@ -2,18 +2,8 @@ intents:
   - select_mechanism_by_reaction
   - select_reaction_by_species
   - query_reaction_property
-  - symmetry_number
-  - rotational_constants
-  - vibration_frequency
-  - guassian_file
-  - spin_multiplicity
-  - formal_charge
-  - electronic_energy
-  - geometry_type
-  - lennard_jones_well
-  - polarizability
-  - dipole_moment
-  - rotational_relaxation_collision
+  - query_quantum_chemistry
+  - query_thermodynamic
 
 entities:
   - to

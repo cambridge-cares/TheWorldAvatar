@@ -1,10 +1,13 @@
 import json, re, random
 import os
+from fuzzywuzzy import fuzz
 
 import chemparse
-from  .locations import RASA_JPS_DIR
+from .locations import RASA_JPS_DIR
 
-word_map = {'hydrogen': 'H2', 'water': 'H2O', 'oxygen': 'O2', 'benzene': 'C6H6', 'methane': 'CH4'}
+word_map = {'hydrogen': 'H2', 'water': 'H2O', 'oxygen': 'O2', 'benzene': 'C6H6', 'methane': 'CH4',
+            'hydrogen peroxide': 'H2O2'}
+
 
 class SpeciesValidator:
 
@@ -46,21 +49,38 @@ class SpeciesValidator:
             # remove all XX1 component ...
             return ''.join(sorted(temp))
 
-    def validate(self, ontology, intent, species):
+    def validate(self, attribute, ontology, intent, species):
+        intents = ['polarizability',
+                   'dipole_moment',
+                   'rotational_relaxation_collision',
+                   'lennard_jones_well'] + ['symmetry_number',
+                                            'rotational_constants',
+                                            'vibration_frequency',
+                                            'guassian_file',
+                                            'spin_multiplicity',
+                                            'formal_charge',
+                                            'electronic_energy',
+                                            'geometry_type']
+
+        best_intent = \
+            sorted([(word, fuzz.ratio(attribute, word)) for word in intents], key=lambda x: x[1], reverse=True)[0][0]
 
         if ontology == 'ontocompchem':
-            species_dict = self.ontocompchem_species_dict[intent]
+            species_dict = self.ontocompchem_species_dict[best_intent]
             if species in species_dict:
                 return species
         elif ontology == 'ontokin':
-            species_dict = self.ontokin_species_dict[intent]
+            species_dict = self.ontokin_species_dict[best_intent]
             if species in species_dict:
                 return species
-        else:
-            return None
+        # else:
+        #     return None
 
+        print('=============== line 70 ==============')
+        print('species got in 70', species)
+        print('word map', word_map)
         if species.lower() in word_map:
-            species = word_map[species]
+            species = word_map[species.lower()]
 
         species = self.normalize_formula(species)
         print('normalized species', species)
@@ -69,15 +89,15 @@ class SpeciesValidator:
         # make the comparison
         # replace the species with what is in the dict ...
         if ontology == 'ontocompchem':
-            species_dict = self.ontocompchem_species_dict[intent]
+            species_dict = self.ontocompchem_species_dict[best_intent]
             print('line 54')
         elif ontology == 'ontokin':
-            species_dict = self.ontokin_species_dict[intent]
+            species_dict = self.ontokin_species_dict[best_intent]
         else:
             return None
         # chem parse is terrible, use regular expression instead
         for species_in_dict in species_dict:
-            original = species_in_dict # this is important, this goes to the query ...
+            original = species_in_dict  # this is important, this goes to the query ...
             transformed_species_in_dict = self.normalize_formula(species_in_dict)
             if species == transformed_species_in_dict:
                 # there is a match, the species is available in the KG. return the original
@@ -87,8 +107,7 @@ class SpeciesValidator:
 
         return None
 
-            # focus on one
-
+        # focus on one
 
         # TODO: use regular expression to find whether the question can be answered (the dict contains the species)
 
@@ -97,7 +116,6 @@ class SpeciesValidator:
         # selected_species = random.choices(species_list, k=40)
         selected_species = species_list
         return selected_species
-
 
 # speices_validator = SpeciesValidator()
 # intent = 'vibration_frequency'

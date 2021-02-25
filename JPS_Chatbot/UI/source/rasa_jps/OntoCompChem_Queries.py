@@ -20,7 +20,7 @@ OPTIONAL {
 ?rotational_constants gc:hasUnit ?unit .
 BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short) .
 }
-} 
+}  LIMIT 1
 '''
 
 VIBRATION_FREQUENCY_QUERY = '''
@@ -46,7 +46,7 @@ OPTIONAL {
 ?result gc:hasUnit ?unit .
 BIND(REPLACE(STR(?unit),"http://purl.org/gc/","") AS ?unit_short) .
 }
-}   
+}  LIMIT 1
 '''
 
 ROTATIONAL_SYMMETRY_NUMBER = '''
@@ -66,7 +66,7 @@ FILTER regex(?name, "^%s$")
 ?g_calculation  gc:isCalculationOn  ?RotationalSymmetry .
 ?RotationalSymmetry rdf:type ontocompchem:RotationalSymmetry .
 ?RotationalSymmetry ontocompchem:hasRotationalSymmetryNumber ?symmetry_number .
-}   
+}   LIMIT 1
 '''
 
 GAUSSIAN_FILE = '''
@@ -85,7 +85,7 @@ FILTER regex(?name, "^%s$")
 # ============ to match molecule =========================
 ?g_calculation  ontocompchem:hasEnvironment   ?Environment .
 ?Environment    gc:hasOutputFile  ?File . 
-}
+} LIMIT 1
 '''
 
 SPIN_MULTIPLICITY = '''
@@ -105,7 +105,7 @@ FILTER regex(?name, "^%s$")
 ?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
 ?GeometryOptimization    gc:hasMolecule    ?Molecule .
 ?Molecule  ontocompchem:hasSpinMultiplicity ?SpinMultiplicity .
-}
+} LIMIT 1
 '''
 
 FORMAL_CHARGE = '''
@@ -131,7 +131,7 @@ OPTIONAL {
 ?FormalCharge gc:hasUnit ?unit .
 BIND(REPLACE(STR(?unit),"http://purl.org/gc/","") AS ?unit_short) .
 }
-}
+} LIMIT 1
 '''
 
 ELECTRONIC_ENERGY = '''
@@ -156,7 +156,7 @@ OPTIONAL {
 ?x gc:hasUnit ?unit .
 BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short) .
 } # http://data.nasa.gov/qudt/owl/unit#Hartree
-}
+} LIMIT 1
 '''
 
 GEOMETRY_TYPE = '''
@@ -179,7 +179,7 @@ OPTIONAL {
 ?x gc:hasUnit ?unit .
 BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short) .
 } # http://data.nasa.gov/qudt/owl/unit#Hartree
-}
+} LIMIT 1
 
 '''
 

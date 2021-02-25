@@ -5,6 +5,9 @@ import urllib.request
 from pprint import pprint
 
 from .species_validator import SpeciesValidator
+from .attribute_mapping import AttributeMapper
+
+
 from .locations import JPS_SPARQL_TEMPLATE_PATH
 from .search_interface import SearchInterface
 from .OntoCompChem_Queries import ontocompchem_simple_intents, \
@@ -12,7 +15,7 @@ from .OntoCompChem_Queries import ontocompchem_simple_intents, \
     ROTATIONAL_SYMMETRY_NUMBER, GAUSSIAN_FILE, SPIN_MULTIPLICITY, \
     FORMAL_CHARGE, ELECTRONIC_ENERGY, GEOMETRY_TYPE
 
-from .OntoOntokin_Queries import  LENNARD_JONES_WELL_DEPTH, \
+from .OntoOntokin_Queries import  GENERAL_QUERY, LENNARD_JONES_WELL_DEPTH, \
     POLARIZABILITY, DIPOLE_MOMENT, RELAXATION_COLLISION,\
     ontokin_simple_intents
 
@@ -34,6 +37,7 @@ class JPS_query_constructor:
         self.serach_interface = SearchInterface()
         self.socketio = socketio
         self.validator = SpeciesValidator()
+        self.attribute_mapper = AttributeMapper()
         # self.fire_query.clear_cache()
         # self.fire_query_ontochemcomp.clear_cache()
 
@@ -78,23 +82,27 @@ class JPS_query_constructor:
         entity_pairs = JPS_query_constructor.extract_entity_pairs(intents['entities'])
         self.socketio.emit('coordinate_agent', 'Looking up entities in JPS KG<br/> -----------------' + str(entity_pairs) + '-----------------')
 
-        if intent in ontocompchem_simple_intents:
+        if intent in ontocompchem_simple_intents or (intent == 'query_quantum_chemistry'):
             result = {'intent': intent}
             for e in intents['entities']:
                 entity_type = e['entity']
                 value = e['value']
                 if entity_type == 'species':
                     result['species'] = value
-
+                if entity_type == 'attribute':
+                    result['attribute'] = value
             return result
 
-        if intent in ontokin_simple_intents:
+        if intent in ontokin_simple_intents or (intent == 'query_thermodynamic'):
             result = {'intent': intent}
             for e in intents['entities']:
                 entity_type = e['entity']
                 value = e['value']
                 if entity_type == 'species':
                     result['species'] = value
+                if entity_type == 'attribute':
+                    result['attribute'] = value
+
 
             return result
 
@@ -191,28 +199,43 @@ class JPS_query_constructor:
             rst = self.query_mechanism_by_reaction(result['reactants'], result['products'])
             if rst is None:
                 return None
-        elif intent in ontocompchem_simple_intents:
-            rst = self.query_quantum_of_moleculars(result['intent'], result['species'])
+        elif intent in ontocompchem_simple_intents or (intent == 'query_quantum_chemistry'):
+            rst = self.query_quantum_of_moleculars(result['intent'], result['species'], result['attribute'])
             if rst is None:
                 return None
-        elif intent in ontokin_simple_intents:
-            rst = self.query_thermo_of_moleculars(result['intent'], result['species'])
+        elif intent in ontokin_simple_intents or (intent == 'query_thermodynamic'):
+            rst = self.query_thermo_of_moleculars(result['intent'], result['species'], result['attribute'])
             if rst is None:
                 return None
 
 
         return rst.replace('[=]', '->').replace('=]', '->')
 
-    def query_thermo_of_moleculars(self, intent, species):
+    def query_thermo_of_moleculars(self, intent, species, attribute):
+
+        print('=========== species received ===========')
+        print('species:', species)
+        print('=========== attribute received ============')
+        print('attribute:', attribute)
         species = species.upper()
+        attribute_iri = self.attribute_mapper.find_closest_attribute(intent, attribute)
+        print('=========== attribute iri  ============')
+        print('attribute iri :', attribute_iri)
         print('============= line 206 ============')
         print('intent', intent)
         print('species', species)
-        species = self.validator.validate('ontokin', intent, species)
+        species = self.validator.validate(attribute, 'ontokin', intent, species)
         print('======== species =======')
         print(species)
 
-        if intent == 'lennard_jones_well':
+        if intent == 'query_thermodynamic':
+            q = GENERAL_QUERY % (attribute.replace(' ', '').upper(), species, attribute_iri, attribute.replace(' ', '').upper(), attribute_iri)
+            print('================ GENERAL QUERY ===============')
+            print(q)
+            rst = self.fire_query(q).decode('utf-8')
+            return rst
+        # # 1. att name, 1.5 species  2. att iri name 3. att name 4. att iri name
+        elif intent == 'lennard_jones_well':
             q = LENNARD_JONES_WELL_DEPTH % species
             print('===========JONE WELL DEPTH========== ')
             print(q)
@@ -242,7 +265,7 @@ class JPS_query_constructor:
             print('result from ontokin', rst)
             return rst
 
-    def query_quantum_of_moleculars(self, intent, species):
+    def query_quantum_of_moleculars(self, intent, species, attribute):
         # ROTATIONAL_CONSTANT_QUERY
         # VIBRATION_FREQUENCY_QUERY
         # ROTATIONAL_SYMMETRY_NUMBER
@@ -250,7 +273,9 @@ class JPS_query_constructor:
         print('=========== line 238 =============')
         print('intent', intent)
         print('species', species)
-        species = self.validator.validate('ontocompchem', intent, species)
+        attribute_iri = self.attribute_mapper.find_closest_attribute(intent, attribute)
+        species = self.validator.validate(attribute, 'ontocompchem', intent, species)
+        intent = self.attribute_mapper.map_to_quantum_queries(attribute_iri)
         self.socketio.emit('coordinate_agent', 'this is from the validator' + str(species))
         if species is None:
             self.socketio.emit('coordinate_agent', 'This species does not have this information in the World Avatar KG')
