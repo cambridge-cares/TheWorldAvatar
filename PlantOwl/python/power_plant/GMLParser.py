@@ -6,6 +6,7 @@
 """GMLParser is developed to parse crop map data encoded in GML,
 structure the data by following an ontological model, and finally
 represent the data using RDF."""
+import os
 import sys
 from pathlib import Path
 
@@ -281,10 +282,21 @@ def parse_gml(file_name, output_folder_path, start_feature_number, upper_limit):
 
 """This block of code is the access point to this Python module"""
 if __name__ == '__main__':
+    home = str(Path.home())
+    print(home+os.path.sep)
     if len(sys.argv) == 1:
         print('For HELP, run> GMLParser -h')
     if len(sys.argv) == 2 and str(sys.argv[1]) in '-h':
         print('To run the parser, provide a command as follows:>GMLParser.py [INPUT_FILE_PATH] [OUTPUT_FOLDER_PATH] [STARTING_FEATURE_NUMBER] [UPPER_LIMIT]\n')
-        print('An example comm>GMLParser Crop_Map_of_England_2019_North_Yorkshire.gml kb 1 1000')
+        print('An example comm>GMLParser /home/<username>/cropmaps/Crop_Map_of_England_2019_North_Yorkshire.gml /home/<username>/kb 1 1000')
     if len(sys.argv) == 5:
-        parse_gml(rdfizer.select_file())
+        input_file_name = ''
+        if '/' in sys.argv[1]:
+            input_file_name = sys.argv[1].split('/')
+            input_file_name = input_file_name[len(input_file_name)-1]
+        elif '\\' in sys.argv[1]:
+            input_file_name = sys.argv[1].split('\\')
+            input_file_name = input_file_name[len(input_file_name)-1]
+        if len(input_file_name) > 0:
+            input_file_name = input_file_name.split('.')[0]
+            parse_gml(sys.argv[1], sys.argv[2]+os.path.sep+input_file_name, sys.argv[3], sys.argv[4])
