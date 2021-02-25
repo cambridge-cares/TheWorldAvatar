@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#"
+     xml:base="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:OntoDispersionSim="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 February 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6258c44570dd8dc819f9f60ff250492d5c8ca1d1</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDispersionSim is an ontology developed for to represent dispersion simulations.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasEnvelope -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasEnvelope">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The envelope defines the simulation domain and contains the upper and lower corners.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasNx -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasNx">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#nx"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasNy -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasNy">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#ny"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasResultsFile -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasResultsFile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#resultsFile"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasSimAgent -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasSimAgent">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#simAgent"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasSimCRS -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasSimCRS">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#simCRS"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasZ_cell -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasZ_cell">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#z_cell"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontocsv/OntoDSV.owl#dsvFile -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontocsv/OntoDSV.owl#dsvFile"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#dispersionSim">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#nx -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#nx">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number of cells in the x direction, a scalar value and cells are uniform</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#ny -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#ny">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number of cells in the y direction, a scalar value and cells are uniform</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#resultsFile -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#resultsFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kb/ontocsv/OntoDSV.owl#dsvFile"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#simAgent -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#simAgent">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#simCRS -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#simCRS">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CRS used for simulation</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#z_cell -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#z_cell">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Value of each cell in the vertical direction, can be non-uniform</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
