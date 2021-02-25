@@ -207,7 +207,7 @@ public class ABoxManagement implements IABoxManagement{
 		OWLLiteral literal = createOWLLiteral(dataFactory, dataPropertyValue, propertyType);
 		// Creates the data property
 		OWLDataProperty dataPropertyCreated = createOWLDataProperty(dataFactory, basePathTBox,
-				dataPropertyName, HASH);
+				dataPropertyName, BACKSLASH);
 		// Adds the data property and value to the ABox ontology
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLDataPropertyAssertionAxiom(dataPropertyCreated, individual, literal)));
@@ -224,7 +224,7 @@ public class ABoxManagement implements IABoxManagement{
 	public void addObjectProperty(String objectPropertyName, String domainInstanceName, String rangeInstanceName) throws ABoxManagementException {
 		// Creates the object property
 		OWLObjectProperty objectProperty = dataFactory
-				.getOWLObjectProperty(basePathTBox.concat("#").concat(objectPropertyName));
+				.getOWLObjectProperty(basePathTBox.concat(BACKSLASH).concat(objectPropertyName));
 		// Creates the domain instance
 		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox,
 				domainInstanceName);
@@ -562,7 +562,7 @@ public class ABoxManagement implements IABoxManagement{
 	}
 	
 	private OWLIndividual createOWLIndividual(OWLDataFactory ontoFactory, String owlFilePath, String individualName){
-		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat("#").concat(individualName));
+		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat(BACKSLASH).concat(individualName));
 	}
 	
 	private OWLDataProperty createOWLDataProperty(OWLDataFactory dataFactory, String iri, String propertyName, String separator){

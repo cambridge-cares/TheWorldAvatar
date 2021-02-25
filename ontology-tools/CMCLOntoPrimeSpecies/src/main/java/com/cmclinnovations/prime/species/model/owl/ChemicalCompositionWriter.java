@@ -130,7 +130,7 @@ public class ChemicalCompositionWriter extends PrimeSpeciesConverter implements 
 	}
 	
 	public void addObjectPropertyFromOtherOntology(String basePath, String objectPropertyName, String domainInstanceName, String rangeInstanceName) throws OntoPrimeSpeciesException {
-		OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(basePath.concat("#").concat(objectPropertyName));
+		OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(basePath.concat(BACKSLASH).concat(objectPropertyName));
 		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox, domainInstanceName);
 		OWLIndividual rangeIndividual = createOWLIndividual(dataFactory, basePathABox, rangeInstanceName);
 		manager.applyChange(new AddAxiom(ontology, 
@@ -140,7 +140,7 @@ public class ChemicalCompositionWriter extends PrimeSpeciesConverter implements 
 	public void addDataPropertyFromOtherOntology(String basePath, String instance, String dataPropertyName, String dataPropertyValue, String propertyType) throws OntoPrimeSpeciesException {
 		OWLIndividual individual = createOWLIndividual(dataFactory, basePathABox, instance);
 		OWLLiteral literal = createOWLLiteral(dataFactory, dataPropertyValue, propertyType);
-		OWLDataProperty dataPropertyCreated = createOWLDataProperty(dataFactory, basePath, dataPropertyName, HASH);
+		OWLDataProperty dataPropertyCreated = createOWLDataProperty(dataFactory, basePath, dataPropertyName, BACKSLASH);
 		manager.applyChange(new AddAxiom(ontology, 
 				dataFactory.getOWLDataPropertyAssertionAxiom(dataPropertyCreated, individual, literal)));
 	}
@@ -150,7 +150,7 @@ public class ChemicalCompositionWriter extends PrimeSpeciesConverter implements 
 	}
 	
 	private OWLIndividual createOWLIndividual(OWLDataFactory ontoFactory, String owlFilePath, String individualName) {
-		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat("#").concat(individualName));
+		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat(BACKSLASH).concat(individualName));
 	}
 	
 	private OWLDataProperty createOWLDataProperty(OWLDataFactory dataFactory, String iri, String propertyName, String separator) {
