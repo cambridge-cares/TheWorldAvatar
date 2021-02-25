@@ -1,8 +1,10 @@
 package uk.ac.cam.cares.jps.base.config.test;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.nio.file.Paths;
 
 import junit.framework.TestCase;
@@ -52,18 +54,18 @@ public class AgentLocatorTest extends TestCase {
 		AgentLocator al = AgentLocator.getSingleton();
 		assertNotNull(al.getClass().getDeclaredMethod("getCurrentJpsAppDirectory", Object.class));
 		Object obj = null;
-
+		
 		try {
 			al.getCurrentJpsAppDirectory(obj);
 		} catch (JPSRuntimeException e) {
-			assertEquals(e.getMessage(), "Invalid class.");
+			assertEquals(e.getMessage(), "Path could not be constructed.");
 		}
-
+		
 		obj = this;
 		assertNotNull(al.getCurrentJpsAppDirectory(obj));
-		assertNotNull(al.getCurrentJpsAppDirectory(KeyValueMap.getInstance()));
 		assertEquals(al.getCurrentJpsAppDirectory(obj), al.getCurrentJpsAppDirectory(KeyValueMap.getInstance()));
-
+		assertTrue(al.getCurrentJpsAppDirectory(obj).contains("JPS_BASE_LIB"));
+				
 	}
 
 	public void testGetJPSBaseDirectory() throws NoSuchMethodException, SecurityException {
