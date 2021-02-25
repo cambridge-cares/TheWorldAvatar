@@ -9,6 +9,7 @@ filled in with example data and that is provided in the following path:
 python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
+from rdflib.extras.infixowl import OWL_NS
 from rdflib.namespace import RDF, RDFS, Namespace
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
@@ -134,7 +135,9 @@ def convert_into_rdf(file_path):
                process_data(row)
            line_count +=1
            print('[', line_count, ']', row)
-    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(), format="application/rdf+xml")
+    g.set((g.identifier, OWL_NS['imports'], URIRef(propread.getTBoxIRI())))
+    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(),
+                format="application/rdf+xml")
 
 """This block of codes calls the function that converts the content of ABox excel template into RDF"""
 if __name__ == '__main__':

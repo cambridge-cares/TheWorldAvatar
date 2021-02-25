@@ -2,18 +2,22 @@ package uk.ac.cam.cares.jps.powsys.coordination;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/startsimulation", "/processresult", "/processresultwithpf", "/processresultwithopf" })
-public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths {
+public class CoordinationAgent extends JPSAgent implements Prefixes, Paths {
 
 	private static final long serialVersionUID = 6859324316966357379L;
     @Override
@@ -21,37 +25,57 @@ public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths
         logger = LoggerFactory.getLogger(CoordinationAgent.class);
     }
     Logger logger = LoggerFactory.getLogger(CoordinationAgent.class);
-	 @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+        requestParams = processRequestParameters(requestParams, null);
+        return requestParams;
+    }
+    @Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	
-		JSONObject jo =requestParams;
-		String path = request.getServletPath();
+		String path = requestParams.getString("path");
 
-		if ("/startsimulation".equals(path)) {
+		if (path.contains("/startsimulation") ){
 			
-			startSimulation(jo);
+			startSimulation(requestParams);
 			
-		} else if ("/processresult".equals(path)) {
+		} else if (path.contains("/processresult") ){
 			
-			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
+			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", requestParams.toString());
 			
-		} else if ("/processresultwithpf".equals(path)) { //unused
+		} else if (path.contains("/processresultwithpf")) { //unused
 			
 			String pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationPF";
-			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
-			AgentCaller.executeGetWithJsonParameter(pathForENAgent, jo.toString());
+			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", requestParams.toString());
+			AgentCaller.executeGetWithJsonParameter(pathForENAgent, requestParams.toString());
 			
-		} else if ("/processresultwithopf".equals(path)) { //unused
+		} else if (path.contains("/processresultwithopf")) { //unused
 			
 			String pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationOPF";
-			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
-			AgentCaller.executeGetWithJsonParameter(pathForENAgent, jo.toString());
+			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", requestParams.toString());
+			AgentCaller.executeGetWithJsonParameter(pathForENAgent, requestParams.toString());
 			
 		}
-		return jo;
+		return requestParams;
 		
 	}
-	
+    @Override
+    /** validates input by checking if path and electricalnetwork parameters are present
+     * 
+     */
+      public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+          if (requestParams.isEmpty()) {
+              throw new BadRequestException();
+          }
+          try {
+          String iriofnetwork = requestParams.getString("electricalnetwork");
+          
+          return InputValidator.checkIfValidIRI(iriofnetwork) ;
+          } catch (JSONException ex) {
+            ex.printStackTrace();
+            throw new JSONException("electrical network not found");
+          }
+      }
 	public void startSimulation(JSONObject jo) {
 		
 		logger.info("starting optimization for carbon tax");
