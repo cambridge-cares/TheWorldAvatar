@@ -6,6 +6,7 @@
 """GMLParser is developed to parse crop map data encoded in GML,
 structure the data by following an ontological model, and finally
 represent the data using RDF."""
+import sys
 from pathlib import Path
 
 from lxml import etree
@@ -70,7 +71,7 @@ def get_envelope(context):
         return envelope
 
 """Parses properties of the current crop map"""
-def get_crop_map(context):
+def get_crop_map(context, output_folder_path, start_feature_number, upper_limit):
     map_counter = 0
     file_counter = 0
     flag = False
@@ -79,9 +80,9 @@ def get_crop_map(context):
         #print(elem)
         map_counter += 1
         """Following two conditional statements enables the processing of feature maps within a specified range"""
-        if map_counter < int(gmlpropread.getStartFeatureMember()):
+        if map_counter < int(start_feature_number):
             continue
-        if int(gmlpropread.getUpperLimit()) !=-9999 and map_counter > int(gmlpropread.getUpperLimit()):
+        if int(upper_limit) !=-9999 and map_counter > int(upper_limit):
             flag = True
             break
         for map in elem:
@@ -199,10 +200,10 @@ def get_crop_map(context):
             print('Total number of feature members processed:', map_counter)
 
         if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
-            if '/' in gmlpropread.getOutputFilePath():
-                save_into_disk(g, gmlpropread.getOutputFilePath()+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+            if '/' in output_folder_path:
+                save_into_disk(g, output_folder_path+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
             else:
-                save_into_disk(g, gmlpropread.getOutputFilePath() + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
+                save_into_disk(g, output_folder_path + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
                     file_counter))
             file_counter += 1
             g = Graph()
@@ -211,10 +212,10 @@ def get_crop_map(context):
     if flag:
         map_counter = map_counter -1
     if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) != 0:
-        if '/' in gmlpropread.getOutputFilePath():
-            save_into_disk(g, gmlpropread.getOutputFilePath()+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+        if '/' in output_folder_path:
+            save_into_disk(g, output_folder_path+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
         else:
-            save_into_disk(g, gmlpropread.getOutputFilePath() + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
+            save_into_disk(g, output_folder_path + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
                 file_counter))
         print('Total number of feature members processed:', map_counter)
 
@@ -268,7 +269,7 @@ def get_tag_name(url):
     return None
 
 """Parses a standard GML file consisting of an Envelope and a set of feature members"""
-def parse_gml(file_name):
+def parse_gml(file_name, output_folder_path, start_feature_number, upper_limit):
     p = Path(gmlpropread.getOutputFilePath())
     if not p.exists():
         print('The following file output path is not valid:', p)
@@ -276,8 +277,14 @@ def parse_gml(file_name):
     context = get_context(file_name, URL_ENVELOPE)
     get_envelope(context)
     context = get_context(file_name, URL_FEATURE_MEMBER)
-    get_crop_map(context)
+    get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
 
 """This block of code is the access point to this Python module"""
 if __name__ == '__main__':
-    parse_gml(rdfizer.select_file())
+    if len(sys.argv) == 1:
+        print('For HELP, run> GMLParser -h')
+    if len(sys.argv) == 2 and str(sys.argv[1]) in '-h':
+        print('To run the parser, provide a command as follows:>GMLParser.py [INPUT_FILE_PATH] [OUTPUT_FOLDER_PATH] [STARTING_FEATURE_NUMBER] [UPPER_LIMIT]\n')
+        print('An example comm>GMLParser Crop_Map_of_England_2019_North_Yorkshire.gml kb 1 1000')
+    if len(sys.argv) == 5:
+        parse_gml(rdfizer.select_file())
