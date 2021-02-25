@@ -1,26 +1,10 @@
 package uk.ac.cam.cares.jps.base.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Properties;
-import java.util.StringTokenizer;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.SystemPropertyUtils;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -33,10 +17,10 @@ public class AgentLocator {
 	private static String REL_DIR_PYTHON = "reldir.python";
 	private static String REL_DIR_WORKINGDIR = "reldir.workingdir";
 	private static String ABS_JPSDATA_WORKINGDIR = "absdir.jpsdata.workingdir";
-	private static String INVALID_CLASS = "Invalid class.";
 	private static String INVALID_PATH = "Path could not be constructed.";
 	private static String INVALID_URL = "URL could not be constructed.";
 	private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
+	private static final String[] SUBDIRECTORIES = new String[] {"WEB-INF", "bin", "build", "target"};
 
 	public static synchronized AgentLocator getSingleton() {
 		if (instance == null) {
@@ -61,24 +45,28 @@ public class AgentLocator {
 	}
 
 	/**
-	 * Obtains the working directory of given class. e.g.
+	 * Obtains the working/tomcat directory of given class. e.g.
 	 * getCurrentJpsAppDirectory(this) returns
 	 * /Users/russ1337/Desktop/JPS/workarea/JParkSimulator-git/JPS_BASE_LIB -
 	 * Russell
 	 */
-	public static String getCurrentJpsAppDirectory(Object thisClass) {
-		String thisFile;
-
-		try {
-			thisFile = new File(thisClass.toString()).getAbsolutePath();
+	public static String getCurrentJpsAppDirectory(Object thisObject) {
+        String path;
+        
+        try {
+			path = Paths.get(thisObject.getClass().getClassLoader().getResource("").toURI()).toString();
 		} catch (Exception e) {
-			throw new JPSRuntimeException(INVALID_CLASS);
+			throw new JPSRuntimeException(INVALID_PATH);
 		}
-
-		String appPath = Paths.get(thisFile).getParent().toString();
-
-		return appPath;
-
+        
+        for (String subDir : SUBDIRECTORIES) {
+        	while (path.contains(subDir)) {
+        		path = Paths.get(path).getParent().toString();
+        	}
+        }
+        
+        return path;
+        
 	}
 
 	/**
