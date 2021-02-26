@@ -121,7 +121,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 				+ "?s system:hasValue/system:numericalValue ?value"
 				+ "} ";
 		String result = client().query(resourceUrl, sparql);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
 		System.out.println(simplified);
 		String value = simplified.getJSONArray("results").getJSONObject(0).getString("value");
 		return value;
@@ -215,7 +215,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		String sparqlquery = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"SELECT ?s ?p ?o WHERE { ?s dcterms:created ?o } ";
 		String result = client().query(target, sparqlquery);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
 		assertEquals("http://example.com/" + provenanceName, subject);

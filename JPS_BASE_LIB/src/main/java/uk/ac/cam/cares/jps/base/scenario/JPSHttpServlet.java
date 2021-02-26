@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.http.Http;
 
 import javax.ws.rs.core.Response;
 
@@ -189,6 +190,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
      */
     protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
         JSONObject responseParams;
+        System.out.println("AgentCaller: getResponseBody 1 : " + requestParams.toString());
+        System.out.println("AgentCaller: getResponseBody 2: " +Http.readJsonParameter(request));
         requestParams.put("path", request.getServletPath());
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {

@@ -43,6 +43,7 @@ import com.google.gson.Gson;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 
@@ -270,15 +271,18 @@ public class AgentCaller {
 
         try {
             String json = null;
-
             if (request.getMethod().equals(HttpPost.METHOD_NAME)) {
                 json = IOUtils.toString(request.getReader());
             } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
                 json = request.getParameter(JSON_PARAMETER_KEY);
             }else if (request.getMethod().equals(HttpPut.METHOD_NAME)) {
-                json = IOUtils.toString(request.getReader());
+                json =IOUtils.toString(request.getReader());
+                JSONObject jo2 = new JSONObject(request.getParameter(JSON_PARAMETER_KEY));
+                jo2.put("body",json);
+                json = jo2.toString();
+                //hasty method of putting both into one
             }
-
+            System.out.println("AgentCaller: json "+ json);
             if (json != null) {
             	JSONObject jo = new JSONObject();
             	if (InputValidator.checkIfValidJSONObject(json)) {
@@ -289,6 +293,7 @@ public class AgentCaller {
             	jo.put("method", request.getMethod());
             	jo.put("pathInfo", request.getPathInfo());
             	jo.put("contentType", request.getContentType());
+            	jo.put("requestUrl", request.getRequestURL().toString());
             	
                 return jo;
             }
@@ -303,7 +308,8 @@ public class AgentCaller {
             jsonobject.put("method", request.getMethod())
 			.put("body", json)
 			.put("pathInfo", request.getPathInfo())
-			.put("contentType", request.getContentType());
+			.put("contentType", request.getContentType())
+			.put("requestUrl", request.getRequestURL().toString());
             return jsonobject;
 
         } catch (JSONException | IOException e) {

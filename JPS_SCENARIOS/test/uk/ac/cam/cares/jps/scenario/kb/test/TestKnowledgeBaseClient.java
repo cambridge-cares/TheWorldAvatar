@@ -125,7 +125,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		String sparqlquery = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"SELECT ?s ?p ?o WHERE { ?s dcterms:created ?o } ";
 		String result = KnowledgeBaseClient.query(dataset, target, sparqlquery);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
 		assertEquals("http://example.com/zzz", subject);
@@ -150,7 +150,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 
 		String accept = null;
 		String result = KnowledgeBaseClient.get(datasetUrl, target, accept);
-		assertEquals(body, result);
+		assertEquals(body,new JSONObject(result).getString("result"));
 	}
 	
 	private void assertKnowledgeBaseAbstracQuery(InputStream inputStream) {
