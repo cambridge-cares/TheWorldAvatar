@@ -14,8 +14,7 @@ class TestWrapper(unittest.TestCase):
         gateway.importJava(module1_view,'uk.ac.cam.cares.jps.base.util.*')
 
         FileUtil = module1_view.FileUtil
-
-        file_str = FileUtil.readFileLocally(path.join(path.dirname(__file__),'test_file1.txt'))
+        file_str = FileUtil.readFileLocally(path.abspath(path.join(path.dirname(__file__),'test_file1.txt')))
         self.assertEqual("test file1", file_str)
         gateway.shutdown()
 

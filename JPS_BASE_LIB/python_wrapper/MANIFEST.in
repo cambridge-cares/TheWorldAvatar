@@ -1,2 +1,1 @@
-include py4jps/tests/test_file1.txt 
 recursive-include py4jps/resources *
