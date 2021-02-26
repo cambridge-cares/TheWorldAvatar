@@ -43,6 +43,7 @@ import com.google.gson.Gson;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 
 public class AgentCaller {
@@ -279,7 +280,16 @@ public class AgentCaller {
             }
 
             if (json != null) {
-            	JSONObject jo = new JSONObject(json).put("method", request.getMethod());
+            	JSONObject jo = new JSONObject();
+            	if (InputValidator.checkIfValidJSONObject(json)) {
+            		jo = new JSONObject(json);
+            	}else {
+            		jo.put("body", json);
+            	}
+            	jo.put("method", request.getMethod());
+            	jo.put("pathInfo", request.getPathInfo());
+            	jo.put("contentType", request.getContentType());
+            	
                 return jo;
             }
 
@@ -290,6 +300,10 @@ public class AgentCaller {
                 String value = request.getParameter(key);
                 jsonobject.put(key, value);
             }
+            jsonobject.put("method", request.getMethod())
+			.put("body", json)
+			.put("pathInfo", request.getPathInfo())
+			.put("contentType", request.getContentType());
             return jsonobject;
 
         } catch (JSONException | IOException e) {
