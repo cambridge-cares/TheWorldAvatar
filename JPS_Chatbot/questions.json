@@ -1,0 +1,159 @@
+{"set": [
+  {
+    "questions": [
+      "Show me all the species with 8 H atoms",
+      "species that have more than 16 Oxygens",
+      "Species with an molecular weight larger than 200",
+      "species with enthalpy more than -167",
+      "chemicals with enthalpy less than -200",
+      "species of which enthalpy that is larger than -155"
+    ],
+    "label": "batch_restriction_query"
+  },
+  {
+    "questions": [
+      "What is the enthalpy of H2O2",
+      "Give me the name of C6H2",
+      "What is the empirical formula of Acetone",
+      "What is the oxidation potential of chloroauric acid",
+      "What is the pka constant of citric acid",
+      "what is the explosion limit of methane",
+      "what is the laminar flame speed of ethylene",
+      "what is the boiling point of Benzene",
+      "what is the energy content of Gasoline",
+      "what is Benzene's heat capacity",
+      "what is Benzene' std enthalpy of combustion",
+      "What is the GHS signal word of Benzene ",
+      "What is Benzene's conjugate acid",
+      "Describe the sublimation condition of Methyl salicylate",
+      "describe the odor of Methyl salicylate",
+      "what is the acidity of Methyl salicylate",
+      "what is the autoignition tempeature of Methyl salicylate",
+      "give me the fire diamond of Ethanol",
+      "what are the other names for Ethanol",
+      "what is the pka of Ethanol",
+      "what is methyl salicylate's solubility in ethanol",
+      "what are the main hazards of Ethanol",
+      "what is the type of diels-alder reaction",
+      "what is the other names of diels-alder reaction",
+      "what are the products of diels-alder reaction",
+      "what are the isomers of C3H8O",
+      "show me the 3d model of Colchicine"
+
+
+    ],
+    "label": "item_attribute_query"
+  },
+
+  {
+    "questions": [
+      "what is the vapour pressure of Benzene at 25 degrees",
+      "what is the refractive index of Benzene at 30 degrees",
+      "what is the boiling point of Butanone under 300 kpa",
+      "what is the melting point of Nonafluoro-tert-butyl alcohol under room temperature"
+
+    ],
+    "label": "item_attribute_query"
+  },
+  {
+    "questions": [
+      "what commodity chemicals are derived Butanone",
+      "list the chemicals with Hydrogen",
+      "Give me the chemicals that have Br element",
+      "what are the chemicals containing Rhenium",
+      "find all reactions with water as a reactant?"
+    ],"label": "batch_restriction_query"
+  },
+
+  {
+    "questions": [
+      "show me all the acids that are flammable",
+      "show me all the amino acids that are polar",
+      "show me all the amino acids that are not polar"
+    ],"label": "batch_restriction_query"
+
+  },
+  {
+    "questions": [
+      "give me the flash point of all the fossil fuels",
+      "show me the melting point of all the metals",
+      "give me the acidity of all kinds of acids",
+      "what are the hydrophobicity scales of all amino acid",
+      "what are the bond-dissociation energy of all chemicals at 298 K"
+    ],"label": "batch_attribute_query"
+  },
+
+  {
+    "questions": [
+      "List the diameters of all types of active carbon in nanometers",
+      "give me the flash point of all the fossil fuels in Calvin",
+      "show me the melting point of all the metals in Celsius"
+    ],
+    "label": "batch_attribute_query_with_unit"
+  },
+  {
+    "questions": [
+      "what is the precursor of flame synthesis of silica nanoparticles",
+      "what is the length of the CO bond in CO2"
+    ],
+    "label": "item_attribute_query"
+  },
+  {
+    "questions": [
+      "what is the pH value of 1 Mole KOH aqueous solution"
+    ],
+    "label": "item_attribute_with_restricted_quantity"
+  },
+  {
+    "questions": [
+      "which chemical has the stronger alkalinity, NaOH or KOH",
+      "which bond is the strongest, metallic or covalent or ionic"
+    ],
+    "label": "selection_by_comparison"
+  },
+  {
+    "questions": [
+      "how many different N-O bond lengths are in the actual structure of NO3"
+    ],
+    "label": "count"
+  },
+  {
+    "questions": [
+      "Is the neutralization reaction reversible or not",
+      "is alanine polar",
+      "is alanine a polar acid"
+    ],
+    "label": "true_or_false"
+  },
+  {
+    "questions": [
+      "what is fourier transform",
+      "what does navier stokes equation do",
+      "what is newtons method",
+      "what does newton's method do"
+    ],
+    "label": "simple_info"
+  },
+  {
+    "questions": [
+      "how long is 4 angstrom in nanometers",
+      "234 Celisus in Clavin",
+      "convert 456 pounds to kilograms"
+    ],
+    "label": "unit_conversion"
+  },
+  {
+    "questions": [
+      "show me the gap between the heat capacity of molecular hydrogen and water"
+    ],
+    "label": "value_subtraction"
+  },
+  {
+    "questions": [
+      "How to synthesize gold nanopatircles",
+      "how to synthesize titanium nanoparticles",
+      "how to separate oil and water"
+    ],
+    "label": "how_to_do_something"
+  }
+]}

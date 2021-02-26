@@ -1,0 +1,24 @@
+[
+  {
+    "tag_name": "entity",
+    "ids_to_tags": {
+      "1": "attribute",
+      "2": "class",
+      "3": "command",
+      "4": "indicator",
+      "5": "species",
+      "6": "to",
+      "0": "O"
+    },
+    "tags_to_ids": {
+      "attribute": 1,
+      "class": 2,
+      "command": 3,
+      "indicator": 4,
+      "species": 5,
+      "to": 6,
+      "O": 0
+    },
+    "num_tags": 7
+  }
+]

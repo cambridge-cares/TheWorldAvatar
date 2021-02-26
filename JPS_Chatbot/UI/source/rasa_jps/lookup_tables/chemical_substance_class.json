@@ -1,0 +1,2838 @@
+{
+  "alkane": [
+    "https://www.wikidata.org/entity/Q41581"
+  ],
+
+  "saturated hydrocarbon": [
+    "https://www.wikidata.org/entity/Q41581"
+  ],
+
+  "fossil fuel": ["http://www.wikidata.org/entity/Q41581"],
+
+  "fertilizer": [
+    "http://www.wikidata.org/entity/Q83323"
+  ],
+  "fertiliser": [
+    "http://www.wikidata.org/entity/Q83323"
+  ],
+  "fertilizers": [
+    "http://www.wikidata.org/entity/Q83323"
+  ],
+  "fertilisers": [
+    "http://www.wikidata.org/entity/Q83323"
+  ],
+  "chlorinated paraffin": [
+    "http://www.wikidata.org/entity/Q417632"
+  ],
+  "chlorinated paraffins": [
+    "http://www.wikidata.org/entity/Q417632"
+  ],
+  "chloroalkane": [
+    "http://www.wikidata.org/entity/Q417632"
+  ],
+  "4,4'-methylenediphenyldiisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "MDI": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "MOCA": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "MDR": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "1,1'-Methylenebis(4-isocyanatobenzene)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Diisocyanatodiphenylmethane": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Diphenylmethane diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-methylene diphenyl diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Methylenebis(phenyl isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Methylenedi-p-phenylene diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Methylenedi(phenyl isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Methylenediphenyl diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Methylenediphenyl isocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Methylenediphenylene diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-Methylenediphenylene isocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Bis(1,4-isocyanatophenyl)methane": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Bis(4-isocyanatophenyl)methane": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Bis(p-isocyanatophenyl)methane": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Bis(para-isocyanatophenyl)methane": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Diphenyl methane diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Diphenylmethane diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Diphenylmethane-4,4'-diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Diphenylmethyl diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylbisphenyl isocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylene bis(4-phenyl isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylene bisphenyl isocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylene di-p-phenylene ester of isocyanic acid": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylene di-p-phenylene isocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylene diphenyl diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenebis(4-isocyanatobenzene)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenebis(4-phenyl isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenebis(4-phenylene isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenebis(p-phenyl isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenebis(p-phenylene isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenebis(para-phenyl isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenebis(para-phenylene isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenebisphenyl diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenedi-p-phenylene diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "Methylenedi-para-phenylene diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "p,p'-Diphenylmethane diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "p,p'-Methylenebis(phenyl isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "para,para'-Diphenylmethane diisocyanate": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "para,para'-Methylenebis(phenyl isocyanate)": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "4,4'-,2,4'-,2,2'-diisocyanatodiphenylmethane": [
+    "http://www.wikidata.org/entity/Q417646"
+  ],
+  "acene": [
+    "http://www.wikidata.org/entity/Q418207"
+  ],
+  "acenes": [
+    "http://www.wikidata.org/entity/Q418207"
+  ],
+  "cyclophane": [
+    "http://www.wikidata.org/entity/Q419024"
+  ],
+  "cyclophanes": [
+    "http://www.wikidata.org/entity/Q419024"
+  ],
+  "boride": [
+    "http://www.wikidata.org/entity/Q419302"
+  ],
+  "borides": [
+    "http://www.wikidata.org/entity/Q419302"
+  ],
+  "thioamide": [
+    "http://www.wikidata.org/entity/Q419481"
+  ],
+  "thioamides": [
+    "http://www.wikidata.org/entity/Q419481"
+  ],
+  "thionamide": [
+    "http://www.wikidata.org/entity/Q419481"
+  ],
+  "thiourylene": [
+    "http://www.wikidata.org/entity/Q419481"
+  ],
+  "pyrrolizidine alkaloids": [
+    "http://www.wikidata.org/entity/Q419965"
+  ],
+  "necine bases": [
+    "http://www.wikidata.org/entity/Q419965"
+  ],
+  "pyrrolizidine alkaloid": [
+    "http://www.wikidata.org/entity/Q419965"
+  ],
+  "cosmetics": [
+    "http://www.wikidata.org/entity/Q131207"
+  ],
+  "make-up": [
+    "http://www.wikidata.org/entity/Q131207"
+  ],
+  "make up": [
+    "http://www.wikidata.org/entity/Q131207"
+  ],
+  "makeup": [
+    "http://www.wikidata.org/entity/Q131207"
+  ],
+  "harmala alkaloid": [
+    "http://www.wikidata.org/entity/Q135149"
+  ],
+  "harmala alkaloids": [
+    "http://www.wikidata.org/entity/Q135149"
+  ],
+  "silicone": [
+    "http://www.wikidata.org/entity/Q146439"
+  ],
+  "polysiloxane": [
+    "http://www.wikidata.org/entity/Q146439"
+  ],
+  "triarylmethane dye": [
+    "http://www.wikidata.org/entity/Q905480"
+  ],
+  "triarylmethane dyes": [
+    "http://www.wikidata.org/entity/Q905480"
+  ],
+  "heparinoid": [
+    "http://www.wikidata.org/entity/Q906289"
+  ],
+  "Hirudoid": [
+    "http://www.wikidata.org/entity/Q906289"
+  ],
+  "heparinoids": [
+    "http://www.wikidata.org/entity/Q906289"
+  ],
+  "fluorotelomer alcohol": [
+    "http://www.wikidata.org/entity/Q906620"
+  ],
+  "fluorotelomer (linear) alcohols": [
+    "http://www.wikidata.org/entity/Q906620"
+  ],
+  "salvinorins": [
+    "http://www.wikidata.org/entity/Q908054"
+  ],
+  "salvinorin": [
+    "http://www.wikidata.org/entity/Q908054"
+  ],
+  "ichthyotoxin": [
+    "http://www.wikidata.org/entity/Q908194"
+  ],
+  "ichthyotoxins": [
+    "http://www.wikidata.org/entity/Q908194"
+  ],
+  "fulvic acid": [
+    "http://www.wikidata.org/entity/Q909033"
+  ],
+  "fulvic acids": [
+    "http://www.wikidata.org/entity/Q909033"
+  ],
+  "colourant": [
+    "http://www.wikidata.org/entity/Q911922"
+  ],
+  "coloring agent": [
+    "http://www.wikidata.org/entity/Q911922"
+  ],
+  "coloring agents": [
+    "http://www.wikidata.org/entity/Q911922"
+  ],
+  "colorant": [
+    "http://www.wikidata.org/entity/Q911922"
+  ],
+  "coloring matter": [
+    "http://www.wikidata.org/entity/Q911922"
+  ],
+  "colouring agent": [
+    "http://www.wikidata.org/entity/Q911922"
+  ],
+  "colouring matter": [
+    "http://www.wikidata.org/entity/Q911922"
+  ],
+  "colouring agents": [
+    "http://www.wikidata.org/entity/Q911922"
+  ],
+  "solvent": [
+    "http://www.wikidata.org/entity/Q146505"
+  ],
+  "solvents": [
+    "http://www.wikidata.org/entity/Q146505"
+  ],
+  "electrolyte": [
+    "http://www.wikidata.org/entity/Q162908"
+  ],
+  "electrolyte solution": [
+    "http://www.wikidata.org/entity/Q162908"
+  ],
+  "mixture": [
+    "http://www.wikidata.org/entity/Q169336"
+  ],
+  "chemical mixture": [
+    "http://www.wikidata.org/entity/Q169336"
+  ],
+  "ginkgolide": [
+    "http://www.wikidata.org/entity/Q188152"
+  ],
+  "ginkgolides": [
+    "http://www.wikidata.org/entity/Q188152"
+  ],
+  "heme": [
+    "http://www.wikidata.org/entity/Q189621"
+  ],
+  "haem": [
+    "http://www.wikidata.org/entity/Q189621"
+  ],
+  "Rhodamines": [
+    "http://www.wikidata.org/entity/Q420410"
+  ],
+  "Rhodamine": [
+    "http://www.wikidata.org/entity/Q420410"
+  ],
+  "polyphosphate": [
+    "http://www.wikidata.org/entity/Q420783"
+  ],
+  "polyphosphates": [
+    "http://www.wikidata.org/entity/Q420783"
+  ],
+  "polyphosphoric acid": [
+    "http://www.wikidata.org/entity/Q420783"
+  ],
+  "CBS catalyst": [
+    "http://www.wikidata.org/entity/Q421679"
+  ],
+  "Corey\u00e2\u20ac\u201cBakshi\u00e2\u20ac\u201cShibata catalyst": [
+    "http://www.wikidata.org/entity/Q421679"
+  ],
+  "lincosamides": [
+    "http://www.wikidata.org/entity/Q422235"
+  ],
+  "lincosamide": [
+    "http://www.wikidata.org/entity/Q422235"
+  ],
+  "glucocorticoid": [
+    "http://www.wikidata.org/entity/Q422549"
+  ],
+  "glucocorticosteroid": [
+    "http://www.wikidata.org/entity/Q422549"
+  ],
+  "surfactant": [
+    "http://www.wikidata.org/entity/Q191154",
+    "http://www.wikidata.org/entity/Q191154"
+  ],
+  "surface active agent": [
+    "http://www.wikidata.org/entity/Q191154"
+  ],
+  "Surface active agent": [
+    "http://www.wikidata.org/entity/Q191154"
+  ],
+  "Surface Active Agents": [
+    "http://www.wikidata.org/entity/Q191154"
+  ],
+  "triptan": [
+    "http://www.wikidata.org/entity/Q423866"
+  ],
+  "triptans": [
+    "http://www.wikidata.org/entity/Q423866"
+  ],
+  "xenoestrogen": [
+    "http://www.wikidata.org/entity/Q423964"
+  ],
+  "environmental estrogen": [
+    "http://www.wikidata.org/entity/Q423964"
+  ],
+  "charge-transfer complex": [
+    "http://www.wikidata.org/entity/Q424085"
+  ],
+  "CT complex": [
+    "http://www.wikidata.org/entity/Q424085"
+  ],
+  "electron-donor-acceptor complex": [
+    "http://www.wikidata.org/entity/Q424085"
+  ],
+  "biogenic amine": [
+    "http://www.wikidata.org/entity/Q424455"
+  ],
+  "biogenic amines": [
+    "http://www.wikidata.org/entity/Q424455"
+  ],
+  "polyhydroxyalkanoate": [
+    "http://www.wikidata.org/entity/Q425079"
+  ],
+  "polyhydroxyalkanoates": [
+    "http://www.wikidata.org/entity/Q425079"
+  ],
+  "hemin": [
+    "http://www.wikidata.org/entity/Q425165"
+  ],
+  "Chlorohemin": [
+    "http://www.wikidata.org/entity/Q425165"
+  ],
+  "haemin": [
+    "http://www.wikidata.org/entity/Q425165"
+  ],
+  "motor oil": [
+    "http://www.wikidata.org/entity/Q193784"
+  ],
+  "car oil": [
+    "http://www.wikidata.org/entity/Q193784"
+  ],
+  "engine oil": [
+    "http://www.wikidata.org/entity/Q193784"
+  ],
+  "vehicle oil": [
+    "http://www.wikidata.org/entity/Q193784"
+  ],
+  "diuretic": [
+    "http://www.wikidata.org/entity/Q200656"
+  ],
+  "Diuretic": [
+    "http://www.wikidata.org/entity/Q200656"
+  ],
+  "Valines": [
+    "http://www.wikidata.org/entity/Q1801668"
+  ],
+  "valine": [
+    "http://www.wikidata.org/entity/Q1801668"
+  ],
+  "Leuchs' anhydride": [
+    "http://www.wikidata.org/entity/Q1821342"
+  ],
+  "NCAs": [
+    "http://www.wikidata.org/entity/Q1821342"
+  ],
+  "alkenoic acids": [
+    "http://www.wikidata.org/entity/Q1877812"
+  ],
+  "alkene acids": [
+    "http://www.wikidata.org/entity/Q1877812"
+  ],
+  "alkenecarboxylic acids": [
+    "http://www.wikidata.org/entity/Q1877812"
+  ],
+  "alkenic acids": [
+    "http://www.wikidata.org/entity/Q1877812"
+  ],
+  "mitogen": [
+    "http://www.wikidata.org/entity/Q1926141"
+  ],
+  "mitogens": [
+    "http://www.wikidata.org/entity/Q1926141"
+  ],
+  "Complex inorganic color pigments": [
+    "http://www.wikidata.org/entity/Q1938692"
+  ],
+  "MMO": [
+    "http://www.wikidata.org/entity/Q1938692"
+  ],
+  "CICP": [
+    "http://www.wikidata.org/entity/Q1938692"
+  ],
+  "mixed metal oxide pigments": [
+    "http://www.wikidata.org/entity/Q1938692"
+  ],
+  "aminocoumarin": [
+    "http://www.wikidata.org/entity/Q471668"
+  ],
+  "aminocoumarins": [
+    "http://www.wikidata.org/entity/Q471668"
+  ],
+  "strobilurin": [
+    "http://www.wikidata.org/entity/Q486497"
+  ],
+  "strobilurins": [
+    "http://www.wikidata.org/entity/Q486497"
+  ],
+  "product": [
+    "http://www.wikidata.org/entity/Q542929"
+  ],
+  "Product": [
+    "http://www.wikidata.org/entity/Q542929"
+  ],
+  "products": [
+    "http://www.wikidata.org/entity/Q542929"
+  ],
+  "product of reaction": [
+    "http://www.wikidata.org/entity/Q542929"
+  ],
+  "reaction product": [
+    "http://www.wikidata.org/entity/Q542929"
+  ],
+  "pure substance": [
+    "http://www.wikidata.org/entity/Q578779"
+  ],
+  "pure substances": [
+    "http://www.wikidata.org/entity/Q578779"
+  ],
+  "covalent network solid": [
+    "http://www.wikidata.org/entity/Q632350"
+  ],
+  "network covalent bonding": [
+    "http://www.wikidata.org/entity/Q632350"
+  ],
+  "infinite covalent lattice": [
+    "http://www.wikidata.org/entity/Q632350"
+  ],
+  "network solid": [
+    "http://www.wikidata.org/entity/Q632350"
+  ],
+  "covalent network": [
+    "http://www.wikidata.org/entity/Q632350"
+  ],
+  "network covalent": [
+    "http://www.wikidata.org/entity/Q632350"
+  ],
+  "gaseous signaling molecule": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gasotransmitters": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Endogenous gases": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous mediators": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous messengers": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous modulators": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous neuromediators": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous neuromodulators": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous neurotransmitters": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous second messengers": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous signaling": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous signalling molecules": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous signals": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gaseous transmitters": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gasomediators": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gasomessengers": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "Gasomodulators": [
+    "http://www.wikidata.org/entity/Q657925"
+  ],
+  "psychoactive drug": [
+    "http://www.wikidata.org/entity/Q3706669"
+  ],
+  "Psychoactive drug": [
+    "http://www.wikidata.org/entity/Q3706669"
+  ],
+  "Psychotropic": [
+    "http://www.wikidata.org/entity/Q3706669"
+  ],
+  "psychopharmaceutical": [
+    "http://www.wikidata.org/entity/Q3706669"
+  ],
+  "psychotropic": [
+    "http://www.wikidata.org/entity/Q3706669"
+  ],
+  "diyne": [
+    "http://www.wikidata.org/entity/Q4062481"
+  ],
+  "Diyne": [
+    "http://www.wikidata.org/entity/Q4062481"
+  ],
+  "alkadiyne": [
+    "http://www.wikidata.org/entity/Q4062481"
+  ],
+  "alkadiynes": [
+    "http://www.wikidata.org/entity/Q4062481"
+  ],
+  "diynes": [
+    "http://www.wikidata.org/entity/Q4062481"
+  ],
+  "ciguatoxin-1": [
+    "http://www.wikidata.org/entity/Q4387413"
+  ],
+  "CTX": [
+    "http://www.wikidata.org/entity/Q4387413"
+  ],
+  "Ciguatoxin 1": [
+    "http://www.wikidata.org/entity/Q4387413"
+  ],
+  "Ciguatoxin CTX 1": [
+    "http://www.wikidata.org/entity/Q4387413"
+  ],
+  "CTX 1": [
+    "http://www.wikidata.org/entity/Q4387413"
+  ],
+  "Pacific ciguatoxin 1": [
+    "http://www.wikidata.org/entity/Q4387413"
+  ],
+  "alkylresorcinol": [
+    "http://www.wikidata.org/entity/Q4727746"
+  ],
+  "alkylresorcinols": [
+    "http://www.wikidata.org/entity/Q4727746"
+  ],
+  "amphichromatic": [
+    "http://www.wikidata.org/entity/Q4748230"
+  ],
+  "amphichroic": [
+    "http://www.wikidata.org/entity/Q4748230"
+  ],
+  "ferrite": [
+    "http://www.wikidata.org/entity/Q5105088"
+  ],
+  "Ferrite magnet": [
+    "http://www.wikidata.org/entity/Q5105088"
+  ],
+  "mineral": [
+    "http://www.wikidata.org/entity/Q7946"
+  ],
+  "minerals": [
+    "http://www.wikidata.org/entity/Q7946"
+  ],
+  "drug": [
+    "http://www.wikidata.org/entity/Q8386",
+    "http://www.wikidata.org/entity/Q12140"
+  ],
+  "recreational drug": [
+    "http://www.wikidata.org/entity/Q8386"
+  ],
+  "drugs": [
+    "http://www.wikidata.org/entity/Q8386"
+  ],
+  "plastic": [
+    "http://www.wikidata.org/entity/Q11474"
+  ],
+  "plastics": [
+    "http://www.wikidata.org/entity/Q11474"
+  ],
+  "medication": [
+    "http://www.wikidata.org/entity/Q12140"
+  ],
+  "pharmaceutical drug": [
+    "http://www.wikidata.org/entity/Q12140"
+  ],
+  "medicine": [
+    "http://www.wikidata.org/entity/Q12140"
+  ],
+  "pharmaceutical": [
+    "http://www.wikidata.org/entity/Q12140"
+  ],
+  "beer": [
+    "http://www.wikidata.org/entity/Q44"
+  ],
+  "brew": [
+    "http://www.wikidata.org/entity/Q44"
+  ],
+  "persistent carbene": [
+    "http://www.wikidata.org/entity/Q425776"
+  ],
+  "stable carbene": [
+    "http://www.wikidata.org/entity/Q425776"
+  ],
+  "vanadates": [
+    "http://www.wikidata.org/entity/Q426228"
+  ],
+  "vanadate": [
+    "http://www.wikidata.org/entity/Q426228"
+  ],
+  "enzyme inhibitor": [
+    "http://www.wikidata.org/entity/Q427492"
+  ],
+  "inhibitor": [
+    "http://www.wikidata.org/entity/Q427492"
+  ],
+  "hydrophobe": [
+    "http://www.wikidata.org/entity/Q219567"
+  ],
+  "hydrophobic molecule": [
+    "http://www.wikidata.org/entity/Q219567"
+  ],
+  "lecithin": [
+    "http://www.wikidata.org/entity/Q241595"
+  ],
+  "Lecithin": [
+    "http://www.wikidata.org/entity/Q241595"
+  ],
+  "Eggyolk lecithin": [
+    "http://www.wikidata.org/entity/Q241595"
+  ],
+  "L-alpha-Phosphatidyl choline": [
+    "http://www.wikidata.org/entity/Q241595"
+  ],
+  "Soybean lecithin": [
+    "http://www.wikidata.org/entity/Q241595"
+  ],
+  "trans fat": [
+    "http://www.wikidata.org/entity/Q243465"
+  ],
+  "trans fats": [
+    "http://www.wikidata.org/entity/Q243465"
+  ],
+  "trans fatty acid": [
+    "http://www.wikidata.org/entity/Q243465"
+  ],
+  "trans fatty acids": [
+    "http://www.wikidata.org/entity/Q243465"
+  ],
+  "trans-unsaturated fatty acids": [
+    "http://www.wikidata.org/entity/Q243465"
+  ],
+  "phytoalexin": [
+    "http://www.wikidata.org/entity/Q422870"
+  ],
+  "phytoalexins": [
+    "http://www.wikidata.org/entity/Q422870"
+  ],
+  "cannabinoids": [
+    "http://www.wikidata.org/entity/Q422936"
+  ],
+  "cannabinoid": [
+    "http://www.wikidata.org/entity/Q422936"
+  ],
+  "amidines": [
+    "http://www.wikidata.org/entity/Q423088"
+  ],
+  "amidine": [
+    "http://www.wikidata.org/entity/Q423088"
+  ],
+  "calixarene": [
+    "http://www.wikidata.org/entity/Q423503"
+  ],
+  "calixarenes": [
+    "http://www.wikidata.org/entity/Q423503"
+  ],
+  "betalain": [
+    "http://www.wikidata.org/entity/Q423717"
+  ],
+  "betalains": [
+    "http://www.wikidata.org/entity/Q423717"
+  ],
+  "flame retardant": [
+    "http://www.wikidata.org/entity/Q902863"
+  ],
+  "fire retardants": [
+    "http://www.wikidata.org/entity/Q902863"
+  ],
+  "penetrating oil": [
+    "http://www.wikidata.org/entity/Q379333"
+  ],
+  "penetrating fluid": [
+    "http://www.wikidata.org/entity/Q379333"
+  ],
+  "endohedral fullerene": [
+    "http://www.wikidata.org/entity/Q385413"
+  ],
+  "endohedral fullerenes": [
+    "http://www.wikidata.org/entity/Q385413"
+  ],
+  "aglycone": [
+    "http://www.wikidata.org/entity/Q394316"
+  ],
+  "aglycon": [
+    "http://www.wikidata.org/entity/Q394316"
+  ],
+  "aglycones": [
+    "http://www.wikidata.org/entity/Q394316"
+  ],
+  "metabolite": [
+    "http://www.wikidata.org/entity/Q407595",
+    "http://www.wikidata.org/entity/Q407595"
+  ],
+  "kavalactone": [
+    "http://www.wikidata.org/entity/Q408171"
+  ],
+  "kavalactones": [
+    "http://www.wikidata.org/entity/Q408171"
+  ],
+  "explosive material": [
+    "http://www.wikidata.org/entity/Q12870"
+  ],
+  "explosive": [
+    "http://www.wikidata.org/entity/Q12870"
+  ],
+  "explosives": [
+    "http://www.wikidata.org/entity/Q12870"
+  ],
+  "ice": [
+    "http://www.wikidata.org/entity/Q23392"
+  ],
+  "water": [
+    "http://www.wikidata.org/entity/Q283"
+  ],
+  "crystalline water": [
+    "http://www.wikidata.org/entity/Q23392"
+  ],
+  "frozen ice": [
+    "http://www.wikidata.org/entity/Q23392"
+  ],
+  "frozen water": [
+    "http://www.wikidata.org/entity/Q23392"
+  ],
+  "solid water": [
+    "http://www.wikidata.org/entity/Q23392"
+  ],
+  "water ice": [
+    "http://www.wikidata.org/entity/Q23392"
+  ],
+  "pyrophoricity": [
+    "http://www.wikidata.org/entity/Q912400"
+  ],
+  "pyrophoric": [
+    "http://www.wikidata.org/entity/Q912400"
+  ],
+  "hypohalite": [
+    "http://www.wikidata.org/entity/Q1036661"
+  ],
+  "hypohalites": [
+    "http://www.wikidata.org/entity/Q1036661"
+  ],
+  "chemical product": [
+    "http://www.wikidata.org/entity/Q1069267"
+  ],
+  "chemical": [
+    "http://www.wikidata.org/entity/Q1069267"
+  ],
+  "Quinacridone pigments": [
+    "http://www.wikidata.org/entity/Q1073561"
+  ],
+  "Quinacridones": [
+    "http://www.wikidata.org/entity/Q1073561"
+  ],
+  "dichloropropene": [
+    "http://www.wikidata.org/entity/Q1209411"
+  ],
+  "dichloropropylene": [
+    "http://www.wikidata.org/entity/Q1209411"
+  ],
+  "oxadiazole": [
+    "http://www.wikidata.org/entity/Q1227206"
+  ],
+  "oxadiazoles": [
+    "http://www.wikidata.org/entity/Q1227206"
+  ],
+  "reductone": [
+    "http://www.wikidata.org/entity/Q1347057"
+  ],
+  "reductones": [
+    "http://www.wikidata.org/entity/Q1347057"
+  ],
+  "cryoprotectant": [
+    "http://www.wikidata.org/entity/Q692267"
+  ],
+  "cryoprotectants": [
+    "http://www.wikidata.org/entity/Q692267"
+  ],
+  "cryoprotective agent": [
+    "http://www.wikidata.org/entity/Q692267"
+  ],
+  "cryoprotective agents": [
+    "http://www.wikidata.org/entity/Q692267"
+  ],
+  "streptogramins": [
+    "http://www.wikidata.org/entity/Q739867"
+  ],
+  "streptogramin": [
+    "http://www.wikidata.org/entity/Q739867"
+  ],
+  "nootropic": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "cognitive enhancer": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "cognitive enhancers": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "Nootropic Agent": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "Nootropic Agents": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "Nootropic Drugs": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "nootropics": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "smart drug": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "smart drugs": [
+    "http://www.wikidata.org/entity/Q742487"
+  ],
+  "ketone bodies": [
+    "http://www.wikidata.org/entity/Q746183"
+  ],
+  "ketone body": [
+    "http://www.wikidata.org/entity/Q746183"
+  ],
+  "glycerol ester of wood rosin": [
+    "http://www.wikidata.org/entity/Q836765"
+  ],
+  "ester gum": [
+    "http://www.wikidata.org/entity/Q836765"
+  ],
+  "glyceryl abietate": [
+    "http://www.wikidata.org/entity/Q836765"
+  ],
+  "viologens": [
+    "http://www.wikidata.org/entity/Q845218"
+  ],
+  "viologen": [
+    "http://www.wikidata.org/entity/Q845218"
+  ],
+  "binder": [
+    "http://www.wikidata.org/entity/Q863583"
+  ],
+  "binding agent": [
+    "http://www.wikidata.org/entity/Q863583"
+  ],
+  "precursor": [
+    "http://www.wikidata.org/entity/Q247994"
+  ],
+  "precursor (chemistry)": [
+    "http://www.wikidata.org/entity/Q247994"
+  ],
+  "biogenic substance": [
+    "http://www.wikidata.org/entity/Q289472"
+  ],
+  "biogene": [
+    "http://www.wikidata.org/entity/Q289472"
+  ],
+  "biomolecule": [
+    "http://www.wikidata.org/entity/Q289472"
+  ],
+  "depside": [
+    "http://www.wikidata.org/entity/Q408611"
+  ],
+  "depsides": [
+    "http://www.wikidata.org/entity/Q408611"
+  ],
+  "xenobiotic": [
+    "http://www.wikidata.org/entity/Q409205"
+  ],
+  "xenobiotics": [
+    "http://www.wikidata.org/entity/Q409205"
+  ],
+  "Mono- and diacetyl tartaric acid esters of mono- and diglycerides of fatty acids": [
+    "http://www.wikidata.org/entity/Q409406"
+  ],
+  "DATEM": [
+    "http://www.wikidata.org/entity/Q409406"
+  ],
+  "diacetyl tartaric acid ester of mono- and diglycerides": [
+    "http://www.wikidata.org/entity/Q409406"
+  ],
+  "E472e": [
+    "http://www.wikidata.org/entity/Q409406"
+  ],
+  "mitotic inhibitor": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "anti-microtubule drug": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "antimitotic agent": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "Antimitotic Agents": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "Antimitotic Drugs": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "Antimitotics": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "microtubule poison": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "microtubule-active drug": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "microtubule-targeting agent": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "mitotic poison": [
+    "http://www.wikidata.org/entity/Q6881918"
+  ],
+  "butylamines": [
+    "http://www.wikidata.org/entity/Q14531849"
+  ],
+  "butylamine": [
+    "http://www.wikidata.org/entity/Q14531849"
+  ],
+  "decynes": [
+    "http://www.wikidata.org/entity/Q15679938"
+  ],
+  "decyne": [
+    "http://www.wikidata.org/entity/Q15679938"
+  ],
+  "descaling agent": [
+    "http://www.wikidata.org/entity/Q16960009"
+  ],
+  "chemical descaler": [
+    "http://www.wikidata.org/entity/Q16960009"
+  ],
+  "nanoporous material": [
+    "http://www.wikidata.org/entity/Q17623309"
+  ],
+  "nanoporous": [
+    "http://www.wikidata.org/entity/Q17623309"
+  ],
+  "ynone": [
+    "http://www.wikidata.org/entity/Q18435446"
+  ],
+  "ynones": [
+    "http://www.wikidata.org/entity/Q18435446"
+  ],
+  "chemical warfare agents": [
+    "http://www.wikidata.org/entity/Q21973549"
+  ],
+  "Agents": [
+    "http://www.wikidata.org/entity/Q21973549"
+  ],
+  "Chemical Warfare": [
+    "http://www.wikidata.org/entity/Q21973549"
+  ],
+  "chemical warfare agent": [
+    "http://www.wikidata.org/entity/Q21973549"
+  ],
+  "Warfare Agents": [
+    "http://www.wikidata.org/entity/Q21973549"
+  ],
+  "Chemical": [
+    "http://www.wikidata.org/entity/Q21973549"
+  ],
+  "trinitroethylorthocarbonate": [
+    "http://www.wikidata.org/entity/Q25104102"
+  ],
+  "C9H8N12O28": [
+    "http://www.wikidata.org/entity/Q25104102"
+  ],
+  "TNEOC": [
+    "http://www.wikidata.org/entity/Q25104102"
+  ],
+  "isodecane": [
+    "http://www.wikidata.org/entity/Q27032337"
+  ],
+  "2-methylnonane": [
+    "http://www.wikidata.org/entity/Q27032337"
+  ],
+  "prostaglandin a1": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "PGA1": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "(13E,15S)-15-hydroxy-9-oxo-Prosta-10,13-dien-1-oate": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "(13E,15S)-15-hydroxy-9-oxo-Prosta-10,13-dien-1-oic acid": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "15-Hydroxy-9-oxoprosta-10,13-dienoate": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "15-Hydroxy-9-oxoprosta-10,13-dienoic acid": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "15a-Hydroxy-9-ketoprosta-10,13-dienoate": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "15a-Hydroxy-9-ketoprosta-10,13-dienoic acid": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "15a-Hydroxy-9-oxo-10,13E-prostadienoate": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "15a-Hydroxy-9-oxo-10,13E-prostadienoic acid": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "2-(3-Hydroxy-1-octenyl)-5-oxo-3- cyclopentene-1-heptanoate": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "2-(3-Hydroxy-1-octenyl)-5-oxo-3- cyclopentene-1-heptanoic acid": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "2-(3-Hydroxy-1-octenyl)-5-oxo-3-Cyclopentene-1-heptanoate": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "2-(3-Hydroxy-1-octenyl)-5-oxo-3-Cyclopentene-1-heptanoic acid": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "7-[(1R,2S)-2-[(1E,3S)-3-hydroxyoct-1-en-1-yl]-5-oxocyclopent-3-en-1-yl]heptanoic acid": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "Prostaglandin E1-217": [
+    "http://www.wikidata.org/entity/Q27098093"
+  ],
+  "vinyl sulfone": [
+    "http://www.wikidata.org/entity/Q27104812"
+  ],
+  "(CH2=CH)2SO2": [
+    "http://www.wikidata.org/entity/Q27104812"
+  ],
+  "1-(Vinylsulfonyl)ethylene": [
+    "http://www.wikidata.org/entity/Q27104812"
+  ],
+  "1,1'-Sulphonylbisethene": [
+    "http://www.wikidata.org/entity/Q27104812"
+  ],
+  "Bis(ethenyl)sulfone": [
+    "http://www.wikidata.org/entity/Q27104812"
+  ],
+  "Divinyl sulphone": [
+    "http://www.wikidata.org/entity/Q27104812"
+  ],
+  "Vinyl sulfone": [
+    "http://www.wikidata.org/entity/Q27104812"
+  ],
+  "vinyl sulphone": [
+    "http://www.wikidata.org/entity/Q27104812"
+  ],
+  "5-carboxytetramethylrhodamine": [
+    "http://www.wikidata.org/entity/Q27122704"
+  ],
+  "5-TAMRA": [
+    "http://www.wikidata.org/entity/Q27122704"
+  ],
+  "Phytoestrogens": [
+    "http://www.wikidata.org/entity/Q414496"
+  ],
+  "Phyto-Estrogen": [
+    "http://www.wikidata.org/entity/Q414496"
+  ],
+  "Phytoestrogen": [
+    "http://www.wikidata.org/entity/Q414496"
+  ],
+  "Plant Estrogen": [
+    "http://www.wikidata.org/entity/Q414496"
+  ],
+  "Plant Estrogens": [
+    "http://www.wikidata.org/entity/Q414496"
+  ],
+  "jasmonate": [
+    "http://www.wikidata.org/entity/Q415713"
+  ],
+  "jasmonates": [
+    "http://www.wikidata.org/entity/Q415713"
+  ],
+  "Hydroxyethyl starch": [
+    "http://www.wikidata.org/entity/Q415775"
+  ],
+  "HAES": [
+    "http://www.wikidata.org/entity/Q415775"
+  ],
+  "HES": [
+    "http://www.wikidata.org/entity/Q415775"
+  ],
+  "Hetastarch": [
+    "http://www.wikidata.org/entity/Q415775"
+  ],
+  "Hydroxyethyl starch 130/0.4": [
+    "http://www.wikidata.org/entity/Q415775"
+  ],
+  "isothiocyanates": [
+    "http://www.wikidata.org/entity/Q416049"
+  ],
+  "isothiocyanate": [
+    "http://www.wikidata.org/entity/Q416049"
+  ],
+  "Aryne": [
+    "http://www.wikidata.org/entity/Q416633"
+  ],
+  "Benzyne": [
+    "http://www.wikidata.org/entity/Q416633"
+  ],
+  "aerosol": [
+    "http://www.wikidata.org/entity/Q104541"
+  ],
+  "wax": [
+    "http://www.wikidata.org/entity/Q124695"
+  ],
+  "Zintl phase": [
+    "http://www.wikidata.org/entity/Q128575"
+  ],
+  "Selenol": [
+    "http://www.wikidata.org/entity/Q130764"
+  ],
+  "curare": [
+    "http://www.wikidata.org/entity/Q138919"
+  ],
+  "Secosteroid": [
+    "http://www.wikidata.org/entity/Q139660"
+  ],
+  "reaction inhibitor": [
+    "http://www.wikidata.org/entity/Q163767"
+  ],
+  "dangerous substance": [
+    "http://www.wikidata.org/entity/Q174107"
+  ],
+  "flavin group": [
+    "http://www.wikidata.org/entity/Q174337"
+  ],
+  "nutrient": [
+    "http://www.wikidata.org/entity/Q181394"
+  ],
+  "Tellurol": [
+    "http://www.wikidata.org/entity/Q181954"
+  ],
+  "dielectric": [
+    "http://www.wikidata.org/entity/Q184996"
+  ],
+  "alum": [
+    "http://www.wikidata.org/entity/Q190527"
+  ],
+  "Zincate": [
+    "http://www.wikidata.org/entity/Q204649"
+  ],
+  "vitamin B6": [
+    "http://www.wikidata.org/entity/Q205130"
+  ],
+  "Squaraine dye": [
+    "http://www.wikidata.org/entity/Q206501"
+  ],
+  "Q223094": [
+    "http://www.wikidata.org/entity/Q223094"
+  ],
+  "humic acid": [
+    "http://www.wikidata.org/entity/Q224896"
+  ],
+  "sugar hormone": [
+    "http://www.wikidata.org/entity/Q227858"
+  ],
+  "Zuschlagstoff": [
+    "http://www.wikidata.org/entity/Q230760"
+  ],
+  "Metal carbonyl hydride": [
+    "http://www.wikidata.org/entity/Q251399"
+  ],
+  "furanose": [
+    "http://www.wikidata.org/entity/Q264492"
+  ],
+  "preservative": [
+    "http://www.wikidata.org/entity/Q274579"
+  ],
+  "entheogen": [
+    "http://www.wikidata.org/entity/Q310491"
+  ],
+  "Boronic acid": [
+    "http://www.wikidata.org/entity/Q335768"
+  ],
+  "additive": [
+    "http://www.wikidata.org/entity/Q350176"
+  ],
+  "Monacolin": [
+    "http://www.wikidata.org/entity/Q373957"
+  ],
+  "Phosphaalkyne": [
+    "http://www.wikidata.org/entity/Q380005"
+  ],
+  "agonist": [
+    "http://www.wikidata.org/entity/Q389934"
+  ],
+  "enamine": [
+    "http://www.wikidata.org/entity/Q408018"
+  ],
+  "Poloxamer": [
+    "http://www.wikidata.org/entity/Q408943"
+  ],
+  "Diazonium compound": [
+    "http://www.wikidata.org/entity/Q410255"
+  ],
+  "Meisenheimer complex": [
+    "http://www.wikidata.org/entity/Q410450"
+  ],
+  "Antivitamin": [
+    "http://www.wikidata.org/entity/Q410918"
+  ],
+  "Opine": [
+    "http://www.wikidata.org/entity/Q411700"
+  ],
+  "sulfenic acid": [
+    "http://www.wikidata.org/entity/Q411721"
+  ],
+  "metaphosphate": [
+    "http://www.wikidata.org/entity/Q412611"
+  ],
+  "cyanine": [
+    "http://www.wikidata.org/entity/Q412922"
+  ],
+  "Meglitinide": [
+    "http://www.wikidata.org/entity/Q412926"
+  ],
+  "Peroxodisulfate": [
+    "http://www.wikidata.org/entity/Q413093"
+  ],
+  "nitrene": [
+    "http://www.wikidata.org/entity/Q413110"
+  ],
+  "Phosphorane": [
+    "http://www.wikidata.org/entity/Q413172"
+  ],
+  "thiocarbamate": [
+    "http://www.wikidata.org/entity/Q413606"
+  ],
+  "Trace amine": [
+    "http://www.wikidata.org/entity/Q413778"
+  ],
+  "carborane": [
+    "http://www.wikidata.org/entity/Q413945"
+  ],
+  "Transition metal carbene complex": [
+    "http://www.wikidata.org/entity/Q414293"
+  ],
+  "Orthoester": [
+    "http://www.wikidata.org/entity/Q414475"
+  ],
+  "mycolic acid": [
+    "http://www.wikidata.org/entity/Q414506"
+  ],
+  "azodicarbonamide": [
+    "http://www.wikidata.org/entity/Q415646"
+  ],
+  "Nitrone": [
+    "http://www.wikidata.org/entity/Q415778"
+  ],
+  "Avermectin": [
+    "http://www.wikidata.org/entity/Q416170"
+  ],
+  "Glucosinolate": [
+    "http://www.wikidata.org/entity/Q416883"
+  ],
+  "urushiol iv": [
+    "http://www.wikidata.org/entity/Q416909"
+  ],
+  "selenate": [
+    "http://www.wikidata.org/entity/Q417113"
+  ],
+  "Propellane": [
+    "http://www.wikidata.org/entity/Q417471"
+  ],
+  "hexafluoride": [
+    "http://www.wikidata.org/entity/Q417565"
+  ],
+  "Xanthate": [
+    "http://www.wikidata.org/entity/Q417615"
+  ],
+  "Titanate": [
+    "http://www.wikidata.org/entity/Q417725"
+  ],
+  "Cuprate": [
+    "http://www.wikidata.org/entity/Q418279"
+  ],
+  "Sulfonylurea": [
+    "http://www.wikidata.org/entity/Q418776"
+  ],
+  "Silyl ether": [
+    "http://www.wikidata.org/entity/Q419032"
+  ],
+  "Diamondoid": [
+    "http://www.wikidata.org/entity/Q419631"
+  ],
+  "phenolic acid": [
+    "http://www.wikidata.org/entity/Q419836"
+  ],
+  "semiochemical": [
+    "http://www.wikidata.org/entity/Q420168"
+  ],
+  "Sulfinic acid": [
+    "http://www.wikidata.org/entity/Q420304"
+  ],
+  "Polybrominated biphenyl": [
+    "http://www.wikidata.org/entity/Q420526"
+  ],
+  "Halohydrin": [
+    "http://www.wikidata.org/entity/Q421086"
+  ],
+  "dideoxynucleotide": [
+    "http://www.wikidata.org/entity/Q421201"
+  ],
+  "Q421685": [
+    "http://www.wikidata.org/entity/Q421685"
+  ],
+  "Reducing sugar": [
+    "http://www.wikidata.org/entity/Q421982"
+  ],
+  "Thioester": [
+    "http://www.wikidata.org/entity/Q422794"
+  ],
+  "Q423937": [
+    "http://www.wikidata.org/entity/Q423937"
+  ],
+  "aluminate": [
+    "http://www.wikidata.org/entity/Q424081"
+  ],
+  "leukotriene": [
+    "http://www.wikidata.org/entity/Q424190"
+  ],
+  "Pyranose": [
+    "http://www.wikidata.org/entity/Q424248"
+  ],
+  "Resin acid": [
+    "http://www.wikidata.org/entity/Q424263"
+  ],
+  "Diazo": [
+    "http://www.wikidata.org/entity/Q424424"
+  ],
+  "Hemiaminal": [
+    "http://www.wikidata.org/entity/Q424620"
+  ],
+  "Hopanoids": [
+    "http://www.wikidata.org/entity/Q424647"
+  ],
+  "Fibrate": [
+    "http://www.wikidata.org/entity/Q424744"
+  ],
+  "Sulfinyl halide": [
+    "http://www.wikidata.org/entity/Q425024"
+  ],
+  "taxane": [
+    "http://www.wikidata.org/entity/Q425227"
+  ],
+  "Polythionic acid": [
+    "http://www.wikidata.org/entity/Q425358"
+  ],
+  "Suboxide": [
+    "http://www.wikidata.org/entity/Q425366"
+  ],
+  "Oxylipin": [
+    "http://www.wikidata.org/entity/Q425463"
+  ],
+  "urofuranic acid": [
+    "http://www.wikidata.org/entity/Q425715"
+  ],
+  "vitriol": [
+    "http://www.wikidata.org/entity/Q427282"
+  ],
+  "Xerogel": [
+    "http://www.wikidata.org/entity/Q455333"
+  ],
+  "antifreeze": [
+    "http://www.wikidata.org/entity/Q503288"
+  ],
+  "Q697989": [
+    "http://www.wikidata.org/entity/Q697989"
+  ],
+  "Carboximidate": [
+    "http://www.wikidata.org/entity/Q723538"
+  ],
+  "Q791863": [
+    "http://www.wikidata.org/entity/Q791863"
+  ],
+  "Q793714": [
+    "http://www.wikidata.org/entity/Q793714"
+  ],
+  "Q794027": [
+    "http://www.wikidata.org/entity/Q794027"
+  ],
+  "Q809941": [
+    "http://www.wikidata.org/entity/Q809941"
+  ],
+  "Polyamino carboxylic acid": [
+    "http://www.wikidata.org/entity/Q844593"
+  ],
+  "biocide": [
+    "http://www.wikidata.org/entity/Q864939"
+  ],
+  "mineral resource": [
+    "http://www.wikidata.org/entity/Q889659"
+  ],
+  "Q893328": [
+    "http://www.wikidata.org/entity/Q893328"
+  ],
+  "Substance of very high concern": [
+    "http://www.wikidata.org/entity/Q898866"
+  ],
+  "ligand": [
+    "http://www.wikidata.org/entity/Q899107"
+  ],
+  "natural product": [
+    "http://www.wikidata.org/entity/Q901227",
+    "http://www.wikidata.org/entity/Q1365353"
+  ],
+  "braunstein": [
+    "http://www.wikidata.org/entity/Q902156"
+  ],
+  "excipient": [
+    "http://www.wikidata.org/entity/Q902638"
+  ],
+  "Halogenated ether": [
+    "http://www.wikidata.org/entity/Q903628"
+  ],
+  "paste": [
+    "http://www.wikidata.org/entity/Q904216"
+  ],
+  "Alkyl polyglycoside": [
+    "http://www.wikidata.org/entity/Q904331"
+  ],
+  "xenoandrogen": [
+    "http://www.wikidata.org/entity/Q904609"
+  ],
+  "Holothurin": [
+    "http://www.wikidata.org/entity/Q904973"
+  ],
+  "Q905126": [
+    "http://www.wikidata.org/entity/Q905126"
+  ],
+  "Q905154": [
+    "http://www.wikidata.org/entity/Q905154"
+  ],
+  "sequestrant": [
+    "http://www.wikidata.org/entity/Q905648"
+  ],
+  "Non-coordinating anion": [
+    "http://www.wikidata.org/entity/Q906592"
+  ],
+  "Withanolide": [
+    "http://www.wikidata.org/entity/Q907017"
+  ],
+  "Tellurate": [
+    "http://www.wikidata.org/entity/Q907644"
+  ],
+  "Polyquaternium": [
+    "http://www.wikidata.org/entity/Q909096"
+  ],
+  "plasticizer": [
+    "http://www.wikidata.org/entity/Q910212"
+  ],
+  "Polyoxometalate": [
+    "http://www.wikidata.org/entity/Q910291"
+  ],
+  "stabilizer": [
+    "http://www.wikidata.org/entity/Q910592"
+  ],
+  "electron donor": [
+    "http://www.wikidata.org/entity/Q911571"
+  ],
+  "Q926457": [
+    "http://www.wikidata.org/entity/Q926457"
+  ],
+  "Q926546": [
+    "http://www.wikidata.org/entity/Q926546"
+  ],
+  "Q926882": [
+    "http://www.wikidata.org/entity/Q926882"
+  ],
+  "cephalopod ink": [
+    "http://www.wikidata.org/entity/Q927860"
+  ],
+  "oxirene": [
+    "http://www.wikidata.org/entity/Q964273"
+  ],
+  "Q989497": [
+    "http://www.wikidata.org/entity/Q989497"
+  ],
+  "Q994152": [
+    "http://www.wikidata.org/entity/Q994152"
+  ],
+  "Q998801": [
+    "http://www.wikidata.org/entity/Q998801"
+  ],
+  "C2-Benzenes": [
+    "http://www.wikidata.org/entity/Q1022637"
+  ],
+  "C3-Benzenes": [
+    "http://www.wikidata.org/entity/Q1022646"
+  ],
+  "Q1035464": [
+    "http://www.wikidata.org/entity/Q1035464"
+  ],
+  "Carbenoid": [
+    "http://www.wikidata.org/entity/Q1035476"
+  ],
+  "Q1035553": [
+    "http://www.wikidata.org/entity/Q1035553"
+  ],
+  "Q1053113": [
+    "http://www.wikidata.org/entity/Q1053113"
+  ],
+  "Q1053116": [
+    "http://www.wikidata.org/entity/Q1053116"
+  ],
+  "coolant": [
+    "http://www.wikidata.org/entity/Q1056832"
+  ],
+  "Q1070961": [
+    "http://www.wikidata.org/entity/Q1070961"
+  ],
+  "Q1074416": [
+    "http://www.wikidata.org/entity/Q1074416"
+  ],
+  "solute": [
+    "http://www.wikidata.org/entity/Q1079788"
+  ],
+  "Q1087535": [
+    "http://www.wikidata.org/entity/Q1087535"
+  ],
+  "Q1113234": [
+    "http://www.wikidata.org/entity/Q1113234"
+  ],
+  "Croscarmellose sodium": [
+    "http://www.wikidata.org/entity/Q1141043"
+  ],
+  "Q1143634": [
+    "http://www.wikidata.org/entity/Q1143634"
+  ],
+  "Q1147064": [
+    "http://www.wikidata.org/entity/Q1147064"
+  ],
+  "Didemnin": [
+    "http://www.wikidata.org/entity/Q1210452"
+  ],
+  "Diketopyrrolopyrrole dye": [
+    "http://www.wikidata.org/entity/Q1225292"
+  ],
+  "Q1234451": [
+    "http://www.wikidata.org/entity/Q1234451"
+  ],
+  "potion": [
+    "http://www.wikidata.org/entity/Q1249918"
+  ],
+  "Q1263750": [
+    "http://www.wikidata.org/entity/Q1263750"
+  ],
+  "Q1303790": [
+    "http://www.wikidata.org/entity/Q1303790"
+  ],
+  "volatiles": [
+    "http://www.wikidata.org/entity/Q1306723"
+  ],
+  "iron oxide pigment": [
+    "http://www.wikidata.org/entity/Q1313132"
+  ],
+  "Q1313155": [
+    "http://www.wikidata.org/entity/Q1313155"
+  ],
+  "Q1327037": [
+    "http://www.wikidata.org/entity/Q1327037"
+  ],
+  "Q1327815": [
+    "http://www.wikidata.org/entity/Q1327815"
+  ],
+  "Q1344574": [
+    "http://www.wikidata.org/entity/Q1344574"
+  ],
+  "propellant": [
+    "http://www.wikidata.org/entity/Q1364934"
+  ],
+  "Salatrim": [
+    "http://www.wikidata.org/entity/Q1370541"
+  ],
+  "Q1375656": [
+    "http://www.wikidata.org/entity/Q1375656"
+  ],
+  "N-Sulfinyl amine": [
+    "http://www.wikidata.org/entity/Q1379801"
+  ],
+  "Q1406871": [
+    "http://www.wikidata.org/entity/Q1406871"
+  ],
+  "Q1414074": [
+    "http://www.wikidata.org/entity/Q1414074"
+  ],
+  "Q1434219": [
+    "http://www.wikidata.org/entity/Q1434219"
+  ],
+  "mycosporins": [
+    "http://www.wikidata.org/entity/Q1462632"
+  ],
+  "Q1473259": [
+    "http://www.wikidata.org/entity/Q1473259"
+  ],
+  "Q1483694": [
+    "http://www.wikidata.org/entity/Q1483694"
+  ],
+  "Q1502606": [
+    "http://www.wikidata.org/entity/Q1502606"
+  ],
+  "Q1542103": [
+    "http://www.wikidata.org/entity/Q1542103"
+  ],
+  "Q1548446": [
+    "http://www.wikidata.org/entity/Q1548446"
+  ],
+  "Q1568915": [
+    "http://www.wikidata.org/entity/Q1568915"
+  ],
+  "Q1569971": [
+    "http://www.wikidata.org/entity/Q1569971"
+  ],
+  "Q1572076": [
+    "http://www.wikidata.org/entity/Q1572076"
+  ],
+  "polyisocyanates": [
+    "http://www.wikidata.org/entity/Q1590613"
+  ],
+  "heterocumulene": [
+    "http://www.wikidata.org/entity/Q1616204"
+  ],
+  "Q1645277": [
+    "http://www.wikidata.org/entity/Q1645277"
+  ],
+  "Q1648150": [
+    "http://www.wikidata.org/entity/Q1648150"
+  ],
+  "Q1671021": [
+    "http://www.wikidata.org/entity/Q1671021"
+  ],
+  "inverse agonist": [
+    "http://www.wikidata.org/entity/Q1671731"
+  ],
+  "Q1674734": [
+    "http://www.wikidata.org/entity/Q1674734"
+  ],
+  "titanaluminiumnitride": [
+    "http://www.wikidata.org/entity/Q1685673"
+  ],
+  "Q1688665": [
+    "http://www.wikidata.org/entity/Q1688665"
+  ],
+  "Q1694333": [
+    "http://www.wikidata.org/entity/Q1694333"
+  ],
+  "Q1709236": [
+    "http://www.wikidata.org/entity/Q1709236"
+  ],
+  "Q1714676": [
+    "http://www.wikidata.org/entity/Q1714676"
+  ],
+  "xanthene dyes": [
+    "http://www.wikidata.org/entity/Q1718523"
+  ],
+  "Q1728628": [
+    "http://www.wikidata.org/entity/Q1728628"
+  ],
+  "Q1741093": [
+    "http://www.wikidata.org/entity/Q1741093"
+  ],
+  "Q1769614": [
+    "http://www.wikidata.org/entity/Q1769614"
+  ],
+  "Q1780926": [
+    "http://www.wikidata.org/entity/Q1780926"
+  ],
+  "Q1792828": [
+    "http://www.wikidata.org/entity/Q1792828"
+  ],
+  "Q1869511": [
+    "http://www.wikidata.org/entity/Q1869511"
+  ],
+  "Q1916923": [
+    "http://www.wikidata.org/entity/Q1916923"
+  ],
+  "metal hydride": [
+    "http://www.wikidata.org/entity/Q1924904"
+  ],
+  "Q1925608": [
+    "http://www.wikidata.org/entity/Q1925608"
+  ],
+  "Q1944956": [
+    "http://www.wikidata.org/entity/Q1944956"
+  ],
+  "Q1959613": [
+    "http://www.wikidata.org/entity/Q1959613"
+  ],
+  "Q1981893": [
+    "http://www.wikidata.org/entity/Q1981893"
+  ],
+  "Q1985215": [
+    "http://www.wikidata.org/entity/Q1985215"
+  ],
+  "Q1993952": [
+    "http://www.wikidata.org/entity/Q1993952"
+  ],
+  "arabich": [
+    "http://www.wikidata.org/entity/Q2023196"
+  ],
+  "opiate": [
+    "http://www.wikidata.org/entity/Q2026938"
+  ],
+  "Q2031882": [
+    "http://www.wikidata.org/entity/Q2031882"
+  ],
+  "Ortho acid": [
+    "http://www.wikidata.org/entity/Q2031968"
+  ],
+  "Q2042769": [
+    "http://www.wikidata.org/entity/Q2042769"
+  ],
+  "Q2042851": [
+    "http://www.wikidata.org/entity/Q2042851"
+  ],
+  "Q2069344": [
+    "http://www.wikidata.org/entity/Q2069344"
+  ],
+  "Q2070146": [
+    "http://www.wikidata.org/entity/Q2070146"
+  ],
+  "Peroxocarbonate": [
+    "http://www.wikidata.org/entity/Q2070149"
+  ],
+  "Circulene": [
+    "http://www.wikidata.org/entity/Q2070531"
+  ],
+  "Phenalkamine": [
+    "http://www.wikidata.org/entity/Q2085482"
+  ],
+  "Q2088916": [
+    "http://www.wikidata.org/entity/Q2088916"
+  ],
+  "Q2089139": [
+    "http://www.wikidata.org/entity/Q2089139"
+  ],
+  "Plutonium borides": [
+    "http://www.wikidata.org/entity/Q2099820"
+  ],
+  "Q2102735": [
+    "http://www.wikidata.org/entity/Q2102735"
+  ],
+  "Polyolester": [
+    "http://www.wikidata.org/entity/Q2103000"
+  ],
+  "Q2103059": [
+    "http://www.wikidata.org/entity/Q2103059"
+  ],
+  "Q2103175": [
+    "http://www.wikidata.org/entity/Q2103175"
+  ],
+  "Q2112726": [
+    "http://www.wikidata.org/entity/Q2112726"
+  ],
+  "Q2112933": [
+    "http://www.wikidata.org/entity/Q2112933"
+  ],
+  "Q2116138": [
+    "http://www.wikidata.org/entity/Q2116138"
+  ],
+  "Q2116155": [
+    "http://www.wikidata.org/entity/Q2116155"
+  ],
+  "Q2119943": [
+    "http://www.wikidata.org/entity/Q2119943"
+  ],
+  "Q2119997": [
+    "http://www.wikidata.org/entity/Q2119997"
+  ],
+  "chemical indicator": [
+    "http://www.wikidata.org/entity/Q2200407"
+  ],
+  "Q2252967": [
+    "http://www.wikidata.org/entity/Q2252967"
+  ],
+  "Q2268031": [
+    "http://www.wikidata.org/entity/Q2268031"
+  ],
+  "Q2268080": [
+    "http://www.wikidata.org/entity/Q2268080"
+  ],
+  "Q2268086": [
+    "http://www.wikidata.org/entity/Q2268086"
+  ],
+  "analyte": [
+    "http://www.wikidata.org/entity/Q2282401"
+  ],
+  "Q2285876": [
+    "http://www.wikidata.org/entity/Q2285876"
+  ],
+  "Q2286032": [
+    "http://www.wikidata.org/entity/Q2286032"
+  ],
+  "Solanum alkaloids": [
+    "http://www.wikidata.org/entity/Q2298266"
+  ],
+  "Q2364934": [
+    "http://www.wikidata.org/entity/Q2364934"
+  ],
+  "Q2379223": [
+    "http://www.wikidata.org/entity/Q2379223"
+  ],
+  "taurates": [
+    "http://www.wikidata.org/entity/Q2397102"
+  ],
+  "resinoid": [
+    "http://www.wikidata.org/entity/Q2412969"
+  ],
+  "Q2421273": [
+    "http://www.wikidata.org/entity/Q2421273"
+  ],
+  "Q2445387": [
+    "http://www.wikidata.org/entity/Q2445387"
+  ],
+  "Q2453083": [
+    "http://www.wikidata.org/entity/Q2453083"
+  ],
+  "promoter": [
+    "http://www.wikidata.org/entity/Q2470597"
+  ],
+  "Ubiquinone": [
+    "http://www.wikidata.org/entity/Q2472771"
+  ],
+  "Q2508742": [
+    "http://www.wikidata.org/entity/Q2508742"
+  ],
+  "Q2514355": [
+    "http://www.wikidata.org/entity/Q2514355"
+  ],
+  "Active substance": [
+    "http://www.wikidata.org/entity/Q2585625"
+  ],
+  "zeoliths": [
+    "http://www.wikidata.org/entity/Q2603870"
+  ],
+  "Alkalide": [
+    "http://www.wikidata.org/entity/Q2616114"
+  ],
+  "Q2635452": [
+    "http://www.wikidata.org/entity/Q2635452"
+  ],
+  "Q2640409": [
+    "http://www.wikidata.org/entity/Q2640409"
+  ],
+  "Q2647303": [
+    "http://www.wikidata.org/entity/Q2647303"
+  ],
+  "Q2647379": [
+    "http://www.wikidata.org/entity/Q2647379"
+  ],
+  "Q2647419": [
+    "http://www.wikidata.org/entity/Q2647419"
+  ],
+  "Q2647519": [
+    "http://www.wikidata.org/entity/Q2647519"
+  ],
+  "allosteric modulator": [
+    "http://www.wikidata.org/entity/Q2649417"
+  ],
+  "Q2661200": [
+    "http://www.wikidata.org/entity/Q2661200"
+  ],
+  "Bunte salt": [
+    "http://www.wikidata.org/entity/Q2664257"
+  ],
+  "Q2781559": [
+    "http://www.wikidata.org/entity/Q2781559"
+  ],
+  "weak acid": [
+    "http://www.wikidata.org/entity/Q2823273"
+  ],
+  "Q2886630": [
+    "http://www.wikidata.org/entity/Q2886630"
+  ],
+  "Fluorotelomer": [
+    "http://www.wikidata.org/entity/Q3074508"
+  ],
+  "fixative": [
+    "http://www.wikidata.org/entity/Q3127040"
+  ],
+  "Electride": [
+    "http://www.wikidata.org/entity/Q3271204"
+  ],
+  "Iron nitride": [
+    "http://www.wikidata.org/entity/Q3342229"
+  ],
+  "inorganic substance": [
+    "http://www.wikidata.org/entity/Q3361209"
+  ],
+  "Q3406727": [
+    "http://www.wikidata.org/entity/Q3406727"
+  ],
+  "Q3482521": [
+    "http://www.wikidata.org/entity/Q3482521"
+  ],
+  "household chemicals": [
+    "http://www.wikidata.org/entity/Q3564138"
+  ],
+  "comburent": [
+    "http://www.wikidata.org/entity/Q3775643"
+  ],
+  "Q4139912": [
+    "http://www.wikidata.org/entity/Q4139912"
+  ],
+  "humic substances": [
+    "http://www.wikidata.org/entity/Q4152088"
+  ],
+  "acetylhydrazine": [
+    "http://www.wikidata.org/entity/Q4678005"
+  ],
+  "Butane": [
+    "http://www.wikidata.org/entity/Q5130692"
+  ],
+  "Diphenylbutylpiperidine": [
+    "http://www.wikidata.org/entity/Q5279740"
+  ],
+  "Exotic material": [
+    "http://www.wikidata.org/entity/Q5420720"
+  ],
+  "Gonadotropin preparations": [
+    "http://www.wikidata.org/entity/Q5581328"
+  ],
+  "Natriumaluminates": [
+    "http://www.wikidata.org/entity/Q5642179"
+  ],
+  "Q5764227": [
+    "http://www.wikidata.org/entity/Q5764227"
+  ],
+  "mordant": [
+    "http://www.wikidata.org/entity/Q5857145"
+  ],
+  "melt": [
+    "http://www.wikidata.org/entity/Q6813720"
+  ],
+  "nonmineral": [
+    "http://www.wikidata.org/entity/Q7049495"
+  ],
+  "Sandite": [
+    "http://www.wikidata.org/entity/Q7416390"
+  ],
+  "Q10414189": [
+    "http://www.wikidata.org/entity/Q10414189"
+  ],
+  "Q12034587": [
+    "http://www.wikidata.org/entity/Q12034587"
+  ],
+  "Q12037703": [
+    "http://www.wikidata.org/entity/Q12037703"
+  ],
+  "Q12060038": [
+    "http://www.wikidata.org/entity/Q12060038"
+  ],
+  "catalyst": [
+    "http://www.wikidata.org/entity/Q12385831"
+  ],
+  "Q12547982": [
+    "http://www.wikidata.org/entity/Q12547982"
+  ],
+  "Q12552222": [
+    "http://www.wikidata.org/entity/Q12552222"
+  ],
+  "Q12554308": [
+    "http://www.wikidata.org/entity/Q12554308"
+  ],
+  "Q12556210": [
+    "http://www.wikidata.org/entity/Q12556210"
+  ],
+  "Q12556356": [
+    "http://www.wikidata.org/entity/Q12556356"
+  ],
+  "Q12558778": [
+    "http://www.wikidata.org/entity/Q12558778"
+  ],
+  "Q12565740": [
+    "http://www.wikidata.org/entity/Q12565740"
+  ],
+  "Q12566046": [
+    "http://www.wikidata.org/entity/Q12566046"
+  ],
+  "Q12569222": [
+    "http://www.wikidata.org/entity/Q12569222"
+  ],
+  "Q13170170": [
+    "http://www.wikidata.org/entity/Q13170170"
+  ],
+  "Weapons-grade": [
+    "http://www.wikidata.org/entity/Q14479936"
+  ],
+  "Q14650090": [
+    "http://www.wikidata.org/entity/Q14650090"
+  ],
+  "Q15043636": [
+    "http://www.wikidata.org/entity/Q15043636"
+  ],
+  "Arabinosyl nucleosides": [
+    "http://www.wikidata.org/entity/Q15103871"
+  ],
+  "heptyne": [
+    "http://www.wikidata.org/entity/Q15679928"
+  ],
+  "arene oxides": [
+    "http://www.wikidata.org/entity/Q15783904"
+  ],
+  "Q15788468": [
+    "http://www.wikidata.org/entity/Q15788468"
+  ],
+  "Q15790913": [
+    "http://www.wikidata.org/entity/Q15790913"
+  ],
+  "Q15794107": [
+    "http://www.wikidata.org/entity/Q15794107"
+  ],
+  "Q15794559": [
+    "http://www.wikidata.org/entity/Q15794559"
+  ],
+  "Decane": [
+    "http://www.wikidata.org/entity/Q15804892"
+  ],
+  "Q15805332": [
+    "http://www.wikidata.org/entity/Q15805332"
+  ],
+  "Q15806044": [
+    "http://www.wikidata.org/entity/Q15806044"
+  ],
+  "Q15806126": [
+    "http://www.wikidata.org/entity/Q15806126"
+  ],
+  "Q15807678": [
+    "http://www.wikidata.org/entity/Q15807678"
+  ],
+  "Q15808685": [
+    "http://www.wikidata.org/entity/Q15808685"
+  ],
+  "Q15808731": [
+    "http://www.wikidata.org/entity/Q15808731"
+  ],
+  "Q15822502": [
+    "http://www.wikidata.org/entity/Q15822502"
+  ],
+  "Q15824623": [
+    "http://www.wikidata.org/entity/Q15824623"
+  ],
+  "tracer": [
+    "http://www.wikidata.org/entity/Q15835484"
+  ],
+  "Q15835937": [
+    "http://www.wikidata.org/entity/Q15835937"
+  ],
+  "Q15836938": [
+    "http://www.wikidata.org/entity/Q15836938"
+  ],
+  "Nonane": [
+    "http://www.wikidata.org/entity/Q15836976"
+  ],
+  "Q15841362": [
+    "http://www.wikidata.org/entity/Q15841362"
+  ],
+  "Safranines": [
+    "http://www.wikidata.org/entity/Q15843756"
+  ],
+  "Q15851030": [
+    "http://www.wikidata.org/entity/Q15851030"
+  ],
+  "Q15851469": [
+    "http://www.wikidata.org/entity/Q15851469"
+  ],
+  "Q15851548": [
+    "http://www.wikidata.org/entity/Q15851548"
+  ],
+  "Q15851917": [
+    "http://www.wikidata.org/entity/Q15851917"
+  ],
+  "Q15852431": [
+    "http://www.wikidata.org/entity/Q15852431"
+  ],
+  "Q15855810": [
+    "http://www.wikidata.org/entity/Q15855810"
+  ],
+  "Q15855809": [
+    "http://www.wikidata.org/entity/Q15855809"
+  ],
+  "xanthones": [
+    "http://www.wikidata.org/entity/Q16007012"
+  ],
+  "Q16433493": [
+    "http://www.wikidata.org/entity/Q16433493"
+  ],
+  "Q16830769": [
+    "http://www.wikidata.org/entity/Q16830769"
+  ],
+  "Q16831378": [
+    "http://www.wikidata.org/entity/Q16831378"
+  ],
+  "Q17126946": [
+    "http://www.wikidata.org/entity/Q17126946"
+  ],
+  "Q17127593": [
+    "http://www.wikidata.org/entity/Q17127593"
+  ],
+  "oleochemical": [
+    "http://www.wikidata.org/entity/Q17146098"
+  ],
+  "Q17310496": [
+    "http://www.wikidata.org/entity/Q17310496"
+  ],
+  "Q17310777": [
+    "http://www.wikidata.org/entity/Q17310777"
+  ],
+  "Q17323403": [
+    "http://www.wikidata.org/entity/Q17323403"
+  ],
+  "Q17325708": [
+    "http://www.wikidata.org/entity/Q17325708"
+  ],
+  "Q17325780": [
+    "http://www.wikidata.org/entity/Q17325780"
+  ],
+  "Q17325781": [
+    "http://www.wikidata.org/entity/Q17325781"
+  ],
+  "Q17326428": [
+    "http://www.wikidata.org/entity/Q17326428"
+  ],
+  "hydroxyazobenzenes": [
+    "http://www.wikidata.org/entity/Q17329354"
+  ],
+  "Q17334037": [
+    "http://www.wikidata.org/entity/Q17334037"
+  ],
+  "Q17573799": [
+    "http://www.wikidata.org/entity/Q17573799"
+  ],
+  "bioactive compound": [
+    "http://www.wikidata.org/entity/Q17774539"
+  ],
+  "Iminosugar": [
+    "http://www.wikidata.org/entity/Q18351124"
+  ],
+  "optically anisotropic substance": [
+    "http://www.wikidata.org/entity/Q20057914"
+  ],
+  "volatile compound": [
+    "http://www.wikidata.org/entity/Q22981361"
+  ],
+  "Amine Fluoride": [
+    "http://www.wikidata.org/entity/Q25324102"
+  ],
+  "Exohedral fullerene": [
+    "http://www.wikidata.org/entity/Q25325301"
+  ],
+  "styrene-butadiene rubber fume": [
+    "http://www.wikidata.org/entity/Q26989359"
+  ],
+  "Milube N 32": [
+    "http://www.wikidata.org/entity/Q26989367"
+  ],
+  "Irinotecan": [
+    "http://www.wikidata.org/entity/Q26989371"
+  ],
+  "phenylmercuric propionate": [
+    "http://www.wikidata.org/entity/Q27032301"
+  ],
+  "4,4'-diisothiocyanato-2,2'-stilbenedisulfonic acid": [
+    "http://www.wikidata.org/entity/Q27032314"
+  ],
+  "doxorubicin hydrochloride": [
+    "http://www.wikidata.org/entity/Q27032359"
+  ],
+  "octadecanoic acid, barium cadmium salt": [
+    "http://www.wikidata.org/entity/Q27032521"
+  ],
+  "dichlorotetrafluoroethane": [
+    "http://www.wikidata.org/entity/Q27032539"
+  ],
+  "group 14 hydride": [
+    "http://www.wikidata.org/entity/Q27105731"
+  ],
+  "citric acid, manganese salt": [
+    "http://www.wikidata.org/entity/Q27266293"
+  ],
+  "solvent orange 1": [
+    "http://www.wikidata.org/entity/Q27281644"
+  ],
+  "methylenediphenyl diisocyanate": [
+    "http://www.wikidata.org/entity/Q27430037"
+  ],
+  "aflatoxin delta": [
+    "http://www.wikidata.org/entity/Q27430154"
+  ],
+  "(cyclohexane-1,2-diammine)oxalatoplatinum (II)": [
+    "http://www.wikidata.org/entity/Q27430152"
+  ],
+  "HCH": [
+    "http://www.wikidata.org/entity/Q27430160"
+  ],
+  "mercaptopropionic acid": [
+    "http://www.wikidata.org/entity/Q27430184"
+  ],
+  "(+-)-1,2:3,4-diepoxybutane": [
+    "http://www.wikidata.org/entity/Q27430195"
+  ],
+  "4-dimethylaminostilbene": [
+    "http://www.wikidata.org/entity/Q27430192"
+  ],
+  "diisoyanatonaphthalene": [
+    "http://www.wikidata.org/entity/Q27430207"
+  ],
+  "Caswell No. 232": [
+    "http://www.wikidata.org/entity/Q27430211"
+  ],
+  "polychlorinated biphenyls": [
+    "http://www.wikidata.org/entity/Q27430237"
+  ],
+  "trichloro derivative of 1-phenyl-ethanone": [
+    "http://www.wikidata.org/entity/Q27430309"
+  ],
+  "Dimethicone 350": [
+    "http://www.wikidata.org/entity/Q27430330"
+  ],
+  "benzo(a)pyrene 3-monooxygenase": [
+    "http://www.wikidata.org/entity/Q27430329"
+  ],
+  "trichlorobutene": [
+    "http://www.wikidata.org/entity/Q27430334"
+  ],
+  "hafnium phosphide": [
+    "http://www.wikidata.org/entity/Q27430340"
+  ],
+  "polyorthosilicic acid": [
+    "http://www.wikidata.org/entity/Q27430423"
+  ],
+  "silicon calcium": [
+    "http://www.wikidata.org/entity/Q27430425"
+  ],
+  "Phenone": [
+    "http://www.wikidata.org/entity/Q27902934"
+  ],
+  "Q27902935": [
+    "http://www.wikidata.org/entity/Q27902935"
+  ],
+  "Q27902932": [
+    "http://www.wikidata.org/entity/Q27902932"
+  ],
+  "Q27902938": [
+    "http://www.wikidata.org/entity/Q27902938"
+  ],
+  "Q27902939": [
+    "http://www.wikidata.org/entity/Q27902939"
+  ],
+  "Q27902937": [
+    "http://www.wikidata.org/entity/Q27902937"
+  ],
+  "4-[2-[(cyclohexylcarbonimidoyl)amino]ethyl]-4-methylmorpholinium toluene-p-sulfonate": [
+    "http://www.wikidata.org/entity/Q27902941"
+  ],
+  "Q27902947": [
+    "http://www.wikidata.org/entity/Q27902947"
+  ],
+  "Q27902944": [
+    "http://www.wikidata.org/entity/Q27902944"
+  ],
+  "monomer": [
+    "http://www.wikidata.org/entity/Q43760939"
+  ],
+  "2-acyl-sn-glycero-3-phosphoglycerol": [
+    "http://www.wikidata.org/entity/Q46224359"
+  ],
+  "Labdanes": [
+    "http://www.wikidata.org/entity/Q51831414"
+  ],
+  "diatomic oxygen": [
+    "http://www.wikidata.org/entity/Q71659756"
+  ],
+  "cargo": [
+    "http://www.wikidata.org/entity/Q75152245"
+  ],
+  "poison": [
+    "http://www.wikidata.org/entity/Q40867"
+  ],
+  "FIASMA": [
+    "http://www.wikidata.org/entity/Q1388376"
+  ],
+  "functional inhibitors of acid sphingomyelinase": [
+    "http://www.wikidata.org/entity/Q1388376"
+  ],
+  "resorcinarene": [
+    "http://www.wikidata.org/entity/Q1402811"
+  ],
+  "resorcinarenes": [
+    "http://www.wikidata.org/entity/Q1402811"
+  ],
+  "fatty alcohol sulfate": [
+    "http://www.wikidata.org/entity/Q1409184"
+  ],
+  "FAS": [
+    "http://www.wikidata.org/entity/Q1409184"
+  ],
+  "fatty alcohol sulphate": [
+    "http://www.wikidata.org/entity/Q1409184"
+  ],
+  "Hypomanganate": [
+    "http://www.wikidata.org/entity/Q1641357"
+  ],
+  "[MnO4](3-)": [
+    "http://www.wikidata.org/entity/Q1641357"
+  ],
+  "hypomanganate": [
+    "http://www.wikidata.org/entity/Q1641357"
+  ],
+  "manganate(V)": [
+    "http://www.wikidata.org/entity/Q1641357"
+  ],
+  "MnO4(3-)": [
+    "http://www.wikidata.org/entity/Q1641357"
+  ],
+  "tetraoxidomanganate(3\u00e2\u02c6\u2019)": [
+    "http://www.wikidata.org/entity/Q1641357"
+  ],
+  "milbemycin": [
+    "http://www.wikidata.org/entity/Q1728148"
+  ],
+  "milbemycins": [
+    "http://www.wikidata.org/entity/Q1728148"
+  ],
+  "cluster": [
+    "http://www.wikidata.org/entity/Q1757710"
+  ],
+  "cluster chemistry": [
+    "http://www.wikidata.org/entity/Q1757710"
+  ],
+  "Cluster compound": [
+    "http://www.wikidata.org/entity/Q1757710"
+  ],
+  "globotriaosylceramide": [
+    "http://www.wikidata.org/entity/Q410539"
+  ],
+  "globotriaosylceramides": [
+    "http://www.wikidata.org/entity/Q410539"
+  ],
+  "nitride compound": [
+    "http://www.wikidata.org/entity/Q410851"
+  ],
+  "nitride": [
+    "http://www.wikidata.org/entity/Q410851"
+  ],
+  "carbapenem antibiotic": [
+    "http://www.wikidata.org/entity/Q410897"
+  ],
+  "carbapenem": [
+    "http://www.wikidata.org/entity/Q410897"
+  ],
+  "carbapenem antibiotics": [
+    "http://www.wikidata.org/entity/Q410897"
+  ],
+  "carbapenems": [
+    "http://www.wikidata.org/entity/Q410897"
+  ],
+  "antagonist": [
+    "http://www.wikidata.org/entity/Q410943"
+  ],
+  "antagonism (biochemistry)": [
+    "http://www.wikidata.org/entity/Q410943"
+  ],
+  "antagonist (biochemistry)": [
+    "http://www.wikidata.org/entity/Q410943"
+  ],
+  "receptor antagonism": [
+    "http://www.wikidata.org/entity/Q410943"
+  ],
+  "receptor antagonist": [
+    "http://www.wikidata.org/entity/Q410943"
+  ],
+  "brevetoxin": [
+    "http://www.wikidata.org/entity/Q411011"
+  ],
+  "brevetoxins": [
+    "http://www.wikidata.org/entity/Q411011"
+  ],
+  "polysorbate": [
+    "http://www.wikidata.org/entity/Q417074"
+  ],
+  "polysorbates": [
+    "http://www.wikidata.org/entity/Q417074"
+  ],
+  "monobactam antibiotic": [
+    "http://www.wikidata.org/entity/Q417315"
+  ],
+  "monobactam": [
+    "http://www.wikidata.org/entity/Q417315"
+  ],
+  "nitroamine": [
+    "http://www.wikidata.org/entity/Q417561"
+  ],
+  "nitroamines": [
+    "http://www.wikidata.org/entity/Q417561"
+  ],
+  "acetone peroxide": [
+    "http://www.wikidata.org/entity/Q329022"
+  ],
+  "Mother of Satan": [
+    "http://www.wikidata.org/entity/Q329022"
+  ],
+  "Peroxyacetone": [
+    "http://www.wikidata.org/entity/Q329022"
+  ],
+  "4-O-({poly[(2R)-1-glycerylphosphonato]}-[2R]-1-glycerylphosphonato)-N-acetyl-beta-D-mannosaminyl-(1->4)-N-acetyl-alpha-D-glucosaminyl undecaprenyl diphosphate polyanion": [
+    "http://www.wikidata.org/entity/Q27225479",
+    "http://www.wikidata.org/entity/Q27225479"
+  ],
+  "(Gro-P)n-Gro-P-ManNAc-GlcNAc-PP-undecaprenol": [
+    "http://www.wikidata.org/entity/Q27225479"
+  ],
+  "4-O-({poly[(2R)-1-glycerylphosphonato]}-[2R]-1-glycerylphosphonato)-N-acetyl-\u00ce\u00b2-D-mannosaminyl-(1\u00e2\u2020\u20194)-N-acetyl-\u00ce\u00b1-D-glucosaminyl undecaprenyl diphosphate polyanion": [
+    "http://www.wikidata.org/entity/Q27225479"
+  ],
+  "4-O-({poly[(2R)-glycerylphospho]}-(2R)-glycerylphospho)-N-acetyl-\u00ce\u00b2-D-mannosaminyl-(1\u00e2\u2020\u20194)-N-acetyl-\u00ce\u00b1-D-glucosaminyl undecaprenyl diphosphate": [
+    "http://www.wikidata.org/entity/Q27225479"
+  ],
+  "Teichoic-P-Gro": [
+    "http://www.wikidata.org/entity/Q27225479"
+  ],
+  "4-O-({poly[(2R)-2-glucosyl-1-glycerylphosphonato]}-[2R]-1-glycerylphosphonato)-N-acetyl-beta-D-mannosaminyl-(1->4)-N-acetyl-alpha-D-glucosaminyl undecaprenyl diphosphate polyanion": [
+    "http://www.wikidata.org/entity/Q27225544"
+  ],
+  "((2-Glc)Gro-P)n Gro-P-ManNac-GlcNAc-PP-undecaprenol": [
+    "http://www.wikidata.org/entity/Q27225544"
+  ],
+  "4-O-({poly[(2R)-2-glucosyl-1-glycerylphosphonato]}-[2R]-1-glycerylphosphonato)-N-acetyl-\u00ce\u00b2-D-mannosaminyl-(1\u00e2\u2020\u20194)-N-acetyl-\u00ce\u00b1-D-glucosaminyl undecaprenyl diphosphate polyanion": [
+    "http://www.wikidata.org/entity/Q27225544"
+  ],
+  "4-O-({poly[(2R)-2-\u00ce\u00b1-D-glycosyl-glycerylphospho]}-(2R)-glycerylphospho)-N-acetyl-\u00ce\u00b2-D-mannosaminyl-(1\u00e2\u2020\u20194)-N-acetyl-\u00ce\u00b1-D-glucosaminyl undecaprenyl diphosphate": [
+    "http://www.wikidata.org/entity/Q27225544"
+  ],
+  "Teichoic-P-Gro-Glc": [
+    "http://www.wikidata.org/entity/Q27225544"
+  ],
+  "Ferumoxytol": [
+    "http://www.wikidata.org/entity/Q27430123"
+  ],
+  "ferumoxytol": [
+    "http://www.wikidata.org/entity/Q27430123"
+  ],
+  "1,3-diisocyanatomethylbenzene": [
+    "http://www.wikidata.org/entity/Q27430422"
+  ],
+  "TDI": [
+    "http://www.wikidata.org/entity/Q27430422"
+  ],
+  "diisocyanatotoluene": [
+    "http://www.wikidata.org/entity/Q27430422"
+  ],
+  "tolylene diisocyanate": [
+    "http://www.wikidata.org/entity/Q27430422"
+  ],
+  "Benzyltoluene": [
+    "http://www.wikidata.org/entity/Q27902949"
+  ],
+  "Jarylec": [
+    "http://www.wikidata.org/entity/Q27902949"
+  ],
+  "Jarytherm": [
+    "http://www.wikidata.org/entity/Q27902949"
+  ],
+  "Superjary": [
+    "http://www.wikidata.org/entity/Q27902949"
+  ],
+  "industrial chemical": [
+    "http://www.wikidata.org/entity/Q29053737"
+  ],
+  "industrial chemicals": [
+    "http://www.wikidata.org/entity/Q29053737"
+  ],
+  "iron tallate": [
+    "http://www.wikidata.org/entity/Q31460347"
+  ],
+  "fatty acids": [
+    "http://www.wikidata.org/entity/Q31460347"
+  ],
+  "iron salts": [
+    "http://www.wikidata.org/entity/Q31460347"
+  ],
+  "tall oil fatty acids": [
+    "http://www.wikidata.org/entity/Q31460347"
+  ],
+  "tall-oil": [
+    "http://www.wikidata.org/entity/Q31460347"
+  ],
+  "1-phosphatidyl-1D-myo-inositol 3-phosphate (R1,R2)": [
+    "http://www.wikidata.org/entity/Q46220488"
+  ],
+  "1,2-Diacyl-sn-glycero-3-phospho-(1'-myo-inositol-3'-phosphate)": [
+    "http://www.wikidata.org/entity/Q46220488"
+  ],
+  "stearoyl group": [
+    "http://www.wikidata.org/entity/Q46222840"
+  ],
+  "Ste": [
+    "http://www.wikidata.org/entity/Q46222840"
+  ],
+  "CH3\u00e2\u20ac\u2019[CH2]16\u00e2\u20ac\u2019CO\u00e2\u20ac\u2019": [
+    "http://www.wikidata.org/entity/Q46222840"
+  ],
+  "octadecanoyl *": [
+    "http://www.wikidata.org/entity/Q46222840"
+  ],
+  "stearoyl": [
+    "http://www.wikidata.org/entity/Q46222840"
+  ],
+  "trans-3-enoyl-CoA (R1)": [
+    "http://www.wikidata.org/entity/Q46224015"
+  ],
+  "trans-3-enoyl-CoA": [
+    "http://www.wikidata.org/entity/Q46224015"
+  ],
+  "trans-3-Enoyl-CoA": [
+    "http://www.wikidata.org/entity/Q46224015"
+  ],
+  "10-formyltetrahydrofolyl polyglutamate macromolecule": [
+    "http://www.wikidata.org/entity/Q46224534"
+  ],
+  "10-Formyl-THF-polyglutamate": [
+    "http://www.wikidata.org/entity/Q46224534"
+  ],
+  "10-formyltetrahydrofolyl polyglutamate": [
+    "http://www.wikidata.org/entity/Q46224534"
+  ],
+  "10-formyltetrahydrofolylpolyglutamate": [
+    "http://www.wikidata.org/entity/Q46224534"
+  ],
+  "tetrahydrofolyl-poly(glutamic acid) macromolecule": [
+    "http://www.wikidata.org/entity/Q46224863"
+  ],
+  "(6S)-H4PteGlu(n)": [
+    "http://www.wikidata.org/entity/Q46224863"
+  ],
+  "Tetrahydrofolyl-[Glu](n-1)": [
+    "http://www.wikidata.org/entity/Q46224863"
+  ],
+  "Tetrahydrofolyl-[Glu](n)": [
+    "http://www.wikidata.org/entity/Q46224863"
+  ],
+  "Tetrahydropteroyl-[gamma-Glu]n": [
+    "http://www.wikidata.org/entity/Q46224863"
+  ],
+  "Tetrahydropteroyl-[gamma-Glu]n+1": [
+    "http://www.wikidata.org/entity/Q46224863"
+  ],
+  "THF-polyglutamate": [
+    "http://www.wikidata.org/entity/Q46224863"
+  ],
+  "reagent": [
+    "http://www.wikidata.org/entity/Q2356542"
+  ],
+  "reagens": [
+    "http://www.wikidata.org/entity/Q2356542"
+  ],
+  "thiohydantoins": [
+    "http://www.wikidata.org/entity/Q2421285"
+  ],
+  "thiohydantoin": [
+    "http://www.wikidata.org/entity/Q2421285"
+  ],
+  "fuel additive": [
+    "http://www.wikidata.org/entity/Q2656940"
+  ],
+  "gasoline additive": [
+    "http://www.wikidata.org/entity/Q2656940"
+  ],
+  "attractant": [
+    "http://www.wikidata.org/entity/Q2690011"
+  ],
+  "chemo-attractant": [
+    "http://www.wikidata.org/entity/Q2690011"
+  ],
+  "toxicant": [
+    "http://www.wikidata.org/entity/Q3072135"
+  ],
+  "toxic substance": [
+    "http://www.wikidata.org/entity/Q3072135"
+  ],
+  "persistent, bioaccumulative and toxic substance": [
+    "http://www.wikidata.org/entity/Q3502656"
+  ],
+  "PBT substance": [
+    "http://www.wikidata.org/entity/Q3502656"
+  ],
+  "Persistent": [
+    "http://www.wikidata.org/entity/Q3502656"
+  ],
+  "bioaccumulative and toxic substances": [
+    "http://www.wikidata.org/entity/Q3502656"
+  ],
+  "uroporphyrinogens": [
+    "http://www.wikidata.org/entity/Q3552432"
+  ],
+  "uroporphyrinogen": [
+    "http://www.wikidata.org/entity/Q3552432"
+  ],
+  "combustible matter": [
+    "http://www.wikidata.org/entity/Q42501"
+  ],
+  "fuel": [
+    "http://www.wikidata.org/entity/Q42501"
+  ],
+  "crystal": [
+    "http://www.wikidata.org/entity/Q43533"
+  ],
+  "crystalline solid": [
+    "http://www.wikidata.org/entity/Q43533"
+  ],
+  "phosphide": [
+    "http://www.wikidata.org/entity/Q411835"
+  ],
+  "P 3-": [
+    "http://www.wikidata.org/entity/Q411835"
+  ],
+  "ochratoxin": [
+    "http://www.wikidata.org/entity/Q411901"
+  ],
+  "ochratoxins": [
+    "http://www.wikidata.org/entity/Q411901"
+  ],
+  "bisphosphonates": [
+    "http://www.wikidata.org/entity/Q412205"
+  ],
+  "biphosphonate": [
+    "http://www.wikidata.org/entity/Q412205"
+  ],
+  "diphosphonate": [
+    "http://www.wikidata.org/entity/Q412205"
+  ],
+  "diphosphonates": [
+    "http://www.wikidata.org/entity/Q412205"
+  ],
+  "Thromboxane": [
+    "http://www.wikidata.org/entity/Q412212",
+    "http://www.wikidata.org/entity/Q412212"
+  ],
+  "TX": [
+    "http://www.wikidata.org/entity/Q412212"
+  ],
+  "phycobilins": [
+    "http://www.wikidata.org/entity/Q412631"
+  ],
+  "phycobilin": [
+    "http://www.wikidata.org/entity/Q412631"
+  ],
+  "histrionicotoxin": [
+    "http://www.wikidata.org/entity/Q412991"
+  ],
+  "histrionicotoxins": [
+    "http://www.wikidata.org/entity/Q412991"
+  ],
+  "derivative": [
+    "http://www.wikidata.org/entity/Q898317"
+  ],
+  "chemical derivative": [
+    "http://www.wikidata.org/entity/Q898317"
+  ],
+  "chemical species": [
+    "http://www.wikidata.org/entity/Q11173"
+  ],
+  "species": [
+    "http://www.wikidata.org/entity/Q11173"
+  ],
+  "helicene": [
+    "http://www.wikidata.org/entity/Q901562"
+  ],
+  "helicenes": [
+    "http://www.wikidata.org/entity/Q901562"
+  ],
+  "immunostimulant": [
+    "http://www.wikidata.org/entity/Q901656"
+  ],
+  "immunostimulator": [
+    "http://www.wikidata.org/entity/Q901656"
+  ],
+  "PG-D-Ala (R1,R2)": [
+    "http://www.wikidata.org/entity/Q46328873"
+  ],
+  "2-O-D-alanyl-1-O-phosphatidylglycerol": [
+    "http://www.wikidata.org/entity/Q46328873"
+  ],
+  "D-alanyl-L-alanyl poly(glycerol phosphate)": [
+    "http://www.wikidata.org/entity/Q46329416"
+  ],
+  "polyisoprenyl-major wall teichoic acid": [
+    "http://www.wikidata.org/entity/Q46329416"
+  ],
+  "ditrans,octacis-undecaprenyldiphospho-[(N-acetyl-\u00ce\u00b2-D-glucosaminyl)-(1,4)-]-N-acetyl-\u00ce\u00b1-D-muramoyl-L-alanyl-\u00ce\u00b3-D-glutamyl-meso-2,6-diaminopimeloyl-D-alanyl-D-alanine": [
+    "http://www.wikidata.org/entity/Q46330436"
+  ],
+  "lipid intermediate II": [
+    "http://www.wikidata.org/entity/Q46330436"
+  ],
+  "a peptidoglycan with (L-alanyl-\u00ce\u00b3-D-glutamyl-meso-2,6-diaminopimeloyl-D-alanyl-D-alanine) pentapeptide": [
+    "http://www.wikidata.org/entity/Q46330436"
+  ],
+  "diphosphoundecaprenyl-[GlcNAc-MurNAc-pentapeptide]n": [
+    "http://www.wikidata.org/entity/Q46330436"
+  ],
+  "lipid II": [
+    "http://www.wikidata.org/entity/Q46330436"
+  ],
+  "lipid II (meso diaminopimelate containing)": [
+    "http://www.wikidata.org/entity/Q46330436"
+  ],
+  "undecaprenyl-diphospho-N-acetylmuramoyl-(N-acetylglucosamine)-L-ala-\u00ce\u00b3-D-glu-meso-2,6-diaminopimeloyl-D-ala-D-ala": [
+    "http://www.wikidata.org/entity/Q46330436"
+  ],
+  "peptidoglycan-major wall teichoic acid complex": [
+    "http://www.wikidata.org/entity/Q46330851"
+  ],
+  "peptidoglycan-P-GlcNAc-ManNAc-P-Gro-(P-Gro)m(Glc)n": [
+    "http://www.wikidata.org/entity/Q46330851"
+  ],
+  "sequestering agent": [
+    "http://www.wikidata.org/entity/Q50414097"
+  ],
+  "sequestering agents": [
+    "http://www.wikidata.org/entity/Q50414097"
+  ],
+  "Unleaded 91": [
+    "http://www.wikidata.org/entity/Q50740556"
+  ],
+  "91 RON": [
+    "http://www.wikidata.org/entity/Q50740556"
+  ],
+  "regular unleaded petrol": [
+    "http://www.wikidata.org/entity/Q50740556"
+  ],
+  "participant": [
+    "http://www.wikidata.org/entity/Q75232720"
+  ],
+  "participants": [
+    "http://www.wikidata.org/entity/Q75232720"
+  ]
+}
