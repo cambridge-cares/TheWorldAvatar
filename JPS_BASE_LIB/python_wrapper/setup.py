@@ -9,7 +9,11 @@ setup(
     license='',
     python_requires='>=3.5, <3.8',
     long_description=open('README.md').read(),
-    package_dir={"": "py4jps"},
-    packages=find_packages(exclude=("tests")),    
-    package_data={'resources': ['*.jar']})
+    packages=find_packages(),
+    include_package_data=True,
+    entry_points={
+        'console_scripts': [
+             'py4jps_test=py4jps.tests.test_wrapper:runTests'
+        ],
+    },
 )
