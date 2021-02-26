@@ -3,7 +3,7 @@ build/
 dist/
 *~*
 .vscode/
-venv/
+*venv/
 .mypy_cache/
 coverage.xml
 .coverage
