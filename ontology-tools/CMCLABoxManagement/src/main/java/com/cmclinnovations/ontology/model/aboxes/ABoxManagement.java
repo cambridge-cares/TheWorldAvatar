@@ -207,7 +207,7 @@ public class ABoxManagement implements IABoxManagement{
 		OWLLiteral literal = createOWLLiteral(dataFactory, dataPropertyValue, propertyType);
 		// Creates the data property
 		OWLDataProperty dataPropertyCreated = createOWLDataProperty(dataFactory, basePathTBox,
-				dataPropertyName, BACKSLASH);
+				dataPropertyName, HASH);
 		// Adds the data property and value to the ABox ontology
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLDataPropertyAssertionAxiom(dataPropertyCreated, individual, literal)));
@@ -224,7 +224,7 @@ public class ABoxManagement implements IABoxManagement{
 	public void addObjectProperty(String objectPropertyName, String domainInstanceName, String rangeInstanceName) throws ABoxManagementException {
 		// Creates the object property
 		OWLObjectProperty objectProperty = dataFactory
-				.getOWLObjectProperty(basePathTBox.concat(BACKSLASH).concat(objectPropertyName));
+				.getOWLObjectProperty(basePathTBox.concat(HASH).concat(objectPropertyName));
 		// Creates the domain instance
 		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox,
 				domainInstanceName);
@@ -750,6 +750,11 @@ public class ABoxManagement implements IABoxManagement{
 				if(tokens.length>1){
 					return tokens[1];
 				}
+			} else if(result.contains(BACKSLASH)){
+				String[] tokens = result.split(BACKSLASH);
+				if(tokens.length>1){
+					return tokens[tokens.length-1];
+				}
 			}
 		}
 		}catch(Exception e){
@@ -770,10 +775,10 @@ public class ABoxManagement implements IABoxManagement{
 		try{
 		if (resultLength > 32) {
 			if(result.substring(32)!=null){
-				if(result.substring(32).contains(HASH)){
-					String[] resultParts = result.substring(32).split(HASH);
+				if(result.substring(32).contains(BACKSLASH)){
+					String[] resultParts = result.substring(32).split(BACKSLASH);
 					if(resultParts.length>1){
-						return resultParts[1];
+						return resultParts[resultParts.length-1];
 					}
 				}
 			}
@@ -822,7 +827,7 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return
 	 */
 	public String formQueryWithAStandardVocabulary(String vocabulary, String vocabURL, String object, String property) {
-		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat("#>\n")
+		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(BACKSLASH+">\n")
 				.concat("PREFIX ").concat(vocabulary).concat(": <").concat(vocabURL).concat(">\n")
 				.concat("SELECT ?v WHERE {\n")
 				.concat("PropertyValue(base:").concat(object)
@@ -839,7 +844,7 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return
 	 */
 	public String formSubjectRetrievalQuery(String object, String property) {
-		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat("#>\n")
+		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(BACKSLASH+">\n")
 				.concat("SELECT ?v WHERE {\n")
 				.concat("PropertyValue(?v, base:").concat(property).concat(", base:")
 				.concat(object).concat(")\n")
@@ -859,7 +864,7 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return the value of the property being searched
 	 */
 	public String formQueryWithBaseURL(String tBoxPrefix, String tBoxIri, String object, String queryItem){
-		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat("#>\n")
+		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(BACKSLASH+">\n")
 				.concat("PREFIX ".concat(tBoxPrefix).concat(" <").concat(tBoxIri).concat("#>\n"))
 				.concat("SELECT ?v WHERE {\n")
 				.concat("PropertyValue(base:").concat(object)
@@ -893,7 +898,7 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return
 	 */
 	public String formTypeQueryWithAnInstance(String instance) {
-		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat("#>\n")
+		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(BACKSLASH+">\n")
 				.concat("SELECT ?v WHERE {\n")
 				.concat("Type(base:").concat(instance).concat(", ")
 				.concat("?v")
