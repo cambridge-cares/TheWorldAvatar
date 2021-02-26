@@ -1,5 +1,5 @@
 import unittest
-from py4jps.main import Gateway
+from py4jps import Gateway
 from os import path
 
 
