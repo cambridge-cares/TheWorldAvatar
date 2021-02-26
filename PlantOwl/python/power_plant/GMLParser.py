@@ -271,7 +271,7 @@ def get_tag_name(url):
 
 """Parses a standard GML file consisting of an Envelope and a set of feature members"""
 def parse_gml(file_name, output_folder_path, start_feature_number, upper_limit):
-    p = Path(gmlpropread.getOutputFilePath())
+    p = Path(output_folder_path)
     if not p.exists():
         print('The following file output path is not valid:', p)
     print('Parsing in progress...')
@@ -300,5 +300,9 @@ if __name__ == '__main__':
             output_folder_path = output_folder_path.split('.')[0]
             output_folder_path = sys.argv[2] + '\\' + output_folder_path + '\\' + str(sys.argv[3]) + '-' + str(sys.argv[4])
         if len(output_folder_path) > 0:
-            os.makedirs(output_folder_path)
+            p = Path(output_folder_path)
+            if not p.exists():
+                print('The following file output path is not valid:', p)
+                print('The path is being created:', p)
+                os.makedirs(output_folder_path)
             parse_gml(sys.argv[1], output_folder_path, sys.argv[3], sys.argv[4])
