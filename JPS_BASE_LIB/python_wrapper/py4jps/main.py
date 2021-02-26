@@ -16,5 +16,5 @@ class Gateway:
         return self.gateway.new_jvm_view()
 
     @staticmethod
-    def importJava(moduleView,importStatement):
+    def importPackages(moduleView,importStatement):
         java_import(moduleView, importStatement)

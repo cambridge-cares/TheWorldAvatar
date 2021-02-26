@@ -11,7 +11,7 @@ class TestWrapper(unittest.TestCase):
         gateway = Gateway()
         gateway.start()
         module1_view = gateway.createModuleView()
-        gateway.importJava(module1_view,'uk.ac.cam.cares.jps.base.util.*')
+        gateway.importPackages(module1_view,'uk.ac.cam.cares.jps.base.util.*')
 
         FileUtil = module1_view.FileUtil
         file_str = FileUtil.readFileLocally(path.abspath(path.join(path.dirname(__file__),'test_file1.txt')))
