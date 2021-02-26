@@ -282,8 +282,6 @@ def parse_gml(file_name, output_folder_path, start_feature_number, upper_limit):
 
 """This block of code is the access point to this Python module"""
 if __name__ == '__main__':
-    home = str(Path.home())
-    print(home+os.path.sep)
     if len(sys.argv) == 1:
         print('For HELP, run> GMLParser -h')
     if len(sys.argv) == 2 and str(sys.argv[1]) in '-h':
