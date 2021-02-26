@@ -290,13 +290,17 @@ if __name__ == '__main__':
         print('To run the parser, provide a command as follows:>GMLParser.py [INPUT_FILE_PATH] [OUTPUT_FOLDER_PATH] [STARTING_FEATURE_NUMBER] [UPPER_LIMIT]\n')
         print('An example comm>GMLParser /home/<username>/cropmaps/Crop_Map_of_England_2019_North_Yorkshire.gml /home/<username>/kb 1 1000')
     if len(sys.argv) == 5:
-        input_file_name = ''
+        output_folder_path = ''
         if '/' in sys.argv[1]:
-            input_file_name = sys.argv[1].split('/')
-            input_file_name = input_file_name[len(input_file_name)-1]
+            output_folder_path = sys.argv[1].split('/')
+            output_folder_path = output_folder_path[len(output_folder_path)-1]
+            output_folder_path = output_folder_path.split('.')[0]
+            output_folder_path = sys.argv[2] + '/' + output_folder_path + '/' + str(sys.argv[3]) + '-' + str(sys.argv[4])
         elif '\\' in sys.argv[1]:
-            input_file_name = sys.argv[1].split('\\')
-            input_file_name = input_file_name[len(input_file_name)-1]
-        if len(input_file_name) > 0:
-            input_file_name = input_file_name.split('.')[0]
-            parse_gml(sys.argv[1], sys.argv[2]+os.path.sep+input_file_name, sys.argv[3], sys.argv[4])
+            output_folder_path = sys.argv[1].split('\\')
+            output_folder_path = output_folder_path[len(output_folder_path)-1]
+            output_folder_path = output_folder_path.split('.')[0]
+            output_folder_path = sys.argv[2] + '\\' + output_folder_path + '\\' + str(sys.argv[3]) + '-' + str(sys.argv[4])
+        if len(output_folder_path) > 0:
+            os.makedirs(output_folder_path)
+            parse_gml(sys.argv[1], output_folder_path, sys.argv[3], sys.argv[4])
