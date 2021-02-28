@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q243309"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "carnitine"}, "x": {"type": "literal", "value": "C\u2087H\u2081\u2085NO\u2083"}, "altLabel_list": {"type": "literal", "value": "D,L-carnitine"}}]}}
