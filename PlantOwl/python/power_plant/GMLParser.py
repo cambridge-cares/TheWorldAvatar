@@ -300,9 +300,23 @@ if __name__ == '__main__':
             output_folder_path = output_folder_path.split('.')[0]
             output_folder_path = sys.argv[2] + '\\' + output_folder_path + '\\' + str(sys.argv[3]) + '-' + str(sys.argv[4])
         if len(output_folder_path) > 0:
-            p = Path(output_folder_path)
-            if not p.exists():
-                print('The following file output path is not valid:', p)
-                print('The path is being created:', p)
+            p_output = Path(output_folder_path)
+            p_input = Path(sys.argv[1])
+            if not p_output.exists():
+                print('The following file output path is not valid:', p_output)
+                print('The path is being created:', p_output)
                 os.makedirs(output_folder_path)
-            parse_gml(sys.argv[1], output_folder_path, sys.argv[3], sys.argv[4])
+            if p_input.exists() and p_output.exists() and int(sys.argv[3])>0 \
+                    and (int(sys.argv[4]) == -9999 or int(sys.argv[4])>1):
+                parse_gml(sys.argv[1], output_folder_path, sys.argv[3], sys.argv[4])
+            else:
+                if not p_input.exists():
+                    print('Input file does not exist.')
+                if not p_output.exists():
+                    print('Output folder path could not be created.')
+                if not isinstance(int(sys.argv[3]), int):
+                    print('Starting feature member is not an integer.')
+                if not int(sys.argv[3])>0:
+                    print('Starting feature number must be greater than 0.')
+                if not (int(sys.argv[4]) == -9999 or int(sys.argv[4])>1):
+                    print('Upper limit is neither -9999 nor greater than 1.')
