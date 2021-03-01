@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
@@ -88,7 +89,7 @@ public class ShipSparql {
             double lat, double lon, int timestamp) {
         String ship_name = "ship"+i;
         Iri ship_iri = p_ship.iri(ship_name);
-        Iri chimney_iri = p_ship.iri(ship_name+"Chimney");
+        Iri chimney_iri = p_ship.iri(ship_name+"_Chimney");
         Iri mmsi_iri = p_ship.iri(ship_name+"_MMSI");
         Iri vmmsi_iri = p_ship.iri(ship_name+"_vMMSI");
 
@@ -260,8 +261,117 @@ public class ShipSparql {
         return result;
     }
 
+    public static JSONObject GetShipIriWithinScope(Scope sc) {
+    	SelectQuery query = Queries.SELECT();
+
+    	String shipkey = "ship";
+        // ship IRI to obtain
+        Variable ship = SparqlBuilder.var(shipkey);
+        
+        // for coordinates
+        Variable lon = SparqlBuilder.var("lon"); Variable lat = SparqlBuilder.var("lat");
+        Variable coord = query.var();
+        
+        // ship dimensions and speed for sorting
+        Variable al = SparqlBuilder.var("al");
+        Variable aw = SparqlBuilder.var("aw");
+        Variable ss = SparqlBuilder.var("ss");
+        
+        GraphPattern ship_gp = ship.has(p_space_time_extended.iri("hasGISCoordinateSystem"),coord);
+        
+        Iri hasProjectedCoordinate_x = p_space_time_extended.iri("hasProjectedCoordinate_x");
+        Iri hasProjectedCoordinate_y = p_space_time_extended.iri("hasProjectedCoordinate_y");
+        Iri hasValue = p_system.iri("hasValue");
+        Iri numericalValue = p_system.iri("numericalValue");
+        
+        // for coordinates
+        Iri[] XcoordPredicates = {hasProjectedCoordinate_x,hasValue,numericalValue};
+        GraphPattern xcoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, XcoordPredicates, null, coord, lon);
+        
+        Iri[] YcoordPredicates = {hasProjectedCoordinate_y,hasValue,numericalValue};
+        GraphPattern ycoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, YcoordPredicates, null, coord, lat);
+        
+        // length query
+        Iri hasDimension = p_system.iri("hasDimension");
+        Iri QuantitativeValue = p_system.iri("QuantitativeValue");
+        Iri[] LengthQueryPredicates = {hasDimension, hasValue, QuantitativeValue};
+        Iri[] LengthQueryRdfTypes = {null, p_ship.iri("ShipLength"), null};
+        GraphPattern length_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, LengthQueryPredicates, LengthQueryRdfTypes, ship, al);
+        
+        // beam query
+        Iri[] BeamQueryPredicates = {hasDimension,hasValue,QuantitativeValue};
+        Iri[] BeamQueryRdfTypes = {null, p_ship.iri("ShipBeam"), null};
+        GraphPattern beam_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, BeamQueryPredicates, BeamQueryRdfTypes, ship, aw);
+        
+        // speed query
+        Iri hasSOG = p_ship.iri("hasSOG");
+        Iri[] SpeedQueryPredicates = {hasSOG,hasValue,numericalValue};
+        GraphPattern speed_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship, ss);
+        
+        // named graph
+        From queryGraph = SparqlBuilder.from(ship_graph);
+        
+        // constraint to get ships within provided scope
+        sc.transform("EPSG:4326");
+        Expression<?> xconstraint = Expressions.and(Expressions.lt(lon, sc.getUpperx()),Expressions.gt(lon, sc.getLowerx()));
+        Expression<?> yconstraint = Expressions.and(Expressions.lt(lat, sc.getUppery()),Expressions.gt(lat, sc.getLowery()));
+        Expression<?> overallconstraint = Expressions.and(xconstraint,yconstraint);
+       
+        // prioritise ships that are moving and large ones
+        OrderCondition alDesc = SparqlBuilder.desc(al);
+        OrderCondition awDesc = SparqlBuilder.desc(aw);
+        OrderCondition ssDesc = SparqlBuilder.desc(ss);
+        
+        GraphPattern queryPattern = GraphPatterns.and(ship_gp,xcoord_gp,ycoord_gp,length_gp,beam_gp,speed_gp).filter(overallconstraint);
+        
+        query.from(queryGraph).prefix(p_ship,p_space_time_extended, p_system).select(ship).where(queryPattern)
+        .orderBy(ssDesc).orderBy(alDesc).orderBy(awDesc).limit(300);
+
+        JSONArray queryresult = performQuery(query);
+        
+        JSONArray shipIRI = new JSONArray();
+        for (int i=0; i < queryresult.length(); i++) {
+        	shipIRI.put(queryresult.getJSONObject(i).getString(shipkey));
+        }
+        
+        JSONObject response = new JSONObject();
+        response.put(shipkey, shipIRI);
+        
+        return response;
+    }
+    
+    public static JSONObject queryShipProperties(String ship_iri_string) {
+    	SelectQuery query = Queries.SELECT();
+        Iri ship_iri = iri(ship_iri_string);
+        
+        Variable type = SparqlBuilder.var("type");
+        Variable ss = SparqlBuilder.var("ss");
+        
+        // ship type query
+        Iri hasShipType = p_ship.iri("hasShipType");
+        Iri hasValue = p_system.iri("hasValue");
+        Iri Value = p_system.iri("Value");
+        Iri[] TypeQueryPredicates = {hasShipType,hasValue,Value};
+        GraphPattern type_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, TypeQueryPredicates, null, ship_iri, type);
+        
+        // speed query
+        Iri hasSOG = p_ship.iri("hasSOG");
+        Iri numericalValue = p_system.iri("numericalValue");
+        Iri[] SpeedQueryPredicates = {hasSOG,hasValue,numericalValue};
+        GraphPattern speed_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship_iri, ss);
+        
+        // named graph
+        From queryGraph = SparqlBuilder.from(ship_graph);
+        
+        query.from(queryGraph).prefix(p_ship,p_system).select(type,ss).where(type_gp,speed_gp);
+        JSONArray queryresult = performQuery(query);
+        
+        JSONObject response = queryresult.getJSONObject(0);
+        return response;
+    }
+    
     private static TriplePattern[] GetChimneyTP(String ship_name, Iri chimney_iri) {
-    	String chimney = "Chimney";
+    	String chimney = "_Chimney";
     	Iri diameter = p_ship.iri(ship_name+chimney+"Diameter");
     	Iri v_diameter = p_ship.iri(ship_name+chimney+"DiameterValue");
     	Iri height = p_ship.iri(ship_name+chimney+"Height");
@@ -356,7 +466,7 @@ public class ShipSparql {
      * @param particulateamount
      */
     private static TriplePattern [] getParticleTP(String ship_name, Iri particulateAmount, Integer particle_index) {
-    	String chimney = "Chimney";
+    	String chimney = "_Chimney";
     	Iri particle_iri = p_ship.iri(ship_name+chimney+"Particle" + particle_index);
     	Iri massfraction_iri = p_ship.iri(ship_name+chimney+"ParticleMassFraction"+particle_index);
     	Iri vmassfraction_iri = p_ship.iri(ship_name+chimney+"ParticleMassFractionValue"+particle_index);
@@ -413,6 +523,10 @@ public class ShipSparql {
         TriplePattern[] combined_tp = {material_tp,mixture_tp,massFlow_tp};
         combined_tp = ArrayUtils.addAll(combined_tp, value_tp);
         return combined_tp;
+    }
+    
+    public void UpdateShipChimney(String ship_iri,Chimney chim) {
+    	
     }
     
     private static void performUpdate(ModifyQuery query) {
