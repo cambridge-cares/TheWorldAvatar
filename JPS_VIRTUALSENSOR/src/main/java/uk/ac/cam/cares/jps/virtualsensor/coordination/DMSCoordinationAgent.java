@@ -64,7 +64,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
 		String result;
 
-		// @TODO - improve weather update frequency
 		result = execute("/JPS_VIRTUALSENSOR/WeatherAgent", requestParams.getJSONObject("region").toString());
 
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
