@@ -51,6 +51,7 @@ public class KnowledgeBaseAgent extends JPSAgent {
 		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
 	 
 		if (body != null) {
+			System.out.println("BODY "+body );
 			if ( InputValidator.checkIfValidJSONObject(body)) {
 				paramResourceUrl = MiscUtil.optNullKey(new JSONObject(body), JPSConstants.SCENARIO_RESOURCE);
 			}
@@ -154,7 +155,6 @@ public class KnowledgeBaseAgent extends JPSAgent {
 //		String requestUrl = req.getRequestURL().toString();
 //		String path = req.getPathInfo();
 //		JSONObject input = Http.readJsonParameter(req);
-//		System.out.println(input.toString());
 //		String sparql = MiscUtil.optNullKey(input, JPSConstants.QUERY_SPARQL_UPDATE);
 //		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
 //		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
@@ -171,7 +171,8 @@ public class KnowledgeBaseAgent extends JPSAgent {
 //			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
 //			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
 //			String body = Http.getRequestBody(req);
-//			
+//
+//			System.out.println(input.toString());
 //			kb.put(resourceUrl, body, contentType);
 //
 //		} catch (RuntimeException e) {

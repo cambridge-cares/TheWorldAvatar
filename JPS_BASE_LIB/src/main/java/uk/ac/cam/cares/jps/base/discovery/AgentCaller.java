@@ -275,12 +275,6 @@ public class AgentCaller {
                 json = IOUtils.toString(request.getReader());
             } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
                 json = request.getParameter(JSON_PARAMETER_KEY);
-            }else if (request.getMethod().equals(HttpPut.METHOD_NAME)) {
-                json =IOUtils.toString(request.getReader());
-                JSONObject jo2 = new JSONObject(request.getParameter(JSON_PARAMETER_KEY));
-                jo2.put("body",json);
-                json = jo2.toString();
-                //hasty method of putting both into one
             }
             System.out.println("AgentCaller: json "+ json);
             if (json != null) {
@@ -305,6 +299,18 @@ public class AgentCaller {
                 String value = request.getParameter(key);
                 jsonobject.put(key, value);
             }
+            if (request.getMethod().equals(HttpPut.METHOD_NAME)) {
+                json =IOUtils.toString(request.getReader()); 
+                String json2 = request.getParameter(JSON_PARAMETER_KEY);
+                if (json2 != null) {
+                	//Since request.getParameterNames doesn't work
+                	JSONObject jo = new JSONObject(json2);
+                	for(String key : JSONObject.getNames(jo))
+                	{
+                	  jsonobject.put(key, jo.get(key));
+                	}
+                }
+            	}                
             jsonobject.put("method", request.getMethod())
 			.put("body", json)
 			.put("pathInfo", request.getPathInfo())
