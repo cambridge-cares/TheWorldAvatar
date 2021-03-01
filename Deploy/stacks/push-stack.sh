@@ -39,7 +39,7 @@ compose_opts="$compose_file_args --env-file $env_filename"
 printf "Pushing all images in the $stack stack\n\n"
 
 # Switch to stack dir to simplify finding config files
-pushd $stack > /dev/null
+cd ./$stack
 
 if [ ! -e $env_filename ]; then
   echo "Warning: no env vars file at $stack/$env_filename, '$stack' stack may not have been started. Trying to stop it anyway..."
@@ -49,7 +49,6 @@ fi
 docker_compose_cmd="docker-compose $compose_opts push"
 $docker_compose_cmd
 compose_push_exit_code=$?
-popd > /dev/null
 
 if [ $compose_push_exit_code -eq 0 ]; then
   printf "\nDone\n"

@@ -73,7 +73,7 @@ printf "\n======================================================================
 printf "Building the $stack stack in $mode mode\n\n"
 
 # Build in stack dir
-pushd $stack > /dev/null
+cd ./$stack
 
 # Write some properties (e.g. the current git hash) to a temporary env file so that they can be used
 # in the compose config files
@@ -120,7 +120,6 @@ for compose_file in $compose_files; do
           read -p "  Enter a value for $secret_file_path (or a blank string to abort): " new_secret_val
           if [ -z "$new_secret_val" ]; then
             echo "Aborting..."
-            popd > /dev/null
             exit 1
           else
             if [ -f $secret_file_path ]; then
@@ -144,8 +143,6 @@ $docker_compose_cmd
 compose_up_exit_code=$?
 echo Done
 
-# Return from stack dir
-popd > /dev/null
 
 if [ $compose_up_exit_code -eq 0 ]; then
   printf "\n$stack stack started in $mode mode\n"
