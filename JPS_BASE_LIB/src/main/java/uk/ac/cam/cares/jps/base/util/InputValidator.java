@@ -76,7 +76,7 @@ public class InputValidator {
 			}else return false;
 		}return false;
 	}
-	/** checks if Integer by throwing exception otherwise
+	/** checks if Integer by throwing Exception otherwise
 	 * 
 	 * @param str
 	 * @return
@@ -89,6 +89,11 @@ public class InputValidator {
 	         return false;
 	     }
 	 }
+	/** checks if JSONOBject by throwing Exception otherwise. 
+	 * 
+	 * @param str
+	 * @return
+	 */
 	public static boolean checkIfValidJSONObject(String str) {
 		try {
 	        new JSONObject(str);

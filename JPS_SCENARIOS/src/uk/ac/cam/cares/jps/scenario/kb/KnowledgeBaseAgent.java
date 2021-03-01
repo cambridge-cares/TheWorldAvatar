@@ -49,20 +49,33 @@ public class KnowledgeBaseAgent extends JPSAgent {
 		String path = MiscUtil.optNullKey(requestParams, "pathInfo");
 		String contentType = MiscUtil.optNullKey(requestParams, "contentType");
 		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
-	 
-		if (body != null) {
-			System.out.println("BODY "+body );
-			if ( InputValidator.checkIfValidJSONObject(body)) {
-				paramResourceUrl = MiscUtil.optNullKey(new JSONObject(body), JPSConstants.SCENARIO_RESOURCE);
-			}
-			}
+        String sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
+//		if (body != null) {
+//			System.out.println("BODY "+body );
+//			if ( InputValidator.checkIfValidJSONObject(body)) {
+//				paramResourceUrl = MiscUtil.optNullKey(new JSONObject(body), JPSConstants.SCENARIO_RESOURCE);
+//				
+//                
+//			}
+//			}
 		String method = MiscUtil.optNullKey(requestParams, "method");
-        String sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String paramDatasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);
 		try {
 			if (method.equals(HttpPost.METHOD_NAME)) {
-//                json = IOUtils.toString(request.getReader());
+        		logInputParams("POST", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
+				
+				if (sparql == null) {
+					throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
+				}
+				
+				String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
+				KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
+				String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
+
+				updateKnowledgeBase(kb, resourceUrl, sparql);
             } else if (method.equals(HttpGet.METHOD_NAME)) {
+            	sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
+                
 	            String accept = getAccept(request);
 				String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
 				KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
@@ -78,7 +91,6 @@ public class KnowledgeBaseAgent extends JPSAgent {
 				return new JSONObject().put("result", result);
 
             }else if (method.equals(HttpPut.METHOD_NAME)) {
-            	System.out.println("BODY " + body);
         		sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
         		logInputParams("PUT", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
     			
@@ -182,37 +194,37 @@ public class KnowledgeBaseAgent extends JPSAgent {
 //		}
 //	}
 	
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
-		String requestUrl = req.getRequestURL().toString();
-		String path = req.getPathInfo();
-		JSONObject input = Http.readJsonParameter(req);
-		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
-		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
-		JSONObject body = new JSONObject(Http.getRequestBody(req));
-		String sparql = MiscUtil.optNullKey(body, JPSConstants.QUERY_SPARQL_UPDATE);
-		String contentType = req.getContentType();
-
-		try {
-			logInputParams("POST", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
-	
-			if (sparql == null) {
-				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is missing");
-			}
-			
-			String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
-			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
-			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
-
-			updateKnowledgeBase(kb, resourceUrl, sparql);
-			
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			logInputParams("POST", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, true);
-			throw e;
-		}
-	}
+//	@Override
+//	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//		
+//		String requestUrl = req.getRequestURL().toString();
+//		String path = req.getPathInfo();
+//		JSONObject input = Http.readJsonParameter(req);
+//		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
+//		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
+//		JSONObject body = new JSONObject(Http.getRequestBody(req));
+//		String sparql = MiscUtil.optNullKey(body, JPSConstants.QUERY_SPARQL_UPDATE);
+//		String contentType = req.getContentType();
+//
+//		try {
+//			logInputParams("POST", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
+//	
+//			if (sparql == null) {
+//				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is missing");
+//			}
+//			
+//			String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
+//			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
+//			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
+//
+//			updateKnowledgeBase(kb, resourceUrl, sparql);
+//			
+//		} catch (RuntimeException e) {
+//			e.printStackTrace();
+//			logInputParams("POST", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, true);
+//			throw e;
+//		}
+//	}
 	
 	protected void updateKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql) {
 		kb.update(resourceUrl, sparql);

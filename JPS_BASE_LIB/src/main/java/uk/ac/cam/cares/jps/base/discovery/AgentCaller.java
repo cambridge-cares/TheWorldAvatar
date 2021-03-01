@@ -271,9 +271,7 @@ public class AgentCaller {
 
         try {
             String json = null;
-            if (request.getMethod().equals(HttpPost.METHOD_NAME)) {
-                json = IOUtils.toString(request.getReader());
-            } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
+            if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
                 json = request.getParameter(JSON_PARAMETER_KEY);
             }
             System.out.println("AgentCaller: json "+ json);
@@ -292,19 +290,21 @@ public class AgentCaller {
                 return jo;
             }
 
-            JSONObject jsonobject = new JSONObject();
-            Enumeration<String> keys = request.getParameterNames();
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
-                String value = request.getParameter(key);
-                jsonobject.put(key, value);
-            }
-            if (request.getMethod().equals(HttpPut.METHOD_NAME)) {
+            JSONObject jsonobject = Http.readJsonParameter(request);
+            System.out.println("AgentCaller: Line 296: " + jsonobject.toString());
+            if (request.getMethod().equals(HttpPut.METHOD_NAME)
+            		|| request.getMethod().equals(HttpPost.METHOD_NAME)) {
                 json =IOUtils.toString(request.getReader()); 
                 String json2 = request.getParameter(JSON_PARAMETER_KEY);
                 if (json2 != null) {
                 	//Since request.getParameterNames doesn't work
                 	JSONObject jo = new JSONObject(json2);
+                	for(String key : JSONObject.getNames(jo))
+                	{
+                	  jsonobject.put(key, jo.get(key));
+                	}
+                }if (InputValidator.checkIfValidJSONObject(json)){
+                	JSONObject jo = new JSONObject(json);
                 	for(String key : JSONObject.getNames(jo))
                 	{
                 	  jsonobject.put(key, jo.get(key));
