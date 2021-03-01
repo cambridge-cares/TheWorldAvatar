@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.virtualsensor.sparql;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
@@ -23,6 +24,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.SparqlAuthentication;
 
 public class ShipSparql {
     private static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
@@ -35,11 +37,39 @@ public class ShipSparql {
     private static Prefix p_coordsys = SparqlBuilder.prefix("coordsys",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"));
     private static Prefix p_time = SparqlBuilder.prefix("time",iri("http://www.w3.org/2006/time#"));
     private static Prefix p_SI_unit = SparqlBuilder.prefix("si_unit",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#"));
-
+    private static Prefix p_plant = SparqlBuilder.prefix("plant",iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#"));
+    private static Prefix p_technical = SparqlBuilder.prefix("technical",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"));
+    private static Prefix p_process = SparqlBuilder.prefix("process",iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#"));
+    private static Prefix p_topology = SparqlBuilder.prefix("topology",iri("http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"));
+    private static Prefix p_chemprocess = SparqlBuilder.prefix("chemprocess",iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#"));
+    private static Prefix p_behaviour = SparqlBuilder.prefix("behaviour",iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#"));
+    private static Prefix p_phase_system = SparqlBuilder.prefix("phase",iri("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#"));
+    private static Prefix p_geometry = SparqlBuilder.prefix("geometry",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#"));
+    private static Prefix p_material = SparqlBuilder.prefix("material",iri("http://www.theworldavatar.com/ontology/ontocape/material/material.owl#"));
+    private static Prefix p_chemspecies = SparqlBuilder.prefix("species",iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#"));
+    private static Prefix p_pseudo = SparqlBuilder.prefix("pseudo",iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#"));
+    private static Prefix p_substance = SparqlBuilder.prefix("substance", iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#"));
+    
+    // units
     private static Iri unit_degree = p_derived_SI_unit.iri("degree");
     private static Iri unit_knot = p_derived_SI_unit.iri("knot"); // not SI unit, change to m/s soon
     private static Iri unit_m = p_SI_unit.iri("m");
+    private static Iri unit_JperkgK = p_derived_SI_unit.iri("J_per_kg.K"); 
+    private static Iri unit_celcius = p_derived_SI_unit.iri("Celsius");
+    private static Iri unit_bar = p_derived_SI_unit.iri("bar");
+    private static Iri unit_g_per_s = p_derived_SI_unit.iri("kg_per_s"); 
+    private static Iri unit_kg_per_mol = p_derived_SI_unit.iri("kg_per_mol");
 
+    // chemical species
+    private static Iri NO2 = p_chemspecies.iri("Nitrogen_dioxide");
+    private static Iri NOx = p_pseudo.iri("Nitrogen__oxides");
+    private static Iri uHC = p_pseudo.iri("Unburned_Hydrocarbon");
+    private static Iri CO = p_chemspecies.iri("Carbon__monoxide");
+    private static Iri CO2 = p_chemspecies.iri("Carbon__dioxide");
+    private static Iri Ozone = p_chemspecies.iri("Ozone");
+    private static Iri SO2 = p_chemspecies.iri("Sulfur__dioxide");
+    private static Iri[] species = {NO2,NOx,uHC,CO,CO2,Ozone,SO2};
+    
     private static Iri ship_graph = p_ship.iri("Ships");
     /**
      * Creates a ship instance on ship_endpoint, Blazegraph is highly recommended because of its performance
@@ -58,6 +88,7 @@ public class ShipSparql {
             double lat, double lon, int timestamp) {
         String ship_name = "ship"+i;
         Iri ship_iri = p_ship.iri(ship_name);
+        Iri chimney_iri = p_ship.iri(ship_name+"Chimney");
         Iri mmsi_iri = p_ship.iri(ship_name+"_MMSI");
         Iri vmmsi_iri = p_ship.iri(ship_name+"_vMMSI");
 
@@ -88,8 +119,9 @@ public class ShipSparql {
                 .andHas(p_ship.iri("hasShipType"),type_iri).andHas(p_ship.iri("hasSOG"),speed_iri)
                 .andHas(p_ship.iri("hasCOG"), course_iri).andHas(p_system.iri("hasDimension"),length_iri)
                 .andHas(p_system.iri("hasDimension"),beam_iri)
-                .andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),coordinates_iri);
-
+                .andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),coordinates_iri)
+                .andHas(p_system.iri("hasSubsystem"),chimney_iri);
+        
         TriplePattern mmsi_tp = mmsi_iri.isA(p_ship.iri("MMSI")).andHas(p_system.iri("hasValue"), vmmsi_iri);
         TriplePattern vmmsi_tp = vmmsi_iri.isA(p_system.iri("Property")).andHas(p_system.iri("numericalValue"), mmsi);
 
@@ -129,7 +161,10 @@ public class ShipSparql {
         TriplePattern [] combined_tp = {ship_tp,mmsi_tp,vmmsi_tp,type_tp,vtype_tp,length_tp,vlength_tp,beam_tp,vbeam_tp,
                 speed_tp,vspeed_tp,course_tp,vcourse_tp,time_tp,projected_gp,xcoord_tp,ycoord_tp,vxcoord_tp,vycoord_tp};
 
-        Prefix [] prefix_list = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_time,p_SI_unit};
+        combined_tp = ArrayUtils.addAll(combined_tp, GetChimneyTP(ship_name,chimney_iri));
+        
+        Prefix [] prefix_list = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_time,p_SI_unit,p_plant,p_technical,
+        		p_process,p_topology,p_chemprocess,p_behaviour,p_phase_system,p_geometry,p_material,p_chemspecies,p_pseudo,p_substance};
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(prefix_list).insert(combined_tp).where().with(ship_graph);
 
@@ -225,6 +260,161 @@ public class ShipSparql {
         return result;
     }
 
+    private static TriplePattern[] GetChimneyTP(String ship_name, Iri chimney_iri) {
+    	String chimney = "Chimney";
+    	Iri diameter = p_ship.iri(ship_name+chimney+"Diameter");
+    	Iri v_diameter = p_ship.iri(ship_name+chimney+"DiameterValue");
+    	Iri height = p_ship.iri(ship_name+chimney+"Height");
+    	Iri v_height = p_ship.iri(ship_name+chimney+"HeightValue");
+    	Iri release = p_ship.iri(ship_name+chimney+"ReleaseEmission");
+    	Iri wasteproduct = p_ship.iri(ship_name+chimney+"WasteProduct");
+    	Iri generalizedamount = p_ship.iri(ship_name+chimney+"GeneralizedAmount");
+    	Iri particulateamount = p_ship.iri(ship_name+chimney+"Particulate");
+    	Iri materialamount = p_ship.iri(ship_name+chimney+"MaterialAmount");
+    	Iri massflow = p_ship.iri(ship_name+chimney+"MassFlow");
+    	
+    	Iri material = p_ship.iri(ship_name+chimney+"Material");
+    	Iri singlephase = p_ship.iri(ship_name+chimney+"MaterialSinglePhase");
+    	Iri cp = p_ship.iri(ship_name+chimney+"MaterialCp");
+    	Iri cp_value = p_ship.iri(ship_name+chimney+"MaterialCpValue");
+    	Iri temperature = p_ship.iri(ship_name+chimney+"MaterialTemperature");
+    	Iri temperature_value = p_ship.iri(ship_name+chimney+"MaterialTemperatureValue");
+    	Iri pressure = p_ship.iri(ship_name+chimney+"MaterialPressure");
+    	Iri pressure_value = p_ship.iri(ship_name+chimney+"MaterialPressureValue");
+    	Iri molWeight = p_ship.iri(ship_name+chimney+"MolecularWeight");
+    	Iri molWeightValue = p_ship.iri(ship_name+chimney+"MolecularWeightValue");
+    	
+    	TriplePattern pipe_tp = chimney_iri.isA(p_plant.iri("Pipe"))
+    			.andHas(p_plant.iri("hasInsideDiameter"),diameter)
+    			.andHas(p_plant.iri("hasHeight"),height)
+    			.andHas(p_technical.iri("realizes"),release);
+    	
+    	TriplePattern diameter_tp = diameter.isA(p_ship.iri("DimensionOfBow"));
+    	TriplePattern[] v_diameter_tp = SparqlPatternGenerator.GetScalarTP(diameter,v_diameter,1.0,unit_m);
+    	
+    	TriplePattern height_tp = height.isA(p_ship.iri("DimensionOfBow"));
+    	TriplePattern[] v_height_tp = SparqlPatternGenerator.GetScalarTP(height,v_height,20.0,unit_m);
+    	
+    	TriplePattern release_tp = release.isA(p_process.iri("ReleaseEmission")).andHas(p_topology.iri("hasOutput"),wasteproduct);
+    	TriplePattern waste_tp = wasteproduct.isA(p_process.iri("NonReusableWasteProduct")).andHas(p_chemprocess.iri("refersToGeneralizedAmount"),generalizedamount);
+    	
+    	TriplePattern amount_tp = generalizedamount.isA(p_behaviour.iri("GeneralizedAmount"))
+    			.andHas(p_system.iri("contains"),particulateamount)
+    			.andHas(p_system.iri("hasSubsystem"),materialamount)
+    			.andHas(p_system.iri("hasProperty"),massflow);
+    	
+    	TriplePattern materialamount_tp = materialamount.isA(p_behaviour.iri("MaterialAmount"))
+    			.andHas(p_behaviour.iri("refersToMaterial"),material);
+    	TriplePattern material_tp = material.isA(p_material.iri("Material")).andHas(p_material.iri("thermodynamicBehaviour"),singlephase);
+    	TriplePattern singlephase_tp = singlephase.isA(p_phase_system.iri("SinglePhase"))
+    			.andHas(p_system.iri("hasProperty"),cp)
+    			.andHas(p_phase_system.iri("has_temperature"),temperature)
+    			.andHas(p_phase_system.iri("has_pressure"),pressure)
+    			.andHas(p_system.iri("hasProperty"),molWeight);
+    	
+    	TriplePattern cp_tp = cp.isA(p_phase_system.iri("ThermodynamicStateProperty"));
+    	TriplePattern[] cpvalue_tp = SparqlPatternGenerator.GetScalarTP(cp,cp_value,0,unit_JperkgK);
+    	
+    	TriplePattern temperature_tp = temperature.isA(p_phase_system.iri("Temperature"));
+    	TriplePattern[] tempvalue_tp = SparqlPatternGenerator.GetScalarTP(temperature,temperature_value,0,unit_celcius);
+    	
+    	TriplePattern pressure_tp = pressure.isA(p_phase_system.iri("Pressure"));
+    	TriplePattern[] pressurevalue_tp = SparqlPatternGenerator.GetScalarTP(pressure,pressure_value,0,unit_bar);
+    	
+    	TriplePattern molWeight_tp = molWeight.isA(p_substance.iri("MolecularWeight"));
+    	TriplePattern[] molWeightValue_tp = SparqlPatternGenerator.GetScalarTP(molWeight, molWeightValue, 0, unit_kg_per_mol);
+    	
+    	TriplePattern [] combined_tp = {pipe_tp,diameter_tp,height_tp,release_tp,waste_tp,
+    			amount_tp,materialamount_tp,material_tp,singlephase_tp,cp_tp,temperature_tp,pressure_tp,molWeight_tp};
+    	
+    	// the values triples are arrays
+    	combined_tp = ArrayUtils.addAll(combined_tp, v_height_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, v_diameter_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, cpvalue_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, tempvalue_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, pressurevalue_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, molWeightValue_tp);
+    	
+    	// 1 mixture for each species
+    	for (int i=0; i < 7; i++) {
+    		Iri mixture = p_ship.iri(ship_name+chimney+"Mixture"+String.valueOf(i+1));
+    		Iri massFlow = p_ship.iri(ship_name+chimney+"MassFlow"+String.valueOf(i+1));
+    		Iri massFlowValue = p_ship.iri(ship_name+chimney+"MassFlowValue"+String.valueOf(i+1));
+    		TriplePattern[] mixture_tp = GetMixtureTP(material,mixture,species[i],massFlow,massFlowValue);
+    		combined_tp = ArrayUtils.addAll(combined_tp, mixture_tp);
+    	}
+    	
+    	for (int i = 0; i < getParticleNumber(); i++) {
+    		TriplePattern[] particle_tp = getParticleTP(ship_name,particulateamount,i+1);
+    		combined_tp = ArrayUtils.addAll(combined_tp, particle_tp);
+    	}
+    	return combined_tp;
+    }
+    
+    /**
+     * Provide graph for each particle
+     * @param particulateamount
+     */
+    private static TriplePattern [] getParticleTP(String ship_name, Iri particulateAmount, Integer particle_index) {
+    	String chimney = "Chimney";
+    	Iri particle_iri = p_ship.iri(ship_name+chimney+"Particle" + particle_index);
+    	Iri massfraction_iri = p_ship.iri(ship_name+chimney+"ParticleMassFraction"+particle_index);
+    	Iri vmassfraction_iri = p_ship.iri(ship_name+chimney+"ParticleMassFractionValue"+particle_index);
+    	Iri density_iri = p_ship.iri(ship_name+chimney+"ParticleDensity"+particle_index);
+    	Iri vdensity_iri = p_ship.iri(ship_name+chimney+"ParticleDensityValue"+particle_index);
+    	Iri diameter_iri = p_ship.iri(ship_name+chimney+"ParticleDiameter"+particle_index);
+    	Iri vdiameter_iri = p_ship.iri(ship_name+chimney+"ParticleDiameterValue"+particle_index);
+    	
+    	TriplePattern entity_tp = particulateAmount.has(p_behaviour.iri("hasRepresentativeParticle"),particle_iri);
+    	
+    	TriplePattern particle_tp = particle_iri.isA(p_behaviour.iri("SingleParticle"))
+    			.andHas(p_system.iri("hasProperty"),massfraction_iri)
+    			.andHas(p_phase_system.iri("has_density"),density_iri)
+    			.andHas(p_geometry.iri("has_length"),diameter_iri);
+    	
+    	TriplePattern mass_tp = massfraction_iri.isA(p_phase_system.iri("MassFraction")).andHas(p_system.iri("hasValue"),vmassfraction_iri);
+    	TriplePattern vmass_tp = vmassfraction_iri.isA(p_system.iri("ScalarValue")).andHas(p_system.iri("numericalValue"),0);
+    	
+    	TriplePattern density_tp = density_iri.isA(p_phase_system.iri("Density")).andHas(p_system.iri("hasValue"),vdensity_iri);
+    	TriplePattern vdensity_tp = vdensity_iri.isA(p_system.iri("ScalarValue")).andHas(p_system.iri("numericalValue"),0);
+    	
+    	TriplePattern diameter_tp = diameter_iri.isA(p_geometry.iri("Diameter")).andHas(p_system.iri("hasValue"),vdiameter_iri);
+    	TriplePattern vdiameter_tp = vdiameter_iri.isA(p_system.iri("ScalarValue")).andHas(p_system.iri("numericalValue"),0);
+    	
+    	TriplePattern [] combined_tp = {entity_tp,particle_tp,mass_tp,vmass_tp,density_tp,vdensity_tp,diameter_tp,vdiameter_tp};
+    	return combined_tp;
+    }
+    
+    /**
+     * Number of particle to add
+     * @return
+     */
+    private static int getParticleNumber() {
+    	return 4;
+    }
+    
+    /**
+     * Returns triples for each waste stream, 1 waste stream for each species
+     * @param Mixture
+     * @param Species
+     * @param MassFlow
+     * @param MassFlowValue
+     */
+    
+    private static TriplePattern[] GetMixtureTP(Iri material, Iri mixture, Iri species, Iri massFlow, Iri massFlowValue) {
+    	Iri Mixture = iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Mixture");
+        
+    	TriplePattern material_tp = material.has(p_material.iri("intrinsicCharacteristics"),mixture);
+        TriplePattern mixture_tp = mixture.isA(Mixture).andHas(p_system.iri("containsDirectly"),species)
+        		.andHas(p_system.iri("hasProperty"),massFlow);
+        TriplePattern massFlow_tp = massFlow.isA(p_behaviour.iri("ConvectiveMassFlowrate"));
+        TriplePattern[] value_tp = SparqlPatternGenerator.GetScalarTP(massFlow,massFlowValue,0.0,unit_g_per_s);
+        
+        TriplePattern[] combined_tp = {material_tp,mixture_tp,massFlow_tp};
+        combined_tp = ArrayUtils.addAll(combined_tp, value_tp);
+        return combined_tp;
+    }
+    
     private static void performUpdate(ModifyQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setUpdateEndpoint(endpoint);
@@ -234,6 +424,8 @@ public class ShipSparql {
 
     private static JSONArray performQuery(SelectQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        kbClient.setUser(SparqlAuthentication.getUser());
+        kbClient.setPassword(SparqlAuthentication.getPassword());
         kbClient.setQueryEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
         JSONArray result = null;

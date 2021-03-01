@@ -2,28 +2,25 @@ package uk.ac.cam.cares.jps.wte.visualization;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
-import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
-public class WTEVisualization extends JPSHttpServlet{
+public class WTEVisualization extends JPSAgent{
 	/**
 	 * 
 	 */
@@ -31,29 +28,49 @@ public class WTEVisualization extends JPSHttpServlet{
 	
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-		
-		String path = request.getServletPath();
-		JSONObject joforEN = AgentCaller.readJsonParameter(request);
-		String iriofnetwork = joforEN.optString("wastenetwork",
-				"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
+		validateInput(requestParams);
+		String iriofnetwork = requestParams.getString("wastenetwork");
+
+		String path = requestParams.getString("path");
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork); //because this is a static method
-		logger.info("path called= "+path);
 		String g = "";
-		 if ("/WTEVisualization/createMarkers".equals(path)) {
+		 if (path.contains("/WTEVisualization/createMarkers")) {
 			logger.info("path called here= " + path);
-			g=createMarkers(model, joforEN);
-		}else if ("/WTEVisualization/readInputs".equals(path)) {
+			g=createMarkers(model, requestParams);
+		}else if (path.contains("/WTEVisualization/readInputs")) {
 			logger.info("path called here= " + path);
 			g=readInputs(model);
-		}else if ("/WTEVisualization/queryOnsite".equals(path)) {
+		}else if (path.contains("/WTEVisualization/queryOnsite")) {
 			logger.info("path called here= " + path);
-			g=searchOnsite(model, joforEN);
+			g=searchOnsite(model, requestParams);
 		}
 		JSONObject responseParams = new JSONObject(g);
 		System.gc();
 		return responseParams;
 	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("wastenetwork");
+        String path = requestParams.getString("path");
+        boolean relevant = path.contains("createMarkers") 
+        		|| path.contains("readInputs") ||
+        		path.contains("queryOnsite");
+        return InputValidator.checkIfValidIRI(iriofnetwork) & relevant;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        	throw new JSONException("wastenetwork not found");
+        }
+    }
 	/** get wastesite arrangement in input
 	 * 
 	 * @param model

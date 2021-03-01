@@ -80,6 +80,12 @@ def getBoundedBy():
 def getImportOntologyURL():
     return config.get('ABOX', 'ontology.imports')
 
+def getStartFeatureMember():
+    return config.get('ABOX', 'start.feature.member')
+
+def getUpperLimit():
+    return config.get('ABOX', 'upper.limit')
+
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
@@ -101,3 +107,5 @@ if __name__ == '__main__':
     print(getUpperCorner())
     print(getCentrePoint())
     print(getBoundedBy())
+    print(getStartFeatureMember())
+    print(getUpperLimit())

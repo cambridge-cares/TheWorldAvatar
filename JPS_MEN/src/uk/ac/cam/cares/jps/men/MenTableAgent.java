@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.validator.routines.DoubleValidator;
 import org.apache.commons.validator.routines.IntegerValidator;
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
@@ -24,11 +26,14 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = {"/MENTableAgent"})
 
-public class MenTableAgent extends HttpServlet {
+public class MenTableAgent extends JPSAgent{
 	
 
 	
-	private static final long serialVersionUID = -4199209974912271432L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Logger logger = LoggerFactory.getLogger(MenTableAgent.class);
 	
 	private String getContextPathForJPSMen() {
@@ -64,21 +69,21 @@ public class MenTableAgent extends HttpServlet {
 	}
 	
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	    
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	
 		logger.info("MEN_Table Agent start");
-		request.setCharacterEncoding("UTF-8");
-		
-		
-		JSONObject jogui = AgentCaller.readJsonParameter(request);	
-		logger.info("jsonstring= "+jogui);
-		boolean validated = validateInput(jogui);
+		boolean validated = validateInput( requestParams);
 		if (validated== false) {
 			logger.info("MEN_Table Agent stop");
-			response.setContentType("application/json");
 			JSONObject error404 = new JSONObject();
 			error404.put("Error", "non-valid input reached. Please try again. ");
-			response.getWriter().write(error404.toString());
+			return error404;
 		}
 		// read form fields	
 		double carbontax = 0.0;
@@ -88,10 +93,10 @@ public class MenTableAgent extends HttpServlet {
 		JSONArray annualfactor= null;
 		try {
 			
-			carbontax = jogui.getDouble("CarbonTax");
-			intmarketpricefactor= jogui.getDouble("InternationalMarketPriceFactor");
-			intmarketlowestprice = jogui.getBoolean("InternationalMarketLowestPriceApplied");
-			annualfactor = jogui.getJSONArray("AnnualCostFactor");
+			carbontax = requestParams.getDouble("CarbonTax");
+			intmarketpricefactor= requestParams.getDouble("InternationalMarketPriceFactor");
+			intmarketlowestprice = requestParams.getBoolean("InternationalMarketLowestPriceApplied");
+			annualfactor = requestParams.getJSONArray("AnnualCostFactor");
 					
 		} catch (JSONException e1) {
 
@@ -176,11 +181,9 @@ public class MenTableAgent extends HttpServlet {
 		logger.info("response of the agent=" + resultjson);
 
 		
-		response.setContentType("application/json");
-	
-		response.getWriter().write(resultjson);
 
 		logger.info("MEN_Table Agent stop");
+		return json;
 	}
 	/** validation of inputs for MEN Table Agent
 	 * 
@@ -188,6 +191,9 @@ public class MenTableAgent extends HttpServlet {
 	 * @return
 	 */
 	public boolean validateInput(JSONObject args) {
+		if (args.isEmpty()) {
+            throw new BadRequestException();
+        }
 		boolean yrBool,intMarketBool,carbBool,intBool;
 		yrBool=intMarketBool=carbBool=intBool = true;
         DoubleValidator doubleValidator = new DoubleValidator();

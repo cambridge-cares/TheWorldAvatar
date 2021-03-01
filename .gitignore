@@ -22,6 +22,12 @@
 target
 *.jar
 *.war
+*.tar
+*.tar.gz
+*.gz
+*.pkl
+*.pyc
+*.index
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/MANIFEST.MF
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/maven/uk.ac.cam.cares.jps/JPS_COMPOSITION_LITE/pom.properties
 *.class
@@ -32,4 +38,7 @@ JPS_DISPERSION/JPS_DISPERSION.iml
 /*/.settings/
 /*/.project
 /*/.classpath
+/*/bin/*.data-00000-of-00001
+/JPS_Chatbot/UI/source/rasa_jps/models/nlu/component_6_EmbeddingIntentClassifier.tf_model.data-00000-of-00001
 /*/bin/
+geckodriver.log

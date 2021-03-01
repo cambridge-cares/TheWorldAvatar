@@ -68,7 +68,7 @@ static Logger logger = LoggerFactory.getLogger(ChemicalSpeciesQuery.class);
 			for (String cas : cass) {
 				if (cas != null && !cas.isEmpty()) {
 					name.setValue(cas);
-					name.setSource("@NIST");
+					name.setSource("©NIST");
 					name.setType("CASRegistryNumber");
 					nameList.add(name);
 					name = new Name();
@@ -89,7 +89,7 @@ static Logger logger = LoggerFactory.getLogger(ChemicalSpeciesQuery.class);
 				for (String empiFormula : empiFormulas) {
 					if (empiFormula != null && !empiFormula.isEmpty()) {
 						name.setValue(empiFormula);
-						name.setSource("@NIST");
+						name.setSource("©NIST");
 						name.setType("formula");
 						nameList.add(name);
 						name = new Name();
@@ -109,7 +109,7 @@ static Logger logger = LoggerFactory.getLogger(ChemicalSpeciesQuery.class);
 			for (String otherName : otherNames) {
 				if (otherName != null && !otherName.isEmpty()) {
 					name.setValue(otherName);
-					name.setSource("@NIST");
+					name.setSource("©NIST");
 					nameList.add(name);
 					name = new Name();
 				}

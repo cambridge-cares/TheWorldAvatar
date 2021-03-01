@@ -7,34 +7,40 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
+
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 
 @WebServlet(urlPatterns = {"/GetIrradiationandWeatherData" })
-public class WeatherIrradiationRetriever extends JPSHttpServlet {
+public class WeatherIrradiationRetriever extends JPSAgent{
 	private static final long serialVersionUID = 1L;
-	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
 	@Override 
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-		String baseUrl = requestParams.optString("folder", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+
+		validateInput(requestParams);
+		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
-		JSONObject result=new JSONObject();
 		try {
-	    	String iritempsensor=requestParams.optString("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
-	    	String iriirradiationsensor=requestParams.optString("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
-	    	String irispeedsensor=requestParams.optString("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-	    	System.out.println("tempsensor= "+iritempsensor);
-	    	result=readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
-		
+	    	String iritempsensor=requestParams.getString("temperaturesensor");
+	    	String iriirradiationsensor=requestParams.getString("irradiationsensor");
+	    	String irispeedsensor=requestParams.getString("windspeedsensor");
+	    	readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
+
+			return requestParams;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,12 +48,34 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		return requestParams;
  		
 	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String iriofwindF = requestParams.getString("windspeedsensor");
+	        boolean w = InputValidator.checkIfValidIRI(iriofwindF);
+	        
+	        String irioftempF=requestParams.getString("temperaturesensor");
 	
-	public static JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
+	        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+	        String iriofirrF=requestParams.getString("irradiationsensor");
+	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+	        // Till now, there is no system independent to check if a file path is valid or not. 
+	        
+	        return w&e&r;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        	throw new JSONException("Sensor not present in getString");
+        }
+
+    }
+	public static void readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
 		//TODO: I can't figure out how to get this to run without having to copy over a file to create
 		//the location within this folder. If I leave the line below commented
 		// the folder isn't created, and I get an error. 
-		new DistributedEnergySystem().copyFromPython(folder, "ocrv1.py");
+		new DESAgentNew().copyFromPython(folder, "ocrv1.py");
 		String res =  new DESAgentNew().runPythonScript("ocrv1.py",folder);
 
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -138,14 +166,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(iriforirradiation+" is updated");
 		String iriforwind=converter.startConversion(readingFromCSV,"windspeed","001","SG");
 		System.out.println(iriforwind+" is updated");
-		JSONObject resultweather = new JSONObject();
-		//resultweather.put("folder",folder );
-		resultweather.put("temperaturesensor",irifortemp );
-		resultweather.put("irradiationsensor",iriforirradiation );
-		resultweather.put("windspeedsensor",iriforwind );
 		
-		
-		return resultweather;
 	}
 	
 

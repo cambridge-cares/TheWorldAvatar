@@ -9,6 +9,7 @@ filled in with example data and that is provided in the following path:
 python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
+from rdflib.extras.infixowl import OWL_NS
 from rdflib.namespace import RDF, RDFS, Namespace
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
@@ -33,6 +34,8 @@ TYPE_DATA     = 'Data Property'
 HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
+HTTP='http://'
+HTTPS='https://'
 
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
@@ -75,13 +78,18 @@ def process_data(row):
                                         row[0])
                 instances[row[0].strip()] = row[2].strip()
 
-            elif row[2].strip() in instances:
+            elif row[2].strip() in instances or row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS):
                 if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
                     print('link instance 1', instances.get(row[0]))
                     print('link instance 2', instances.get(row[2]))
-                    aboxgen.link_instance(g, URIRef(row[3]),
+                    if row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS):
+                        aboxgen.link_instance(g, URIRef(row[3]),
+                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
+                                              URIRef(row[2].strip()))
+                    else:
+                        aboxgen.link_instance(g, URIRef(row[3]),
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
 
@@ -93,7 +101,6 @@ def process_data(row):
 
 """Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
-    iri = iri.title()
     iri = iri.replace(":"," ")
     iri = iri.replace(",", " ")
     iri = iri.replace(" ","")
@@ -128,7 +135,9 @@ def convert_into_rdf(file_path):
                process_data(row)
            line_count +=1
            print('[', line_count, ']', row)
-    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(), format="application/rdf+xml")
+    g.set((g.identifier, OWL_NS['imports'], URIRef(propread.getTBoxIRI())))
+    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(),
+                format="application/rdf+xml")
 
 """This block of codes calls the function that converts the content of ABox excel template into RDF"""
 if __name__ == '__main__':

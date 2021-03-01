@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q27281515"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "isopropyl sorbate"}, "x": {"type": "literal", "value": "C\u2089H\u2081\u2084O\u2082"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

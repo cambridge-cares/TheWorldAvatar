@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.jena.arq.querybuilder.Order;
@@ -13,10 +14,12 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -24,11 +27,12 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-@WebServlet(urlPatterns= {"/startsimulation"})
+@WebServlet(urlPatterns= {"/startSimulationAgent"})
 
-public class WastetoEnergyAgent extends JPSHttpServlet {
+public class WastetoEnergyAgent extends JPSAgent {
 	
     @Override
     protected void setLogger() {
@@ -44,7 +48,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	public static final String KEY_WATCH = "watch";
 	public static final String KEY_CALLBACK_URL = "callback";
 	// first called to begin simulation. 
-	public static final String SIM_START_PATH = "/startsimulation";
+	public static final String SIM_START_PATH = "/startSimulationAgent";
+	public static final String COORDINATION_PATH = "/startsimulationCoordinationWTE";
 	//called to produce this result directly after start simulation is called. Waits for the first simulation to finish. 
 	public static final String SIM_PROCESS_PATH = "/processresult";
 	/**gets the food court name, xy coordinates, amount of waste, the year
@@ -101,23 +106,32 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				.addWhere("?entity" ,"j1:hasOffsiteAnerobicDigestionUpperBound", "?tech3upp");
 		return sb.buildString();
 	}
-	
+//	@Override
+//	public JSONObject processRequestParameters(JSONObject requestParams) {
+//	    requestParams = processRequestParameters(requestParams, null);
+//	    return requestParams;
+//	}
 	
 	/** main function. Reads the values in and copies the templates back. 
 	 * 
 	 */
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		String baseUrl= requestParams.optString("baseUrl", "testFood");
-		String wasteIRI=requestParams.optString("wastenetwork"
-				, "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		validateInput(requestParams);
+		String baseUrl= requestParams.getString("baseUrl");
+		String wasteIRI=requestParams.getString("wastenetwork");
 		//render ontological model of waste network
 		OntModel model= readModelGreedy(wasteIRI);
 		//creates the csv of FCs, with Site_xy reading for location, waste containing the level of waste in years 1-15
 		//in baseUrl folder
 		List<String[]> fcMarkers = prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
 		// searches for number of clusters to agglomerate (i.e. number of onsite WTF max)
-		String n_cluster= requestParams.optString("n_cluster", Integer.toString(fcMarkers.size()));
+		String n_cluster= requestParams.getString("n_cluster");
 		//TODO: Can put this as input to matlab, but I don't know Matlab well enough for this, so having a txt to read from 
 		// is feasible for now. 
         new QueryBroker().putLocal(baseUrl + "/n_cluster.txt",n_cluster ); 
@@ -141,17 +155,40 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		copyTemplate(baseUrl, "SphereDist.m");
 		copyTemplate(baseUrl, "Main.m");
 		copyTemplate(baseUrl, "D2R.m");
-		
+
+		String path = requestParams.getString("scenarioagentoperation");
 		try {
 			createBat(baseUrl, n_cluster);
             notifyWatcher(requestParams, baseUrl+"/year by year_NPV.txt",
-                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+                    path.replace(COORDINATION_PATH, SIM_PROCESS_PATH));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return requestParams;
 	}
-	 
+	/** checks if n_cluster is an integer
+	 * and wastenetwork is an IRI
+	 * 
+	 * @param requestParams
+	 * @return
+	 * @throws BadRequestException
+	 */
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("wastenetwork");
+        String nCluster = requestParams.getString("n_cluster");
+        return InputValidator.checkIfValidIRI(iriofnetwork) & InputValidator.checkIfInteger(nCluster);
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+            throw new JSONException("");
+        }catch (Exception ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
 	
 	/** reads the topnode into an OntModel of all its subsystems. 
 	 * @param iriofnetwork
