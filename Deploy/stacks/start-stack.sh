@@ -97,8 +97,10 @@ for compose_file in $compose_files; do
   for secret_file_path in $secret_file_paths; do
     if [ -f $secret_file_path ]; then
       num_lines=$(wc -l $secret_file_path |awk '{print $1}')
+      # Zero lines (having no newline char) is allowed; set num_lines=1 if that's the case
+      num_lines=$(( num_lines==0 ? 1 : num_lines ))
       num_words=$(wc -w $secret_file_path |awk '{print $1}')
-      if [ $num_lines != "1" ] || [ $num_words != "1" ]; then
+      if [ $num_lines -ne 1 ] || [ $num_words -ne 1 ]; then
         echo "Secret file at $secret_file_path looks to be invalid (contains $num_words words on $num_lines lines; expected 1 word on 1 line)"
         popd > /dev/null
         exit 2
