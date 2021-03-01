@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -26,7 +27,7 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog.ScenarioLogEntry;
 
 @WebServlet(urlPatterns = {"/scenariomanagement/*"})
-public class ScenarioManagementAgent extends HttpServlet {
+public class ScenarioManagementAgent extends JPSAgent {
 
 	private static final long serialVersionUID = 1733142247564226760L;
 	private static Logger logger = LoggerFactory.getLogger(ScenarioManagementAgent.class);
@@ -78,22 +79,27 @@ public class ScenarioManagementAgent extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+    	return new JSONObject();
+    }
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		
-		String path = request.getPathInfo();
+		String path = requestParams.getString("path");
 		logger.info("called for path=" + path);
 		
-		if ("/list".equals(path)) {
+		if (path.contains("/list")) {
 
-			String result = listScenariosAndAgentsAsJson();
-			AgentCaller.printToResponse(result, response);
+			JSONObject result = listScenariosAndAgentsAsJson();
+			return result;
 			
 		} else {
 			throw new JPSRuntimeException("unknown operation");
 		}
 	}
 	
-	public String listScenariosAndAgentsAsJson() {
+	public JSONObject listScenariosAndAgentsAsJson() {
 
 		String descriptions = AgentCaller.executeGet("/JPS_COMPOSITION/agentdescriptions");
 		JSONObject joresult = new JSONObject(descriptions);	
@@ -110,7 +116,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 			}
 		}
 		
-		return joresult.toString();
+		return joresult;
 	}
 	
 	public JSONObject createScenarioAgent(String scenarioName, ScenarioLog log) {
