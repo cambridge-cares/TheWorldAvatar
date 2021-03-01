@@ -5,15 +5,19 @@ import java.util.List;
 import org.json.JSONObject;
 import org.junit.Test;
 
+import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.Chimney;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
-public class ShipSparqlTest {
+public class ShipSparqlTest extends TestCase {
     /**
      * This script might go into an infinite loop if you have not set things up correctly because of the
      * while - try - catch loop at the end, it's done like that because sometimes the connection to the 
@@ -21,7 +25,6 @@ public class ShipSparqlTest {
      * Comment it out first and test if it runs before using it to upload tons of ship data.
      * @throws InterruptedException 
      */
-    @Test
     public void testCreateShip () throws InterruptedException {
         String csvPath = AgentLocator.getPathToWorkingDir(this) + "/ship_latest_consolidated.csv";
         String csvFile=new QueryBroker().readFileLocal(csvPath);
@@ -67,7 +70,6 @@ public class ShipSparqlTest {
         }
     }
 
-    @Test
     public void testQuery() {
         JSONObject jo = new JSONObject();
         Region.putRegion(jo, 4);
@@ -75,5 +77,31 @@ public class ShipSparqlTest {
         Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
         
         ShipSparql.queryShipWithinScope(sc);
+    }
+    
+    public void testQueryShipIRI() {
+    	JSONObject jo = new JSONObject();
+        Region.putRegion(jo, 4);
+        
+        Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
+        ShipSparql.GetShipIriWithinScope(sc);
+    }
+    
+    public void testQueryShipProperties() {
+    	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
+    	ShipSparql.queryShipProperties(ship_iri);
+    }
+
+    public void testShipObject() {
+    	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
+    	new Ship(ship_iri);
+    }
+    
+    public void testChimneyObject() {
+		String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
+    	JSONObject request = new JSONObject();
+    	request.put("shipIRI",ship_iri);
+    	JSONObject result = new JSONObject(AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/SpeedLoadMapAgent", request.toString()));
+    	new Chimney(result);
     }
 }
