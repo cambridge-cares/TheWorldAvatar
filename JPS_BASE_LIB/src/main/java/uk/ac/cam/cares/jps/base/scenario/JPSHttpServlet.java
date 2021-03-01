@@ -190,8 +190,6 @@ public abstract class JPSHttpServlet extends HttpServlet {
      */
     protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
         JSONObject responseParams;
-        System.out.println("AgentCaller: getResponseBody 1 : " + requestParams.toString());
-        System.out.println("AgentCaller: getResponseBody 2: " + AgentCaller.readJsonParameter(request));
         requestParams.put("path", request.getServletPath());
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
@@ -223,28 +221,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
         return responseParams;
     }
 
-    /**
-     * Extracts agent input parameters from the request.
-     * - makes a difference between GET and POST requests
-     *
-     * @param request Should contain agent input params
-     * @return extracted parameters
-     */
-    private JSONObject getRequestParameters(HttpServletRequest request) {
-        JSONObject params;
-        try {
-            String request_params = "";
-            if (request.getMethod().equals(HttpPost.METHOD_NAME)) {
-                request_params = IOUtils.toString(request.getReader());
-            } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
-                request_params = request.getParameter(GET_AGENT_INPUT_PARAMS_KEY);
-            }
-            params = new JSONObject(request_params);
-        } catch (IOException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        }
-        return params;
-    }
+    
 
     /**
      * Method to call agents appropriate to the URI paths

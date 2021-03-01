@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -273,25 +272,23 @@ public class AgentCaller {
             String json = null;
             if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
                 json = request.getParameter(JSON_PARAMETER_KEY);
+                if (json != null) {
+                	JSONObject jo = new JSONObject();
+                	if (InputValidator.checkIfValidJSONObject(json)) {
+                		jo = new JSONObject(json);
+                	}else {
+                		jo.put("body", json);
+                	}
+                	jo.put("method", request.getMethod());
+                	jo.put("contentType", request.getContentType());
+                	jo.put("requestUrl", request.getRequestURL().toString());
+                	
+                    return jo;
+                }
             }
-            System.out.println("AgentCaller: json "+ json);
-            if (json != null) {
-            	JSONObject jo = new JSONObject();
-            	if (InputValidator.checkIfValidJSONObject(json)) {
-            		jo = new JSONObject(json);
-            	}else {
-            		jo.put("body", json);
-            	}
-            	jo.put("method", request.getMethod());
-            	jo.put("pathInfo", request.getPathInfo());
-            	jo.put("contentType", request.getContentType());
-            	jo.put("requestUrl", request.getRequestURL().toString());
-            	
-                return jo;
-            }
+            
 
             JSONObject jsonobject = Http.readJsonParameter(request);
-            System.out.println("AgentCaller: Line 296: " + jsonobject.toString());
             if (request.getMethod().equals(HttpPut.METHOD_NAME)
             		|| request.getMethod().equals(HttpPost.METHOD_NAME)) {
                 json =IOUtils.toString(request.getReader()); 
@@ -313,7 +310,6 @@ public class AgentCaller {
             	}                
             jsonobject.put("method", request.getMethod())
 			.put("body", json)
-			.put("pathInfo", request.getPathInfo())
 			.put("contentType", request.getContentType())
 			.put("requestUrl", request.getRequestURL().toString());
             return jsonobject;
