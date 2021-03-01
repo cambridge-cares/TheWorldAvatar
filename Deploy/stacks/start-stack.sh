@@ -90,26 +90,49 @@ echo "MODE=$mode" >> "$env_filename"
 echo "BUILDER=$builder" >> "$env_filename"
 printf "Done\n\n"
 
-# Loop over secret files listed in the compose files, ensuring that they all exist, and have exactly one word on one linea
+# Loop over secret files listed in the compose files, ensuring that they all exist, and have exactly one word on one line
 echo "Checking required Docker secrets..."
 for compose_file in $compose_files; do
   secret_file_paths=$(grep -E "file:.*\/secrets\/.*" $compose_file|awk '{print $2}'|tr "\n" " ")
   for secret_file_path in $secret_file_paths; do
-    if [ -f $secret_file_path ]; then
-      num_lines=$(wc -l $secret_file_path |awk '{print $1}')
-      # Zero lines (having no newline char) is allowed; set num_lines=1 if that's the case
-      num_lines=$(( num_lines==0 ? 1 : num_lines ))
-      num_words=$(wc -w $secret_file_path |awk '{print $1}')
-      if [ $num_lines -ne 1 ] || [ $num_words -ne 1 ]; then
-        echo "Secret file at $secret_file_path looks to be invalid (contains $num_words words on $num_lines lines; expected 1 word on 1 line)"
-        popd > /dev/null
-        exit 2
+    secret_state=""
+    while [ "$secret_state" != "valid" ]
+    do
+      # Check that the secret file is present and valid
+      if [ -f $secret_file_path ]; then
+        num_lines=$(wc -l $secret_file_path |awk '{print $1}')
+        # Zero lines (having no newline char) is allowed; set num_lines=1 if that's the case
+        num_lines=$(( num_lines==0 ? 1 : num_lines ))
+        num_words=$(wc -w $secret_file_path |awk '{print $1}')
+        if [ $num_lines -eq 1 ] && [ $num_words -eq 1 ]; then
+          secret_state="valid"
+        else
+          secret_state="invalid"
+          echo "  Secret file at $secret_file_path looks to be invalid (contains $num_words words on $num_lines lines; expected 1 word on 1 line)"
+        fi
+      else
+        secret_state="missing"
+        echo "  Expected secret file not found at $stack/$secret_file_path"
       fi
-    else
-      echo Expected secret file not found at $stack/$secret_file_path
-      popd > /dev/null
-      exit 1
-    fi
+
+      # If secret is missing/invalid, let the user enter a new value
+      if [ $secret_state != "valid" ]; then
+          read -p "  Enter a value for $secret_file_path (or a blank string to abort): " new_secret_val
+          if [ -z "$new_secret_val" ]; then
+            echo "Aborting..."
+            popd > /dev/null
+            exit 1
+          else
+            if [ -f $secret_file_path ]; then
+              \rm -f $secret_file_path
+            fi
+            touch $secret_file_path
+            echo $new_secret_val >> $secret_file_path
+            secret_state="valid"
+            echo "  Value set"
+          fi
+      fi
+    done
   done
 done
 printf "Done\n\n"
