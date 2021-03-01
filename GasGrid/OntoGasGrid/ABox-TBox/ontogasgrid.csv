@@ -1,2 +1,0 @@
-Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-hasName,Data Property,,,http://www.w3.org/2002/07/owl#Thing,String,,The name of anything,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
