@@ -1,26 +1,79 @@
 package uk.ac.cam.cares.jps.virtualsensor.agents;
 
-import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.Ship;
 
 @WebServlet("/SpeedLoadMapAgent")
-public class SpeedLoadMapAgent extends HttpServlet {
+public class SpeedLoadMapAgent extends JPSAgent {
 	private static final Path slmDir = Paths.get("python", "ADMS-speed-load-map");
 	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
+	
+	/**
+	 * Takes in one ship IRI as input, queries the ship properties (type and speed for now).
+	 * These parameters are then passed to the speed load map agent to generate emissions.
+	 * Reference to convert ship speed into engine speed:
+	 * http://betterboat.com/average-boat-speed/ assume fastest medium boat 
+     * max speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
+	 * https://www.marineinsight.com/shipping-news/worlds-fastest-ship-built-tasmania-christened-argentinas-president/->fastest=58.1 knot
+	 * knot*2500/58.1 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
+	 * kg/h NO2 (comparison of NO2
+	 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
+	 * 1 boat mass flux=0.0192143028723584 kg/s 
+	 */
+	
+	@Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+		JSONObject response = new JSONObject();
+		
+		if (validateInput(requestParams)) {
+			Ship ship = new Ship(requestParams.getString("shipIRI"));
+
+			double valuecalc=ship.getSpeed()*2500/58.1;
+			if(valuecalc>2500) {
+				valuecalc=2500;
+			}
+			String type=ship.getType().toLowerCase();
+			
+			JSONObject in= new JSONObject();
+			JSONObject speedob= new JSONObject();		
+			speedob.put("value", valuecalc); //600-2500
+			speedob.put("unit", "RPM");
+			JSONObject torob= new JSONObject();
+			torob.put("value", 250); //50-550 range
+			torob.put("unit", "Nm");
+			in.put("speed", speedob);
+			in.put("torque", torob);
+	
+		    response = crankUpRealShipModel(type, getSurogateValues(in.toString().replace("\"", "'")));
+		}
+
+		return response;
+	}
+
+	@Override
+	public boolean validateInput(JSONObject requestParams) {
+    	boolean valid = false;
+    	try {
+    		// ensure ship IRI is valid
+    		new URL(requestParams.getString("shipIRI")).toURI();
+    		valid = true;
+    	} catch (Exception e) {
+    		throw new BadRequestException(e);
+    	}
+    	return valid;
+    }
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
@@ -34,41 +87,6 @@ public class SpeedLoadMapAgent extends HttpServlet {
 		return CommandHelper.executeCommands(slmWorkingDir.toString(), args);
 	}
 	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		JSONObject jo = AgentCaller.readJsonParameter(request);
-		JSONObject in= new JSONObject();
-		/*
-		 * http://betterboat.com/average-boat-speed/ assume fastest medium boat 
-		 * max speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
-		 * https://www.marineinsight.com/shipping-news/worlds-fastest-ship-built-tasmania-christened-argentinas-president/->fastest=58.1 knot
-		 * knot*2500/58.1 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
-		 * kg/h NO2 (comparison of NO2
-		 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
-		 * 1 boat mass flux=0.0192143028723584 kg/s 
-
-		 */
-		double valuecalc=jo.getDouble("speed")*2500/58.1;
-		if(valuecalc>2500) {
-			valuecalc=2500;
-		}
-		String type=jo.getString("type").toLowerCase();
-		JSONObject speedob= new JSONObject();		
-		speedob.put("value", valuecalc); //600-2500
-		speedob.put("unit", "RPM");
-		JSONObject torob= new JSONObject();
-		torob.put("value", 250); //50-550 range
-		torob.put("unit", "Nm");
-		in.put("speed", speedob);
-		in.put("torque", torob);
-
-		JSONObject json = crankUpRealShipModel(type, getSurogateValues(in.toString().replace("\"", "'")));
-		
-		AgentCaller.writeJsonParameter(response, json);
-		
-	}
-
 	private JSONObject crankUpRealShipModel(String type, String newjsonfile) {
 		JSONObject json = new JSONObject(newjsonfile);
 		
