@@ -1,5 +1,5 @@
 import unittest
-from py4jps import Gateway
+from py4jps import JPSGateway
 from os import path
 
 
@@ -8,15 +8,15 @@ from os import path
 class TestWrapper(unittest.TestCase):
 
     def test_1(self):
-        gateway = Gateway()
-        gateway.start()
-        module1_view = gateway.createModuleView()
-        gateway.importPackages(module1_view,'uk.ac.cam.cares.jps.base.util.*')
+        jps = JPSGateway()
+        jps.start()
+        module1_view = jps.createModuleView()
+        jps.importPackages(module1_view,'uk.ac.cam.cares.jps.base.util.*')
 
         FileUtil = module1_view.FileUtil
         file_str = FileUtil.readFileLocally(path.abspath(path.join(path.dirname(__file__),'test_file1.txt')))
         self.assertEqual("test file1", file_str)
-        gateway.shutdown()
+        jps.shutdown()
 
 def runTests():
     suite = unittest.TestSuite()

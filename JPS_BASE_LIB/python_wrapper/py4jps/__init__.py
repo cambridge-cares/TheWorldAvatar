@@ -1,1 +1,1 @@
-from py4jps.gateway import Gateway
+from py4jps.gateway import JPSGateway
