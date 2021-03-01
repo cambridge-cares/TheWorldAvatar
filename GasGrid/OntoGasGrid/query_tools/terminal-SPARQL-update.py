@@ -45,13 +45,6 @@ def real_time_intakes():
     table = pd.DataFrame(table)
     #--- ontaining only the required values ---#
     table = table.to_numpy()[4:,1:]
-    # zone_names = table[1:29,0]
-    # latest_zone_value = table[1:29,6]
-    # latest_zone_value[6] = latest_zone_value[6][1:]
-    # latest_zone_value = latest_zone_value.astype(np.float)
-    # zone_supply = np.concatenate(([zone_names],[latest_zone_value]),axis=0).T
-
-    # zone_supply_pd = pd.DataFrame(zone_supply)
 
     terminal_names = table[43:52,0]
     data = []
@@ -75,7 +68,7 @@ def real_time_intakes():
 def update_triple_store():
     data = real_time_intakes()
     for terminal_supply in data:
-        print('Updating Triple Store...')
+        print('Updating Terminal Values for ',terminal_supply.values[0,1],' ...')
 
         component_namespace = "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/"
         BIPS = "<"+component_namespace+"BactonIPsTerminal>"
@@ -109,8 +102,7 @@ def update_triple_store():
             sparql.setQuery(query)
             ret = sparql.query()
 
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print('Done!')
+    os.system('cls' if os.name == 'nt' else 'clear')
     return 
 
 '''
@@ -119,4 +111,34 @@ TODO:
 - Delete taken gas if older than X or have no date.
 
 '''
-update_triple_store()
+
+
+def delete_gas_history():
+    
+    query = '''PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ns1:     <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX gasgrid: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#>
+    PREFIX loc:     <http://www.bigdata.com/rdf/geospatial/literals/v1#>
+    PREFIX geo:     <http://www.bigdata.com/rdf/geospatial#>
+    PREFIX comp:	<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
+
+    delete
+    where {
+    ?gas comp:hasGasVolume ?p.
+    ?term comp:hasTaken ?gas .
+    ?gas rdf:type comp:IntakenGas.
+    ?gas comp:atUTC ?s .}'''
+
+    sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
+    sparql.setMethod(POST)
+    sparql.setQuery(query)
+    ret = sparql.query()
+    return 
+
+
+while True:
+    update_triple_store()
+    print('waiting for update...')
+    for i in tqdm(range(60*12)):
+        time.sleep(1)
