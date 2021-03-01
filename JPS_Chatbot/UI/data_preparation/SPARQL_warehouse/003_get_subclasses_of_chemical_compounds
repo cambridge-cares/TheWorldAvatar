@@ -1,0 +1,7 @@
+# to get all subclasses of group of class of chemical substances 
+SELECT ?item ?itemLabel 
+WHERE 
+{
+  ?item wdt:P31 wd:Q11173.
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}

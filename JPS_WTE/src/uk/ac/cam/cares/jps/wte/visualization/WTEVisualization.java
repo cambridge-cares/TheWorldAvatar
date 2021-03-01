@@ -14,56 +14,58 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
-public class WTEVisualization extends JPSHttpServlet{
+public class WTEVisualization extends JPSAgent{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);
-//	@Override
-//	public JSONObject processRequestParameters(JSONObject requestParams) {
-//	    requestParams = processRequestParameters(requestParams, null);
-//	    return requestParams;
-//	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-		
-		String path = request.getServletPath();
-		JSONObject joforEN = AgentCaller.readJsonParameter(request);
-		String iriofnetwork = joforEN.optString("wastenetwork",
-				"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		validateInput(requestParams);
+		String iriofnetwork = requestParams.getString("wastenetwork");
+
+		String path = requestParams.getString("path");
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork); //because this is a static method
 		String g = "";
-		 if ("/WTEVisualization/createMarkers".equals(path)) {
+		 if (path.contains("/WTEVisualization/createMarkers")) {
 			logger.info("path called here= " + path);
-			g=createMarkers(model, joforEN);
-		}else if ("/WTEVisualization/readInputs".equals(path)) {
+			g=createMarkers(model, requestParams);
+		}else if (path.contains("/WTEVisualization/readInputs")) {
 			logger.info("path called here= " + path);
 			g=readInputs(model);
-		}else if ("/WTEVisualization/queryOnsite".equals(path)) {
+		}else if (path.contains("/WTEVisualization/queryOnsite")) {
 			logger.info("path called here= " + path);
-			g=searchOnsite(model, joforEN);
+			g=searchOnsite(model, requestParams);
 		}
 		JSONObject responseParams = new JSONObject(g);
 		System.gc();
 		return responseParams;
 	}
-//	@Override
+	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
             throw new BadRequestException();
         }
         try {
         String iriofnetwork = requestParams.getString("wastenetwork");
-        return InputValidator.checkIfValidIRI(iriofnetwork);
+        String path = requestParams.getString("path");
+        boolean relevant = path.contains("createMarkers") 
+        		|| path.contains("readInputs") ||
+        		path.contains("queryOnsite");
+        return InputValidator.checkIfValidIRI(iriofnetwork) & relevant;
         } catch (JSONException ex) {
         	ex.printStackTrace();
         	throw new JSONException("wastenetwork not found");

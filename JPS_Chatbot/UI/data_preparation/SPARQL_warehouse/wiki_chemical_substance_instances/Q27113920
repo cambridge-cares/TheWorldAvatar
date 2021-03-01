@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q418214"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "L-homoserine"}, "x": {"type": "literal", "value": "C\u2084H\u2089NO\u2083"}, "altLabel_list": {"type": "literal", "value": "homoserine$ L-Homoserine"}}]}}

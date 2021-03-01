@@ -8,26 +8,33 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearGenType;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/optimizeforcarbontax" })
-public class CarbonTaxAgent extends JPSHttpServlet {
+public class CarbonTaxAgent extends JPSAgent {
 
 	private static final long serialVersionUID = -2354646810093235777L;
 	List<NuclearGenType>plant =new ArrayList<NuclearGenType>();	
@@ -40,28 +47,43 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
     }
 	Logger logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
-	 @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-
-		JSONObject jo = requestParams;
-
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    	if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
+	        return w;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		if (!validateInput(requestParams)) {
+			throw new JSONException ("CarbonTaxAgent input parameters invalid");
+		}
 		// put the template file
 		String newdir = QueryBroker.getLocalDataPath() + "/GAMS_CarbonTaxAgent";
 		copyTemplate(newdir, "time_profile.csv");
 		// prepareCSVGeneratorParameter(jo.getString("electricalnetwork"),newdir);
-		prepareCSVGeneratorParameterUpdatedGenScale(jo.getString("electricalnetwork"), newdir);
+		prepareCSVGeneratorParameterUpdatedGenScale(requestParams.getString("electricalnetwork"), newdir);
 
-		BigDecimal carbontax = jo.getBigDecimal("carbontax");
+		BigDecimal carbontax = requestParams.getBigDecimal("carbontax");
 		prepareConstantCSV(carbontax, newdir);
 
 		logger.info("start optimization for carbon tax = " + carbontax);
-		// if (!AgentLocator.isJPSRunningForTest()) {
-		// runGAMS(newdir);
-		// }else { //18 oct 19
 		try {
 			runGAMS(newdir);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			logger.error(e1.getMessage());
 		} 
 		catch (IOException e2) {
@@ -70,8 +92,6 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		}
 		
 		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results.csv";
-		// String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir"
-		// + "/results2.csv";
 		File file = new File(source);
 		String destinationUrl = newdir + "/results.csv";
 		new QueryBroker().putLocal(destinationUrl, file);
@@ -102,10 +122,6 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         fileContext = fileContext.replaceAll("Generator_Parameters.csv",newdir+"/Generator_Parameters.csv output="+newdir+"/Generator_Parameters.gdx");
         fileContext = fileContext.replaceAll("time_profile.csv",newdir+"/time_profile.csv output="+newdir+"/time_profile.gdx");
        
-
-        //FileUtils.write(file, fileContext);
- 
-		
 		new QueryBroker().putLocal(destinationUrl, fileContext);
 	}
 	
@@ -113,21 +129,15 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	
 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 
 		
-		//copyTemplate(baseUrl,"constants.gdx");
-		//copyTemplate(baseUrl,"Generator_Parameters.gdx");
-		//copyTemplate(baseUrl,"time_profile.gdx");
-		//copyTemplate(baseUrl,"Final_parallel_wrld.gms");
-		//copyTemplate(baseUrl,"gmsproj.gpr");
-		
 		
 		modifyTemplate(baseUrl,modelname);
 
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-        String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
-        String folderlocation =baseUrl; //+"/";
+		String folderlocation =baseUrl; //+"/";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
+		String executablelocation = Util.getGAMSLocation();
         String[] cmdArray = new String[7];
         
         cmdArray[0] = executablelocation;
@@ -140,36 +150,35 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
+        //TODO: Disable this until we get a waitFor run time
+//        CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
         
         logger.info(cmdArrayinstring);
         Process p = Runtime.getRuntime().exec(cmdArray);
-		   p.waitFor();
+		p.waitFor();
          
-		   logger.info("Done");
+		logger.info("Done");
 	}
 	
 	
 	public static List<String[]> provideGenlist(String iriofnetwork) {
+		//Filter Exists doesn't occur in SelectBuilder. 
+//		String gennodeInfo = new SelectBuilder()
+//				.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+//				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+//				.addVar("?entity").addWhere("?entity", "a", "j1:PowerGenerator")
+//				.addWhere("?entity", "j2:isSubsystemOf", "?plant")
+//				.buildString();
 		String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
 				+ "SELECT ?entity " 
 				+ "WHERE {?entity  a  j1:PowerGenerator  ."
 				+ "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
 				+ "}";
 		
 
-		OntModel model = ENAgent.readModelGreedy(iriofnetwork);
-		ResultSet resultSet = JenaHelper.query(model, gennodeInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		OntModel model = Util.readModelGreedy(iriofnetwork);
+		List<String[]> resultListfromquery = Util.queryResult(model, gennodeInfo);
 
 		return resultListfromquery;
 	}
@@ -177,30 +186,26 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	public void prepareCSVGeneratorParameterUpdatedGenScale(String ENiri, String baseUrl) {
 
 		// updated version so that plant owl file won't be used
-		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "SELECT ?entity ?Pmaxvalue ?emissionfactor " // add the emission value as optional
-				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
-				//+ "?entity   j2:isSubsystemOf ?plant ." // plant
-				+ "?entity   j2:isModeledBy ?model ." 
-				+ "?model   j5:hasModelVariable ?pmax ." 
-				+ "?pmax  a  j3:PMax  ."
-				+ "?pmax  j2:hasValue ?vpmax ." 
-				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
-
-				+ "?entity j4:realizes ?genprocess ." 
-				+ "?genprocess j9:usesGenerationTechnology ?tech ."
-				+ "?tech j9:hasEmissionFactor ?emm ."
-				+ "?emm j2:hasValue ?valueemm ."
-				+ "?valueemm j2:numericalValue ?emissionfactor ." 
-				+ "}";
+		String genInfo = new SelectBuilder()
+		.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+		.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+		.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+		.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+		.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+		.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#")
+		.addVar("?entity").addVar("?Pmaxvalue").addVar("?emissionfactor")
+		.addWhere("?entity", "a", "j1:PowerGenerator")
+		.addWhere("?entity", "j2:isModeledBy", "?model")
+		.addWhere("?model", "j5:hasModelVariable", "?pmax")
+        .addWhere("?pmax","a","j3:PMax")
+        .addWhere("?pmax","j2:hasValue", "?vpmax")
+        .addWhere("?vpmax","j2:numericalValue", "?Pmaxvalue")
+		.addWhere("?entity", "j4:realizes", "?genprocess")
+		.addWhere("?genprocess", "j9:usesGenerationTechnology", "?tech")
+        .addWhere("?tech","j9:hasEmissionFactor","?emm")
+        .addWhere("?emm","j2:hasValue", "?valueemm")
+        .addWhere("?valueemm","j2:numericalValue", "?emissionfactor")
+		.buildString();
 
 
 

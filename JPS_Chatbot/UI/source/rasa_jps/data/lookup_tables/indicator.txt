@@ -1,0 +1,10 @@
+consumes
+consume
+takes
+take
+use
+uses
+produces
+produce
+give
+gives

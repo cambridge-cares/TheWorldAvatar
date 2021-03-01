@@ -1,0 +1,13 @@
+[Unit]
+Description=Gunicorn instance to serve flask application
+After=network.target
+
+[Service]
+User=zxc
+Group=www-data
+WorkingDirectory=/home/zxc/Desktop/JPS_Chatbot/
+Environment="PATH=/home/zxc/Desktop/JPS_Chatbot/chatbotenv/bin"
+ExecStart=/home/zxc/Desktop/JPS_Chatbot/chatbotenv/bin/gunicorn ---config gunicorn_config.py -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --timeout 120 --bind 127.0.0.1:5000 UI.source.wsgi:app
+
+[Install]
+WantedBy=multi-user.target

@@ -30,9 +30,9 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-@WebServlet(urlPatterns= {"/startsimulation"})
+@WebServlet(urlPatterns= {"/startSimulationAgent"})
 
-public class WastetoEnergyAgent extends JPSHttpServlet {
+public class WastetoEnergyAgent extends JPSAgent {
 	
     @Override
     protected void setLogger() {
@@ -48,7 +48,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	public static final String KEY_WATCH = "watch";
 	public static final String KEY_CALLBACK_URL = "callback";
 	// first called to begin simulation. 
-	public static final String SIM_START_PATH = "/startsimulation";
+	public static final String SIM_START_PATH = "/startSimulationAgent";
+	public static final String COORDINATION_PATH = "/startsimulationCoordinationWTE";
 	//called to produce this result directly after start simulation is called. Waits for the first simulation to finish. 
 	public static final String SIM_PROCESS_PATH = "/processresult";
 	/**gets the food court name, xy coordinates, amount of waste, the year
@@ -115,6 +116,11 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 * 
 	 */
 	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		validateInput(requestParams);
 		String baseUrl= requestParams.getString("baseUrl");
@@ -149,11 +155,12 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		copyTemplate(baseUrl, "SphereDist.m");
 		copyTemplate(baseUrl, "Main.m");
 		copyTemplate(baseUrl, "D2R.m");
-		
+
+		String path = requestParams.getString("scenarioagentoperation");
 		try {
 			createBat(baseUrl, n_cluster);
             notifyWatcher(requestParams, baseUrl+"/year by year_NPV.txt",
-                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+                    path.replace(COORDINATION_PATH, SIM_PROCESS_PATH));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

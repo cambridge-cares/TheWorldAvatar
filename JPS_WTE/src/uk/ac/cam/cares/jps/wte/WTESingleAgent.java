@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.wte;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,13 +13,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.atlas.json.JsonException;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.Resource;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -27,7 +31,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns= {"/processresult"})
-public class WTESingleAgent extends JPSHttpServlet {
+public class WTESingleAgent extends JPSAgent{
 	
 	/**
 	 * 
@@ -124,6 +128,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * 
 	 */
 	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
@@ -151,22 +160,30 @@ public class WTESingleAgent extends JPSHttpServlet {
 		 
 		return requestParams;
 	}
-	/** Using the same method as WasteToEnergyAgent as the baseUrl has to be 
-	 * exactly the same as WasteToEnergyAgent
+	/**
 	 * 
 	 * @param requestParams
 	 * @return
 	 * @throws BadRequestException
 	 */
-//	@Override
-	public boolean validateInput(JSONObject requestParams) throws Exception {
-		String baseUrl= requestParams.getString("baseUrl");
-		String filePath = baseUrl +"/year by year_NPV.txt";
-		boolean fileExist = InputValidator.checkIfValidFile(filePath);
-		if (!fileExist) {
-			throw new Exception("File doesn't exist. Check matlab simulation");
+	@Override
+	public boolean validateInput(JSONObject requestParams){
+		if (requestParams.isEmpty()) {
+			throw new BadRequestException();
+	    }
+		try {
+			
+		 	String baseUrl= requestParams.getString("baseUrl");
+			String filePath = baseUrl +"/year by year_NPV.txt";
+			boolean fileExist = InputValidator.checkIfValidFile(filePath);
+			return new WastetoEnergyAgent().validateInput(requestParams)& fileExist;
+		}catch (JSONException ex) {
+			ex.printStackTrace();
 		}
-		return new WastetoEnergyAgent().validateInput(requestParams)& fileExist;
+		return false;
+		
+		
+		
 	}
 	/** reads the result from the csv file produced and returns as List<String[]>
 	 * 

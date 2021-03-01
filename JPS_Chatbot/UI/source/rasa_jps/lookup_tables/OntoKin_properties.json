@@ -1,0 +1,416 @@
+{
+  "indicates multiplicity of": [
+    "http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#indicatesMultiplicityOf"
+  ],
+  "participates in": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#participatesIn"
+  ],
+  "same as": [
+    "http://www.w3.org/2002/07/owl#sameAs"
+  ],
+  "element": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElement"
+  ],
+  "contained in": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#containedIn"
+  ],
+  "stoichiometric coefficient": [
+    "http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasStoichiometricCoefficient"
+  ],
+  "publication specification": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPublicationSpecification"
+  ],
+  "belongs to material": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#belongsToMaterial"
+  ],
+  "arrhenius coefficient": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient"
+  ],
+  "arrhenius rate constant": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient"
+  ],
+  "reaction rate": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient"
+  ],
+  "reaction rate constant": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient"
+  ],
+  "arrhenius rate constant parameters": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient"
+  ],
+  "belongs to phase": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#belongsToPhase"
+  ],
+  "specifies": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#specifies"
+  ],
+  "fall off model coefficient": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasFallOffModelCoefficient"
+  ],
+  "applies to": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#appliesTo"
+  ],
+  "element metadata": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElementMetadata"
+  ],
+  "species": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasSpecies"
+  ],
+  "extracted from": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#extractedFrom"
+  ],
+  "coverage dependency": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCoverageDependency"
+  ],
+  "reaction order": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasReactionOrder"
+  ],
+  "cheb rate coefficient": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCHEBRateCoefficient"
+  ],
+  "creator": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCreator"
+  ],
+  "reaction metadata": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasReactionMetadata"
+  ],
+  "third body efficiency": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasThirdBodyEfficiency"
+  ],
+  "sticking coefficient": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasStickingCoefficient"
+  ],
+  "species metadata": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasSpeciesMetadata"
+  ],
+  "transport model": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasTransportModel"
+  ],
+  "reactant": [
+    "http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"
+  ],
+  "reference": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasReference"
+  ],
+  "element number": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElementNumber"
+  ],
+  "named third body": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasNamedThirdBody"
+  ],
+  "exists in": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#existsIn"
+  ],
+  "landau teller dependency": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLandauTellerDependency"
+  ],
+  "indicates number of": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#indicatesNumberOf"
+  ],
+  "contributor": [
+    "http://purl.org/dc/terms/contributor"
+  ],
+  "product": [
+    "http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"
+  ],
+  "thermo model": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasThermoModel"
+  ],
+  "type of kinetics model": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasTypeOfKineticsModel"
+  ],
+  "maximum temperature": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasMaximumTemperature"
+  ],
+  "reaction order modifier units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasReactionOrderModifierUnits"
+  ],
+  "dipole moment units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasDipoleMomentUnits"
+  ],
+  "page start": [
+    "http://purl.org/ontology/bibo/pageStart"
+  ],
+  "pre exponential modifier units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPreExponentialModifierUnits"
+  ],
+  "name": [
+    "http://xmlns.com/foaf/0.1/name"
+  ],
+  "type of thermo model": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasTypeOfThermoModel"
+  ],
+  "activation energy": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasActivationEnergy"
+  ],
+  "is duplicate": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isDuplicate"
+  ],
+  "chemical species array id": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasChemicalSpeciesArrayId"
+  ],
+  "phase array": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPhaseArray"
+  ],
+  "chemical element array id": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasChemicalElementArrayId"
+  ],
+  "pressure points": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPressurePoints"
+  ],
+  "publisher": [
+    "http://purl.org/dc/terms/publisher"
+  ],
+  "reference pressure": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasReferencePressure"
+  ],
+  "exponential modifier": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasExponentialModifier"
+  ],
+  "lennard jones well depth": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLennardJonesWellDepth"
+  ],
+  "note": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasNote"
+  ],
+  "number of element": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasNumberOfElement"
+  ],
+  "rotational relaxation collision number": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasRotationalRelaxationCollisionNumber"
+  ],
+  "minimum pressure units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasMinimumPressureUnits"
+  ],
+  "thermo comment": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasThermoComment"
+  ],
+  "exponential modifier units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasExponentialModifierUnits"
+  ],
+  "phase thermo state": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPhaseThermoState"
+  ],
+  "may not conserve site": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#mayNotConserveSite"
+  ],
+  "number of coefficients": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasNumberOfCoefficients"
+  ],
+  "polarizability units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPolarizabilityUnits"
+  ],
+  "pre exponential modifier": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPreExponentialModifier"
+  ],
+  "is motz wise correction applicable": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isMotzWiseCorrectionApplicable"
+  ],
+  "dimension": [
+    "http://www.opengis.net/ont/geosparql#dimension"
+  ],
+  "equation": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasEquation"
+  ],
+  "is defined via partial pressure": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isDefinedViaPartialPressure"
+  ],
+  "efficiency": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#efficiency"
+  ],
+  "pressure": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPressure"
+  ],
+  "species geometry title": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasSpeciesGeometryTitle"
+  ],
+  "cheb coefficient values": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCHEBCoefficientValues"
+  ],
+  "source comment": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasSourceComment"
+  ],
+  "bulk species density": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasBulkSpeciesDensity"
+  ],
+  "minimum pressure": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasMinimumPressure"
+  ],
+  "landau teller coefficient c units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLandauTellerCoefficientCUnits"
+  ],
+  "is species data case sensitive": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isSpeciesDataCaseSensitive"
+  ],
+  "issn": [
+    "http://purl.org/ontology/bibo/issn"
+  ],
+  "polarizability": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPolarizability"
+  ],
+  "quantum calculation iri": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasQuantumCalculationIRI"
+  ],
+  "species geometry": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasSpeciesGeometry"
+  ],
+  "lennard jones diameter": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLennardJonesDiameter"
+  ],
+  "landau teller coefficient b": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLandauTellerCoefficientB"
+  ],
+  "activation energy units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasActivationEnergyUnits"
+  ],
+  "unique species iri": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasUniqueSpeciesIRI"
+  ],
+  "temperature points": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasTemperaturePoints"
+  ],
+  "landau teller coefficient c": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLandauTellerCoefficientC"
+  ],
+  "stoichiometric value": [
+    "http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#stoichiometricValue"
+  ],
+  "maximum pressure units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasMaximumPressureUnits"
+  ],
+  "occupancy units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasOccupancyUnits"
+  ],
+  "atomic mass": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasAtomicMass"
+  ],
+  "page end": [
+    "http://purl.org/ontology/bibo/pageEnd"
+  ],
+  "reference pressure units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasReferencePressureUnits"
+  ],
+  "title": [
+    "http://purl.org/dc/terms/title"
+  ],
+  "thermo agent iri": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasThermoAgentIRI"
+  ],
+  "lennard jones diameter units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLennardJonesDiameterUnits"
+  ],
+  "is reaction data case sensitive": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isReactionDataCaseSensitive"
+  ],
+  "atomic mass units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasAtomicMassUnits"
+  ],
+  "rotational relaxation collision number units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasRotationalRelaxationCollisionNumberUnits"
+  ],
+  "pre exponential factor": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPreExponentialFactor"
+  ],
+  "chemical reaction array id": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasChemicalReactionArrayId"
+  ],
+  "minimum temperature units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasMinimumTemperatureUnits"
+  ],
+  "lennard jones well depth units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLennardJonesWellDepthUnits"
+  ],
+  "site density units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasSiteDensityUnits"
+  ],
+  "default third body efficiency value": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasDefaultThirdBodyEfficiencyValue"
+  ],
+  "requires species validation": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#requiresSpeciesValidation"
+  ],
+  "site density": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasSiteDensity"
+  ],
+  "third body efficiency value": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasThirdBodyEfficiencyValue"
+  ],
+  "coefficient values": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCoefficientValues"
+  ],
+  "commit": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCommit"
+  ],
+  "type of transport model": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasTypeOfTransportModel"
+  ],
+  "pre exponential factor units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasPreExponentialFactorUnits"
+  ],
+  "dipole moment": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasDipoleMoment"
+  ],
+  "expected phase": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasExpectedPhase"
+  ],
+  "family name": [
+    "http://xmlns.com/foaf/0.1/familyName"
+  ],
+  "temperature exponent units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasTemperatureExponentUnits"
+  ],
+  "requires reaction validation": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#requiresReactionValidation"
+  ],
+  "is defined via site fractions": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isDefinedViaSiteFractions"
+  ],
+  "temperature exponent": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasTemperatureExponent"
+  ],
+  "landau teller coefficient b units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasLandauTellerCoefficientBUnits"
+  ],
+  "is landau teller reaction": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isLandauTellerReaction"
+  ],
+  "is element data case sensitive": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isElementDataCaseSensitive"
+  ],
+  "occupancy": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasOccupancy"
+  ],
+  "maximum temperature units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasMaximumTemperatureUnits"
+  ],
+  "reaction order modifier": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasReactionOrderModifier"
+  ],
+  "reaction order direction": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasReactionOrderDirection"
+  ],
+  "given name": [
+    "http://xmlns.com/foaf/0.1/givenName"
+  ],
+  "chemical species array": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasChemicalSpeciesArray"
+  ],
+  "minimum temperature": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasMinimumTemperature"
+  ],
+  "cheb coefficient units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCHEBCoefficientUnits"
+  ],
+  "maximum pressure": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasMaximumPressure"
+  ],
+  "bulk species density units": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasBulkSpeciesDensityUnits"
+  ],
+  "volume": [
+    "http://purl.org/ontology/bibo/volume"
+  ],
+  "is reversible": [
+    "http://www.theworldavatar.com/kb/ontokin/ontokin.owl#isReversible"
+  ]
+}

@@ -10,8 +10,9 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.AggregationEmissionAgent;
 
-public class TestAggregation extends TestCase{
 
+public class TestAggregation extends TestCase{
+	// This test doesn't run. 
 	public void testsumagg() {
 		JSONObject x= new AggregationEmissionAgent().sumEmissionResult("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		int size=x.getJSONArray("plant").length();
@@ -29,6 +30,10 @@ public class TestAggregation extends TestCase{
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
 		System.out.println("result end="+resultStart);
+		jo = new JSONObject(resultStart);
+		assertNotNull(jo.get("actual"));
+		assertNotNull(jo.get("design"));
+		assertTrue(jo.getDouble("design")> jo.getDouble("actual"));
 	}
 
 	
@@ -45,27 +50,36 @@ public class TestAggregation extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
 		System.out.println("result end="+resultStart);
 	}
-	
-//	public void testupdatefunction() {
-//        LocalOntologyModelManager lomm = new LocalOntologyModelManager();
-//        ServletConfig ctx = ServletTestHelper.getServletConfig();
-//        ServletContextEvent event = new ServletContextEvent(ctx.getServletContext());
-//        //Test Initialisation: baseChimney, species & concepts loaded
-//        try {
-//            lomm.contextInitialized(event);
-//        } catch (Exception e) {
-//            throw new JPSRuntimeException(e);
-//        } finally {
-//		JSONObject jo = new AggregationEmissionAgent().updateEmission(TestEN.ELECTRICAL_NETWORK);
-//		System.out.println("result end="+jo.toString());
-//        }
-//	}
-	
+	/** calls aggregateEmissionAgent within Scenario. 
+	 * Should be different from regular as it possesses Nuclear generators. 
+	 * Only successful if simulation is stored
+	 */
 	public void testcallscenario(){
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		String scenarioName = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10";
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
-		System.out.println(result);
+		System.out.println("Emission generated via Nuclear Scenario " + result);
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
+		System.out.println("Emission generated via Base Scenario "+resultStart);
+		JSONObject nucEm = new JSONObject(result);
+		JSONObject baseEm = new JSONObject(resultStart);
+		assertNotNull(nucEm.getString("actual")); 
+		assertNotNull(nucEm.getString("design")); 
+		assertNotNull(baseEm.getString("actual")); 
+		assertNotNull(baseEm.getString("design"));
+		
+		//nucEM would be the same as base if it has not been simulated
+		assertNotSame(nucEm.getString("actual"), baseEm.getString("actual"));
+		assertNotSame(nucEm.getString("design"), baseEm.getString("design"));
+	}
+	/** test validateInput() of AggregationEmissionAgent
+	 * 
+	 */
+	public void testInputValidationAggregationEmissionAgent() {
+
+		JSONObject jo = new JSONObject().put("electricalnetwork",  TestEN.ELECTRICAL_NETWORK);
+		AggregationEmissionAgent j = new AggregationEmissionAgent();
+		assertTrue(j.validateInput(jo));
 	}
 }

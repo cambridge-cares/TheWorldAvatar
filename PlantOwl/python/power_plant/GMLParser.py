@@ -6,11 +6,13 @@
 """GMLParser is developed to parse crop map data encoded in GML,
 structure the data by following an ontological model, and finally
 represent the data using RDF."""
+import os
+import sys
+from pathlib import Path
 
 from lxml import etree
 from rdflib.extras.infixowl import Ontology, OWL_NS
 
-import CoordinateConversion as coord_convert
 from CropMap import CropMap
 from Envelope import Envelope
 from rdflib import Graph, URIRef, XSD
@@ -70,12 +72,20 @@ def get_envelope(context):
         return envelope
 
 """Parses properties of the current crop map"""
-def get_crop_map(context):
+def get_crop_map(context, output_folder_path, start_feature_number, upper_limit):
     map_counter = 0
     file_counter = 0
+    flag = False
     global g
     for event, elem in context:
         #print(elem)
+        map_counter += 1
+        """Following two conditional statements enables the processing of feature maps within a specified range"""
+        if map_counter < int(start_feature_number):
+            continue
+        if int(upper_limit) !=-9999 and map_counter > int(upper_limit):
+            flag = True
+            break
         for map in elem:
             #print(get_tag_name(map.tag))
             cropMap = CropMap()
@@ -103,7 +113,7 @@ def get_crop_map(context):
                         aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCentrePoint()),
                                                     URIRef(gmlpropread.getABoxIRI()
                                       + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                                    coord_convert.e_n_to_lat_long(getcentre_point_from_crome_id(cropMap.cromeID), "#"),
+                                                    convert_epsg27700_to_wgs84(getcentre_point_from_crome_id(cropMap.cromeID), "#"),
                                                     URIRef(gmlpropread.getDataTypeCoordinatePoint()))
 
                     #print('cromeid', attribute.text)
@@ -151,13 +161,13 @@ def get_crop_map(context):
                                                                         URIRef(gmlpropread.getABoxIRI()
                                                                                + rdfizer.SLASH + rdfizer.format_iri(
                                                                             cropMap.id)),
-                                                                        coord_convert.e_n_to_lat_long_multiple(
-                                                                            posList.text.replace(" ", "#"), "#", 7),
+                                                                        convert_polygon_from_epsg27700_to_wgs84(
+                                                                            posList.text.replace(" ", "#"), "#", 2),
                                                                         URIRef(
                                                                             gmlpropread.getDataTypePolygonalPoints()))
                                             #print(cropMap.polygon)
             """Adds data and metadata to the envelope"""
-            if map_counter == 0:
+            if map_counter == 1:
                 aboxgen.create_instance(g,
                                         URIRef(gmlpropread.getClassEnvelope()),
                                         gmlpropread.getABoxIRI() + rdfizer.SLASH
@@ -174,12 +184,12 @@ def get_crop_map(context):
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getLowerCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        coord_convert.e_n_to_lat_long(envelope.lowerCorner.replace(' ', '#'), "#"),
+                                        convert_epsg27700_to_wgs84(envelope.lowerCorner.replace(' ', '#'), "#"),
                                         gmlpropread.getDataTypeCoordinatePoint())
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getUpperCorner()),
                                         URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
                                         + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
-                                        coord_convert.e_n_to_lat_long(envelope.upperCorner.replace(' ', '#'), "#"),
+                                        convert_epsg27700_to_wgs84(envelope.upperCorner.replace(' ', '#'), "#"),
                                         gmlpropread.getDataTypeCoordinatePoint())
             """Links each feature to the envelope"""
             aboxgen.link_instance(g, URIRef(gmlpropread.getBoundedBy()),
@@ -187,18 +197,31 @@ def get_crop_map(context):
                                   + rdfizer.format_iri(cropMap.id)),
                                   URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
                                   + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)))
-        map_counter += 1
+        if map_counter % 20 == 0 and map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) != 0:
+            print('Total number of feature members processed:', map_counter)
+
         if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
-            save_into_disk(g, str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+            if '/' in output_folder_path:
+                save_into_disk(g, output_folder_path+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+            else:
+                save_into_disk(g, output_folder_path + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
+                    file_counter))
             file_counter += 1
             g = Graph()
             print('Total number of feature members processed:', map_counter)
+
+    if flag:
+        map_counter = map_counter -1
     if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) != 0:
-        save_into_disk(g, str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+        if '/' in output_folder_path:
+            save_into_disk(g, output_folder_path+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+        else:
+            save_into_disk(g, output_folder_path + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
+                file_counter))
         print('Total number of feature members processed:', map_counter)
 
 """Converts polygon coordinates represented in EPSG 27700 into WGS84"""
-def convert_polygon_from_epsg27700_to_wgs84(delimiter, span, string):
+def convert_polygon_from_epsg27700_to_wgs84(string, delimiter, span):
     wgs84_coordinates = ''
     flag = True
     for token in split_at_span(delimiter, span, string):
@@ -247,13 +270,53 @@ def get_tag_name(url):
     return None
 
 """Parses a standard GML file consisting of an Envelope and a set of feature members"""
-def parse_gml(file_name):
+def parse_gml(file_name, output_folder_path, start_feature_number, upper_limit):
+    p = Path(output_folder_path)
+    if not p.exists():
+        print('The following file output path is not valid:', p)
     print('Parsing in progress...')
     context = get_context(file_name, URL_ENVELOPE)
     get_envelope(context)
     context = get_context(file_name, URL_FEATURE_MEMBER)
-    get_crop_map(context)
+    get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
 
 """This block of code is the access point to this Python module"""
 if __name__ == '__main__':
-    parse_gml(rdfizer.select_file())
+    if len(sys.argv) == 1:
+        print('For HELP, run> GMLParser -h')
+    if len(sys.argv) == 2 and str(sys.argv[1]) in '-h':
+        print('To run the parser, provide a command as follows:>GMLParser.py [INPUT_FILE_PATH] [OUTPUT_FOLDER_PATH] [STARTING_FEATURE_NUMBER] [UPPER_LIMIT]\n')
+        print('An example comm>GMLParser /home/<username>/cropmaps/Crop_Map_of_England_2019_North_Yorkshire.gml /home/<username>/kb 1 1000')
+    if len(sys.argv) == 5:
+        output_folder_path = ''
+        if '/' in sys.argv[1]:
+            output_folder_path = sys.argv[1].split('/')
+            output_folder_path = output_folder_path[len(output_folder_path)-1]
+            output_folder_path = output_folder_path.split('.')[0]
+            output_folder_path = sys.argv[2] + '/' + output_folder_path + '/' + str(sys.argv[3]) + '-' + str(sys.argv[4])
+        elif '\\' in sys.argv[1]:
+            output_folder_path = sys.argv[1].split('\\')
+            output_folder_path = output_folder_path[len(output_folder_path)-1]
+            output_folder_path = output_folder_path.split('.')[0]
+            output_folder_path = sys.argv[2] + '\\' + output_folder_path + '\\' + str(sys.argv[3]) + '-' + str(sys.argv[4])
+        if len(output_folder_path) > 0:
+            p_output = Path(output_folder_path)
+            p_input = Path(sys.argv[1])
+            if not p_output.exists():
+                print('The following file output path is not valid:', p_output)
+                print('The path is being created:', p_output)
+                os.makedirs(output_folder_path)
+            if p_input.exists() and p_output.exists() and int(sys.argv[3])>0 \
+                    and (int(sys.argv[4]) == -9999 or int(sys.argv[4])>1):
+                parse_gml(sys.argv[1], output_folder_path, sys.argv[3], sys.argv[4])
+            else:
+                if not p_input.exists():
+                    print('Input file does not exist.')
+                if not p_output.exists():
+                    print('Output folder path could not be created.')
+                if not isinstance(int(sys.argv[3]), int):
+                    print('Starting feature member is not an integer.')
+                if not int(sys.argv[3])>0:
+                    print('Starting feature number must be greater than 0.')
+                if not (int(sys.argv[4]) == -9999 or int(sys.argv[4])>1):
+                    print('Upper limit is neither -9999 nor greater than 1.')
