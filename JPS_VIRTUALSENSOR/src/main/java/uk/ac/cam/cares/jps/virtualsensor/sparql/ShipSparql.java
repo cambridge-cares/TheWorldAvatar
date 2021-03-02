@@ -2,6 +2,9 @@ package uk.ac.cam.cares.jps.virtualsensor.sparql;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -58,8 +61,9 @@ public class ShipSparql {
     private static Iri unit_JperkgK = p_derived_SI_unit.iri("J_per_kg.K"); 
     private static Iri unit_celcius = p_derived_SI_unit.iri("Celsius");
     private static Iri unit_bar = p_derived_SI_unit.iri("bar");
-    private static Iri unit_g_per_s = p_derived_SI_unit.iri("kg_per_s"); 
+    private static Iri unit_kg_per_s = p_derived_SI_unit.iri("kg_per_s"); 
     private static Iri unit_kg_per_mol = p_derived_SI_unit.iri("kg_per_mol");
+    private static Iri unit_kg_m3 = p_derived_SI_unit.iri("kg_per_cubic_m");
 
     // chemical species
     private static Iri NO2 = p_chemspecies.iri("Nitrogen_dioxide");
@@ -67,11 +71,50 @@ public class ShipSparql {
     private static Iri uHC = p_pseudo.iri("Unburned_Hydrocarbon");
     private static Iri CO = p_chemspecies.iri("Carbon__monoxide");
     private static Iri CO2 = p_chemspecies.iri("Carbon__dioxide");
-    private static Iri Ozone = p_chemspecies.iri("Ozone");
+    private static Iri O3 = p_chemspecies.iri("Ozone");
     private static Iri SO2 = p_chemspecies.iri("Sulfur__dioxide");
-    private static Iri[] species = {NO2,NOx,uHC,CO,CO2,Ozone,SO2};
+    private static Iri[] species = {NO2,NOx,uHC,CO,CO2,O3,SO2};
     
+    @SuppressWarnings("serial")
+	static Map<String, Iri> speciesIriMap = new HashMap<String , Iri>() {{
+    	put("CO",CO);
+    	put("CO2",CO2);
+    	put("NO2",NO2);
+    	put("HC",uHC);
+    	put("NOx", NOx);
+    	put("SO2",SO2);
+    	put("O3",O3);
+    }};
+    
+    // named graph
     private static Iri ship_graph = p_ship.iri("Ships");
+    
+    // relations
+    static Iri hasSubsystem = p_system.iri("hasSubsystem");
+	static Iri realizes = p_technical.iri("realizes");
+	static Iri hasOutput = p_topology.iri("hasOutput");
+	static Iri refersToGeneralizedAmount = p_chemprocess.iri("refersToGeneralizedAmount");
+	static Iri refersToMaterial = p_behaviour.iri("refersToMaterial");
+	static Iri thermodynamicBehaviour = p_material.iri("thermodynamicBehaviour");
+	static Iri hasProperty = p_system.iri("hasProperty");
+	static Iri hasValue = p_system.iri("hasValue");
+	static Iri numericalValue = p_system.iri("numericalValue");
+	static Iri has_temperature = p_phase_system.iri("has_temperature");
+	static Iri has_density = p_phase_system.iri("has_density");
+	static Iri contains = p_system.iri("contains");
+	static Iri hasRepresentativeParticle = p_behaviour.iri("hasRepresentativeParticle");
+	static Iri has_length = p_geometry.iri("has_length");
+	static Iri hasProjectedCoordinate_x = p_space_time_extended.iri("hasProjectedCoordinate_x");
+    static Iri hasProjectedCoordinate_y = p_space_time_extended.iri("hasProjectedCoordinate_y");
+    static Iri hasShipType = p_ship.iri("hasShipType");
+    static Iri Value = p_system.iri("Value");
+    static Iri hasDimension = p_system.iri("hasDimension");
+    static Iri QuantitativeValue = p_system.iri("QuantitativeValue");
+    static Iri MolecularWeight = p_substance.iri("MolecularWeight");
+    static Iri ConvectiveMassFlowrate = p_behaviour.iri("ConvectiveMassFlowrate");
+    static Iri ThermodynamicStateProperty = p_phase_system.iri("ThermodynamicStateProperty");
+    static Iri intrinsicCharacteristics = p_material.iri("intrinsicCharacteristics");
+    static Iri containsDirectly = p_system.iri("containsDirectly");
     /**
      * Creates a ship instance on ship_endpoint, Blazegraph is highly recommended because of its performance
      * @param i
@@ -117,45 +160,45 @@ public class ShipSparql {
         Iri vycoord = p_ship.iri(ship_name+"_vycoord");
 
         TriplePattern ship_tp = ship_iri.isA(p_ship.iri("Ship")).andHas(p_ship.iri("hasMMSI"),mmsi_iri)
-                .andHas(p_ship.iri("hasShipType"),type_iri).andHas(p_ship.iri("hasSOG"),speed_iri)
-                .andHas(p_ship.iri("hasCOG"), course_iri).andHas(p_system.iri("hasDimension"),length_iri)
-                .andHas(p_system.iri("hasDimension"),beam_iri)
+                .andHas(hasShipType,type_iri).andHas(p_ship.iri("hasSOG"),speed_iri)
+                .andHas(p_ship.iri("hasCOG"), course_iri).andHas(hasDimension,length_iri)
+                .andHas(hasDimension,beam_iri)
                 .andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),coordinates_iri)
-                .andHas(p_system.iri("hasSubsystem"),chimney_iri);
+                .andHas(hasSubsystem,chimney_iri);
         
-        TriplePattern mmsi_tp = mmsi_iri.isA(p_ship.iri("MMSI")).andHas(p_system.iri("hasValue"), vmmsi_iri);
-        TriplePattern vmmsi_tp = vmmsi_iri.isA(p_system.iri("Property")).andHas(p_system.iri("numericalValue"), mmsi);
+        TriplePattern mmsi_tp = mmsi_iri.isA(p_ship.iri("MMSI")).andHas(hasValue, vmmsi_iri);
+        TriplePattern vmmsi_tp = vmmsi_iri.isA(p_system.iri("Property")).andHas(numericalValue, mmsi);
 
-        TriplePattern type_tp = type_iri.isA(p_ship.iri("ShipType")).andHas(p_system.iri("hasValue"), vtype_iri);
-        TriplePattern vtype_tp = vtype_iri.isA(p_system.iri("Property")).andHas(p_system.iri("Value"),type);
+        TriplePattern type_tp = type_iri.isA(p_ship.iri("ShipType")).andHas(hasValue, vtype_iri);
+        TriplePattern vtype_tp = vtype_iri.isA(p_system.iri("Property")).andHas(Value,type);
 
-        TriplePattern length_tp = length_iri.isA(p_ship.iri("ShipLength")).andHas(p_system.iri("hasValue"), vlength_iri);
-        TriplePattern vlength_tp = vlength_iri.isA(p_system.iri("PhysicalDimension")).andHas(p_system.iri("QuantitativeValue"), al)
+        TriplePattern length_tp = length_iri.isA(p_ship.iri("ShipLength")).andHas(hasValue, vlength_iri);
+        TriplePattern vlength_tp = vlength_iri.isA(p_system.iri("PhysicalDimension")).andHas(QuantitativeValue, al)
                 .andHas(p_system.iri("hasUnitOfMeasure"), unit_m);
 
-        TriplePattern beam_tp = beam_iri.isA(p_ship.iri("ShipBeam")).andHas(p_system.iri("hasValue"), vbeam_iri);
-        TriplePattern vbeam_tp = vbeam_iri.isA(p_system.iri("PhysicalDimension")).andHas(p_system.iri("QuantitativeValue"), aw)
+        TriplePattern beam_tp = beam_iri.isA(p_ship.iri("ShipBeam")).andHas(hasValue, vbeam_iri);
+        TriplePattern vbeam_tp = vbeam_iri.isA(p_system.iri("PhysicalDimension")).andHas(QuantitativeValue, aw)
                 .andHas(p_system.iri("hasUnitOfMeasure"), unit_m);
 
-        TriplePattern speed_tp = speed_iri.isA(p_ship.iri("SpeedOverGround")).andHas(p_system.iri("hasValue"), vspeed_iri);
-        TriplePattern vspeed_tp = vspeed_iri.isA(p_system.iri("ScalarQuantity")).andHas(p_system.iri("numericalValue"), ss)
+        TriplePattern speed_tp = speed_iri.isA(p_ship.iri("SpeedOverGround")).andHas(hasValue, vspeed_iri);
+        TriplePattern vspeed_tp = vspeed_iri.isA(p_system.iri("ScalarQuantity")).andHas(numericalValue, ss)
                 .andHas(p_system.iri("hasUnitOfMeasure"), unit_knot).andHas(p_time.iri("hasTime"),time_iri);
 
-        TriplePattern course_tp = course_iri.isA(p_ship.iri("CourseOverGround")).andHas(p_system.iri("hasValue"), vcourse_iri);
-        TriplePattern vcourse_tp = vcourse_iri.isA(p_system.iri("ScalarQuantity")).andHas(p_system.iri("numericalValue"), cu)
+        TriplePattern course_tp = course_iri.isA(p_ship.iri("CourseOverGround")).andHas(hasValue, vcourse_iri);
+        TriplePattern vcourse_tp = vcourse_iri.isA(p_system.iri("ScalarQuantity")).andHas(numericalValue, cu)
                 .andHas(p_system.iri("hasUnitOfMeasure"), unit_degree).andHas(p_time.iri("hasTime"),time_iri);
 
         TriplePattern projected_gp = coordinates_iri.isA(p_space_time_extended.iri("ProjectedCoordinateSystem"))
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord);
+                .andHas(hasProjectedCoordinate_x,xcoord)
+                .andHas(hasProjectedCoordinate_y,ycoord);
 
-        TriplePattern xcoord_tp = xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vxcoord);
-        TriplePattern ycoord_tp = ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(p_system.iri("hasValue"),vycoord);
+        TriplePattern xcoord_tp = xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(hasValue,vxcoord);
+        TriplePattern ycoord_tp = ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(hasValue,vycoord);
 
         TriplePattern vxcoord_tp  = vxcoord.isA(p_coordsys.iri("CoordinateValue")).andHas(p_time.iri("hasTime"),time_iri)
-                .andHas(p_system.iri("numericalValue"), lon).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
+                .andHas(numericalValue, lon).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
         TriplePattern vycoord_tp = vycoord.isA(p_coordsys.iri("CoordinateValue")).andHas(p_time.iri("hasTime"),time_iri)
-                .andHas(p_system.iri("numericalValue"), lat).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
+                .andHas(numericalValue, lat).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
 
         TriplePattern time_tp = time_iri.isA(p_time.iri("Instant")).andHas(p_time.iri("inTimePosition"),timestamp);
 
@@ -279,11 +322,6 @@ public class ShipSparql {
         
         GraphPattern ship_gp = ship.has(p_space_time_extended.iri("hasGISCoordinateSystem"),coord);
         
-        Iri hasProjectedCoordinate_x = p_space_time_extended.iri("hasProjectedCoordinate_x");
-        Iri hasProjectedCoordinate_y = p_space_time_extended.iri("hasProjectedCoordinate_y");
-        Iri hasValue = p_system.iri("hasValue");
-        Iri numericalValue = p_system.iri("numericalValue");
-        
         // for coordinates
         Iri[] XcoordPredicates = {hasProjectedCoordinate_x,hasValue,numericalValue};
         GraphPattern xcoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, XcoordPredicates, null, coord, lon);
@@ -292,8 +330,7 @@ public class ShipSparql {
         GraphPattern ycoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, YcoordPredicates, null, coord, lat);
         
         // length query
-        Iri hasDimension = p_system.iri("hasDimension");
-        Iri QuantitativeValue = p_system.iri("QuantitativeValue");
+        
         Iri[] LengthQueryPredicates = {hasDimension, hasValue, QuantitativeValue};
         Iri[] LengthQueryRdfTypes = {null, p_ship.iri("ShipLength"), null};
         GraphPattern length_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, LengthQueryPredicates, LengthQueryRdfTypes, ship, al);
@@ -348,15 +385,11 @@ public class ShipSparql {
         Variable ss = SparqlBuilder.var("ss");
         
         // ship type query
-        Iri hasShipType = p_ship.iri("hasShipType");
-        Iri hasValue = p_system.iri("hasValue");
-        Iri Value = p_system.iri("Value");
         Iri[] TypeQueryPredicates = {hasShipType,hasValue,Value};
         GraphPattern type_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, TypeQueryPredicates, null, ship_iri, type);
         
         // speed query
         Iri hasSOG = p_ship.iri("hasSOG");
-        Iri numericalValue = p_system.iri("numericalValue");
         Iri[] SpeedQueryPredicates = {hasSOG,hasValue,numericalValue};
         GraphPattern speed_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship_iri, ss);
         
@@ -380,8 +413,11 @@ public class ShipSparql {
     	Iri wasteproduct = p_ship.iri(ship_name+chimney+"WasteProduct");
     	Iri generalizedamount = p_ship.iri(ship_name+chimney+"GeneralizedAmount");
     	Iri particulateamount = p_ship.iri(ship_name+chimney+"Particulate");
+    	Iri particlerate = p_ship.iri(ship_name+chimney+"ParticulateRate");
+    	Iri particleratevalue = p_ship.iri(ship_name+chimney+"ParticulateRateValue");
     	Iri materialamount = p_ship.iri(ship_name+chimney+"MaterialAmount");
     	Iri massflow = p_ship.iri(ship_name+chimney+"MassFlow");
+    	Iri massflowvalue = p_ship.iri(ship_name+chimney+"MassFlowValue");
     	
     	Iri material = p_ship.iri(ship_name+chimney+"Material");
     	Iri singlephase = p_ship.iri(ship_name+chimney+"MaterialSinglePhase");
@@ -393,11 +429,13 @@ public class ShipSparql {
     	Iri pressure_value = p_ship.iri(ship_name+chimney+"MaterialPressureValue");
     	Iri molWeight = p_ship.iri(ship_name+chimney+"MolecularWeight");
     	Iri molWeightValue = p_ship.iri(ship_name+chimney+"MolecularWeightValue");
+    	Iri density = p_ship.iri(ship_name+chimney+"Density");
+    	Iri densityValue = p_ship.iri(ship_name+chimney+"DensityValue");
     	
     	TriplePattern pipe_tp = chimney_iri.isA(p_plant.iri("Pipe"))
     			.andHas(p_plant.iri("hasInsideDiameter"),diameter)
     			.andHas(p_plant.iri("hasHeight"),height)
-    			.andHas(p_technical.iri("realizes"),release);
+    			.andHas(realizes,release);
     	
     	TriplePattern diameter_tp = diameter.isA(p_ship.iri("DimensionOfBow"));
     	TriplePattern[] v_diameter_tp = SparqlPatternGenerator.GetScalarTP(diameter,v_diameter,1.0,unit_m);
@@ -405,24 +443,33 @@ public class ShipSparql {
     	TriplePattern height_tp = height.isA(p_ship.iri("DimensionOfBow"));
     	TriplePattern[] v_height_tp = SparqlPatternGenerator.GetScalarTP(height,v_height,20.0,unit_m);
     	
-    	TriplePattern release_tp = release.isA(p_process.iri("ReleaseEmission")).andHas(p_topology.iri("hasOutput"),wasteproduct);
-    	TriplePattern waste_tp = wasteproduct.isA(p_process.iri("NonReusableWasteProduct")).andHas(p_chemprocess.iri("refersToGeneralizedAmount"),generalizedamount);
+    	TriplePattern release_tp = release.isA(p_process.iri("ReleaseEmission")).andHas(hasOutput,wasteproduct);
+    	TriplePattern waste_tp = wasteproduct.isA(p_process.iri("NonReusableWasteProduct")).andHas(refersToGeneralizedAmount,generalizedamount);
     	
     	TriplePattern amount_tp = generalizedamount.isA(p_behaviour.iri("GeneralizedAmount"))
-    			.andHas(p_system.iri("contains"),particulateamount)
-    			.andHas(p_system.iri("hasSubsystem"),materialamount)
-    			.andHas(p_system.iri("hasProperty"),massflow);
+    			.andHas(contains,particulateamount)
+    			.andHas(hasSubsystem,materialamount)
+    			.andHas(hasProperty,massflow);
+    	
+    	// particle total flowrate
+    	TriplePattern particulateamount_tp = particulateamount.isA(p_behaviour.iri("ParticulateMaterialAmount")).andHas(hasProperty,particlerate);
+    	TriplePattern particlerate_tp = particlerate.isA(ConvectiveMassFlowrate);
+    	TriplePattern[] particleratevalue_tp = SparqlPatternGenerator.GetScalarTP(particlerate,particleratevalue,0,unit_kg_per_s);
+    	
+    	TriplePattern massflow_tp = massflow.isA(ConvectiveMassFlowrate);
+    	TriplePattern[] massflowvalue_tp = SparqlPatternGenerator.GetScalarTP(massflow,massflowvalue,0,unit_kg_per_s);
     	
     	TriplePattern materialamount_tp = materialamount.isA(p_behaviour.iri("MaterialAmount"))
-    			.andHas(p_behaviour.iri("refersToMaterial"),material);
-    	TriplePattern material_tp = material.isA(p_material.iri("Material")).andHas(p_material.iri("thermodynamicBehaviour"),singlephase);
+    			.andHas(refersToMaterial,material);
+    	TriplePattern material_tp = material.isA(p_material.iri("Material")).andHas(thermodynamicBehaviour,singlephase);
     	TriplePattern singlephase_tp = singlephase.isA(p_phase_system.iri("SinglePhase"))
-    			.andHas(p_system.iri("hasProperty"),cp)
-    			.andHas(p_phase_system.iri("has_temperature"),temperature)
+    			.andHas(hasProperty,cp)
+    			.andHas(has_temperature,temperature)
     			.andHas(p_phase_system.iri("has_pressure"),pressure)
-    			.andHas(p_system.iri("hasProperty"),molWeight);
+    			.andHas(hasProperty,molWeight)
+    			.andHas(has_density,density);
     	
-    	TriplePattern cp_tp = cp.isA(p_phase_system.iri("ThermodynamicStateProperty"));
+    	TriplePattern cp_tp = cp.isA(ThermodynamicStateProperty);
     	TriplePattern[] cpvalue_tp = SparqlPatternGenerator.GetScalarTP(cp,cp_value,0,unit_JperkgK);
     	
     	TriplePattern temperature_tp = temperature.isA(p_phase_system.iri("Temperature"));
@@ -431,11 +478,14 @@ public class ShipSparql {
     	TriplePattern pressure_tp = pressure.isA(p_phase_system.iri("Pressure"));
     	TriplePattern[] pressurevalue_tp = SparqlPatternGenerator.GetScalarTP(pressure,pressure_value,0,unit_bar);
     	
-    	TriplePattern molWeight_tp = molWeight.isA(p_substance.iri("MolecularWeight"));
+    	TriplePattern molWeight_tp = molWeight.isA(MolecularWeight);
     	TriplePattern[] molWeightValue_tp = SparqlPatternGenerator.GetScalarTP(molWeight, molWeightValue, 0, unit_kg_per_mol);
     	
-    	TriplePattern [] combined_tp = {pipe_tp,diameter_tp,height_tp,release_tp,waste_tp,
-    			amount_tp,materialamount_tp,material_tp,singlephase_tp,cp_tp,temperature_tp,pressure_tp,molWeight_tp};
+    	TriplePattern density_tp = density.isA(p_phase_system.iri("Density"));
+    	TriplePattern[] densityvalue_tp = SparqlPatternGenerator.GetScalarTP(density, densityValue, 0, unit_kg_m3);
+    	
+    	TriplePattern [] combined_tp = {pipe_tp,diameter_tp,height_tp,release_tp,waste_tp,particulateamount_tp,particlerate_tp,
+    			amount_tp,massflow_tp,materialamount_tp,material_tp,singlephase_tp,cp_tp,temperature_tp,pressure_tp,molWeight_tp,density_tp};
     	
     	// the values triples are arrays
     	combined_tp = ArrayUtils.addAll(combined_tp, v_height_tp);
@@ -444,13 +494,17 @@ public class ShipSparql {
     	combined_tp = ArrayUtils.addAll(combined_tp, tempvalue_tp);
     	combined_tp = ArrayUtils.addAll(combined_tp, pressurevalue_tp);
     	combined_tp = ArrayUtils.addAll(combined_tp, molWeightValue_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, massflowvalue_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, densityvalue_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, particleratevalue_tp);
     	
     	// 1 mixture for each species
     	for (int i=0; i < 7; i++) {
     		Iri mixture = p_ship.iri(ship_name+chimney+"Mixture"+String.valueOf(i+1));
     		Iri massFlow = p_ship.iri(ship_name+chimney+"MassFlow"+String.valueOf(i+1));
     		Iri massFlowValue = p_ship.iri(ship_name+chimney+"MassFlowValue"+String.valueOf(i+1));
-    		TriplePattern[] mixture_tp = GetMixtureTP(material,mixture,species[i],massFlow,massFlowValue);
+    		Iri mixtureSpecies = p_ship.iri(ship_name+chimney+"MixtureSpecies"+String.valueOf(i+1));
+    		TriplePattern[] mixture_tp = GetMixtureTP(material,mixture,mixtureSpecies,species[i],massFlow,massFlowValue);
     		combined_tp = ArrayUtils.addAll(combined_tp, mixture_tp);
     	}
     	
@@ -475,23 +529,26 @@ public class ShipSparql {
     	Iri diameter_iri = p_ship.iri(ship_name+chimney+"ParticleDiameter"+particle_index);
     	Iri vdiameter_iri = p_ship.iri(ship_name+chimney+"ParticleDiameterValue"+particle_index);
     	
-    	TriplePattern entity_tp = particulateAmount.has(p_behaviour.iri("hasRepresentativeParticle"),particle_iri);
+    	TriplePattern entity_tp = particulateAmount.has(hasRepresentativeParticle,particle_iri);
     	
     	TriplePattern particle_tp = particle_iri.isA(p_behaviour.iri("SingleParticle"))
-    			.andHas(p_system.iri("hasProperty"),massfraction_iri)
-    			.andHas(p_phase_system.iri("has_density"),density_iri)
-    			.andHas(p_geometry.iri("has_length"),diameter_iri);
+    			.andHas(hasProperty,massfraction_iri)
+    			.andHas(has_density,density_iri)
+    			.andHas(has_length,diameter_iri);
     	
-    	TriplePattern mass_tp = massfraction_iri.isA(p_phase_system.iri("MassFraction")).andHas(p_system.iri("hasValue"),vmassfraction_iri);
-    	TriplePattern vmass_tp = vmassfraction_iri.isA(p_system.iri("ScalarValue")).andHas(p_system.iri("numericalValue"),0);
+    	TriplePattern mass_tp = massfraction_iri.isA(p_phase_system.iri("MassFraction")).andHas(hasValue,vmassfraction_iri);
+    	TriplePattern vmass_tp = vmassfraction_iri.isA(p_system.iri("ScalarValue")).andHas(numericalValue,0);
     	
-    	TriplePattern density_tp = density_iri.isA(p_phase_system.iri("Density")).andHas(p_system.iri("hasValue"),vdensity_iri);
-    	TriplePattern vdensity_tp = vdensity_iri.isA(p_system.iri("ScalarValue")).andHas(p_system.iri("numericalValue"),0);
+    	TriplePattern density_tp = density_iri.isA(p_phase_system.iri("Density"));
+    	TriplePattern[] densityvalue_tp = SparqlPatternGenerator.GetScalarTP(density_iri, vdensity_iri, 0, unit_kg_m3);
     	
-    	TriplePattern diameter_tp = diameter_iri.isA(p_geometry.iri("Diameter")).andHas(p_system.iri("hasValue"),vdiameter_iri);
-    	TriplePattern vdiameter_tp = vdiameter_iri.isA(p_system.iri("ScalarValue")).andHas(p_system.iri("numericalValue"),0);
+    	TriplePattern diameter_tp = diameter_iri.isA(p_geometry.iri("Diameter"));
+    	TriplePattern[] diametervalue_tp = SparqlPatternGenerator.GetScalarTP(diameter_iri, vdiameter_iri, 0, unit_m);
     	
-    	TriplePattern [] combined_tp = {entity_tp,particle_tp,mass_tp,vmass_tp,density_tp,vdensity_tp,diameter_tp,vdiameter_tp};
+    	TriplePattern[] combined_tp = {entity_tp,particle_tp,mass_tp,vmass_tp,density_tp,diameter_tp};
+    	
+    	combined_tp = ArrayUtils.addAll(combined_tp, densityvalue_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, diametervalue_tp);
     	return combined_tp;
     }
     
@@ -511,22 +568,119 @@ public class ShipSparql {
      * @param MassFlowValue
      */
     
-    private static TriplePattern[] GetMixtureTP(Iri material, Iri mixture, Iri species, Iri massFlow, Iri massFlowValue) {
+    private static TriplePattern[] GetMixtureTP(Iri material, Iri mixture, Iri species, Iri species_type, Iri massFlow, Iri massFlowValue) {
     	Iri Mixture = iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Mixture");
         
-    	TriplePattern material_tp = material.has(p_material.iri("intrinsicCharacteristics"),mixture);
-        TriplePattern mixture_tp = mixture.isA(Mixture).andHas(p_system.iri("containsDirectly"),species)
-        		.andHas(p_system.iri("hasProperty"),massFlow);
-        TriplePattern massFlow_tp = massFlow.isA(p_behaviour.iri("ConvectiveMassFlowrate"));
-        TriplePattern[] value_tp = SparqlPatternGenerator.GetScalarTP(massFlow,massFlowValue,0.0,unit_g_per_s);
+    	TriplePattern material_tp = material.has(intrinsicCharacteristics,mixture);
+        TriplePattern mixture_tp = mixture.isA(Mixture).andHas(containsDirectly,species)
+        		.andHas(hasProperty,massFlow);
+        TriplePattern species_tp = species.isA(species_type);
+        TriplePattern massFlow_tp = massFlow.isA(ConvectiveMassFlowrate);
+        TriplePattern[] value_tp = SparqlPatternGenerator.GetScalarTP(massFlow,massFlowValue,0.0,unit_kg_per_s);
         
-        TriplePattern[] combined_tp = {material_tp,mixture_tp,massFlow_tp};
+        TriplePattern[] combined_tp = {material_tp,mixture_tp,massFlow_tp,species_tp};
         combined_tp = ArrayUtils.addAll(combined_tp, value_tp);
         return combined_tp;
     }
     
-    public void UpdateShipChimney(String ship_iri,Chimney chim) {
+    public static void UpdateShipChimney(String ship_iri_string,Chimney chim) {
+    	// molecular weight
+    	Iri ship_iri = iri(ship_iri_string);
     	
+    	Prefix[] Prefixes = {p_ship,p_system,p_technical,p_topology,p_chemprocess,p_behaviour,p_material,p_substance,p_phase_system,p_geometry,p_chemspecies,p_pseudo};
+    	
+    	Iri[] molWeightPredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,
+    			refersToMaterial,thermodynamicBehaviour,hasProperty,hasValue,numericalValue};
+    	Iri[] molWeightRdfTypes = new Iri[molWeightPredicates.length+1];
+    	molWeightRdfTypes[8] = MolecularWeight;
+    	
+    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, molWeightPredicates, molWeightRdfTypes, ship_iri, chim.getMixtureMolWeight(), ship_graph));
+    	
+    	//cp
+    	Iri[] cpPredicates = molWeightPredicates;
+    	Iri[] cpRdfTypes = new Iri[cpPredicates.length+1];
+    	cpRdfTypes[8] = ThermodynamicStateProperty;
+    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, cpPredicates, cpRdfTypes, ship_iri, chim.getMixtureCp(), ship_graph));
+    	
+    	//temperature
+    	Iri[] tempPredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,
+    			refersToMaterial,thermodynamicBehaviour,has_temperature,hasValue,numericalValue};
+    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, tempPredicates, null, ship_iri, chim.getMixtureTemperature(), ship_graph));
+    	
+    	// mass flux
+    	Iri[] massFluxPredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasProperty,hasValue,numericalValue};
+    	Iri[] massFluxRdfTypes = new Iri[massFluxPredicates.length+1];
+    	massFluxRdfTypes[5] = ConvectiveMassFlowrate;
+    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, massFluxPredicates, massFluxRdfTypes, ship_iri, chim.getMixtureMassFlux(), ship_graph));
+    	
+    	// density
+    	Iri[] densityPredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,
+    			refersToMaterial,thermodynamicBehaviour,has_density,hasValue,numericalValue};
+    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, densityPredicates, null, ship_iri, chim.getMixtureDensity(), ship_graph));
+    
+    	// particles
+    	// first query the IRIs of the representative particles, it is assumed that the number is always the same with the ones in chimney
+    	Iri [] particlePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,contains,hasRepresentativeParticle};
+    	SelectQuery query = Queries.SELECT();
+    	String particlekey = "particleIRI";
+    	Variable particleIRI = SparqlBuilder.var(particlekey);
+    	GraphPattern queryPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, particlePredicates, null, ship_iri, particleIRI);
+    	From FromGraph = SparqlBuilder.from(ship_graph);
+    	query.prefix(Prefixes).select(particleIRI).where(queryPattern).from(FromGraph);
+    	JSONArray particles = performQuery(query);
+    	
+    	// then update each particle
+    	if (particles.length() == chim.getNumpar()) {
+    		for (int i = 0; i < particles.length(); i++) {
+    			Iri particle_iri = iri(particles.getJSONObject(i).getString(particlekey));
+    			
+    			// update density
+    			Iri[] partDenPredicates = {has_density,hasValue,numericalValue};
+    			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, partDenPredicates, null, particle_iri, chim.getParticle(i).getDensity(), ship_graph));
+    			
+    			// update diameter
+    			Iri[] partDiameterPredicates = {has_length,hasValue,numericalValue};
+    			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, partDiameterPredicates, null, particle_iri, chim.getParticle(i).getDiameter(), ship_graph));
+    		    
+    			// update mass fraction
+    			Iri[] partmassPredicates = {hasProperty,hasValue,numericalValue};
+    			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, partmassPredicates, null, particle_iri, chim.getParticle(i).getMassFraction(), ship_graph));
+    		}
+    	}
+    	
+    	// overall particulate flow rate
+    	Iri[] particleRatePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,contains,hasProperty,hasValue,numericalValue};
+    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, particleRatePredicates, null, ship_iri, chim.getTotalParticleFlowrate(), ship_graph));
+    
+    	// gas phase
+    	for (int i=0; i < chim.getNumpol(); i++) {
+    		String speciesname = chim.getPollutant(i).getSpecies();
+    		
+    		if (speciesIriMap.get(speciesname) != null) {
+    			Iri speciesIri = speciesIriMap.get(speciesname);
+    			
+    			// first query the mixture IRI containing the species
+    			SelectQuery MixtureQuery = Queries.SELECT();
+    			Variable mixture = SparqlBuilder.var("mixture");
+    			
+    			Iri[] mixturePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,refersToMaterial,intrinsicCharacteristics};
+    			GraphPattern ship2mixture_gp = SparqlPatternGenerator.GetQueryGraphPattern(MixtureQuery,mixturePredicates,null,ship_iri,mixture);
+    			
+    			Iri[] speciesPredicates = {containsDirectly};
+    			Iri[] speciesRdfTypes = new Iri[speciesPredicates.length+1];
+    			speciesRdfTypes[1] = speciesIri;
+    			GraphPattern mixture2species_gp = SparqlPatternGenerator.GetQueryGraphPattern(MixtureQuery,speciesPredicates,speciesRdfTypes,mixture);
+    			
+    			GraphPattern mixtureQueryPattern = GraphPatterns.and(ship2mixture_gp,mixture2species_gp);
+    			MixtureQuery.select(mixture).where(mixtureQueryPattern).from(FromGraph).prefix(Prefixes);
+    			
+    			JSONArray mixtureQueryResult = performQuery(MixtureQuery);
+ 
+    			Iri MixtureIri = iri(mixtureQueryResult.getJSONObject(0).getString("mixture"));
+    			Iri[] flowratePredicates = {hasProperty,hasValue,numericalValue};
+    			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, flowratePredicates, null, MixtureIri, chim.getPollutant(i).getFlowrate(), ship_graph));
+    		}
+    	}
     }
     
     private static void performUpdate(ModifyQuery query) {
