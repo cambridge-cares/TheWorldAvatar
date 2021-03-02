@@ -82,6 +82,13 @@ public class SparqlPatternGenerator {
     		}
     	}
     	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
+    		}
+    	}
+    	
     	return CombinedGP;
     }
 	
@@ -119,6 +126,59 @@ public class SparqlPatternGenerator {
     			}
     		} else {
     			CombinedGP.and(triple);
+    		}
+    	}
+    	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
+    		}
+    	}
+    	
+    	return CombinedGP;
+    }
+	
+	public static GraphPattern GetQueryGraphPattern (SelectQuery Query, Iri[] Predicates, Iri[] RdfType, Variable FirstNode) {
+        GraphPattern CombinedGP = null;
+    	
+    	Variable[] Variables = new Variable[Predicates.length];
+    	
+    	// initialise intermediate nodes
+    	for (int i=0; i < Variables.length; i++) {
+    		Variables[i] = Query.var();
+    	}
+    	
+    	// first triple
+    	GraphPattern firstTriple = FirstNode.has(Predicates[0],Variables[0]);
+    	if (RdfType != null) {
+    		if (RdfType[0] != null) {
+    			CombinedGP = GraphPatterns.and(firstTriple,FirstNode.isA(RdfType[0]));
+    		} else {
+    			CombinedGP = GraphPatterns.and(firstTriple);
+    		}
+    	} else {
+    		CombinedGP = GraphPatterns.and(firstTriple);
+    	}
+    	
+    	// the remaining
+    	for (int i=0; i < Variables.length-1; i++) {
+    		GraphPattern triple = Variables[i].has(Predicates[i+1],Variables[i+1]);
+    		if (RdfType != null) {
+    			if (RdfType[i+1] != null) {
+    				CombinedGP.and(triple,Variables[i].isA(RdfType[i+1]));
+    			} else {
+    				CombinedGP.and(triple);
+    			}
+    		} else {
+    			CombinedGP.and(triple);
+    		}
+    	}
+    	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
     		}
     	}
     	
@@ -160,6 +220,13 @@ public class SparqlPatternGenerator {
     			}
     		} else {
     			CombinedGP.and(triple);
+    		}
+    	}
+    	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
     		}
     	}
     	
