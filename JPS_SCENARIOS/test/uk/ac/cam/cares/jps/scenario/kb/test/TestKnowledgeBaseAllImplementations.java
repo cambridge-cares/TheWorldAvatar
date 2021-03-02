@@ -230,11 +230,6 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		assertEquals("http://example.com/" + provenanceName, subject);
 	}
 	
-	public void testPutAndUpdateRdfFile() throws FileNotFoundException {
-		String provenanceName = UUID.randomUUID().toString();
-		String resourceUrl = "http://www.myhost.com:7778/fancyquerypath/testE-303load.owl";
-		putAndUpdateE303Provenance(resourceUrl, provenanceName);
-	}
 	
 	public void testQueryOwlFileWithImports() throws IOException {
 		

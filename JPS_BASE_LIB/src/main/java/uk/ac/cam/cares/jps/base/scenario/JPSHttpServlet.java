@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
@@ -190,7 +191,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      */
     protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
         JSONObject responseParams;
-        requestParams.put("path", request.getServletPath());
+        requestParams.put(JPSConstants.PATH, request.getPathInfo());
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
             responseParams = processRequestParameters(requestParams, request);

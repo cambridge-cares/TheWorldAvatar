@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.http.client.methods.HttpGet;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -87,82 +88,63 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		boolean copyOnRead = ScenarioManagementAgent.getCopyOnRead(log);
 		
 		String result = "";
-		if (operation == null) {
-			
+		if (operation == null) { //SWITCH doesn't accept operation as a null
 			if (requestParams.has(JPSConstants.SCENARIO_RESOURCE)) {
 				
 				doGetNew(request, response, scenarioName, copyOnRead);
-				return;
-				
-//				if (jo.has(JPSConstants.QUERY_SPARQL_QUERY)) {
-//					result = queryFile(jo, scenarioName, copyOnRead);
-//				} else {
-//					result = readFile(jo, scenarioName, copyOnRead);
-//				}
-			} else {
+				return;} else {
 			
 				// just return the scenario log
 				JSONObject resultjo = new JSONObject(log.getLogAsString());
 				// pretty print with 2 spaces to indent
 				result = resultjo.toString(2);
-			}
-		
-		} else if ("/option".equals(operation)) {
-			
-			setOptions(requestParams, scenarioName, log);
-
-		} else if ("/mock".equals(operation)) {
-			
-			new ScenarioMockManager().mock(requestParams, scenarioName, log);
-		
-		} else if ("/call".equals(operation)) {
-
-			result = call(requestParams, scenarioName, log);
 				
-		} else if ("/read".equals(operation)) {
-			
-			result = readFile(requestParams, scenarioName, copyOnRead);
-			
-		} else if ("/query".equals(operation)) {
-			
-			result = queryFile(requestParams, scenarioName, copyOnRead);
-			
-		} else if ("/update".equals(operation)) {
-
-			updateFile(requestParams, scenarioName);
-			
-		} else if ("/delete".equals(operation)) {
-			
-			deleteScenario(scenarioName);
-			
-		} else if ("/compose".equals(operation)) {
-			
-			result = compose(requestParams, scenarioName, log);
-
-		} else if ("/preparerecording".equals(operation)) {
-			
-			result = prepareRecording(requestParams, scenarioName, log);
-			
-		} else if ("/ping".equals(operation)) {
-			
-			result = new Date().toString();
-			
-		} else if ("/mergescenario".equals(operation)) {
-			
-			mergeScenario(requestParams, scenarioName, log);
-			
-		} else {
-			
-			if (operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/") 
-					|| operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_KB + "/")) {
-				String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
-				result = FileUtil.readFileLocally(localPath);
-			} else {
-				
-				result = new ScenarioMockManager().execute(requestParams, scenarioName, operation, log);
 			}
 		}
-		
+		switch (operation) {			
+			case "/option":			
+				setOptions(requestParams, scenarioName, log);
+				break;
+			case "/mock":			
+				new ScenarioMockManager().mock(requestParams, scenarioName, log);
+				break;
+			case "/call":
+				result = call(requestParams, scenarioName, log);
+				break;				
+			case "/read":			
+				result = readFile(requestParams, scenarioName, copyOnRead);
+				break;			
+			case "/query":			
+				result = queryFile(requestParams, scenarioName, copyOnRead);
+				break;			
+			case "/update":
+				updateFile(requestParams, scenarioName);
+				break;			
+			case "/delete":			
+				deleteScenario(scenarioName);
+				break;			
+			case "/compose":			
+				result = compose(requestParams, scenarioName, log);
+				break;
+			case "/preparerecording":			
+				result = prepareRecording(requestParams, scenarioName, log);
+				break;			
+			case "/ping":			
+				result = new Date().toString();
+				break;			
+			case "/mergescenario":			
+				mergeScenario(requestParams, scenarioName, log);
+				break;
+			default:
+				if (operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/") 
+						|| operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_KB + "/")) {
+					String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
+					result = FileUtil.readFileLocally(localPath);
+				} 
+				else  {					
+					result = new ScenarioMockManager().execute(requestParams, scenarioName, operation, log);
+				}
+		}
 		AgentCaller.printToResponse(result, response);
 	}
 	
