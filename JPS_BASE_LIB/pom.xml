@@ -18,6 +18,45 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- This plugin edits the manifest file that goes inside the .jar file -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- These properties add the copied dependencies to the classpath so the .jar can find them at runtime. -->
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>./lib/</classpathPrefix>
+                            <classpathLayoutType>repository</classpathLayoutType>
+                            <!--mainClass>com.cmclinnovations.py4j_wrapper.Py4jGateway</mainClass-->
+                            <useUniqueVersions>false</useUniqueVersions>
+                        </manifest>
+                    </archive>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                  <!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target directory. -->
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-dependency-plugin</artifactId>
+                  <version>3.1.2</version>
+                  <executions>
+                      <execution>
+                          <id>copy-jar-dependencies</id>
+                          <phase>prepare-package</phase>
+                          <goals>
+                              <goal>copy-dependencies</goal>
+                          </goals>
+                          <configuration>
+                              <includeScope>runtime</includeScope>
+                              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                              <useRepositoryLayout>true</useRepositoryLayout>
+                          </configuration>
+                      </execution>
+                  </executions>
+              </plugin>
         </plugins>
     </build>
   <properties>
@@ -201,6 +240,11 @@
     <artifactId>commons-codec</artifactId>
     <version>1.15</version>
 </dependency>
+        <dependency>
+            <groupId>net.sf.py4j</groupId>
+            <artifactId>py4j</artifactId>
+            <version>0.10.9.1</version>
+        </dependency>
 	</dependencies>
 
 </project>
