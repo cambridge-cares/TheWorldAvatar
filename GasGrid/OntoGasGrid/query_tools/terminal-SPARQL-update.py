@@ -95,7 +95,7 @@ def update_triple_store():
             INSERT DATA
             { compa:%s rdf:type comp:IntakenGas.
             %s comp:hasTaken compa:%s.
-            compa:%s comp:hasGasVolume %s.
+            compa:%s comp:atGasVolumeRate %s.
             compa:%s comp:atUTC "%s"^^xsd:dateTime .} '''%(gas_uuid,term_uris[i],gas_uuid,gas_uuid,gas_volume,gas_uuid,time_UTC)
             sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
             sparql.setMethod(POST)
@@ -104,13 +104,6 @@ def update_triple_store():
 
     os.system('cls' if os.name == 'nt' else 'clear')
     return 
-
-'''
-TODO:
-
-- Delete taken gas if older than X or have no date.
-
-'''
 
 
 def delete_gas_history():
@@ -125,7 +118,7 @@ def delete_gas_history():
 
     delete
     where {
-    ?gas comp:hasGasVolume ?p.
+    ?gas comp:atGasVolumeRate ?p.
     ?term comp:hasTaken ?gas .
     ?gas rdf:type comp:IntakenGas.
     ?gas comp:atUTC ?s .}'''
@@ -134,11 +127,14 @@ def delete_gas_history():
     sparql.setMethod(POST)
     sparql.setQuery(query)
     ret = sparql.query()
-    return 
+    return
 
-
+delete_gas_history()
+ 
 while True:
+    start = time.time()
     update_triple_store()
+    end = time.time()
     print('waiting for update...')
-    for i in tqdm(range(60*12)):
+    for i in tqdm(range(60*12-int((end-start)))):
         time.sleep(1)
