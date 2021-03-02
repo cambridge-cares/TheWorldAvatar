@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
@@ -43,13 +44,13 @@ public class KnowledgeBaseAgent extends JPSAgent {
 		if (!validateInput(requestParams)) {
 			throw new JSONException("KnowledgeBaseAgent: input Parameters not found!");
 		}
-		String body = MiscUtil.optNullKey(requestParams, "body");
-		String requestUrl = MiscUtil.optNullKey(requestParams, "requestUrl");
-		String path = MiscUtil.optNullKey(requestParams, "path");
-		String contentType = MiscUtil.optNullKey(requestParams, "contentType");
+		String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
+		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
+		String path = MiscUtil.optNullKey(requestParams, JPSConstants.PATH);
+		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
 		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
         String sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
-        String method = MiscUtil.optNullKey(requestParams, "method");
+        String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
 		
         String paramDatasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);
 		String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
@@ -57,14 +58,11 @@ public class KnowledgeBaseAgent extends JPSAgent {
 		String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
 
 		JSONObject result = new JSONObject();
-		
-		try {
-			if (method.equals(HttpGet.METHOD_NAME)) {
-            	sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
-                
-	            String accept = getAccept(request);
-				logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
-//				
+		logInputParams(method, requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
+		switch (method) {
+			case HttpGet.METHOD_NAME:
+				sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
+	            String accept = MiscUtil.optNullKey(requestParams, JPSConstants.HEADERS);
 				String qres = "";
 				if (sparql == null) {
 					qres = kb.get(resourceUrl, accept);
@@ -72,30 +70,20 @@ public class KnowledgeBaseAgent extends JPSAgent {
 					qres = kb.query(resourceUrl, sparql);
 				}
 				result.put("result", qres);
-
-            }else if (method.equals(HttpPost.METHOD_NAME)) {
-        		logInputParams("POST", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
-				
+			    break;
+		  case HttpPost.METHOD_NAME:
 				if (sparql == null) {
 					throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
 				}
-				
 				kb.update(resourceUrl, sparql);
-            }else  if (method.equals(HttpPut.METHOD_NAME)) {
-        		logInputParams("PUT", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
-    			
-    			if (sparql != null) {
+		    break;
+		  case HttpPut.METHOD_NAME:
+				if (sparql != null) {
     				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
     			}    			
     			kb.put(resourceUrl, body, contentType);
-            }
-			
-			
-		}catch (JPSRuntimeException e) {
-			e.printStackTrace();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
+		  
+			}		
         return result;
         }
 	
@@ -107,8 +95,8 @@ public class KnowledgeBaseAgent extends JPSAgent {
             throw new BadRequestException();
         }
         try {
-	        boolean q = InputValidator.checkURLpattern(requestParams.getString("requestUrl"));
-	        String method = MiscUtil.optNullKey(requestParams, "method");
+	        boolean q = InputValidator.checkURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
+	        String method = MiscUtil.optNullKey(requestParams,JPSConstants.METHOD);
 	        if (method == null) {
 	        	return false;
 	        }

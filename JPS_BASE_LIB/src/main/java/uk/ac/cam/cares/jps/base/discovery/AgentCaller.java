@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
@@ -275,14 +277,15 @@ public class AgentCaller {
                 if (json != null) {
                 	JSONObject jo = new JSONObject();
                 	if (InputValidator.checkIfValidJSONObject(json)) {
-                		jo = new JSONObject(json);
+                		jo = new JSONObject(json);//scenario resource, agent etc
                 	}else {
-                		jo.put("body", json);
+                		jo.put(JPSConstants.CONTENT, json);//string content
+            			
                 	}
-                	jo.put("method", request.getMethod());
-                	jo.put("contentType", request.getContentType());
-                	jo.put("requestUrl", request.getRequestURL().toString());
-                	
+                	jo.put(JPSConstants.HEADERS, getAccept(request));
+                	jo.put(JPSConstants.METHOD, request.getMethod())
+        			.put(JPSConstants.CONTENTTYPE, request.getContentType())
+        			.put(JPSConstants.REQUESTURL, request.getRequestURL().toString());
                     return jo;
                 }
             }
@@ -308,17 +311,26 @@ public class AgentCaller {
                 	}
                 }
             	}                
-            jsonobject.put("method", request.getMethod())
-			.put("body", json)
-			.put("contentType", request.getContentType())
-			.put("requestUrl", request.getRequestURL().toString());
+            jsonobject.put(JPSConstants.METHOD, request.getMethod())
+            .put(JPSConstants.HEADERS, getAccept(request))
+			.put(JPSConstants.CONTENT, json)
+			.put(JPSConstants.CONTENTTYPE, request.getContentType())
+			.put(JPSConstants.REQUESTURL, request.getRequestURL().toString());
             return jsonobject;
 
         } catch (JSONException | IOException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
     }
-
+    protected static String getAccept(HttpServletRequest req) {
+		String accept = null;
+		Enumeration<String> acceptList = req.getHeaders(HttpHeaders.ACCEPT);
+		if (acceptList.hasMoreElements()) {
+			accept = acceptList.nextElement();
+		}
+		logger.info("accept = " + accept);
+		return accept;
+	}
     public static void writeJsonParameter(HttpServletResponse response, JSONObject json) throws IOException {
 
         response.setContentType("application/json");

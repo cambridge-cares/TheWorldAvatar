@@ -527,11 +527,10 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
 		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
 		String contentType = req.getContentType();
-		
+		String accept = MiscUtil.optNullKey(input, "acceptHeaders");
 		try {
 			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
 			
-			String accept = getAccept(req);
 			
 			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
 			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
