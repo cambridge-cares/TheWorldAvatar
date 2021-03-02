@@ -10,7 +10,7 @@ python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.extras.infixowl import OWL_NS
-from rdflib.namespace import RDF, RDFS, Namespace
+from rdflib.namespace import RDF, RDFS, Namespace, XSD
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
@@ -36,6 +36,11 @@ SLASH = '/'
 UNDERSCORE = '_'
 HTTP='http://'
 HTTPS='https://'
+DATA_TYPE_STRING = 'string'
+DATA_TYPE_INTEGER = 'integer'
+DATA_TYPE_FLOAT = 'float'
+DATA_TYPE_DOUBLE = 'double'
+DATA_TYPE_DATE_TIME = 'datetime'
 
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
@@ -94,10 +99,39 @@ def process_data(row):
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
 
         elif row[1].strip().lower() == TYPE_DATA.lower():
-            if row[2].strip() in instances and not row[4].strip() == '':
-                aboxgen.link_data(g, URIRef(row[0].strip()),
+            if (row[2].startswith(HTTP) or row[2].startswith(HTTPS)) and not row[4].strip() == '':
+                if not row[5].strip() == '':
+                    aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
+                                      URIRef(format_iri(row[2].strip())),
+                                      row[4].strip(), get_data_type(row[5].strip()))
+                else:
+                    aboxgen.link_data(g, URIRef(row[0].strip()),
+                                  URIRef(format_iri(row[2].strip())),
+                                  row[4].strip())
+            elif row[2].strip() in instances and not row[4].strip() == '':
+                if not row[5].strip() == '':
+                    aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
+                                      URIRef(propread.getABoxIRI() + SLASH + format_iri(row[2].strip())),
+                                      row[4].strip(), get_data_type(row[5].strip()))
+                else:
+                    aboxgen.link_data(g, URIRef(row[0].strip()),
                                   URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())),
                                   row[4].strip())
+
+"""Returns the corresponding data type syntax for a given data type"""
+def get_data_type(data_type):
+    if data_type.strip().lower() == DATA_TYPE_STRING:
+        return XSD.string
+    elif data_type.strip().lower() == DATA_TYPE_INTEGER:
+        return XSD.integer
+    elif data_type.strip().lower() == DATA_TYPE_FLOAT:
+        return XSD.float
+    elif data_type.strip().lower() == DATA_TYPE_DOUBLE:
+        return XSD.double
+    elif data_type.strip().lower() == DATA_TYPE_DATE_TIME:
+        return XSD.dateTime
+    else:
+        return data_type
 
 """Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
