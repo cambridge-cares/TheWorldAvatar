@@ -34,7 +34,10 @@ services:
   # JPS Chatbot
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   jps-chatbot:
-    image: docker.cmclinnovations.com/jps-chatbot:6c73b9ff4
+    image: docker.cmclinnovations.com/jps-chatbot:${HASH}
+    build:
+      context: "../../../JPS_Chatbot"
+      dockerfile: "./docker/Dockerfile"
     container_name: "jps-chatbot-${MODE}"
     restart: unless-stopped
     ports:
