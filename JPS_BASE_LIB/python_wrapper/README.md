@@ -160,6 +160,11 @@ def doTask2():
 #============================================================
 ```
 
+# Note to developers
+
+ The py4jps aim is to provide Python access to the jps-base-lib classes. However, it is important to understand that not all jps-base-lib classes can be accessed. Namely, **any servlet depending classes can not be instantiated in Python without running the TomCat server first**. Since this has not been tested, it is not guranteed that running the TomCat server would actually fix the problem. However, this should not be an issue for the py4jps users, given that the main purpose of the wrapper is to use client side jps-base-lib classes to perform KG queries or updates. In other words, tt is not the py4jps purpose to develop the server side code, which should happen in Java.
+
+
 # Authors #
 
 Daniel Nurkowski
