@@ -10,7 +10,7 @@ python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.extras.infixowl import OWL_NS
-from rdflib.namespace import RDF, RDFS, Namespace
+from rdflib.namespace import RDF, RDFS, Namespace, XSD
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
@@ -36,6 +36,13 @@ SLASH = '/'
 UNDERSCORE = '_'
 HTTP='http://'
 HTTPS='https://'
+
+"""Data type constants"""
+DATA_TYPE_STRING = 'string'
+DATA_TYPE_INTEGER = 'integer'
+DATA_TYPE_FLOAT = 'float'
+DATA_TYPE_DOUBLE = 'double'
+DATA_TYPE_DATE_TIME = 'datetime'
 
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
@@ -72,13 +79,16 @@ def process_data(row):
             if (row[3].strip() is None or row[3].strip() == '') \
                     and (row[4].strip() is None or row[4].strip() == ''):
                 print('Creating an instance:')
-                aboxgen.create_instance(g,
-                                        URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
-                                        propread.getABoxIRI()+SLASH+format_iri(row[0]),
-                                        row[0])
+                instance = propread.getABoxIRI()+SLASH+format_iri(row[0])
+                type = propread.getTBoxIRI()+HASH+format_iri(row[2])
+                if row[0].strip().startswith(HTTP) or row[0].strip().startswith(HTTPS):
+                    instance = format_iri(row[0])
+                if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
+                    type = format_iri(row[2])
+                aboxgen.create_instance_without_name(g, URIRef(type), URIRef(instance))
                 instances[row[0].strip()] = row[2].strip()
 
-            elif row[2].strip() in instances or row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS):
+            elif row[2].strip() in instances or row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
                 if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
@@ -95,13 +105,36 @@ def process_data(row):
 
         elif row[1].strip().lower() == TYPE_DATA.lower():
             if row[2].strip() in instances and not row[4].strip() == '':
-                aboxgen.link_data(g, URIRef(row[0].strip()),
-                                  URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())),
+                instance = propread.getABoxIRI()+SLASH+format_iri(row[2].strip())
+                if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
+                    instance = format_iri(row[2].strip())
+                if not row[5].strip() == '':
+                    aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
+                                      URIRef(instance),
+                                      row[4].strip(), get_data_type(row[5]))
+                else:
+                    aboxgen.link_data(g, URIRef(row[0].strip()),
+                                  URIRef(instance),
                                   row[4].strip())
+
+"""Returns an XSD data type when available for a given input data type"""
+def get_data_type(data_type):
+    if data_type.strip().lower().startswith(HTTP) or data_type.strip().lower().startswith(HTTPS):
+        return data_type
+    if data_type.strip().lower() == DATA_TYPE_STRING:
+        return XSD.string
+    if data_type.strip().lower() == DATA_TYPE_INTEGER:
+        return XSD.integer
+    if data_type.strip().lower() == DATA_TYPE_FLOAT:
+        return XSD.float
+    if data_type.strip().lower() == DATA_TYPE_DOUBLE:
+        return XSD.double
+    if data_type.strip().lower() == DATA_TYPE_DATE_TIME:
+        return XSD.dateTime
+    return data_type;
 
 """Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
-    iri = iri.replace(":"," ")
     iri = iri.replace(",", " ")
     iri = iri.replace(" ","")
     return iri
