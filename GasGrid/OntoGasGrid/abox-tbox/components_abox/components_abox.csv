@@ -1263,5 +1263,5 @@ Bacton UKCS Terminal,Instance,GasTerminal,,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Bacton UKCS Terminal,,52.85703026#1.464486122
 Bacton UKCS Terminal,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOYELVERTON5Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Teesside Terminal,Instance,GasTerminal,,
-http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Teesside Terminal,,54.36385#1.12008
+http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Teesside Terminal,,54.61005615#-1.202487946
 Teesside Terminal,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASINGTONTOPAULLTHREE0Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,

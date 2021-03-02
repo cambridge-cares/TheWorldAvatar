@@ -18,22 +18,20 @@ from datetime import  timezone
 def real_time_intakes():
     '''
     DESCRIPTION:
-    Calls the National Grid online publication of incoming flows to the NTS and produces
-    two numpy tables, one with zonal intakes and one with terminal intakes.
-    Units are mcm/day.
+    Calls the National Grid online publication of incoming flows to the NTS
+    Produces table with Terminals, times, and values.
     '''
-    #--- opening intakes webpage ---#
+    # clearing terminal
     os.system('cls' if os.name == 'nt' else 'clear')
-    # reading html from webpage 
+    # opening and rendering HTML
     url = 'https://mip-prd-web.azurewebsites.net/InstantaneousView'
     session = HTMLSession()
     r = session.get(url)
     r.html.render()
-    #--- converting all the information to a table ---#
+    # convert to soup to parse as table
     soup = bs.BeautifulSoup(r.html.html,'lxml') 
-    
 
-    # CREATION OF TABLE FROM HTML TABLE
+    # parse table from HTML
     table = []
     for tr in soup.find_all('tr')[1:]:
         tds = tr.find_all('td')
@@ -41,35 +39,40 @@ def real_time_intakes():
         for i in tds:
             row.append(i.text)
         table.append(row)
-    # TABLE TO DATAFRAME
+    # converting to dataframe
     table = pd.DataFrame(table)
-    #--- ontaining only the required values ---#
+    # converting to numpy with only desired bits
     table = table.to_numpy()[4:,1:]
 
+    # terminal names from tables
     terminal_names = table[43:52,0]
     data = []
+    # iterating over temporal values
     for i in range(1,7):
         latest_terminal_value = table[43:52,i].astype(np.float)
         time = table[42,i]
+        # converting time to datetime format
         now = datetime.datetime.now()
         time = [now.replace(hour=int(time[:2]), minute=int(time[-2:]),second = 0,microsecond=0) for i in range(len(latest_terminal_value))]
+        # creating row in table 
         terminal_supply = np.concatenate(([terminal_names],[time],[latest_terminal_value]),axis=0).T
 
         terminal_supply_pd = pd.DataFrame(terminal_supply)
 
-        # overall_df = pd.concat((zone_supply_pd,terminal_supply_pd),axis=1,ignore_index=True)
         overall_df = terminal_supply_pd
 
         data.append(terminal_supply_pd)
-
+    # return data table
     return data
 
 
 def update_triple_store():
+    # calling function to get most recent values of terminal gas rate
     data = real_time_intakes()
     for terminal_supply in data:
         print('Updating Terminal Values for ',terminal_supply.values[0,1],' ...')
 
+        # defining namespaces of each terminal
         component_namespace = "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/"
         BIPS = "<"+component_namespace+"BactonIPsTerminal>"
         BUKS = "<"+component_namespace+"BactonUKCSTerminal>"
@@ -83,9 +86,13 @@ def update_triple_store():
 
         term_uris = [BIPS,BUKS,BAR,EAS,IOG,MH,SF,TEES,THED]
 
+        # iterating over terminals
         for i in range(len(term_uris)):
+            # convert to proper datetime format
             time_UTC = str(terminal_supply.values[i,1].strftime("%Y-%m-%dT%H:%M:%S"))
+            # get gas volume
             gas_volume = str(terminal_supply.values[i,2])
+            # create UUID for IntakenGas
             gas_uuid = uuid.uuid1()
             query = '''PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -98,43 +105,24 @@ def update_triple_store():
             compa:%s comp:atGasVolumeRate %s.
             compa:%s comp:atUTC "%s"^^xsd:dateTime .} '''%(gas_uuid,term_uris[i],gas_uuid,gas_uuid,gas_volume,gas_uuid,time_UTC)
             sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
-            sparql.setMethod(POST)
+            sparql.setMethod(POST) # POST query, not GET
             sparql.setQuery(query)
             ret = sparql.query()
-
+    # clear terminal
     os.system('cls' if os.name == 'nt' else 'clear')
     return 
 
+def continuous_update():
+    while True:
+        start = time.time()
+        update_triple_store()
+        end = time.time()
+        print('waiting for update...')
+        # wait for 12 minutes taking into account time to update queries
+        for i in tqdm(range(60*12-int((end-start)))):
+            time.sleep(1)
+    return 
 
-def delete_gas_history():
-    
-    query = '''PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ns1:     <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX gasgrid: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#>
-    PREFIX loc:     <http://www.bigdata.com/rdf/geospatial/literals/v1#>
-    PREFIX geo:     <http://www.bigdata.com/rdf/geospatial#>
-    PREFIX comp:	<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
-
-    delete
-    where {
-    ?gas comp:atGasVolumeRate ?p.
-    ?term comp:hasTaken ?gas .
-    ?gas rdf:type comp:IntakenGas.
-    ?gas comp:atUTC ?s .}'''
-
-    sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
-    sparql.setMethod(POST)
-    sparql.setQuery(query)
-    ret = sparql.query()
-    return
-
-delete_gas_history()
- 
-while True:
-    start = time.time()
-    update_triple_store()
-    end = time.time()
-    print('waiting for update...')
-    for i in tqdm(range(60*12-int((end-start)))):
-        time.sleep(1)
+def single_update():
+        update_triple_store()
+        return 
