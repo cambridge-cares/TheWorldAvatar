@@ -2,12 +2,9 @@ import unittest
 from py4jps import JPSGateway
 from os import path
 
-
-
-# placeholder class for any unit tests
 class TestWrapper(unittest.TestCase):
 
-    def test_1(self):
+    def fileReading(self):
         jps = JPSGateway()
         jps.start()
         module1_view = jps.createModuleView()
@@ -18,9 +15,23 @@ class TestWrapper(unittest.TestCase):
         self.assertEqual("test file1", file_str)
         jps.shutdown()
 
+    def remoteKGquery(self):
+        jps = JPSGateway()
+        jps.start()
+        module1_view = jps.createModuleView()
+        jps.importPackages(module1_view,"uk.ac.cam.cares.jps.base.query.*")
+
+        KGRouter = module1_view.KGRouter
+        KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+'ontokin', True, False)
+        response = KGClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
+                                        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>	SELECT ?mechanismIRI \
+                                        WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))
+        jps.shutdown()
+
 def runTests():
     suite = unittest.TestSuite()
-    suite.addTest(TestWrapper('test_1'))
+    suite.addTest(TestWrapper('fileReading'))
+    suite.addTest(TestWrapper('remoteKGquery'))
     runner = unittest.TextTestRunner()
     runner.run(suite)
 
