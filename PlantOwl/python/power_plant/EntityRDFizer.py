@@ -109,9 +109,9 @@ def process_data(row):
                 if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
                     instance = format_iri(row[2].strip())
                 if not row[5].strip() == '':
-                    aboxgen.link_data(g, URIRef(row[0].strip()),
+                    aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
                                       URIRef(instance),
-                                      row[4].strip())
+                                      row[4].strip(), get_data_type(row[5]))
                 else:
                     aboxgen.link_data(g, URIRef(row[0].strip()),
                                   URIRef(instance),
@@ -119,7 +119,7 @@ def process_data(row):
 
 """Returns an XSD data type when available for a given input data type"""
 def get_data_type(data_type):
-    if data_type.strip().lower().startsWith(HTTP) or data_type.strip().lower().startsWith(HTTPS):
+    if data_type.strip().lower().startswith(HTTP) or data_type.strip().lower().startswith(HTTPS):
         return data_type
     if data_type.strip().lower() == DATA_TYPE_STRING:
         return XSD.string
