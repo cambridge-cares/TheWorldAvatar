@@ -123,14 +123,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 				+ "} ";
 		String result = client().query(resourceUrl, sparql);
 		//Unfortunately, client().query doesn't tell if it's return from agent or direct Query
-		JSONObject simplified;
-		try {
-			simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
-			
-		}catch (JSONException e) {
-			simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
-		}
-		
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
 		System.out.println(simplified);
 		String value = simplified.getJSONArray("results").getJSONObject(0).getString("value");
 		return value;
@@ -224,7 +217,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		String sparqlquery = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"SELECT ?s ?p ?o WHERE { ?s dcterms:created ?o } ";
 		String result = client().query(target, sparqlquery);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
 		assertEquals("http://example.com/" + provenanceName, subject);

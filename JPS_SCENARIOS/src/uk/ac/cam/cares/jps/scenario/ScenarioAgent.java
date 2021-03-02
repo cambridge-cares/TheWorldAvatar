@@ -47,7 +47,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		JSONObject jo = AgentCaller.readJsonParameter(request);
+		JSONObject requestParams = AgentCaller.readJsonParameter(request);
 		
 		String path = request.getPathInfo();
 		logger.debug("called for path=" + path);
@@ -58,8 +58,8 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		
 		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
 
-		String scenariourl = JPSContext.getScenarioUrl(jo);
-		String usecaseurl = JPSContext.getUsecaseUrl(jo);
+		String scenariourl = JPSContext.getScenarioUrl(requestParams);
+		String usecaseurl = JPSContext.getUsecaseUrl(requestParams);
 		
 
 		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
@@ -72,7 +72,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		// as the scenario agent calls other agents.
 		if ((scenariourl == null) || scenariourl.isEmpty()) {
 			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName); //keyaddress/jps/scenario/scenarioName
-			JPSContext.putScenarioUrl(jo, scenariourl);
+			JPSContext.putScenarioUrl(requestParams, scenariourl);
 			
 //			usecaseurl = BucketHelper.getUsecaseUrl(scenariourl);
 //			JPSContext.putUsecaseUrl(jo, usecaseurl);
@@ -89,7 +89,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		String result = "";
 		if (operation == null) {
 			
-			if (jo.has(JPSConstants.SCENARIO_RESOURCE)) {
+			if (requestParams.has(JPSConstants.SCENARIO_RESOURCE)) {
 				
 				doGetNew(request, response, scenarioName, copyOnRead);
 				return;
@@ -109,27 +109,27 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		
 		} else if ("/option".equals(operation)) {
 			
-			setOptions(jo, scenarioName, log);
+			setOptions(requestParams, scenarioName, log);
 
 		} else if ("/mock".equals(operation)) {
 			
-			new ScenarioMockManager().mock(jo, scenarioName, log);
+			new ScenarioMockManager().mock(requestParams, scenarioName, log);
 		
 		} else if ("/call".equals(operation)) {
 
-			result = call(jo, scenarioName, log);
+			result = call(requestParams, scenarioName, log);
 				
 		} else if ("/read".equals(operation)) {
 			
-			result = readFile(jo, scenarioName, copyOnRead);
+			result = readFile(requestParams, scenarioName, copyOnRead);
 			
 		} else if ("/query".equals(operation)) {
 			
-			result = queryFile(jo, scenarioName, copyOnRead);
+			result = queryFile(requestParams, scenarioName, copyOnRead);
 			
 		} else if ("/update".equals(operation)) {
 
-			updateFile(jo, scenarioName);
+			updateFile(requestParams, scenarioName);
 			
 		} else if ("/delete".equals(operation)) {
 			
@@ -137,11 +137,11 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			
 		} else if ("/compose".equals(operation)) {
 			
-			result = compose(jo, scenarioName, log);
+			result = compose(requestParams, scenarioName, log);
 
 		} else if ("/preparerecording".equals(operation)) {
 			
-			result = prepareRecording(jo, scenarioName, log);
+			result = prepareRecording(requestParams, scenarioName, log);
 			
 		} else if ("/ping".equals(operation)) {
 			
@@ -149,7 +149,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			
 		} else if ("/mergescenario".equals(operation)) {
 			
-			mergeScenario(jo, scenarioName, log);
+			mergeScenario(requestParams, scenarioName, log);
 			
 		} else {
 			
@@ -159,7 +159,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 				result = FileUtil.readFileLocally(localPath);
 			} else {
 				
-				result = new ScenarioMockManager().execute(jo, scenarioName, operation, log);
+				result = new ScenarioMockManager().execute(requestParams, scenarioName, operation, log);
 			}
 		}
 		

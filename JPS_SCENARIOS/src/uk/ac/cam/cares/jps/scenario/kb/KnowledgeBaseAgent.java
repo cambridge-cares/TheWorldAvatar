@@ -1,9 +1,14 @@
 package uk.ac.cam.cares.jps.scenario.kb;
 
+import java.io.IOException;
 import java.util.Enumeration;
+
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.core.Response;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
@@ -17,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -92,6 +98,67 @@ public class KnowledgeBaseAgent extends JPSAgent {
 		}
         return new JSONObject();
         }
+	
+	/**
+     * Method to group pre-processing steps common to all Http request methods
+     *
+     * @param request  HTTP Servlet Request
+     * @param response HTTP Servlet Rsponse
+     * @throws IOException @see PrintWriter#getWriter
+     */
+    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    	setLogger();
+        try {
+            String responseBody = getResponseBody(request);
+            JSONObject jo = new JSONObject(responseBody);
+            if (jo.has("result")) {
+                response.getWriter().write(jo.getString("result"));
+            }else {
+            	response.getWriter().write(responseBody);
+            }
+        } catch (BadRequestException e) {
+            response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+        } catch (JPSRuntimeException e) {
+        	response.setStatus(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
+        }
+    }
+//	@Override
+//	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//		
+//		String requestUrl = req.getRequestURL().toString();
+//		String path = req.getPathInfo();
+//		JSONObject input = Http.readJsonParameter(req);
+//		String sparql = MiscUtil.optNullKey(input, JPSConstants.QUERY_SPARQL_QUERY);
+//		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
+//		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
+//		String contentType = req.getContentType();
+//		
+//		try {
+//			
+//			String accept = getAccept(req);
+//			
+//			String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
+//			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
+//			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
+//			
+//			String result = "";	
+//			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
+//			
+//			if (sparql == null) {
+//				result = kb.get(resourceUrl, accept);
+//			} else {
+//				result = kb.query(resourceUrl, sparql);
+//			}
+//			
+//			Http.printToResponse(result, resp);
+//
+//		} catch (RuntimeException e) {
+//			e.printStackTrace();
+//			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, true);
+//			throw e;
+//		}
+//	}
+
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
