@@ -128,3 +128,40 @@ def delete_gas_history():
     ret = sparql.query()
     return
 # delete_gas_history()
+
+def delete_usage_history():
+    '''
+    Description:
+    Delete all usage triples 
+
+    WARNING - DO NOT USE UNLESS YOU ARE SURE WHAT THIS IS DOING. 
+    '''
+
+
+    query = '''PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ns1:     <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX gasgrid: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#>
+    PREFIX gas: <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#>
+    PREFIX loc:     <http://www.bigdata.com/rdf/geospatial/literals/v1#>
+    PREFIX geo:     <http://www.bigdata.com/rdf/geospatial#>
+    PREFIX comp:	<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
+
+    delete 
+    where {
+       ?s rdf:type comp:OfftakenGas.
+       ?r comp:hasUsed ?s.
+       ?r gas:hasConsumingGasMeters ?m.
+       ?s comp:hasStartUTC ?st .
+       ?s comp:hasEndUTC ?en .
+       ?r gas:hasNonConsumingGasMeters ?nm. 
+       ?s comp:hasGasEnergy ?ge. }'''
+
+    sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
+    sparql.setMethod(POST) # POST query, not GET
+    sparql.setQuery(query)
+    ret = sparql.query()
+
+    return
+
+# delete_usage_history()
