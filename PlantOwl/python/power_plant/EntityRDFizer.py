@@ -10,7 +10,7 @@ python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.extras.infixowl import OWL_NS
-from rdflib.namespace import RDF, RDFS, Namespace
+from rdflib.namespace import RDF, RDFS, Namespace, XSD
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
@@ -36,6 +36,13 @@ SLASH = '/'
 UNDERSCORE = '_'
 HTTP='http://'
 HTTPS='https://'
+
+"""Data type constants"""
+DATA_TYPE_STRING = 'string'
+DATA_TYPE_INTEGER = 'integer'
+DATA_TYPE_FLOAT = 'float'
+DATA_TYPE_DOUBLE = 'double'
+DATA_TYPE_DATE_TIME = 'datetime'
 
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
@@ -109,6 +116,22 @@ def process_data(row):
                     aboxgen.link_data(g, URIRef(row[0].strip()),
                                   URIRef(instance),
                                   row[4].strip())
+
+"""Returns an XSD data type when available for a given input data type"""
+def get_data_type(data_type):
+    if data_type.strip().lower().startsWith(HTTP) or data_type.strip().lower().startsWith(HTTPS):
+        return data_type
+    if data_type.strip().lower() == DATA_TYPE_STRING:
+        return XSD.string
+    if data_type.strip().lower() == DATA_TYPE_INTEGER:
+        return XSD.integer
+    if data_type.strip().lower() == DATA_TYPE_FLOAT:
+        return XSD.float
+    if data_type.strip().lower() == DATA_TYPE_DOUBLE:
+        return XSD.double
+    if data_type.strip().lower() == DATA_TYPE_DATE_TIME:
+        return XSD.dateTime
+    return data_type;
 
 """Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
