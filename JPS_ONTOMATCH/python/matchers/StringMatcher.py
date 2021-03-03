@@ -26,6 +26,9 @@ class StringMatcher(ElementMatcher):
         return jaro_similarity(a1, a2)
 
     @classmethod
+    def edit_similarity(cls,a1,a2):
+        return 1 - edit_distance(a1, a2) / (max(len(a1), len(a2)))
+    @classmethod
     def stringCompareEdit(cls, a1, a2):
         return edit_distance(a1, a2)/max(len(a1),len(a2))
 

@@ -94,10 +94,10 @@ public class ElementMatcher extends JPSAgent {
 			/** construct params list according to matcher type, then call python ***/
 			if (type == MATCHERTYPE.DOMAIN) {// special case: domain matcher needs extra params
 				String[] paras = { savePath, srcPkl, tgtPkl, pyMatchFunction, modelPath, dictPath };
-				results = pyHelper.callPython(matcherLocation, paras, this);
+				results = pyHelper.callPython(matcherLocation, paras, ElementMatcher.class);
 			} else {// other cases
 				String[] paras = { savePath, srcPkl, tgtPkl, pyMatchFunction };
-				results = pyHelper.callPython(matcherLocation, paras, this);
+				results = pyHelper.callPython(matcherLocation, paras, ElementMatcher.class);
 			}
 			System.out.println(results[0]);
 			System.out.println(results[1]);
@@ -132,6 +132,7 @@ public class ElementMatcher extends JPSAgent {
 		String resultStr = KnowledgeBaseClient.query(MetaDataAnnotator.getMetadataSetUrl(), null, queryStr);
 		try {
 			JSONObject jo = new JSONObject(resultStr);
+			System.out.println(resultStr);
 			addr = jo.getJSONObject("results").getJSONArray("bindings").getJSONObject(0).getJSONObject("addr")
 					.getString("value");
 		} catch (Exception e) {

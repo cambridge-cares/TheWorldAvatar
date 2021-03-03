@@ -5,7 +5,7 @@
 	<artifactId>ontomatch</artifactId>
 	<version>1.0.0</version>
 	
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<build>
 	
@@ -23,6 +23,10 @@
 
 		<plugins>
 
+<plugin>
+  <artifactId>maven-war-plugin</artifactId>
+  <version>3.0.0</version>
+</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
@@ -68,6 +72,30 @@
                     </execution>
                 </executions>
             </plugin>
+                    <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>appassembler-maven-plugin</artifactId>
+            <version>2.1.0</version>
+            <configuration>
+                <assembleDirectory>target</assembleDirectory>
+                <useWildcardClassPath>true</useWildcardClassPath>
+             <repositoryLayout>flat</repositoryLayout>
+                <programs>
+                    <program>
+                        <mainClass>launch.Main</mainClass>
+                        <name>webapp</name>
+                    </program>
+                </programs>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>assemble</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
 	</build>
     <repositories>
@@ -76,7 +104,9 @@
             <url>http://dl.bintray.com/filipmalczak/maven</url>
         </repository>
     </repositories>
-
+  <properties>
+    <tomcat.version>8.5.54</tomcat.version>
+  </properties>
 	<dependencies>
 	<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-common -->
 <dependency>
@@ -340,5 +370,31 @@
 			<artifactId>jena-core</artifactId>
 			<version>3.7.0</version>
 		</dependency>
+		 <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-jasper</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jasper</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jasper-el</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jsp-api</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+		
 	</dependencies>
 </project>

@@ -165,6 +165,7 @@ public class MatchAggregator extends JPSAgent {
 		while (scoreIters[0].hasNext()) {
 			if (batchScoreList.size() == BATCH_SIZE) {// write and reset batch score list
 				AlignmentIOHelper.updateAlignmentFile(thisAlignmentIRI, batchScoreList);
+				System.out.println("one batch");
 				batchScoreList.clear();
 			}
 			weightingWithGenerator(scoreIters, threshold);
@@ -176,14 +177,18 @@ public class MatchAggregator extends JPSAgent {
 		}
 		
 		// read the result
+	    batchScoreList.clear();
 		batchScoreList = AlignmentIOHelper.readAlignmentFileAsMapList(thisAlignmentIRI);
-		/******** cardinality filtering(optional) ****************/
-		if (choices != null && choices.contains(AGGREGATE_CHOICE.CARDINALITY)) {
-			one2oneCardinalityFiltering( AlignmentIOHelper.IRI2local(thisAlignmentIRI));
-		}
+		System.out.println("file read, prepare to penalize");
 		/******** class penalizing filtering(optional) ****************/
 		if (choices != null && choices.contains(AGGREGATE_CHOICE.PENALIZING)) {
 			 penalizing(classAlignmentIRI, sameClassThreshold, pFactor);
+		}
+		System.out.println("penalizing sucssesss");
+
+		/******** cardinality filtering(optional) ****************/
+		if (choices != null && choices.contains(AGGREGATE_CHOICE.CARDINALITY)) {
+			one2oneCardinalityFiltering( AlignmentIOHelper.IRI2local(thisAlignmentIRI));
 		}
 		/******** filtering by measure value ****************/
 	     filtering(threshold);
@@ -284,6 +289,7 @@ public class MatchAggregator extends JPSAgent {
 			String indi2 = (String) mcell.get("entity2");
 
 			if (!sameClass(classAlign, ICMap1, ICMap2, indi1, indi2)) {// does not belong to same class
+			   System.out.println("not same class");
 				mcell.put("measure", (double) mcell.get("measure") * pFactor);// penalize
 			}
 		}
@@ -384,7 +390,7 @@ public class MatchAggregator extends JPSAgent {
 		//		.getProperty(OntomatchProperties.CARDINALITYFILTERING_TMP_ALIGNMENT_PATH);
 		String[] paras = {  alignmentFileAddr };
 		String pyName = OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_ONETOONECARDI);
-		String[] results = pyHelper.callPython(pyName, paras, this);//
+		String[] results = pyHelper.callPython(pyName, paras, MatchAggregator.class);//
 		System.out.println(results[0]);
 		System.out.println(results[0]);
 
@@ -398,6 +404,7 @@ public class MatchAggregator extends JPSAgent {
 				|| !requestParams.has("tgtOnto") || !requestParams.has("alignments") || !requestParams.has("addr")|| !requestParams.has("weights")) {
 			throw new BadRequestException();
 		}
+		/**
 		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
 	     paramTypes.put("threshold",CUSTOMVALUETYPE.THRESHOLD);
 	     paramTypes.put("srcOnto",CUSTOMVALUETYPE.PATH);
@@ -423,5 +430,8 @@ public class MatchAggregator extends JPSAgent {
 			if (!ParamsValidateHelper.validateALLParams(requestParams, paramTypes)) {
 				throw new BadRequestException();
 			}
-			return true;	     }
+			***/
+		return true;	     
+
+			}
 }

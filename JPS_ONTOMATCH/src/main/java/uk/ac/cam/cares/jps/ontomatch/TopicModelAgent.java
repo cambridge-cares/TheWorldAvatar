@@ -71,7 +71,7 @@ public class TopicModelAgent extends JPSAgent{
         
 		try {
 			String[] params = {corpusLocation, dictionaryLocation, docsPath, modelLocation}; 
-			String[] prints = pyHelper.callPython("modelTopic.py",params, this);
+			String[] prints = pyHelper.callPython("modelTopic.py",params, TopicModelAgent.class);
 			List<String> topics = new ArrayList<String>();
 			String serverPath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL);
 			String afileIRI = serverPath+"topicmodel";

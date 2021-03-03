@@ -93,8 +93,8 @@ public class LexicalProcessor extends JPSAgent {
 			throw new BadRequestException();
 		}
 		Map<String, CUSTOMVALUETYPE> paramTypes = new HashMap<String, CUSTOMVALUETYPE>();
-		paramTypes.put("ontologyIRI", CUSTOMVALUETYPE.URL);
-		paramTypes.put("saveAddress", CUSTOMVALUETYPE.PATH);
+		//paramTypes.put("ontologyIRI", CUSTOMVALUETYPE.URL);
+		//paramTypes.put("saveAddress", CUSTOMVALUETYPE.PATH);
 		if (!ParamsValidateHelper.validateALLParams(requestParams, paramTypes)) {
 			throw new BadRequestException();
 		}

@@ -83,8 +83,9 @@ public class AlignmentIOHelper {
 	public static List<Map> readAlignmentFileAsMapList(String iriOfAlignmentFile)
 			throws ParseException, FileNotFoundException {
 		List<Map> resultListfromquery = new ArrayList<Map>();
-
-		ResultSet resultSet = queryForAlignment(IRI2local(iriOfAlignmentFile), 0.0);
+       //String addr = IRI2local(iriOfAlignmentFile);
+		String addr = ResourcePathConverter.convertToLocalPath(iriOfAlignmentFile);
+		ResultSet resultSet = queryForAlignment(addr, 0.0);
 		Iterator<Map> iter = new ResultSetMapIterator(resultSet, new QuerySolutionToMapAdapter() {
 			@Override
 			public Iterator<Map> adapt(QuerySolution qs) {

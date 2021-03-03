@@ -397,9 +397,12 @@ if __name__ == '__main__':
 
     #for i,d in o.tokensDict.items():
     #    print('!!!'+o.entities[i]+'    ' +str(d))
-    #print(str(len(o.entities)))
-    ontologyIRI = sys.argv[1]
-    pklAddress = sys.argv[2]
+    ##print(str(len(o.entities)))
+    #ontologyIRI = sys.argv[1]
+    #pklAddress = sys.argv[2]
+    ontologyIRI = "D:/workwork/ontoMatchFiles/ppbatch/jpsppbatch7.rdf"
+    pklAddress = "D:/workwork/jpslatest/JParkSimulator-git/JPS_ONTOMATCH/tmp/jpsppbatch7pt.pkl"
+
     ontoObject = Ontology(ontologyIRI)
     try:
         fw = open(pklAddress, 'wb')

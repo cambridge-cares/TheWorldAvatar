@@ -44,7 +44,7 @@ class ElementMatcher(object):
                 #todo:build a list of ids, now is string id
                 #property check
                 results.append(self.add2Alignment((keyS, keyT), self.compareMethod))
-        print(results)
+        #print(results)
         a = Alignment(results)
         return a
 
