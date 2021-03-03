@@ -10,7 +10,7 @@ set timeout -1
 # Proceedure to read contents of a file
 proc slurp {file} {
     set fh [open $file r]
-    set ret [read $fh]
+    set ret [read -nonewline $fh]
     close $fh
     return $ret
 }
