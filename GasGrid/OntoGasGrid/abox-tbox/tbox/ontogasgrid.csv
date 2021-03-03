@@ -1,2 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-hasName,Data Property,,,http://www.w3.org/2002/07/owl#Thing,String,,The name of anything,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl
+hasName,Data Property,,,http://www.w3.org/2002/07/owl#Thing,String,,The name of anything,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+GasMeters,Class,,,,,,Represents a collection of Gas Meters,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+hasConsumingGasMeters,Data Property,,,GasMeters,String,,The number of consuming gas meters within a set of gas meters,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+hasNonConsumingGasMeters,Data Property,,,GasMeters,String,,The number of non consuming gas meters within a set of gas meters,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
+hasGasMeters,Object Property,,,http://statistics.data.gov.uk/id/statistical-geography/,GasMeters,,Relation between a location and it's associated set of gas meters,http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl
