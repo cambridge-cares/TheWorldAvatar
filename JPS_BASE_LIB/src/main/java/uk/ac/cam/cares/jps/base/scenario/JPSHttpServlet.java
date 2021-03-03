@@ -173,8 +173,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
     protected String getResponseBody(HttpServletRequest request) {
     	System.out.println("DO GET RESPONSE BODY: 1 ");
         JSONObject requestParams = AgentCaller.readJsonParameter(request);
+        requestParams.put(JPSConstants.PATH, request.getPathInfo());
         System.out.println("DO GET RESPONSE BODY: 2 ");
-        requestParams.put("path", request.getServletPath());
         JSONObject responseParams;
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
