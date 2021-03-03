@@ -42,13 +42,6 @@ DATA_TYPE_FLOAT = 'float'
 DATA_TYPE_DOUBLE = 'double'
 DATA_TYPE_DATE_TIME = 'datetime'
 
-"""Data type constants"""
-DATA_TYPE_STRING = 'string'
-DATA_TYPE_INTEGER = 'integer'
-DATA_TYPE_FLOAT = 'float'
-DATA_TYPE_DOUBLE = 'double'
-DATA_TYPE_DATE_TIME = 'datetime'
-
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
 g = Graph()
@@ -84,16 +77,13 @@ def process_data(row):
             if (row[3].strip() is None or row[3].strip() == '') \
                     and (row[4].strip() is None or row[4].strip() == ''):
                 print('Creating an instance:')
-                instance = propread.getABoxIRI()+SLASH+format_iri(row[0])
-                type = propread.getTBoxIRI()+HASH+format_iri(row[2])
-                if row[0].strip().startswith(HTTP) or row[0].strip().startswith(HTTPS):
-                    instance = format_iri(row[0])
-                if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
-                    type = format_iri(row[2])
-                aboxgen.create_instance_without_name(g, URIRef(type), URIRef(instance))
+                aboxgen.create_instance(g,
+                                        URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
+                                        propread.getABoxIRI()+SLASH+format_iri(row[0]),
+                                        row[0])
                 instances[row[0].strip()] = row[2].strip()
 
-            elif row[2].strip() in instances or row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
+            elif row[2].strip() in instances or row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS):
                 if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
@@ -115,19 +105,37 @@ def process_data(row):
                                       URIRef(format_iri(row[2].strip())),
                                       row[4].strip(), get_data_type(row[5].strip()))
                 else:
-                instance = propread.getABoxIRI()+SLASH+format_iri(row[2].strip())
-                if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
-                    instance = format_iri(row[2].strip())
+                    aboxgen.link_data(g, URIRef(row[0].strip()),
+                                  URIRef(format_iri(row[2].strip())),
+                                  row[4].strip())
+            elif row[2].strip() in instances and not row[4].strip() == '':
                 if not row[5].strip() == '':
                     aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
-                                      URIRef(instance),
-                                      row[4].strip(), get_data_type(row[5]))
+                                      URIRef(propread.getABoxIRI() + SLASH + format_iri(row[2].strip())),
+                                      row[4].strip(), get_data_type(row[5].strip()))
                 else:
                     aboxgen.link_data(g, URIRef(row[0].strip()),
-                                  URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())),                                  row[4].strip())
+                                  URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())),
+                                  row[4].strip())
+
+"""Returns the corresponding data type syntax for a given data type"""
+def get_data_type(data_type):
+    if data_type.strip().lower() == DATA_TYPE_STRING:
+        return XSD.string
+    elif data_type.strip().lower() == DATA_TYPE_INTEGER:
+        return XSD.integer
+    elif data_type.strip().lower() == DATA_TYPE_FLOAT:
+        return XSD.float
+    elif data_type.strip().lower() == DATA_TYPE_DOUBLE:
+        return XSD.double
+    elif data_type.strip().lower() == DATA_TYPE_DATE_TIME:
+        return XSD.dateTime
+    else:
+        return data_type
 
 """Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
+    iri = iri.replace(":"," ")
     iri = iri.replace(",", " ")
     iri = iri.replace(" ","")
     return iri
