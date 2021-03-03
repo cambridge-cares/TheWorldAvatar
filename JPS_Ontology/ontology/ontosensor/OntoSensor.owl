@@ -546,9 +546,9 @@ The conditions specified here are those that affect the measurement properties, 
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM25Concentration -->
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM2.5Concentration -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM25Concentration">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM2.5Concentration">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideParticleConcentration"/>
     </owl:Class>
     

@@ -10,31 +10,80 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns = { "/SemakauPV"})
 
-public class SemakauPV extends JPSHttpServlet {
+public class SemakauPV extends JPSAgent {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(SemakauPV.class);
-	public static String root=AgentLocator.getProperty("absdir.root");
-	String Sim4 = root+"/Sim_PV1"; // THIS SIMULATION NEED TO BE EXIST 
+	public static String root=AgentLocator.getProperty(IKeys.ABSDIR_ROOT);
+	String Sim4 = root+"/Sim_PV1"; 
 
 	
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+    	validateInput(requestParams);
+    	String ENIRI=requestParams.getString("electricalnetwork");
+		String irradSensorIRI=requestParams.getString("irradiationsensor");
+		OntModel model = readModelGreedy(ENIRI);
+		JSONObject res=runMODS(model,irradSensorIRI);
+		//TODO: This is hardcoded; but I don't know what other PVs there could be. 
+		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/",
+				"PV-002.owl","EBus-006.owl");
+		return result;
+    }
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        } 
+        try {
+            String iriofnetwork = requestParams.getString("electricalnetwork");
+            boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
+            String iriofirrF=requestParams.getString("irradiationsensor");
+	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+            return q&r;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        	return false;
+        } catch (Exception ex) {
+        	ex.printStackTrace();
+            return false;
+        }
+    }
+	/**
+	 * @param request HttpServletrequest, should contain responses from DES Solar Irradiation collection agent
+	 */
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
@@ -50,73 +99,85 @@ public class SemakauPV extends JPSHttpServlet {
 			
 	}
 	
-	public static OntModel readModelGreedy(String iriofnetwork) {
-		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "SELECT ?component "
-				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
+
+	/** reads the topnode into an OntModel of all its subsystems. 
+	 * @param iriofnetwork
+	 * @return
+	 */
+	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the subsystems
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
+		String wasteInfo = sb.build().toString();
 
 		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}
-	
-	
+	/** creates Query for PV variables/qualities
+	 * 
+	 * @return String Query
+	 */
+	public String getPVQuery() {
+		SelectBuilder sb = new SelectBuilder()
+				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addPrefix("j9", "http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#")
+				.addVar("?entity").addVar("?widthvalue").addVar("?lengthvalue").addVar("?effvalue").addVar("?panelnovalue")
+				.addWhere("?obj", "a", "j1:PowerGenerator")
+				.addWhere("?obj", "j9:isComposedOf", "?entity")
+				
+				.addWhere("?entity", "j1:hasPanelWidth", "?width")
+				.addWhere( "?width", "j2:hasValue", "?vwidth")
+				.addWhere( "?vwidth", "j2:numericalValue", "?widthvalue")
+				
+				.addWhere("?entity", "j1:hasPanelLength", "?length")
+				.addWhere( "?length", "j2:hasValue", "?vlength")
+				.addWhere( "?vlength", "j2:numericalValue", "?lengthvalue")
+				
+				.addWhere("?obj", "j6:hasEfficiency", "?eff")
+				.addWhere( "?eff", "j2:hasValue", "?veff")
+				.addWhere( "?veff", "j2:numericalValue", "?effvalue")
+				
+				.addWhere("?obj", "j1:hasNumberOfPanels", "?panelno")
+				.addWhere( "?panelno", "j2:hasValue", "?vpanelno")
+				.addWhere( "?vpanelno", "j2:numericalValue", "?panelnovalue");
+		return sb.buildString();
+	}
+	/** get Query from Irradiation OWL
+	 * @return String Query
+	 */
+	public static String getSolarData() {
+		WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+	    			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
+	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+	    			.addPrefix("j6", "http://www.w3.org/2006/time#").addWhere("?entity", "j4:observes", "?prop")
+	    			.addWhere("?prop", "j2:hasValue", "?vprop").addWhere("?vprop", "j2:numericalValue", "?propval")
+	    			.addWhere("?vprop", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
+		SelectBuilder sensorIrrad = new SelectBuilder()
+	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+	    			.addVar("?entity").addVar("?propval").addVar("?proptimeval")
+	    			.addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+		return sensorIrrad.buildString();
+	    	
+	}
+	/** creates inputs from power generator variables as well as solar irradiation readings
+	 * 
+	 * @param model
+	 * @param filename
+	 * @param irradSensorIRI
+	 * @return
+	 */
 	public List<Double> createInputCSV(OntModel model,String filename,String irradSensorIRI) {
 		List<String[]> inputcsv=new ArrayList<String[]>();
 		List<Double> xvalue=new ArrayList<Double>();
-		String pvquery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#> "
-				+ "SELECT ?entity ?widthvalue ?lengthvalue ?effvalue ?panelnovalue " 
-				+ "WHERE {?obj  a  j1:PowerGenerator  ."
-				+ "?obj j9:isComposedOf ?entity ."
-				
-				+ "?entity   j1:hasPanelWidth ?width ." 
-				+ "?width     j2:hasValue ?vwidth ."
-				+ "?vwidth  j2:numericalValue ?widthvalue ."
-
-				+ "?entity   j1:hasPanelLength ?length ." 
-				+ "?length     j2:hasValue ?vlength ."
-				+ "?vlength  j2:numericalValue ?lengthvalue ."
-				
-				+ "?obj   j6:hasEfficiency ?eff ." 
-				+ "?eff     j2:hasValue ?veff ."
-				+ "?veff  j2:numericalValue ?effvalue ."
-				
-				+ "?obj   j1:hasNumberOfPanels ?panelno ." 
-				+ "?panelno     j2:hasValue ?vpanelno ."
-				+ "?vpanelno  j2:numericalValue ?panelnovalue ."
-
-				+ "?obj   j1:hasRatedVoltage ?voltage ." 
-				+ "?voltage     j2:hasValue ?vvoltage ."
-				+ "?vvoltage  j2:numericalValue ?voltagevalue ."
-				
-				+ "}";
+		String pvquery =  getPVQuery();
 		
-			String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
- 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
- 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
- 					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
- 					+ "SELECT ?entity ?propval ?proptimeval "
- 					+ "WHERE { ?entity a j5:Q-Sensor ." 
- 					+ "  ?entity j4:observes ?prop ." 
- 					+ " ?prop   j2:hasValue ?vprop ."
- 					+ " ?vprop   j2:numericalValue ?propval ." 
- 					+ " ?vprop   j6:hasTime ?proptime ."
- 					+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
- 					+ "}" 
- 					+ "ORDER BY ASC(?proptimeval)";
+		String sensorinfo2 = getSolarData();
 
- 			String result2 = new QueryBroker().queryFile(irradSensorIRI, sensorinfo2);
- 			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
- 			List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
- 			Double irr=Double.valueOf(resultListfromqueryirr.get(resultListfromqueryirr.size()-1)[1]); //come from the OCR
+		String result2 = new QueryBroker().queryFile(irradSensorIRI, sensorinfo2);
+		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+		Double irr=Double.valueOf(resultListfromqueryirr.get(resultListfromqueryirr.size()-1)[1]); //come from the OCR
  			
  			
 		ResultSet resultSet = JenaHelper.query(model, pvquery);
@@ -152,7 +213,12 @@ public class SemakauPV extends JPSHttpServlet {
 		
 		return xvalue;
 	}
-	
+	/** Executes simulator producing the phase angle, reactive power, active power and voltage coming from the model solar panel
+	 * 
+	 * @param model OntModel from readModel greedy, has the subsystems available
+	 * @param irradSensorIRI Singapore irradiation sensor IRI, contains irradiation data from the last 48 hours
+	 * @return
+	 */
 	public JSONObject runMODS(OntModel model,String irradSensorIRI) {
 			
 		
@@ -162,7 +228,7 @@ public class SemakauPV extends JPSHttpServlet {
 
 
 		
-		String simDir = Sim4; // pass the directory of the power world sorrogate model to simDir
+		String simDir = Sim4; // pass the directory of the power world surrogate model to simDir
 		String modelName = "HDMR_Alg_1";
 		try {
 
@@ -224,84 +290,62 @@ public class SemakauPV extends JPSHttpServlet {
 		
 
 	}
-	
+	/** feeds a query and gets a result
+	 * 
+	 * @param name IRI
+	 * @param query
+	 * @return
+	 */
+	public static List<String[]> queryResult(String name, String query) {
+		String result = new QueryBroker().queryFile(name, query);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		return resultListfromquery;
+	}
+	/** create specialized PVGenerator query, now ranked according to proptime
+	 * 
+	 * @return String 
+	 */
+	public static SelectBuilder preparePVGeneratorWithPropTime() {
+		SelectBuilder sb = TimeSeriesConverter.createQueryForPowerGeneratorPV();
+		WhereBuilder wb = new WhereBuilder().addPrefix("j6", "http://www.w3.org/2006/time#")
+				.addWhere("?vpg", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval")
+				.addWhere("?vqg", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
+		sb.addVar("?proptimeval").addWhere(wb).addOrderBy("?proptime");
+		return sb;
+	}
+	public static SelectBuilder prepareBusWithPropTime() {
+		SelectBuilder sb2 = TimeSeriesConverter.createQueryForBus() ;
+		WhereBuilder wb2 = new WhereBuilder().addPrefix("j6", "http://www.w3.org/2006/time#")
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+				.addWhere("?vVM", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval")
+				.addWhere("?vVA", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval")
+				.addWhere("?model", "j5:hasModelVariable" ,"?BKV")
+				.addWhere("?BKV", "a" ,"j3:baseKV")
+				.addWhere("?BKV", "j2:hasValue" ,"?vBKV")
+				.addWhere("?vBKV", "j2:numericalValue" ,"?BaseKVvalue");
+
+		sb2.addVar("?proptimeval").addVar("?BaseKVvalue").addWhere(wb2).addOrderBy("?proptime").buildString();
+		return sb2;
+	}
+	/** Updates OWL values in PV, and Bus 6
+	 * a. queries OWL files for pre-existing values
+	 * 
+	 * @param ans
+	 * @param prefix
+	 * @param genfilename
+	 * @param busfilename
+	 * @return
+	 */
 	public JSONObject updateOWLValue(JSONObject ans,String prefix,String genfilename, String busfilename ) {
 		
 		JSONObject ans2= new JSONObject();
-
 		
-		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "SELECT ?activepowervalue ?reactivepowervalue ?proptimeval "
-
-				+ "WHERE {?entity  a  j1:PowerGenerator  ."
-				+ "?entity   j2:isModeledBy ?model ."
-
-				+ "?model   j5:hasModelVariable ?Pg ." 
-				+ "?Pg  a  j3:Pg  ." 
-				+ "?Pg  j2:hasValue ?vpg ."
-				+ "?vpg   j2:numericalValue ?activepowervalue ." // pg
-				+ " ?vpg   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
-				
-
-				+ "?model   j5:hasModelVariable ?Qg ." 
-				+ "?Qg  a  j3:Qg  ." 
-				+ "?Qg  j2:hasValue ?vqg ."
-				+ "?vqg   j2:numericalValue ?reactivepowervalue ." // qg
-				+ " ?vqg   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ."
-				+ "}" 
-				+ "ORDER BY ASC(?proptime)"; 
+		List<String[]> resultListfromquerygen = queryResult(prefix+genfilename, preparePVGeneratorWithPropTime().buildString());
 		
-		String result3 = new QueryBroker().queryFile(prefix+genfilename, genInfo);
-		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
-		List<String[]> resultListfromquerygen = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
-		
-		String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "SELECT ?VoltMagvalue ?VoltAnglevalue ?proptimeval ?BaseKVvalue "
-
-				+ "WHERE {?entity  a  j1:BusNode  ." 
-				+ "?entity   j2:isModeledBy ?model ."
-
-				+ "?model   j5:hasModelVariable ?VM ." 
-				+ "?VM  a  j3:Vm  ." 
-				+ "?VM  j2:hasValue ?vVM ."
-				+ "?vVM   j2:numericalValue ?VoltMagvalue ." // Vm
-				+ " ?vVM   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
-
-				+ "?model   j5:hasModelVariable ?VA ." 
-				+ "?VA  a  j3:Va  ." 
-				+ "?VA  j2:hasValue ?vVA ."
-				+ "?vVA   j2:numericalValue ?VoltAnglevalue ." // Va
-				+ " ?vVA   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
-
-				+ "?model   j5:hasModelVariable ?BKV ." 
-				+ "?BKV  a  j3:baseKV  ." 
-				+ "?BKV  j2:hasValue ?vBKV ."
-				+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
-				+ "}" 
-				+ "ORDER BY ASC(?proptime)"; 
-		
-		String result1 = new QueryBroker().queryFile(prefix+busfilename, busInfo);
-		String[] keys1 = JenaResultSetFormatter.getKeys(result1);
-		List<String[]> resultListfromquerybus = JenaResultSetFormatter.convertToListofStringArrays(result1, keys1);
-		
+		List<String[]>  resultListfromquerybus  = queryResult(prefix+busfilename,prepareBusWithPropTime().buildString());
 		//postprocessing the merged query result //gen and bus must have 2 same time set element amount
 		List<String[]> readingFromCSV = new ArrayList<String[]>();
 		for (int d=0;d<resultListfromquerygen.size();d++) {

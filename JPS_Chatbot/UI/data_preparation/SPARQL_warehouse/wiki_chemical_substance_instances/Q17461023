@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q27252831"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "bacoside A3"}, "x": {"type": "literal", "value": "C\u2084\u2087H\u2087\u2086O\u2081\u2088"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

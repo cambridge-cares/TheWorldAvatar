@@ -80,6 +80,74 @@
             </plugin>
 
 			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<version>1.3.0</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<id>downloading python 3.6.8 for windows</id>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe</url>
+							<outputFileName>python-3.6.8.exe</outputFileName>
+							<outputDirectory>python/ADMS-speed-load-map</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>copying resources</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${tomcatPath}/webapps/ROOT</outputDirectory>
+							<resources>
+								<resource>
+									<directory>python/ADMS-speed-load-map</directory>
+									<includes>
+										<include>pyvenvdir.cmd</include>
+										<include>pyvenv.cmd</include>
+										<include>python-3.6.8.exe</include>
+										<include>requirements.txt</include>
+										<include>Pipfile.lock</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<id>creating pyvenv directory in tomcat root directory</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>.\pyvenvdir.cmd</executable>
+							<workingDirectory>${tomcatPath}/webapps/ROOT</workingDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>3.0.0</version>
@@ -92,7 +160,7 @@
 						</goals>
 						<configuration>
 							<executable>.\pyvenv.cmd</executable>
-							<workingDirectory>python/ADMS-speed-load-map</workingDirectory>
+							<workingDirectory>${tomcatPath}/webapps/ROOT/pyvenv/PYVENV_JPS_SHIP</workingDirectory>
 						</configuration>
 					</execution>
 				</executions>

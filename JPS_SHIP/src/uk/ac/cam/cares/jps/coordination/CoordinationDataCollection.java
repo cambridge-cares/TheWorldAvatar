@@ -22,23 +22,27 @@ import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 public class CoordinationDataCollection extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 		
-	public JSONObject executeSGDataADMS(JSONObject jo) {
+	public JSONObject executeSGDataADMS() {
+		JSONObject jo = new JSONObject();
 		Region.putRegionAndStation(jo, 1);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
 		return jo;
 	}
-	public JSONObject executeSGDataEPISODE(JSONObject jo) {
+	public JSONObject executeSGDataEPISODE() {
+		JSONObject jo = new JSONObject();
 		Region.putRegionAndStation(jo, 2);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
 		return jo;
 	}
 	
-	public JSONObject executeHKDataADMS(JSONObject jo) {
+	public JSONObject executeHKDataADMS() {
+		JSONObject jo = new JSONObject();
 		Region.putRegionAndStation(jo, 3);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
 		return jo;
 	}
-	public JSONObject executeHKDataEPISODE(JSONObject jo) throws ExecutionException, InterruptedException {
+	public JSONObject executeHKDataEPISODE() {
+		JSONObject jo = new JSONObject();
 		Region.putRegionAndStation(jo, 4);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
 		return jo;
@@ -76,9 +80,6 @@ public class CoordinationDataCollection extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
 		JSONObject jo = new JSONObject();
-		JSONObject jo2 = new JSONObject();
-		JSONObject jo3 = new JSONObject();
-		JSONObject jo4 = new JSONObject();
 		JSONObject inputjo = AgentCaller.readJsonParameter(req);
 		String scenarioUrl = null;
 		String scenarioName = inputjo.optString("scenarioname");
@@ -98,18 +99,13 @@ public class CoordinationDataCollection extends HttpServlet {
 		
 		//retrieveShipdata();
 		try {
-			if (AgentLocator.isJPSRunningAtCMCL()) {
-				JSONObject episode=executeSGDataEPISODE(jo2);
-				callAgent(episode);
-			} else {
-				JSONObject episode=executeSGDataEPISODE(jo2);
-				JSONObject adms=executeSGDataADMS(jo);
-	//			JSONObject episodeHK=executeHKDataEPISODE(jo4);
-	//			JSONObject admsHK=executeHKDataADMS(jo3);
+			JSONObject episode=executeSGDataEPISODE();
+			JSONObject adms=executeSGDataADMS();
+//			JSONObject episodeHK=executeHKDataEPISODE();
+//			JSONObject admsHK=executeHKDataADMS();
 				
-				callAgent(adms,episode);
-	//			callAgent(admsHK,episodeHK);
-			}
+			callAgent(adms,episode);
+//			callAgent(admsHK,episodeHK);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

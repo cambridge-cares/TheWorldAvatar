@@ -1,5 +1,6 @@
 package com.cmclinnovations.prime.species.model.owl;
 
+import org.semanticweb.owlapi.model.IRI;
 import org.xml.sax.SAXException;
 
 import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
@@ -23,6 +24,7 @@ public class ChemicalSpeciesWriter extends PrimeSpeciesConverter implements IChe
 		if (chemicalSpeciesParseStatus.isChemicalSpecies()) {
 			if (needsToCreateChemicalSpecies) {
 				createChemicalSpecies();
+				addHeadComment();
 				needsToCreateChemicalSpecies = false;
 			}
 			chemicalSpeciesParseStatus.setChemicalSpecies(false);
@@ -57,6 +59,16 @@ public class ChemicalSpeciesWriter extends PrimeSpeciesConverter implements IChe
 		} catch (ABoxManagementException e) {
 			logger.error(
 					"An individual of chemicalSpecies could not be created.");
+		}
+	}
+	
+	private void addHeadComment() {
+		IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_COMMENT));
+		try {
+			iABoxManagement.addProperty("Species"+UNDERSCORE+chemicalSpeciesInstanceID, 
+					dataPropertyIRI, ontoPrimeSpeciesKB.getOntoSpeciesHeadComment(), STRING);
+		} catch (ABoxManagementException e) {
+			e.printStackTrace();
 		}
 	}
 }

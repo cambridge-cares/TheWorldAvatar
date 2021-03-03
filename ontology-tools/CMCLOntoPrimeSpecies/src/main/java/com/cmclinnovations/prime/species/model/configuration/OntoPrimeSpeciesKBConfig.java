@@ -174,6 +174,8 @@ public class OntoPrimeSpeciesKBConfig {
 	@Value("${ontoprimespecies.namespace}")
 	private String ontoPrimeSpeciesNamespace;
 	
+	@Value("${ontospecies.kb.file.head.comment}")
+	private String ontoSpeciesHeadComment;
 	
 	public String getOntoPrimeSpeciesNamespace() {
 		return ontoPrimeSpeciesNamespace;
@@ -253,5 +255,13 @@ public class OntoPrimeSpeciesKBConfig {
 
 	public void setOntoPrimeSpeciesKBFileName(String ontoPrimeSpeciesKBFileName) {
 		this.ontoPrimeSpeciesKBFileName = ontoPrimeSpeciesKBFileName;
+	}
+
+	public String getOntoSpeciesHeadComment() {
+		return ontoSpeciesHeadComment;
+	}
+
+	public void setOntoSpeciesHeadComment(String ontoSpeciesHeadComment) {
+		this.ontoSpeciesHeadComment = ontoSpeciesHeadComment;
 	}
 }

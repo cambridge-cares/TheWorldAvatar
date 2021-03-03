@@ -57,16 +57,16 @@ public class BibliographyLinkWriter extends PrimeConverter implements IBibliogra
 			}
 		}
 
-		if (bibliographyLink.getPrimeID() != null && !bibliographyLink.getPrimeID().trim().isEmpty()) {
-			try {
-				iABoxManagement.addProperty(
-						"BibliographyLink" + UNDERSCORE + (bibliographyLinkID + bibliographyLinkCount),
-						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), bibliographyLink.getPrimeID(), STRING);
-			} catch (ABoxManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		if (bibliographyLink.getPrimeID() != null && !bibliographyLink.getPrimeID().trim().isEmpty()) {
+//			try {
+//				iABoxManagement.addProperty(
+//						"BibliographyLink" + UNDERSCORE + (bibliographyLinkID + bibliographyLinkCount),
+//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), bibliographyLink.getPrimeID(), STRING);
+//			} catch (ABoxManagementException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 	/**

@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q3754733"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "furanochromone"}, "x": {"type": "literal", "value": "C\u2081\u2081H\u2086O\u2083"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

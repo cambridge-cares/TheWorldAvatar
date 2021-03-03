@@ -27,7 +27,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
-public abstract class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
+public class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		
     @Override
     protected void setLogger() {
@@ -35,7 +35,9 @@ public abstract class GeneralRetrofitAgent extends JPSHttpServlet implements Pre
     }
     Logger logger = LoggerFactory.getLogger(GeneralRetrofitAgent.class);
     
-    protected abstract JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request);
+    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		return processRequestParameters(requestParams,request);
+	}
     
     
     public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants, List<String> substitutionalGenerators) {
