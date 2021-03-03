@@ -24,7 +24,19 @@ non_met_num = data['Number of non-consuming meters'].values
 
 start_time = "2019-01-01T12:00:00"
 end_time = "2019-12-31T12:00:00"
-for i in tqdm(range(len(consump))):
+
+total = len(met_num)
+n_compile = total / 100
+remainder = total % 100 
+n_compile = int(n_compile)
+len_query = np.zeros(n_compile+2)
+for i in range(1,len(len_query)-1):
+    len_query[i] = len_query[i-1] + 100
+len_query[-1] = len_query[-2] + remainder
+
+print(len_query[-5:])
+for g in tqdm(range(len(len_query)-1)):
+    i = int(len_query[g])
     region = LSOA_codes[i]
     meters = met_num[i]
     non_meters = non_met_num[i]
@@ -47,7 +59,44 @@ for i in tqdm(range(len(consump))):
       compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
       ons:%s gas:hasNonConsumingGasMeters %s. 
       compa:%s comp:hasGasEnergy %s.
-      } '''%(used_uuid,region,used_uuid,region,meters,used_uuid,start_time,used_uuid,end_time,region,non_meters,used_uuid,cons)
+       '''%(used_uuid,region,used_uuid,region,meters,used_uuid,start_time,used_uuid,end_time,region,non_meters,used_uuid,cons)
+    
+    middle_num = int(len_query[g+1]-len_query[g])-2
+    for j in range(middle_num):
+        region = LSOA_codes[i+j+1]
+        meters = met_num[i+j+1]
+        non_meters = non_met_num[i+j+1]
+        cons = consump[i+j+1]
+
+        used_uuid = uuid.uuid1()
+
+        query += '''
+        compa:%s rdf:type comp:OfftakenGas.
+          ons:%s comp:hasUsed compa:%s.
+          ons:%s gas:hasConsumingGasMeters %s.
+          compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+          compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
+          ons:%s gas:hasNonConsumingGasMeters %s. 
+          compa:%s comp:hasGasEnergy %s.
+        '''%(used_uuid,region,used_uuid,region,meters,used_uuid,start_time,used_uuid,end_time,region,non_meters,used_uuid,cons)
+      
+        
+    region = LSOA_codes[int(len_query[g+1])-1]
+    meters = met_num[int(len_query[g+1])-1]
+    non_meters = non_met_num[int(len_query[g+1])-1]
+    cons = consump[int(len_query[g+1])-1]
+
+    used_uuid = uuid.uuid1()
+
+    query += '''
+    compa:%s rdf:type comp:OfftakenGas.
+      ons:%s comp:hasUsed compa:%s.
+      ons:%s gas:hasConsumingGasMeters %s.
+      compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+      compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
+      ons:%s gas:hasNonConsumingGasMeters %s. 
+      compa:%s comp:hasGasEnergy %s.}
+      '''%(used_uuid,region,used_uuid,region,meters,used_uuid,start_time,used_uuid,end_time,region,non_meters,used_uuid,cons)
 
     sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
     sparql.setMethod(POST) # POST query, not GET

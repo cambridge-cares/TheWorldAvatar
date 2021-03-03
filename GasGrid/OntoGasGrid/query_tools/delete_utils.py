@@ -164,4 +164,4 @@ def delete_usage_history():
 
     return
 
-# delete_usage_history()
+delete_usage_history()

@@ -126,3 +126,5 @@ def continuous_update():
 def single_update():
         update_triple_store()
         return 
+
+continuous_update()
