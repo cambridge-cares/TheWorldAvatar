@@ -32,6 +32,8 @@ services:
   
   
   # JPS Chatbot
+  # NOTE - You must set up Vienna credentials before attempting to build this server,
+  #        see the JPS_Chatbot/docker/README.txt file for details.
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   jps-chatbot:
     image: docker.cmclinnovations.com/jps-chatbot:${HASH}
