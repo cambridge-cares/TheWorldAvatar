@@ -34,7 +34,6 @@ for i in range(1,len(len_query)-1):
     len_query[i] = len_query[i-1] + 100
 len_query[-1] = len_query[-2] + remainder
 
-print(len_query[-5:])
 for g in tqdm(range(len(len_query)-1)):
     i = int(len_query[g])
     region = LSOA_codes[i]
@@ -43,6 +42,7 @@ for g in tqdm(range(len(len_query)-1)):
     cons = consump[i]
 
     used_uuid = uuid.uuid1()
+    met_uuid = uuid.uuid1()
 
     query = '''PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -54,12 +54,18 @@ for g in tqdm(range(len(len_query)-1)):
     INSERT DATA
     { compa:%s rdf:type comp:OfftakenGas.
       ons:%s comp:hasUsed compa:%s.
-      ons:%s gas:hasConsumingGasMeters %s.
       compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
       compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
-      ons:%s gas:hasNonConsumingGasMeters %s. 
       compa:%s comp:hasGasEnergy %s.
-       '''%(used_uuid,region,used_uuid,region,meters,used_uuid,start_time,used_uuid,end_time,region,non_meters,used_uuid,cons)
+      compa:%s rdf:type gas:GasMeters.
+      ons:%s gas:hasGasMeters compa:%s.
+      compa:%s gas:hasConsumingGasMeters %s.
+      compa:%s gas:hasNonConsumingGasMeters %s. 
+      compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+      compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
+       '''%(used_uuid,region,used_uuid,used_uuid,start_time,\
+         used_uuid,end_time,used_uuid,cons,met_uuid,region,\
+           met_uuid,met_uuid,meters,met_uuid,non_meters,met_uuid,start_time,met_uuid,end_time)
     
     middle_num = int(len_query[g+1]-len_query[g])-2
     for j in range(middle_num):
@@ -69,16 +75,23 @@ for g in tqdm(range(len(len_query)-1)):
         cons = consump[i+j+1]
 
         used_uuid = uuid.uuid1()
+        met_uuid = uuid.uuid1()
 
         query += '''
         compa:%s rdf:type comp:OfftakenGas.
-          ons:%s comp:hasUsed compa:%s.
-          ons:%s gas:hasConsumingGasMeters %s.
-          compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
-          compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
-          ons:%s gas:hasNonConsumingGasMeters %s. 
-          compa:%s comp:hasGasEnergy %s.
-        '''%(used_uuid,region,used_uuid,region,meters,used_uuid,start_time,used_uuid,end_time,region,non_meters,used_uuid,cons)
+        ons:%s comp:hasUsed compa:%s.
+        compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+        compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
+        compa:%s comp:hasGasEnergy %s.
+        compa:%s rdf:type gas:GasMeters.
+        ons:%s gas:hasGasMeters compa:%s.
+        compa:%s gas:hasConsumingGasMeters %s.
+        compa:%s gas:hasNonConsumingGasMeters %s. 
+        compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+        compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
+        '''%(used_uuid,region,used_uuid,used_uuid,start_time,\
+          used_uuid,end_time,used_uuid,cons,met_uuid,region,\
+            met_uuid,met_uuid,meters,met_uuid,non_meters,met_uuid,start_time,met_uuid,end_time)
       
         
     region = LSOA_codes[int(len_query[g+1])-1]
@@ -87,16 +100,23 @@ for g in tqdm(range(len(len_query)-1)):
     cons = consump[int(len_query[g+1])-1]
 
     used_uuid = uuid.uuid1()
+    met_uuid = uuid.uuid1()
 
     query += '''
-    compa:%s rdf:type comp:OfftakenGas.
-      ons:%s comp:hasUsed compa:%s.
-      ons:%s gas:hasConsumingGasMeters %s.
-      compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
-      compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
-      ons:%s gas:hasNonConsumingGasMeters %s. 
-      compa:%s comp:hasGasEnergy %s.}
-      '''%(used_uuid,region,used_uuid,region,meters,used_uuid,start_time,used_uuid,end_time,region,non_meters,used_uuid,cons)
+        compa:%s rdf:type comp:OfftakenGas.
+        ons:%s comp:hasUsed compa:%s.
+        compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+        compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
+        compa:%s comp:hasGasEnergy %s.
+        compa:%s rdf:type gas:GasMeters.
+        ons:%s gas:hasGasMeters compa:%s.
+        compa:%s gas:hasConsumingGasMeters %s.
+        compa:%s gas:hasNonConsumingGasMeters %s. 
+        compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+        compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .}
+        '''%(used_uuid,region,used_uuid,used_uuid,start_time,\
+          used_uuid,end_time,used_uuid,cons,met_uuid,region,\
+            met_uuid,met_uuid,meters,met_uuid,non_meters,met_uuid,start_time,met_uuid,end_time)
 
     sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
     sparql.setMethod(POST) # POST query, not GET

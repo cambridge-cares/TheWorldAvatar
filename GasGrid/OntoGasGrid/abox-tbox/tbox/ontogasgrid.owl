@@ -35,7 +35,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#hasGasMeters">
-        <rdfs:domain rdf:resource="http://statistics.data.gov.uk/id/statistical-geography/"/>
+        <rdfs:domain rdf:resource="http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/OntoGasGrid.owl#GasMeters"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relation between a location and it&apos;s associated set of gas meters</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl</rdfs:isDefinedBy>
@@ -103,10 +103,10 @@
     
 
 
-    <!-- http://statistics.data.gov.uk/id/statistical-geography/ -->
+    <!-- http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography -->
 
 
-    <owl:Class rdf:about="http://statistics.data.gov.uk/id/statistical-geography/"/>
+    <owl:Class rdf:about="http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography"/>
     
 
 

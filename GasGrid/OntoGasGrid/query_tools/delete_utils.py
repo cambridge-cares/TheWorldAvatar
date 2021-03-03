@@ -155,7 +155,14 @@ def delete_usage_history():
        ?s comp:hasStartUTC ?st .
        ?s comp:hasEndUTC ?en .
        ?r gas:hasNonConsumingGasMeters ?nm. 
-       ?s comp:hasGasEnergy ?ge. }'''
+       ?s comp:hasGasEnergy ?ge.
+       ?gm rdf:type gas:GasMeters.
+       ?ss gas:hasGasMeters ?gm.
+       ?gm gas:hasConsumingGasMeters %cgm.
+       ?gm gas:hasNonConsumingGasMeters %ncgm.
+       ?gm comp:hasStartUTC ?stm .
+       ?gm comp:hasEndUTC ?enm .
+       }'''
 
     sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
     sparql.setMethod(POST) # POST query, not GET
