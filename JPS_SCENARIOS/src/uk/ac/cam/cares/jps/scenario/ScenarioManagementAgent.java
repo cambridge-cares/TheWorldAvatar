@@ -85,7 +85,7 @@ public class ScenarioManagementAgent extends JPSAgent {
     }
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		
+		validateInput(requestParams);
 		String path = requestParams.getString("path");
 		logger.info("called for path=" + path);
 		

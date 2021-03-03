@@ -212,7 +212,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 //	}
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {	
-		
+		validateInput(requestParams);
 		String path = requestParams.getString("path");
 		logger.debug("called for path=" + path);
 		
