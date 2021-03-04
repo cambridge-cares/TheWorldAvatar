@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
@@ -53,6 +54,8 @@ public class ShipSparql {
     private static Prefix p_chemspecies = SparqlBuilder.prefix("species",iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/chemical_species.owl#"));
     private static Prefix p_pseudo = SparqlBuilder.prefix("pseudo",iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/pseudocomponent.owl#"));
     private static Prefix p_substance = SparqlBuilder.prefix("substance", iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#"));
+    private static Prefix[] Prefixes = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_time,p_SI_unit,p_plant,
+    		p_technical,p_process,p_topology,p_chemprocess,p_behaviour,p_phase_system,p_geometry,p_material,p_substance,p_chemspecies,p_pseudo};
     
     // units
     private static Iri unit_degree = p_derived_SI_unit.iri("degree");
@@ -88,6 +91,7 @@ public class ShipSparql {
     
     // named graph
     private static Iri ship_graph = p_ship.iri("Ships");
+    private static From FromGraph = SparqlBuilder.from(ship_graph);
     
     // relations
     static Iri hasSubsystem = p_system.iri("hasSubsystem");
@@ -115,6 +119,10 @@ public class ShipSparql {
     static Iri ThermodynamicStateProperty = p_phase_system.iri("ThermodynamicStateProperty");
     static Iri intrinsicCharacteristics = p_material.iri("intrinsicCharacteristics");
     static Iri containsDirectly = p_system.iri("containsDirectly");
+    static Iri hasSOG = p_ship.iri("hasSOG");
+    static Iri hasGISCoordinateSystem = p_space_time_extended.iri("hasGISCoordinateSystem");
+    static Iri hasInsideDiameter = p_plant.iri("hasInsideDiameter");
+    static Iri hasHeight = p_plant.iri("hasHeight");
     /**
      * Creates a ship instance on ship_endpoint, Blazegraph is highly recommended because of its performance
      * @param i
@@ -160,10 +168,10 @@ public class ShipSparql {
         Iri vycoord = p_ship.iri(ship_name+"_vycoord");
 
         TriplePattern ship_tp = ship_iri.isA(p_ship.iri("Ship")).andHas(p_ship.iri("hasMMSI"),mmsi_iri)
-                .andHas(hasShipType,type_iri).andHas(p_ship.iri("hasSOG"),speed_iri)
+                .andHas(hasShipType,type_iri).andHas(hasSOG,speed_iri)
                 .andHas(p_ship.iri("hasCOG"), course_iri).andHas(hasDimension,length_iri)
                 .andHas(hasDimension,beam_iri)
-                .andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),coordinates_iri)
+                .andHas(hasGISCoordinateSystem,coordinates_iri)
                 .andHas(hasSubsystem,chimney_iri);
         
         TriplePattern mmsi_tp = mmsi_iri.isA(p_ship.iri("MMSI")).andHas(hasValue, vmmsi_iri);
@@ -208,7 +216,7 @@ public class ShipSparql {
         combined_tp = ArrayUtils.addAll(combined_tp, GetChimneyTP(ship_name,chimney_iri));
         
         Prefix [] prefix_list = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_time,p_SI_unit,p_plant,p_technical,
-        		p_process,p_topology,p_chemprocess,p_behaviour,p_phase_system,p_geometry,p_material,p_chemspecies,p_pseudo,p_substance};
+        		p_process,p_topology,p_chemprocess,p_behaviour,p_phase_system,p_geometry,p_material,p_substance};
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(prefix_list).insert(combined_tp).where().with(ship_graph);
 
@@ -249,7 +257,7 @@ public class ShipSparql {
         GraphPattern ship_gp = GraphPatterns.and(ship.has(p_ship.iri("hasMMSI"),mmsi).andHas(p_ship.iri("hasShipType"),shiptype)
                 .andHas(p_ship.iri("hasSOG"),speed).andHas(p_ship.iri("hasCOG"), course)
                 .andHas(p_system.iri("hasDimension"),length).andHas(p_system.iri("hasDimension"),beam)
-                .andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),coord));
+                .andHas(hasGISCoordinateSystem,coord));
         
         // patterns to match for each quantity we want to query
         GraphPattern mmsi_gp = GraphPatterns.and(mmsi.has(p_system.iri("hasValue"), vmmsi),
@@ -320,7 +328,7 @@ public class ShipSparql {
         Variable aw = SparqlBuilder.var("aw");
         Variable ss = SparqlBuilder.var("ss");
         
-        GraphPattern ship_gp = ship.has(p_space_time_extended.iri("hasGISCoordinateSystem"),coord);
+        GraphPattern ship_gp = ship.has(hasGISCoordinateSystem,coord);
         
         // for coordinates
         Iri[] XcoordPredicates = {hasProjectedCoordinate_x,hasValue,numericalValue};
@@ -341,7 +349,6 @@ public class ShipSparql {
         GraphPattern beam_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, BeamQueryPredicates, BeamQueryRdfTypes, ship, aw);
         
         // speed query
-        Iri hasSOG = p_ship.iri("hasSOG");
         Iri[] SpeedQueryPredicates = {hasSOG,hasValue,numericalValue};
         GraphPattern speed_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship, ss);
         
@@ -389,18 +396,46 @@ public class ShipSparql {
         GraphPattern type_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, TypeQueryPredicates, null, ship_iri, type);
         
         // speed query
-        Iri hasSOG = p_ship.iri("hasSOG");
         Iri[] SpeedQueryPredicates = {hasSOG,hasValue,numericalValue};
         GraphPattern speed_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship_iri, ss);
         
-        // named graph
-        From queryGraph = SparqlBuilder.from(ship_graph);
-        
-        query.from(queryGraph).prefix(p_ship,p_system).select(type,ss).where(type_gp,speed_gp);
+        query.from(FromGraph).prefix(p_ship,p_system).select(type,ss).where(type_gp,speed_gp);
         JSONArray queryresult = performQuery(query);
         
         JSONObject response = queryresult.getJSONObject(0);
         return response;
+    }
+    
+    public static double[] queryShipCoordinates(String ship_iri_string) {
+    	Iri ship_iri = iri(ship_iri_string);
+    	SelectQuery query = Queries.SELECT();
+    	Variable coord = query.var();
+    	
+    	//coord node
+    	Iri[] ship2coord_predicates = {hasGISCoordinateSystem};
+    	GraphPattern ship2coord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, ship2coord_predicates,null,ship_iri,coord);
+    	
+    	//x node
+    	Variable x = SparqlBuilder.var("x");
+    	Iri[] coord2xcoord_predicates = {hasProjectedCoordinate_x,hasValue,numericalValue};
+    	GraphPattern coord2xcoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, coord2xcoord_predicates,null,coord, x);
+    	
+    	//y 
+    	Variable y = SparqlBuilder.var("y");
+    	Iri[] coord2ycoord_predicates = {hasProjectedCoordinate_y,hasValue,numericalValue};
+    	GraphPattern coord2ycoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, coord2ycoord_predicates, null, coord, y);
+    	
+    	// combined query graph
+    	GraphPattern combined_gp = GraphPatterns.and(ship2coord_gp,coord2xcoord_gp,coord2ycoord_gp);
+    	
+    	query.prefix(p_space_time_extended,p_system,p_ship).from(FromGraph).select(x,y).where(combined_gp);
+    	
+    	JSONArray queryresult = performQuery(query);
+    	double xvalue = queryresult.getJSONObject(0).getDouble("x");
+    	double yvalue = queryresult.getJSONObject(0).getDouble("y");
+    	double[] result = {xvalue,yvalue};
+    	
+    	return result;
     }
     
     private static TriplePattern[] GetChimneyTP(String ship_name, Iri chimney_iri) {
@@ -433,8 +468,8 @@ public class ShipSparql {
     	Iri densityValue = p_ship.iri(ship_name+chimney+"DensityValue");
     	
     	TriplePattern pipe_tp = chimney_iri.isA(p_plant.iri("Pipe"))
-    			.andHas(p_plant.iri("hasInsideDiameter"),diameter)
-    			.andHas(p_plant.iri("hasHeight"),height)
+    			.andHas(hasInsideDiameter,diameter)
+    			.andHas(hasHeight,height)
     			.andHas(realizes,release);
     	
     	TriplePattern diameter_tp = diameter.isA(p_ship.iri("DimensionOfBow"));
@@ -587,8 +622,6 @@ public class ShipSparql {
     	// molecular weight
     	Iri ship_iri = iri(ship_iri_string);
     	
-    	Prefix[] Prefixes = {p_ship,p_system,p_technical,p_topology,p_chemprocess,p_behaviour,p_material,p_substance,p_phase_system,p_geometry,p_chemspecies,p_pseudo};
-    	
     	Iri[] molWeightPredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,
     			refersToMaterial,thermodynamicBehaviour,hasProperty,hasValue,numericalValue};
     	Iri[] molWeightRdfTypes = new Iri[molWeightPredicates.length+1];
@@ -625,7 +658,6 @@ public class ShipSparql {
     	String particlekey = "particleIRI";
     	Variable particleIRI = SparqlBuilder.var(particlekey);
     	GraphPattern queryPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, particlePredicates, null, ship_iri, particleIRI);
-    	From FromGraph = SparqlBuilder.from(ship_graph);
     	query.prefix(Prefixes).select(particleIRI).where(queryPattern).from(FromGraph);
     	JSONArray particles = performQuery(query);
     	
@@ -681,6 +713,143 @@ public class ShipSparql {
     			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, flowratePredicates, null, MixtureIri, chim.getPollutant(i).getFlowrate(), ship_graph));
     		}
     	}
+    }
+    
+    public static JSONArray QueryChimneyProperties(String ship_iri_string) {
+    	Iri ship_iri = iri(ship_iri_string);
+    	SelectQuery query = Queries.SELECT();
+    	
+    	// values we want to query
+    	Variable diameter = SparqlBuilder.var("diameter");
+    	Variable overallFlowrate = SparqlBuilder.var("overallFlowrate");
+    	Variable density = SparqlBuilder.var("density");
+    	Variable height = SparqlBuilder.var("height");
+    	Variable temp = SparqlBuilder.var("temp");
+    	Variable particleFlowrate = SparqlBuilder.var("particleFlowrate");
+    	
+    	// intermediate variables that intersect in the graph query
+    	Variable chimney = query.var(); Variable generalizeAmount = query.var(); Variable singlephase = query.var();
+    	
+    	Iri[] chimneyPredicates = {hasSubsystem};
+    	GraphPattern ship2chimney = SparqlPatternGenerator.GetQueryGraphPattern(query, chimneyPredicates, null, ship_iri,chimney);
+    	
+    	Iri[] diameterPredicates = {hasInsideDiameter,hasValue,numericalValue};
+    	GraphPattern chimney2diameter = SparqlPatternGenerator.GetQueryGraphPattern(query, diameterPredicates, null, chimney, diameter);
+    	
+    	Iri[] generalPredicates = {realizes,hasOutput,refersToGeneralizedAmount};
+    	GraphPattern chimney2general = SparqlPatternGenerator.GetQueryGraphPattern(query, generalPredicates, null, chimney, generalizeAmount);
+    	
+    	Iri[] flowratePredicates = {hasProperty,hasValue,numericalValue};
+    	GraphPattern general2flowrate = SparqlPatternGenerator.GetQueryGraphPattern(query, flowratePredicates, null, generalizeAmount,overallFlowrate);
+    	
+    	Iri[] singlephasePredicates = {hasSubsystem,refersToMaterial,thermodynamicBehaviour};
+    	GraphPattern general2singlephase = SparqlPatternGenerator.GetQueryGraphPattern(query, singlephasePredicates, null, generalizeAmount,singlephase);
+    	
+    	Iri[] particlePredicates = {contains,hasProperty,hasValue,numericalValue};
+    	GraphPattern general2particlerate = SparqlPatternGenerator.GetQueryGraphPattern(query, particlePredicates, null, generalizeAmount,particleFlowrate);
+    	
+    	Iri[] densityPredicates = {has_density,hasValue,numericalValue};
+    	GraphPattern singlephase2density = SparqlPatternGenerator.GetQueryGraphPattern(query, densityPredicates, null, singlephase,density);
+    	
+    	Iri[] tempPredicates = {has_temperature,hasValue,numericalValue};
+    	GraphPattern singlephase2temp = SparqlPatternGenerator.GetQueryGraphPattern(query, tempPredicates, null, singlephase,temp);
+    	
+    	Iri[] heightPredicates = {hasHeight,hasValue,numericalValue};
+    	GraphPattern chimney2height = SparqlPatternGenerator.GetQueryGraphPattern(query, heightPredicates, null, chimney,height);
+    	
+    	GraphPattern queryPattern = GraphPatterns.and(ship2chimney,chimney2diameter,chimney2general,general2flowrate,general2singlephase,
+    			singlephase2density,singlephase2temp,chimney2height,general2particlerate);
+    	
+    	query.from(FromGraph).select(diameter,overallFlowrate,density,height,temp,particleFlowrate).where(queryPattern).prefix(Prefixes);
+    	JSONArray queryresult = performQuery(query);
+    	
+    	return queryresult;
+    }
+    
+    public static double QueryMixtureFlowrate(String ship_iri_string,String species) {
+    	SelectQuery query = Queries.SELECT();
+    	Iri ship_iri = iri(ship_iri_string);
+    	Variable flowrate = SparqlBuilder.var("flowrate");
+    	
+    	// intermediate node
+    	Variable mixture = query.var();
+    	
+    	Iri[] mixturePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,refersToMaterial,intrinsicCharacteristics};
+    	GraphPattern mixturePattern = SparqlPatternGenerator.GetQueryGraphPattern(query, mixturePredicates, null, ship_iri, mixture);
+    	
+    	// match species
+    	Iri[] speciesPredicates = {containsDirectly};
+    	Iri[] rdfTypes = {null,speciesIriMap.get(species)};
+    	GraphPattern speciesPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, speciesPredicates, rdfTypes, mixture);
+    	
+    	// flowrate
+    	Iri[] flowratePredicates = {hasProperty,hasValue,numericalValue};
+    	GraphPattern flowratePattern = SparqlPatternGenerator.GetQueryGraphPattern(query, flowratePredicates, null, mixture,flowrate);
+    	
+    	GraphPattern queryPattern = GraphPatterns.and(mixturePattern,speciesPattern,flowratePattern);
+    	
+    	query.from(FromGraph).prefix(Prefixes).select(flowrate).where(queryPattern);
+    	
+    	double result = performQuery(query).getJSONObject(0).getDouble("flowrate");
+    	return result;
+    }
+    
+    public static String[] QueryParticleIRI(String ship_iri_string) {
+    	Iri ship_iri = iri(ship_iri_string);
+    	
+    	String particlekey = "particle";
+    	SelectQuery query = Queries.SELECT();
+    	Variable particle = SparqlBuilder.var(particlekey);
+    	
+    	Iri [] particlePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,contains,hasRepresentativeParticle};
+    	GraphPattern queryPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, particlePredicates, null, ship_iri,particle);
+    	
+    	query.prefix(Prefixes).from(FromGraph).select(particle).where(queryPattern);
+    	
+    	JSONArray queryresult = performQuery(query);
+    	String[] particles = new String[queryresult.length()];
+    	
+    	for (int i = 0; i<queryresult.length(); i++) {
+    		particles[i] = queryresult.getJSONObject(i).getString(particlekey);
+    	}
+    	return particles;
+    }
+    
+    public static Particle QueryParticle(String particle_iri_string) {
+    	Iri particle_iri = iri(particle_iri_string);
+    	
+    	//keys
+    	String massfractionKey = "massfraction"; String diameterKey = "diameter"; String densityKey = "density";
+    	
+    	//variables to query
+    	Variable massfraction = SparqlBuilder.var(massfractionKey);
+    	Variable diameter = SparqlBuilder.var(diameterKey);
+    	Variable density = SparqlBuilder.var(densityKey);
+    	
+    	SelectQuery query = Queries.SELECT();
+    	
+    	Iri[] massPredicates = {hasProperty,hasValue,numericalValue};
+    	GraphPattern massPattern = SparqlPatternGenerator.GetQueryGraphPattern(query,massPredicates,null,particle_iri,massfraction);
+    	
+    	Iri[] diameterPredicates = {has_length,hasValue,numericalValue};
+    	GraphPattern diameterPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, diameterPredicates, null, particle_iri, diameter);
+    	
+    	Iri[] densityPredicates = {has_density,hasValue,numericalValue};
+    	GraphPattern densityPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, densityPredicates, null, particle_iri, density);
+    	
+    	GraphPattern combinedGraph = GraphPatterns.and(massPattern,diameterPattern,densityPattern);
+    	
+    	// construct query
+    	query.select(massfraction,diameter,density).from(FromGraph).prefix(Prefixes).where(combinedGraph);
+    	
+    	JSONObject queryresult = performQuery(query).getJSONObject(0);
+    	
+    	Particle part = new Particle();
+    	part.setDensity(queryresult.getDouble(densityKey));
+    	part.setDiameter(queryresult.getDouble(diameterKey));
+    	part.setMassFraction(queryresult.getDouble(massfractionKey));
+    	
+    	return part;
     }
     
     private static void performUpdate(ModifyQuery query) {
