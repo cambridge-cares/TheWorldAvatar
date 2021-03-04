@@ -63,7 +63,7 @@ public class EpisodeAgentTest extends TestCase {
 		String result = AgentCaller.executeGetWithURLAndJSON("http://www.theworldavatar.com:80/JPS_POSTGRESQL/getEntitiesWithinRegion", jo.toString());
 		System.out.println("result of the ship= "+result);
 		JSONObject shipdata = new JSONObject(result);
-		new EpisodeAgent().createControlEmissionFile(shipdata,dataPath,"cctapm_meta_PSE.inp",sc);
+//		new EpisodeAgent().createControlEmissionFile(shipdata,dataPath,"cctapm_meta_PSE.inp",sc);
 	}
 	
 	public void testEpisodeReceptorInput() {

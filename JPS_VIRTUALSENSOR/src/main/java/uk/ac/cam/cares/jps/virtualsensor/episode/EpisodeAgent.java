@@ -54,6 +54,7 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeConfig;
 import uk.ac.cam.cares.jps.virtualsensor.general.DispersionModellingAgent;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
 
 public class EpisodeAgent extends DispersionModellingAgent {
@@ -99,80 +100,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	private String epsgActive="EPSG:32648";
 	private String gmttimedifference="-8"; //it should be dependent on the location it simulates
 	
-    String chimneyiriInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-            + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
-            + "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-            + "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-            + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
-            + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-            + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
-            + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-            + "SELECT ?heightchimneyval ?diameterchimneyval ?massfval ?tempval ?densval ?vpolflowrate ?polflowrateval "
-            + "WHERE {?entity  a  j3:Pipe  ."
-            + "?entity   j3:hasHeight ?heightchimney ."
-            + "?heightchimney  j2:hasValue ?vheightchimney ."
-            + "?vheightchimney  j2:numericalValue ?heightchimneyval ."
-            + "?entity   j3:hasInsideDiameter ?diameterchimney ."
-            + "?diameterchimney  j2:hasValue ?vdiameterchimney ."
-            + "?vdiameterchimney  j2:numericalValue ?diameterchimneyval ."
-            + "?entity   j4:realizes ?proc ."
-            + "?proc j5:hasOutput ?waste ."
-            + "?waste j6:refersToGeneralizedAmount ?genwaste ."
-            + "?genwaste   j2:hasProperty ?massf ."
-            + "?massf   j2:hasValue ?vmassf ."
-            + "?vmassf   j2:numericalValue ?massfval ."
-            + "?genwaste   j2:hasSubsystem ?matamount ."
-            + "?matamount   j7:refersToMaterial ?mat ."
-            + "?mat   j8:thermodynamicBehavior ?thermo ."
-            + "?thermo   j9:has_temperature ?temp ."
-            + "?temp  j2:hasValue ?vtemp ."
-            + "?vtemp  j2:numericalValue ?tempval ."
-            + "?thermo   j9:has_density ?dens ."
-            + "?dens  j2:hasValue ?vdens ."
-            + "?vdens  j2:numericalValue ?densval ."
-            + "?mat   j8:intrinsicCharacteristics ?char ."
-            + "?char j2:hasProperty ?polflowrate ."
-            + "?polflowrate j2:hasValue ?vpolflowrate ."
-            + "?vpolflowrate j2:numericalValue ?polflowrateval ."
-            + "}";
-    
-    String chimneyiriparticleInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-            + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
-            + "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-            + "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-            + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
-            + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-            +"PREFIX j10:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>"
-            + "SELECT ?overallflowrateval ?particulatefractionval ?particulatediameterval "
-		
-            + "WHERE {?entity  a  j3:Pipe  ."
-            + "?entity   j4:realizes ?proc ."
-            + "?proc j5:hasOutput ?waste ."
-            + "?waste j6:refersToGeneralizedAmount ?genwaste ."
-            + "?genwaste   j2:contains ?particle ." 
-            + 
-              " ?particle j2:hasProperty ?overallflowrate ." + 
-            " ?overallflowrate j2:hasValue ?voverallflowrate ." + 
-            "?voverallflowrate j2:numericalValue ?overallflowrateval ." + 
-            "?particle j7:hasRepresentativeParticle ?particulate ." + 
-            "?particulate j2:hasProperty ?particulatefraction ." + 
-            "?particulatefraction j2:hasValue ?vparticulatefraction ." + 
-            "?vparticulatefraction j2:numericalValue ?particulatefractionval ." + 
-            "?particulate j10:has_length ?particulatediameter ." + 
-            "?particulatediameter j2:hasValue ?vparticulatediameter ." + 
-            "?vparticulatediameter j2:numericalValue ?particulatediameterval ."
-            
-            + "}";
-		
-
-    
 	public static void main(String[] args) throws ServletException{
 		EpisodeAgent episodeAgent = new EpisodeAgent();
 		episodeAgent.init();
 	}
     
-    private double unitflowconverter(double numberInGramPerS) {
-    	double result=numberInGramPerS*0.001*365*24*3600;
+    private double kgsTokgYear(double numberInKGramPerS) {
+    	double result=numberInKGramPerS*365*24*3600;
     	return result;
     }
     
@@ -220,13 +154,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	 Logger logger = LoggerFactory.getLogger(EpisodeAgent.class);
 	
 	 
-	    @Override
+	@Override
     protected JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject responseParams=new JSONObject();
 
         if (validateInput(requestParams)) {
             JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
-            JSONObject shipdata=requestParams.getJSONObject("ship");
+            JSONArray ship_iri=requestParams.getJSONArray("ship");
             String dataPath = QueryBroker.getLocalDataPath()+"/input";
             String cityIRI = requestParams.getString("city"); //later to be used for annotation??
             String agent=requestParams.getString("agent");
@@ -289,14 +223,14 @@ public class EpisodeAgent extends DispersionModellingAgent {
             	weatherStations[i] = new WeatherStation(stnIRI.getString(i));
             }
             
-            createEmissionInput(dataPath, "points.csv",shipdata);
-            createEmissionInput(dataPath, "lines.csv",shipdata);
+            createPointsInput(dataPath, "points.csv",ship_iri);
+            createLinesInput(dataPath, "lines.csv", sc);
             try { //for control file
                 createControlTopologyFile(srtm, dataPath, "aermap.inp",sc);
                 createControlWeatherORCityChemFile(dataPath, "run_file.asc",weatherStations,sc);
                 createControlWeatherORCityChemFile(dataPath, "citychem_restart.txt",weatherStations,sc);
-                createControlEmissionFile(shipdata,dataPath,"cctapm_meta_LSE.inp",sc);
-                createControlEmissionFile(shipdata,dataPath,"cctapm_meta_PSE.inp",sc);
+                createControlEmissionFile(ship_iri.length(),dataPath,"cctapm_meta_LSE.inp",sc);
+                createControlEmissionFile(ship_iri.length(),dataPath,"cctapm_meta_PSE.inp",sc);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -420,115 +354,90 @@ public class EpisodeAgent extends DispersionModellingAgent {
         new QueryBroker().putLocal(dataPath + "/"+filename, sb.toString());  	
 	}
     
-	@Override
-	public void createEmissionInput(String dataPath, String filename,JSONObject shipdata) {
-		JSONArray coordinateship = getEntityData(shipdata);
-		if (filename.contains("point")) {
+    private void createPointsInput(String dataPath, String filename,JSONArray ship_iri) {
+    	System.out.println("it goes to create point emission input here");
+
+		int numship = ship_iri.length();
+		List<String[]> resultquery = new ArrayList<String[]>();
+		String[] header = { "snap", "xcor", "ycor", "Hi", "Vi", "Ti", "radi", "BH", "BW", "Pvec", "Pdir",
+				"pcir_ang", "Ptstart", "Ptend", "NOx", "NMVOC", "CO", "SO2", "NH3", "PM2.5", "PM10" };
+		resultquery.add(0, header);
+		for (int i = 0; i < numship; i++) {
+			Ship ship = new Ship(ship_iri.getString(i),true);
 			
-			System.out.println("it goes to create point emission input here");
-
-			int shipAmount = coordinateship.length();
-			List<String[]> resultquery = new ArrayList<String[]>();
-			String[] header = { "snap", "xcor", "ycor", "Hi", "Vi", "Ti", "radi", "BH", "BW", "Pvec", "Pdir",
-					"pcir_ang", "Ptstart", "Ptend", "NOx", "NMVOC", "CO", "SO2", "NH3", "PM2.5", "PM10" };
-			resultquery.add(0, header);
-			for (int ship = 0; ship < shipAmount; ship++) {
-				String mmsi = coordinateship.getJSONObject(ship).get(DATA_KEY_MMSI).toString();
-
-				OntModel jenaOwlModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-				String iriofchimney = "http://www.theworldavatar.com/kb/ships/" + mmsi + "/" + "Chimney-1.owl";
-				if (AgentLocator.isJPSRunningForTest()) {
-					iriofchimney = "http://localhost:8080/kb/ships/" + mmsi + "/" + "Chimney-1.owl";
+			// all emission are in kg/s from the triple store
+			double emissionratepm25 = 0.0;
+			double emissionratepm10 = 0.0;
+			for (int x = 0; x < ship.getChimney().getNumpar(); x++) {
+				if (ship.getChimney().getParticle(x).getDiameter() <= 0.0000025) {
+					emissionratepm25 += ship.getChimney().getParticle(x).getFlowrate();
 				}
-
-				jenaOwlModel.read(iriofchimney);
-				System.out.println("iri chimney now= " + mmsi);
-				List<String[]> resultListParticlePollutant = queryKBIRI(chimneyiriparticleInfo, jenaOwlModel);
-				List<String[]> resultListChimneyGasPollutant = queryKBIRI(chimneyiriInfo, jenaOwlModel);
-				JSONObject mappollutant = new JSONObject();
-				for (int d = 0; d < resultListChimneyGasPollutant.size(); d++) {
-					if (resultListChimneyGasPollutant.get(d)[5].contains("EmissionRate")) {
-						String key = resultListChimneyGasPollutant.get(d)[5].split("#V_")[1];
-						mappollutant.put(key, resultListChimneyGasPollutant.get(d)[6]);
-					}
+				if (ship.getChimney().getParticle(x).getDiameter() <= 0.00001) {
+					emissionratepm10 += ship.getChimney().getParticle(x).getFlowrate();
 				}
-
-				double fractionpm25 = 0.0;
-				double fractionpm10 = 0.0;
-				for (int x = 0; x < resultListParticlePollutant.size(); x++) {
-					if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.0000025) {
-						fractionpm25 = fractionpm25 + Double.valueOf(resultListParticlePollutant.get(x)[1]);
-					}
-					if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.00001) {
-						fractionpm10 = fractionpm10 + Double.valueOf(resultListParticlePollutant.get(x)[1]);
-					}
-				}
-				// all emission are in g/s
-				double emissionratepm25 = fractionpm25 * Double.valueOf(resultListParticlePollutant.get(0)[0]);
-				double emissionratepm10 = fractionpm10 * Double.valueOf(resultListParticlePollutant.get(0)[0]);
-				double nox =Double.valueOf(mappollutant.getString("PseudoComponent_Nitrogen__oxides_EmissionRate"));
-				double voc = Double
-						.valueOf(mappollutant.getString("PseudoComponent_Unburned_Hydrocarbon_EmissionRate"));
-				double co = Double.valueOf(mappollutant.getString("ChemSpecies_Carbon__monoxide_EmissionRate"));
-				double so2 = Double.valueOf(mappollutant.getString("ChemSpecies_Sulfur__dioxide_EmissionRate"));
-
-				double area = Math.PI * Math.pow(Double.valueOf(resultListChimneyGasPollutant.get(0)[1]) / 2, 2);
-				double massflowrate = Double.valueOf(resultListChimneyGasPollutant.get(0)[2]); // in kg/hr
-				double density = Double.valueOf(resultListChimneyGasPollutant.get(0)[4]); // kg/m3
-				double velocity = massflowrate / area / density; // should be in m/hr
-
-				String[] content = new String[21];
-				content[0] = "8";
-				double shipx = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LON);
-				double shipy = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LAT);
-				double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", epsgActive,
-						new double[] { shipx, shipy });
-				content[1] = "" + locationshipconverted[0];
-				content[2] = "" + locationshipconverted[1];
-				content[3] = resultListChimneyGasPollutant.get(0)[0];// QUERY FROM CHIMNEY height //in m
-				content[4] = "" + velocity;// DERIVED FROM CHIMNEY velocity
-				content[5] = resultListChimneyGasPollutant.get(0)[3];// QUERY FROM CHIMNEY //temperature celcius
-				content[6] = "" + (Double.valueOf(resultListChimneyGasPollutant.get(0)[1]) / 2);// QUERY FROM CHIMNEY
-																								// radius in m
-				content[7] = "10"; // constant unused building height
-				content[8] = "20";// constant unused building width;
-				//this value is in knot, but in Kang's document, it should be in m/s
-				content[9] = coordinateship.getJSONObject(ship).get("speed").toString(); // should be in knot?
-				content[10] = coordinateship.getJSONObject(ship).get("angle").toString();
-				content[11] = "0";// circularangle assume it moves straightline
-				content[12] = "0";// moving starting time;
-				content[13] = "3600";// moving ending time;
-				content[14] = "" + unitflowconverter(nox);
-				content[15] = "" + unitflowconverter(voc); // voc
-				content[16] = "" + unitflowconverter(co); // CO
-				content[17] = "" + unitflowconverter(so2); // SO2
-				content[18] = "-999"; // NH3 not avilable
-				content[19] = "" + unitflowconverter(emissionratepm25); // pm2.5
-				content[20] = "" + unitflowconverter(emissionratepm10); // pm10
-				resultquery.add(content);
 			}
+			
+			double nox = ship.getChimney().getFlowrateNOx();
+			double voc = ship.getChimney().getFlowrateHC();
+			double co = ship.getChimney().getFlowrateCO();
+			double so2 = ship.getChimney().getFlowrateSO2();
 
-			new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultquery));
-		} else {
-			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
-			double x0 = coordinateship.getJSONObject(0).getDouble(DATA_KEY_LON);
-			double y0 = coordinateship.getJSONObject(0).getDouble(DATA_KEY_LAT);
-			double[] locationshipconverted0 = CRSTransformer.transform("EPSG:4326", epsgActive,
-					new double[] { x0, y0 });
-			double[] locationshipconverted1 = CRSTransformer.transform("EPSG:4326", epsgActive,
-					new double[] { x0+0.1, y0+0.1 });
-			try {
-				String fileContext = FileUtils.readFileToString(file);
-				fileContext = fileContext.replaceAll("351474", "" + locationshipconverted0[0]);
-				fileContext = fileContext.replaceAll("133855", "" + locationshipconverted0[1] );
-				fileContext = fileContext.replaceAll("351476", "" + locationshipconverted1[0]);
-				fileContext = fileContext.replaceAll("139903", "" +locationshipconverted1[1] );
-				new QueryBroker().putLocal(dataPath + "/"+filename, fileContext); 
-			} catch (IOException e) {
-				logger.error(e.getMessage());
+			double area = Math.PI * Math.pow(ship.getChimney().getDiameter() / 2, 2);
+			double massflowrate = ship.getChimney().getMixtureMassFlux(); // in kg/s
+			double density = ship.getChimney().getMixtureDensity(); // kg/m3
+			double velocity = massflowrate / area / density; // m/s
 
-			}
+			String[] content = new String[21];
+			content[0] = "8";
+			double shipx = ship.getXCoord();
+			double shipy = ship.getYCoord();
+			double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", epsgActive,
+					new double[] { shipx, shipy });
+			content[1] = "" + locationshipconverted[0];
+			content[2] = "" + locationshipconverted[1];
+			content[3] = String.valueOf(ship.getChimney().getHeight());// QUERY FROM CHIMNEY height //in m
+			content[4] = "" + velocity;// DERIVED FROM CHIMNEY velocity
+			content[5] = String.valueOf(ship.getChimney().getMixtureTemperature()-273);// QUERY FROM CHIMNEY //temperature celcius
+			content[6] = String.valueOf(ship.getChimney().getDiameter()/2);// QUERY FROM CHIMNEY
+																							// radius in m
+			content[7] = "10"; // constant unused building height
+			content[8] = "20";// constant unused building width;
+			//this value is in knot, but in Kang's document, it should be in m/s
+			content[9] = "0"; // Disable moving point source model
+			content[10] = "0";
+			content[11] = "0";// circularangle assume it moves straightline
+			content[12] = "0";// moving starting time;
+			content[13] = "3600";// moving ending time;
+			content[14] = "" + kgsTokgYear(nox);
+			content[15] = "" + kgsTokgYear(voc); // voc
+			content[16] = "" + kgsTokgYear(co); // CO
+			content[17] = "" + kgsTokgYear(so2); // SO2
+			content[18] = "-999"; // NH3 not avilable
+			content[19] = "" + kgsTokgYear(emissionratepm25); // pm2.5
+			content[20] = "" + kgsTokgYear(emissionratepm10); // pm10
+			resultquery.add(content);
+		}
 
+		new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultquery));
+    }
+    
+	public void createLinesInput(String dataPath, String filename,Scope sc) {
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+		double x0 = sc.getScopeCentre()[0]; // value not used in simulation, but needs to be within domain
+		double y0 = sc.getScopeCentre()[1];
+		double[] locationshipconverted0 = CRSTransformer.transform("EPSG:4326", epsgActive,
+				new double[] { x0, y0 });
+		double[] locationshipconverted1 = CRSTransformer.transform("EPSG:4326", epsgActive,
+				new double[] { x0+0.1, y0+0.1 });
+		try {
+			String fileContext = FileUtils.readFileToString(file);
+			fileContext = fileContext.replaceAll("351474", "" + locationshipconverted0[0]);
+			fileContext = fileContext.replaceAll("133855", "" + locationshipconverted0[1] );
+			fileContext = fileContext.replaceAll("351476", "" + locationshipconverted1[0]);
+			fileContext = fileContext.replaceAll("139903", "" +locationshipconverted1[1] );
+			new QueryBroker().putLocal(dataPath + "/"+filename, fileContext); 
+		} catch (IOException e) {
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -560,9 +469,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	    new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
 	}
 	
-	public void createControlEmissionFile(JSONObject shipdata,String dataPath,String Filename,Scope sc) throws IOException {
+	public void createControlEmissionFile(int numpoints,String dataPath,String Filename,Scope sc) throws IOException {
 		JSONObject in= new JSONObject();
-		in.put("sourceinput",shipdata);
+		in.put("sourceinput",numpoints);
 		String  modifiedcontent=modifyTemplate(Filename,in,sc);
 		new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
 	}
@@ -687,7 +596,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			return fileContext;
 
 		} else if (filename.contains("cctapm_meta_LSE")||filename.contains("cctapm_meta_PSE")) {
-			int size = inputparameter.getJSONObject("sourceinput").getJSONObject(DATA_KEY_COLLECTION).getJSONArray(DATA_KEY_ITEMS).length();
+			int size = inputparameter.getInt("sourceinput");
            String lseORpse=filename.split("_")[2].split(".inp")[0];     
            File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/cctapm_meta.inp");
    			 fileContext = FileUtils.readFileToString(file);   
