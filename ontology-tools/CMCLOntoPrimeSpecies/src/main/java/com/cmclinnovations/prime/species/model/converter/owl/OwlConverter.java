@@ -44,8 +44,8 @@ public class OwlConverter extends PrimeSpeciesConverterState implements IOwlConv
 	public static void main(String[] args)
 			throws OWLOntologyCreationException, OntoPrimeSpeciesException, ABoxManagementException {
 		ArrayList<String> owlFiles = new ArrayList<String>();
-		String primeFilePath = "file:\\C:\\Users\\jb2197\\Documents\\c4e-jb2197-PrIMeSpeciesOntology\\Data\\Test\\s00006480\\xml";
-		owlFiles.add("file:/C:/Users/jb2197/Documents/c4e-jb2197-PrIMeSpeciesOntology/Data/Test/s00006480/kb/s00006480.owl");
+		String primeFilePath = "file:\\C:\\Users\\jb2197\\Documents\\c4e-jb2197-PrIMeSpeciesOntology\\Test\\s00000074\\xml";
+		owlFiles.add("file:/C:/Users/jb2197/Documents/c4e-jb2197-PrIMeSpeciesOntology/Test/kb/s00000074.owl");
 //		owlFiles.add("file:/C:/Users/jb2197/Documents/c4e-jb2197-PrIMeSpeciesOntology/Data/Test/kb/POLIMI_H2CO_1412.owl");
 //		new OwlConverter().convert(owlFiles, primeFilePath);
 	}
@@ -110,11 +110,11 @@ public class OwlConverter extends PrimeSpeciesConverterState implements IOwlConv
 //				"PropertyValue(base:Element_AR"+", rdfs:label, ?v)\r\n" + 
 //				"}";
 		
-		String q = "PREFIX base: <http://www.theworldavatar.com/kb/ontospecies/s00006480.owl#>\r\n" + 
+		String q = "PREFIX base: <http://www.theworldavatar.com/kb/ontospecies/s00006480.owl/>\r\n" + 
 				"PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\r\n" + 
-				"PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\r\n" + 
+				"PREFIX OntoKin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl/>\r\n" + 
 				"PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\r\n" + 
-				"PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>\r\n" + 
+				"PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl/>\r\n" + 
 				"SELECT ?v WHERE {\r\n" + 
 //				"PropertyValue(base:Species_2404722298400900"+", skos:altLabel, ?v)\r\n" + 
 //				"PropertyValue(base:Species_2404722298400900"+", rdfs:label, ?v)\r\n" + 

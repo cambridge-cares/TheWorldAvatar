@@ -97,7 +97,8 @@ public class EnergyStorageSystem extends JPSAgent {
      * @throws InterruptedException
      */
  	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
-		
+ 		baseUrl =baseUrl.replace("\\", "/");
+ 		baseUrl =baseUrl.replace("//", "/");
 		modifyTemplate(baseUrl,modelname);		
 		logger.info("Start");
 		//If user does not have GAMSDIR on, replace the following with the location of his GAMS
