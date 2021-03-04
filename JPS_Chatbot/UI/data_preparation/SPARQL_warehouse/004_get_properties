@@ -1,0 +1,7 @@
+#All properties with descriptions and aliases and types
+SELECT ?prop ?propLabel  ?propAltLabel WHERE {
+  wd:%s ?property ?x .
+  ?prop wikibase:directClaim ?property .
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+GROUP BY  ?prop ?propLabel ?propAltLabel

@@ -106,8 +106,8 @@ public class EnergyStorageSystemTest extends TestCase {
 	 * @throws InterruptedException
 	 */
 	public void testModifyTemplate() throws IOException, InterruptedException{
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_ESS";
+//		String dataPath = QueryBroker.getLocalDataPath();
+//		String baseUrl = dataPath + "/JPS_ESS";
 		EnergyStorageSystem a = new EnergyStorageSystem();
 		try {
 			a.runGAMS(baseUrl);
@@ -229,12 +229,7 @@ public class EnergyStorageSystemTest extends TestCase {
 		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/"+optimizationresult, jo.toString());
 		jo.put("batterylist",new JSONObject(result2).getJSONArray("batterylist"));
 		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
-		File file = new File( baseUrl + "\\"+scenarioName+".json");
-		assertTrue(file.exists()); //check that scenario exists
-		File file2 = new File(baseUrl +"\\localhost_8080");
-		assertTrue(file2.exists());
-		File file3 = new File(baseUrl +"\\www_jparksimulator_com");
-		assertTrue(file3.exists());
+		
 	}
 	
 	
