@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -19,7 +20,11 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-
+/** Ontology creator
+ * 
+ * @author KADITYA01
+ *
+ */
 public class TimeSeriesConverter {
 	
 	private OntClass mainobjclass = null;
@@ -67,72 +72,78 @@ public class TimeSeriesConverter {
 		Mvar=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar");
 		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
 	}
-	
+	/** create Query for Solar Panel
+	 * 
+	 * @return String querystring for solar panel
+	 */
+	public static SelectBuilder createQueryForPowerGeneratorPV() {
+		SelectBuilder sb = new SelectBuilder()
+				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+				.addVar("?Pg").addVar("?Qg")
+				.addWhere("?entity", "a", "j1:PowerGenerator")
+				.addWhere("?entity", "j2:isModeledBy", "?model")
+				
+				.addWhere("?model", "j5:hasModelVariable" ,"?Pg")
+				.addWhere("?Pg", "a" ,"j3:Pg")
+				.addWhere("?Pg", "j2:hasValue" ,"?vpg")
+				.addWhere("?vpg", "j2:numericalValue" ,"?activepowervalue")
+				
+				.addWhere("?model", "j5:hasModelVariable" ,"?Qg")
+				.addWhere("?Qg", "a" ,"j3:Qg")
+				.addWhere("?Qg", "j2:hasValue" ,"?vqg")
+				.addWhere("?vqg", "j2:numericalValue" ,"?reactivepowervalue");
+		return sb;
+				
+	}
+	/** create Query for Electronic Bus
+	 * 
+	 * @return String querystring for Electronic Bus
+	 */
+	public static SelectBuilder createQueryForBus() {
+		SelectBuilder sb = new SelectBuilder()
+				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+				.addVar("?VM").addVar("?VA")
+				.addWhere("?entity", "a", "j1:BusNode")
+				.addWhere("?entity", "j2:isModeledBy", "?model")
+				
+				.addWhere("?model", "j5:hasModelVariable" ,"?VM")
+				.addWhere("?VM", "a" ,"j3:Vm")
+				.addWhere("?VM", "j2:hasValue" ,"?vVM")
+				.addWhere("?vVM", "j2:numericalValue" ,"?VoltMagvalue")
+				
+				.addWhere("?model", "j5:hasModelVariable" ,"?VA")
+				.addWhere("?VA", "a" ,"j3:Va")
+				.addWhere("?VA", "j2:hasValue" ,"?vVA")
+				.addWhere("?vVA", "j2:numericalValue" ,"?VoltAnglevalue");
+		return sb;
+				
+	}
+	/**
+	 * list of properties in 1 owl file 
+	 * + list of values of them
+	 * + list of units of them
+	 * 
+	 * check if the value properties is exist in the beginning, if yes, delete; if no direct create and link it to the properties
+	 * how many time series
+	 * @param jenaOwlModel
+	 * @param mainobjectname2
+	 * @param Prefix
+	 * @param readingFromCSV
+	 * @param unit
+	 * @param flag
+	 * @throws FileNotFoundException
+	 * @throws URISyntaxException
+	 */
 	public void doConversionForTimeSeries(OntModel jenaOwlModel, String mainobjectname2,String Prefix,List<String[]> readingFromCSV, List<Individual> unit,String flag) throws FileNotFoundException, URISyntaxException{
 
-		/**
-		 * list of properties in 1 owl file 
-		 * + list of values of them
-		 * + list of units of them
-		 * 
-		 * check if the value properties is exist in the beginning, if yes, delete; if no direct create and link it to the properties
-		 * how many time series
-		 * 
-		 */
-		
-		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "SELECT ?Pg ?Qg "
-
-				+ "WHERE {?entity  a  j1:PowerGenerator  ."
-				+ "?entity   j2:isModeledBy ?model ."
-
-				+ "?model   j5:hasModelVariable ?Pg ." 
-				+ "?Pg  a  j3:Pg  ." 
-				+ "?Pg  j2:hasValue ?vpg ."
-				+ "?vpg   j2:numericalValue ?activepowervalue ." // pg
-
-				+ "?model   j5:hasModelVariable ?Qg ." 
-				+ "?Qg  a  j3:Qg  ." 
-				+ "?Qg  j2:hasValue ?vqg ."
-				+ "?vqg   j2:numericalValue ?reactivepowervalue ." // qg
-				+ "}" ;
-		
-		
-		String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "SELECT ?VM ?VA "
-
-				+ "WHERE {?entity  a  j1:BusNode  ." 
-				+ "?entity   j2:isModeledBy ?model ."
-
-				+ "?model   j5:hasModelVariable ?VM ." 
-				+ "?VM  a  j3:Vm  ." 
-				+ "?VM  j2:hasValue ?vVM ."
-				+ "?vVM   j2:numericalValue ?VoltMagvalue ." // Vm
-
-				+ "?model   j5:hasModelVariable ?VA ." 
-				+ "?VA  a  j3:Va  ." 
-				+ "?VA  j2:hasValue ?vVA ."
-				+ "?vVA   j2:numericalValue ?VoltAnglevalue ." // Va
-
-//				+ "?model   j5:hasModelVariable ?BKV ." 
-//				+ "?BKV  a  j3:baseKV  ." 
-//				+ "?BKV  j2:hasValue ?vBKV ."
-//				+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
-				+ "}" ;
+		String genInfo =createQueryForPowerGeneratorPV().buildString() ;
+		String busInfo = createQueryForBus().buildString();
 		ResultSet resultSet = JenaHelper.query(jenaOwlModel, busInfo);
 		int[]indexcsv= {5,6};
 		if(flag.contains("gen")) {
@@ -176,7 +187,14 @@ public class TimeSeriesConverter {
 		}
 		
 	}
-	
+	/**Used to create OWL files
+	 * 
+	 * @param readingFromCSV {"year","monthdate","time","PGen","QGen","VmPu","Va"} format 
+	 * @param flag gen Or bus
+	 * @param Prefix http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/ or any respective folder
+	 * @param filename PVXX.owl or EBusXX.owl
+	 * @throws Exception
+	 */
 	public void startConversion(List<String[]> readingFromCSV,String flag,String Prefix,String filename) throws Exception {
 		OntModel jenaOwlModel = JenaHelper.createModel(Prefix+filename);
 		initOWLClasses(jenaOwlModel);
@@ -199,7 +217,10 @@ public class TimeSeriesConverter {
 		}
 		
 	}
-	
+	/** helper function to create preliminary PV, bus files
+	 * 
+	 * @throws Exception
+	 */
 	public void executeConversion() throws Exception {
 		System.out.println("Starting Process");
 		TimeSeriesConverter converter = new TimeSeriesConverter();
@@ -212,6 +233,11 @@ public class TimeSeriesConverter {
 
 			
 	}
+	/** main method to create preliminary OWL files for later updates
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception {
 		
 		new TimeSeriesConverter().executeConversion();

@@ -140,7 +140,7 @@ public class LocalOntologyModelManagerTest extends TestCase {
         try {
             assertFalse(file.exists());
             assertNotNull(chimney);
-            lomm.saveToOwl(chimney, iri);
+            lomm.saveToOwl(chimney, iri, "123");
             assertTrue(file.exists());
         } catch (Exception e) {
             throw new JPSRuntimeException(e);

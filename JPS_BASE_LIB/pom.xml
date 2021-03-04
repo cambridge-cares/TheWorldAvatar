@@ -26,27 +26,40 @@
   </properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-	<dependency>
-	    <groupId>com.google.guava</groupId>
-	    <artifactId>guava</artifactId>
-	    <version>29.0-jre</version>
-	</dependency >
 		<dependency>
-	    <groupId>commons-lang</groupId>
-	    <artifactId>commons-lang</artifactId>
-	    <version>2.6</version>
-	</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>29.0-jre</version>
+		</dependency >
+			<dependency>
+		    <groupId>commons-lang</groupId>
+		    <artifactId>commons-lang</artifactId>
+		    <version>2.6</version>
+		</dependency>
+		 <dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.7.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-beans</artifactId>
-		<version>${spring-version}</version>
-	</dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.7.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<version>5.7.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
 			<!-- Spring MVC for Servlet Environments (depends on spring-core, spring-beans, 
 			spring-context, spring-web) Define this if you use Spring MVC with a Servlet 
 			Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
@@ -98,22 +111,40 @@
 			<version>4.5.5</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-arq</artifactId>
-			<version>3.7.0</version>
-		</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-arq -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-arq</artifactId>
+    <version>3.16.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-querybuilder -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-querybuilder</artifactId>
+    <version>3.16.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-rdfconnection -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-rdfconnection</artifactId>
+    <version>3.16.0</version>
+</dependency>
 
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>jena-shaded-guava</artifactId>
-			<version>3.7.0</version>
-		</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-shaded-guava -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-shaded-guava</artifactId>
+    <version>3.16.0</version>
+</dependency>
+
 		<dependency>
 			<groupId>org.orbisgis</groupId>
 			<artifactId>cts</artifactId>
 			<version>1.5.1</version>
 		</dependency>
+
+
 	<!-- https://mvnrepository.com/artifact/net.lingala.zip4j/zip4j -->
 	<dependency>
 	    <groupId>net.lingala.zip4j</groupId>
@@ -126,5 +157,50 @@
 			<version>2.1.5</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-jdbc-driver-mem -->
+	<dependency>
+	    <groupId>org.apache.jena</groupId>
+	    <artifactId>jena-jdbc-driver-mem</artifactId>
+	    <version>3.16.0</version>
+	</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-jdbc-core -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-jdbc-core</artifactId>
+    <version>3.16.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-jdbc-driver-remote -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-jdbc-driver-remote</artifactId>
+    <version>3.16.0</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-jdbc -->
+<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-jdbc</artifactId>
+    <version>3.16.0</version>
+    <type>pom</type>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>3.5.7</version>
+    <scope>test</scope>
+</dependency>
+		<!--  https://github.com/owlcs/ont-api/wiki/Maven -->
+		<dependency>
+   			<groupId>com.github.owlcs</groupId>
+    		<artifactId>ontapi</artifactId>
+    		<version>2.0.0</version>
+		</dependency> 
+<!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+<dependency>
+    <groupId>commons-codec</groupId>
+    <artifactId>commons-codec</artifactId>
+    <version>1.15</version>
+</dependency>
 	</dependencies>
+
 </project>

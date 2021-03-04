@@ -86,6 +86,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			workingDir.mkdirs();
 		}
 		
+		// create global settings
+		((ObjectNode) modsJsonNode).set("global", new ObjectMapper().readTree(collectGlobal()));
 		// create algorithms node
 		((ObjectNode) modsJsonNode).set("algorithms", new ObjectMapper().readTree(INITIALISATION_STRING_ALGORITHMS));
 		// create models node
@@ -149,6 +151,22 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	private void init() {
 		initMoDSInputs = new InitMoDSInputs(modsMechCalibAgentProperty);
 		initMoDSInputs.init();
+	}
+	
+	/**
+	 * Generate string of Global node in MoDS input file. 
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	public String collectGlobal() throws IOException, MoDSMechCalibAgentException {
+		LinkedHashMap<String, String> globalDetails = new LinkedHashMap<String, String>();
+		globalDetails.put("delete_run_dir", "always");
+		globalDetails.put("max_run_look_back", "10");
+		String globalJson = new JSONObject().put("details", collectDetails(globalDetails)).toString();
+		
+		return globalJson;
 	}
 	
 	/**

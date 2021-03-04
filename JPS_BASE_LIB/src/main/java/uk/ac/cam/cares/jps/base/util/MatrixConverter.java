@@ -100,7 +100,11 @@ public class MatrixConverter {
 		StringTokenizer tokenizer = new StringTokenizer(sClean, "\n");
 		
 		while (tokenizer.hasMoreTokens()) {
-			String[] row = asArray(fromCsvRow(tokenizer.nextToken()));
+			// Changed from String[] row = asArray(fromCsvRow(tokenizer.nextToken()));
+			// Previously there is an issue if there are empty cells, e.g. two commas in a row
+			// Note that this still does not work if there is a string with comma in between
+			// e.g. ,"abc, abc",
+			String[] row = tokenizer.nextToken().split(",");
 			result.add(row);
 		}
 		

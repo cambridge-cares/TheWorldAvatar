@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.ship.HKUPollutionRetriever;
@@ -20,97 +22,29 @@ import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 public class CoordinationDataCollection extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 		
-	public JSONObject executeSGDataADMS(JSONObject jo) throws ExecutionException, InterruptedException {
-		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "11564077.989");
-		upcorn.put("uppery", "143305.896");
-		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "11560879.832");
-		lowcorn.put("lowery", "140107.739");
-		JSONObject joregion = new JSONObject();
-		joregion.put("srsname","EPSG:3857");
-		joregion.put("lowercorner",lowcorn);
-		joregion.put("uppercorner",upcorn);
-		jo.put("region", joregion);
+	public JSONObject executeSGDataADMS() {
+		JSONObject jo = new JSONObject();
+		Region.putRegionAndStation(jo, 1);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
-
 		return jo;
 	}
-	public JSONObject executeSGDataEPISODE(JSONObject jo) throws ExecutionException, InterruptedException {
-	
-		//SG episode
-		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "11572101.89");
-		upcorn.put("uppery", "151860.32");
-		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "11552101.832");
-		lowcorn.put("lowery", "131707.739");
-		JSONObject joregion = new JSONObject();
-		joregion.put("srsname","EPSG:3857");
-		joregion.put("lowercorner",lowcorn);
-		joregion.put("uppercorner",upcorn);
-		jo.put("region", joregion);
+	public JSONObject executeSGDataEPISODE() {
+		JSONObject jo = new JSONObject();
+		Region.putRegionAndStation(jo, 2);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
-		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002");
 		return jo;
 	}
 	
-	public void executeHKData(JSONObject jo){
-		//HK episode
-//		JSONObject upcorn = new JSONObject();
-//		upcorn.put("upperx", "12720578.56");
-//		upcorn.put("uppery", "2562555.26");
-//		JSONObject lowcorn = new JSONObject();
-//		lowcorn.put("lowerx", "12694101.21");
-//		lowcorn.put("lowery", "2534900.06");
-//		JSONObject joregion = new JSONObject();
-//		joregion.put("srsname","EPSG:3857");
-//		joregion.put("lowercorner",lowcorn);
-//		joregion.put("uppercorner",upcorn);
-//		jo.put("region", joregion);
-	
-	
-//		callAgent(jo);
-	}
-	
-	public JSONObject executeHKDataADMS(JSONObject jo) throws ExecutionException, InterruptedException {
-		JSONObject upcorn = new JSONObject();
-//		upcorn.put("upperx", "12708579.81");
-//		upcorn.put("uppery", "2547126.72");
-//		JSONObject lowcorn = new JSONObject();
-//		lowcorn.put("lowerx", "12706653.262");
-//		lowcorn.put("lowery", "2545200.172");
-		upcorn.put("upperx", "12711879.81");
-		upcorn.put("uppery", "2550426.72");
-		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "12706653.262");
-		lowcorn.put("lowery", "2545200.172");
-		JSONObject joregion = new JSONObject();
-		joregion.put("srsname","EPSG:3857");
-		joregion.put("lowercorner",lowcorn);
-		joregion.put("uppercorner",upcorn);
-		jo.put("region", joregion);
+	public JSONObject executeHKDataADMS() {
+		JSONObject jo = new JSONObject();
+		Region.putRegionAndStation(jo, 3);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-		jo.put("airStationIRI","http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-001.owl#AirQualityStation-001");
-
 		return jo;
 	}
-	public JSONObject executeHKDataEPISODE(JSONObject jo) throws ExecutionException, InterruptedException {
-
-		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12720578.56");
-		upcorn.put("uppery", "2562555.26");
-		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "12694101.21");
-		lowcorn.put("lowery", "2534900.06");
-		JSONObject joregion = new JSONObject();
-		joregion.put("srsname","EPSG:3857");
-		joregion.put("lowercorner",lowcorn);
-		joregion.put("uppercorner",upcorn);
-		jo.put("region", joregion);
+	public JSONObject executeHKDataEPISODE() {
+		JSONObject jo = new JSONObject();
+		Region.putRegionAndStation(jo, 4);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
-		jo.put("airStationIRI","http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
 		return jo;
 	}
 
@@ -137,12 +71,15 @@ public class CoordinationDataCollection extends HttpServlet {
 
 	}
 
+	public void callAgent(JSONObject jo) {
+		// This is only used in CMCL
+		jo.put("reactionmechanism", "none");
+		AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/dispersion/coordination",jo.toString());
+	}
+	
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
 		JSONObject jo = new JSONObject();
-		JSONObject jo2 = new JSONObject();
-		JSONObject jo3 = new JSONObject();
-		JSONObject jo4 = new JSONObject();
 		JSONObject inputjo = AgentCaller.readJsonParameter(req);
 		String scenarioUrl = null;
 		String scenarioName = inputjo.optString("scenarioname");
@@ -154,21 +91,21 @@ public class CoordinationDataCollection extends HttpServlet {
 		System.out.println("CoordinationDataCollection is called with scenarioUrl = " + scenarioUrl);
 		
 		
-		new HKUWeatherRetriever().readWritedata();
-		System.out.println(" finished reading writing data weather");
-		new HKUPollutionRetriever().readWritedata();
-		System.out.println(" finished reading writing airpollution weather");
+//		new HKUWeatherRetriever().readWritedata();
+//		System.out.println(" finished reading writing data weather");
+//		new HKUPollutionRetriever().readWritedata();
+//		System.out.println(" finished reading writing airpollution weather");
 
 		
 		//retrieveShipdata();
 		try {
-			JSONObject episode=executeSGDataEPISODE(jo2);
-			JSONObject adms=executeSGDataADMS(jo);
-			JSONObject episodeHK=executeHKDataEPISODE(jo4);
-			JSONObject admsHK=executeHKDataADMS(jo3);
-			
+			JSONObject episode=executeSGDataEPISODE();
+			JSONObject adms=executeSGDataADMS();
+//			JSONObject episodeHK=executeHKDataEPISODE();
+//			JSONObject admsHK=executeHKDataADMS();
+				
 			callAgent(adms,episode);
-			callAgent(admsHK,episodeHK);
+//			callAgent(admsHK,episodeHK);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -51,6 +51,9 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	
 	private String tranModel = "mix-average";
 	private String rangeOfMultipliers = "100.0";
+	private String flameSpdScaling = "linear";
+	private String activeParamScaling = "logarithmic";
+	private String responseRatio = "1.0";
 	
 	public String getTranModel() {
 		return tranModel;
@@ -66,6 +69,30 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 
 	public void setRangeOfMultipliers(String rangeOfMultipliers) {
 		this.rangeOfMultipliers = rangeOfMultipliers;
+	}
+
+	public String getFlameSpdScaling() {
+		return flameSpdScaling;
+	}
+
+	public void setFlameSpdScaling(String flameSpdScaling) {
+		this.flameSpdScaling = flameSpdScaling;
+	}
+
+	public String getActiveParamScaling() {
+		return activeParamScaling;
+	}
+
+	public void setActiveParamScaling(String activeParamScaling) {
+		this.activeParamScaling = activeParamScaling;
+	}
+
+	public String getResponseRatio() {
+		return responseRatio;
+	}
+
+	public void setResponseRatio(String responseRatio) {
+		this.responseRatio = responseRatio;
 	}
 
 	public ModelCanteraLFS(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -191,6 +218,24 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			setRangeOfMultipliers(rangeOfMultipliers);
 		}
 		
+		// set up scaling for flame speed response
+		String flameSpdScaling = JSonRequestParser.getFlameSpdScaling(otherOptions);
+		if (flameSpdScaling != null && !flameSpdScaling.isEmpty()) {
+			setFlameSpdScaling(flameSpdScaling);
+		}
+		
+		// set up scaling for active parameters
+		String activeParamScaling = JSonRequestParser.getActiveParamScaling(otherOptions);
+		if (activeParamScaling != null && !activeParamScaling.isEmpty()) {
+			setActiveParamScaling(activeParamScaling);
+		}
+		
+		// set up response ratio
+		String responseRatio = JSonRequestParser.getFlameSpdResponseRatio(otherOptions);
+		if (responseRatio != null && !responseRatio.isEmpty()) {
+			setResponseRatio(responseRatio);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -288,6 +333,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		} else if (getTranModel().toLowerCase().contains("multi") || getTranModel().toLowerCase().contains("2")) {
 			model.put("args", Property.MODEL_CANTERA_MULTI_OPT.getPropertyName()+" "+FILE_CANTERA_LFSSIMULATION);
 		}
+		model.put("max_tries", "1");
 		models.put(modelName, model);
 		collectModels(models);
 		
@@ -344,12 +390,12 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		String row = "";
 		String lbAbs = "";
 		String ubAbs = "";
-		double sqrtN = Math.sqrt(caseNames.size());
+		double sqrtRatio = Math.sqrt(Double.parseDouble(getResponseRatio()));
 		List<Double> lb_abs = new ArrayList<>();
 		List<Double> ub_abs = new ArrayList<>();
 		for (int idx = 0; idx < caseNames.size(); idx++) {
-			lb_abs.add(-1*Double.parseDouble(outputErrs.get(idx))*sqrtN);
-			ub_abs.add(Double.parseDouble(outputErrs.get(idx))*sqrtN);
+			lb_abs.add(-1*Double.parseDouble(outputErrs.get(idx))/sqrtRatio);
+			ub_abs.add(Double.parseDouble(outputErrs.get(idx))/sqrtRatio);
 		}
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
@@ -367,7 +413,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			baseParam.setSubtype("subtype_"+"rxn_"+i+"_base");
 			baseParam.setName("rxn_"+i+"_base");
 			baseParam.setPreserveWhiteSpace("true");
-			baseParam.setScaling("linear");
+			baseParam.setScaling(getActiveParamScaling());
 			baseParam.setCaseNamesList(caseNames);
 			baseParam.setModelList(caseModel);
 			
@@ -388,7 +434,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			lfsParam.setSubtype("subtype_"+"rxn_"+i+"_lfs");
 			lfsParam.setName("rxn_"+i+"_lfs");
 			lfsParam.setPreserveWhiteSpace("true");
-			lfsParam.setScaling("linear");
+			lfsParam.setScaling(getActiveParamScaling());
 			lfsParam.setCaseNamesList(caseNames);
 			lfsParam.setModelList(caseModel);
 			
@@ -447,7 +493,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			param.setCaseDetailSep(";");
 			param.setNParamsPerCase("1");
 			param.setPreserveWhiteSpace("true");
-			param.setScaling("linear");
+			param.setScaling(getFlameSpdScaling());
 			param.setCaseNamesList(caseNames);
 			param.setModelList(caseModel);
 			

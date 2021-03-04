@@ -31,6 +31,7 @@ import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MechCalibOutputProcess;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSFileManagement;
+import uk.ac.cam.cares.jps.agent.file_management.marshallr.yrt23.MoDS4yrt23;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -44,7 +45,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 @Controller
-@WebServlet(urlPatterns = {Property.JOB_REQUEST_PATH, Property.JOB_STATISTICS_PATH})
+@WebServlet(urlPatterns = {Property.JOB_REQUEST_PATH, Property.JOB_STATISTICS_PATH, Property.JOB_REQUEST_EVAL_PATH})
 public class MoDSMechCalibAgent extends JPSAgent {
 	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(MoDSMechCalibAgent.class);
@@ -59,6 +60,31 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
 	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSMechCalib Agent";
 	public static final String OUTPUT_PROCESS_FAILED = "Mechanism calibration results process were failed.";
+	public static final String EVAL_CHECK_FAILED = "Mechanism evaluation results were not found.";
+	
+	public static void main(String[] args) {
+		MoDSMechCalibAgent test = new MoDSMechCalibAgent();
+		String[] ratio = new String[] {"6.3","4.98","3.65","2.33","1.0"};
+		for (String r : ratio) {
+			String jsonString = "{\"json\":{\"mods\":{"
+					+ "\"calibrationAlg\":{\"epsilon\":\"0.001\",\"initPoints\":\"3\",\"objectiveFunction\":\"SumOfSquares\","
+					+ "\"rho\":\"0.2\",\"rhoFactor\":\"0.5\",\"nIters\":\"400\"},"
+					+ "\"sensAna\":{\"relPerturbation\":\"1e-3\",\"maxORavg\":\"max\",\"topN\":\"10\"},"
+					+ "\"samplingAlg\":{\"outputInterval\":\"1000\",\"rangeOfMultipliers\":\"100.0\",\"sobolPoints\":\"10000\",\"activeParamScaling\":\"logarithmic\"},"
+					+ "\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\",\"scaling\":\"logarithmic\"},"
+					+ "\"flameSpeedOption\":{\"tranModel\":\"mix-average\",\"scaling\":\"linear\",\"responseRatio\":"
+					+ "\"" + r + "\"},"
+					+ "\"executable\":{\"path\":\"/home/jb2197/Codes_kinetics/mods-backend/outputs/Release/bin/MoDS_mpi\"}},"
+					+ "\"cantera\":{\"environment\":\"pycantera\"}," + "\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\",\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264148_166\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264157_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264156_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264020_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264155_173\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264017_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264158_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264053_71\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264152_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264163_181\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264104_122\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264135_153\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264165_183\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264134_152\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264142_160\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264154_172\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264136_154\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264137_155\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264159_177\"]},"
+					+ "\"kinetics\":{\"numerical\":{\"simEnd\":\"500\"}}}}";
+			test.initAgentProperty();
+			try {
+				test.setUpJob(jsonString);
+			} catch (IOException | MoDSMechCalibAgentException | SlurmJobException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	/**
 	 * Receives requests that match with the URL patterns listed in the<br>
@@ -68,7 +94,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
 		System.out.println(REQUEST_RECEIVED);
-		if (path.equals(Property.JOB_REQUEST_PATH)) {
+		if (path.equals(Property.JOB_REQUEST_PATH) || path.equals(Property.JOB_REQUEST_EVAL_PATH)) {
 			try {
 				validateInput(requestParams);
 			} catch (BadRequestException e) {
@@ -110,19 +136,25 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				throw new BadRequestException(Property.JOB_SETUP_EXPERIMENT_IRI_MISSING.getPropertyName());
 			}
 			
-			List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
-			if (rxnIRI == null || rxnIRI.isEmpty()) {
-				throw new BadRequestException(Property.JOB_SETUP_REACTION_IRI_MISSING.getPropertyName());
-			} else {
-				OntoKinKG ontoKinKg = new OntoKinKG(modsMechCalibAgentProperty);
-				LinkedHashMap<String, String> results;
-				try {
-					results = ontoKinKg.queryReactionsToOptimise(mechanismIRI, rxnIRI);
-					if (results == null || results.isEmpty()) {
-						throw new BadRequestException(Property.JOB_SETUP_MECHANISM_REACTION_MISMATCH.getPropertyName());
+			boolean onlyEval = JSonRequestParser.getIfOnlyEval(requestParams.toString());
+			if (!onlyEval) {
+				List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
+				if (rxnIRI == null || rxnIRI.isEmpty()) {
+					List<String> rxnsMustInclude = JSonRequestParser.getRxnsMustInclude(requestParams.toString());
+					if (rxnsMustInclude == null || rxnsMustInclude.isEmpty()) {
+						throw new BadRequestException(Property.JOB_SETUP_REACTION_IRI_MISSING.getPropertyName());
 					}
-				} catch (MoDSMechCalibAgentException e) {
-					e.printStackTrace();
+				} else {
+					OntoKinKG ontoKinKg = new OntoKinKG(modsMechCalibAgentProperty);
+					LinkedHashMap<String, String> results;
+					try {
+						results = ontoKinKg.queryReactionsToOptimise(mechanismIRI, rxnIRI);
+						if (results == null || results.isEmpty()) {
+							throw new BadRequestException(Property.JOB_SETUP_MECHANISM_REACTION_MISMATCH.getPropertyName());
+						}
+					} catch (MoDSMechCalibAgentException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			
@@ -150,15 +182,20 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 */
 	public JSONObject validateRxnMustInclude(JSONObject requestParams) throws MoDSMechCalibAgentException {
 		try {
-			List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
-			List<String> rxnsMustInclude = JSonRequestParser.getRxnsMustInclude(requestParams.toString());
-			String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(requestParams.toString());
-			for (String rxn : rxnsMustInclude) {
-				OntoKinKG ontoKinKg = new OntoKinKG(modsMechCalibAgentProperty);
-				LinkedHashMap<String, String> rxnIRIandEqu = ontoKinKg.queryReactionBasedOnNo(mechanismIRI, rxn);
-				for (String iri : rxnIRIandEqu.keySet()) {
-					if (!rxnIRI.contains(iri)) {
-						requestParams.getJSONObject("json").getJSONObject("ontokinIRI").getJSONArray("reactionList").put(iri);
+			boolean onlyEval = JSonRequestParser.getIfOnlyEval(requestParams.toString());
+			if (!onlyEval) {
+				List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
+				List<String> rxnsMustInclude = JSonRequestParser.getRxnsMustInclude(requestParams.toString());
+				String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(requestParams.toString());
+				if (rxnsMustInclude != null && !rxnsMustInclude.isEmpty()) {
+					for (String rxn : rxnsMustInclude) {
+						OntoKinKG ontoKinKg = new OntoKinKG(modsMechCalibAgentProperty);
+						LinkedHashMap<String, String> rxnIRIandEqu = ontoKinKg.queryReactionBasedOnNo(mechanismIRI, rxn);
+						for (String iri : rxnIRIandEqu.keySet()) {
+							if (!rxnIRI.contains(iri)) {
+								requestParams.getJSONObject("json").getJSONObject("ontokinIRI").getJSONArray("reactionList").put(iri);
+							}
+						}
 					}
 				}
 			}
@@ -309,7 +346,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
 							updateCalibMech(jobFolder);
-							updateJpbOutputStatus(jobFolder);
+							updateJobOutputStatus(jobFolder);
 						}
 					}
 				}
@@ -337,7 +374,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private boolean updateJpbOutputStatus(File jobFolder) throws JSchException, SftpException, IOException, InterruptedException {
+	private boolean updateJobOutputStatus(File jobFolder) throws JSchException, SftpException, IOException, InterruptedException {
 		File statusFile = Utils.getStatusFile(jobFolder);
 		return updateJobOutputStatus(jobFolder.getName(), statusFile);
 	}
@@ -360,12 +397,22 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				.concat(modsMechCalibAgentProperty.getJsonInputFileName())
 				.concat(modsMechCalibAgentProperty.getJsonFileExtension())));
 		
-		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess(modsMechCalibAgentProperty);
-		String mechOwlOnServer = mechCalibPro.processResults(destDir, jsonString);
-		if (mechOwlOnServer != null && !mechOwlOnServer.isEmpty()) {
-			System.out.println("Mechanism calibration results were successfully processed.");
+		boolean onlyEval = JSonRequestParser.getIfOnlyEval(jsonString);
+		if (!onlyEval) {
+			MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess(modsMechCalibAgentProperty);
+			String mechOwlOnServer = mechCalibPro.processResults(destDir, jsonString);
+			if (mechOwlOnServer != null && !mechOwlOnServer.isEmpty()) {
+				System.out.println("Mechanism calibration results were successfully processed.");
+			} else {
+				throw new JPSRuntimeException(OUTPUT_PROCESS_FAILED);
+			}
 		} else {
-			throw new JPSRuntimeException(OUTPUT_PROCESS_FAILED);
+			boolean evalResults = checkEvalResults(destDir);
+			if (evalResults) {
+				System.out.println("Mechanism evaluation were successfully finished.");
+			} else {
+				throw new JPSRuntimeException(EVAL_CHECK_FAILED);
+			}
 		}
 	}
 	
@@ -387,6 +434,26 @@ public class MoDSMechCalibAgent extends JPSAgent {
 		}
 		br.close();
 		return jsonString;
+	}
+	
+	/**
+	 * Check if evaluation folder exist. 
+	 * 
+	 * @param jobFolderPath
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	private boolean checkEvalResults(String jobFolderPath) throws IOException, MoDSMechCalibAgentException {
+		if (jobFolderPath.endsWith("\\")) {
+			jobFolderPath = jobFolderPath.substring(0,jobFolderPath.length()-1);
+		}
+		File evalFolder = new File(jobFolderPath.concat(File.separator).concat("Evaluation"));
+		if (evalFolder.exists()) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -449,6 +516,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				new File(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getSlurmScriptFileName()).getPath()), 
 				getInputFile(jsonString, jobFolderName), timeStamp);
 		if (setUpMsg != null) {
+			deleteDirectory(new File(jobFolderPath.concat(".zip")));
 			deleteDirectory(new File(jobFolderPath));
 			return jobSubmission.getWorkspaceDirectory().getAbsolutePath().concat(File.separator).concat(jobFolderName);
 		}
@@ -464,9 +532,14 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @throws MoDSMechCalibAgentException
 	 */
 	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSMechCalibAgentException {
-		MoDSFileManagement fileMagt = new MoDSFileManagement(modsMechCalibAgentProperty);
-		
-		jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
+		boolean onlyEval = JSonRequestParser.getIfOnlyEval(jsonString);
+		if (!onlyEval) {
+			MoDSFileManagement fileMagt = new MoDSFileManagement(modsMechCalibAgentProperty);
+			jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
+		} else {
+			MoDS4yrt23 fileMagt = new MoDS4yrt23(modsMechCalibAgentProperty);
+			jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
+		}
 		
 		return Utils.getZipFile(new File(jobFolderPath).getAbsolutePath());
 	}

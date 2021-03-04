@@ -122,6 +122,12 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.25</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.jena/jena-core -->
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-sparqlbuilder</artifactId>
+		    <version>3.4.3</version>
+		</dependency>
 
 	</dependencies>
   

@@ -211,6 +211,16 @@ case util:
      echo $F90
      echo $F90FLAGS
 
+     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/ATDSC3.EXT
+     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/CONST3.EXT
+     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/FDESC3.EXT
+     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/IODECL3.EXT
+     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/NETCDF.EXT
+     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/NOTICE.EXT
+     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/PARMS3.EXT
+     dos2unix ${HOME}/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fixed_src/STATE3.EXT
+     chmod +x ~/citychem-1.3/preproc/bconcc2.2/ioapi3.2/ioapi/fix_src.csh
+     chmod +x ~/citychem-1.3/preproc/auxiliary/srtm_generate_hdr.sh
 #> Write the makefiles using the *.tmpl templates
 #     sed \
 #       -e "s%@{F90}%${F90}%g" \
@@ -282,6 +292,7 @@ case util:
      cd preproc/${mcwind}/
      make -f Makefile.mc clean
      make -f Makefile.mc
+     ln -s ./bin/MCWIND.exe
 
 #> 2 UECT
      cd .. &&  cd ./${uect}/

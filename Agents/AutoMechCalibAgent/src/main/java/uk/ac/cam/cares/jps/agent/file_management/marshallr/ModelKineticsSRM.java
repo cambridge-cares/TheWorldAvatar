@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
 
+import uk.ac.cam.cares.jps.agent.configuration.AutoMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
 import uk.ac.cam.cares.jps.agent.file_management.mods.models.Model;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
@@ -43,6 +44,8 @@ import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
 
 public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private static Logger logger = LoggerFactory.getLogger(ModelKineticsSRM.class);
+	private AutoMechCalibAgentProperty autoMechCalibAgentProperty;
+	
 	private int numOfReactions;
 	private String modelName = new String();
 	private LinkedHashMap<String, String> activeParameters = new LinkedHashMap<String, String>(); // linkedHashMap? 
@@ -68,6 +71,11 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setIgnDelaySpecies(String ignDelaySpecies) {
 		this.ignDelaySpecies = ignDelaySpecies;
+	}
+	
+	public ModelKineticsSRM(AutoMechCalibAgentProperty autoMechCalibAgentProperty) {
+		super(autoMechCalibAgentProperty);
+		this.autoMechCalibAgentProperty = autoMechCalibAgentProperty;
 	}
 	
 	/**
@@ -99,7 +107,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		checkFolderPath(folderTemporaryPath);
 		
 		// create ontology kg instance for query
-		OntoKinKG ontoKinKG = new OntoKinKG();
+		OntoKinKG ontoKinKG = new OntoKinKG(autoMechCalibAgentProperty);
 		// query active parameters
 		LinkedHashMap<String, String> activeParameters = ontoKinKG.queryReactionsToOptimise(mechanismIRI, reactionIRIList);
 		// collect experiment information

@@ -9,16 +9,21 @@ import javax.ws.rs.BadRequestException;
 
 public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
 
-    @Override
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-        JSONObject responseParams = new JSONObject();
-        return responseParams;
+    	validateInput(requestParams);
+    	return requestParams;
     }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        JSONObject responseParams = new JSONObject();
-        return responseParams;
+    	validateInput(requestParams);
+    	return requestParams;
     }
 
     @Override
