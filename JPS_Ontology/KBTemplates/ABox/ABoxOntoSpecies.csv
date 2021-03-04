@@ -16,3 +16,4 @@ Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Temperature,,
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,298.15
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,K
 StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasReferenceTemperature,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,http://www.theworldavatar.com/kb/ontospecies/s00000049.owl#Species_669961921657800,,[Ar]

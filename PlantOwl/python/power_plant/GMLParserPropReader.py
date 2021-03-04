@@ -86,9 +86,6 @@ def getStartFeatureMember():
 def getUpperLimit():
     return config.get('ABOX', 'upper.limit')
 
-def getOutputFilePath():
-    return config.get('ABOX', 'output.file.path')
-
 if __name__ == '__main__':
     print(getNOfMapsInAnAboxFile())
     print(getClassLinearRing())
@@ -112,4 +109,3 @@ if __name__ == '__main__':
     print(getBoundedBy())
     print(getStartFeatureMember())
     print(getUpperLimit())
-    print(getOutputFilePath())
