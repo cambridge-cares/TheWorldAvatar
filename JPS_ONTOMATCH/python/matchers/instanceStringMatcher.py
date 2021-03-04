@@ -19,7 +19,7 @@ class instanceStringMatcher(ElementMatcher):
         e2 = self.T.individualNames[id2]
         #print(e1)
         #print(e2)
-        return StringMatcher.jaro_similarity(e1, e2)
+        return StringMatcher.edit_similarity(e1, e2)
 
 
 
