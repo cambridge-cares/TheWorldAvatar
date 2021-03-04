@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.virtualsensor.sparqltest;
 import java.util.List;
 
 import org.json.JSONObject;
-import org.junit.Test;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -26,7 +25,7 @@ public class ShipSparqlTest extends TestCase {
      * @throws InterruptedException 
      */
     public void testCreateShip () throws InterruptedException {
-        String csvPath = AgentLocator.getPathToWorkingDir(this) + "/ship_latest_consolidated.csv";
+        String csvPath = AgentLocator.getPathToWorkingDir(this) + "/ship_latest_consolidated_plymouth.csv";
         String csvFile=new QueryBroker().readFileLocal(csvPath);
         List<String[]> csv_array = MatrixConverter.fromCsvToArray(csvFile);
         int mmsi, al, aw, ts, tst; double ss, cu, lat, lon; String type;
@@ -81,7 +80,7 @@ public class ShipSparqlTest extends TestCase {
     
     public void testQueryShipIRI() {
     	JSONObject jo = new JSONObject();
-        Region.putRegion(jo, 4);
+        Region.putRegion(jo, 5);
         
         Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
         ShipSparql.GetShipIriWithinScope(sc);
@@ -94,14 +93,36 @@ public class ShipSparqlTest extends TestCase {
 
     public void testShipObject() {
     	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
-    	new Ship(ship_iri);
+    	new Ship(ship_iri,true);
+    	new Ship(ship_iri,false);
     }
     
     public void testChimneyObject() {
 		String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
+    	Chimney chim2 = new Chimney(ship_iri);
+    }
+    
+    public void testUpdateChimney() {
+    	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
     	JSONObject request = new JSONObject();
     	request.put("shipIRI",ship_iri);
     	JSONObject result = new JSONObject(AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/SpeedLoadMapAgent", request.toString()));
-    	new Chimney(result);
+    	Chimney chim = new Chimney(result);
+    	ShipSparql.UpdateShipChimney(ship_iri, chim);
+    }
+    
+    public void testQueryShipCoordinates() {
+    	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship2";
+    	ShipSparql.queryShipCoordinates(ship_iri);
+    }
+    
+    public void testQueryChimneyProperties() {
+    	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
+    	ShipSparql.QueryChimneyProperties(ship_iri);
+    }
+    
+    public void testQueryParticleIRI() {
+    	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
+    	ShipSparql.QueryParticleIRI(ship_iri);
     }
 }
