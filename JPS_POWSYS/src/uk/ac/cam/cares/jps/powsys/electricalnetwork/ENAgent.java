@@ -128,7 +128,7 @@ public class ENAgent extends JPSAgent{
 	        last = line;
 	    }
 		if (last.contains("Converged")) {
-			resjo.put("status", "Converged");
+			resjo.put("status", "converged");
 			try {
 				logger.info("converting PyPower results to OWL files");
 				doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
