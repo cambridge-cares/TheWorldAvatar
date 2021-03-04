@@ -38,7 +38,7 @@ public class SpeedLoadMapAgent extends JPSAgent {
 		JSONObject response = new JSONObject();
 		
 		if (validateInput(requestParams)) {
-			Ship ship = new Ship(requestParams.getString("shipIRI"));
+			Ship ship = new Ship(requestParams.getString("shipIRI"),false);
 
 			double valuecalc=ship.getSpeed()*2500/58.1;
 			if(valuecalc>2500) {
