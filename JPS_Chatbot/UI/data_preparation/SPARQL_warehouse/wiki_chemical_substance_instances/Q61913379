@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q16897539"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "justicidin A"}, "x": {"type": "literal", "value": "C\u2082\u2082H\u2081\u2088O\u2087"}, "altLabel_list": {"type": "literal", "value": "justicidin a"}}]}}

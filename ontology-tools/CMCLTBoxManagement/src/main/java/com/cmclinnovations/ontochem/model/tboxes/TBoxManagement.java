@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.AddOntologyAnnotation;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -17,6 +18,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
@@ -55,9 +57,16 @@ public class TBoxManagement implements ITBoxManagement{
 	public OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	public OWLOntology ontology;
 	public IRI ontologyIRI;
-	public TBoxConfiguration ontoChemKB;
+	public TBoxConfiguration tBoxConfig;
 	public static ApplicationContext applicationContext;
 	public static OntoKinVocabulary appConfigOntoKin;
+	public String SLASH = "/";
+	public String BACKSLASH = "\\";
+	public String FILE_EXT_OWL = ".owl";
+	public String FILE_EXT_RDF = ".rdf";
+	
+	public static final String HTTP_PROTOCOL="http://";
+	public static final String HTTPS_PROTOCOL="https://";			
 	
 	/**
 	 * Creates an OWL class using the name provided. If the name of the parent 
@@ -491,8 +500,13 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void addSingleDataTypeRange(OWLDataProperty dataProperty, String range) throws TBoxManagementException{
-		manager.applyChange(new AddAxiom(ontology,
+		if(range.trim().startsWith(HTTP_PROTOCOL) || range.trim().startsWith(HTTPS_PROTOCOL)){
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLDataPropertyRangeAxiom(dataProperty, dataFactory.getOWLDatatype(range))));
+		}else{
+			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLDataPropertyRangeAxiom(dataProperty, getRange(range))));
+		}
 	}
 	
 	/**
@@ -694,11 +708,11 @@ public class TBoxManagement implements ITBoxManagement{
 		for (String classLabel : classLabels) {
 			if (++labelSequence < 2) {
 				checkClassName(classLabel);
-				if (classLabel.contains("http://")) {
+				if (classLabel.trim().startsWith(HTTP_PROTOCOL)||classLabel.trim().startsWith(HTTPS_PROTOCOL)) {
 					classInOwl = dataFactory.getOWLClass(classLabel.replace(" ", ""));
 				} else {
 					classInOwl = dataFactory.getOWLClass(
-							ontoChemKB.gettBoxIri().concat("#").concat(classLabel.replace(" ", "")));
+							tBoxConfig.gettBoxIri().concat("#").concat(classLabel.replace(" ", "")));
 				}
 			}
 		}
@@ -714,11 +728,11 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private OWLDataProperty createDataProperty(String propertyLabel) throws TBoxManagementException {
-		if(propertyLabel.contains("http://")){
+		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLDataProperty(propertyLabel.replace(" ", ""));
 		}
 		return dataFactory.getOWLDataProperty(
-				ontoChemKB.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+				tBoxConfig.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
 	}
 	
 	/**
@@ -730,11 +744,11 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private OWLObjectProperty createObjectProperty(String propertyLabel) throws TBoxManagementException {
-		if(propertyLabel.contains("http://")){
+		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLObjectProperty(propertyLabel.replace(" ", ""));
 		}
 		return dataFactory.getOWLObjectProperty(
-				ontoChemKB.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+				tBoxConfig.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
 	}
 	
 	/**
@@ -780,11 +794,11 @@ public class TBoxManagement implements ITBoxManagement{
 		if (appConfigOntoKin == null) {
 			appConfigOntoKin = applicationContext.getBean(OntoKinVocabulary.class);
 		}
-		if (ontoChemKB == null) {
-			ontoChemKB = applicationContext.getBean(TBoxConfiguration.class);
+		if (tBoxConfig == null) {
+			tBoxConfig = applicationContext.getBean(TBoxConfiguration.class);
 		}
 		if(ontologyIRI==null){
-			ontologyIRI = IRI.create(ontoChemKB.gettBoxIri());
+			ontologyIRI = IRI.create(tBoxConfig.gettBoxIri());
 		}
 		ontology = manager.createOntology(ontologyIRI);
 		if (ontology == null) {
@@ -798,13 +812,29 @@ public class TBoxManagement implements ITBoxManagement{
 	 */
 	public void saveOntology(String owlFilePath) throws OWLOntologyStorageException {
 		try {
+			if(getOntologyFileNameFromIri(tBoxConfig.gettBoxIri())==null 
+					|| getOntologyFileNameFromIri(tBoxConfig.gettBoxIri()).isEmpty()){
+				throw new OWLOntologyStorageException("Invalid TBox file name provided.");
+			}
 			File file = new File(
-					ontoChemKB.getOntolgyFilePath().concat(ontoChemKB.getOntolgyFileName()));
+					System.getProperty("user.dir").concat(File.separator)
+							.concat(getOntologyFileNameFromIri(tBoxConfig.gettBoxIri())));
 			// Adding metadata to the ontology.
 			representOntologyMetadata();
+			// Adding import statements to the ontology.
+			// Adds the import clause to the OntoChem ABox
+			if(tBoxConfig.gettBoxImport()!=null && tBoxConfig.gettBoxImport().length()>HTTP_PROTOCOL.length()){
+				for(String ontologyBeingImported:tBoxConfig.gettBoxImport().split(",")){
+					if(ontologyBeingImported.trim().startsWith(HTTP_PROTOCOL) || ontologyBeingImported.trim().startsWith(HTTPS_PROTOCOL)){
+						OWLImportsDeclaration importDeclarationABox = dataFactory.getOWLImportsDeclaration(IRI.create(ontologyBeingImported.trim()));
+						manager.applyChange(new AddImport(ontology, importDeclarationABox));
+					}
+				}
+			}
 			manager.saveOntology(ontology, manager.getOntologyFormat(ontology), IRI.create(file.toURI()));
-			logger.info("The OntoChem TBox has been saved under the path "
-					+ ontoChemKB.getOntolgyFilePath().concat(ontoChemKB.getOntolgyFileName()));
+			logger.info("The TBox has been saved under the path "
+					+ System.getProperty("user.dir").concat(File.separator)
+					.concat(getOntologyFileNameFromIri(tBoxConfig.gettBoxIri())));
 		} catch (OWLOntologyStorageException e) {
 			logger.error("The ontology could not be saved.");
 			e.printStackTrace();
@@ -870,7 +900,7 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void representComment() throws TBoxManagementException{
-		String comment = appConfigOntoKin.getAnnotationPropertyValueOfComment();
+		String comment = tBoxConfig.gettBoxComment();
 		if (comment != null && !comment.isEmpty()) {
 			OWLLiteral commentValue = dataFactory.getOWLLiteral(comment);
 			OWLAnnotationProperty commentProperty = dataFactory.getRDFSComment();
@@ -885,17 +915,14 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void representCommitHash() throws TBoxManagementException{
-		try{
-		String commitHash = CtmlConverterUtils.gitCommitHash();
+		//String commitHash = CtmlConverterUtils.gitCommitHash();
+		String commitHash = tBoxConfig.getGitCommitHashValue();
 		if (commitHash != null && !commitHash.isEmpty()) {
 			OWLLiteral commitHashValue = dataFactory.getOWLLiteral(commitHash);
-			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(ontoChemKB
+			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
 					.gettBoxIri().concat("#").concat(appConfigOntoKin.getCompChemGitCommitHash())));
 			OWLAnnotation commitAttributeWithValue = dataFactory.getOWLAnnotation(commit, commitHashValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commitAttributeWithValue));
-		}
-		}catch(OntoException e){
-			throw new TBoxManagementException(e.getMessage());
 		}
 	}
 	
@@ -905,7 +932,7 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void representVersion() throws TBoxManagementException{
-		String version = appConfigOntoKin.getAnnotationPropertyValueOfVersion();
+		String version = tBoxConfig.gettBoxVersion();
 		if (version != null && !version.isEmpty()) {
 			OWLLiteral versionValue = dataFactory.getOWLLiteral(version);
 			OWLAnnotationProperty versionProperty = dataFactory.getOWLAnnotationProperty(CtmlConverterUtils.OWL_URL.concat(CtmlConverterUtils.OWL_VERSIONINFO));
@@ -939,5 +966,26 @@ public class TBoxManagement implements ITBoxManagement{
 		SimpleDateFormat simpleDateFormat =new SimpleDateFormat(pattern, new Locale("en", "UK"));
 		String date = simpleDateFormat.format(new Date());
 		return date;
+	}
+	
+	/**
+	 * Extracts the OWL or RDF file name from the IRI of the file.
+	 * 
+	 * @param iri
+	 * @return
+	 */
+	private String getOntologyFileNameFromIri(String iri){
+		if (!(iri.contains(FILE_EXT_OWL) || iri.contains(FILE_EXT_RDF))){
+			return null; 
+		}
+		if(iri.contains(SLASH)){
+			String tokens[] = iri.split(SLASH);
+			return tokens[tokens.length-1];
+		} else if(iri.contains(BACKSLASH)){
+			String tokens[] = iri.split(BACKSLASH);
+			return tokens[tokens.length-1];
+		} else{
+			return null;
+		}
 	}
 }

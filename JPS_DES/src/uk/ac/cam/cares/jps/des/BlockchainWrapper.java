@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.des;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.net.ConnectException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,37 +26,62 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns = {"/GetBlock" })
-public class BlockchainWrapper extends JPSHttpServlet{
+public class BlockchainWrapper extends JPSAgent{
 	private static String ElectricPublicKey = "0xCB37bDCAfb98463d5bfB573781f022Cd1D2EDB81";
 	private static String SolarPublicKey = "0xAf70f1C1D6B1c0C28cbDCa6b49217Aa6FA17b6A8";
 	private static String addrOfI = "industrial.json";
 	private static String addrOfC = "commercial.json";
 	private static String addrOfR = "residential.json";
 	private static final long serialVersionUID = 1L;
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+    }
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 
 		JSONObject result=new JSONObject();
 		JSONObject graData =new JSONObject();
-		graData = provideJSONResult(requestParams.getString("directory"));
+		graData = provideJSONResult(getLastModifiedDirectory());
+
 		JSONObject jo = determineValue (graData);
 		try {
 			result = calculateTrade(jo);
 			graData.put("txHash", result.get("txHash"));
 			graData.put("sandr", result.get("sandr"));
-			
+
+			return graData;
 		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return graData;
 		}
-		return graData;
  
 	}
+	 /**
+     * Gets the latest file created using rdf4j
+     * @return last created file
+     */
+    public String getLastModifiedDirectory() {
+    	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
+		List<String> lst = null;
+    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
+		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
+		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
+    	return listmap.get(0)[0];
+    }
+
+	
 	/** creates transaction between sender and receiver. 
 	 * 
 	 * @param sender String address of Ethereum account
@@ -75,7 +102,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		}else if (moneyEth < Math.pow(10, -1)) {
 			moneyEth = 0;
 		}
-		Credentials credentials = WalletUtils.loadCredentials("Caesar1!",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
+		Credentials credentials = WalletUtils.loadCredentials("PASSWORD",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
 		return  transactionReceipt.getTransactionHash();
 		
@@ -83,7 +110,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
     
 	/**
 	 * Derive and estimate the values to be transacted over the blockchain, to the closest half an hour. 
-     *
+     * calculates the power consumption for either the next hour or the current hour
 	 * @param basefold
 	 * @return
 	 * @throws JSONException
@@ -100,7 +127,6 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		for (int i = 0; i< tim.length; i++) {
 			Date date1;
 				date1 = sdf.parse(tim[i]);
-				// TODO Auto-generated catch block
 			long difference = date2.getTime() - date1.getTime();
 			difference = difference/60000;
 			if (difference < 29) {
@@ -121,8 +147,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 
 		return jo;
     }
-	/**
-     * helper function to determineValue()s
+	/** helper function to determineValue()s
 	 * 
 	 * @param index
 	 * @param inbetween
@@ -148,7 +173,14 @@ public class BlockchainWrapper extends JPSHttpServlet{
         }
         return jo;
     }
-	public JSONObject calculateTrade(JSONObject jo) {
+	/** parse values of solar, grid supply for that hour, and 
+	 * sends value to doTransact to create Transaction as well as 
+	 * determineValue() to check the value in terms of Ether
+	 * 
+	 * @param jo
+	 * @return
+	 */
+    public JSONObject calculateTrade(JSONObject jo) {
 		double totalsolar = Double.parseDouble((String) jo.get("solar"));
 		double totalelectric =Double.parseDouble((String) jo.get("gridsupply"));
 		double totalindus = Double.parseDouble((String)jo.get("industrial"));

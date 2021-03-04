@@ -5,7 +5,8 @@ from commercial import commercial
 from residential import residential 
 from industrial import industrial
 from solarRadiation import solar 
-
+def rotate(lst, h):
+	return (lst[h:] + lst[:h])
 def system(AirTemp, Radiation, alpha_sc, a_ref, Il_ref, Io_ref,
  Rs_ref, Rsh_ref, Tc_ref, G_ref, Eg_ref, k, Ns, household_below,
   household_above, flex1, sche1, low1, high1, un1, bcap1, flex2,
@@ -92,7 +93,9 @@ def system(AirTemp, Radiation, alpha_sc, a_ref, Il_ref, Io_ref,
 				 Tcwi, Ccw, z2, U0, E1, E2, I0, R, nc2, eta,
 				  Tlow, Thigh, Ilow, Ihigh, quantity, Ni)
 		load[4] = out4[2]
-
+		now = datetime.now()
+		current_time = now.strftime("%H:%M:%S")
+		print(" Current Iteration " + current_time)
 		try:
 			if check_termination([out0[0], out1[0], out2[0], out3[0], out4[0]],
 			 penetration):
@@ -217,13 +220,18 @@ if __name__ == "__main__":
 	#Default Values; we don't have a OWL for them since they're arbitrary
 	business_below = 1.14*1/50*0.01*np.ones(24)
 	business_above = 1.14*1/50*0.02*np.ones(24)
-	HeatSource = np.array([5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 25.0, 25.0, 25.0, 25.0, 25.0,
-	 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0])
-	RoomTempLow = np.array([19.0, 19.0, 19.0, 19.0, 19.0, 19.0, 19.0, 21.0, 21.0, 21.0, 21.0,
-	 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 19.0, 19.0, 19.0, 19.0, 19.0, 19.0])
-	RoomTempHigh = np.array([30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 25.8, 25.8, 25.8, 25.8,
-	 25.8, 25.8, 25.8, 25.8, 25.8, 25.8, 25.8, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0])
-	InitialTemp = np.array([28.3, 28.2, 28.6])
+	#Rotation of the hour
+	hour = now.hour
+	HeatSource = np.array(rotate([5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 25.0, 25.0, 25.0, 25.0, 25.0,
+	 25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0], hour))
+	RoomTempLow = np.array(rotate([19.0, 19.0, 19.0, 19.0, 19.0, 19.0, 19.0, 21.0, 21.0, 21.0, 21.0,
+	 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 21.0, 19.0, 19.0, 19.0, 19.0, 19.0, 19.0], hour))
+	RoomTempHigh = np.array(rotate([30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 25.8, 25.8, 25.8, 25.8,
+	 25.8, 25.8, 25.8, 25.8, 25.8, 25.8, 25.8, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0], hour))
+	#Supposed to be the ambient temperature of the building. 
+	#get previous hour's temperature
+	previ_hourTemp = RoomTempHigh[hour-1]    
+	InitialTemp = previ_hourTemp*np.ones(3)
 
 
 	A = np.array([[-1/C1*(K1+K2+K3+K5), 1/C1*(K1+K2), 1/C1*K5], [1/C2*(K1+K2), -1/C2*(K1+K2), 0], [1/C3*K5, 0, -1/C3*(K4+K5)]])
@@ -265,7 +273,10 @@ if __name__ == "__main__":
 	industrial = result[4][2]
 	renewableGen = result[5]
 	gridGen = residential + commercial + industrial - renewableGen
-
+	#clear to zero
+	gridGen = gridGen.clip(min=0)
+	# for some reason, parsing the file in Claudius doesn't work, so this line is added
+	folder = folder.replace("//", "/")
 	np.savetxt(folder +"/totgen.csv",[residential, commercial, industrial, renewableGen, gridGen], delimiter=",")
 	np.savetxt(folder +"/rh1.csv",[out0[3],out0[4], out0[5],out1[3],out1[4],out1[5],out2[3],out2[4], out2[5]], delimiter="," )
 	returnResultsToJava(result)

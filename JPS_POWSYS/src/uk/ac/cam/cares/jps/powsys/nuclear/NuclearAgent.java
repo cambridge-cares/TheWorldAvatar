@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.powsys.nuclear;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +11,19 @@ import java.util.Random;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -32,12 +36,14 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = {"/NuclearAgent/startsimulation", "/NuclearAgent/processresult"})
-public class NuclearAgent extends JPSHttpServlet {
+public class NuclearAgent extends JPSAgent {
 
     public static final String SIM_START_PATH = "/NuclearAgent/startsimulation";
     public static final String SIM_PROCESS_PATH = "/NuclearAgent/processresult";
@@ -51,10 +57,11 @@ public class NuclearAgent extends JPSHttpServlet {
     
     public void runGAMSAsync(String baseUrl) throws IOException, InterruptedException {
     	modifyTemplate(baseUrl, modelname);
-        String executablelocation = "C:/GAMS/win64/26.1/gams.exe";
+        String executablelocation = Util.getGAMSLocation();
         String folderlocation = baseUrl;
         String content=executablelocation+" "+baseUrl+"/"+modelname+",WDIR="+folderlocation+",PROCDIR="+folderlocation+",CURDIR="+folderlocation+",SCRDIR="+folderlocation+" LO=2";
-
+        
+//      CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
         Process p = Runtime.getRuntime().exec(content); //used w/o waitFor() to be async
         System.out.println("Done");
     }
@@ -96,7 +103,7 @@ public class NuclearAgent extends JPSHttpServlet {
 
         logger.info("Start");
         //logger.info("separator= "+File.separator);
-        String executablelocation = "C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
+        String executablelocation = Util.getGAMSLocation(); //depends where is in claudius
         String folderlocation =baseUrl;
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[5];
@@ -110,6 +117,8 @@ public class NuclearAgent extends JPSHttpServlet {
         String cmdArrayinstring = cmdArray[0] + " " + cmdArray[1] + "," + cmdArray[2] + "," + cmdArray[3] + " " + cmdArray[4];
 
         logger.info(cmdArrayinstring);
+      //TODO: Disable this until we get a waitFor run time
+//      CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
         Process p = Runtime.getRuntime().exec(cmdArray);
         p.waitFor();
 
@@ -138,41 +147,76 @@ public class NuclearAgent extends JPSHttpServlet {
     protected void setLogger() {
         logger = LoggerFactory.getLogger(NuclearAgent.class);
     }
-
     @Override
-    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    	if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
+	        String lotiri = requestParams.getString("landlot");	        
+	        boolean v = InputValidator.checkIfValidIRI(lotiri);
+	        JSONArray ja =  requestParams.getJSONArray("substitutionalgenerators");
+	        List<String> subGenerators = MiscUtil.toList(ja);
+			if (ja.length()!= 0) {
+				for (int i = 0; i< subGenerators.size(); i++) {
+					if (subGenerators.get(i)!= null) {
+						boolean t = InputValidator.checkIfValidIRI(subGenerators.get(i));
+						if (t == false) {
+							return false;
+						}
+					}
+				}
+			}else {
+				return false;
+			}
+	        return w&v;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        }
+        return false;
+    }
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 
-        JSONObject responseParams = requestParams;
-        String path = request.getServletPath();
+        String path = requestParams.getString("scenarioagentoperation");
+
         System.out.println("path= " + path);
 
-        if (SIM_START_PATH.equals(path)) {
+        if (path.contains(SIM_START_PATH)) {
 
-            JSONObject jofornuc = requestParams;
 
             try {
-                String lotiri = jofornuc.getString("landlot");
-                String iriofnetwork = jofornuc.getString("electricalnetwork");
+            	if (!validateInput(requestParams)) {
+            		throw new JSONException("Nuclear Agent input parameters invalid");
+            	};
+                String lotiri = requestParams.getString("landlot");
+                String iriofnetwork = requestParams.getString("electricalnetwork");
 
-                List<Object> listofplant = jofornuc.getJSONArray("substitutionalgenerators").toList();
-
+                JSONArray ja = requestParams.getJSONArray("substitutionalgenerators");
+    			List<String> listofplant = MiscUtil.toList(ja);
                 boolean runGams = true;
-                if (!jofornuc.isNull(JPSConstants.RUN_SIMULATION)) {
-                    runGams = jofornuc.getBoolean(JPSConstants.RUN_SIMULATION);
+                if (!requestParams.isNull(JPSConstants.RUN_SIMULATION)) {
+                    runGams = requestParams.getBoolean(JPSConstants.RUN_SIMULATION);
                 }
 
-                String dataPath = QueryBroker.getLocalDataPath();
-
-                startSimulation(lotiri, iriofnetwork, (ArrayList) listofplant, dataPath, runGams);
-                notifyWatcher(jofornuc, dataPath + "/" + AGENT_TAG + "/" + NuclearKBCreator.GAMS_OUTPUT_FILENAME,
-                        request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+                String dataPath = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath());
+                startSimulation(lotiri, iriofnetwork, listofplant, dataPath, runGams);
+                notifyWatcher(requestParams, dataPath + "/" + AGENT_TAG + "/" + NuclearKBCreator.GAMS_OUTPUT_FILENAME,
+                		path.replace(SIM_START_PATH, SIM_PROCESS_PATH));
 
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 throw new JPSRuntimeException(e.getMessage(), e);
             }
 
-        } else if (SIM_PROCESS_PATH.equals(path)) {//is the process result still used???
+        } else {//is the process result still used???
 
             try {
                 JSONObject jo = requestParams;
@@ -190,17 +234,17 @@ public class NuclearAgent extends JPSHttpServlet {
                 AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
 
                 // no need to return jo or plants here; this is just for asserting the simulation result in a junit test
-                responseParams = jo;
+                return jo;
 
             } catch (NumberFormatException | URISyntaxException | IOException e) {
                 logger.error(e.getMessage(), e);
                 throw new JPSRuntimeException(e.getMessage(), e);
             }
         }
-        return responseParams;
+        return requestParams;
     }
 
-    public void startSimulation(String lotiri, String iriofnetwork, ArrayList<String> plantlist, String dataPath, boolean runGams) throws IOException, InterruptedException {
+    public void startSimulation(String lotiri, String iriofnetwork,List<String> plantlist, String dataPath, boolean runGams) throws IOException, InterruptedException {
 
         String baseUrl = dataPath + "/" + AGENT_TAG;
         System.out.println("go here datapath= "+baseUrl);
@@ -277,8 +321,8 @@ public class NuclearAgent extends JPSHttpServlet {
     }
 
 
-    public void prepareCSVPartialRemaining(ArrayList<String> plantlist, String iriofnetwork, String baseUrl) throws IOException {
-        OntModel model = ENAgent.readModelGreedy(iriofnetwork);
+    public void prepareCSVPartialRemaining(List<String> plantlist, String iriofnetwork, String baseUrl) throws IOException {
+        OntModel model = Util.readModelGreedy(iriofnetwork);
         String genplantinfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
                 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
                 + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
