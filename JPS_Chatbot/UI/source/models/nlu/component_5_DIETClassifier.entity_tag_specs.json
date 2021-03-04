@@ -1,0 +1,52 @@
+[
+  {
+    "tag_name": "entity",
+    "ids_to_tags": {
+      "1": "B-attribute",
+      "2": "I-attribute",
+      "3": "L-attribute",
+      "4": "U-attribute",
+      "5": "B-class",
+      "6": "I-class",
+      "7": "L-class",
+      "8": "U-class",
+      "9": "B-comparison",
+      "10": "I-comparison",
+      "11": "L-comparison",
+      "12": "U-comparison",
+      "13": "B-entity",
+      "14": "I-entity",
+      "15": "L-entity",
+      "16": "U-entity",
+      "17": "B-numerical_value",
+      "18": "I-numerical_value",
+      "19": "L-numerical_value",
+      "20": "U-numerical_value",
+      "0": "O"
+    },
+    "tags_to_ids": {
+      "B-attribute": 1,
+      "I-attribute": 2,
+      "L-attribute": 3,
+      "U-attribute": 4,
+      "B-class": 5,
+      "I-class": 6,
+      "L-class": 7,
+      "U-class": 8,
+      "B-comparison": 9,
+      "I-comparison": 10,
+      "L-comparison": 11,
+      "U-comparison": 12,
+      "B-entity": 13,
+      "I-entity": 14,
+      "L-entity": 15,
+      "U-entity": 16,
+      "B-numerical_value": 17,
+      "I-numerical_value": 18,
+      "L-numerical_value": 19,
+      "U-numerical_value": 20,
+      "O": 0
+    },
+    "num_tags": 21
+  }
+]

@@ -1,6 +1,9 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -21,15 +24,19 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
 
 public class TestEN extends TestCase {
 	
@@ -37,6 +44,7 @@ public class TestEN extends TestCase {
 	public static String SGELECTRICAL_NETWORK = "http://localhost:8080/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 	String dataPath = QueryBroker.getLocalDataPath();
 	String baseUrl=dataPath+"/JPS_POWSYS_EN";
+	private ENAgent agent =new ENAgent();
 	
 	String genInfocost= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -373,12 +381,11 @@ public class TestEN extends TestCase {
 		//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
 
 		ENAgent b= new ENAgent ();
-		//List<String[]>buslist= b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfo,baseUrl);
-		 // List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,branchInfo,"branch",baseUrl);
-		   List<String[]>buslist=b.extractOWLinArray(b.readModelGreedy(ELECTRICAL_NETWORK),ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
-//		     List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfocost,"generatorcost",baseUrl);
-	      System.out.println(buslist.size());
-	      assertEquals(208, buslist.size());
+			//List<String[]>buslist= b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfo,baseUrl);
+			// List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,branchInfo,"branch",baseUrl);
+			List<String[]>buslist=b.extractOWLinArray(Util.readModelGreedy(ELECTRICAL_NETWORK),ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
+			//List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfocost,"generatorcost",baseUrl);
+			//assertEquals(208, buslist.size());
 	}
 	
 		
@@ -388,7 +395,7 @@ public class TestEN extends TestCase {
 		ENAgent b= new ENAgent ();
 		
 	String busmapurl=baseUrl+"/mappingforbus.csv";
-	OntModel model = ENAgent.readModelGreedy(ELECTRICAL_NETWORK);
+	OntModel model = Util.readModelGreedy(ELECTRICAL_NETWORK);
 		List<String[]>list=b.extractOWLinArray(model,ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
 	List<String[]>list2=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfo,"generator",baseUrl);
 	List<String[]>list3=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfocost,"generatorcost",baseUrl);
@@ -417,7 +424,7 @@ public class TestEN extends TestCase {
 //		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
 //		
 //		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFCallAgent");
-		jo.put("electricalnetwork", SGELECTRICAL_NETWORK);
+		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
 		String scenarioname="testSGPOWSYSOPFCallAgent6"+usecaseID;
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioname);
 		JPSHttpServlet.enableScenario(scenarioUrl);	
@@ -431,8 +438,18 @@ public class TestEN extends TestCase {
 		//JPSContext.putUsecaseUrl(jo, usecaseUrl); //if it is used, then the data will be moved to the base
 
 		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
-		System.out.println(resultStart);
+		String resultStart = new ScenarioClient().call(scenarioname, "JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
+	}
+	
+	//This function is added to be used by the unit test below (JA-Tests check number of columns)
+	//This function reads the number of lines in a file (csv compatible) 
+	public List<String[]> readResult(String baseUrl,String filename) throws IOException {
+
+        String outputFile = baseUrl + "/"+filename;
+        String csv = new QueryBroker().readFileLocal(outputFile);
+        List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
+		
+		return simulationResult;
 	}
 		
 	public void testStartSimulationOPFDirectCallNonBaseScenario() throws IOException  {
@@ -447,6 +464,37 @@ public class TestEN extends TestCase {
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
 		JSONObject x=new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
 		System.out.println(x.toString());
+		
+		
+		//JA-TESTS 2/02/2021 PyPower Checks
+		//Check that the output files are made (branch, bus, gen - in that order below). 
+		File file1 = new File(baseUrl +"\\outputBranchOPF.txt");
+		assertTrue(file1.exists());
+		File file2 = new File(baseUrl +"\\outputBusOPF.txt");
+		assertTrue(file2.exists());
+		File file3 = new File(baseUrl +"\\outputGenOPF.txt");
+		assertTrue(file3.exists());
+		
+		//Check the number of rows are the same for the inputs and outputs
+		//Check Branch In and Out rows are the same length
+		List<String[]> rList1 = readResult(baseUrl, "branch.txt"); 
+		List<String[]> rList2 = readResult(baseUrl, "outputBranchOPF.txt");
+		//System.out.println(rList1.size());
+		//System.out.println(rList2.size());
+		assertEquals(rList1.size(), rList2.size());
+		//Check Bus In and Out rows are the same length
+		List<String[]> rList3 = readResult(baseUrl, "bus.txt"); 
+		List<String[]> rList4 = readResult(baseUrl, "outputBusOPF.txt");
+		//System.out.println(rList3.size());
+		//System.out.println(rList4.size());
+		assertEquals(rList3.size(), rList4.size());
+		//Check Gen In and Out rows are the same length
+		List<String[]> rList5 = readResult(baseUrl, "Gen.txt"); 
+		List<String[]> rList6 = readResult(baseUrl, "outputGenOPF.txt");
+		//System.out.println(rList5.size());
+		//System.out.println(rList6.size());
+		assertEquals(rList5.size(), rList6.size());
+		
 	}
 	
 	public void testStartSimulationOPFDirectCallBaseScenario() throws IOException  {			
@@ -552,5 +600,137 @@ public class TestEN extends TestCase {
 	public void xxxtestquerygen() {
 		OntModel jenaOwlModel = JenaHelper.createModel("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl");
 		new ENAgent().updateGeneratorEmission(jenaOwlModel);
+	}
+	
+	public void copyFromFolder(String baseUrl, String filename) {
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sample_input/" + filename);
+
+		String destinationUrl = baseUrl + "/" + filename;
+		new QueryBroker().putLocal(destinationUrl, file);
+	}
+	public void testRunPythonScript() {
+		String script = "PyPower-PF-OPF-JA-9-Java-2.py";
+		String folder = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
+		System.out.println(folder);
+		//Create new txt Files here: I'm just copying over from a single folder
+		//but create it in this location
+		copyFromFolder(folder, "fixedbaseMVA.txt");
+		copyFromFolder(folder, "fixedbranch.txt");
+		copyFromFolder(folder, "fixedbus.txt");
+		copyFromFolder(folder, "fixedgen.txt");
+		copyFromFolder(folder, "fixedgenCost.txt");
+		
+		try {
+			String[] fileNames = {"/fixedbaseMVA.txt", "/fixedbus.txt", "/fixedgen.txt", "/fixedbranch.txt", "/fixedoutputBusOPF.txt", "/fixedoutputBranchOPF.txt", "/fixedoutputGenOPF.txt", "/fixedareas.txt", "/fixedgenCost.txt", "/fixedoutputStatus.txt"};
+			new ENAgent().runPythonScript(script, folder, fileNames);
+			String fileName = folder+"/fixedoutputStatus.txt";
+//			Path path = Paths.get(fileName);
+//			List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+//			assertTrue(allLines.get(2).contains("Converged!")); 
+			BufferedReader input = new BufferedReader(new FileReader(fileName));
+		    String last, line;
+		    last = "";
+		    while ((line = input.readLine()) != null) { 
+		        last = line;
+		    }
+		    assertTrue(last.contains("Converged")); 
+		    
+		    //JA-TESTS PyPower Checks for the Fixed Input/Output Test
+			//Check that the output files are made (branch, bus, gen - in that order below). 
+			File file1 = new File(folder +"\\fixedoutputBranchOPF.txt");
+			assertTrue(file1.exists());
+			File file2 = new File(folder +"\\fixedoutputBusOPF.txt");
+			assertTrue(file2.exists());
+			File file3 = new File(folder +"\\fixedoutputGenOPF.txt");
+			assertTrue(file3.exists());
+			
+			//Check the number of rows are the same for the inputs and outputs
+			//Check Branch In and Out rows are the same length
+			List<String[]> fixedrList1 = readResult(folder, "fixedbranch.txt"); 
+			List<String[]> fixedrList2 = readResult(folder, "fixedoutputBranchOPF.txt");
+			//System.out.println(fixedrList1.size());
+			//System.out.println(fixedrList2.size());
+			assertEquals(fixedrList1.size(), fixedrList2.size());
+			//Check Bus In and Out rows are the same length
+			List<String[]> fixedrList3 = readResult(folder, "fixedbus.txt"); 
+			List<String[]> fixedrList4 = readResult(folder, "fixedoutputBusOPF.txt");
+			//System.out.println(fixedrList3.size());
+			//System.out.println(fixedrList4.size());
+			assertEquals(fixedrList3.size(), fixedrList4.size());
+			//Check Gen In and Out rows are the same length
+			List<String[]> fixedrList5 = readResult(folder, "fixedGen.txt"); 
+			List<String[]> fixedrList6 = readResult(folder, "fixedoutputGenOPF.txt");
+			//System.out.println(fixedrList5.size());
+			//System.out.println(fixedrList6.size());
+			assertEquals(fixedrList5.size(), fixedrList6.size());
+			
+			//Check the output itself. This uses the lists made above.  
+			//Firstly, check that the input is correct to what is pre-determined to correspond to the output. 
+			//These tests are a bit repetitive, but didn't want to have the for loop in a different function so if there's a failure it's easier to see what line it's on and thus which comparison failed. 
+			//Check that the base branch input data hasn't changed. 
+			String[] branchBase = {"1	2	0.001	0.0	0.0	100000	0	0	1	0	1	-360	360"};
+			for (int i = 0; i < fixedrList1.size(); i++){
+			  String[] arr = fixedrList1.get(i);
+			  String str = String.join(",", arr);
+			  //System.out.println(str);
+			  //System.out.println(branchBase[i]);
+			  assertEquals(str, branchBase[i]);
+			  
+			}
+			//Check that the base bus input data hasn't changed. 
+			String[] busBase = {"1	3	10001	0	0	0	1	1	0	400	1	1.05	0.95", "2	1	5001	0	0	0	1	1	0	400	1	1.05	0.95"};
+			for (int i = 0; i < fixedrList3.size(); i++){
+			  String[] arr = fixedrList3.get(i);
+			  String str = String.join(",", arr);
+			  //System.out.println(str);
+			  //System.out.println(busBase[i]);
+			  assertEquals(str, busBase[i]);
+			}
+			//Check that the base generator input data hasn't changed. 
+			String[] genBase = {"1	10001	0	10001	-10001	1	100	1	10001	0	0	0	0	0	0	0	0	0	0	0	0", "2	5001	0	5001	-5001	1	100	1	5001	0	0	0	0	0	0	0	0	0	0	0	0"};
+			for (int i = 0; i < fixedrList5.size(); i++){
+			  String[] arr = fixedrList5.get(i);
+			  String str = String.join(",", arr);
+			  //System.out.println(str);
+			  //System.out.println(genBase[i]);
+			  assertEquals(str, genBase[i]);
+			}
+			//Now check that this input creates the correct output. 
+			//Check that the branch output data hasn't changed. 
+			String[] branchBaseOutPart = {"0.0"};
+			for (int i = 0; i < fixedrList2.size(); i++){
+			  String[] arr = fixedrList2.get(i);
+			  String str = String.join(",", arr);
+			  //System.out.println(str);
+			  //System.out.println(branchBaseOut[i]);
+			  assertThat(str, containsString(branchBaseOutPart[i]));
+			  //assertEquals(str, branchBaseOut[i]);
+			}
+			//Check that the bus output data hasn't changed. 
+			String[] busBaseOutPart = {"0.0	1000", "0.0	500"};
+			for (int i = 0; i < fixedrList4.size(); i++){
+			  String[] arr = fixedrList4.get(i);
+			  String str = String.join(",", arr);
+			  //System.out.println(str);
+			  //System.out.println(busBaseOut[i]);
+			  assertThat(str, containsString(busBaseOutPart[i]));
+			  //assertEquals(str, busBaseOut[i]);
+			}
+			//Check that the generator output data hasn't changed. 
+			String[] genBaseOutPart = {"1	1000", "2	500"};
+			for (int i = 0; i < fixedrList6.size(); i++){
+			  String[] arr = fixedrList6.get(i);
+			  String str = String.join(",", arr);
+			  //System.out.println(str);
+			  //System.out.println(genBaseOut[i]);
+			  assertThat(str, containsString(genBaseOutPart[i]));
+			  //assertEquals(str, genBaseOut[i]);
+			}
+		    
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }

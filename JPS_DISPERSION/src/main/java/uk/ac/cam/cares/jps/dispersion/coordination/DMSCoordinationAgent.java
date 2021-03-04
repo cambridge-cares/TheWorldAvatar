@@ -34,31 +34,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 	public static final String DISPERSION_PATH = "/JPS_DISPERSION";
 	public static final String EPISODE_PATH = "/episode/dispersion/coordination";
 	public static final String ADMS_PATH = "/adms/dispersion/coordination";
-	
-	public boolean validateWeatherInput(String context) {
-		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
-				+ "PREFIX j6:<http://www.w3.org/2006/time#>" + "SELECT ?class ?propval ?proptimeval " + "{ GRAPH <"
-				+ context + "> " + "{ "
-
-				+ "  ?entity j4:observes ?prop ." + " ?prop a ?class ." + " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" + "}" + "ORDER BY DESC(?proptimeval)LIMIT 7";
-
-		String dataseturl = KeyValueManager.get(IKeys.DATASET_WEATHER_URL);
-		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, sensorinfo);
-		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
-		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
-		String timestampInit = listmap.get(0)[2];
-		for (int x = 0; x < listmap.size(); x++) {
-			String timestamp = listmap.get(x)[2];
-			if (!timestampInit.contentEquals(timestamp)) {
-				return false;
-			}
-		}
-		return true;
-	}
 
 	private JSONArray getNewWasteAsync(String reactionMechanism, JSONObject jsonShip) {
 		JSONArray newwaste = new JSONArray();
@@ -101,18 +76,13 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		String result;
 
 		// @TODO - improve weather update frequency
-		// temporary measure to avoid changing things on Claudius
-		if (AgentLocator.isJPSRunningAtCMCL()) {
-			result = execute("/JPS_DISPERSION/WeatherAgent", requestParams.getJSONObject("region").toString());
-		} else {
-		    result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
-		}
+		result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
 		
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
 		requestParams.put("stationiri", stationiri);
 
 		logger.info("calling ship data agent = " + requestParams.getJSONObject("region").toString());
-		String resultship = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ShipDataAgent", 
+		String resultship = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/ShipDataAgent", 
 				requestParams.getJSONObject("region").toString());
 
 		JSONObject jsonShip = new JSONObject(resultship);

@@ -130,7 +130,7 @@ public class ChemicalCompositionWriter extends PrimeSpeciesConverter implements 
 	}
 	
 	public void addObjectPropertyFromOtherOntology(String basePath, String objectPropertyName, String domainInstanceName, String rangeInstanceName) throws OntoPrimeSpeciesException {
-		OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(basePath.concat("#").concat(objectPropertyName));
+		OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(basePath.concat(HASH).concat(objectPropertyName));
 		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox, domainInstanceName);
 		OWLIndividual rangeIndividual = createOWLIndividual(dataFactory, basePathABox, rangeInstanceName);
 		manager.applyChange(new AddAxiom(ontology, 
@@ -150,7 +150,7 @@ public class ChemicalCompositionWriter extends PrimeSpeciesConverter implements 
 	}
 	
 	private OWLIndividual createOWLIndividual(OWLDataFactory ontoFactory, String owlFilePath, String individualName) {
-		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat("#").concat(individualName));
+		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat(BACKSLASH).concat(individualName));
 	}
 	
 	private OWLDataProperty createOWLDataProperty(OWLDataFactory dataFactory, String iri, String propertyName, String separator) {

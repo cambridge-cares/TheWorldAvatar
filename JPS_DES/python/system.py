@@ -118,8 +118,8 @@ if __name__ == "__main__":
 
 	now = datetime.now()
 	current_time = now.strftime("%H:%M:%S")
-	# pythonLogger = PythonLogger('system.py')
-	# pythonLogger.postInfoToLogServer('start of system.py, Current Time = '+current_time)
+	pythonLogger = PythonLogger('system.py')
+	pythonLogger.postInfoToLogServer('start of system.py, Current Time = '+current_time)
 	folder = sys.argv[1]
 	#forecast Weather
 	dfWeather=pd.read_csv(folder + '/WeatherForecast.csv', sep=',', header=None)
@@ -275,10 +275,11 @@ if __name__ == "__main__":
 	gridGen = residential + commercial + industrial - renewableGen
 	#clear to zero
 	gridGen = gridGen.clip(min=0)
-
+	# for some reason, parsing the file in Claudius doesn't work, so this line is added
+	folder = folder.replace("//", "/")
 	np.savetxt(folder +"/totgen.csv",[residential, commercial, industrial, renewableGen, gridGen], delimiter=",")
 	np.savetxt(folder +"/rh1.csv",[out0[3],out0[4], out0[5],out1[3],out1[4],out1[5],out2[3],out2[4], out2[5]], delimiter="," )
 	returnResultsToJava(result)
 	now = datetime.now()
 	current_time = now.strftime("%H:%M:%S")
-	# pythonLogger.postInfoToLogServer('end of system.py, Current time = ' +current_time)
+	pythonLogger.postInfoToLogServer('end of system.py, Current time = ' +current_time)

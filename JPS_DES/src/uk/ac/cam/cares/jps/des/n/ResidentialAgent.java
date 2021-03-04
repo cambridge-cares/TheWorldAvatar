@@ -10,30 +10,77 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/ResidentialAgent"})
-public class ResidentialAgent extends JPSHttpServlet {
+public class ResidentialAgent extends JPSAgent {
 	public static String bcap="bcap.csv";
 	public static String Pmin="Pmin.csv";
 	public static String Pmax="Pmax.csv";
 	public static String unwill="unwill.csv";
 	public static String schedule="ApplianceScheduleLoad1.csv";
+	
+	/** returns noOfHouseHoulds x  (hourly power consumption profile of all appliances for a given household 
+	 * +hourly charging(+)/discharging(-) profile of all batteries for a given household
+	 * +hourly total power consumption profile for a given household)
+	 * 9 rows for now
+	 */
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request)  {
+		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
+		
+		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
+        
+		extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+		JSONObject responseParams = new JSONObject();
+		try {
+			String res =  new DESAgentNew().runPythonScript("residential.py", baseUrl);
+
+			responseParams.put("results", res);
+			}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+    	
+		return responseParams;
+	}
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        } 
+        try {
+        String iriofdistrict = requestParams.getString("district");
+        return InputValidator.checkIfValidIRI(iriofdistrict); 
+        }catch (JSONException ex) {
+        	ex.printStackTrace();
+        	throw new JSONException("Sensor not present in getString");
+        }
+    }
 	/** general function for extracting Residential Data
 	 * 
 	 * @param iriofnetworkdistrict
@@ -190,27 +237,5 @@ public class ResidentialAgent extends JPSHttpServlet {
 		return groupschedule;
 	}
 	
-	/** returns noOfHouseHoulds x  (hourly power consumption profile of all appliances for a given household 
-	 * +hourly charging(+)/discharging(-) profile of all batteries for a given household
-	 * +hourly total power consumption profile for a given household)
-	 * 9 rows for now
-	 */
-	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request)  {
-		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
-		
-		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
-        
-		extractResidentialData(iriofdistrict, baseUrl); //csv for residential
-		JSONObject responseParams = new JSONObject();
-		try {
-			String res =  new DESAgentNew().runPythonScript("residential.py", baseUrl);
-
-			responseParams.put("results", res);
-			}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-    	
-		return responseParams;
-	}
+	
 }

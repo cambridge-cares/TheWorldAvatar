@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.dispersion.agents.WeatherAgent;
-import uk.ac.cam.cares.jps.dispersion.sensorsparql.WeatherStation;
+import uk.ac.cam.cares.jps.dispersion.sparql.WeatherStation;
 
 public class WeatherAgentTest extends TestCase {
 	

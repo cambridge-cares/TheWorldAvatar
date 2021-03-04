@@ -1,0 +1,42 @@
+CO STARTING
+   TITLEONE  Using 3 arc-second SRTM File for N53E009
+   TITLETWO  With NAD83-Equivalent Anchor Point
+   DATATYPE  NED
+   
+** Use 3 arc-second SRTM File for Hamburg area (WGS84)
+** N53E009 and N53E010 needed to cover Hamburg area
+   DATAFILE  "./srtm3/N01E103.tif"   tiffdebug
+   DATAFILE  "./srtm3/N01E104.tif"   tiffdebug
+   
+** Request ALL Debug Output Files   
+   DEBUGOPT  ALL
+
+**           x-1000m  y-1000m       x+1000m  y+1000m 
+**           Lower Left corner      Upper right corner
+**           LL UTME  LL UTMN   Zn  UR UTME  UR UTMN   Zn
+   DOMAINXY  330600.0 118000.0  48  402600.0 190000.0  48
+   
+** NAD83 anchor point: (use NAD84 for WGS84)
+** NAD code in TABLE 3-1 of AERMAP User Guide
+** WGS84 = 3
+** Mid-point = x1+15km, y1+15km
+**           X-point  Y-point     UTME     UTMN   Zn  NAD
+   ANCHORXY  0.0      0.0     366600.0  154000.0  48  3
+   
+   NADGRIDS  ..\
+   RUNORNOT  RUN
+CO FINISHED
+
+** Output elevation on a Cartesian grid
+**                        xinit xnum  dx    yinit  ynum  dy
+RE STARTING
+   GRIDCART CART1 STA
+                  XYINC  -35000.0a 35b 2000.0c  -35000.0d 35e 2000.0f
+   GRIDCART CART1 END
+RE FINISHED
+
+OU STARTING
+   RECEPTOR  AERMAP_NAD83_NED.REC
+   DEBUGHIL  CALCHCDB_NAD83_NED.OUT
+   DEBUGREC  REC1DB_NAD83_NED.OUT  REC2DB_NAD83_NED.OUT  REC3DB_NAD83_NED.OUT
+OU FINISHED

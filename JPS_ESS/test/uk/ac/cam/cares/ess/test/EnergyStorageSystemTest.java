@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.ess.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,23 +15,20 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.ess.BatteryEntityCreator;
 import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
+import uk.ac.cam.cares.jps.ess.OptimizationAgent;
+import uk.ac.cam.cares.jps.ess.coordination.CoordinationESSAgent;
 
 
 public class EnergyStorageSystemTest extends TestCase {
-	
-	//public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PVSingaporeNetwork.owl#PVSingaporeNetwork";
-//	String dataPath = QueryBroker.getLocalDataPath();
-//	String baseUrl=dataPath+"/JPS_ESS";
-
-	private String modelname="NESS.gms";
 	private String ENIRI="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 	private String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
 	private String pvGenIRI="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001";
+	private String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\ESSTest";
+	private String storageIRI = "http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";
 	List<String>pvgeniris= new ArrayList<String>();
 	String usecaseID = UUID.randomUUID().toString();
 	
@@ -37,10 +36,60 @@ public class EnergyStorageSystemTest extends TestCase {
 		EnergyStorageSystem a = new EnergyStorageSystem();
 		a.runGAMS("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\c8e42983-320e-4748-84e0-a49b7628b9db");
 	}
-
+	/** test the inputValidate method of Energy Storage System Coordination Agent
+	 * 
+	 */
+	public void testValidateCoordinationESSAgent() {
+		JSONObject requestParam = new JSONObject().put("electricalnetwork", ENIRI);
+		List<String> lstJA = new ArrayList<String>();
+		lstJA.add(pvGenIRI);
+		JSONArray ja = new JSONArray(lstJA);
+        requestParam.put("RenewableEnergyGenerator", ja);
+		assertTrue(new CoordinationESSAgent().validateInput(requestParam));
+	}
+	/** test the inputValidate method of Energy Storage System (aka GAMS runner)
+	 * 
+	 */
+	public void testValidateInputEnergyStorageSystem() {
+		JSONObject requestParam = new JSONObject().put("electricalnetwork", ENIRI);
+		requestParam.put("BatteryCatalog", batIRI);
+		assertTrue(new EnergyStorageSystem().validateInput(requestParam));
+		
+		
+	}
+	/** test filterPV method of EnergyStorageSystem
+	 * 
+	 */
+	public void testEnergyStorageSystemFilterPV() {
+		List<String> ja = new EnergyStorageSystem().filterPV (ENIRI);
+		assertNotNull(ja.size());
+	}
+	/** test prepareCSVPahigh of EnergyStorageSystem
+	 * 
+	 */
+	public void testEnergyStorageSystemprepareCSVPahigh() {
+		List<String> lstJA = new ArrayList<String>();
+		lstJA.add(pvGenIRI);
+		new EnergyStorageSystem(). prepareCSVPahigh( lstJA , baseUrl);
+		File file = new File( baseUrl + "/Pa_high.csv");
+		assertTrue(file.exists());
+		assertTrue(file.length()> 0);
+	}
 	
+	/** test prepareCSVRemaining of EnergyStorageSystem
+	 * 
+	 */
+	public void testEnergyStorageSystemprepareCSVRemaining() {
+		
+		new EnergyStorageSystem(). prepareCSVRemaining( batIRI, baseUrl );
+		File file = new File( baseUrl + "/EnvironmentalScore.csv");
+		assertTrue(file.exists());
+		assertTrue(file.length()> 0);
+	}
+	/** test readOutput of EnergyStorageSystem
+	 * 
+	 */
 	public void testreadsolutionstocsv() {
-		//String outputfiledir="C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/eb00c933-2513-4b8a-8eac-29b6304bf184/solutions.csv";
 		String outputfiledir = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/solutions.csv";
 		List<Double[]> simulationResult=new EnergyStorageSystem().readOutput(outputfiledir);
 
@@ -51,152 +100,15 @@ public class EnergyStorageSystemTest extends TestCase {
 		//ArrayList<String>removedplant=new ArrayList<String>();
 		JSONObject result = new JSONObject();
 	}
-	
-//	public void xxxtestgetbatterylocmethod() throws IOException {
-//		String indexline ="34"; //--> index no 34
-//		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\123621a1-a8c8-4527-9268-0e132e483082\\JPS_POWSYS_EN";
-//	    EnergyStorageSystem c=new EnergyStorageSystem();		
-//		OntModel model = c.readModelGreedy(ENIRI);
-//		double[]coordinate=c.prepareBatteryLocationData(indexline, baseUrl, model);
-//		assertEquals(103.70840835, coordinate[0], 0.001);
-//		assertEquals(1.2723166665, coordinate[1], 0.001);
-//	}
-	
-//	public void xxxtestCreateOWLFile() throws IOException {
-//
-//		String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\123621a1-a8c8-4527-9268-0e132e483082\\JPS_POWSYS_EN";
-//		String resultofbattery="http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";
-//		JSONObject result=new JSONObject();
-//		result.put("storage",resultofbattery);
-//	
-//		EnergyStorageSystem c=new EnergyStorageSystem();
-//		JSONArray a= c.createBatteryOwlFile(ENIRI, result, dir);
-//		//assertEquals("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/VRB-001.owl", a.get(0));
-//	}
-	
-	
-	
-	public void testoptimizedbattery() throws IOException { //to test the execution of gams model
-		
-		
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_ESS";
-		pvgeniris.add(pvGenIRI);
-		JSONObject testres= new EnergyStorageSystem ().optimizedBatteryMatching(baseUrl, pvgeniris, batIRI);
-		System.out.println("result battery= "+testres.getString("storage"));
-		pvgeniris.clear();
-		assertEquals("http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB", testres.getString("storage"));
-		
-	}
-
-	public void xxxtestStartSimulationESSScenario() throws IOException  { //need to provide which EN folder to get bat location
-		
-
-		JSONObject jo = new JSONObject();
-		pvgeniris.add(pvGenIRI);
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("BatteryCatalog", batIRI);
-		jo.put("RenewableEnergyGenerator", pvgeniris);
-		String scenarioname="testBatteryESSfin3"+usecaseID;
-		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioname);
-		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-		
-		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
-		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		JPSHttpServlet.enableScenario(scenarioUrl,usecaseUrl);
-	
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
-		pvgeniris.clear();
-	}
-	
-public static OntModel readModelGreedy(String iriofnetwork) {
-	String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-			+ "SELECT ?component "
-			+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
-
-	QueryBroker broker = new QueryBroker();
-	return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
-}
-
-public void testCoordinationStartSimulationESSScenario() throws IOException  {
-	
-
-	JSONObject jo = new JSONObject();
-	pvgeniris.add(pvGenIRI);
-	jo.put("electricalnetwork", ENIRI);
-	jo.put("BatteryCatalog", batIRI);
-	jo.put("RenewableEnergyGenerator", pvgeniris);
-	String scenarioname="testBatteryESSfin4"+usecaseID;
-	String scenarioUrl = BucketHelper.getScenarioUrl(scenarioname);
-	//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-	JPSHttpServlet.enableScenario(scenarioUrl);
-	JPSContext.putScenarioUrl(jo, scenarioUrl);
-	System.out.println("contextusecase= "+JPSContext.getUsecaseUrl());
-	System.out.println("contextuse case from jo= "+JPSContext.getUsecaseUrl(jo));
-	String usecaseUrl = BucketHelper.getUsecaseUrl();
-	JPSContext.putUsecaseUrl(jo, usecaseUrl); //if not using put usecase, each different simulation even in 1 coordination will be separated
-
-
-	System.out.println(jo.toString());
-	String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_ESS/startsimulationCoordinationESS", jo.toString());
-	System.out.println(resultStart);
-	System.out.println("finished execute");
-	System.out.println("USECASE URL="+usecaseUrl);
-	System.out.println("SCENARIO URL="+scenarioUrl);
-	pvgeniris.clear();
-}
-
-public void testCreateScenarioAndCallESSAgent() throws JSONException {
-	
-	String scenarioName = "testESSTRIAL01"+usecaseID;	
-	JSONObject jo = new JSONObject();
-	pvgeniris.add(pvGenIRI);
-	jo.put("electricalnetwork", ENIRI);
-	jo.put("BatteryCatalog", batIRI);
-	jo.put("RenewableEnergyGenerator", pvgeniris);
-	String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/startsimulationCoordinationESS", jo.toString());
-	
-	System.out.println(result);
-	
-}
-public void testCallENAgentFromCreatedWorld() throws JSONException {
-	
-	String scenarioName = "testESSTRIAL01";
-	
-	JSONObject jo = new JSONObject();
-	pvgeniris.add(pvGenIRI);
-	jo.put("electricalnetwork", ENIRI);
-	String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
-	
-	System.out.println(result);
-	
-}
-
-	
-	public void testCreateCSV() throws IOException  {
-		//String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
-		EnergyStorageSystem a = new EnergyStorageSystem();
-		OntModel modelbattery=EnergyStorageSystem.readBatteryGreedy(batIRI);
-		pvgeniris.add(pvGenIRI);
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_ESS";
-		a.prepareCSVPahigh(pvgeniris, baseUrl);	
-		a.prepareCSVRemaining(batIRI,baseUrl,modelbattery);
-		pvgeniris.clear();
-	}
-	
-	
-	@SuppressWarnings("static-access")
+	/** tests  modifyTemplate and runGAMS methods
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public void testModifyTemplate() throws IOException, InterruptedException{
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_ESS";
+//		String dataPath = QueryBroker.getLocalDataPath();
+//		String baseUrl = dataPath + "/JPS_ESS";
 		EnergyStorageSystem a = new EnergyStorageSystem();
-//		a.runGAMS("D:\\Users\\LONG01\\Documents\\gamsdir\\projdir") ;
 		try {
 			a.runGAMS(baseUrl);
 		   }
@@ -207,4 +119,120 @@ public void testCallENAgentFromCreatedWorld() throws JSONException {
 			      e.printStackTrace();
 			   }
 	}
+	/** test optimizedBatteryMatching() of EnergyStorageSystem ().
+	 * 
+	 * @throws IOException
+	 */
+	public void testoptimizedbattery() throws IOException {
+		
+		
+		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = dataPath + "/JPS_ESS";
+		pvgeniris.add(pvGenIRI);
+		JSONObject testres= new EnergyStorageSystem ().optimizedBatteryMatching(baseUrl, pvgeniris, batIRI);
+		System.out.println("result battery= "+testres.getString("storage"));
+		pvgeniris.clear();
+		assertEquals(storageIRI, testres.getString("storage"));
+		
+	}
+	/** add validateInput() for OptimizationAgent
+	 * 
+	 */
+	public void testOptimizationAgentInputValidation() {
+		JSONObject jo = new JSONObject();
+		jo.put("storage", storageIRI);
+		assertTrue(new OptimizationAgent().validateInput(jo));
+		
+	}
+	/** test createBatteryOwlFile() of BatteryEntityCreator
+	 * 
+	 */
+	public void testBatteryEntityCreator() {
+		try {
+			JSONArray listbat;
+			Double valueboundary=0.3; //later is extracted from the battery type
+			OntModel model = EnergyStorageSystem.readModelGreedy(ENIRI);
+			
+			listbat = new BatteryEntityCreator().createBatteryOwlFile(model, storageIRI,valueboundary);
+
+			assertNotNull(listbat);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	/** test validateInput() of BatteryEntityCreator
+	 * 
+	 */
+	public void testBatteryEntityCreatorInputValidation() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
+		jo.put("storage", storageIRI);
+		assertTrue(new BatteryEntityCreator().validateInput(jo));
+		
+	}
+	/** test BatteryEntityCreator as an agent
+	 * 
+	 */
+	public void testBatteryEntityCreatorAgentCall() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
+		jo.put("storage", storageIRI);
+		String testres = AgentCaller.executeGetWithJsonParameter("JPS_ESS/CreateBattery" , jo.toString());
+		JSONArray ja = new  JSONObject(testres).getJSONArray("batterylist" );
+		assertTrue(ja.length() > 0);
+	}
+	/** test BatteryLocator as an agent
+	 * 
+	 */
+	public void testBatteryLocatorAgentCall() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
+		jo.put("storage", storageIRI);
+		String testres = AgentCaller.executeGetWithJsonParameter("JPS_ESS/LocateBattery" , jo.toString());
+		JSONArray ja = new  JSONObject(testres).getJSONArray("batterylist" );
+		assertTrue(ja.length() > 0);
+	}
+	/** calls ESSCoordinate through Agent
+	 * 
+	 * @throws JSONException
+	 */
+	public void testCreateScenarioAndCallESSCoordinate() throws JSONException {
+		
+		String scenarioName = "testESSTRIAL01"+usecaseID;	
+		JSONObject jo = new JSONObject();
+		pvgeniris.add(pvGenIRI);
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("BatteryCatalog", batIRI);
+		jo.put("RenewableEnergyGenerator", pvgeniris);
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/startsimulationCoordinationESS", jo.toString());
+		JSONObject testres = new JSONObject(result);
+		assertEquals(batIRI, testres.getString("storage"), "http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB");
+		JSONArray ja = testres.getJSONArray("batterylist" );
+		assertTrue(ja.length() > 0);
+	}
+	/** call ESSCoordinate directly
+	 * 
+	 * @throws JSONException
+	 */
+	public void testCreateScenarioAndCallESSCoordinateDirect() throws JSONException {
+		String scenarioName = "testESSTRIAL01"+usecaseID;	
+		JSONObject jo = new JSONObject();
+		pvgeniris.add(pvGenIRI);
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("BatteryCatalog", batIRI);
+		jo.put("RenewableEnergyGenerator", pvgeniris);
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/RenewableGenRetrofit", jo.toString());
+		String usecaseUrl = JPSContext.getUsecaseUrl();	
+		result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/ESSAgent", jo.toString());
+		JSONObject res1=new JSONObject(result);
+		jo.put("storage",res1.getString("storage"));
+		String result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/OptimizationAgent", jo.toString());
+		JSONObject res2=new JSONObject(result2);		
+		String optimizationresult=res2.getString("optimization");
+		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/"+optimizationresult, jo.toString());
+		jo.put("batterylist",new JSONObject(result2).getJSONArray("batterylist"));
+		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
+		
+	}
+	
+	
+	
+	
 }

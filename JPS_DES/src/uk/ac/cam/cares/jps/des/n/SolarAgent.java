@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -12,6 +13,7 @@ import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -20,10 +22,18 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/SolarAgent"})
-public class SolarAgent extends JPSHttpServlet{
-
+public class SolarAgent extends JPSAgent {
+	
 	@Override
-    protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+	    requestParams = processRequestParameters(requestParams, null);
+	    return requestParams;
+	}
+	/** main method. Runs solar radiation data after creating solar constant csv
+	 *
+	 */
+	@Override
+    public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 		JSONObject responseParams = requestParams;	
         String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
@@ -44,6 +54,18 @@ public class SolarAgent extends JPSHttpServlet{
 		}
     	return requestParams;
     }
+	/** uses Commercial Agent's validate Input method since they're 
+	 * using the same variables
+	 */
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        return new CommercialAgent().validateInput(requestParams);
+    }
+	/** Creates PVGenerator.csv which are constants for solar agent
+	 * 
+	 * @param model
+	 * @param baseUrl
+	 */
 	public void provideGenlist(OntModel model, String baseUrl) { //for file "PV_parameters.csv"
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")

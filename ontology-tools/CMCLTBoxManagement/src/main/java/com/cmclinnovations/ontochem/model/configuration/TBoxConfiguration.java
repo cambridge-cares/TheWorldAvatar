@@ -19,25 +19,22 @@ import org.springframework.context.annotation.PropertySource;
 public class TBoxConfiguration {
 	@Value("${tbox.iri}")
 	private String tBoxIri;
-
-	@Value("${tbox.management.kb.root.directory}")
-	private String kbRootDirectory;
-
-	@Value("${tbox.management.kb.url}")
-	private String kbURL;
-
-	@Value("${tbox.management.ontology.file.path}")
-	private String ontolgyFilePath;
 	
-	@Value("${tbox.management.ontology.file.name}")
-	private String ontolgyFileName;
-
-	@Value("${tbox.management.kb.file.path}")
-	private String kbFilePath;
-
-	@Value("${tbox.management.kb.file.name}")
-	private String kbFileName;
-
+	@Value("${tbox.version}")
+	private String tBoxVersion;	
+	
+	@Value("${tbox.comment}")
+	private String tBoxComment;
+	
+	@Value("${tbox.git.commit.hash.value}")
+	private String gitCommitHashValue;
+	
+	@Value("${tbox.date.of.publication}")
+	private String tBoxCreationDate;
+	
+	@Value("${tbox.import}")
+	private String tBoxImport;
+	
 	public String gettBoxIri() {
 		return tBoxIri;
 	}
@@ -46,51 +43,43 @@ public class TBoxConfiguration {
 		this.tBoxIri = tBoxIri;
 	}
 
-	public String getKbRootDirectory() {
-		return kbRootDirectory;
+	public String gettBoxVersion() {
+		return tBoxVersion;
 	}
 
-	public void setKbRootDirectory(String kbRootDirectory) {
-		this.kbRootDirectory = kbRootDirectory;
+	public void settBoxVersion(String tBoxVersion) {
+		this.tBoxVersion = tBoxVersion;
 	}
 
-	public String getKbURL() {
-		return kbURL;
+	public String gettBoxComment() {
+		return tBoxComment;
 	}
 
-	public void setKbURL(String kbURL) {
-		this.kbURL = kbURL;
+	public void settBoxComment(String tBoxComment) {
+		this.tBoxComment = tBoxComment;
 	}
 
-	public String getOntolgyFilePath() {
-		return ontolgyFilePath;
+	public String getGitCommitHashValue() {
+		return gitCommitHashValue;
 	}
 
-	public void setOntolgyFilePath(String ontolgyFilePath) {
-		this.ontolgyFilePath = ontolgyFilePath;
+	public void setGitCommitHashValue(String gitCommitHashValue) {
+		this.gitCommitHashValue = gitCommitHashValue;
 	}
 
-	public String getOntolgyFileName() {
-		return ontolgyFileName;
+	public String gettBoxCreationDate() {
+		return tBoxCreationDate;
 	}
 
-	public void setOntolgyFileName(String ontolgyFileName) {
-		this.ontolgyFileName = ontolgyFileName;
+	public void settBoxCreationDate(String tBoxCreationDate) {
+		this.tBoxCreationDate = tBoxCreationDate;
 	}
 
-	public String getKbFilePath() {
-		return kbFilePath;
+	public String gettBoxImport() {
+		return tBoxImport;
 	}
 
-	public void setKbFilePath(String kbFilePath) {
-		this.kbFilePath = kbFilePath;
-	}
-
-	public String getKbFileName() {
-		return kbFileName;
-	}
-
-	public void setKbFileName(String kbFileName) {
-		this.kbFileName = kbFileName;
+	public void settBoxImport(String tBoxImport) {
+		this.tBoxImport = tBoxImport;
 	}
 }
