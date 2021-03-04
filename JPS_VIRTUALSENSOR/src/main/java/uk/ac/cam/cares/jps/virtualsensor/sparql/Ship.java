@@ -11,14 +11,14 @@ public class Ship {
 	
     public Ship (String shipIRI, boolean withChimney) {
     	if (withChimney) {
-    		JSONObject queryresult = ShipSparql.queryShipProperties(shipIRI);
-    		this.speed = queryresult.getDouble("ss");
-    		this.type = queryresult.getString("type");
-    	} else {
     		double[] coordinates = ShipSparql.queryShipCoordinates(shipIRI);
     		this.x = coordinates[0];
     		this.y = coordinates[1];
     		this.chim = new Chimney(shipIRI);
+    	} else {
+    		JSONObject queryresult = ShipSparql.queryShipProperties(shipIRI);
+    		this.speed = queryresult.getDouble("ss");
+    		this.type = queryresult.getString("type");
     	}
     }
     
