@@ -1,0 +1,60 @@
+----------- ontokin -----------
+
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?RotationalRelaxationCollisionNumber
+{
+  ?Species rdfs:label ?label .
+  FILTER regex(?label, "^H2O2$")
+  ?Species ontokin:hasTransportModel ?TransportModel . 
+  ?TransportModel rdf:type ontokin:TransportModel .
+  ?TransportModel ontokin:hasRotationalRelaxationCollisionNumber  ?RotationalRelaxationCollisionNumber . 
+}  
+----------- ontokin -----------
+
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?RotationalRelaxationCollisionNumber
+{
+  ?Species rdfs:label ?label .
+  FILTER regex(?label, "^H2O2$")
+  ?Species ontokin:hasTransportModel ?TransportModel . 
+  ?TransportModel rdf:type ontokin:TransportModel .
+  ?TransportModel ontokin:hasRotationalRelaxationCollisionNumber  ?RotationalRelaxationCollisionNumber . 
+}  
+----------- ontocompchem -----------
+
+PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+SELECT DISTINCT  ?name   ?File
+WHERE  {
+?g_calculation rdf:type ontocompchem:G09 .
+?g_calculation ontocompchem:hasInitialization ?initialization .
+?initialization gc:hasMoleculeProperty ?molecule_property .
+?molecule_property gc:hasName ?name .
+FILTER regex(?name, "^C 8 H 14  $")
+# ============ to match molecule =========================
+?g_calculation  ontocompchem:hasEnvironment   ?Environment .
+?Environment    gc:hasOutputFile  ?File .
+}
+----------- ontocompchem -----------
+
+PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
+PREFIX gc: <http://purl.org/gc/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+SELECT DISTINCT  ?name   ?File
+WHERE  {
+?g_calculation rdf:type ontocompchem:G09 .
+?g_calculation ontocompchem:hasInitialization ?initialization .
+?initialization gc:hasMoleculeProperty ?molecule_property .
+?molecule_property gc:hasName ?name .
+FILTER regex(?name, "^C 8 H 14 $")
+# ============ to match molecule =========================
+?g_calculation  ontocompchem:hasEnvironment   ?Environment .
+?Environment    gc:hasOutputFile  ?File .
+}

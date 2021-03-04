@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.RDFNode;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -18,12 +19,29 @@ import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
+import uk.ac.cam.cares.jps.powsys.retrofit.BatteryRetrofit;
+import uk.ac.cam.cares.jps.powsys.retrofit.RenewableGeneratorRetrofit;
 import uk.ac.cam.cares.jps.powsys.retrofit.RetrofitAgent;
 
 public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
-	
+	private String ENIRI
+	= "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+	private JSONArray pvgeniris = new JSONArray()
+			.put("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001");
+	private String scenarioName = "testESSTRIAL01";	
+	private String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testESSTRIAL01";
+	private JSONArray batteryiris = new JSONArray()
+			.put("http://localhost:8080/jps/kb/f288d618-e936-448b-8582-57cfc1ca827f/sgp/jurongisland/jurongislandpowernetwork/VRB-059.owl#VRB-059")
+			.put("http://localhost:8080/jps/kb/f288d618-e936-448b-8582-57cfc1ca827f/sgp/jurongisland/jurongislandpowernetwork/VRB-011.owl#VRB-011.owl");
+	private JSONArray nucgeniris = new JSONArray()
+			.put("http://localhost:8080/jps/kb/337ad6e8-6e9b-4d30-b0aa-dfda02e80a1f/nuclearpowerplants/NucGenerator_3_B3.owl#NucGenerator_3_B3")
+			.put("http://localhost:8080/jps/kb/337ad6e8-6e9b-4d30-b0aa-dfda02e80a1f/nuclearpowerplants/NucGenerator_3_B0.owl#NucGenerator_3_B0");
+	private JSONArray nucPPiris = new JSONArray()
+			.put("http://localhost:8080/jps/kb/337ad6e8-6e9b-4d30-b0aa-dfda02e80a1f/nuclearpowerplants/NucPP_3.owl#NucPP_3");
 	private void assertPropertyValue(double expected, String url, String... path) {
 		OntModel model = JenaHelper.createModel(url);
 		JenaModelWrapper w = new JenaModelWrapper(model, null);
@@ -39,7 +57,6 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		String actualUrl = o.asResource().getURI();
 		assertEquals(expectedUrl, actualUrl);
 	}
-	
 	public void testCompleteOnePowerGenerator() {
 		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSCoordinateCompleteOnePowerGenerator"); 
@@ -70,35 +87,79 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		String expectedPowerPlant = "http://localhost:8080/jps/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucPP_1.owl#NucPP_1";
 		assertPropertyValue(expectedPowerPlant, powerGenerator, path);
 	}
-	
+	//This test doesn't pass because QueryBroker().updateFile, when
+	//running in the original scenario (aka base scenario)
+	// Can't update to a URL that has not been converted. 
 	public void testretrofitgen() {
 		JSONObject jo = new JSONObject();
-		JSONArray value1 = new JSONArray();
 		JSONArray value2 = new JSONArray();
-		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
-		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
-		value1.put("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001");
-		jo.put("RenewableEnergyGenerator", value1);
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("RenewableEnergyGenerator", pvgeniris);
 		jo.put("substitutionalgenerators", value2);
-		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
-		List<String> RenewableGenerators = MiscUtil.toList(value1);
+		List<String> RenewableGenerators = MiscUtil.toList(pvgeniris);
 		new RetrofitAgent().retrofitGenerator(jo.getString("electricalnetwork"), RenewableGenerators);
-		//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
+		}
+	/** test validateInput() of RenewableGeneratorRetrofitAgent()
+	 * 
+	 */
+	public void testRenewableGeneratorRetrofitValidateInput() {
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork",ENIRI);
+		jo.put("RenewableEnergyGenerator", pvgeniris);
+		assertTrue(new RenewableGeneratorRetrofit().validateInput(jo));
+	
+	}
+	/** test Agent calling of RenewableGeneratorRetrofitAgent
+	 * 
+	 * @throws JSONException
+	 */
+	public void testRenewableGeneratorRetrofitAgent() throws JSONException {
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("RenewableEnergyGenerator", pvgeniris);
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/RenewableGenRetrofit", jo.toString());
+		File file2 = new File(baseUrl +"\\localhost_8080");
+		assertTrue(file2.exists());
+		File file3 = new File(baseUrl +"\\www_jparksimulator_com");
+		assertTrue(file3.exists());
+		System.out.println(result);
+	}
+	/** test validateInput() of BatteryRetrofitAgent()
+	 * 
+	 */
+	public void testBatteryRetrofitValidateInput() {
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork",ENIRI);
+		jo.put("batterylist", batteryiris);
+		assertTrue(new BatteryRetrofit().validateInput(jo));
+	
+	}
+	/** this test works ONLY when you have the 
+	 * scenario testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10
+	 * in your JPS_DATA folder. 
+	 * If you have a suitable file (i.e. simulation completed) then change
+	 * the name accordingly
+	 */
+	public void testretrofitNucScenarioAgent() {
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("plants", nucPPiris);
+		jo.put("substitutionalgenerators", nucgeniris);
+		String result = new ScenarioClient()
+				.call("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10"
+						, "http://localhost:8080/JPS_POWSYS/retrofit", jo.toString());
+	//TODO: If this successfully runs, then this should be considered passing the test as no change in file is noted. 	
+	}
+	/** test validateInput() of RetrofitAgent()
+	 * 
+	 */
+	public void testRetrofitValidateInput() {
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("plants", nucPPiris);
+		jo.put("substitutionalgenerators", nucgeniris);
+		assertTrue(new RetrofitAgent().validateInput(jo));
+	
 	}
 	
-//	public void testretrofitnuclear() {
-//		JSONObject jo = new JSONObject();
-//		JSONArray value1 = new JSONArray();
-//		JSONArray value2 = new JSONArray();
-//		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-//		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
-//		value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
-//		jo.put("RenewableEnergyGenerator", value1);
-//		jo.put("substitutionalgenerators", value2);
-//		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
-//		List<String> RenewableGenerators = MiscUtil.toList(value1);
-//		new RetrofitAgent().retrofit(jo.getString("electricalnetwork"), RenewableGenerators,jo.getString("substitutionalgenerators"));
-//		//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
-//	}
 }

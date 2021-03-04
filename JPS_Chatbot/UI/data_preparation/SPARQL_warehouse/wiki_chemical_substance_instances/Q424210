@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q2548975"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "aristolochic acid ii"}, "x": {"type": "literal", "value": "C\u2081\u2086H\u2089NO\u2086"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

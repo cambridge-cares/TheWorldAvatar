@@ -1,0 +1,35 @@
+Molecular model of  aromatic hydrocarbons
+Chemical  structure of  aromatic hydrocarbons
+mass of aromatic hydrocarbons
+mass of aromatic hydrocarbons with mass less than 170
+density of aromatic hydrocarbons with mass less than 200
+Molecular weight of ch4.
+chemical structure of aromatic hydrocarbon with molecular weight more than 200 -->
+what is the molecular weight of c1ccccc1
+show me the molecular model of CH2=CHCHO 
+show me the ionization energy of C1=CC=CC=C1
+what is the heat capacity of c1=cc=cc=c1
+reaction rate of H2 + O2 -> H2O
+what is the product of H2 + OH
+is the reaction H + H2O == H2 + OH reversible
+what reactions produce NO2 + O2
+what reaction has CH4 as reactant
+what mechanism contains CH4 + OH
+show me the log file of C8H14
+show me the vibration frequency of H2O2
+symmetry number of C8H14
+what is the rotational constants of C3H6
+what is the spin multiplicity of C8H14
+show the formal charge of C3H6
+electronic energy of C2H2O2
+what is the geometry type of C2H2O2
+what is the lennard jones well depth of C2H2O2
+what is the polarizability of C2H2O2
+what is the dipole moment of C2H2O2
+rotational relaxation collision number of C8H14
+chemical formula of alkanol with heat capacity less than 200					
+ 
+ 
+ 
+ 
+ 

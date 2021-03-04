@@ -16,6 +16,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.virtualsensor.episode.CalculationUtils;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
@@ -33,7 +34,7 @@ public class WeatherAgent extends JPSAgent {
 	Logger logger = LoggerFactory.getLogger(WeatherAgent.class);
 	
 	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject response = new JSONObject();
     	if (validateInput(requestParams)) {
 	        Scope sc = new Scope(requestParams);
@@ -105,9 +106,14 @@ public class WeatherAgent extends JPSAgent {
 			try {
 				double [] xy = {ws.getXcoord(),ws.getYcoord()};
 				JSONObject apiresult = getWeatherDataFromAPI(xy);
-				double precipitation = 0.0; // in mm
+				double precipitation = 0.0; // in mm/h
 				if (apiresult.has("rain")) {
-					precipitation = apiresult.getJSONObject("rain").optDouble("3h", apiresult.getJSONObject("rain").getDouble("1h"));
+					JSONObject rain = apiresult.getJSONObject("rain");
+					try {
+						precipitation = rain.getDouble("1h");
+					} catch (Exception e) {
+						precipitation = rain.getDouble("3h")/3.0;
+					}
 				}
 				// units are set according to mcwind file for Episode
 				double pressure = apiresult.getJSONObject("main").getDouble("pressure"); // in hPa

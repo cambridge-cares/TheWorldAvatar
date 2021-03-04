@@ -63,7 +63,8 @@ How do we know if it's not working? If the python logger logging to tomcat serve
  	
  	2. If both doesn't work, it's a problem with your python libraries. More specifically, phantomJS webdriver isn't installed and/or placed in your environment path. Search stackoverflow to do so. 
  	
- 	3. Then check if your python is able to download data. The way to do so is to check that after calling on the agent, see of your Map<String, String[]> variables are all non-null. If they're null, then your download of webpage using selenium is probably going haywire. 
+ 	3. Then check if your python is able to download data. The way to do so is to check that after calling on the agent, see of your Map<String, String[]> variables are all non-null. If they're null, then your download of webpage using selenium is probably going haywire. Alternatively, run JUNIT on the testDownloading in debug mode, and place a breakpoint in PythonHelper just after it forms the command
  	
  	4. What if your TestMoDsAnalysis is not working? 
  	- Check if you have your Mods API jar file in the right folder. I have it in `XX01\\.m2\repository\com\cmclinnovations\mods\MoDS_Java_API\0.3.3`, and if yours doesn't have the jar file but a lastUpdated file, then it means you tried to download it via Maven. But you can't. 
+ 	- Test if testDownloadingAndSaving.. tests as well as TestMoDS Analysis are not working, but the other tests are. That's because you might not have installed your phantomJS browser (or chromium browser, but you'll have to modify the Python to do so) within. 

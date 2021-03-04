@@ -1,18 +1,16 @@
 package uk.ac.cam.cares.jps.men;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.validator.routines.DoubleValidator;
-import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Resource;
@@ -21,17 +19,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.men.entity.MenCalculationParameters;
 
 
 @WebServlet(urlPatterns = {"/MENAgent"})
 
-public class MenAgent extends JPSHttpServlet {
+public class MenAgent extends JPSAgent{
 	
 	private static final long serialVersionUID = -4199209974912271432L;
 	private List<String> cpirilist = new ArrayList<String>();
@@ -39,31 +34,36 @@ public class MenAgent extends JPSHttpServlet {
 	Logger logger = LoggerFactory.getLogger(MenAgent.class);
 	
 	@Override
-	protected void doGetJPS(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams = processRequestParameters(requestParams, null);
+		return requestParams;
+	}
+	    
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+			
 		
 		logger.info("MENAgent start");
-		
-		JSONObject jo = AgentCaller.readJsonParameter(req);	
-		boolean validInputs = validateInput(jo);
+		boolean validInputs = validateInput(requestParams);
 		if (validInputs == false) {
-			AgentCaller.printToResponse("Error caused by problematic inputs", resp);
+			throw new JSONException("Error caused by problematic inputs");
 		}
-		String transportationModes = jo.optString("transportationmodes", "http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl");
+		String transportationModes = requestParams.optString("transportationmodes", "http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl");
 		
-		if (jo.has("chemicalplants")) {
+		if (requestParams.has("chemicalplants")) {
 			
-			String chemicalPlants = jo.getString("chemicalplants");			
+			String chemicalPlants = requestParams.getString("chemicalplants");			
 			String[] arr=chemicalPlants.split(",");
 			cpirilist.addAll(Arrays.asList(arr));
 		} else {
-			String ecoindustrialpark = jo.getString("ecoindustrialpark");
-			String chemicalplantInfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> " 
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "SELECT ?iri "
-					+ "WHERE {?entity  a  cp:Eco-industrialPark  ." 
-					+ "?entity   j2:hasSubsystem ?iri ."
-					+ "}";
+			String ecoindustrialpark = requestParams.getString("ecoindustrialpark");
+			String chemicalplantInfo = new SelectBuilder()
+					.addPrefix("cp", "http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#")
+					.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+					.addVar("?iri").addWhere("?entity", "a", "cp:Eco-industrialPark")
+					.addWhere("?entity", "j2:hasSubsystem", "?iri")
+					.buildString();
+			
 	
 			ResultSet rs_plant = MenDataProvider.sparql(ecoindustrialpark, chemicalplantInfo); 
 			
@@ -81,11 +81,11 @@ public class MenAgent extends JPSHttpServlet {
 			}
 		}
 		
-		String carbonTax = "" + jo.getDouble("carbontax");
-		String interestFactor = "" + jo.getDouble("interestfactor");
-		String annualCostFactor = "" + jo.getDouble("annualcostfactor");
-		String internationalMarketPriceFactor = "" + jo.optDouble("internationalmarketpricefactor", 1.05);
-		String internationalMarketLowestPriceApplied = jo.optString("internationalmarketlowestpriceapplied", "false");
+		String carbonTax = "" + requestParams.getDouble("carbontax");
+		String interestFactor = "" +requestParams.getDouble("interestfactor");
+		String annualCostFactor = "" + requestParams.getDouble("annualcostfactor");
+		String internationalMarketPriceFactor = "" + requestParams.optDouble("internationalmarketpricefactor", 1.05);
+		String internationalMarketLowestPriceApplied =requestParams.optString("internationalmarketlowestpriceapplied", "false");
 		
 		MenCalculationParameters parameters = new MenCalculationParameters(Double.parseDouble(carbonTax), Double.parseDouble(interestFactor), Double.parseDouble(annualCostFactor), Double.parseDouble(internationalMarketPriceFactor), Boolean.parseBoolean(internationalMarketLowestPriceApplied));
 		MenDataProvider converter = new MenDataProvider();
@@ -105,11 +105,10 @@ public class MenAgent extends JPSHttpServlet {
 		double totalCost = actual.totalMaterialPurchaseCost + actual.totalMaterialPurchaseCostInternationalMarket 
 				+ actual.totalTransportationCost + actual.totalC02EmissionCost + actual.totalInstallationCost;
 		result.put("totalcost", totalCost);
-			
-		AgentCaller.printToResponse(result.toString(), resp);
 
 		cpirilist.clear();
 		logger.info("MENAgent exit");
+		return result;
 	}
 	/** validate input for args in input from Table Agent
 	 * 
@@ -117,13 +116,15 @@ public class MenAgent extends JPSHttpServlet {
 	 * @return
 	 */
 	public boolean validateInput(JSONObject args) {
+		if (args.isEmpty()) {
+            throw new BadRequestException();
+        }
         boolean transport_opt,chemical_opt,bool_opt,impf_opt, comp_opt; 
         transport_opt= chemical_opt =bool_opt= impf_opt = comp_opt= true; //set default value to true
         DoubleValidator doubleValidator = new DoubleValidator();
-        UrlValidator urlValidator = new UrlValidator();
     	try {
         if (args.has("transportationmodes")) {//string of url representing transport
-        	transport_opt = urlValidator.isValid(args.get("transportationmodes").toString() );
+        	transport_opt = InputValidator.checkIfValidIRI(args.get("transportationmodes").toString() );
         	
         }
         if (args.has("chemicalplants")) {//optional value
@@ -131,7 +132,7 @@ public class MenAgent extends JPSHttpServlet {
         	String[] arr = plantLists.split(",");
         	//test all members of array
         	for (int i = 0; i< arr.length; i++) {
-        		if (urlValidator.isValid(arr[i]) == false) {
+        		if (InputValidator.checkIfValidIRI(arr[i]) == false) {
         			chemical_opt = false;
         		}
         	}
