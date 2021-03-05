@@ -1,0 +1,58 @@
+extends header.pug
+block title
+    title  Biodiesel3 Plant on Google Map
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |Biodiesel3 Plant on Google Map
+
+block readme
+    span#readme-button
+        | ?    
+    span#readme-text
+        | This agent combines both the chemical process and electrical aspects of a biodiesel plant. The chemical process of the biodiesel plant involves converting palm oil and methanol into biodiesel and glycerol.
+        br
+        br
+        |The biodiesel plant consists of equipment such as pumps, blowers, heat exchangers, reactors, vessels, valves, mixers and distillation columns. To reduce the computation time for the simulation, a surrogate model was developed for the biodiesel plant.
+        br
+        br
+        |Upon clicking on the individual icon, a pop-up window containing the information about the selected component will appear. The user can modify the values of E-301 (highlighted in yellow) process stream’s temperature (V_Temperature_3-1) and molar flow rate (V_molarF_3-1) and execute the simulation to determine the impacts of the modifications.
+        br
+        br
+        |The expected electrical domain aspects to be impacted due to changing of the chemical domain aspects (E-301 process stream’s temperature and molar flow rate) are the electricity consumption (heat duty) and voltage angle of the reactors (R-301 and R-302).
+        br
+        br
+        |Increasing either E-301 process stream’s temperature or molar flow rate will result in an increase in reactors’ (R-301 and R-302) electricity consumption (heat duty) and a decrease in the voltage angle.
+
+block description
+    |Biodiesel plant chemical process model combined with the electrical aspect domain based on Ibris Biodiesel plant process flowsheet in Jurong Island.   
+
+block content
+
+    div#map
+    // Modal
+    #err-msg-modal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#exampleModalLabel.modal-title Message
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+                #err-msg-modal-body.modal-body
+                    |
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity = "sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin = "anonymous")
+    script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous")
+    script(src="/javascripts/async.js")
+
+    script(src="/javascripts/PopUpmap.js")
+    script(src="/javascripts/b3Map.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")
