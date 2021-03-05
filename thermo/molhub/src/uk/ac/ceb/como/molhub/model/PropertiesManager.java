@@ -4,6 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * The Properties Manager class. Implements method for reading data from .properties files.
+ * 
+ * @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
+ *
+ */
 public class PropertiesManager {
 
 	public static void main(String[] args) {

@@ -29,7 +29,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <title>Molhub: Thermochemistry database</title>
+    <title>Quantum chemistry knowledge graph</title>
     
 <script src="scripts/start.js"></script>
 
@@ -61,14 +61,14 @@ text-align: left;
     <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
         <img  src="images/cam_lang_negativ1%20NEW_0.png">
     </a>
-       <h1 id="head1">Molhub: Thermochemistry database</h1>
+       <h1 id="head1">Quantum chemistry knowledge graph: Thermochemistry database</h1>
 	   
 	   <span id="readme-button">?</span>
-		<span id="readme-text">This is the Computational Modelling Group's open database for our thermochemistry data. It contains theoretical results that can be navigated and queried both manually through a browser and automatically. 
+		<span id="readme-text">This is the Computational Modelling Group's open knowledge graph for our thermochemistry data. It contains theoretical results that can be navigated and queried both manually through a browser and automatically. 
 		
 		<br/>
 		<br/>
-		The database is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between data points. 
+		The knowledge graph is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between data points. 
 		These queries are defined using the SPARQL Protocol and RDF Query Language (SPARQL). These queries can be implemented using a variety of different programming languages and make the database extremely flexible.
 		
 
@@ -82,7 +82,7 @@ text-align: left;
 </span>
 
 		
-<p id="description">Exlpore Molhub as an open database for thermochemistry data.   </p>
+<p id="description">Explore knowledge graph as an open database for thermochemistry data.   </p>
 
 </div>
 
@@ -103,7 +103,7 @@ text-align: left;
 
 <div id="leftnav" class="clearfix">
 
- <ul><li class="selcsm">MolHub</li></ul>
+ <ul><li class="selcsm">Quantum chemistry knowledge graph</li></ul>
     
 </div>
 
@@ -123,8 +123,8 @@ text-align: left;
 <div class="col-md-9">
 <s:actionerror/>
 <s:form action="search" align="left">   
-<s:textfield name="term.name" placeholder="Search Molhub" size="80"/>
-<s:submit value="Molhub Search"/>
+<s:textfield name="term.name" placeholder="(Ti1 and Cl4)" size="80"/>
+<s:submit value="Search Knowledge Graph"/>
 </s:form>
 </div>
 <div class="col-md-9">
@@ -199,6 +199,8 @@ Session result: <s:property value="session"/>
 <!--Define parameter for uuid to be used in query all data in RDF4J repository.-->
 <s:param name="uuidName"><s:property  value="uuid"/></s:param>
 
+<s:param name="uuidFileName"><s:property  value="uniqueFileIdentifier"/></s:param>
+
 </s:url>
 
 <div class="species-image" id="middlepanel"></div>
@@ -213,7 +215,7 @@ Session result: <s:property value="session"/>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[1]"/></div>
                 <div class="property-value" align="left">
-                <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/></s:a>
+            <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/> </s:a> 
                 </div>
             </div>
             <p/>

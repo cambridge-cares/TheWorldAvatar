@@ -621,7 +621,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
 				    '?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
@@ -633,7 +633,7 @@ $( function() {
 					queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 				 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 					'PREFIX ontokin:' + '\n' +
-					'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+					'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 					'SELECT ?MechanismName ?SpeciesName ?MechanismIRI' + '\n' +
 					'WHERE {{' + '\n' +
 						getSpeciesQueryPartPrimitive('C6H6') + '\n' +
@@ -652,7 +652,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?SpeciesName ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
 					getSpeciesQueryPartPrimitive(search_term_name) + '\n' +
@@ -668,7 +668,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -689,7 +689,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -709,7 +709,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -725,7 +725,7 @@ $( function() {
 					queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 				 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 					'PREFIX ontokin:' + '\n' +
-					'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+					'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 					'SELECT ?MechanismName ?SpeciesName ?CoefficientValues ?MinTemp ?MaxTemp ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI' + '\n' +
 					'WHERE {{' + '\n' +
 						getSpeciesQueryPartComplex('C6H6') + '\n' +
@@ -744,7 +744,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?SpeciesName ?CoefficientValues ?MinTemp ?MaxTemp ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI' + '\n' +
 				'WHERE {' + '\n' +
 					getSpeciesQueryPartComplex(search_term_name) + '\n' +
@@ -755,7 +755,7 @@ $( function() {
 					queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 				 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 					'PREFIX ontokin:' + '\n' +
-					'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+					'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 					'SELECT ?MechanismName ?SpeciesName ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI ?CoefficientValues ?MinTemp ?MaxTemp ?Pressure' + '\n' +
 					'WHERE {{' + '\n' +
 						getSpeciesQueryPartComplex('C6H6') + '\n' +
@@ -773,7 +773,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI ?CoefficientValues ?MinTemp ?MaxTemp ?Pressure' + '\n' +
 				'WHERE {' + '\n' +
 					getSpeciesQueryPartComplex(search_term_name) + '\n' +
@@ -788,7 +788,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits ?MechanismIRI ?ReactionIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -816,7 +816,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits ?MechanismIRI ?ReactionIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -843,7 +843,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits ?MechanismIRI ?ReactionIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -869,7 +869,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits ?MechanismIRI ?ReactionIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -896,7 +896,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -924,7 +924,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -951,7 +951,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
@@ -977,7 +977,7 @@ $( function() {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 

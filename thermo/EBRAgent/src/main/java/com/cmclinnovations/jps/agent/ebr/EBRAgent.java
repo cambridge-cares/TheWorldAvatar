@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmclinnovations.jps.agent.caller.AgentCaller;
 import com.cmclinnovations.jps.agent.configuration.EBRAgentProperty;
+import com.cmclinnovations.jps.agent.configuration.SpringConfiguration;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.csv.species.CSVGenerator;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
@@ -51,9 +52,9 @@ import com.jcraft.jsch.SftpException;
 
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 /**
  * EBR Agent is developed for setting-up and running thermodata validation<br>
@@ -147,7 +148,7 @@ public class EBRAgent extends HttpServlet{
 	
 	
 	/**
-     * Shows the following statistics of EBR jobs processed by EBR Agent.</br>
+     * Returns the following statistics of EBR jobs processed by the EBR Agent.</br>
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -159,7 +160,7 @@ public class EBRAgent extends HttpServlet{
      */
 	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
     @ResponseBody
-    public String produceStatistics(@RequestParam String input) throws IOException, EBRAgentException{
+    public JSONObject produceStatistics(@RequestParam String input) throws IOException, EBRAgentException{
 		System.out.println("Received a request to send statistics.\n");
 		logger.info("Received a request to send statistics.\n");
 		if(jobSubmission==null){
@@ -202,7 +203,14 @@ public class EBRAgent extends HttpServlet{
        	// the first 60 refers to the delay (in seconds) before the job scheduler
         // starts and the second 60 refers to the interval between two consecu-
         // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(ebrAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(() -> {
+			try {
+				ebrAgent.monitorJobs();
+			} catch (SlurmJobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}, 30, 60, TimeUnit.SECONDS);
 		// initialising classes to read properties from the ebr-agent.properites file
 		initConfig();
         logger.info("---------- EBR jobs are being monitored  ----------");
@@ -225,7 +233,7 @@ public class EBRAgent extends HttpServlet{
 		}
 	}
 	
-	private void monitorJobs(){
+	private void monitorJobs() throws SlurmJobException{
 		if(jobSubmission==null){
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}

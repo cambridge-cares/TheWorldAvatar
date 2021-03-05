@@ -122,7 +122,7 @@ public class OntoKinKG {
 	 * @return
 	 */
 	public static String formThermoModelInsertionQuery(String triple){
-		String queryString = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+		String queryString = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 		queryString = queryString.concat("INSERT DATA\n");
 		queryString = queryString.concat("{"+triple+"}");
 		return queryString;
@@ -135,7 +135,7 @@ public class OntoKinKG {
 	 * @return
 	 */
 	public static String formThermoModelDeletionQuery(String triple){
-		String queryString = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+		String queryString = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 		queryString = queryString.concat("DELETE DATA\n");
 		queryString = queryString.concat("{"+triple+"}");
 		return queryString;
@@ -148,7 +148,7 @@ public class OntoKinKG {
 	 * @return
 	 */
 	public static String formThermoModelQuery(String speciesIRI){
-		String queryString = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+		String queryString = "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>\n";
 		queryString = queryString.concat("SELECT ?thermoModel ?coeffValues\n");
 		queryString = queryString.concat("WHERE {\n");
 		queryString = queryString.concat("?speciesIRI ontokin:hasUniqueSpecies <"+speciesIRI+"> .\n");

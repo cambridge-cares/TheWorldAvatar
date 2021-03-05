@@ -14,6 +14,9 @@ import aima.core.logic.propositional.visitors.DistributeOrOverAnd;
 
 /**
  * The Class SentenceManager.
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 public class SentenceManager {
 

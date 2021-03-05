@@ -23,6 +23,8 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.slf4j.Logger;
 
+import gigadot.chom.model.cookie.EnthalpyOfFormation;
+
 /**
  * Parses HTML, SDF and MOL files containing NIST species and convert them into 
  * ontologies represented using OWL.
@@ -123,9 +125,20 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 		NISTWebBookParser nistWebBookParser = new NISTWebBookParser();
 		try{
 		Map<String, NISTSpeciesInfo> data = nistWebBookParser.parseNISTData(sourceHTMLFilePath, sourceStructureFilePath);
+		int count = 0;
 		// Each iteration converts a NIST species into an OWL file.
 		for (String key:data.keySet()) {
 			NISTSpeciesInfo speciesInfo = data.get(key);
+			if(speciesInfo.getEnthalpyOfFormationInGas() == null || speciesInfo.getEnthalpyOfFormationInGas().size()<1){
+				continue;
+			}
+			System.out.println(speciesInfo.getEnthalpyOfFormationInGas().size());
+			if(speciesInfo.getSpeciesGeometry()==null || speciesInfo.getSpeciesGeometry().getString()==null || speciesInfo.getSpeciesGeometry().getString().trim().equals("")){
+				continue;
+			}
+			count++;
+			logger.info("Number of species found with all relevant info:"+count);
+			System.out.println("Number of species found with all relevant info:"+count);
 			// Also initialises the instances of the classes that read
 			// configuration parameters using Spring framework annotations.
 			initNISTConverter = new InitNISTConverter();
@@ -155,12 +168,11 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 				logger.error("The requested ontology could not be created.");
 				throw new OntoSpeciesException("Ontology could not be created.");
 			}
-			
 			convertNISTSpecies(speciesInfo);
 			try{
 				saveOntology();
 			}catch(Exception e){
-				
+				e.printStackTrace();
 			}
 			iteration++;
 			logger.info("["+iteration+"] Finished the conversion of Species:"+iteration);
@@ -214,6 +226,7 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	private void convertNISTSpecies(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
 		createSpeciesInstance();
 		addIdentifier();
+		addName(speciesInfo);
 		addWeblinkToSpecies(speciesInfo);
 		addEnthalpyOfFormation(speciesInfo);
 		addCASRegistryNumber(speciesInfo);
@@ -228,7 +241,7 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	 * @throws OntoSpeciesException
 	 */
 	private void createSpeciesInstance() throws OntoSpeciesException{
-		individual = iNistOWLWriter.createInstance(ontoKinTBoxIRI, uniqueSpeciesId, CLS_SPECIES);
+		individual = iNistOWLWriter.createInstance(uniqueSpeciesId, CLS_SPECIES);
 	}
 	
 	/**
@@ -264,23 +277,13 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	 * @throws OntoSpeciesException
 	 */
 	private void addEnthalpyOfFormation(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
-		if(speciesInfo.getPermanentLink()!=null && !speciesInfo.getPermanentLink().trim().isEmpty())
-		{
-			if(speciesInfo.getPhase()==null || speciesInfo.getPhase().equals("gas")){
+		if(speciesInfo.getEnthalpyOfFormationInGas()!=null){
 				for(NISTEnthalpy nistEnthalpy:speciesInfo.getEnthalpyOfFormationInGas()){
 					addEnthalpyOfFormation(nistEnthalpy);
-				}				
-			} else if(speciesInfo.getPhase().equals("solid")){
-				for(NISTEnthalpy nistEnthalpy:speciesInfo.getEnthalpyOfFormationInSolid()){
-					addEnthalpyOfFormation(nistEnthalpy);
+				break;
 				}
-			} else if(speciesInfo.getPhase().equals("liquid")){
-				for(NISTEnthalpy nistEnthalpy:speciesInfo.getEnthalpyOfFormationInLiquid()){
-					addEnthalpyOfFormation(nistEnthalpy);
 				}
-			} 
 		}
-	}
 	
 	
 	
@@ -318,9 +321,22 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	 * @throws OntoSpeciesException
 	 */
 	private void addCASRegistryNumber(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
-		if(speciesInfo.getPermanentLink()!=null && !speciesInfo.getPermanentLink().trim().isEmpty())
+		if(speciesInfo.getCASRegNr()!=null && !speciesInfo.getCASRegNr().trim().isEmpty())
 		{
 			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_CAS_REG_ID, HASH, speciesInfo.getCASRegNr());
+		}
+	}
+	
+	/**
+	 * Adds the name to the current species.
+	 * 
+	 * @throws OntoSpeciesException
+	 */
+	private void addName(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
+		if(speciesInfo.getName()!=null && !speciesInfo.getName().isEmpty())
+		{
+			dataPropertyNameVsTypeMap.put(RDFS_URL+RDFS_LABEL, "string");
+			iNistOWLWriter.addDataPropertyToIndividual(individual, RDFS_URL, RDFS_LABEL, EMPTY, speciesInfo.getName());
 		}
 	}
 	
@@ -337,14 +353,14 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 			}
 		}
 	}
-	
+
 	/**
 	 * Adds the geometry to the current species.
 	 * 
 	 * @throws OntoSpeciesException
 	 */
 	private void addGeometryString(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
-		if(speciesInfo.getSpeciesGeometry()!=null)
+		if(speciesInfo.getSpeciesGeometry()!=null && speciesInfo.getSpeciesGeometry().getString()!=null)
 		{
 			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_GEOMETRY, HASH, speciesInfo.getSpeciesGeometry().getString());
 		}
@@ -356,14 +372,13 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	 * @throws OntoSpeciesException
 	 */
 	private void addAtomicBondsString(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
-		if(speciesInfo.getSpeciesGeometry()!=null)
+		if(speciesInfo.getSpeciesGeometry()!=null && speciesInfo.getSpeciesGeometry().getAtomicBondsString()!=null)
 		{
 			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_ATOMIC_BONDS, HASH, speciesInfo.getSpeciesGeometry().getAtomicBondsString());
 		}
 	}
 	
-	/**
-	 * Saves the ontology created for codifying a single species chemical mechanism.
+	/**	 * Saves the ontology created for codifying a single species chemical mechanism.
 	 */
 	public void saveOntology() throws OWLOntologyStorageException {
 		try {

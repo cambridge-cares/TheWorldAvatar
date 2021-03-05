@@ -20,7 +20,7 @@ let getTableResultRowString = (index, resultObj) => {
 		//console.log('ss');
 		let queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 	 	'PREFIX ontokin:' + '\n' +
-		'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+		'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+ '\n' +
 		'SELECT ?x' + '\n' +
 		'WHERE {' + '\n' +
 		    '?x rdf:type ontokin:ReactionMechanism .' + '\n' +
@@ -33,7 +33,7 @@ let getTableResultRowString = (index, resultObj) => {
 // 			if (search_querySelection == 'thermo' ) {
 // 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + 
 // 					'PREFIX ontokin:' +
-// 						'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+
+// 						'<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>'+
 // 						'SELECT ?x' +
 // 						'WHERE {' +
 // 						    '?x rdf:type ontokin:ReactionMechanism .' +

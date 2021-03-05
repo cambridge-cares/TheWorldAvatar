@@ -64,7 +64,7 @@ public class FederatedQuery {
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * Returns a result of federated sparql query via ontospecieskb repositories stored on local host and on Claudius server.
+	 * Returns a result of federated sparql query via ontospecies repositories stored on local host and on Claudius server.
 	 * 
 	 */
 	
@@ -146,7 +146,7 @@ public class FederatedQuery {
 		/**
 		 * 
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * Returns a result of federated sparql query via ontospecieskb repositories stored on local host and on Claudius server.
+		 * Returns a result of federated sparql query via ontospecies repositories stored on local host and on Claudius server.
 		 * 
 		 */
 		
