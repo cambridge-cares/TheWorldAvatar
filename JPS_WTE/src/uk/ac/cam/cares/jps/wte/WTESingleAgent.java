@@ -158,7 +158,8 @@ public class WTESingleAgent extends JPSAgent{
 			updateKBForSystem(wasteIRI, baseUrl, getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		 }catch (Exception e) {
-			e.printStackTrace();
+			 //LIKELY IO EXCEPTION
+			logger.info(e.getMessage());
 		}			 
 		 
 		return requestParams;
