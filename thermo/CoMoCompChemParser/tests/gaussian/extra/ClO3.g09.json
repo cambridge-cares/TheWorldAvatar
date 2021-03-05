@@ -1,0 +1,72 @@
+{
+    "Empirical formula": "Cl1O3",
+    "Atom counts": {
+        "Cl": 1,
+        "O": 3
+    },
+    "Atom types": [
+        "Cl",
+        "O",
+        "O",
+        "O"
+    ],
+    "Atomic masses": [
+        34.9688527,
+        15.9949146,
+        15.9949146,
+        15.9949146
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "UB971",
+    "Basis set": "6-311+G(d,p)",
+    "Spin multiplicity": 2,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -0.24313,
+            0.28968,
+            0.0
+        ],
+        [
+            1.00293,
+            1.06725,
+            0.0
+        ],
+        [
+            -0.24313,
+            -0.84141,
+            1.0961
+        ],
+        [
+            -0.24313,
+            -0.84141,
+            -1.0961
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational symmetry number": 1.0,
+    "Rotational constants": [
+        10.97359,
+        7.91559,
+        5.33892
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Frequencies": [
+        295.9677,
+        344.3649,
+        413.2362,
+        506.8114,
+        808.8233,
+        1071.702
+    ],
+    "Frequencies number": 6,
+    "Frequencies unit": "cm^-1",
+    "Electronic energy": -685.473599202,
+    "Electronic and ZPE energy": -685.46576,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Mon Oct 19 21:09:29 2015"
+}

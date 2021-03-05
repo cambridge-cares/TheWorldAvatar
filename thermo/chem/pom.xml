@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    
+    <!-- 
+    <parent>
+        <groupId>gigadot.chom</groupId>
+        <artifactId>chom-pom</artifactId>
+        <version>0.7-SNAPSHOT</version>
+    </parent>
+    -->
+     
+    <groupId>gigadot.chom</groupId>
+    <artifactId>chom-chem</artifactId>
+    <version>0.7-SNAPSHOT</version>
+     
+    <name>Chom - Chemistry</name>
+    <url>http://como.cheng.cam.ac.uk</url>
+    
+    <dependencies>
+    
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>chom-model</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>chom-compchem</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+         
+        <dependency>
+            <groupId>gigadot.gigatools</groupId>
+            <artifactId>gigatools-lite</artifactId>
+            <version>0.8-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.gigatools</groupId>
+            <artifactId>gigatools-extra</artifactId>
+            <version>0.8-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+            <version>1.2.5</version>
+        </dependency>
+        
+         
+        <dependency>
+            <groupId>org.xml-cml</groupId>
+            <artifactId>cmlxom</artifactId>
+            <version>3.1</version>
+         </dependency>
+        <dependency>
+            <groupId>org.xml-cml</groupId>
+            <artifactId>jumbo</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-cli</artifactId>
+                    <groupId>org.apache.commons</groupId>
+                </exclusion>
+            </exclusions>
+            <version>6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+             <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math</artifactId>
+             <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+             <version>1.9.3</version>
+        </dependency>
+        
+    </dependencies>
+</project>
+
+
+
+
+
+
+
+
+
+
+
+
+
