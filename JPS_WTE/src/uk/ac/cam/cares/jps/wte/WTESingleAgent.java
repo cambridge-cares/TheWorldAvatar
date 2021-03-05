@@ -134,6 +134,9 @@ public class WTESingleAgent extends JPSAgent{
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		if (!validateInput(requestParams)) {
+			throw new JSONException("WTE:createOWLFileAgent: Input parameters not found.\n");
+		}
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
@@ -178,9 +181,8 @@ public class WTESingleAgent extends JPSAgent{
 			boolean fileExist = InputValidator.checkIfValidFile(filePath);
 			return new WastetoEnergyAgent().validateInput(requestParams)& fileExist;
 		}catch (JSONException ex) {
-			ex.printStackTrace();
+			return false;
 		}
-		return false;
 		
 		
 		

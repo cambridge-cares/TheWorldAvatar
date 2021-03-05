@@ -76,13 +76,6 @@ public class ENAgent extends JPSAgent{
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = null;
 
-		String path = requestParams.getString("path");
-
-		if (path.contains("/ENAgent/startsimulationPF")) {
-			modeltype = "PF";// PF or OPF
-		} else if (path.contains("/ENAgent/startsimulationOPF")) {
-			modeltype = "OPF";
-		}
 		modeltype = "OPF";
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
