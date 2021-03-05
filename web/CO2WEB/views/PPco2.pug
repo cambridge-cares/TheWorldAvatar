@@ -1,0 +1,96 @@
+extends header.pug
+block title
+    title  CO2 Emission Meter
+    
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    | World Natural Gas and Coal Power Plant CO
+    sub 2
+    | &nbsp;Emission Meter
+    
+    span#readme-button
+        | ?    
+    span#readme-text
+        | This agent estimates the individual and total CO
+        sub 2
+        |&nbsp;emissions of all coal and natural gas power plants obtained from the Global Energy Observatory website #[a(href='http://globalenergyobservatory.org') (http://globalenergyobservatory.org)]
+        |using the plant-specific emission factor based on Emissions & Generation Resource Integrated Database – eGRID.
+        br
+        br
+        |The agent can also estimate the total CO
+        sub 2
+        |&nbsp;emissions of coal and natural gas power plants for an individual country by selecting the country from
+        |&nbsp;the dropdown list. The power plants considered for the selected country and their corresponding name, capacity, generation type and estimated CO
+        sub 2
+        |&nbsp;emission are indicated in the table. The impact on CO
+        sub 2 
+        |&nbsp;emission reduction by converting a certain percentage of existing coal power plants capacity to natural gas power plants can also be estimated by specifying the value in the query box (located at the bottom) and pressing “enter”.
+    
+
+block description
+    | A CO
+    sub 2
+    | &nbsp;emission meter estimating the total CO
+    sub 2
+    | &nbsp;emission from World's Natural Gas and Coal Power Plant.
+
+block content  
+
+    body
+        div#container
+            div#co2-sum-panel
+                p
+                    | World Natural Gas and Coal Power Plant CO
+                    sub 2
+                    | &nbsp;Emission:
+                p
+                span#co2Value  #{co2Value}
+                span  tonnes/h
+
+                p.textsmall
+                    | The total CO
+                    sub 2
+                    | &nbsp;emission from World Natural Gas and Coal Power Plants is estimated using method from Emissions & Generation Resource Integrated Database (eGRID) and data from Global Energy Observatory (GEO)
+
+                p.textsmall
+                    |Source for world power plant: http://globalenergyobservatory.org
+
+            div#country-sum-panel.mypanel.container-fluid
+                p select country:
+                select#country-select.col-lg-2
+                    each country in countries
+                        option(value= {country}) #{country}
+                div#table-panel.col-lg-7
+                div#country-total-panel.col-lg-3
+                    |Total country's CO
+                    sub 2
+                    | &nbsp;emission(tonnes/h):
+                    span#country-total-echo
+            div#err-msg-panel
+            div#convert-panel.mypanel
+                p.p2 Enter percentage of existing coal power plant capacity to be converted to natural gas:
+                    input#input-percentage(type="text")
+                    span %
+
+                p.p2 Total CO
+                    sub 2 
+                    |&nbsp;Emission reduction by converting&nbsp;
+                    span#input-percentage-echo
+                    | % of coal power plant capacity to natural gas in&nbsp;
+                    span#select-country-echo
+                    | :&nbsp;
+                    span#convert-result-echo
+                    |&nbsp;tonnes/h
+
+
+
+
+
+
+                script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+
+                script(src="/javascripts/PPco2withjavaservlet.js")
