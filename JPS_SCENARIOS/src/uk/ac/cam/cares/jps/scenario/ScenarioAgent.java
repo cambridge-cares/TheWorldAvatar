@@ -19,6 +19,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,167 +54,169 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-//	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//		
-//		JSONObject requestParams = AgentCaller.readJsonParameter(request);
-//		
-//		String path = request.getPathInfo();
-//		logger.debug("called for path=" + path);
-//		
-//		String[] parts = ScenarioHelper.dividePath(path);
-//		String scenarioName = parts[0]; //name of scenario: base, testNuclear
-//		String operation = parts[1];
-//
-//		System.out.println("JSONPARAMS: "+ requestParams.toString());
-//		System.out.println("\noperation: "+operation);
-//		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
-//
-//		String scenariourl = JPSContext.getScenarioUrl(requestParams);
-//		String usecaseurl = JPSContext.getUsecaseUrl(requestParams);
-//		
-//
-//		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
-//		//logger.debug("with input param=" + jo);
-//		//logger.debug("with query string=" + request.getQueryString());
-//		//logger.debug("with request uri=" + request.getRequestURI());
-//		
-//		// The information of the scenarioUrl in JSON object from the input is redundant when
-//		// calling the scenario agent. However, it is needed as soon
-//		// as the scenario agent calls other agents.
-//		if ((scenariourl == null) || scenariourl.isEmpty()) {
-//			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName); //keyaddress/jps/scenario/scenarioName
-//			JPSContext.putScenarioUrl(requestParams, scenariourl);
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		JSONObject requestParams = AgentCaller.readJsonParameter(request);
+		
+		String path = request.getPathInfo();
+		logger.debug("called for path=" + path);
+		
+		String[] parts = ScenarioHelper.dividePath(path);
+		String scenarioName = parts[0]; //name of scenario: base, testNuclear
+		String operation = parts[1];
+
+		System.out.println("JSONPARAMS: "+ requestParams.toString());
+		System.out.println("\noperation: "+operation);
+		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
+
+		String scenariourl = JPSContext.getScenarioUrl(requestParams);
+		String usecaseurl = JPSContext.getUsecaseUrl(requestParams);
+		
+
+		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
+		//logger.debug("with input param=" + jo);
+		//logger.debug("with query string=" + request.getQueryString());
+		//logger.debug("with request uri=" + request.getRequestURI());
+		
+		// The information of the scenarioUrl in JSON object from the input is redundant when
+		// calling the scenario agent. However, it is needed as soon
+		// as the scenario agent calls other agents.
+		if ((scenariourl == null) || scenariourl.isEmpty()) {
+			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName); //keyaddress/jps/scenario/scenarioName
+			JPSContext.putScenarioUrl(requestParams, scenariourl);
+			
+//			usecaseurl = BucketHelper.getUsecaseUrl(scenariourl);
+//			JPSContext.putUsecaseUrl(jo, usecaseurl);
 //			
-////			usecaseurl = BucketHelper.getUsecaseUrl(scenariourl);
-////			JPSContext.putUsecaseUrl(jo, usecaseurl);
-////			
-////			logger.info("scenariourl now= "+scenariourl + " usecaseurl now= "+usecaseurl); 
-////			logger.info("context now= " + JPSContext.getJpsContext());
-////			logger.info("JSON now= " + jo.toString());
-//		}
-//
-//				
-//		ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
-//		boolean copyOnRead = ScenarioManagementAgent.getCopyOnRead(log);
-//		
-//		String result = "";
-//		if (operation == null) {
-//			
-//			if (requestParams.has(JPSConstants.SCENARIO_RESOURCE)) {
-//				
-//				doGetNew(request, response, scenarioName, copyOnRead);
-//				return;
-//				
-////				if (jo.has(JPSConstants.QUERY_SPARQL_QUERY)) {
-////					result = queryFile(jo, scenarioName, copyOnRead);
-////				} else {
-////					result = readFile(jo, scenarioName, copyOnRead);
-////				}
-//			} else {
-//			
-//				// just return the scenario log
-//				JSONObject resultjo = new JSONObject(log.getLogAsString());
-//				// pretty print with 2 spaces to indent
-//				result = resultjo.toString(2);
-//			}
-//		
-//		} else if ("/option".equals(operation)) {
-//			
-//			setOptions(requestParams, scenarioName, log);
-//
-//		} else if ("/mock".equals(operation)) {
-//			
-//			new ScenarioMockManager().mock(requestParams, scenarioName, log);
-//		
-//		} else if ("/call".equals(operation)) {
-//
-//			result = call(requestParams, scenarioName, log);
-//				
-//		} else if ("/read".equals(operation)) {
-//			
-//			result = readFile(requestParams, scenarioName, copyOnRead);
-//			
-//		} else if ("/query".equals(operation)) {
-//			
-//			result = queryFile(requestParams, scenarioName, copyOnRead);
-//			
-//		} else if ("/update".equals(operation)) {
-//
-//			updateFile(requestParams, scenarioName);
-//			
-//		} else if ("/delete".equals(operation)) {
-//			
-//			deleteScenario(scenarioName);
-//			
-//		} else if ("/compose".equals(operation)) {
-//			
-//			result = compose(requestParams, scenarioName, log);
-//
-//		} else if ("/preparerecording".equals(operation)) {
-//			
-//			result = prepareRecording(requestParams, scenarioName, log);
-//			
-//		} else if ("/ping".equals(operation)) {
-//			
-//			result = new Date().toString();
-//			
-//		} else if ("/mergescenario".equals(operation)) {
-//			
-//			mergeScenario(requestParams, scenarioName, log);
-//			
-//		} else {
-//			
-//			if (operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/") 
-//					|| operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_KB + "/")) {
-//				String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
-//				result = FileUtil.readFileLocally(localPath);
-//			} else {
-//				
-//				result = new ScenarioMockManager().execute(requestParams, scenarioName, operation, log);
-//			}
-//		}
-//		
-//		AgentCaller.printToResponse(result, response);
-//	}
-//	private void doGetNew(HttpServletRequest req, HttpServletResponse resp, String scenarioName, boolean copyOnRead) 
-//			throws ServletException, IOException {
-//		
-//		String requestUrl = req.getRequestURL().toString();
-//		String path = req.getPathInfo();
-//		JSONObject input = Http.readJsonParameter(req);
-//		String sparql = MiscUtil.optNullKey(input, JPSConstants.QUERY_SPARQL_QUERY);
-//		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
-//		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
-//		String contentType = req.getContentType();
-//		String accept = MiscUtil.optNullKey(input, "acceptHeaders");
-//		try {
-//			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
-//			
-//			
-//			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-//			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
-//			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
-//			
-//			String result = "";	
-//			if (sparql == null) {
-//				//result = kb.get(resourceUrl, accept);
-//				result = getFromKnowledgeBase(kb, paramDatasetUrl, resourceUrl, copyOnRead, accept);
-//			} else {
-//				//result = kb.query(resourceUrl, sparql);
-//				result = queryKnowledgeBase(kb, resourceUrl, sparql, copyOnRead);
-//			}
-//			
-//			Http.printToResponse(result, resp);
-//
-//		} catch (RuntimeException e) {
-//			e.printStackTrace();
-//			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, true);
-//			throw e;
-//		}
-//	}
+//			logger.info("scenariourl now= "+scenariourl + " usecaseurl now= "+usecaseurl); 
+//			logger.info("context now= " + JPSContext.getJpsContext());
+//			logger.info("JSON now= " + jo.toString());
+		}
+
+				
+		ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
+		boolean copyOnRead = ScenarioManagementAgent.getCopyOnRead(log);
+		
+		String result = "";
+		if (operation == null) {
+			
+			if (requestParams.has(JPSConstants.SCENARIO_RESOURCE)) {
+				
+				doGetNew(request, response, scenarioName, copyOnRead);
+				return;
+				
+//				if (jo.has(JPSConstants.QUERY_SPARQL_QUERY)) {
+//					result = queryFile(jo, scenarioName, copyOnRead);
+//				} else {
+//					result = readFile(jo, scenarioName, copyOnRead);
+//				}
+			} else {
+			
+				// just return the scenario log
+				JSONObject resultjo = new JSONObject(log.getLogAsString());
+				// pretty print with 2 spaces to indent
+				result = resultjo.toString(2);
+			}
+		
+		} else if ("/option".equals(operation)) {
+			
+			setOptions(requestParams, scenarioName, log);
+
+		} else if ("/mock".equals(operation)) {
+			
+			new ScenarioMockManager().mock(requestParams, scenarioName, log);
+		
+		} else if ("/call".equals(operation)) {
+
+			result = call(requestParams, scenarioName, log);
+				
+		} else if ("/read".equals(operation)) {
+			
+			result = readFile(requestParams, scenarioName, copyOnRead);
+			
+		} else if ("/query".equals(operation)) {
+			
+			result = queryFile(requestParams, scenarioName, copyOnRead);
+			
+		} else if ("/update".equals(operation)) {
+
+			updateFile(requestParams, scenarioName);
+			
+		} else if ("/delete".equals(operation)) {
+			
+			deleteScenario(scenarioName);
+			
+		} else if ("/compose".equals(operation)) {
+			
+			result = compose(requestParams, scenarioName, log);
+
+		} else if ("/preparerecording".equals(operation)) {
+			
+			result = prepareRecording(requestParams, scenarioName, log);
+			
+		} else if ("/ping".equals(operation)) {
+			
+			result = new Date().toString();
+			
+		} else if ("/mergescenario".equals(operation)) {
+			
+			mergeScenario(requestParams, scenarioName, log);
+			
+		} else {
+			
+			if (operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/") 
+					|| operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_KB + "/")) {
+				String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
+				result = FileUtil.readFileLocally(localPath);
+			} else {
+				
+				result = new ScenarioMockManager().execute(requestParams, scenarioName, operation, log);
+			}
+		}
+		
+		AgentCaller.printToResponse(result, response);
+	}
+	private void doGetNew(HttpServletRequest req, HttpServletResponse resp, String scenarioName, boolean copyOnRead) 
+			throws ServletException, IOException {
+		
+		String requestUrl = req.getRequestURL().toString();
+		String path = req.getPathInfo();
+		JSONObject input = Http.readJsonParameter(req);
+		String sparql = MiscUtil.optNullKey(input, JPSConstants.QUERY_SPARQL_QUERY);
+		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
+		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
+		String contentType = req.getContentType();
+		String accept = MiscUtil.optNullKey(input, "acceptHeaders");
+		try {
+			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
+			
+			
+			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
+			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
+			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
+			
+			String result = "";	
+			if (sparql == null) {
+				//result = kb.get(resourceUrl, accept);
+				result = getFromKnowledgeBase(kb, paramDatasetUrl, resourceUrl, copyOnRead, accept);
+			} else {
+				//result = kb.query(resourceUrl, sparql);
+				result = queryKnowledgeBase(kb, resourceUrl, sparql, copyOnRead);
+			}
+			
+			Http.printToResponse(result, resp);
+
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, true);
+			throw e;
+		}
+	}
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {	
-		validateInput(requestParams);
+		if (!validateInput(requestParams)) {
+			throw new JSONException("ScenarioAgent: Input parameters not found.\n ");
+		}
 		//TODO: To be fixed with a proper POST or PUT method later on
         String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
 		System.out.println("METHOD: "+ method);

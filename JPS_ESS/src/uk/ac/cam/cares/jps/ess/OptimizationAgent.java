@@ -36,8 +36,10 @@ public class OptimizationAgent extends JPSAgent {
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+		if (!validateInput(requestParams)) {
+			throw new JSONException("ESSOptimizationAgent: Input parameters not found.\n");
+		}
 		String path="JPS_ESS/LocateBattery"; //later can be queried from the agent descriptions
-		
 		String gencoordinate = new SelectBuilder()
 				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
 				.addPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
@@ -46,10 +48,7 @@ public class OptimizationAgent extends JPSAgent {
 				.addWhere("?entity","j6:hasStateOfCharge", "?dt")
 				.addWhere("?class", "rdfs:subClassOf","?parent")
 				.buildString();
-		boolean validity = validateInput(requestParams);
-		if (validity == false) {
-			throw new JSONException("INPUT no longer valid");
-		}
+		
 		String batIRI=requestParams.getString("storage");		
 		String localUrl = ScenarioHelper.cutHash(batIRI);
 		localUrl = ResourcePathConverter.convert(localUrl);
@@ -77,9 +76,8 @@ public class OptimizationAgent extends JPSAgent {
 	        String storageFormat = requestParams.getString("storage");
 	        boolean q = InputValidator.checkIfValidIRI(storageFormat);
 	        return q;
-        }catch (Exception ex) {
-        	ex.printStackTrace();
+        }catch (JSONException ex) {
+            return false;
         }
-        return false;
 	}	
 }

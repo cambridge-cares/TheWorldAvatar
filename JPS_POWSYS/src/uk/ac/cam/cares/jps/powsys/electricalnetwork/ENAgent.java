@@ -71,7 +71,7 @@ public class ENAgent extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		if (!validateInput(requestParams)) {
-			throw new JSONException("ENAgent input parameters invalid");
+			throw new JSONException("ENAgent: Input parameters not found.\n");
 		}
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = null;
@@ -92,11 +92,9 @@ public class ENAgent extends JPSAgent{
 			result = startSimulation(iriofnetwork, baseUrl, modeltype);
 			return result;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
+			throw new JSONException("ENAgent: startSimulation invalid!\n");
 			
 		}
-		return null;
 	}
 	
 	public JSONObject startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
@@ -1029,8 +1027,7 @@ public class ENAgent extends JPSAgent{
 	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
 	        return w;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
+        	return false;
         }
-        return false;
     }
 }

@@ -43,7 +43,7 @@ public class KnowledgeBaseAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		System.out.println("JSON PARAMS" + requestParams.toString());
 		if (!validateInput(requestParams)) {
-			throw new JSONException("KnowledgeBaseAgent: input Parameters not found!");
+			throw new JSONException("KnowledgeBaseAgent: Input parameters not found.\n");
 		}
 		String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
 		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);

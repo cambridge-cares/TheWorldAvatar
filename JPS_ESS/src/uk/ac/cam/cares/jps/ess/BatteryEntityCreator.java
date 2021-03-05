@@ -35,6 +35,10 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 public class BatteryEntityCreator extends JPSAgent {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private OntClass coordinateclass = null;
 	private OntClass coordinatesystemclass = null;
 	private OntClass valueclass = null;
@@ -93,13 +97,13 @@ public class BatteryEntityCreator extends JPSAgent {
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-		
+
+		if (!validateInput(requestParams)) {
+			throw new JSONException("ESSOptimizationAgent: Input parameters not found.\n");
+		}
 		String ENIRI=requestParams.getString("electricalnetwork");
 		String storagetype=requestParams.getString("storage");
-		boolean validity = validateInput(requestParams);
-		if (validity == false) {
-			throw new JSONException("INPUT no longer valid");
-		}
+		
 		Double valueboundary=0.3; //later is extracted from the battery type
 		OntModel model = EnergyStorageSystem.readModelGreedy(ENIRI);
 		
@@ -130,9 +134,8 @@ public class BatteryEntityCreator extends JPSAgent {
 	        
 	        return q&v;
         }catch (Exception ex) {
-        	ex.printStackTrace();
+        	return false;
         }
-        return false;
 	}	
 	/** queries for Electric cable, and returns electric line, loss, and connected buses
 	 * 

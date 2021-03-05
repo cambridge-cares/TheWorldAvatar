@@ -110,10 +110,9 @@ public class AggregationEmissionAgent extends JPSAgent{
 	}
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	boolean v = validateInput(requestParams); 
-    	if (v== false) {
-    		return new JSONObject().put("Error", "Input parameters not valid!");
-    	}
+    	if (!validateInput(requestParams)) {
+			throw new JSONException ("AggregationEmissionAgent: Input parameters not found.\n");
+		}
     	String iriofnetwork = requestParams.getString("electricalnetwork");
     	JSONObject result=updateEmission(iriofnetwork);
 	    List<Object> chimneylist = result.getJSONArray("chimney").toList();
@@ -150,8 +149,7 @@ public class AggregationEmissionAgent extends JPSAgent{
         String iriofnetwork = requestParams.getString("electricalnetwork");
         return InputValidator.checkIfValidIRI(iriofnetwork);
         } catch (JSONException ex) {
-        	ex.printStackTrace();
-        	throw new JSONException("IRI not found");
+        	return false;
         }
     }
     

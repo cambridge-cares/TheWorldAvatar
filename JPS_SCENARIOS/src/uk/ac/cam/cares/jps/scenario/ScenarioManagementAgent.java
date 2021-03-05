@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,9 @@ public class ScenarioManagementAgent extends JPSAgent {
     }
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		validateInput(requestParams);
+		if (validateInput(requestParams)) {
+			throw new JSONException("ScenarioManagementAgent: Input parameters not found.\n");
+		}
 		String path = requestParams.getString("path");
 		logger.info("called for path=" + path);
 		
