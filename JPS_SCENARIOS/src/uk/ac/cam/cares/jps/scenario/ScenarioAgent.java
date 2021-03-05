@@ -16,6 +16,8 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -51,9 +53,6 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 //	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 //		
 //		JSONObject requestParams = AgentCaller.readJsonParameter(request);
@@ -64,7 +63,9 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 //		String[] parts = ScenarioHelper.dividePath(path);
 //		String scenarioName = parts[0]; //name of scenario: base, testNuclear
 //		String operation = parts[1];
-//		
+//
+//		System.out.println("JSONPARAMS: "+ requestParams.toString());
+//		System.out.println("\noperation: "+operation);
 //		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
 //
 //		String scenariourl = JPSContext.getScenarioUrl(requestParams);
@@ -213,97 +214,106 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {	
 		validateInput(requestParams);
-		String path = requestParams.getString("path");
-		logger.debug("called for path=" + path);
-		
-		String[] parts = ScenarioHelper.dividePath(path);
-		String scenarioName = parts[0]; //name of scenario: base, testNuclear
-		String operation = parts[1];
-		
-		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
-
-		String scenariourl = JPSContext.getScenarioUrl(requestParams);
-		String usecaseurl = JPSContext.getUsecaseUrl(requestParams);
-		
-
-		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
-		//logger.debug("with input param=" + jo);
-		//logger.debug("with query string=" + request.getQueryString());
-		//logger.debug("with request uri=" + request.getRequestURI());
-		
-		// The information of the scenarioUrl in JSON object from the input is redundant when
-		// calling the scenario agent. However, it is needed as soon
-		// as the scenario agent calls other agents.
-		if ((scenariourl == null) || scenariourl.isEmpty()) {
-			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName); //keyaddress/jps/scenario/scenarioName
-			JPSContext.putScenarioUrl(requestParams, scenariourl);
-		}
-
-				
-		ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
-		boolean copyOnRead = ScenarioManagementAgent.getCopyOnRead(log);
-		
-		String result = "";
-		JSONObject jo = new JSONObject();
-		if (operation == null) { //SWITCH doesn't accept operation as a null
-			if (requestParams.has(JPSConstants.SCENARIO_RESOURCE)) {
-				result = getNew(request, scenarioName, copyOnRead);
-				return jo.put("result", result);
-				} else {
+		//TODO: To be fixed with a proper POST or PUT method later on
+        String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
+		System.out.println("METHOD: "+ method);
+        if (method.equals(HttpPost.METHOD_NAME) || method.equals(HttpPut.METHOD_NAME)) {
+        	doPutOrPost(requestParams);
+        	return new JSONObject();
+        }
+        else {
+			String path = MiscUtil.optNullKey(requestParams, JPSConstants.PATH);
+			System.out.println("JSONPARAMS: "+ requestParams.toString());
+			logger.info("called for path=" + path);
+			String[] parts = ScenarioHelper.dividePath(path);
+			String scenarioName = parts[0]; //name of scenario: base, testNuclear
+			String operation = parts[1];
 			
-				// just return the scenario log
-				JSONObject resultjo = new JSONObject(log.getLogAsString());
-				// pretty print with 2 spaces to indent
-//				result = resultjo.toString(2);
-				return resultjo;
-				
+			// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
+	
+			String scenariourl = JPSContext.getScenarioUrl(requestParams);
+			String usecaseurl = JPSContext.getUsecaseUrl(requestParams);
+			
+	
+			logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
+			//logger.debug("with input param=" + jo);
+			//logger.debug("with query string=" + request.getQueryString());
+			//logger.debug("with request uri=" + request.getRequestURI());
+			
+			// The information of the scenarioUrl in JSON object from the input is redundant when
+			// calling the scenario agent. However, it is needed as soon
+			// as the scenario agent calls other agents.
+			if ((scenariourl == null) || scenariourl.isEmpty()) {
+				scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName); //keyaddress/jps/scenario/scenarioName
+				JPSContext.putScenarioUrl(requestParams, scenariourl);
 			}
-		}
-		switch (operation) {			
-			case "/option":			
-				setOptions(requestParams, scenarioName, log);
-				break;
-			case "/mock":			
-				new ScenarioMockManager().mock(requestParams, scenarioName, log);
-				break;
-			case "/call":
-				result = call(requestParams, scenarioName, log);
-				break;				
-			case "/read":			
-				result = readFile(requestParams, scenarioName, copyOnRead);
-				break;			
-			case "/query":			
-				result = queryFile(requestParams, scenarioName, copyOnRead);
-				break;			
-			case "/update":
-				updateFile(requestParams, scenarioName);
-				break;			
-			case "/delete":			
-				deleteScenario(scenarioName);
-				break;			
-			case "/compose":			
-				result = compose(requestParams, scenarioName, log);
-				break;
-			case "/preparerecording":			
-				result = prepareRecording(requestParams, scenarioName, log);
-				break;			
-			case "/ping":			
-				result = new Date().toString();
-				break;			
-			case "/mergescenario":			
-				mergeScenario(requestParams, scenarioName, log);
-				break;
-			default:
-				if (operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/") 
-						|| operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_KB + "/")) {
-					String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
-					result = FileUtil.readFileLocally(localPath);
-				} 
-				else  {					
-					result = new ScenarioMockManager().execute(requestParams, scenarioName, operation, log);
+	
+					
+			ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
+			boolean copyOnRead = ScenarioManagementAgent.getCopyOnRead(log);
+			
+			String result = "";
+			JSONObject jo = new JSONObject();
+			if (operation == null) { //SWITCH doesn't accept operation as a null
+				if (requestParams.has(JPSConstants.SCENARIO_RESOURCE)) {
+					result = getNew(request, scenarioName, copyOnRead);
+					return jo.put("result", result);
+					} else {
+				
+					// just return the scenario log
+					JSONObject resultjo = new JSONObject(log.getLogAsString());
+					// pretty print with 2 spaces to indent
+	//				result = resultjo.toString(2);
+					return resultjo;
+					
 				}
-		}
-		return jo.put("result", result);
+			}
+			switch (operation) {			
+				case "/option":			
+					setOptions(requestParams, scenarioName, log);
+					break;
+				case "/mock":			
+					new ScenarioMockManager().mock(requestParams, scenarioName, log);
+					break;
+				case "/call":
+					result = call(requestParams, scenarioName, log);
+					break;				
+				case "/read":			
+					result = readFile(requestParams, scenarioName, copyOnRead);
+					break;			
+				case "/query":			
+					result = queryFile(requestParams, scenarioName, copyOnRead);
+					break;			
+				case "/update":
+					updateFile(requestParams, scenarioName);
+					break;			
+				case "/delete":			
+					deleteScenario(scenarioName);
+					break;			
+				case "/compose":			
+					result = compose(requestParams, scenarioName, log);
+					break;
+				case "/preparerecording":			
+					result = prepareRecording(requestParams, scenarioName, log);
+					break;			
+				case "/ping":			
+					result = new Date().toString();
+					break;			
+				case "/mergescenario":			
+					mergeScenario(requestParams, scenarioName, log);
+					break;
+				default:
+					if (operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/") 
+							|| operation.startsWith("/" + JPSConstants.SCENARIO_SUBDIR_KB + "/")) {
+						String localPath = ScenarioHelper.getScenarioBucket(scenarioName) + operation;
+						result = FileUtil.readFileLocally(localPath);
+					} 
+					else  {					
+						result = new ScenarioMockManager().execute(requestParams, scenarioName, operation, log);
+					}
+			}
+			return jo.put("result", result);
+        }
 	}
 	protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     	setLogger();
@@ -321,6 +331,37 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
         	response.setStatus(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
         }
     }
+	/** to handle doPut OR doPost methods since ScenarioAgent originally called on KBA's put/post methods 
+	 * 
+	 * @param requestParams
+	 */
+	protected void doPutOrPost(JSONObject requestParams) {
+		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
+        String sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
+
+		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
+		String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
+		KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
+		String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
+        String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
+		switch (method) {
+			case HttpPost.METHOD_NAME:
+				if (sparql == null) {
+					throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
+				}
+				kb.update(resourceUrl, sparql);
+				break;
+			case HttpPut.METHOD_NAME:
+				String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
+				String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
+				if (sparql != null) {
+					throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
+				}    			
+				kb.put(resourceUrl, body, contentType);
+				break;
+		  
+			}		
+	}
 	private void setOptions(JSONObject jo, String scenarioName, ScenarioLog log) {
 		
 		JSONObject message = new JSONObject().put("operation", "option");
@@ -469,13 +510,14 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	}
 	
 	private void updateFile(JSONObject jo, String scenarioName) {
-		
+		//TODO: This method isn't working; it's calling on KBA's update in the old code. 
 		String resource = getResourcePath(jo, scenarioName, true);
 		String sparqlUpdate = jo.getString(JPSConstants.QUERY_SPARQL_UPDATE);
 		
-		logger.debug("sparqlupdate=" + sparqlUpdate);
+		logger.info("sparqlupdate=" + sparqlUpdate);
 		
-		new QueryBroker().updateFile(resource, sparqlUpdate);
+		new QueryBroker().updateFile(resource, sparqlUpdate);		
+		
 	}
 	
 	public void deleteScenario(String scenarioName) {

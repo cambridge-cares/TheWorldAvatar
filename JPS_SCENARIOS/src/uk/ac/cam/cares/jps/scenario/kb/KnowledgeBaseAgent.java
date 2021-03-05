@@ -36,7 +36,8 @@ public class KnowledgeBaseAgent extends JPSAgent {
 	 */
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		return new JSONObject();
+		JSONObject result = processRequestParameters(requestParams,null);
+		return result;
 	}
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
