@@ -1,0 +1,8 @@
+Reaction: ClOClO: 1.0x"ClOClO" <-> 0.166667x"Cl2O7" + 0.833333x"ClOCl" Calc enthalpy: 145.0066546031041 Ref enthalpy: 175.5 (error: 30.493345396895904 )
+Reaction: Cl2O7: 0.25x"ClOO" + 1.0x"Cl2O7" <-> 1.0x"Cl2O6" + 0.25x"ClO4_2let" + 0.25x"O2_3let" Calc enthalpy: 353.86592500017883 Ref enthalpy: 321.3 (error: 32.56592500017882 )
+Reaction: ClClO2: 1.0x"ClClO2" <-> 2.0x"ClO_2let" Calc enthalpy: 245.25372000011177 Ref enthalpy: 154.2 (error: 91.05372000011178 )
+Reaction: ClOO: 1.0x"ClOO" + 0.166667x"Cl2O7" <-> 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" Calc enthalpy: 120.49334539652334 Ref enthalpy: 98.0 (error: 22.49334539652334 )
+Reaction: ClOCl: 1.0x"ClOCl" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClOClO" Calc enthalpy: 104.66007499989198 Ref enthalpy: 82.8 (error: 21.860074999891978 )
+Reaction: ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" Calc enthalpy: 56.102499999944115 Ref enthalpy: 101.62936 (error: 45.52686000005589 )
+Reaction: OClO: 1.0x"OClO" <-> 0.333333x"ClClO2" + 0.333333x"ClO4_2let" Calc enthalpy: 65.96577625943848 Ref enthalpy: 94.5584 (error: 28.59262374056152 )
+Reaction: O2_3let: 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" <-> 1.0x"ClOO" + 0.166667x"Cl2O7" Calc enthalpy: -22.493345396523353 Ref enthalpy: 0.0 (error: 22.493345396523353 )

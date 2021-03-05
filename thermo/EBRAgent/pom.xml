@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.cmclinnovations</groupId>
+    <artifactId>EBRAgent</artifactId>
+    <packaging>war</packaging>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>EBRAgent</name>
+    <url>http://www.springframework.org/spring-ws</url>
+    <properties>
+        <spring-version>3.2.9.RELEASE</spring-version>
+        <org.slf4j-version>1.6.6</org.slf4j-version>
+        <rdf4j.version>2.4.2</rdf4j.version>
+    </properties>
+	<dependencies>
+	
+	 <!-- 
+	<dependency>  
+    <groupId>org.springframework</groupId>  
+    <artifactId>spring-tomcat-weaver</artifactId>  
+    <version>2.5.6</version>  
+    <type>jar</type>  
+    <scope>compile</scope>
+    <exclusions>
+          <exclusion>
+               <artifactId>spring-context</artifactId>
+               <groupId>org.springframework</groupId>
+          </exclusion>
+    </exclusions>
+    </dependency>
+     -->
+    <!-- 
+   <dependency>  
+    <groupId>org.springframework.webflow</groupId>  
+    <artifactId>spring-webflow</artifactId>  
+     <version>2.5.0.RELEASE</version>  
+   </dependency>
+   -->
+   
+		<!-- Core utilities used by other modules. Define this if you use Spring 
+			Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+
+		<!-- Bean Factory and JavaBeans utilities (depends on spring-core) Define 
+			this if you use Spring Bean APIs (org.springframework.beans.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+
+
+		<!-- Spring MVC for Servlet Environments (depends on spring-core, spring-beans, 
+			spring-context, spring-web) Define this if you use Spring MVC with a Servlet 
+			Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring-version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Support for testing Spring applications with tools such as JUnit and 
+			TestNG This artifact is generally always defined with a 'test' scope for 
+			the integration testing framework and unit testing stubs -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring-version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-config</artifactId>
+		<version>${spring-version}</version>
+	</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>compile</scope>
+		</dependency>
+		 <!--  
+		<dependency>
+			<groupId>org.eclipse.rdf4j</groupId>
+			<artifactId>rdf4j-runtime</artifactId>
+			<version>${rdf4j.version}</version>
+		</dependency>
+		-->
+		        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${org.slf4j-version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${org.slf4j-version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-http-client -->
+		<dependency>
+			<groupId>org.eclipse.rdf4j</groupId>
+			<artifactId>rdf4j-http-client</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+        
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-model -->
+		<!-- 
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-model</artifactId>
+		    <version>2.4.2</version>
+		</dependency>
+        -->
+        <dependency>
+    		<groupId>com.jcraft</groupId>
+    		<artifactId>jsch</artifactId>
+    		<version>0.1.55</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+		<dependency>
+	    	<groupId>log4j</groupId>
+	    	<artifactId>log4j</artifactId>
+	    	<version>1.2.17</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.jayway.jsonpath</groupId>
+    		<artifactId>json-path</artifactId>
+    		<version>2.4.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+		    <groupId>junit</groupId>
+		    <artifactId>junit</artifactId>
+		    <version>4.4</version>
+		    <scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20190722</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.ac.cam.cares.jps</groupId>
+			<artifactId>jps-base</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+		<dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>DFTAgentCaller</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+     <!--   
+     <dependency>
+	 <groupId>uk.ac.cam.ceb.como</groupId>
+     <artifactId>CoMoNISTWebbook</artifactId>
+     <version>0.0.0</version>
+	 </dependency>
+	  -->
+	 	
+<!-- Added all dependencies for federated query -->
+
+<!--  begin -->
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-http</artifactId>
+    <version>3.0.4</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-sparql -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-sparql</artifactId>
+    <version>3.0.4</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-model -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-model</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-query -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-query</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-util -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-util</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime -->
+<!-- 
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-runtime</artifactId>
+    <version>3.1.0</version>
+</dependency>
+-->
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-api -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-api</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-tools-federation -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-tools-federation</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+<!--  end -->
+
+<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+<dependency>
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <version>28.2-jre</version>
+</dependency>
+
+<dependency>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpclient</artifactId>
+  <version>4.5.2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+<dependency>
+    <groupId>com.opencsv</groupId>
+    <artifactId>opencsv</artifactId>
+    <version>5.1</version>
+</dependency>
+
+		
+</dependencies>
+    <build>
+        <finalName>EBRAgent</finalName>
+        <plugins>
+		    <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.0.1.v20110908</version>
+                <configuration>
+                    <webAppConfig>
+                        <contextPath>/${project.name}</contextPath>
+                    </webAppConfig>
+                    <connectors>
+                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                            <maxIdleTime>3600000</maxIdleTime>
+                            <port>8082</port>
+                        </connector>
+                    </connectors>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
