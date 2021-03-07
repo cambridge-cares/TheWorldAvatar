@@ -124,3 +124,4 @@ for g in tqdm(range(len(len_query)-1)):
     ret = sparql.query()
 
 
+

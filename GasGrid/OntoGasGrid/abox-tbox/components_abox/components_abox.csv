@@ -215,7 +215,7 @@ http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Rawcliff
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Rawcliffe,,North
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Rawcliffe,,E03
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Rawcliffe,,3.0
-Rawcliffe,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CAWOODTOSUSWORTHTRENTWEST347Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
+Rawcliffe,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CAWOODTOSUSWORTHTRENTWESTONE347Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Towton,Instance,LocalDistribution,,
 Towton,Instance,NE,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Towton,,53.86343424#-1.305146694
@@ -299,7 +299,7 @@ http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Thrintof
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Thrintoft,,North
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Thrintoft,,E03
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Thrintoft,,3.0
-Thrintoft,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOYAFFORTH448Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
+Thrintoft,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOYAFFORTHONE448Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Towlaw,Instance,LocalDistribution,,
 Towlaw,Instance,NO,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Towlaw,,54.78308083#-1.890999936
@@ -467,7 +467,7 @@ http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Burnherv
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Burnhervie,,North
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Burnhervie,,E00
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Burnhervie,,2.0
-Burnhervie,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.FERGUSTOABERDEENFOUR1146Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
+Burnhervie,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/ST.FERGUSTOABERDEENFOURONE1146Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Careston,Instance,LocalDistribution,,
 Careston,Instance,SC,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLocalDistributionZone,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Careston,,56.73503023#-2.726519436
@@ -961,13 +961,13 @@ http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Goole (G
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Goole (Guardian Glass),,North
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Goole (Guardian Glass),,E03
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Goole (Guardian Glass),,3.0
-Goole (Guardian Glass),Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CAWOODTOSUSWORTHTRENTWEST347Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
+Goole (Guardian Glass),Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/CAWOODTOSUSWORTHTRENTWESTONE347Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Gowkhall (Longannet),Instance,PowerStation,,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Gowkhall (Longannet),,56.07753909#-3.519298815
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Gowkhall (Longannet),,North
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitZone,Data Property,Gowkhall (Longannet),,E00
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasLinepackZone,Data Property,Gowkhall (Longannet),,0.0
-Gowkhall (Longannet),Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KIRRIEMUIRTOBATHGATETHREE2534Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
+Gowkhall (Longannet),Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/KIRRIEMUIRTOBATHGATETHREEONE2534Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Grain Power Station,Instance,PowerStation,,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Grain Power Station,,51.44534627#0.712108789
 http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasNTSExitArea,Data Property,Grain Power Station,,East
@@ -1246,7 +1246,7 @@ http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Barrow T
 Barrow Terminal,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BARROWTOLUPTON0Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Easington Terminal,Instance,GasTerminal,,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Easington Terminal,,53.65436745#0.117008686
-Easington Terminal,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASINGTONTOLANGELED8Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
+Easington Terminal,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASINGTONTOLANGELEDONE8Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Theddlethorpe Termin,Instance,GasTerminal,,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Theddlethorpe Termin,,53.36136029#0.232686996
 Theddlethorpe Termin,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/THEDDLETHORPETOHATTONONE0Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
@@ -1264,4 +1264,4 @@ http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Bacton U
 Bacton UKCS Terminal,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/BACTONTOYELVERTON5Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
 Teesside Terminal,Instance,GasTerminal,,
 http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Data Property,Teesside Terminal,,54.61005615#-1.202487946
-Teesside Terminal,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/EASINGTONTOPAULLTHREE0Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,
+Teesside Terminal,Instance,http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/COWPENBEWLEYTOTEESSIDE82Connection,http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#isConnectedToPipeline,

@@ -10,7 +10,7 @@ pipelines = pd.read_csv(r'pipeline_split.csv').to_numpy()[:,:]
 
 abox_header = np.array([['Source','Type','Target','Relation','Value']]) 
 abox_full = np.array([['Source','Type','Target','Relation','Value']])
-objectids_full = pipelines[:,2]
+objectids_full = pipelines[:,2].astype(str)
 objectids,unique_index = np.unique(objectids_full,return_index=True)
 sort_index = np.argsort(unique_index)
 unique_index = unique_index[sort_index]
@@ -55,7 +55,7 @@ for j in tqdm(range(len(unique_index)-1)):
             end_to_connection = np.array([[seg_name_prev+' Connection','Instance',seg_name+' Start','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasPipeConnectionOutput','']]) 
             start_connect_2 = np.array([[seg_name_next+' End','Instance',seg_name_next+' Connection','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersPipeConnection','']])
             diam_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasDiameter','Data Property',seg_name+' Tube','',pipelines[i,5]]])
-            order_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasOrder','Data Property',seg_name+' Connection','',pipelines[i,8]+1]])
+            order_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasOrder','Data Property',seg_name+' Connection','',pipelines[i,10]+1]])
             abox_add = np.append(segment_add,subsys_add,axis=0)
             abox_add = np.append(abox_add,start_add,axis=0)
             abox_add = np.append(abox_add,end_add,axis=0)
@@ -97,7 +97,7 @@ for j in tqdm(range(len(unique_index)-1)):
                 connection_2 = np.array([[seg_name+' Connection','Instance','GasPipeConnection','','']])
                 start_connect_2 = np.array([[seg_name+' End','Instance',seg_name+' Connection','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersPipeConnection','']])
                 diam_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasDiameter','Data Property',seg_name+' Tube','',pipelines[i,5]]])
-                order_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasOrder','Data Property',seg_name+' Connection','',pipelines[i,8]+1]])
+                order_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasOrder','Data Property',seg_name+' Connection','',pipelines[i,10]+1]])
                 abox_add = np.append(segment_add,subsys_add,axis=0)
                 abox_add = np.append(abox_add,start_add,axis=0)
                 abox_add = np.append(abox_add,end_add,axis=0)
@@ -138,7 +138,7 @@ for j in tqdm(range(len(unique_index)-1)):
                 connection_2 = np.array([[seg_name+' Connection','Instance','GasPipeConnection','','']])
                 start_connect_2 = np.array([[seg_name+' End','Instance',seg_name+' Connection','http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#entersPipeConnection','']])
                 diam_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasDiameter','Data Property',seg_name+' Tube','',pipelines[i,5]]])
-                order_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasOrder','Data Property',seg_name+' Connection','',pipelines[i,8]+1]])
+                order_add = np.array([['http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#hasOrder','Data Property',seg_name+' Connection','',pipelines[i,10]+1]])
                 abox_add = np.append(segment_add,subsys_add,axis=0)
                 abox_add = np.append(abox_add,start_add,axis=0)
                 abox_add = np.append(abox_add,end_add,axis=0)
@@ -171,7 +171,7 @@ pipelines = pd.read_csv('pipeline_split.csv').to_numpy()[:,:]
 
 abox_header = np.array([['Source','Type','Target','Relation','Value']]) 
 abox_full = np.array([['Source','Type','Target','Relation','Value']])
-objectids_full = pipelines[:,2]
+objectids_full = pipelines[:,2].astype(str)
 objectids,unique_index = np.unique(objectids_full,return_index=True)
 sort_index = np.argsort(unique_index)
 unique_index = unique_index[sort_index]
