@@ -1,0 +1,23 @@
+extends header.pug
+block title
+    title  World Power Plants on Google Map
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |JPS:
+
+block description
+    |Best suited locations for modular nuclear power plants on Jurong Island. 
+    |The case study is based on a risk-cost analysis conducted on all available landlots on Jurong Island. The design data for the modular powerplant was obtained from www.nuscalpower.com
+
+block content
+
+    div#map
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src="/javascripts/PopUpmap.js")
+    script(src="/javascripts/PPMap.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")

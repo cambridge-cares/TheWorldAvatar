@@ -1,0 +1,147 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+<!-- 
+    <parent>
+        <groupId>gigadot.chom</groupId>
+        <artifactId>chom-pom</artifactId>
+        <version>0.7-SNAPSHOT</version>
+    </parent>
+-->
+
+    <groupId>gigadot.chom</groupId>
+    <artifactId>como-chemfilemgmt</artifactId>
+    <version>0.7-SNAPSHOT</version>
+
+    <name>Como - ChemFileMgmt</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.6.6</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+             <version>1.2.17</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>JOpenBabel</groupId>
+            <artifactId>JOpenBabel</artifactId>
+            <version>2.3.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.gigatools</groupId>
+            <artifactId>gigatools-lite</artifactId>
+            <version>0.8-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.gigatools</groupId>
+            <artifactId>gigatools-extra</artifactId>
+            <version>0.8-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>chom-chem</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>chom-compchem</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>chom-thermo</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>chom-openbabel</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>chom-jni-inchi</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>java3d</groupId>
+            <artifactId>j3d-core</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>java3d</groupId>
+            <artifactId>j3d-core-utils</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>java3d</groupId>
+            <artifactId>vecmath</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <artifactId>xom</artifactId>
+            <groupId>xom</groupId>
+            <version>1.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.0.14</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+           <groupId>gigadot.chom</groupId>
+            <artifactId>como-tools</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+         
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>como-openbabel</artifactId>
+             <version>0.7-SNAPSHOT</version>
+        </dependency>
+        
+       <!--     
+       commented by nk510 on 10-01-2019 because of cyclic dependecnies in maven pom files of the following projects: como-chemfilemgmt, como-thermochemistry, como-hinderedrotation  
+        <dependency>
+            <groupId>gigadot.chom</groupId>
+            <artifactId>como-thermochemistry</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        -->    
+    </dependencies>
+    
+    <!-- 
+    <repositories>
+        <repository>
+            <id>gigadot.net</id>
+            <url>http://maven2.gigadot.net/</url>
+        </repository>
+    </repositories>
+    -->
+     
+</project>

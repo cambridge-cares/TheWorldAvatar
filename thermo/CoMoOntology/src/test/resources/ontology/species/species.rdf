@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:skos="http://www.w3.org/2008/05/skos#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl">
+  <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/identifier"/>
+  <owl:Thing rdf:ID="species_10">
+    <dc:identifier>species_10</dc:identifier>
+    <skos:altLabel>Ar 1</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_1">
+    <skos:altLabel> H 1 O 1 </skos:altLabel>
+    <dc:identifier>species_1</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_2">
+    <skos:altLabel>O 1</skos:altLabel>
+    <dc:identifier>species_2</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_3">
+    <dc:identifier>species_3</dc:identifier>
+    <skos:altLabel>O 2</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_4">
+    <skos:altLabel>N 2</skos:altLabel>
+    <dc:identifier>species_4</dc:identifier>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_5">
+    <dc:identifier>species_5</dc:identifier>
+    <skos:altLabel>H 1 O 2</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_6">
+    <dc:identifier>species_6</dc:identifier>
+    <skos:altLabel>H 1</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_7">
+    <skos:altLabel>H 2 O 1</skos:altLabel>
+    <dc:identifier>species_7</dc:identifier>
+  </owl:Thing>
+  <owl:AnnotationProperty rdf:about="http://www.w3.org/2008/05/skos#altLabel">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#label"/>
+  </owl:AnnotationProperty>
+  <owl:Thing rdf:ID="species_8">
+    <dc:identifier>species_8</dc:identifier>
+    <skos:altLabel>H 2 O 2</skos:altLabel>
+  </owl:Thing>
+  <owl:Thing rdf:ID="species_9">
+    <dc:identifier>species_9</dc:identifier>
+    <skos:altLabel>H 2</skos:altLabel>
+  </owl:Thing>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

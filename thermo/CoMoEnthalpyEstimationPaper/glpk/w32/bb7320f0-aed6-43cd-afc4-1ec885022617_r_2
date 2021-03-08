@@ -1,0 +1,126 @@
+Problem:    Ti(Cl)(O)
+Rows:       50
+Columns:    44
+Non-zeros:  164
+Status:     OPTIMAL
+Objective:  R0 = 103.8461538 (MINimum)
+
+   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 R1           NU             0                           0      -6.15385 
+     2 R2           NU             0                           0      -43.8462 
+     3 R3           NU             0                           0      -2.46154 
+     4 R4           NU             0                           0      -71.5385 
+     5 R5           NU             0                           0      -3.69231 
+     6 R6           NU             0                           0      -62.3077 
+     7 R7           NU             0                           0      -6.15385 
+     8 R8           NU             0                           0      -43.8462 
+     9 R9           NU             0                           0      -11.0769 
+    10 R10          NU             0                           0      -21.9231 
+    11 R11          NU             0                           0      -7.38462 
+    12 R12          NU             0                           0      -34.6154 
+    13 R13          B      -0.384615                           0 
+    14 R14          NU             0                           0           -90 
+    15 R15          NU             0                           0      -4.92308 
+    16 R16          NU             0                           0      -53.0769 
+    17 R17          NU             0                           0      -1.23077 
+    18 R18          NU             0                           0      -80.7692 
+    19 R19          NU             0                           0      -12.3077 
+    20 R20          NU             0                           0      -12.6923 
+    21 R21          NU             0                           0      -8.61538 
+    22 R22          NU             0                           0      -25.3846 
+    23 R23          NU             0                           0      -9.84615 
+    24 R24          NU             0                           0      -31.1538 
+    25 R25          NU             0                           0      -11.0769 
+    26 R26          NU             0                           0      -21.9231 
+    27 R27          NU             0                           0      -9.84615 
+    28 R28          NU             0                           0      -46.1538 
+    29 R29          B      -0.230769                           0 
+    30 R30          NU             0                           0           -90 
+    31 R31          NU             0                           0      -4.92308 
+    32 R32          NU             0                           0      -68.0769 
+    33 R33          NU             0                           0      -6.15385 
+    34 R34          NU             0                           0      -43.8462 
+    35 R35          B       -1.61538                           0 
+    36 R36          NU             0                           0           -30 
+    37 R37          NU             0                           0           -47 
+    38 R38          B             -2                           0 
+    39 R39          NU             0                           0      -7.38462 
+    40 R40          NU             0                           0      -34.6154 
+    41 R41          NU             0                           0           -16 
+    42 R42          B      -0.615385                           0 
+    43 R43          NU             0                           0      -8.61538 
+    44 R44          NU             0                           0      -40.3846 
+    45 R45          NS             0             0             =      -56.4615 
+    46 R46          NS             0             0             =      -8.38462 
+    47 R47          NS             0             0             =      -10.4615 
+    48 R48          B              0             0             = 
+    49 R49          NS             0             0             =       18.4615 
+    50 main         NL             1             1                     103.846 
+
+   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 absV[19]     B       0.115385                             
+     2 v[1]         B              0                             
+     3 absV[7]      B              0                             
+     4 absV[5]      B              0                             
+     5 absV[9]      B              0                             
+     6 absV[0]      B              1                             
+     7 absV[20]     B              0                             
+     8 v[11]        B       0.307692                             
+     9 v[21]        B              0                             
+    10 absV[4]      B       0.807692                             
+    11 absV[2]      B              0                             
+    12 v[19]        B      -0.115385                             
+    13 absV[16]     B              0                             
+    14 v[3]         B              0                             
+    15 v[5]         B              0                             
+    16 v[17]        B              0                             
+    17 absV[14]     B       0.192308                             
+    18 v[7]         B              0                             
+    19 v[15]        B              0                             
+    20 absV[12]     B              0                             
+    21 v[9]         B              0                             
+    22 v[13]        B              0                             
+    23 absV[10]     B              0                             
+    24 v[0]         B              1                             
+    25 v[2]         B              0                             
+    26 absV[18]     B              0                             
+    27 absV[8]      B              0                             
+    28 absV[6]      B              0                             
+    29 v[10]        B              0                             
+    30 v[20]        B              0                             
+    31 absV[3]      B              0                             
+    32 absV[1]      B              0                             
+    33 absV[17]     B              0                             
+    34 v[18]        B              0                             
+    35 v[4]         B      -0.807692                             
+    36 absV[15]     B              0                             
+    37 v[6]         B              0                             
+    38 v[16]        B              0                             
+    39 absV[13]     B              0                             
+    40 v[14]        B      -0.192308                             
+    41 v[8]         B              0                             
+    42 absV[11]     B       0.307692                             
+    43 absV[21]     B              0                             
+    44 v[12]        B              0                             
+
+Karush-Kuhn-Tucker optimality conditions:
+
+KKT.PE: max.abs.err = 2.22e-16 on row 47
+        max.rel.err = 2.16e-16 on row 21
+        High quality
+
+KKT.PB: max.abs.err = 7.11e-15 on row 48
+        max.rel.err = 7.11e-15 on row 48
+        High quality
+
+KKT.DE: max.abs.err = 9.95e-14 on column 3
+        max.rel.err = 6.03e-16 on column 3
+        High quality
+
+KKT.DB: max.abs.err = 0.00e+00 on row 0
+        max.rel.err = 0.00e+00 on row 0
+        High quality
+
+End of output

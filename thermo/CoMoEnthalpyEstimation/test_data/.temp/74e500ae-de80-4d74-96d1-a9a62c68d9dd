@@ -1,0 +1,54 @@
+Problem:    96-14-0
+Rows:       14
+Columns:    8
+Non-zeros:  37
+Status:     OPTIMAL
+Objective:  R0 = 72 (MINimum)
+
+   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 R0           B             72                             
+     2 R1           B              0                           0 
+     3 R2           NU             0                           0           -15 
+     4 R3           NU             0                           0           -19 
+     5 R4           B             -2                           0 
+     6 R5           B             -3                           0 
+     7 R6           NU             0                           0           -24 
+     8 R7           NU             0                           0           -17 
+     9 R8           B             -2                           0 
+    10 R9           NS             0             0             =           102 
+    11 R10          NS             0             0             =           -35 
+    12 R11          NS             0             0             =           -35 
+    13 R12          B              0             0             = 
+    14 main         NL             1             1                          72 
+
+   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 absV[0]      B              1                             
+     2 v[0]         B              1                             
+     3 absV[3]      B            1.5                             
+     4 absV[2]      B              1                             
+     5 v[2]         B              1                             
+     6 absV[1]      B              0                             
+     7 v[1]         B              0                             
+     8 v[3]         B           -1.5                             
+
+Karush-Kuhn-Tucker optimality conditions:
+
+KKT.PE: max.abs.err = 2.22e-016 on row 7
+        max.rel.err = 5.55e-017 on row 7
+        High quality
+
+KKT.PB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+KKT.DE: max.abs.err = 0.00e+000 on column 0
+        max.rel.err = 0.00e+000 on column 0
+        High quality
+
+KKT.DB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+End of output

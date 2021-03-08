@@ -1,0 +1,74 @@
+Problem:    C2H4
+Rows:       26
+Columns:    16
+Non-zeros:  81
+Status:     OPTIMAL
+Objective:  R0 = 18 (MINimum)
+
+   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 R0           B             18                             
+     2 R1           B             -1                           0 
+     3 R2           NU             0                           0            -6 
+     4 R3           NU             0                           0            -4 
+     5 R4           NU             0                           0            -1 
+     6 R5           NU             0                           0            -4 
+     7 R6           NU             0                           0            -3 
+     8 R7           B             -1                           0 
+     9 R8           NU             0                           0            -4 
+    10 R9           B             -1                           0 
+    11 R10          NU             0                           0            -8 
+    12 R11          NU             0                           0            -5 
+    13 R12          B             -2                           0 
+    14 R13          NU             0                           0            -8 
+    15 R14          B             -1                           0 
+    16 R15          NU             0                           0            -8 
+    17 R16          NU             0                           0            -2 
+    18 R17          B              0             0             = 
+    19 R18          NS             0             0             =            -1 
+    20 R19          NS             0             0             =             7 
+    21 R20          NS             0             0             =            -9 
+    22 R21          B              0             0             = 
+    23 R22          NS             0             0             =             7 
+    24 R23          B              0             0             = 
+    25 R24          B              0             0             = 
+    26 main         NL             1             1                          18 
+
+   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 v[0]         B              1                             
+     2 v[2]         B            0.5                             
+     3 v[1]         B           -0.5                             
+     4 absV[7]      B            0.5                             
+     5 absV[6]      B              0                             
+     6 absV[5]      B              0                             
+     7 absV[0]      B              1                             
+     8 absV[4]      B              0                             
+     9 absV[3]      B            0.5                             
+    10 absV[2]      B            0.5                             
+    11 absV[1]      B            0.5                             
+    12 v[4]         B              0                             
+    13 v[3]         B           -0.5                             
+    14 v[5]         B              0                             
+    15 v[6]         B              0                             
+    16 v[7]         B           -0.5                             
+
+Karush-Kuhn-Tucker optimality conditions:
+
+KKT.PE: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+KKT.PB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+KKT.DE: max.abs.err = 0.00e+000 on column 0
+        max.rel.err = 0.00e+000 on column 0
+        High quality
+
+KKT.DB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+End of output
