@@ -5,7 +5,7 @@
 import configparser
 
 config = configparser.RawConfigParser()
-config.read('./conf/KB.properties')
+config.read('./conf/EntityRDFizer.properties')
 
 def getTBoxIRI():
     return config.get('IRISection', 'kb.tbox.iri')

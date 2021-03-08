@@ -1,0 +1,28 @@
+extends header.pug
+block title
+        title BMS Sensor Data
+
+block sheets
+        link(rel='stylesheet', href='/stylesheets/mpage.css', type='text/css')
+
+block subtitle
+    |BMS Sensor Data Plot
+
+block description
+    |A plot of available CARES Lab Building Management System sensor data.
+    |Please select the sensor from the dropdown list.
+
+
+block content
+        script(src='http://d3js.org/d3.v2.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
+        script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+        script(src='/javascripts/line-graph.js')
+        script(src='/javascripts/Plot.js')
+        script(src='/javascripts/bmsMultiPlots.js')
+        div#sensor-select-panel.mypanel.container-fluid
+            select#sensor-select.col-lg-2
+                option(value= null)
+                each sensor in sensorList
+                    option(value= sensor) #{sensor}
+        #graph1.aGraph(style='position:relative;width:100%')

@@ -1,0 +1,8 @@
+.idea
+irp3-WebJPS-git.iml
+CO2WEB/app.js
+CO2WEB/public/images/totgenbu.csv
+CO2WEB/public/images/weather.csv
+/CO2WEB/package.json
+/CO2WEB/package-lock.json
+/JPS_EMISSIONS/data/output/BAU_CCS/results_bau_ccs_learning_high.csv

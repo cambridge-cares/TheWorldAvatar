@@ -1,0 +1,38 @@
+extends header.pug
+block title
+    title  Semakau Island on Google Map
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |Semakau Island on Google Map
+    
+block readme
+    span#readme-button
+        | ?   
+    span#readme-text
+        |The Semakau model is based on the Semakau Island Smart Grid project that explores the scenario of equipping Semakau Island with various types of renewable energy sources. The types of generators considered are diesel, photovoltaic cells, marine, wind and batteries. The loads considered are a few desalination plants, buildings and a fish hatchery. Upon clicking on the individual icon, a pop-up window containing the information about the selected component will appear.
+        br
+        br
+        |The initial model was built using the Power World software. The model was subsequently parameterised to allow faster and simpler computation. The only dynamic aspect of this model is the photovoltaic cells model, which is computed based on real-time solar irradiation data in Singapore (sourced from https://inetapps.nus.edu.sg/fas/geog/). The solar irradiation data is updated once every five minutes. The outputs from the photovoltaic cells model are:
+        br
+        br
+        ol
+            li Actual active power: a parameter to indicate the real power value that is functional for generating work.
+            li Actual reactive power: a parameter to indicate the imaginary power value that transfers no net energy to the load.
+            li Actual phase angle: a parameter to determine how well connected is the bus with the slack (reference) bus. A smaller value indicates greater stability.
+            li Actual voltage: a parameter to indicate the real value of the bus voltage level.
+
+block description
+    |Electrical Network model based on proposed Microgrid design plan of Diesel generators & renewable energy sources in Semakau Island.
+
+block content
+
+    div#map
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src="/javascripts/PopUpmap.js")
+    script(src="/javascripts/SemakauMap.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")

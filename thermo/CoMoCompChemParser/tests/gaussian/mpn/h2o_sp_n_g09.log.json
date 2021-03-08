@@ -1,0 +1,59 @@
+{
+    "Empirical formula": "H2O1",
+    "Atom counts": {
+        "H": 2,
+        "O": 1
+    },
+    "Atom types": [
+        "H",
+        "H",
+        "O"
+    ],
+    "Atomic masses": [
+        1.00783,
+        1.00783,
+        15.999491
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RMP2-FC",
+    "Basis set": "6-311G(d,p)",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.75697,
+            -0.47495,
+            0.0
+        ],
+        [
+            -0.75697,
+            -0.47495,
+            0.0
+        ],
+        [
+            0.0,
+            0.11874,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational constants": [
+        800.9916578,
+        437.567161,
+        282.9802189
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Electronic energy": -76.26388001022896,
+    "HOMO energy": -0.49969,
+    "HOMO-1 energy": -0.57243,
+    "HOMO-2 energy": -0.7025,
+    "LUMO energy": 0.14949,
+    "LUMO+1 energy": 0.21657,
+    "LUMO+2 energy": 0.56307,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Fri Jul 17 18:09:30 2020"
+}
