@@ -1,0 +1,74 @@
+extends header.pug
+block title
+    title Visualization
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+    link(rel="stylesheet" href='/stylesheets/jquery-ui.min.css')
+
+block subtitle
+    |Visualization
+
+
+block description
+    |A tool to display the ontology based wealth of data present in J-Park Simulator.
+
+block content
+    body
+        script(src="https://code.jquery.com/jquery-2.1.1.min.js")
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
+
+        script(src="https://d3js.org/d3.v4.min.js")
+        script(src="/javascripts/d3.legend.js")
+        script(src="/javascripts/jquery-clickout.min.js")
+        script(src="/javascripts/d3.tip.js")
+        script(src="/javascripts/d3BubbleExpandUpdate.js")
+        script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnIPTFH_vdwakGsRIXJMwHvAJ3DhiWlvE&callback=initMap")
+
+
+        div#wrapper
+
+
+            button#menu-toggle( class="btn btn-default btn-lg" aria-label="Settings")
+                span(class="glyphicon glyphicon-cog" aria-hidden="true")
+
+            div#sidebar-wrapper
+                ul.sidebar-nav.container-fluid
+                    li
+                        input(type="radio" name="option" id="checkShowImport" value="")
+                        label Show Import
+                    li
+                        input(type="radio" name="option" id="checkShowServiceOnly" value="")
+                        label Show Agents Only
+                    li
+                        input(type="radio" name="option" id="checkdefault" value="")
+                        label Show Default
+                    li
+                        div.customHr
+                    li
+                        table#xyr-inputs
+                            tr
+                                td
+                                    label Max number of agentlink at the same time:
+                                td
+                                    input(type="text" id="agent-number" value="")
+
+                            tr
+                                td
+                                    label Agent show duration:
+                                td
+                                    input(type="text" id="agent-duration" value="")
+
+
+                    li
+                        button(type="button" id= "search-submit" class="btn btn-primary") Set
+
+            div#page-content-wrapper
+                div#draw-panel()
+                div#geo-search-result-panel(class="panel panel-default" style="display:block")
+                    div(class="panel-heading") Results
+                    div(class="panel-body container-fluid")
+                        div#result-wrapper.row
+                            div#result-table-wrapper.col-lg-6
+                            div#result-map-wrapper.col-lg-6
+                                div#map

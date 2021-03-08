@@ -1,0 +1,1711 @@
+REF: Processing 1 / 33
+67-64-1.g09: 
+REF: Processing 2 / 33
+74-84-0.g09: 
+REF: Processing 3 / 33
+74-98-6.g09: 
+REF: Processing 4 / 33
+12075-35-3.g09: 
+REF: Processing 5 / 33
+75-65-0.g09: 
+REF: Processing 6 / 33
+5471-63-6.g09: 
+REF: Processing 7 / 33
+504-64-3.g09: 
+REF: Processing 8 / 33
+12184-80-4.g09: 
+REF: Processing 9 / 33
+460-12-8.g09: 
+REF: Processing 10 / 33
+112-53-8.g09: 
+REF: Processing 11 / 33
+630-08-0.g09: 
+REF: Processing 12 / 33
+124-38-9.g09: 
+REF: Processing 13 / 33
+64-18-6.g09: 
+REF: Processing 14 / 33
+593-45-3.g09: 
+REF: Processing 15 / 33
+2892-51-5.g09: 
+REF: Processing 16 / 33
+75-28-5.g09: 
+REF: Processing 17 / 33
+10100-95-5.g09: 
+REF: Processing 18 / 33
+3315-37-5.g09: 
+REF: Processing 19 / 33
+107-21-1.g09: 
+REF: Processing 20 / 33
+2229-07-4.g09: 
+REF: Processing 21 / 33
+2143-68-2.g09: 
+REF: Processing 22 / 33
+50-00-0.g09: 
+REF: Processing 23 / 33
+2465-56-7.g09: 
+REF: Processing 24 / 33
+74-85-1.g09: 
+REF: Processing 25 / 33
+106-97-8.g09: 
+REF: Processing 26 / 33
+56-81-5.g09: 
+REF: Processing 27 / 33
+2025-56-1.g09: 
+REF: Processing 28 / 33
+67-56-1.g09: 
+REF: Processing 29 / 33
+243-24-3.g09: 
+REF: Processing 30 / 33
+112-30-1.g09: 
+REF: Processing 31 / 33
+REF: No file found for 674-82-8
+REF: Processing 32 / 33
+115-07-1.g09: 
+REF: Processing 33 / 33
+542-46-1.g09: 
+refSpecies.isEmpty() before solver (main method): false
+- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -
+Process configuration isg_runs1_res1_radicals0_1500s
+refSpecies.isEmpty()(getPreProcessingCorssValidation method i class DataPreProcessing) : false
+Estimating dHf(298.15K) for species 67-64-1 (1 / 32)
+Ref species name: 67-64-1  ref species Hf: -218.5
+reactionList.size(): 1
+Species name for reaction list : 67-64-1
+Writting complete reaction list...
+ Reaction(0): 67-64-1: 1.0x"67-64-1" <-> 0.181818x"112-53-8" + 0.142857x"2892-51-5" + 0.246753x"67-56-1" Species (ref) enthalpy: -218.5 Calculated Hf for reaction(0): -237.28302770877838
+Median Reaction: 67-64-1: 1.0x"67-64-1" <-> 0.181818x"112-53-8" + 0.142857x"2892-51-5" + 0.246753x"67-56-1" medianReaction species Hf: -218.5 : medianReaction.calculateHf(): -237.28302770877838[ Species name: 67-64-1  Species (reference) enthalpy: -218.5 ]
+Writting species list...
+Estimating dHf(298.15K) for species 74-84-0 (2 / 32)
+Ref species name: 74-84-0  ref species Hf: -84.0
+reactionList.size(): 1
+Species name for reaction list : 74-84-0
+Writting complete reaction list...
+ Reaction(0): 74-84-0: 1.0x"74-84-0" + 0.0625x"12184-80-4" <-> 0.75x"74-98-6" Species (ref) enthalpy: -84.0 Calculated Hf for reaction(0): -79.44425625002827
+Median Reaction: 74-84-0: 1.0x"74-84-0" + 0.0625x"12184-80-4" <-> 0.75x"74-98-6" medianReaction species Hf: -84.0 : medianReaction.calculateHf(): -79.44425625002827[ Species name: 74-84-0  Species (reference) enthalpy: -84.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species 74-98-6 (3 / 32)
+Ref species name: 74-98-6  ref species Hf: -104.7
+reactionList.size(): 1
+Species name for reaction list : 74-98-6
+Writting complete reaction list...
+ Reaction(0): 74-98-6: 1.0x"74-98-6" <-> 0.9375x"74-84-0" + 0.0625x"593-45-3" Species (ref) enthalpy: -104.7 Calculated Hf for reaction(0): -107.12186874998733
+Median Reaction: 74-98-6: 1.0x"74-98-6" <-> 0.9375x"74-84-0" + 0.0625x"593-45-3" medianReaction species Hf: -104.7 : medianReaction.calculateHf(): -107.12186874998733[ Species name: 74-98-6  Species (reference) enthalpy: -104.7 ]
+Writting species list...
+Estimating dHf(298.15K) for species 12075-35-3 (4 / 32)
+Ref species name: 12075-35-3  ref species Hf: 820.06
+reactionList.size(): 1
+Species name for reaction list : 12075-35-3
+Writting complete reaction list...
+ Reaction(0): 12075-35-3: 1.0x"12075-35-3" <-> 0.75x"12184-80-4" Species (ref) enthalpy: 820.06 Calculated Hf for reaction(0): 745.899375000021
+Median Reaction: 12075-35-3: 1.0x"12075-35-3" <-> 0.75x"12184-80-4" medianReaction species Hf: 820.06 : medianReaction.calculateHf(): 745.899375000021[ Species name: 12075-35-3  Species (reference) enthalpy: 820.06 ]
+Writting species list...
+Estimating dHf(298.15K) for species 75-65-0 (5 / 32)
+Ref species name: 75-65-0  ref species Hf: -312.6
+reactionList.size(): 1
+Species name for reaction list : 75-65-0
+Writting complete reaction list...
+ Reaction(0): 75-65-0: 1.0x"75-65-0" <-> 0.272727x"112-53-8" + 0.727273x"67-56-1" Species (ref) enthalpy: -312.6 Calculated Hf for reaction(0): -313.0365466568452
+Median Reaction: 75-65-0: 1.0x"75-65-0" <-> 0.272727x"112-53-8" + 0.727273x"67-56-1" medianReaction species Hf: -312.6 : medianReaction.calculateHf(): -313.0365466568452[ Species name: 75-65-0  Species (reference) enthalpy: -312.6 ]
+Writting species list...
+Estimating dHf(298.15K) for species 5471-63-6 (6 / 32)
+Ref species name: 5471-63-6  ref species Hf: 203.0
+reactionList.size(): 1
+Species name for reaction list : 5471-63-6
+Writting complete reaction list...
+ Reaction(0): 5471-63-6: 1.0x"5471-63-6" <-> 0.111111x"112-53-8" + 0.888889x"243-24-3" + 1.11111x"460-12-8" Species (ref) enthalpy: 203.0 Calculated Hf for reaction(0): 231.51520462024826
+Median Reaction: 5471-63-6: 1.0x"5471-63-6" <-> 0.111111x"112-53-8" + 0.888889x"243-24-3" + 1.11111x"460-12-8" medianReaction species Hf: 203.0 : medianReaction.calculateHf(): 231.51520462024826[ Species name: 5471-63-6  Species (reference) enthalpy: 203.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species 504-64-3 (7 / 32)
+Ref species name: 504-64-3  ref species Hf: -93.64
+reactionList.size(): 1
+Species name for reaction list : 504-64-3
+Writting complete reaction list...
+ Reaction(0): 504-64-3: 1.0x"504-64-3" <-> 1.0x"124-38-9" + 0.5x"12184-80-4" Species (ref) enthalpy: -93.64 Calculated Hf for reaction(0): -169.394849999994
+Median Reaction: 504-64-3: 1.0x"504-64-3" <-> 1.0x"124-38-9" + 0.5x"12184-80-4" medianReaction species Hf: -93.64 : medianReaction.calculateHf(): -169.394849999994[ Species name: 504-64-3  Species (reference) enthalpy: -93.64 ]
+Writting species list...
+Estimating dHf(298.15K) for species 12184-80-4 (8 / 32)
+Ref species name: 12184-80-4  ref species Hf: 970.69
+reactionList.size(): 1
+Species name for reaction list : 12184-80-4
+Writting complete reaction list...
+ Reaction(0): 12184-80-4: 1.0x"12184-80-4" <-> 1.33333x"12075-35-3" Species (ref) enthalpy: 970.69 Calculated Hf for reaction(0): 1068.5701676609444
+Median Reaction: 12184-80-4: 1.0x"12184-80-4" <-> 1.33333x"12075-35-3" medianReaction species Hf: 970.69 : medianReaction.calculateHf(): 1068.5701676609444[ Species name: 12184-80-4  Species (reference) enthalpy: 970.69 ]
+Writting species list...
+Estimating dHf(298.15K) for species 460-12-8 (9 / 32)
+Ref species name: 460-12-8  ref species Hf: 464.0
+reactionList.size(): 1
+Species name for reaction list : 460-12-8
+Writting complete reaction list...
+ Reaction(0): 460-12-8: 1.0x"460-12-8" <-> 0.0526316x"593-45-3" + 0.763158x"12184-80-4" Species (ref) enthalpy: 464.0 Calculated Hf for reaction(0): 395.18906381977615
+Median Reaction: 460-12-8: 1.0x"460-12-8" <-> 0.0526316x"593-45-3" + 0.763158x"12184-80-4" medianReaction species Hf: 464.0 : medianReaction.calculateHf(): 395.18906381977615[ Species name: 460-12-8  Species (reference) enthalpy: 464.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species 112-53-8 (10 / 32)
+Ref species name: 112-53-8  ref species Hf: -436.5
+reactionList.size(): 1
+Species name for reaction list : 112-53-8
+Writting complete reaction list...
+ Reaction(0): 112-53-8: 1.0x"112-53-8" <-> 0.392857x"542-46-1" + 0.607143x"67-56-1" + 1.17857x"75-28-5" Species (ref) enthalpy: -436.5 Calculated Hf for reaction(0): -458.63647328862413
+Median Reaction: 112-53-8: 1.0x"112-53-8" <-> 0.392857x"542-46-1" + 0.607143x"67-56-1" + 1.17857x"75-28-5" medianReaction species Hf: -436.5 : medianReaction.calculateHf(): -458.63647328862413[ Species name: 112-53-8  Species (reference) enthalpy: -436.5 ]
+Writting species list...
+Estimating dHf(298.15K) for species 630-08-0 (11 / 32)
+Ref species name: 630-08-0  ref species Hf: -110.53
+No data were calculated for 630-08-0
+Estimating dHf(298.15K) for species 124-38-9 (12 / 32)
+Ref species name: 124-38-9  ref species Hf: -393.52
+reactionList.size(): 1
+Species name for reaction list : 124-38-9
+Writting complete reaction list...
+ Reaction(0): 124-38-9: 0.25x"74-84-0" + 1.0x"124-38-9" <-> 0.25x"2892-51-5" + 0.5x"64-18-6" Species (ref) enthalpy: -393.52 Calculated Hf for reaction(0): -411.63042500005105
+Median Reaction: 124-38-9: 0.25x"74-84-0" + 1.0x"124-38-9" <-> 0.25x"2892-51-5" + 0.5x"64-18-6" medianReaction species Hf: -393.52 : medianReaction.calculateHf(): -411.63042500005105[ Species name: 124-38-9  Species (reference) enthalpy: -393.52 ]
+Writting species list...
+Estimating dHf(298.15K) for species 64-18-6 (13 / 32)
+Ref species name: 64-18-6  ref species Hf: -378.6
+reactionList.size(): 1
+Species name for reaction list : 64-18-6
+Writting complete reaction list...
+ Reaction(0): 64-18-6: 1.0x"64-18-6" + 0.0625x"12184-80-4" <-> 0.75x"124-38-9" + 0.5x"67-56-1" Species (ref) enthalpy: -378.6 Calculated Hf for reaction(0): -373.34410624993734
+Median Reaction: 64-18-6: 1.0x"64-18-6" + 0.0625x"12184-80-4" <-> 0.75x"124-38-9" + 0.5x"67-56-1" medianReaction species Hf: -378.6 : medianReaction.calculateHf(): -373.34410624993734[ Species name: 64-18-6  Species (reference) enthalpy: -378.6 ]
+Writting species list...
+Estimating dHf(298.15K) for species 593-45-3 (14 / 32)
+Ref species name: 593-45-3  ref species Hf: -414.6
+reactionList.size(): 1
+Species name for reaction list : 593-45-3
+Writting complete reaction list...
+ Reaction(0): 593-45-3: 1.0x"593-45-3" <-> 5.8x"74-84-0" + 1.6x"460-12-8" Species (ref) enthalpy: -414.6 Calculated Hf for reaction(0): -357.89058000007634
+Median Reaction: 593-45-3: 1.0x"593-45-3" <-> 5.8x"74-84-0" + 1.6x"460-12-8" medianReaction species Hf: -414.6 : medianReaction.calculateHf(): -357.89058000007634[ Species name: 593-45-3  Species (reference) enthalpy: -414.6 ]
+Writting species list...
+Estimating dHf(298.15K) for species 2892-51-5 (15 / 32)
+Ref species name: 2892-51-5  ref species Hf: -515.0
+reactionList.size(): 1
+Species name for reaction list : 2892-51-5
+Writting complete reaction list...
+ Reaction(0): 2892-51-5: 1.0x"2892-51-5" <-> 1.0x"504-64-3" + 1.0x"64-18-6" Species (ref) enthalpy: -515.0 Calculated Hf for reaction(0): -428.5927999999933
+Median Reaction: 2892-51-5: 1.0x"2892-51-5" <-> 1.0x"504-64-3" + 1.0x"64-18-6" medianReaction species Hf: -515.0 : medianReaction.calculateHf(): -428.5927999999933[ Species name: 2892-51-5  Species (reference) enthalpy: -515.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species 75-28-5 (16 / 32)
+Ref species name: 75-28-5  ref species Hf: -134.2
+reactionList.size(): 1
+Species name for reaction list : 75-28-5
+Writting complete reaction list...
+ Reaction(0): 75-28-5: 1.0x"75-28-5" <-> 0.875x"74-84-0" + 0.125x"593-45-3" Species (ref) enthalpy: -134.2 Calculated Hf for reaction(0): -134.45273750000632
+Median Reaction: 75-28-5: 1.0x"75-28-5" <-> 0.875x"74-84-0" + 0.125x"593-45-3" medianReaction species Hf: -134.2 : medianReaction.calculateHf(): -134.45273750000632[ Species name: 75-28-5  Species (reference) enthalpy: -134.2 ]
+Writting species list...
+Estimating dHf(298.15K) for species 10100-95-5 (17 / 32)
+Ref species name: 10100-95-5  ref species Hf: -380.6
+reactionList.size(): 1
+Species name for reaction list : 10100-95-5
+Writting complete reaction list...
+ Reaction(0): 10100-95-5: 1.0x"10100-95-5" <-> 0.285714x"542-46-1" + 0.714286x"67-56-1" + 0.857143x"75-28-5" Species (ref) enthalpy: -380.6 Calculated Hf for reaction(0): -393.286378728894
+Median Reaction: 10100-95-5: 1.0x"10100-95-5" <-> 0.285714x"542-46-1" + 0.714286x"67-56-1" + 0.857143x"75-28-5" medianReaction species Hf: -380.6 : medianReaction.calculateHf(): -393.286378728894[ Species name: 10100-95-5  Species (reference) enthalpy: -380.6 ]
+Writting species list...
+Estimating dHf(298.15K) for species 3315-37-5 (18 / 32)
+Ref species name: 3315-37-5  ref species Hf: 594.13
+No data were calculated for 3315-37-5
+Estimating dHf(298.15K) for species 107-21-1 (19 / 32)
+Ref species name: 107-21-1  ref species Hf: -394.4
+reactionList.size(): 1
+Species name for reaction list : 107-21-1
+Writting complete reaction list...
+ Reaction(0): 107-21-1: 1.0x"107-21-1" <-> 0.0196078x"542-46-1" + 1.35294x"67-56-1" + 0.313725x"124-38-9" Species (ref) enthalpy: -394.4 Calculated Hf for reaction(0): -393.2750439422948
+Median Reaction: 107-21-1: 1.0x"107-21-1" <-> 0.0196078x"542-46-1" + 1.35294x"67-56-1" + 0.313725x"124-38-9" medianReaction species Hf: -394.4 : medianReaction.calculateHf(): -393.2750439422948[ Species name: 107-21-1  Species (reference) enthalpy: -394.4 ]
+Writting species list...
+Estimating dHf(298.15K) for species 2229-07-4 (20 / 32)
+Ref species name: 2229-07-4  ref species Hf: 145.69
+No data were calculated for 2229-07-4
+Estimating dHf(298.15K) for species 2143-68-2 (21 / 32)
+Ref species name: 2143-68-2  ref species Hf: 17.0
+No data were calculated for 2143-68-2
+Estimating dHf(298.15K) for species 50-00-0 (22 / 32)
+Ref species name: 50-00-0  ref species Hf: -115.9
+reactionList.size(): 1
+Species name for reaction list : 50-00-0
+Writting complete reaction list...
+ Reaction(0): 50-00-0: 1.0x"50-00-0" <-> 0.428571x"67-56-1" + 0.142857x"2892-51-5" Species (ref) enthalpy: -115.9 Calculated Hf for reaction(0): -121.97372993763523
+Median Reaction: 50-00-0: 1.0x"50-00-0" <-> 0.428571x"67-56-1" + 0.142857x"2892-51-5" medianReaction species Hf: -115.9 : medianReaction.calculateHf(): -121.97372993763523[ Species name: 50-00-0  Species (reference) enthalpy: -115.9 ]
+Writting species list...
+Estimating dHf(298.15K) for species 2465-56-7 (23 / 32)
+Ref species name: 2465-56-7  ref species Hf: 386.39
+No data were calculated for 2465-56-7
+Estimating dHf(298.15K) for species 74-85-1 (24 / 32)
+Ref species name: 74-85-1  ref species Hf: 52.4
+reactionList.size(): 1
+Species name for reaction list : 74-85-1
+Writting complete reaction list...
+ Reaction(0): 74-85-1: 1.0x"74-85-1" <-> 0.103448x"593-45-3" + 0.0344828x"460-12-8" Species (ref) enthalpy: 52.4 Calculated Hf for reaction(0): 47.984390023057216
+Median Reaction: 74-85-1: 1.0x"74-85-1" <-> 0.103448x"593-45-3" + 0.0344828x"460-12-8" medianReaction species Hf: 52.4 : medianReaction.calculateHf(): 47.984390023057216[ Species name: 74-85-1  Species (reference) enthalpy: 52.4 ]
+Writting species list...
+Estimating dHf(298.15K) for species 106-97-8 (25 / 32)
+Ref species name: 106-97-8  ref species Hf: -125.6
+reactionList.size(): 1
+Species name for reaction list : 106-97-8
+Writting complete reaction list...
+ Reaction(0): 106-97-8: 1.0x"106-97-8" <-> 0.875x"74-84-0" + 0.125x"593-45-3" Species (ref) enthalpy: -125.6 Calculated Hf for reaction(0): -129.89473749998723
+Median Reaction: 106-97-8: 1.0x"106-97-8" <-> 0.875x"74-84-0" + 0.125x"593-45-3" medianReaction species Hf: -125.6 : medianReaction.calculateHf(): -129.89473749998723[ Species name: 106-97-8  Species (reference) enthalpy: -125.6 ]
+Writting species list...
+Estimating dHf(298.15K) for species 56-81-5 (26 / 32)
+Ref species name: 56-81-5  ref species Hf: -577.9
+reactionList.size(): 1
+Species name for reaction list : 56-81-5
+Writting complete reaction list...
+ Reaction(0): 56-81-5: 1.0x"56-81-5" <-> 1.85714x"67-56-1" + 0.285714x"2892-51-5" Species (ref) enthalpy: -577.9 Calculated Hf for reaction(0): -587.9444260160597
+Median Reaction: 56-81-5: 1.0x"56-81-5" <-> 1.85714x"67-56-1" + 0.285714x"2892-51-5" medianReaction species Hf: -577.9 : medianReaction.calculateHf(): -587.9444260160597[ Species name: 56-81-5  Species (reference) enthalpy: -577.9 ]
+Writting species list...
+Estimating dHf(298.15K) for species 2025-56-1 (27 / 32)
+Ref species name: 2025-56-1  ref species Hf: 119.0
+No data were calculated for 2025-56-1
+Estimating dHf(298.15K) for species 67-56-1 (28 / 32)
+Ref species name: 67-56-1  ref species Hf: -205.0
+reactionList.size(): 1
+Species name for reaction list : 67-56-1
+Writting complete reaction list...
+ Reaction(0): 67-56-1: 1.0x"67-56-1" + 0.0833333x"12184-80-4" <-> 0.166667x"74-84-0" + 0.5x"107-21-1" Species (ref) enthalpy: -205.0 Calculated Hf for reaction(0): -195.7214753216235
+Median Reaction: 67-56-1: 1.0x"67-56-1" + 0.0833333x"12184-80-4" <-> 0.166667x"74-84-0" + 0.5x"107-21-1" medianReaction species Hf: -205.0 : medianReaction.calculateHf(): -195.7214753216235[ Species name: 67-56-1  Species (reference) enthalpy: -205.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species 243-24-3 (29 / 32)
+Ref species name: 243-24-3  ref species Hf: 200.0
+reactionList.size(): 1
+Species name for reaction list : 243-24-3
+Writting complete reaction list...
+ Reaction(0): 243-24-3: 1.0x"243-24-3" <-> 0.169492x"2892-51-5" + 0.322034x"542-46-1" + 2.46186x"12184-80-4" Species (ref) enthalpy: 200.0 Calculated Hf for reaction(0): -78.50242265186853
+Median Reaction: 243-24-3: 1.0x"243-24-3" <-> 0.169492x"2892-51-5" + 0.322034x"542-46-1" + 2.46186x"12184-80-4" medianReaction species Hf: 200.0 : medianReaction.calculateHf(): -78.50242265186853[ Species name: 243-24-3  Species (reference) enthalpy: 200.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species 112-30-1 (30 / 32)
+Ref species name: 112-30-1  ref species Hf: -395.0
+reactionList.size(): 1
+Species name for reaction list : 112-30-1
+Writting complete reaction list...
+ Reaction(0): 112-30-1: 1.0x"112-30-1" <-> 0.321429x"542-46-1" + 0.678571x"67-56-1" + 0.964286x"75-28-5" Species (ref) enthalpy: -395.0 Calculated Hf for reaction(0): -424.951353931497
+Median Reaction: 112-30-1: 1.0x"112-30-1" <-> 0.321429x"542-46-1" + 0.678571x"67-56-1" + 0.964286x"75-28-5" medianReaction species Hf: -395.0 : medianReaction.calculateHf(): -424.951353931497[ Species name: 112-30-1  Species (reference) enthalpy: -395.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species 115-07-1 (31 / 32)
+Ref species name: 115-07-1  ref species Hf: 20.41
+reactionList.size(): 1
+Species name for reaction list : 115-07-1
+Writting complete reaction list...
+ Reaction(0): 115-07-1: 1.0x"115-07-1" <-> 0.1875x"460-12-8" + 0.5625x"75-28-5" Species (ref) enthalpy: 20.41 Calculated Hf for reaction(0): 16.531193750025707
+Median Reaction: 115-07-1: 1.0x"115-07-1" <-> 0.1875x"460-12-8" + 0.5625x"75-28-5" medianReaction species Hf: 20.41 : medianReaction.calculateHf(): 16.531193750025707[ Species name: 115-07-1  Species (reference) enthalpy: 20.41 ]
+Writting species list...
+Estimating dHf(298.15K) for species 542-46-1 (32 / 32)
+Ref species name: 542-46-1  ref species Hf: -408.0
+reactionList.size(): 1
+Species name for reaction list : 542-46-1
+Writting complete reaction list...
+ Reaction(0): 542-46-1: 1.0x"542-46-1" <-> 1.0x"112-53-8" + 0.0517241x"593-45-3" + 1.01724x"460-12-8" Species (ref) enthalpy: -408.0 Calculated Hf for reaction(0): -331.5436758181645
+Median Reaction: 542-46-1: 1.0x"542-46-1" <-> 1.0x"112-53-8" + 0.0517241x"593-45-3" + 1.01724x"460-12-8" medianReaction species Hf: -408.0 : medianReaction.calculateHf(): -331.5436758181645[ Species name: 542-46-1  Species (reference) enthalpy: -408.0 ]
+Writting species list...
+Valid reactions writing . . . 
+Reaction: 67-64-1: 1.0x"67-64-1" <-> 0.181818x"112-53-8" + 0.142857x"2892-51-5" + 0.246753x"67-56-1" Calc enthalpy: -237.28302770877838 Ref enthalpy: -218.5 (error: 18.783027708778377 )
+Reaction: 74-84-0: 1.0x"74-84-0" + 0.0625x"12184-80-4" <-> 0.75x"74-98-6" Calc enthalpy: -79.44425625002827 Ref enthalpy: -84.0 (error: 4.555743749971725 )
+Reaction: 74-98-6: 1.0x"74-98-6" <-> 0.9375x"74-84-0" + 0.0625x"593-45-3" Calc enthalpy: -107.12186874998733 Ref enthalpy: -104.7 (error: 2.4218687499873255 )
+Reaction: 75-65-0: 1.0x"75-65-0" <-> 0.272727x"112-53-8" + 0.727273x"67-56-1" Calc enthalpy: -313.0365466568452 Ref enthalpy: -312.6 (error: 0.4365466568451666 )
+Reaction: 124-38-9: 0.25x"74-84-0" + 1.0x"124-38-9" <-> 0.25x"2892-51-5" + 0.5x"64-18-6" Calc enthalpy: -411.63042500005105 Ref enthalpy: -393.52 (error: 18.110425000051066 )
+Reaction: 64-18-6: 1.0x"64-18-6" + 0.0625x"12184-80-4" <-> 0.75x"124-38-9" + 0.5x"67-56-1" Calc enthalpy: -373.34410624993734 Ref enthalpy: -378.6 (error: 5.255893750062683 )
+Reaction: 75-28-5: 1.0x"75-28-5" <-> 0.875x"74-84-0" + 0.125x"593-45-3" Calc enthalpy: -134.45273750000632 Ref enthalpy: -134.2 (error: 0.252737500006333 )
+Reaction: 10100-95-5: 1.0x"10100-95-5" <-> 0.285714x"542-46-1" + 0.714286x"67-56-1" + 0.857143x"75-28-5" Calc enthalpy: -393.286378728894 Ref enthalpy: -380.6 (error: 12.686378728893999 )
+Reaction: 107-21-1: 1.0x"107-21-1" <-> 0.0196078x"542-46-1" + 1.35294x"67-56-1" + 0.313725x"124-38-9" Calc enthalpy: -393.2750439422948 Ref enthalpy: -394.4 (error: 1.1249560577051625 )
+Reaction: 50-00-0: 1.0x"50-00-0" <-> 0.428571x"67-56-1" + 0.142857x"2892-51-5" Calc enthalpy: -121.97372993763523 Ref enthalpy: -115.9 (error: 6.073729937635221 )
+Reaction: 74-85-1: 1.0x"74-85-1" <-> 0.103448x"593-45-3" + 0.0344828x"460-12-8" Calc enthalpy: 47.984390023057216 Ref enthalpy: 52.4 (error: 4.415609976942783 )
+Reaction: 106-97-8: 1.0x"106-97-8" <-> 0.875x"74-84-0" + 0.125x"593-45-3" Calc enthalpy: -129.89473749998723 Ref enthalpy: -125.6 (error: 4.294737499987235 )
+Reaction: 56-81-5: 1.0x"56-81-5" <-> 1.85714x"67-56-1" + 0.285714x"2892-51-5" Calc enthalpy: -587.9444260160597 Ref enthalpy: -577.9 (error: 10.044426016059674 )
+Reaction: 67-56-1: 1.0x"67-56-1" + 0.0833333x"12184-80-4" <-> 0.166667x"74-84-0" + 0.5x"107-21-1" Calc enthalpy: -195.7214753216235 Ref enthalpy: -205.0 (error: 9.278524678376499 )
+Reaction: 115-07-1: 1.0x"115-07-1" <-> 0.1875x"460-12-8" + 0.5625x"75-28-5" Calc enthalpy: 16.531193750025707 Ref enthalpy: 20.41 (error: 3.878806249974293 )
+Invalid reactions writing . . .
+Reaction: 12075-35-3: 1.0x"12075-35-3" <-> 0.75x"12184-80-4" Calc enthalpy: 745.899375000021 Ref enthalpy: 820.06 (error: 74.16062499997895 )
+Reaction: 5471-63-6: 1.0x"5471-63-6" <-> 0.111111x"112-53-8" + 0.888889x"243-24-3" + 1.11111x"460-12-8" Calc enthalpy: 231.51520462024826 Ref enthalpy: 203.0 (error: 28.515204620248255 )
+Reaction: 504-64-3: 1.0x"504-64-3" <-> 1.0x"124-38-9" + 0.5x"12184-80-4" Calc enthalpy: -169.394849999994 Ref enthalpy: -93.64 (error: 75.754849999994 )
+Reaction: 12184-80-4: 1.0x"12184-80-4" <-> 1.33333x"12075-35-3" Calc enthalpy: 1068.5701676609444 Ref enthalpy: 970.69 (error: 97.88016766094438 )
+Reaction: 460-12-8: 1.0x"460-12-8" <-> 0.0526316x"593-45-3" + 0.763158x"12184-80-4" Calc enthalpy: 395.18906381977615 Ref enthalpy: 464.0 (error: 68.81093618022385 )
+Reaction: 112-53-8: 1.0x"112-53-8" <-> 0.392857x"542-46-1" + 0.607143x"67-56-1" + 1.17857x"75-28-5" Calc enthalpy: -458.63647328862413 Ref enthalpy: -436.5 (error: 22.13647328862413 )
+Reaction: 593-45-3: 1.0x"593-45-3" <-> 5.8x"74-84-0" + 1.6x"460-12-8" Calc enthalpy: -357.89058000007634 Ref enthalpy: -414.6 (error: 56.70941999992368 )
+Reaction: 2892-51-5: 1.0x"2892-51-5" <-> 1.0x"504-64-3" + 1.0x"64-18-6" Calc enthalpy: -428.5927999999933 Ref enthalpy: -515.0 (error: 86.4072000000067 )
+Reaction: 243-24-3: 1.0x"243-24-3" <-> 0.169492x"2892-51-5" + 0.322034x"542-46-1" + 2.46186x"12184-80-4" Calc enthalpy: -78.50242265186853 Ref enthalpy: 200.0 (error: 278.5024226518685 )
+Reaction: 112-30-1: 1.0x"112-30-1" <-> 0.321429x"542-46-1" + 0.678571x"67-56-1" + 0.964286x"75-28-5" Calc enthalpy: -424.951353931497 Ref enthalpy: -395.0 (error: 29.95135393149701 )
+Reaction: 542-46-1: 1.0x"542-46-1" <-> 1.0x"112-53-8" + 0.0517241x"593-45-3" + 1.01724x"460-12-8" Calc enthalpy: -331.5436758181645 Ref enthalpy: -408.0 (error: 76.4563241818355 )
+Valid species writing . . . 
+Species name: 67-64-1
+Species name: 74-84-0
+Species name: 74-98-6
+Species name: 75-65-0
+Species name: 124-38-9
+Species name: 64-18-6
+Species name: 75-28-5
+Species name: 10100-95-5
+Species name: 107-21-1
+Species name: 50-00-0
+Species name: 74-85-1
+Species name: 106-97-8
+Species name: 56-81-5
+Species name: 67-56-1
+Species name: 115-07-1
+Invalid species writing . . .
+Species name: 12075-35-3
+Species name: 5471-63-6
+Species name: 504-64-3
+Species name: 12184-80-4
+Species name: 460-12-8
+Species name: 112-53-8
+Species name: 593-45-3
+Species name: 2892-51-5
+Species name: 243-24-3
+Species name: 112-30-1
+Species name: 542-46-1
+- - - -  - - - Unique species names from invalid reactions:  - - - - - -  - - - - - - 
+Species name: 460-12-8
+Species name: 2892-51-5
+Species name: 112-30-1
+Species name: 5471-63-6
+Species name: 243-24-3
+Species name: 12184-80-4
+Species name: 112-53-8
+Species name: 593-45-3
+Species name: 542-46-1
+Species name: 12075-35-3
+Species name: 504-64-3
+- - - -  - - -  Species names from invalid reactions and their error bars: - - - - - -  - - - - - - 
+Species name: 460-12-8 , error bar: 68.81093618022385
+Species name: 2892-51-5 , error bar: 86.4072000000067
+Species name: 112-30-1 , error bar: 29.95135393149701
+Species name: 5471-63-6 , error bar: 28.515204620248255
+Species name: 243-24-3 , error bar: 278.5024226518685
+Species name: 12184-80-4 , error bar: 97.88016766094438
+Species name: 112-53-8 , error bar: 22.13647328862413
+Species name: 593-45-3 , error bar: 56.70941999992368
+Species name: 542-46-1 , error bar: 76.4563241818355
+Species name: 12075-35-3 , error bar: 74.16062499997895
+Species name: 504-64-3 , error bar: 75.754849999994
+-----------------Species from invalid (rejected) list with error bar: 
+460-12-8 68.81093618022385
+2892-51-5 86.4072000000067
+112-30-1 29.95135393149701
+5471-63-6 28.515204620248255
+243-24-3 278.5024226518685
+12184-80-4 97.88016766094438
+112-53-8 22.13647328862413
+593-45-3 56.70941999992368
+542-46-1 76.4563241818355
+12075-35-3 74.16062499997895
+504-64-3 75.754849999994
+Sorted species compared by error bars:
+243-24-3 278.5024226518685
+12184-80-4 97.88016766094438
+2892-51-5 86.4072000000067
+542-46-1 76.4563241818355
+504-64-3 75.754849999994
+12075-35-3 74.16062499997895
+460-12-8 68.81093618022385
+593-45-3 56.70941999992368
+112-30-1 29.95135393149701
+5471-63-6 28.515204620248255
+112-53-8 22.13647328862413
+- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -
+Loop number: 1 Iteration number: 1 in Initial analysis of species: 243-24-3
+Iteration number: 1
+Species reference list used in loop (1) and interation (1):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+Soi species name: 243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H} , [[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+targetSpeciesEnthalpy: 200.0
+After updated Hf: 
+Species of interest (target species): 243-24-3 , 0.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H} , [[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+REF: Processing 1 / 16
+67-64-1.g09: 
+REF: Processing 2 / 16
+74-84-0.g09: 
+REF: Processing 3 / 16
+74-98-6.g09: 
+REF: Processing 4 / 16
+75-65-0.g09: 
+REF: Processing 5 / 16
+124-38-9.g09: 
+REF: Processing 6 / 16
+64-18-6.g09: 
+REF: Processing 7 / 16
+75-28-5.g09: 
+REF: Processing 8 / 16
+10100-95-5.g09: 
+REF: Processing 9 / 16
+107-21-1.g09: 
+REF: Processing 10 / 16
+50-00-0.g09: 
+REF: Processing 11 / 16
+74-85-1.g09: 
+REF: Processing 12 / 16
+106-97-8.g09: 
+REF: Processing 13 / 16
+56-81-5.g09: 
+REF: Processing 14 / 16
+67-56-1.g09: 
+REF: Processing 15 / 16
+115-07-1.g09: 
+REF: Processing 16 / 16
+243-24-3.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 243-24-3 (1 / 1)
+rList:
+Species name : 243-24-3 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 243-24-3 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 243-24-3 =  Target species name : 243-24-3 Median species enthalpy: 272.7876141085271
+target species name: 243-24-3 ,  target ref enthalpy: 200.0
+ Reaction(0): 243-24-3: 7.0x"67-56-1" + 1.0x"243-24-3" <-> 4.0x"124-38-9" + 6.33333x"115-07-1" Species (target ref) enthalpy: 200.0 Calculated Hf for reaction(0): 272.7876141085271 error: 72.78761410852712
+species name: 243-24-3 error bar: 72.78761410852712
+Writting species list...
+TTIP Species: 
+243-24-3 200.0
+Loop number: 1 Iteration number: 2 in Initial analysis of species: 12184-80-4
+Iteration number: 2
+Species reference list used in loop (1) and interation (2):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+Soi species name: 12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C} , [[C]{1}[C] x 5]
+targetSpeciesEnthalpy: 970.69
+After updated Hf: 
+Species of interest (target species): 12184-80-4 , 0.0 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C} , [[C]{1}[C] x 5]
+REF: Processing 1 / 17
+67-64-1.g09: 
+REF: Processing 2 / 17
+74-84-0.g09: 
+REF: Processing 3 / 17
+74-98-6.g09: 
+REF: Processing 4 / 17
+75-65-0.g09: 
+REF: Processing 5 / 17
+124-38-9.g09: 
+REF: Processing 6 / 17
+64-18-6.g09: 
+REF: Processing 7 / 17
+75-28-5.g09: 
+REF: Processing 8 / 17
+10100-95-5.g09: 
+REF: Processing 9 / 17
+107-21-1.g09: 
+REF: Processing 10 / 17
+50-00-0.g09: 
+REF: Processing 11 / 17
+74-85-1.g09: 
+REF: Processing 12 / 17
+106-97-8.g09: 
+REF: Processing 13 / 17
+56-81-5.g09: 
+REF: Processing 14 / 17
+67-56-1.g09: 
+REF: Processing 15 / 17
+243-24-3.g09: 
+REF: Processing 16 / 17
+115-07-1.g09: 
+REF: Processing 17 / 17
+12184-80-4.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 12184-80-4 (1 / 1)
+rList:
+Species name : 12184-80-4 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 12184-80-4 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 12184-80-4 =  Target species name : 12184-80-4 Median species enthalpy: 1065.238037663574
+target species name: 12184-80-4 ,  target ref enthalpy: 970.69
+ Reaction(0): 12184-80-4: 0.307692x"74-84-0" + 0.307692x"67-56-1" + 1.0x"12184-80-4" <-> 0.307692x"243-24-3" Species (target ref) enthalpy: 970.69 Calculated Hf for reaction(0): 1065.238037663574 error: 94.54803766357395
+species name: 12184-80-4 error bar: 94.54803766357395
+Writting species list...
+TTIP Species: 
+12184-80-4 970.69
+Loop number: 1 Iteration number: 3 in Initial analysis of species: 2892-51-5
+Iteration number: 3
+Species reference list used in loop (1) and interation (3):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+Soi species name: 2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C} , [[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+targetSpeciesEnthalpy: -515.0
+After updated Hf: 
+Species of interest (target species): 2892-51-5 , 0.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C} , [[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+REF: Processing 1 / 18
+67-64-1.g09: 
+REF: Processing 2 / 18
+74-84-0.g09: 
+REF: Processing 3 / 18
+74-98-6.g09: 
+REF: Processing 4 / 18
+75-65-0.g09: 
+REF: Processing 5 / 18
+12184-80-4.g09: 
+REF: Processing 6 / 18
+124-38-9.g09: 
+REF: Processing 7 / 18
+64-18-6.g09: 
+REF: Processing 8 / 18
+75-28-5.g09: 
+REF: Processing 9 / 18
+10100-95-5.g09: 
+REF: Processing 10 / 18
+107-21-1.g09: 
+REF: Processing 11 / 18
+50-00-0.g09: 
+REF: Processing 12 / 18
+74-85-1.g09: 
+REF: Processing 13 / 18
+106-97-8.g09: 
+REF: Processing 14 / 18
+56-81-5.g09: 
+REF: Processing 15 / 18
+67-56-1.g09: 
+REF: Processing 16 / 18
+243-24-3.g09: 
+REF: Processing 17 / 18
+115-07-1.g09: 
+REF: Processing 18 / 18
+2892-51-5.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 2892-51-5 (1 / 1)
+rList:
+Species name : 2892-51-5 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 2892-51-5 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 2892-51-5 =  Target species name : 2892-51-5 Median species enthalpy: -453.3707745173608
+target species name: 2892-51-5 ,  target ref enthalpy: -515.0
+ Reaction(0): 2892-51-5: 1.0x"2892-51-5" <-> 0.122807x"243-24-3" + 0.192982x"67-56-1" + 1.84211x"124-38-9" Species (target ref) enthalpy: -515.0 Calculated Hf for reaction(0): -453.3707745173608 error: 61.629225482639185
+species name: 2892-51-5 error bar: 61.629225482639185
+Writting species list...
+TTIP Species: 
+2892-51-5 -515.0
+Loop number: 1 Iteration number: 4 in Initial analysis of species: 542-46-1
+Iteration number: 4
+Species reference list used in loop (1) and interation (4):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+542-46-1 , -408.0 , -1944469.597 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, C1=C, H28=H, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, H30=H, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{2}[C], [C]{1}[C] x 16, [C]{1}[H] x 30, [C]{2}[O]]
+Soi species name: 542-46-1 , -408.0 , -1944469.597 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, C1=C, H28=H, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, H30=H, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{2}[C], [C]{1}[C] x 16, [C]{1}[H] x 30, [C]{2}[O]]
+targetSpeciesEnthalpy: -408.0
+After updated Hf: 
+Species of interest (target species): 542-46-1 , 0.0 , -1944469.597 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, C1=C, H28=H, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, H30=H, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{2}[C], [C]{1}[C] x 16, [C]{1}[H] x 30, [C]{2}[O]]
+REF: Processing 1 / 19
+67-64-1.g09: 
+REF: Processing 2 / 19
+74-84-0.g09: 
+REF: Processing 3 / 19
+74-98-6.g09: 
+REF: Processing 4 / 19
+75-65-0.g09: 
+REF: Processing 5 / 19
+12184-80-4.g09: 
+REF: Processing 6 / 19
+124-38-9.g09: 
+REF: Processing 7 / 19
+64-18-6.g09: 
+REF: Processing 8 / 19
+2892-51-5.g09: 
+REF: Processing 9 / 19
+75-28-5.g09: 
+REF: Processing 10 / 19
+10100-95-5.g09: 
+REF: Processing 11 / 19
+107-21-1.g09: 
+REF: Processing 12 / 19
+50-00-0.g09: 
+REF: Processing 13 / 19
+74-85-1.g09: 
+REF: Processing 14 / 19
+106-97-8.g09: 
+REF: Processing 15 / 19
+56-81-5.g09: 
+REF: Processing 16 / 19
+67-56-1.g09: 
+REF: Processing 17 / 19
+243-24-3.g09: 
+REF: Processing 18 / 19
+115-07-1.g09: 
+REF: Processing 19 / 19
+542-46-1.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 542-46-1 (1 / 1)
+rList:
+Species name : 542-46-1 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 542-46-1 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 542-46-1 =  Target species name : 542-46-1 Median species enthalpy: -315.89343750015837
+target species name: 542-46-1 ,  target ref enthalpy: -408.0
+ Reaction(0): 542-46-1: 1.0x"542-46-1" <-> 3.125x"74-85-1" + 0.75x"10100-95-5" + 0.25x"243-24-3" Species (target ref) enthalpy: -408.0 Calculated Hf for reaction(0): -315.89343750015837 error: 92.10656249984163
+species name: 542-46-1 error bar: 92.10656249984163
+Writting species list...
+TTIP Species: 
+542-46-1 -408.0
+Loop number: 1 Iteration number: 5 in Initial analysis of species: 504-64-3
+Iteration number: 5
+Species reference list used in loop (1) and interation (5):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+504-64-3 , -93.64 , -694973.9419 , {C3=C, O1=O, O2=O, C1=C, C2=C}[[C]{2}[C] x 2, [C]{2}[O] x 2]
+Soi species name: 504-64-3 , -93.64 , -694973.9419 , {C3=C, O1=O, O2=O, C1=C, C2=C} , [[C]{2}[C] x 2, [C]{2}[O] x 2]
+targetSpeciesEnthalpy: -93.64
+After updated Hf: 
+Species of interest (target species): 504-64-3 , 0.0 , -694973.9419 , {C3=C, O1=O, O2=O, C1=C, C2=C} , [[C]{2}[C] x 2, [C]{2}[O] x 2]
+REF: Processing 1 / 19
+67-64-1.g09: 
+REF: Processing 2 / 19
+74-84-0.g09: 
+REF: Processing 3 / 19
+74-98-6.g09: 
+REF: Processing 4 / 19
+75-65-0.g09: 
+REF: Processing 5 / 19
+12184-80-4.g09: 
+REF: Processing 6 / 19
+124-38-9.g09: 
+REF: Processing 7 / 19
+64-18-6.g09: 
+REF: Processing 8 / 19
+2892-51-5.g09: 
+REF: Processing 9 / 19
+75-28-5.g09: 
+REF: Processing 10 / 19
+10100-95-5.g09: 
+REF: Processing 11 / 19
+107-21-1.g09: 
+REF: Processing 12 / 19
+50-00-0.g09: 
+REF: Processing 13 / 19
+74-85-1.g09: 
+REF: Processing 14 / 19
+106-97-8.g09: 
+REF: Processing 15 / 19
+56-81-5.g09: 
+REF: Processing 16 / 19
+67-56-1.g09: 
+REF: Processing 17 / 19
+243-24-3.g09: 
+REF: Processing 18 / 19
+115-07-1.g09: 
+REF: Processing 19 / 19
+504-64-3.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 504-64-3 (1 / 1)
+rList:
+Species name : 504-64-3 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 504-64-3 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 504-64-3 =  Target species name : 504-64-3 Median species enthalpy: -169.394849999994
+target species name: 504-64-3 ,  target ref enthalpy: -93.64
+ Reaction(0): 504-64-3: 1.0x"504-64-3" <-> 1.0x"124-38-9" + 0.5x"12184-80-4" Species (target ref) enthalpy: -93.64 Calculated Hf for reaction(0): -169.394849999994 error: 75.754849999994
+species name: 504-64-3 error bar: 75.754849999994
+Writting species list...
+TTIP Species: 
+504-64-3 -93.64
+Loop number: 1 Iteration number: 6 in Initial analysis of species: 12075-35-3
+Iteration number: 6
+Species reference list used in loop (1) and interation (6):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+12075-35-3 , 820.06 , -299379.6417 , {C3=C, C1=C, C2=C}[[C]{1}[C] x 2]
+Soi species name: 12075-35-3 , 820.06 , -299379.6417 , {C3=C, C1=C, C2=C} , [[C]{1}[C] x 2]
+targetSpeciesEnthalpy: 820.06
+After updated Hf: 
+Species of interest (target species): 12075-35-3 , 0.0 , -299379.6417 , {C3=C, C1=C, C2=C} , [[C]{1}[C] x 2]
+REF: Processing 1 / 19
+67-64-1.g09: 
+REF: Processing 2 / 19
+74-84-0.g09: 
+REF: Processing 3 / 19
+74-98-6.g09: 
+REF: Processing 4 / 19
+75-65-0.g09: 
+REF: Processing 5 / 19
+12184-80-4.g09: 
+REF: Processing 6 / 19
+124-38-9.g09: 
+REF: Processing 7 / 19
+64-18-6.g09: 
+REF: Processing 8 / 19
+2892-51-5.g09: 
+REF: Processing 9 / 19
+75-28-5.g09: 
+REF: Processing 10 / 19
+10100-95-5.g09: 
+REF: Processing 11 / 19
+107-21-1.g09: 
+REF: Processing 12 / 19
+50-00-0.g09: 
+REF: Processing 13 / 19
+74-85-1.g09: 
+REF: Processing 14 / 19
+106-97-8.g09: 
+REF: Processing 15 / 19
+56-81-5.g09: 
+REF: Processing 16 / 19
+67-56-1.g09: 
+REF: Processing 17 / 19
+243-24-3.g09: 
+REF: Processing 18 / 19
+115-07-1.g09: 
+REF: Processing 19 / 19
+12075-35-3.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 12075-35-3 (1 / 1)
+rList:
+Species name : 12075-35-3 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 12075-35-3 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 12075-35-3 =  Target species name : 12075-35-3 Median species enthalpy: 745.899375000021
+target species name: 12075-35-3 ,  target ref enthalpy: 820.06
+ Reaction(0): 12075-35-3: 1.0x"12075-35-3" <-> 0.75x"12184-80-4" Species (target ref) enthalpy: 820.06 Calculated Hf for reaction(0): 745.899375000021 error: 74.16062499997895
+species name: 12075-35-3 error bar: 74.16062499997895
+Writting species list...
+TTIP Species: 
+12075-35-3 820.06
+Loop number: 1 Iteration number: 7 in Initial analysis of species: 460-12-8
+Iteration number: 7
+Species reference list used in loop (1) and interation (7):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+Soi species name: 460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C} , [[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+targetSpeciesEnthalpy: 464.0
+After updated Hf: 
+Species of interest (target species): 460-12-8 , 0.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C} , [[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+REF: Processing 1 / 19
+67-64-1.g09: 
+REF: Processing 2 / 19
+74-84-0.g09: 
+REF: Processing 3 / 19
+74-98-6.g09: 
+REF: Processing 4 / 19
+75-65-0.g09: 
+REF: Processing 5 / 19
+12184-80-4.g09: 
+REF: Processing 6 / 19
+124-38-9.g09: 
+REF: Processing 7 / 19
+64-18-6.g09: 
+REF: Processing 8 / 19
+2892-51-5.g09: 
+REF: Processing 9 / 19
+75-28-5.g09: 
+REF: Processing 10 / 19
+10100-95-5.g09: 
+REF: Processing 11 / 19
+107-21-1.g09: 
+REF: Processing 12 / 19
+50-00-0.g09: 
+REF: Processing 13 / 19
+74-85-1.g09: 
+REF: Processing 14 / 19
+106-97-8.g09: 
+REF: Processing 15 / 19
+56-81-5.g09: 
+REF: Processing 16 / 19
+67-56-1.g09: 
+REF: Processing 17 / 19
+243-24-3.g09: 
+REF: Processing 18 / 19
+115-07-1.g09: 
+REF: Processing 19 / 19
+460-12-8.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 460-12-8 (1 / 1)
+rList:
+Species name : 460-12-8 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 460-12-8 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 460-12-8 =  Target species name : 460-12-8 Median species enthalpy: 398.2553250000068
+target species name: 460-12-8 ,  target ref enthalpy: 464.0
+ Reaction(0): 460-12-8: 1.0x"460-12-8" <-> 0.5x"74-85-1" + 0.75x"12184-80-4" Species (target ref) enthalpy: 464.0 Calculated Hf for reaction(0): 398.2553250000068 error: 65.74467499999321
+species name: 460-12-8 error bar: 65.74467499999321
+Writting species list...
+TTIP Species: 
+460-12-8 464.0
+Loop number: 1 Iteration number: 8 in Initial analysis of species: 593-45-3
+Iteration number: 8
+Species reference list used in loop (1) and interation (8):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[C] x 17, [C]{1}[H] x 38]
+Soi species name: 593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[C] x 17, [C]{1}[H] x 38]
+targetSpeciesEnthalpy: -414.6
+After updated Hf: 
+Species of interest (target species): 593-45-3 , 0.0 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[C] x 17, [C]{1}[H] x 38]
+REF: Processing 1 / 20
+67-64-1.g09: 
+REF: Processing 2 / 20
+74-84-0.g09: 
+REF: Processing 3 / 20
+74-98-6.g09: 
+REF: Processing 4 / 20
+75-65-0.g09: 
+REF: Processing 5 / 20
+12184-80-4.g09: 
+REF: Processing 6 / 20
+460-12-8.g09: 
+REF: Processing 7 / 20
+124-38-9.g09: 
+REF: Processing 8 / 20
+64-18-6.g09: 
+REF: Processing 9 / 20
+2892-51-5.g09: 
+REF: Processing 10 / 20
+75-28-5.g09: 
+REF: Processing 11 / 20
+10100-95-5.g09: 
+REF: Processing 12 / 20
+107-21-1.g09: 
+REF: Processing 13 / 20
+50-00-0.g09: 
+REF: Processing 14 / 20
+74-85-1.g09: 
+REF: Processing 15 / 20
+106-97-8.g09: 
+REF: Processing 16 / 20
+56-81-5.g09: 
+REF: Processing 17 / 20
+67-56-1.g09: 
+REF: Processing 18 / 20
+243-24-3.g09: 
+REF: Processing 19 / 20
+115-07-1.g09: 
+REF: Processing 20 / 20
+593-45-3.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 593-45-3 (1 / 1)
+rList:
+Species name : 593-45-3 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 593-45-3 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 593-45-3 =  Target species name : 593-45-3 Median species enthalpy: -358.7425858910867
+target species name: 593-45-3 ,  target ref enthalpy: -414.6
+ Reaction(0): 593-45-3: 1.0x"593-45-3" <-> 1.0x"74-84-0" + 5.33333x"115-07-1" Species (target ref) enthalpy: -414.6 Calculated Hf for reaction(0): -358.7425858910867 error: 55.857414108913304
+species name: 593-45-3 error bar: 55.857414108913304
+Writting species list...
+TTIP Species: 
+593-45-3 -414.6
+Loop number: 1 Iteration number: 9 in Initial analysis of species: 112-30-1
+Iteration number: 9
+Species reference list used in loop (1) and interation (9):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[C] x 17, [C]{1}[H] x 38]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+Soi species name: 112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+targetSpeciesEnthalpy: -395.0
+After updated Hf: 
+Species of interest (target species): 112-30-1 , 0.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+REF: Processing 1 / 21
+67-64-1.g09: 
+REF: Processing 2 / 21
+74-84-0.g09: 
+REF: Processing 3 / 21
+74-98-6.g09: 
+REF: Processing 4 / 21
+75-65-0.g09: 
+REF: Processing 5 / 21
+12184-80-4.g09: 
+REF: Processing 6 / 21
+460-12-8.g09: 
+REF: Processing 7 / 21
+124-38-9.g09: 
+REF: Processing 8 / 21
+64-18-6.g09: 
+REF: Processing 9 / 21
+593-45-3.g09: 
+REF: Processing 10 / 21
+2892-51-5.g09: 
+REF: Processing 11 / 21
+75-28-5.g09: 
+REF: Processing 12 / 21
+10100-95-5.g09: 
+REF: Processing 13 / 21
+107-21-1.g09: 
+REF: Processing 14 / 21
+50-00-0.g09: 
+REF: Processing 15 / 21
+74-85-1.g09: 
+REF: Processing 16 / 21
+106-97-8.g09: 
+REF: Processing 17 / 21
+56-81-5.g09: 
+REF: Processing 18 / 21
+67-56-1.g09: 
+REF: Processing 19 / 21
+243-24-3.g09: 
+REF: Processing 20 / 21
+115-07-1.g09: 
+REF: Processing 21 / 21
+112-30-1.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 112-30-1 (1 / 1)
+rList:
+Species name : 112-30-1 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 112-30-1 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 112-30-1 =  Target species name : 112-30-1 Median species enthalpy: -411.8318480387067
+target species name: 112-30-1 ,  target ref enthalpy: -395.0
+ Reaction(0): 112-30-1: 1.0x"112-30-1" <-> 0.0517241x"593-45-3" + 1.0x"10100-95-5" + 0.0172414x"460-12-8" Species (target ref) enthalpy: -395.0 Calculated Hf for reaction(0): -411.8318480387067 error: 16.83184803870671
+species name: 112-30-1 error bar: 16.83184803870671
+Writting species list...
+TTIP Species: 
+112-30-1 -395.0
+Loop number: 1 Iteration number: 10 in Initial analysis of species: 5471-63-6
+Iteration number: 10
+Species reference list used in loop (1) and interation (10):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[C] x 17, [C]{1}[H] x 38]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+5471-63-6 , 203.0 , -2219736.974 , {C20=C, O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, C19=C, H3=H, H13=H, C18=C, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 10, [C]{1}[O] x 2, [C]{1}[C] x 12, [C]{1}[H] x 14]
+Soi species name: 5471-63-6 , 203.0 , -2219736.974 , {C20=C, O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, C19=C, H3=H, H13=H, C18=C, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H} , [[C]{2}[C] x 10, [C]{1}[O] x 2, [C]{1}[C] x 12, [C]{1}[H] x 14]
+targetSpeciesEnthalpy: 203.0
+After updated Hf: 
+Species of interest (target species): 5471-63-6 , 0.0 , -2219736.974 , {C20=C, O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, C19=C, H3=H, H13=H, C18=C, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H} , [[C]{2}[C] x 10, [C]{1}[O] x 2, [C]{1}[C] x 12, [C]{1}[H] x 14]
+REF: Processing 1 / 22
+67-64-1.g09: 
+REF: Processing 2 / 22
+74-84-0.g09: 
+REF: Processing 3 / 22
+74-98-6.g09: 
+REF: Processing 4 / 22
+75-65-0.g09: 
+REF: Processing 5 / 22
+12184-80-4.g09: 
+REF: Processing 6 / 22
+460-12-8.g09: 
+REF: Processing 7 / 22
+124-38-9.g09: 
+REF: Processing 8 / 22
+64-18-6.g09: 
+REF: Processing 9 / 22
+593-45-3.g09: 
+REF: Processing 10 / 22
+2892-51-5.g09: 
+REF: Processing 11 / 22
+75-28-5.g09: 
+REF: Processing 12 / 22
+10100-95-5.g09: 
+REF: Processing 13 / 22
+107-21-1.g09: 
+REF: Processing 14 / 22
+50-00-0.g09: 
+REF: Processing 15 / 22
+74-85-1.g09: 
+REF: Processing 16 / 22
+106-97-8.g09: 
+REF: Processing 17 / 22
+56-81-5.g09: 
+REF: Processing 18 / 22
+67-56-1.g09: 
+REF: Processing 19 / 22
+243-24-3.g09: 
+REF: Processing 20 / 22
+112-30-1.g09: 
+REF: Processing 21 / 22
+115-07-1.g09: 
+REF: Processing 22 / 22
+5471-63-6.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 5471-63-6 (1 / 1)
+rList:
+Species name : 5471-63-6 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 5471-63-6 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 5471-63-6 =  Target species name : 5471-63-6 Median species enthalpy: 234.33737715397444
+target species name: 5471-63-6 ,  target ref enthalpy: 203.0
+ Reaction(0): 5471-63-6: 1.0x"5471-63-6" <-> 0.0689655x"593-45-3" + 1.0x"243-24-3" + 0.689655x"460-12-8" Species (target ref) enthalpy: 203.0 Calculated Hf for reaction(0): 234.33737715397444 error: 31.337377153974444
+species name: 5471-63-6 error bar: 31.337377153974444
+Writting species list...
+TTIP Species: 
+5471-63-6 203.0
+Loop number: 1 Iteration number: 11 in Initial analysis of species: 112-53-8
+Iteration number: 11
+Species reference list used in loop (1) and interation (11):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[C] x 17, [C]{1}[H] x 38]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+112-53-8 , -436.5 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+Soi species name: 112-53-8 , -436.5 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+targetSpeciesEnthalpy: -436.5
+After updated Hf: 
+Species of interest (target species): 112-53-8 , 0.0 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+REF: Processing 1 / 22
+67-64-1.g09: 
+REF: Processing 2 / 22
+74-84-0.g09: 
+REF: Processing 3 / 22
+74-98-6.g09: 
+REF: Processing 4 / 22
+75-65-0.g09: 
+REF: Processing 5 / 22
+12184-80-4.g09: 
+REF: Processing 6 / 22
+460-12-8.g09: 
+REF: Processing 7 / 22
+124-38-9.g09: 
+REF: Processing 8 / 22
+64-18-6.g09: 
+REF: Processing 9 / 22
+593-45-3.g09: 
+REF: Processing 10 / 22
+2892-51-5.g09: 
+REF: Processing 11 / 22
+75-28-5.g09: 
+REF: Processing 12 / 22
+10100-95-5.g09: 
+REF: Processing 13 / 22
+107-21-1.g09: 
+REF: Processing 14 / 22
+50-00-0.g09: 
+REF: Processing 15 / 22
+74-85-1.g09: 
+REF: Processing 16 / 22
+106-97-8.g09: 
+REF: Processing 17 / 22
+56-81-5.g09: 
+REF: Processing 18 / 22
+67-56-1.g09: 
+REF: Processing 19 / 22
+243-24-3.g09: 
+REF: Processing 20 / 22
+112-30-1.g09: 
+REF: Processing 21 / 22
+115-07-1.g09: 
+REF: Processing 22 / 22
+112-53-8.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 112-53-8 (1 / 1)
+rList:
+Species name : 112-53-8 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 112-53-8 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 112-53-8 =  Target species name : 112-53-8 Median species enthalpy: -424.0785099768745
+target species name: 112-53-8 ,  target ref enthalpy: -436.5
+ Reaction(0): 112-53-8: 1.0x"112-53-8" <-> 0.103448x"593-45-3" + 1.0x"112-30-1" + 0.0344828x"460-12-8" Species (target ref) enthalpy: -436.5 Calculated Hf for reaction(0): -424.0785099768745 error: 12.4214900231255
+species name: 112-53-8 error bar: 12.4214900231255
+Writting species list...
+TTIP Species: 
+112-53-8 -436.5
+Updated valid set of species after (1.) loop through the set of invalid species in initial analysis:
+1. species name: 67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C} , [[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+2. species name: 74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C} , [[C]{1}[C], [C]{1}[H] x 6]
+3. species name: 74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C} , [[C]{1}[C] x 2, [C]{1}[H] x 8]
+4. species name: 75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C} , [[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+5. species name: 124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C} , [[C]{2}[O] x 2]
+6. species name: 64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C} , [[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+7. species name: 75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C} , [[C]{1}[C] x 3, [C]{1}[H] x 10]
+8. species name: 10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+9. species name: 107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C} , [[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+10. species name: 50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C} , [[C]{1}[H] x 2, [C]{2}[O]]
+11. species name: 74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C} , [[C]{2}[C], [C]{1}[H] x 4]
+12. species name: 106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C} , [[C]{1}[C] x 3, [C]{1}[H] x 10]
+13. species name: 56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C} , [[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+14. species name: 67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C} , [[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+15. species name: 115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C} , [[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+16. species name: 243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H} , [[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+17. species name: 12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C} , [[C]{1}[C] x 5]
+18. species name: 2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C} , [[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+19. species name: 460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C} , [[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+20. species name: 593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[C] x 17, [C]{1}[H] x 38]
+21. species name: 112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+22. species name: 112-53-8 , -436.5 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+Invalid species file after (1.) loop through invalid species list with error bar . . .
+Species name: 12075-35-3
+Species name: 5471-63-6
+Species name: 504-64-3
+Species name: 542-46-1
+addedSpeciesToValidSet: true
+After (1.) loop the set of invalid species is:
+12075-35-3 820.06
+5471-63-6 203.0
+504-64-3 -93.64
+542-46-1 -408.0
+Loop number: 2 Iteration number: 1 in Initial analysis of species: 243-24-3
+Species skipped: 243-24-3
+Loop number: 2 Iteration number: 1 in Initial analysis of species: 12184-80-4
+Species skipped: 12184-80-4
+Loop number: 2 Iteration number: 1 in Initial analysis of species: 2892-51-5
+Species skipped: 2892-51-5
+Loop number: 2 Iteration number: 1 in Initial analysis of species: 542-46-1
+Iteration number: 1
+Species reference list used in loop (2) and interation (1):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+112-53-8 , -436.5 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[C] x 17, [C]{1}[H] x 38]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+542-46-1 , -408.0 , -1944469.597 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, C1=C, H28=H, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, H30=H, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{2}[C], [C]{1}[C] x 16, [C]{1}[H] x 30, [C]{2}[O]]
+Soi species name: 542-46-1 , -408.0 , -1944469.597 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, C1=C, H28=H, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, H30=H, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{2}[C], [C]{1}[C] x 16, [C]{1}[H] x 30, [C]{2}[O]]
+targetSpeciesEnthalpy: -408.0
+After updated Hf: 
+Species of interest (target species): 542-46-1 , 0.0 , -1944469.597 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, C1=C, H28=H, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, H30=H, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{2}[C], [C]{1}[C] x 16, [C]{1}[H] x 30, [C]{2}[O]]
+REF: Processing 1 / 23
+67-64-1.g09: 
+REF: Processing 2 / 23
+74-84-0.g09: 
+REF: Processing 3 / 23
+74-98-6.g09: 
+REF: Processing 4 / 23
+75-65-0.g09: 
+REF: Processing 5 / 23
+12184-80-4.g09: 
+REF: Processing 6 / 23
+460-12-8.g09: 
+REF: Processing 7 / 23
+112-53-8.g09: 
+REF: Processing 8 / 23
+124-38-9.g09: 
+REF: Processing 9 / 23
+64-18-6.g09: 
+REF: Processing 10 / 23
+593-45-3.g09: 
+REF: Processing 11 / 23
+2892-51-5.g09: 
+REF: Processing 12 / 23
+75-28-5.g09: 
+REF: Processing 13 / 23
+10100-95-5.g09: 
+REF: Processing 14 / 23
+107-21-1.g09: 
+REF: Processing 15 / 23
+50-00-0.g09: 
+REF: Processing 16 / 23
+74-85-1.g09: 
+REF: Processing 17 / 23
+106-97-8.g09: 
+REF: Processing 18 / 23
+56-81-5.g09: 
+REF: Processing 19 / 23
+67-56-1.g09: 
+REF: Processing 20 / 23
+243-24-3.g09: 
+REF: Processing 21 / 23
+112-30-1.g09: 
+REF: Processing 22 / 23
+115-07-1.g09: 
+REF: Processing 23 / 23
+542-46-1.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 542-46-1 (1 / 1)
+rList:
+Species name : 542-46-1 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 542-46-1 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 542-46-1 =  Target species name : 542-46-1 Median species enthalpy: -331.5436758181645
+target species name: 542-46-1 ,  target ref enthalpy: -408.0
+ Reaction(0): 542-46-1: 1.0x"542-46-1" <-> 0.0517241x"593-45-3" + 1.0x"112-53-8" + 1.01724x"460-12-8" Species (target ref) enthalpy: -408.0 Calculated Hf for reaction(0): -331.5436758181645 error: 76.4563241818355
+species name: 542-46-1 error bar: 76.4563241818355
+Writting species list...
+TTIP Species: 
+542-46-1 -408.0
+Loop number: 2 Iteration number: 2 in Initial analysis of species: 504-64-3
+Iteration number: 2
+Species reference list used in loop (2) and interation (2):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+112-53-8 , -436.5 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[C] x 17, [C]{1}[H] x 38]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+504-64-3 , -93.64 , -694973.9419 , {C3=C, O1=O, O2=O, C1=C, C2=C}[[C]{2}[C] x 2, [C]{2}[O] x 2]
+Soi species name: 504-64-3 , -93.64 , -694973.9419 , {C3=C, O1=O, O2=O, C1=C, C2=C} , [[C]{2}[C] x 2, [C]{2}[O] x 2]
+targetSpeciesEnthalpy: -93.64
+After updated Hf: 
+Species of interest (target species): 504-64-3 , 0.0 , -694973.9419 , {C3=C, O1=O, O2=O, C1=C, C2=C} , [[C]{2}[C] x 2, [C]{2}[O] x 2]
+REF: Processing 1 / 23
+67-64-1.g09: 
+REF: Processing 2 / 23
+74-84-0.g09: 
+REF: Processing 3 / 23
+74-98-6.g09: 
+REF: Processing 4 / 23
+75-65-0.g09: 
+REF: Processing 5 / 23
+12184-80-4.g09: 
+REF: Processing 6 / 23
+460-12-8.g09: 
+REF: Processing 7 / 23
+112-53-8.g09: 
+REF: Processing 8 / 23
+124-38-9.g09: 
+REF: Processing 9 / 23
+64-18-6.g09: 
+REF: Processing 10 / 23
+593-45-3.g09: 
+REF: Processing 11 / 23
+2892-51-5.g09: 
+REF: Processing 12 / 23
+75-28-5.g09: 
+REF: Processing 13 / 23
+10100-95-5.g09: 
+REF: Processing 14 / 23
+107-21-1.g09: 
+REF: Processing 15 / 23
+50-00-0.g09: 
+REF: Processing 16 / 23
+74-85-1.g09: 
+REF: Processing 17 / 23
+106-97-8.g09: 
+REF: Processing 18 / 23
+56-81-5.g09: 
+REF: Processing 19 / 23
+67-56-1.g09: 
+REF: Processing 20 / 23
+243-24-3.g09: 
+REF: Processing 21 / 23
+112-30-1.g09: 
+REF: Processing 22 / 23
+115-07-1.g09: 
+REF: Processing 23 / 23
+504-64-3.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 504-64-3 (1 / 1)
+rList:
+Species name : 504-64-3 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 504-64-3 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 504-64-3 =  Target species name : 504-64-3 Median species enthalpy: -169.394849999994
+target species name: 504-64-3 ,  target ref enthalpy: -93.64
+ Reaction(0): 504-64-3: 1.0x"504-64-3" <-> 1.0x"124-38-9" + 0.5x"12184-80-4" Species (target ref) enthalpy: -93.64 Calculated Hf for reaction(0): -169.394849999994 error: 75.754849999994
+species name: 504-64-3 error bar: 75.754849999994
+Writting species list...
+TTIP Species: 
+504-64-3 -93.64
+Loop number: 2 Iteration number: 3 in Initial analysis of species: 12075-35-3
+Iteration number: 3
+Species reference list used in loop (2) and interation (3):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+112-53-8 , -436.5 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[C] x 17, [C]{1}[H] x 38]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+12075-35-3 , 820.06 , -299379.6417 , {C3=C, C1=C, C2=C}[[C]{1}[C] x 2]
+Soi species name: 12075-35-3 , 820.06 , -299379.6417 , {C3=C, C1=C, C2=C} , [[C]{1}[C] x 2]
+targetSpeciesEnthalpy: 820.06
+After updated Hf: 
+Species of interest (target species): 12075-35-3 , 0.0 , -299379.6417 , {C3=C, C1=C, C2=C} , [[C]{1}[C] x 2]
+REF: Processing 1 / 23
+67-64-1.g09: 
+REF: Processing 2 / 23
+74-84-0.g09: 
+REF: Processing 3 / 23
+74-98-6.g09: 
+REF: Processing 4 / 23
+75-65-0.g09: 
+REF: Processing 5 / 23
+12184-80-4.g09: 
+REF: Processing 6 / 23
+460-12-8.g09: 
+REF: Processing 7 / 23
+112-53-8.g09: 
+REF: Processing 8 / 23
+124-38-9.g09: 
+REF: Processing 9 / 23
+64-18-6.g09: 
+REF: Processing 10 / 23
+593-45-3.g09: 
+REF: Processing 11 / 23
+2892-51-5.g09: 
+REF: Processing 12 / 23
+75-28-5.g09: 
+REF: Processing 13 / 23
+10100-95-5.g09: 
+REF: Processing 14 / 23
+107-21-1.g09: 
+REF: Processing 15 / 23
+50-00-0.g09: 
+REF: Processing 16 / 23
+74-85-1.g09: 
+REF: Processing 17 / 23
+106-97-8.g09: 
+REF: Processing 18 / 23
+56-81-5.g09: 
+REF: Processing 19 / 23
+67-56-1.g09: 
+REF: Processing 20 / 23
+243-24-3.g09: 
+REF: Processing 21 / 23
+112-30-1.g09: 
+REF: Processing 22 / 23
+115-07-1.g09: 
+REF: Processing 23 / 23
+12075-35-3.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 12075-35-3 (1 / 1)
+rList:
+Species name : 12075-35-3 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 12075-35-3 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 12075-35-3 =  Target species name : 12075-35-3 Median species enthalpy: 745.899375000021
+target species name: 12075-35-3 ,  target ref enthalpy: 820.06
+ Reaction(0): 12075-35-3: 1.0x"12075-35-3" <-> 0.75x"12184-80-4" Species (target ref) enthalpy: 820.06 Calculated Hf for reaction(0): 745.899375000021 error: 74.16062499997895
+species name: 12075-35-3 error bar: 74.16062499997895
+Writting species list...
+TTIP Species: 
+12075-35-3 820.06
+Loop number: 2 Iteration number: 4 in Initial analysis of species: 460-12-8
+Species skipped: 460-12-8
+Loop number: 2 Iteration number: 4 in Initial analysis of species: 593-45-3
+Species skipped: 593-45-3
+Loop number: 2 Iteration number: 4 in Initial analysis of species: 112-30-1
+Species skipped: 112-30-1
+Loop number: 2 Iteration number: 4 in Initial analysis of species: 5471-63-6
+Iteration number: 4
+Species reference list used in loop (2) and interation (4):
+67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[C], [C]{1}[H] x 6]
+74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C}[[C]{1}[C] x 2, [C]{1}[H] x 8]
+75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C}[[C]{1}[C] x 5]
+460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C}[[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+112-53-8 , -436.5 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C}[[C]{2}[O] x 2]
+64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C}[[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[C] x 17, [C]{1}[H] x 38]
+2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C}[[C]{1}[H] x 2, [C]{2}[O]]
+74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[H] x 4]
+106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C}[[C]{1}[C] x 3, [C]{1}[H] x 10]
+56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C}[[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C}[[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H}[[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C}[[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+5471-63-6 , 203.0 , -2219736.974 , {C20=C, O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, C19=C, H3=H, H13=H, C18=C, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H}[[C]{2}[C] x 10, [C]{1}[O] x 2, [C]{1}[C] x 12, [C]{1}[H] x 14]
+Soi species name: 5471-63-6 , 203.0 , -2219736.974 , {C20=C, O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, C19=C, H3=H, H13=H, C18=C, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H} , [[C]{2}[C] x 10, [C]{1}[O] x 2, [C]{1}[C] x 12, [C]{1}[H] x 14]
+targetSpeciesEnthalpy: 203.0
+After updated Hf: 
+Species of interest (target species): 5471-63-6 , 0.0 , -2219736.974 , {C20=C, O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H12=H, C17=C, H1=H, H11=H, C16=C, H2=H, H14=H, C19=C, H3=H, H13=H, C18=C, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H} , [[C]{2}[C] x 10, [C]{1}[O] x 2, [C]{1}[C] x 12, [C]{1}[H] x 14]
+REF: Processing 1 / 23
+67-64-1.g09: 
+REF: Processing 2 / 23
+74-84-0.g09: 
+REF: Processing 3 / 23
+74-98-6.g09: 
+REF: Processing 4 / 23
+75-65-0.g09: 
+REF: Processing 5 / 23
+12184-80-4.g09: 
+REF: Processing 6 / 23
+460-12-8.g09: 
+REF: Processing 7 / 23
+112-53-8.g09: 
+REF: Processing 8 / 23
+124-38-9.g09: 
+REF: Processing 9 / 23
+64-18-6.g09: 
+REF: Processing 10 / 23
+593-45-3.g09: 
+REF: Processing 11 / 23
+2892-51-5.g09: 
+REF: Processing 12 / 23
+75-28-5.g09: 
+REF: Processing 13 / 23
+10100-95-5.g09: 
+REF: Processing 14 / 23
+107-21-1.g09: 
+REF: Processing 15 / 23
+50-00-0.g09: 
+REF: Processing 16 / 23
+74-85-1.g09: 
+REF: Processing 17 / 23
+106-97-8.g09: 
+REF: Processing 18 / 23
+56-81-5.g09: 
+REF: Processing 19 / 23
+67-56-1.g09: 
+REF: Processing 20 / 23
+243-24-3.g09: 
+REF: Processing 21 / 23
+112-30-1.g09: 
+REF: Processing 22 / 23
+115-07-1.g09: 
+REF: Processing 23 / 23
+5471-63-6.g09: 
+Process configuration isg_runs1_res1_radicals0_1500s
+Estimating dHf(298.15K) for species 5471-63-6 (1 / 1)
+rList:
+Species name : 5471-63-6 enthalpy: 0.0
+reactionList.size(): 1
+Species name : 5471-63-6 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: 5471-63-6 =  Target species name : 5471-63-6 Median species enthalpy: 231.51520462024826
+target species name: 5471-63-6 ,  target ref enthalpy: 203.0
+ Reaction(0): 5471-63-6: 1.0x"5471-63-6" <-> 0.111111x"112-53-8" + 0.888889x"243-24-3" + 1.11111x"460-12-8" Species (target ref) enthalpy: 203.0 Calculated Hf for reaction(0): 231.51520462024826 error: 28.515204620248255
+species name: 5471-63-6 error bar: 28.515204620248255
+Writting species list...
+TTIP Species: 
+5471-63-6 203.0
+Loop number: 2 Iteration number: 5 in Initial analysis of species: 112-53-8
+Species skipped: 112-53-8
+Updated valid set of species after (2.) loop through the set of invalid species in initial analysis:
+1. species name: 67-64-1 , -218.5 , -506891.7579 , {C3=C, O1=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C} , [[C]{1}[C] x 2, [C]{1}[H] x 6, [C]{2}[O]]
+2. species name: 74-84-0 , -84.0 , -209366.2963 , {H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C} , [[C]{1}[C], [C]{1}[H] x 6]
+3. species name: 74-98-6 , -104.7 , -312501.1184 , {H8=H, C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C} , [[C]{1}[C] x 2, [C]{1}[H] x 8]
+4. species name: 75-65-0 , -312.6 , -613133.3635 , {O1=O, H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C} , [[C]{1}[O], [C]{1}[C] x 3, [C]{1}[H] x 9, [H]{1}[O]]
+5. species name: 124-38-9 , -393.52 , -495114.373 , {O1=O, O2=O, C1=C} , [[C]{2}[O] x 2]
+6. species name: 64-18-6 , -378.6 , -498145.0573 , {O1=O, O2=O, H1=H, H2=H, C1=C} , [[C]{1}[O], [C]{1}[H], [C]{2}[O], [H]{1}[O]]
+7. species name: 75-28-5 , -134.2 , -415640.1495 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C} , [[C]{1}[C] x 3, [C]{1}[H] x 10]
+8. species name: 10100-95-5 , -380.6 , -1128760.626 , {O1=O, H20=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O] x 2, [C]{1}[C] x 7, [C]{1}[H] x 20]
+9. species name: 107-21-1 , -394.4 , -604312.7309 , {O1=O, O2=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C} , [[C]{1}[O] x 2, [C]{1}[C], [C]{1}[H] x 4, [H]{1}[O] x 2]
+10. species name: 50-00-0 , -115.9 , -300551.6109 , {O1=O, H1=H, H2=H, C1=C} , [[C]{1}[H] x 2, [C]{2}[O]]
+11. species name: 74-85-1 , 52.4 , -206176.1421 , {H1=H, H2=H, H3=H, H4=H, C1=C, C2=C} , [[C]{2}[C], [C]{1}[H] x 4]
+12. species name: 106-97-8 , -125.6 , -415635.5915 , {H10=H, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C, H9=H, C4=C} , [[C]{1}[C] x 3, [C]{1}[H] x 10]
+13. species name: 56-81-5 , -577.9 , -904929.6822 , {O1=O, O2=O, O3=O, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, H7=H, C2=C, H8=H, C3=C} , [[C]{1}[O] x 3, [C]{1}[C] x 2, [C]{1}[H] x 5, [H]{1}[O] x 3]
+14. species name: 67-56-1 , -205.0 , -303688.0704 , {O1=O, H1=H, H2=H, H3=H, H4=H, C1=C} , [[C]{1}[O], [C]{1}[H] x 3, [H]{1}[O]]
+15. species name: 115-07-1 , 20.41 , -309325.3573 , {C3=C, H1=H, H2=H, H3=H, H4=H, H5=H, H6=H, C1=C, C2=C} , [[C]{2}[C], [C]{1}[C], [C]{1}[H] x 6]
+16. species name: 243-24-3 , 200.0 , -1813417.96 , {O1=O, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C13=C, C12=C, H10=H, C15=C, C14=C, H1=H, C16=C, H2=H, H3=H, H4=H, H5=H, H6=H, H7=H, H8=H, H9=H} , [[C]{2}[C] x 8, [C]{1}[O] x 2, [C]{1}[C] x 10, [C]{1}[H] x 10]
+17. species name: 12184-80-4 , 970.69 , -399196.6981 , {C3=C, C4=C, C1=C, C2=C} , [[C]{1}[C] x 5]
+18. species name: 2892-51-5 , -515.0 , -1193075.352 , {C3=C, C4=C, O1=O, O2=O, O3=O, O4=O, H1=H, H2=H, C1=C, C2=C} , [[C]{2}[C], [C]{1}[O] x 2, [C]{1}[C] x 3, [C]{2}[O] x 2, [H]{1}[O] x 2]
+19. species name: 460-12-8 , 464.0 , -402841.5568 , {C3=C, C4=C, H1=H, H2=H, C1=C, C2=C} , [[C]{1}[C], [C]{3}[C] x 2, [C]{1}[H] x 2]
+20. species name: 593-45-3 , -414.6 , -1859484.1 , {H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H27=H, H26=H, H29=H, H28=H, C11=C, C10=C, H30=H, C13=C, C12=C, H32=H, C15=C, H31=H, C14=C, H34=H, C17=C, H33=H, C16=C, H36=H, H35=H, C18=C, H38=H, H37=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[C] x 17, [C]{1}[H] x 38]
+21. species name: 112-30-1 , -395.0 , -1231904.107 , {O1=O, H21=H, H20=H, H22=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C10=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O], [C]{1}[C] x 9, [C]{1}[H] x 21, [H]{1}[O]]
+22. species name: 112-53-8 , -436.5 , -1438157.312 , {O1=O, H21=H, H20=H, H23=H, H22=H, H25=H, H24=H, H26=H, C1=C, C2=C, C3=C, C4=C, C5=C, C6=C, C7=C, C8=C, C9=C, C11=C, C10=C, C12=C, H10=H, H12=H, H1=H, H11=H, H2=H, H14=H, H3=H, H13=H, H4=H, H16=H, H5=H, H15=H, H6=H, H18=H, H7=H, H17=H, H8=H, H9=H, H19=H} , [[C]{1}[O], [C]{1}[C] x 11, [C]{1}[H] x 25, [H]{1}[O]]
+Invalid species file after (2.) loop through invalid species list with error bar . . .
+Species name: 12075-35-3
+Species name: 5471-63-6
+Species name: 504-64-3
+Species name: 542-46-1
+addedSpeciesToValidSet: true
+After (2.) loop the set of invalid species is:
+12075-35-3 820.06
+5471-63-6 203.0
+504-64-3 -93.64
+542-46-1 -408.0
+
