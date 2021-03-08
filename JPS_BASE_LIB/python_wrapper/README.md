@@ -5,6 +5,7 @@ Py4jps is a thin Python wrapper for the [TheWorldAvatar](https://github.com/camb
 # Requirements
 
 - You need Python 3.4 - 3.7 to run the py4jps. You can install Python by going to the official Python download page: https://www.python.org/getit/
+- You also need to install a Java environment (version 7 or more recent)
 
 # Installation
 
