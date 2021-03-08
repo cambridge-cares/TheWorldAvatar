@@ -2,9 +2,10 @@ package uk.ac.cam.cares.jps.base.tools;
 
 import java.sql.SQLException;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
-
+import org.apache.jena.arq.querybuilder.ExprFactory;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.E_Conditional;
 import org.apache.jena.sparql.expr.E_Equals;
@@ -18,18 +19,12 @@ import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.sparql.expr.ExprVar;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.arq.querybuilder.ExprFactory;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-/**
- * This class replaces a given target string (renameString) or uri (renameURI)
- * in a RDF store (KnowledgeBaseClient object) with a replacement string or uri 
- * using a sparql update. A named graph or optional filter can be specified.     
- * 
- * @author Casper Lindberg
- *
- */
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+
 public class RenamingTool {
 	
 	/*
@@ -37,11 +32,15 @@ public class RenamingTool {
 	 * @param strTarget 		target string to be replaced in matching s/p/o.
 	 * @param strReplacement 	replacement string.
 	 * @param exprFilter 		additional filter expression can be applied to the update
+	 * @param splitUpdate 		(boolean) split the renaming sparql update into multiple smaller updates
+	 * @param stepSize			number of triples processed per update
 	*/
-	public String strMatch;
-	public String strTarget;
-	public String strReplacement;
-	public Expr exprFilter = null;
+	String strMatch;
+	String strTarget;
+	String strReplacement;
+	Expr exprFilter = null;
+	boolean splitUpdate = true;
+	int stepSize = 1000000;
 	
 	//// Constructors
 	
@@ -66,7 +65,8 @@ public class RenamingTool {
 		this.strReplacement = strReplacement;	
 	}
 	
-	//// Set
+	//// Set methods
+	
 	/**
 	 * The filter expression should created in the calling class using ExprFactory. 
 	 * The static variables exprS, exprP, exprO from this class should be accessed for 
@@ -87,6 +87,23 @@ public class RenamingTool {
 	public void setReplacement(String replacement) {
 		strReplacement = replacement;
 	}
+	
+	/**
+	 * Change the number of triples processed per update
+	 * @param updateSize
+	 */
+	public void setUpdateSize(int updateSize) {
+		splitUpdate = true;
+		stepSize = updateSize;
+	}
+	
+	/**
+	 * Renaming will be performed using a single update
+	 */
+	public void setSingleUpdate() {
+		splitUpdate = false;
+	}
+	
 	
 	//// Rename string
 	
@@ -118,11 +135,38 @@ public class RenamingTool {
 		
 			if(strMatch == null) {strMatch = strTarget;};		
 			
-			// Get sparql update 
-			UpdateRequest sparql = buildSparqlUpdateString(graph);
+			if(splitUpdate == true) {
+				
+				//count query
+				String query = countString(graph);
+				
+				JSONArray result = kbClient.executeQuery(query);
+			    JSONObject jsonobject = result.getJSONObject(0);
+			    int count = jsonobject.getInt(varCount);
+				
+				int steps = count/stepSize;
+				if(count%stepSize > 0) {steps++;}
+				
+				UpdateRequest sparqlUpdate;
+				//loop over splits 
+				for(int offset = 0; offset<steps; offset++) {
+					 sparqlUpdate = buildSparqlUpdateString(graph);
+					 kbClient.executeUpdate(sparqlUpdate);
+				}
+				
+				//check/final update
+				result = kbClient.executeQuery(query);
+				jsonobject = result.getJSONObject(0);
+			    count = jsonobject.getInt(varCount);
+			    if (count > 0) {
+					sparqlUpdate = buildSparqlUpdateString(graph);
+					kbClient.executeUpdate(sparqlUpdate);
+			    }
+			}else {
 			
-			// create KBClient and perform update
-			kbClient.executeUpdate(sparql);
+				UpdateRequest sparqlUpdate = buildSparqlUpdateString(graph);
+				kbClient.executeUpdate(sparqlUpdate);
+			}
 		}
 	}
 		
@@ -152,11 +196,39 @@ public class RenamingTool {
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
 		}else {
-			// Get sparql update as String 
-			UpdateRequest sparql = buildSparqlUpdateURI(graph);
 			
-			// create KBClient and perform update
-			kbClient.executeUpdate(sparql);
+			if(splitUpdate == true) {
+				
+				//count query
+				String query = countURI(graph);
+				
+				JSONArray result = kbClient.executeQuery(query);
+			    JSONObject jsonobject = result.getJSONObject(0);
+			    int count = jsonobject.getInt(varCount);
+				
+				int steps = count/stepSize;
+				if(count%stepSize > 0) {steps++;}
+				
+				UpdateRequest sparqlUpdate;
+				//loop over splits 
+				for(int offset = 0; offset<steps; offset++) {
+					 sparqlUpdate = buildSparqlUpdateURI(graph);
+					 kbClient.executeUpdate(sparqlUpdate);
+				}
+				
+				//check/final update
+				result = kbClient.executeQuery(query);
+				jsonobject = result.getJSONObject(0);
+			    count = jsonobject.getInt(varCount);
+			    if (count > 0) {
+					sparqlUpdate = buildSparqlUpdateURI(graph);
+					kbClient.executeUpdate(sparqlUpdate);
+			    }
+			}else {
+			
+				UpdateRequest sparqlUpdate = buildSparqlUpdateURI(graph);
+				kbClient.executeUpdate(sparqlUpdate);
+			}
 		}
 	}
 	
@@ -165,6 +237,9 @@ public class RenamingTool {
 	/**
 	 * Variables for sparql builder
 	 */
+	
+	String varCount = "count";
+	
 	// new s, p, o		
 	static Var newS = Var.alloc("newS");
 	static Var newP = Var.alloc("newP");
@@ -191,6 +266,51 @@ public class RenamingTool {
 	
 	//// Build SPARQL update
 	
+	///// URI
+	// targetURI
+	Var varTarget = Var.alloc("targetURI");
+	ExprVar exprTarget = new ExprVar(varTarget);
+	
+	//replacementURI
+	Var varReplacement = Var.alloc("replacementURI");
+	ExprVar exprReplacement = new ExprVar(varReplacement);
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ParseException
+	 */
+	private WhereBuilder whereFilterURI() throws ParseException {
+		
+		// Filter OR expression: FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI )
+		Expr eqS = new E_Equals(exprS, exprTarget);
+		Expr eqP = new E_Equals(exprP, exprTarget);
+		Expr eqO = new E_Equals(exprO, exprTarget);
+		Expr orSPO = new E_LogicalOr(eqS, new E_LogicalOr(eqP, eqO));
+		
+		////Build WHERE statement of the form:
+		////"WHERE {" +
+		////		  "?s ?p ?o ." +
+		////		  "BIND( <target> AS ?targetURI ) ." +
+		////		  "BIND( <replacement> AS ?replacementURI ) ." +
+		////		  "FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI ) ."}
+		
+		WhereBuilder where = new WhereBuilder();
+		
+		// Optional additional filter
+		if (exprFilter != null) {
+			where.addFilter(exprFilter);
+		}
+		
+		where.addWhere(varS, varP, varO)
+			.addBind( "<" + strTarget + ">", varTarget)
+			.addBind( "<" + strReplacement + ">", varReplacement)
+			.addFilter(orSPO);
+						
+		return where;
+	}
+	
+	
 	/**
 	 * Builds sparql update using Jena update builder
 	 * target and replacement are URIs.
@@ -200,22 +320,8 @@ public class RenamingTool {
 	 * @throws ParseException
 	 */
 	private UpdateRequest buildSparqlUpdateURI(String graph) throws ParseException {
-				
-		// targetURI
-		Var varTarget = Var.alloc("targetURI");
-		ExprVar exprTarget = new ExprVar(varTarget);
-		
-		//replacementURI
-		Var varReplacement = Var.alloc("replacementURI");
-		ExprVar exprReplacement = new ExprVar(varReplacement);
-		
+						
 		// EXPRESSIONS
-		// Filter OR expression: FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI )
-		Expr eqS = new E_Equals(exprS, exprTarget);
-		Expr eqP = new E_Equals(exprP, exprTarget);
-		Expr eqO = new E_Equals(exprO, exprTarget);
-		Expr orSPO = new E_LogicalOr(eqS, new E_LogicalOr(eqP, eqO));
-		
 		// IF statements: IF(?s = ?targetURI, ?replacementURI, ?s)
 		Expr ifS = new E_Conditional(new E_Equals(exprS, exprTarget), exprReplacement, exprS);
 		Expr ifP = new E_Conditional(new E_Equals(exprP, exprTarget), exprReplacement, exprP);
@@ -225,41 +331,108 @@ public class RenamingTool {
 		Expr ifPBlank = new E_Conditional(new E_IsBlank(exprP), exprP, ifP);
 		Expr ifOBlank = new E_Conditional(new E_IsBlank(exprO), exprO, ifO);
 		
-		// Build WHERE statement of the form:
-		// String strWhere = "WHERE {" +
-		//		  "?s ?p ?o ." +
-		//		  "BIND( <target> AS ?targetURI ) ." +
-		//		  "BIND( <replacement> AS ?replacementURI ) ." +
-		//		  "FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI ) ." +
-		//		  "BIND ( IF(isblank(?s), ?s, IF( ?s = ?targetURI, ?replacementURI, ?s)) AS ?newS) ." +
-		//		  "BIND ( IF(isblank(?p), ?p, IF( ?p = ?targetURI, ?replacementURI, ?p)) AS ?newP) ." +
-		//		  "BIND ( IF(isblank(?o), ?o, IF( ?o = ?targetURI, ?replacementURI, ?o)) AS ?newO) . }";		
-		WhereBuilder where = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addBind( "<" + strTarget + ">", varTarget)
-				.addBind( "<" + strReplacement + ">", varReplacement)
-				.addFilter(orSPO)
+		//// Add to where statement:
+		////		  "BIND ( IF(isblank(?s), ?s, IF( ?s = ?targetURI, ?replacementURI, ?s)) AS ?newS) ." +
+		////		  "BIND ( IF(isblank(?p), ?p, IF( ?p = ?targetURI, ?replacementURI, ?p)) AS ?newP) ." +
+		////		  "BIND ( IF(isblank(?o), ?o, IF( ?o = ?targetURI, ?replacementURI, ?o)) AS ?newO) . }";		
+		WhereBuilder where = whereFilterURI()
 				.addBind(ifSBlank, newS)
 				.addBind(ifPBlank, newP)
 				.addBind(ifOBlank, newO);
 				
+		SelectBuilder select = new SelectBuilder();
+		
+		select.addVar(varS)
+		.addVar(varP)
+		.addVar(varO)
+		.addVar(newS)
+		.addVar(newP)
+		.addVar(newO);
+		
+		if(splitUpdate == true) {
+			select.setLimit(stepSize);
+		}
+		
 		// Build update
 		UpdateBuilder builder = new UpdateBuilder();
-				
+		
 		// Add where 
 		if (graph == null) {
+			select.addWhere(where);
 			builder.addInsert(newS, newP, newO)
 				.addDelete(varS, varP, varO)
-				.addWhere(where);
+				.addSubQuery(select);
 		}else {	
+			select.addGraph(graph, where);
 			// Graph
 			String graphURI = "<" + graph + ">";
 			builder.addInsert(graphURI, newS, newP, newO)
 				.addDelete(graphURI, varS, varP, varO)
-				.addGraph(graphURI, where);	
+				.addSubQuery(select);	
 		}
 		
 		return builder.buildRequest();
+	}
+
+	private String countURI(String graph) throws ParseException {
+						
+		WhereBuilder where = null;
+
+		// Add where 
+		if (graph != null) {	
+			where = new WhereBuilder();
+			// Graph
+			String graphURI = "<" + graph + ">";
+			where.addGraph(graphURI, whereFilterURI());
+		}else {
+			where = whereFilterURI();
+		}
+		
+		String query = "SELECT (COUNT(*) AS ?"+varCount+") ";
+		query += where.toString();
+		return query;
+	}
+	
+	////////////////////////// String
+	
+	
+	// Create expression factory
+	ExprFactory exprFactory = new ExprFactory();
+			
+	// Match string as expression
+	Expr exprMatch = exprFactory.asExpr(strMatch);
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ParseException
+	 */
+	private WhereBuilder whereFilterString() throws ParseException {
+		
+		// EXPRESSIONS
+		// REGEX expressions: REGEX(str(?s), target)
+		Expr regexS = new E_Regex( new E_Str(exprS), exprMatch, null);
+		Expr regexP = new E_Regex( new E_Str(exprP), exprMatch, null);
+		Expr regexO = new E_Regex( new E_Str(exprO), exprMatch, null);
+		
+		// OR expression for filter: 
+		// (?matchS || ?matchP || ?matchO)
+		Expr or = new E_LogicalOr(exprMatchS, new E_LogicalOr(exprMatchP, exprMatchO));
+					
+		WhereBuilder where = new WhereBuilder()
+				.addWhere(varS, varP, varO);
+		
+		// Optional additional filter
+		if (exprFilter != null) {
+			where.addFilter(exprFilter);
+		}
+				
+		where.addBind(regexS, matchS)
+			.addBind(regexP, matchP)
+			.addBind(regexO, matchO)
+			.addFilter(or);
+		
+		return where;
 	}
 	
 	/**
@@ -273,12 +446,6 @@ public class RenamingTool {
 	 * @throws ParseException
 	 */
 	private UpdateRequest buildSparqlUpdateString(String graph) throws ParseException {
-
-		// Create expression factory
-		ExprFactory exprFactory = new ExprFactory();
-				
-		// Match string as expression
-		Expr exprMatch = exprFactory.asExpr(strMatch);
 		
 		// Replacement target string as expression
 		Expr exprTarget = exprFactory.asExpr(strTarget);
@@ -287,15 +454,7 @@ public class RenamingTool {
 		Expr exprReplacement = exprFactory.asExpr(strReplacement); 
 				
 		// EXPRESSIONS
-		// REGEX expressions: REGEX(str(?s), target)
-		Expr regexS = new E_Regex( new E_Str(exprS), exprMatch, null);
-		Expr regexP = new E_Regex( new E_Str(exprP), exprMatch, null);
-		Expr regexO = new E_Regex( new E_Str(exprO), exprMatch, null);
 		
-		// OR expression for filter: 
-		// (?matchS || ?matchP || ?matchO)
-		Expr or = new E_LogicalOr(exprMatchS, new E_LogicalOr(exprMatchP, exprMatchO));
-			
 		// String replace: 
 		// REPLACE(STR(?s), target, replacement)
 		Expr replaceS = new E_StrReplace(new E_Str(exprS), exprTarget,  exprReplacement, null);
@@ -314,49 +473,74 @@ public class RenamingTool {
 		
 		// Build WHERE statement of the form:
 		// String strWhere = "WHERE {" +
-		//		  "?s ?p ?o ." +
-		//		  "FILTER( ... ).
-		//		  "BIND( regex(str(?s), target) AS ?matchS ) ." +
-		//		  "BIND( regex(str(?p), target) AS ?matchP ) ." +
-		//		  "BIND( regex(str(?o), target) AS ?matchO ) ." +
-		//		  "FILTER(?matchS || ?matchP || ?matchO) ." +
 		//		  "BIND ( IF(isblank(?s), ?s, IF( ?matchS, URI(REPLACE(STR(?s), target, replacement)), ?s)) AS ?newS) ." +
 		//		  "BIND ( IF(isblank(?p), ?p, IF( ?matchP, URI(REPLACE(STR(?p), target, replacement)), ?p)) AS ?newP) ." +
 		//		  "BIND ( IF(isblank(?o), ?o, IF( ?matchO, URI(REPLACE(STR(?o), target, replacement)), ?o)) AS ?newO) . }"; 
 		
-		WhereBuilder where = new WhereBuilder()
-				.addWhere(varS, varP, varO);
-		
-		// Optional additional filter
-		if (exprFilter != null) {
-			where.addFilter(exprFilter);
-		}
+		WhereBuilder where = whereFilterString();
 				
-		where.addBind(regexS, matchS)
-			.addBind(regexP, matchP)
-			.addBind(regexO, matchO)
-			.addFilter(or)
-			.addBind(ifSBlank, newS)
+		where.addBind(ifSBlank, newS)
 			.addBind(ifPBlank, newP)
 			.addBind(ifOBlank, newO);			
-				
+		
+		SelectBuilder select = new SelectBuilder();
+		
+		select.addVar(varS)
+		.addVar(varP)
+		.addVar(varO)
+		.addVar(newS)
+		.addVar(newP)
+		.addVar(newO);
+		
+		if(splitUpdate == true) {
+			select.setLimit(stepSize);
+		}
+		
 		// Build update
 		UpdateBuilder builder = new UpdateBuilder();
-				
+		
 		// Add where 
 		if (graph == null) {
+			select.addWhere(where);
 			builder.addInsert(newS, newP, newO)
 				.addDelete(varS, varP, varO)
-				.addWhere(where);
+				.addSubQuery(select);
 		}else {	
+			select.addGraph(graph, where);
 			// Graph
 			String graphURI = "<" + graph + ">";
 			builder.addInsert(graphURI, newS, newP, newO)
 				.addDelete(graphURI, varS, varP, varO)
-				.addGraph(graphURI, where);	
+				.addSubQuery(select);	
 		}
 		
 		return builder.buildRequest();
 	}
+	
+	/**
+	 * 
+	 * @param graph
+	 * @return
+	 * @throws ParseException
+	 */
+	private String countString(String graph) throws ParseException {
+		
+		WhereBuilder where = null;
 
+		// Add where 
+		if (graph != null) {	
+			where = new WhereBuilder();
+			// Graph
+			String graphURI = "<" + graph + ">";
+			where.addGraph(graphURI, whereFilterString());
+		}else {
+			where = whereFilterString();
+		}
+		
+		String query = "SELECT (COUNT(*) AS ?"+varCount+") ";
+		query += where.toString();
+		
+		return query;
+	}
+	
 }
