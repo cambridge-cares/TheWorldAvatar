@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   example:
-    image: simple_agent:1.0.0-SNAPSHOT
+    image: python_agent:1.0.0-SNAPSHOT
     build:
       context: .
       dockerfile: ./Dockerfile
