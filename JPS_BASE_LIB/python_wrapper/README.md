@@ -99,7 +99,11 @@ from py4jps.resources import jpsBaseLib
 5. Remove the non-longer needed `tmp_jpsBaseLib` directory.
 
 
-Note. The `jpsrm` includes a developer only convenience command `devinstall` which will run all the above steps and install the `jpsBaseLib` resource. The command will only work if the `JPS_BASE_LIB` project is present and was successfully built. Here is how to execute the `devinstall` command:
+Note. The `jpsrm` includes a developer only convenience command `devinstall` which will run all the above steps and install the `jpsBaseLib` resource. The command will only work if:
+ - the `JPS_BASE_LIB` project is present and was successfully built
+ - the `py4jps` project was installed in a developer mode (-e option)
+
+Here is how to execute the `devinstall` command:
 
 ```bash
 # execute devinstall
