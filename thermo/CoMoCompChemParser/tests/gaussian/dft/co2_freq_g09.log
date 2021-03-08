@@ -1,0 +1,476 @@
+ Entering Gaussian System, Link 0=g09
+ Initial command:
+ /usr/local/Cluster-Apps/gaussian/g09/l1.exe "/rds/user/am2145/hpc-work/scratch/26057179/Gau-212306.inp" -scrdir="/rds/user/am2145/hpc-work/scratch/26057179/"
+ Entering Link 1 = /usr/local/Cluster-Apps/gaussian/g09/l1.exe PID=    212307.
+  
+ Copyright (c) 1988,1990,1992,1993,1995,1998,2003,2009,2013,
+            Gaussian, Inc.  All Rights Reserved.
+  
+ This is part of the Gaussian(R) 09 program.  It is based on
+ the Gaussian(R) 03 system (copyright 2003, Gaussian, Inc.),
+ the Gaussian(R) 98 system (copyright 1998, Gaussian, Inc.),
+ the Gaussian(R) 94 system (copyright 1995, Gaussian, Inc.),
+ the Gaussian 92(TM) system (copyright 1992, Gaussian, Inc.),
+ the Gaussian 90(TM) system (copyright 1990, Gaussian, Inc.),
+ the Gaussian 88(TM) system (copyright 1988, Gaussian, Inc.),
+ the Gaussian 86(TM) system (copyright 1986, Carnegie Mellon
+ University), and the Gaussian 82(TM) system (copyright 1983,
+ Carnegie Mellon University). Gaussian is a federally registered
+ trademark of Gaussian, Inc.
+  
+ This software contains proprietary and confidential information,
+ including trade secrets, belonging to Gaussian, Inc.
+  
+ This software is provided under written license and may be
+ used, copied, transmitted, or stored only in accord with that
+ written license.
+  
+ The following legend is applicable only to US Government
+ contracts under FAR:
+  
+                    RESTRICTED RIGHTS LEGEND
+  
+ Use, reproduction and disclosure by the US Government is
+ subject to restrictions as set forth in subparagraphs (a)
+ and (c) of the Commercial Computer Software - Restricted
+ Rights clause in FAR 52.227-19.
+  
+ Gaussian, Inc.
+ 340 Quinnipiac St., Bldg. 40, Wallingford CT 06492
+  
+  
+ ---------------------------------------------------------------
+ Warning -- This program may not be used in any manner that
+ competes with the business of Gaussian, Inc. or will provide
+ assistance to any competitor of Gaussian, Inc.  The licensee
+ of this program is prohibited from giving any competitor of
+ Gaussian, Inc. access to this program.  By using this program,
+ the user acknowledges that Gaussian, Inc. is engaged in the
+ business of creating and licensing software in the field of
+ computational chemistry and represents and warrants to the
+ licensee that it is not a competitor of Gaussian, Inc. and that
+ it will not use this program in any manner prohibited above.
+ ---------------------------------------------------------------
+  
+
+ Cite this work as:
+ Gaussian 09, Revision D.01,
+ M. J. Frisch, G. W. Trucks, H. B. Schlegel, G. E. Scuseria, 
+ M. A. Robb, J. R. Cheeseman, G. Scalmani, V. Barone, B. Mennucci, 
+ G. A. Petersson, H. Nakatsuji, M. Caricato, X. Li, H. P. Hratchian, 
+ A. F. Izmaylov, J. Bloino, G. Zheng, J. L. Sonnenberg, M. Hada, 
+ M. Ehara, K. Toyota, R. Fukuda, J. Hasegawa, M. Ishida, T. Nakajima, 
+ Y. Honda, O. Kitao, H. Nakai, T. Vreven, J. A. Montgomery, Jr., 
+ J. E. Peralta, F. Ogliaro, M. Bearpark, J. J. Heyd, E. Brothers, 
+ K. N. Kudin, V. N. Staroverov, T. Keith, R. Kobayashi, J. Normand, 
+ K. Raghavachari, A. Rendell, J. C. Burant, S. S. Iyengar, J. Tomasi, 
+ M. Cossi, N. Rega, J. M. Millam, M. Klene, J. E. Knox, J. B. Cross, 
+ V. Bakken, C. Adamo, J. Jaramillo, R. Gomperts, R. E. Stratmann, 
+ O. Yazyev, A. J. Austin, R. Cammi, C. Pomelli, J. W. Ochterski, 
+ R. L. Martin, K. Morokuma, V. G. Zakrzewski, G. A. Voth, 
+ P. Salvador, J. J. Dannenberg, S. Dapprich, A. D. Daniels, 
+ O. Farkas, J. B. Foresman, J. V. Ortiz, J. Cioslowski, 
+ and D. J. Fox, Gaussian, Inc., Wallingford CT, 2013.
+ 
+ ******************************************
+ Gaussian 09:  ES64L-G09RevD.01 24-Apr-2013
+                17-Jul-2020 
+ ******************************************
+ %NProcShared=20
+ Will use up to   20 processors via shared memory.
+ %mem=64GB
+ %Chk=co2-freq.chk
+ -------------------------
+ #n B3LYP/6-311G(d,p) Freq
+ -------------------------
+ 1/10=4,30=1,38=1/1,3;
+ 2/12=2,17=6,18=5,40=1/2;
+ 3/5=4,6=6,7=101,11=2,16=1,25=1,30=1,71=2,74=-5,140=1/1,2,3;
+ 4//1;
+ 5/5=2,38=5,98=1/2;
+ 8/6=4,10=90,11=11/1;
+ 11/6=1,8=1,9=11,15=111,16=1/1,2,10;
+ 10/6=1/2;
+ 6/7=2,8=2,9=2,10=2,18=1,28=1/1;
+ 7/8=1,10=1,25=1/1,2,3,16;
+ 1/10=4,30=1/3;
+ 99//99;
+ --------
+ co2-freq
+ --------
+ Symbolic Z-matrix:
+ Charge =  0 Multiplicity = 1
+ C                     0.        0.        0. 
+ O                     0.        0.        1.16053 
+ O                     0.        0.       -1.16053 
+ 
+
+ GradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGrad
+ Berny optimization.
+ Initialization pass.
+ Trust Radius=3.00D-01 FncErr=1.00D-07 GrdErr=1.00D-07
+ Number of steps in this run=      2 maximum allowed number of steps=      2.
+ GradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGrad
+
+                          Input orientation:                          
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.000000    0.000000    0.000000
+      2          8           0        0.000000    0.000000    1.160530
+      3          8           0        0.000000    0.000000   -1.160530
+ ---------------------------------------------------------------------
+                    Distance matrix (angstroms):
+                    1          2          3
+     1  C    0.000000
+     2  O    1.160530   0.000000
+     3  O    1.160530   2.321060   0.000000
+ Stoichiometry    CO2
+ Framework group  D*H[O(C),C*(O.O)]
+ Deg. of freedom     1
+ Full point group                 D*H     NOp   8
+ Largest Abelian subgroup         D2H     NOp   8
+ Largest concise Abelian subgroup C2      NOp   2
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic      Atomic             Coordinates (Angstroms)
+ Number     Number       Type             X           Y           Z
+ ---------------------------------------------------------------------
+      1          6           0        0.000000    0.000000    0.000000
+      2          8           0        0.000000    0.000000    1.160530
+      3          8           0        0.000000    0.000000   -1.160530
+ ---------------------------------------------------------------------
+ Rotational constants (GHZ):      0.0000000     11.7298519     11.7298519
+ Standard basis: 6-311G(d,p) (5D, 7F)
+ There are    17 symmetry adapted cartesian basis functions of AG  symmetry.
+ There are     2 symmetry adapted cartesian basis functions of B1G symmetry.
+ There are     5 symmetry adapted cartesian basis functions of B2G symmetry.
+ There are     5 symmetry adapted cartesian basis functions of B3G symmetry.
+ There are     1 symmetry adapted cartesian basis functions of AU  symmetry.
+ There are    13 symmetry adapted cartesian basis functions of B1U symmetry.
+ There are     7 symmetry adapted cartesian basis functions of B2U symmetry.
+ There are     7 symmetry adapted cartesian basis functions of B3U symmetry.
+ There are    15 symmetry adapted basis functions of AG  symmetry.
+ There are     2 symmetry adapted basis functions of B1G symmetry.
+ There are     5 symmetry adapted basis functions of B2G symmetry.
+ There are     5 symmetry adapted basis functions of B3G symmetry.
+ There are     1 symmetry adapted basis functions of AU  symmetry.
+ There are    12 symmetry adapted basis functions of B1U symmetry.
+ There are     7 symmetry adapted basis functions of B2U symmetry.
+ There are     7 symmetry adapted basis functions of B3U symmetry.
+    54 basis functions,    96 primitive gaussians,    57 cartesian basis functions
+    11 alpha electrons       11 beta electrons
+       nuclear repulsion energy        58.3653009397 Hartrees.
+ NAtoms=    3 NActive=    3 NUniq=    2 SFac= 2.25D+00 NAtFMM=   60 NAOKFM=F Big=F
+ Integral buffers will be    131072 words long.
+ Raffenetti 2 integral format.
+ Two-electron integral symmetry is turned on.
+ One-electron integrals computed using PRISM.
+ NBasis=    54 RedAO= T EigKep=  1.35D-02  NBF=    15     2     5     5     1    12     7     7
+ NBsUse=    54 1.00D-06 EigRej= -1.00D+00 NBFU=    15     2     5     5     1    12     7     7
+ ExpMin= 1.46D-01 ExpMax= 8.59D+03 ExpMxC= 1.30D+03 IAcc=1 IRadAn=         1 AccDes= 0.00D+00
+ Harris functional with IExCor=  402 and IRadAn=       1 diagonalized for initial guess.
+ HarFok:  IExCor=  402 AccDes= 0.00D+00 IRadAn=         1 IDoV= 1 UseB2=F ITyADJ=14
+ ICtDFT=  3500011 ScaDFX=  1.000000  1.000000  1.000000  1.000000
+ FoFCou: FMM=F IPFlag=           0 FMFlag=      100000 FMFlg1=           0
+         NFxFlg=           0 DoJE=T BraDBF=F KetDBF=T FulRan=T
+         wScrn=  0.000000 ICntrl=     500 IOpCl=  0 I1Cent=   200000004 NGrid=           0
+         NMat0=    1 NMatS0=      1 NMatT0=    0 NMatD0=    1 NMtDS0=    0 NMtDT0=    0
+ Petite list used in FoFCou.
+ Initial guess orbital symmetries:
+       Occupied  (SGG) (SGU) (SGG) (SGG) (SGU) (SGG) (SGU) (PIU)
+                 (PIU) (PIG) (PIG)
+       Virtual   (PIU) (PIU) (SGG) (SGU) (PIU) (PIU) (SGG) (SGU)
+                 (SGG) (PIG) (PIG) (PIU) (PIU) (SGU) (DLTG) (DLTG)
+                 (SGG) (PIG) (PIG) (SGU) (PIU) (PIU) (SGG) (DLTU)
+                 (DLTU) (DLTG) (DLTG) (PIU) (PIU) (SGU) (SGU) (SGG)
+                 (PIG) (PIG) (PIU) (PIU) (PIG) (PIG) (SGG) (SGU)
+                 (SGG) (SGU) (SGG)
+ The electronic state of the initial guess is 1-SGG.
+ Keep R1 ints in memory in symmetry-blocked form, NReq=2017320.
+ Requested convergence on RMS density matrix=1.00D-08 within 128 cycles.
+ Requested convergence on MAX density matrix=1.00D-06.
+ Requested convergence on             energy=1.00D-06.
+ No special actions if energy rises.
+ Integral accuracy reduced to 1.0D-05 until final iterations.
+ Initial convergence to 1.0D-05 achieved.  Increase integral accuracy.
+ SCF Done:  E(RB3LYP) =  -188.641138763     A.U. after   10 cycles
+            NFock= 10  Conv=0.17D-08     -V/T= 2.0026
+ DoSCS=F DFT=T ScalE2(SS,OS)=  1.000000  1.000000
+ Range of M.O.s used for correlation:     1    54
+ NBasis=    54 NAE=    11 NBE=    11 NFC=     0 NFV=     0
+ NROrb=     54 NOA=    11 NOB=    11 NVA=    43 NVB=    43
+ Symmetrizing basis deriv contribution to polar:
+ IMax=3 JMax=2 DiffMx= 0.00D+00
+ G2DrvN: will do     4 centers at a time, making    1 passes.
+ Calling FoFCou, ICntrl=  3107 FMM=F I1Cent=   0 AccDes= 0.00D+00.
+ End of G2Drv F.D. properties file   721 does not exist.
+ End of G2Drv F.D. properties file   722 does not exist.
+ End of G2Drv F.D. properties file   788 does not exist.
+          IDoAtm=111
+          Differentiating once with respect to electric field.
+                with respect to dipole field.
+          Differentiating once with respect to nuclear coordinates.
+ Keep R1 ints in memory in symmetry-blocked form, NReq=1987371.
+          There are     9 degrees of freedom in the 1st order CPHF.  IDoFFX=4 NUNeed=     9.
+      9 vectors produced by pass  0 Test12= 5.26D-15 1.11D-08 XBig12= 2.50D+01 3.35D+00.
+ AX will form     9 AO Fock derivatives at one time.
+      9 vectors produced by pass  1 Test12= 5.26D-15 1.11D-08 XBig12= 1.01D+01 1.46D+00.
+      9 vectors produced by pass  2 Test12= 5.26D-15 1.11D-08 XBig12= 3.61D-02 6.85D-02.
+      9 vectors produced by pass  3 Test12= 5.26D-15 1.11D-08 XBig12= 1.58D-04 4.55D-03.
+      9 vectors produced by pass  4 Test12= 5.26D-15 1.11D-08 XBig12= 3.70D-07 1.90D-04.
+      7 vectors produced by pass  5 Test12= 5.26D-15 1.11D-08 XBig12= 1.82D-09 1.78D-05.
+      2 vectors produced by pass  6 Test12= 5.26D-15 1.11D-08 XBig12= 2.90D-11 2.64D-06.
+      1 vectors produced by pass  7 Test12= 5.26D-15 1.11D-08 XBig12= 1.02D-13 9.54D-08.
+ InvSVY:  IOpt=1 It=  1 EMax= 2.41D-16
+ Solved reduced A of dimension    55 with     9 vectors.
+ Isotropic polarizability for W=    0.000000       12.60 Bohr**3.
+ End of Minotr F.D. properties file   721 does not exist.
+ End of Minotr F.D. properties file   722 does not exist.
+ End of Minotr F.D. properties file   788 does not exist.
+
+ **********************************************************************
+
+            Population analysis using the SCF density.
+
+ **********************************************************************
+
+ Orbital symmetries:
+       Occupied  (SGG) (SGU) (SGG) (SGG) (SGU) (SGG) (SGU) (PIU)
+                 (PIU) (PIG) (PIG)
+       Virtual   (PIU) (PIU) (SGG) (SGU) (PIU) (PIU) (SGG) (SGU)
+                 (SGG) (PIG) (PIG) (PIU) (PIU) (SGU) (DLTG) (DLTG)
+                 (SGG) (PIG) (PIG) (SGU) (PIU) (PIU) (SGG) (DLTU)
+                 (DLTU) (DLTG) (DLTG) (PIU) (PIU) (SGU) (SGU) (SGG)
+                 (PIG) (PIG) (PIU) (PIU) (PIG) (PIG) (SGG) (SGU)
+                 (SGG) (SGU) (SGG)
+ The electronic state is 1-SGG.
+ Alpha  occ. eigenvalues --  -19.20314 -19.20314 -10.36037  -1.16819  -1.12898
+ Alpha  occ. eigenvalues --   -0.56616  -0.52440  -0.52194  -0.52194  -0.37686
+ Alpha  occ. eigenvalues --   -0.37686
+ Alpha virt. eigenvalues --    0.02943   0.02943   0.06533   0.30326   0.35071
+ Alpha virt. eigenvalues --    0.35071   0.49015   0.63685   0.69098   0.74700
+ Alpha virt. eigenvalues --    0.74700   0.92379   0.92379   1.01052   1.18567
+ Alpha virt. eigenvalues --    1.18568   1.25608   1.38351   1.38351   1.54354
+ Alpha virt. eigenvalues --    2.43363   2.43363   2.61407   2.73543   2.73543
+ Alpha virt. eigenvalues --    2.84576   2.84576   3.05673   3.05673   3.13345
+ Alpha virt. eigenvalues --    3.55707   3.59155   3.61390   3.61390   4.82648
+ Alpha virt. eigenvalues --    4.82648   4.90924   4.90924   5.43016   5.59342
+ Alpha virt. eigenvalues --   24.35122  49.81173  50.03039
+          Condensed to atoms (all electrons):
+               1          2          3
+     1  C    4.209697   0.646773   0.646773
+     2  O    0.646773   7.653273  -0.051668
+     3  O    0.646773  -0.051668   7.653273
+ Mulliken charges:
+               1
+     1  C    0.496756
+     2  O   -0.248378
+     3  O   -0.248378
+ Sum of Mulliken charges =   0.00000
+ Mulliken charges with hydrogens summed into heavy atoms:
+               1
+     1  C    0.496756
+     2  O   -0.248378
+     3  O   -0.248378
+ APT charges:
+               1
+     1  C    1.145452
+     2  O   -0.572726
+     3  O   -0.572726
+ Sum of APT charges =   0.00000
+ APT charges with hydrogens summed into heavy atoms:
+               1
+     1  C    1.145452
+     2  O   -0.572726
+     3  O   -0.572726
+ Electronic spatial extent (au):  <R**2>=            112.9198
+ Charge=              0.0000 electrons
+ Dipole moment (field-independent basis, Debye):
+    X=              0.0000    Y=              0.0000    Z=              0.0000  Tot=              0.0000
+ Quadrupole moment (field-independent basis, Debye-Ang):
+   XX=            -14.5663   YY=            -14.5663   ZZ=            -19.2428
+   XY=              0.0000   XZ=              0.0000   YZ=              0.0000
+ Traceless Quadrupole moment (field-independent basis, Debye-Ang):
+   XX=              1.5588   YY=              1.5588   ZZ=             -3.1177
+   XY=              0.0000   XZ=              0.0000   YZ=              0.0000
+ Octapole moment (field-independent basis, Debye-Ang**2):
+  XXX=              0.0000  YYY=              0.0000  ZZZ=              0.0000  XYY=              0.0000
+  XXY=              0.0000  XXZ=              0.0000  XZZ=              0.0000  YZZ=              0.0000
+  YYZ=              0.0000  XYZ=              0.0000
+ Hexadecapole moment (field-independent basis, Debye-Ang**3):
+ XXXX=            -10.8958 YYYY=            -10.8958 ZZZZ=           -101.5579 XXXY=              0.0000
+ XXXZ=              0.0000 YYYX=              0.0000 YYYZ=              0.0000 ZZZX=              0.0000
+ ZZZY=              0.0000 XXYY=             -3.6319 XXZZ=            -18.1354 YYZZ=            -18.1354
+ XXYZ=              0.0000 YYXZ=              0.0000 ZZXY=              0.0000
+ N-N= 5.836530093967D+01 E-N=-5.611340823257D+02  KE= 1.881511175486D+02
+ Symmetry AG   KE= 1.013658191506D+02
+ Symmetry B1G  KE= 1.160106680353D-33
+ Symmetry B2G  KE= 4.987965411413D+00
+ Symmetry B3G  KE= 4.987965411413D+00
+ Symmetry AU   KE= 1.368184976878D-34
+ Symmetry B1U  KE= 6.947401643462D+01
+ Symmetry B2U  KE= 3.667675570308D+00
+ Symmetry B3U  KE= 3.667675570308D+00
+  Exact polarizability:   7.742   0.000   7.742   0.000   0.000  22.323
+ Approx polarizability:   9.619   0.000   9.619   0.000   0.000  45.297
+ Calling FoFJK, ICntrl=    100127 FMM=F ISym2X=1 I1Cent= 0 IOpClX= 0 NMat=1 NMatS=1 NMatT=0.
+ Full mass-weighted force constant matrix:
+ Low frequencies ---    0.0003    0.0014    0.0015   14.4609   14.4609  666.8783
+ Low frequencies ---  666.8783 1374.9857 2434.8777
+ Diagonal vibrational polarizability:
+        1.9838833       1.9838833       2.8073347
+ Harmonic frequencies (cm**-1), IR intensities (KM/Mole), Raman scattering
+ activities (A**4/AMU), depolarization ratios for plane and unpolarized
+ incident light, reduced masses (AMU), force constants (mDyne/A),
+ and normal coordinates:
+                      1                      2                      3
+                     PIU                    PIU                    SGG
+ Frequencies --    666.8783               666.8783              1374.9857
+ Red. masses --     12.8774                12.8774                15.9949
+ Frc consts  --      3.3742                 3.3742                17.8167
+ IR Inten    --     32.7851                32.7851                 0.0000
+  Atom  AN      X      Y      Z        X      Y      Z        X      Y      Z
+     1   6    -0.52   0.71   0.00     0.71   0.52   0.00     0.00   0.00   0.00
+     2   8     0.19  -0.27   0.00    -0.27  -0.19   0.00     0.00   0.00   0.71
+     3   8     0.19  -0.27   0.00    -0.27  -0.19   0.00     0.00   0.00  -0.71
+                      4
+                     SGU
+ Frequencies --   2434.8777
+ Red. masses --     12.8774
+ Frc consts  --     44.9813
+ IR Inten    --    618.4654
+  Atom  AN      X      Y      Z
+     1   6     0.00   0.00   0.88
+     2   8     0.00   0.00  -0.33
+     3   8     0.00   0.00  -0.33
+
+ -------------------
+ - Thermochemistry -
+ -------------------
+ Temperature   298.150 Kelvin.  Pressure   1.00000 Atm.
+ Atom     1 has atomic number  6 and mass  12.00000
+ Atom     2 has atomic number  8 and mass  15.99491
+ Atom     3 has atomic number  8 and mass  15.99491
+ Molecular mass:    43.98983 amu.
+ Principal axes and moments of inertia in atomic units:
+                           1         2         3
+     Eigenvalues --     0.00000 153.85882 153.85882
+           X            0.00000   1.00000   0.00000
+           Y            0.00000   0.00000   1.00000
+           Z            1.00000   0.00000   0.00000
+ This molecule is a prolate symmetric top.
+ Rotational symmetry number  2.
+ Rotational temperature (Kelvin)      0.56294
+ Rotational constant (GHZ):          11.729852
+ Zero-point vibrational energy      30765.7 (Joules/Mol)
+                                    7.35317 (Kcal/Mol)
+ Vibrational temperatures:    959.49   959.49  1978.30  3503.24
+          (Kelvin)
+ 
+ Zero-point correction=                           0.011718 (Hartree/Particle)
+ Thermal correction to Energy=                    0.014340
+ Thermal correction to Enthalpy=                  0.015284
+ Thermal correction to Gibbs Free Energy=        -0.008976
+ Sum of electronic and zero-point Energies=           -188.629421
+ Sum of electronic and thermal Energies=              -188.626799
+ Sum of electronic and thermal Enthalpies=            -188.625854
+ Sum of electronic and thermal Free Energies=         -188.650115
+ 
+                     E (Thermal)             CV                S
+                      KCal/Mol        Cal/Mol-Kelvin    Cal/Mol-Kelvin
+ Total                    8.999              6.873             51.060
+ Electronic               0.000              0.000              0.000
+ Translational            0.889              2.981             37.270
+ Rotational               0.592              1.987             13.074
+ Vibrational              7.517              1.905              0.716
+                       Q            Log10(Q)             Ln(Q)
+ Total Bot       0.134454D+05          4.128575          9.506394
+ Total V=0       0.329976D+10          9.518482         21.917115
+ Vib (Bot)       0.442742D-05         -5.353849        -12.327693
+ Vib (V=0)       0.108657D+01          0.036058          0.083027
+ Electronic      0.100000D+01          0.000000          0.000000
+ Translational   0.114679D+08          7.059484         16.255062
+ Rotational      0.264813D+03          2.422940          5.579026
+ ***** Axes restored to original set *****
+ -------------------------------------------------------------------
+ Center     Atomic                   Forces (Hartrees/Bohr)
+ Number     Number              X              Y              Z
+ -------------------------------------------------------------------
+      1        6           0.000000000    0.000000000    0.000000000
+      2        8           0.000000000    0.000000000   -0.000189010
+      3        8           0.000000000    0.000000000    0.000189010
+ -------------------------------------------------------------------
+ Cartesian Forces:  Max     0.000189010 RMS     0.000089100
+
+ GradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGrad
+ Berny optimization.
+ Search for a local minimum.
+ Step number   1 out of a maximum of    2
+ All quantities printed in internal units (Hartrees-Bohrs-Radians)
+ Second derivative matrix not updated -- analytic derivatives used.
+ The second derivative matrix:
+                          X1        Y1        Z1        X2        Y2
+           X1           0.14687
+           Y1           0.00000   0.14687
+           Z1           0.00000   0.00000   1.95788
+           X2          -0.07343   0.00000   0.00000   0.03678
+           Y2           0.00000  -0.07343   0.00000   0.00000   0.03678
+           Z2           0.00000   0.00000  -0.97894   0.00000   0.00000
+           X3          -0.07343   0.00000   0.00000   0.03665   0.00000
+           Y3           0.00000  -0.07343   0.00000   0.00000   0.03665
+           Z3           0.00000   0.00000  -0.97894   0.00000   0.00000
+                          Z2        X3        Y3        Z3
+           Z2           1.06166
+           X3           0.00000   0.03678
+           Y3           0.00000   0.00000   0.03678
+           Z3          -0.08272   0.00000   0.00000   1.06166
+ ITU=  0
+     Eigenvalues ---    0.21934   0.21934   1.14438   2.92404
+ Angle between quadratic step and forces=   0.00 degrees.
+ ClnCor:  largest displacement from symmetrization is 2.32D-14 for atom     1.
+ Linear search not attempted -- first point.
+ ClnCor:  largest displacement from symmetrization is 3.00D-31 for atom     1.
+ TrRot=  0.000000  0.000000  0.000000  0.000000  0.000000  0.000000
+ Variable       Old X    -DE/DX   Delta X   Delta X   Delta X     New X
+                                 (Linear)    (Quad)   (Total)
+    X1        0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+    Y1        0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+    Z1        0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+    X2        0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+    Y2        0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+    Z2        2.19308  -0.00019   0.00000  -0.00017  -0.00017   2.19292
+    X3        0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+    Y3        0.00000   0.00000   0.00000   0.00000   0.00000   0.00000
+    Z3       -2.19308   0.00019   0.00000   0.00017   0.00017  -2.19292
+         Item               Value     Threshold  Converged?
+ Maximum Force            0.000189     0.000450     YES
+ RMS     Force            0.000089     0.000300     YES
+ Maximum Displacement     0.000165     0.001800     YES
+ RMS     Displacement     0.000078     0.001200     YES
+ Predicted change in Energy=-3.121753D-08
+ Optimization completed.
+    -- Stationary point found.
+ GradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGradGrad
+
+ 1\1\GINC-CPU-G-4\Freq\RB3LYP\6-311G(d,p)\C1O2\AM2145\17-Jul-2020\0\\#n
+  B3LYP/6-311G(d,p) Freq\\co2-freq\\0,1\C,0.,0.,0.\O,0.,0.,1.16053\O,0.
+ ,0.,-1.16053\\Version=ES64L-G09RevD.01\State=1-SGG\HF=-188.6411388\RMS
+ D=1.658e-09\RMSF=8.910e-05\ZeroPoint=0.011718\Thermal=0.0143402\Dipole
+ =0.,0.,0.\DipoleDeriv=0.5417301,0.,0.,0.,0.5417301,0.,0.,0.,2.3528948,
+ -0.270865,0.,0.,0.,-0.270865,0.,0.,0.,-1.1764474,-0.270865,0.,0.,0.,-0
+ .270865,0.,0.,0.,-1.1764474\Polar=7.741616,0.,7.741616,0.,0.,22.322874
+ 2\PG=D*H [O(C1),C*(O1.O1)]\NImag=0\\0.14686745,0.,0.14686745,0.,0.,1.9
+ 5788261,-0.07343373,0.,0.,0.03678015,0.,-0.07343373,0.,0.,0.03678015,0
+ .,0.,-0.97894131,0.,0.,1.06165993,-0.07343373,0.,0.,0.03665357,0.,0.,0
+ .03678015,0.,-0.07343373,0.,0.,0.03665357,0.,0.,0.03678015,0.,0.,-0.97
+ 894131,0.,0.,-0.08271862,0.,0.,1.06165993\\0.,0.,0.,0.,0.,0.00018901,0
+ .,0.,-0.00018901\\\@
+
+
+ One man practicing sportsmanship is far better than 50 preaching it.
+ -- Knute K. Rockne
+ Job cpu time:       0 days  0 hours  7 minutes 12.3 seconds.
+ File lengths (MBytes):  RWF=      5 Int=      0 D2E=      0 Chk=      1 Scr=      1
+ Normal termination of Gaussian 09 at Fri Jul 17 12:43:16 2020.

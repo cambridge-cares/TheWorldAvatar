@@ -81,24 +81,6 @@ public class SemakauPV extends JPSAgent {
             return false;
         }
     }
-	/**
-	 * @param request HttpServletrequest, should contain responses from DES Solar Irradiation collection agent
-	 */
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		JSONObject joforess = AgentCaller.readJsonParameter(request);
-		String ENIRI=joforess.getString("electricalnetwork");
-		String irradSensorIRI=joforess.getString("irradiationsensor");
-		OntModel model = readModelGreedy(ENIRI);
-		JSONObject res=runMODS(model,irradSensorIRI);
-		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/","PV-002.owl","EBus-006.owl");
-		//hardcoded at the moment the iri due to model restriction
-		
-		AgentCaller.printToResponse(result, response);
-			
-	}
-	
 
 	/** reads the topnode into an OntModel of all its subsystems. 
 	 * @param iriofnetwork

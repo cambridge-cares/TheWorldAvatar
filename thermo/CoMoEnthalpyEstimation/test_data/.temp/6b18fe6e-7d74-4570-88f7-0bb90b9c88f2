@@ -1,0 +1,92 @@
+Problem:    C2H6O
+Rows:       42
+Columns:    18
+Non-zeros:  99
+Status:     OPTIMAL
+Objective:  R0 = 16 (MINimum)
+
+   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 R0           B             16                             
+     2 R1           NU             0                           0            -7 
+     3 R2           B              0                           0 
+     4 R3           B             -2                           0 
+     5 R4           NU             0                           0            -8 
+     6 R5           NU             0                           0            -5 
+     7 R6           B              0                           0 
+     8 R7           NU             0                           0            -5 
+     9 R8           B              0                           0 
+    10 R9           NU             0                           0            -4 
+    11 R10          B              0                           0 
+    12 R11          NU             0                           0            -6 
+    13 R12          B              0                           0 
+    14 R13          NU             0                           0           -10 
+    15 R14          B              0                           0 
+    16 R15          NU             0                           0            -8 
+    17 R16          B              0                           0 
+    18 R17          NU             0                           0            -8 
+    19 R18          B             -2                           0 
+    20 R19          B              0             0             = 
+    21 R20          NS             0             0             =      -1.33333 
+    22 R21          B              0             0             = 
+    23 R22          B              0             0             = 
+    24 R23          NS             0             0             =       11.3333 
+    25 R24          NS             0             0             =            16 
+    26 R25          NS             0             0             =       10.3333 
+    27 R26          B              0             0             = 
+    28 R27          B              0             0             = 
+    29 R28          B              0             0             = 
+    30 R29          NS             0             0             =       2.33333 
+    31 R30          NS             0             0             =       10.3333 
+    32 R31          B              0             0             = 
+    33 R32          NS             0             0             =       3.44444 
+    34 R33          B              0             0             = 
+    35 R34          B              0             0             = 
+    36 R35          B              0             0             = 
+    37 R36          B              0             0             = 
+    38 R37          B              0             0             = 
+    39 R38          B              0             0             = 
+    40 R39          NS             0             0             =            15 
+    41 R40          B              0             0             = 
+    42 main         NL             1             1                          16 
+
+   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 v[0]         B              1                             
+     2 v[2]         B              0                             
+     3 v[1]         B              0                             
+     4 absV[8]      B              0                             
+     5 absV[7]      B              0                             
+     6 absV[6]      B              1                             
+     7 absV[5]      B              0                             
+     8 absV[0]      B              1                             
+     9 absV[4]      B              0                             
+    10 absV[3]      B              0                             
+    11 absV[2]      B              0                             
+    12 absV[1]      B              0                             
+    13 v[4]         B              0                             
+    14 v[3]         B              0                             
+    15 v[5]         B              0                             
+    16 v[6]         B             -1                             
+    17 v[7]         B              0                             
+    18 v[8]         B              0                             
+
+Karush-Kuhn-Tucker optimality conditions:
+
+KKT.PE: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+KKT.PB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+KKT.DE: max.abs.err = 0.00e+000 on column 0
+        max.rel.err = 0.00e+000 on column 0
+        High quality
+
+KKT.DB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+End of output

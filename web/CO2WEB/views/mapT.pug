@@ -1,0 +1,33 @@
+extends header.pug
+block title
+    title  #{texts.title}
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |#{texts.title}
+
+block description
+    |#{texts.description}
+
+block content
+
+    div#map
+    // Modal
+    #err-msg-modal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='exampleModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#exampleModalLabel.modal-title Message
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+                #err-msg-modal-body.modal-body
+                    |
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+
+    each jssrc in jses
+      script(src='#{jssrc}')
+    script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")

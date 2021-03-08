@@ -1,0 +1,120 @@
+@charset "utf-8";
+/* CSS Document */
+
+img.button {
+    margin:1px;
+}
+
+img.button:hover {
+    margin:0px;
+    cursor:pointer;
+    border: 1px #9cbabd solid;
+    border-radius:5px;
+    border-radius:5px;
+}
+
+div.round-top {
+    border-top-left-radius:8px;
+    border-top-right-radius:8px;
+}
+
+div.round-bottom {
+    border-bottom-left-radius:8px;
+    border-bottom-right-radius:8px;
+}
+
+div.box {
+    width:770px;
+    padding-top:20px;
+    padding-bottom:20px;
+    margin-bottom: 10px;
+    margin: auto;
+    text-align:center;
+}
+
+div.box-header {
+    background-color:#C7D167;
+    background-image:url('../images/vhbar.png');
+    background-repeat:repeat-x;
+    border-style:solid;
+    border-width:1px;
+    border-color:#9cbabd;
+    border-bottom-style:none;
+    padding:4px 10px 4px 10px;
+    width:750px;
+    float:left;
+}
+
+div.box-content {
+    background-color:#F4F7CD;
+    background-image:url('../images/contentbg.png');
+    background-repeat:no-repeat;
+    border-width:1px;
+    border-color:#9cbabd;
+    border-style:solid;
+    border-top-style:none;
+    padding:5px 10px 5px 10px;
+    margin-bottom: 15px;
+    width:750px;
+    float:left;
+}
+
+div.box-content:hover {
+    background-color:#e0e8e8;
+}
+
+img.species-image {
+    border-style:solid;
+    border-width:1px;
+    border-color:#666;
+    width:100px;
+    margin:5px 5px 5px 10px;
+    float:left;
+}
+
+div.species-content {
+    text-align:left;
+    vertical-align:top;
+    width:610px;
+    margin:5px 5px 5px 10px;
+    float:left;
+}
+
+div.checkbox-wrapper {
+    /*vertical-align:bottom;margin:3px 10px 1px 0px;*/
+    margin:3px 0px 0px 0px;;
+    padding:0px;
+    float:left;
+}
+
+div.species-title {
+    /*vertical-align:bottom;margin:3px 10px 1px 0px;*/
+    margin:3px 0px 0px 10px;
+    padding:0px;
+    font-weight:bold;
+    font-size:110%;
+    float:left;
+}
+div.species-option {
+    /*vertical-align:bottom;margin:3px 10px 1px 0px;*/
+    margin:2px 0px 0px 10px;;
+    padding:0px;
+    float:right;
+}
+
+div.property-name {
+    width:130px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    float:left;
+    font-weight:bold;
+    font-size:11px;
+}
+
+div.property-value {
+    width:470px;
+    float:right;
+    font-size:11px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
