@@ -206,7 +206,7 @@ console.log(result)});
     
     //***************************************************************************
     osmb.addMapTiles(
-    	'https://a.tile.openstreetmap.org/${z}/${x}/${y}.png'
+    	'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'
         );
     // TBC: Building GeoJSON
     // osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');

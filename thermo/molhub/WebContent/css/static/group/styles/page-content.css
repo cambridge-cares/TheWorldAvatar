@@ -1,0 +1,45 @@
+#page-breadcrumb {
+    padding: 6px 10px 4px 10px;
+    margin: 0px;
+    width: 880px;
+    height: 15px;
+    background-image: url('../images/main-home-no-logo-bg.png');
+    border-bottom: 1px solid #748249;
+    font-size: 11px;
+    color: #444;
+}
+
+#page-breadcrumb a:link, #page-breadcrumb a:visited {
+    text-decoration: none;
+}
+
+#page-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+#page-body {
+    padding: 40px;
+    padding-top: 10px;
+}
+
+#page-body p {
+    line-height:150%;
+    text-align: justify;
+}
+#page-body code {
+    font-size: 13px;
+}
+
+#page-body pre.http {
+    font-size: 13px;
+    margin: 15px;
+    background-color: #EDF4FF;
+    padding: 5px 10px 5px 10px;
+    border: 1px solid #89A9D3;
+    overflow-x: auto;
+}
+
+#page-body hr {
+    border: 0px;
+    border-top: 1px solid #888;
+}

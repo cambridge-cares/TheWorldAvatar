@@ -1,0 +1,84 @@
+extends header.pug
+block title
+    title DES Simulation
+
+block sheets
+    link(rel='stylesheet', href='/stylesheets/mpage.css', type='text/css')
+
+block subtitle
+    | Distributed Energy System
+//- block readme
+//-     span#readme-button
+//-         | ?    
+//-     span#readme-text
+//-         | 
+block description
+    |Plot of Distributed Energy System Simulation (pre-run)
+
+block content
+
+    #loader(style='display:none;')
+    style.
+        .container1 {
+        display: flex;
+        flex-direction: row;
+        overflow:auto;
+        flex-wrap: wrap;
+        }
+        .ediv{
+            zoom:2px;
+            width:45vw;
+            height:50vh;
+        }
+        .chart-container{
+            width:30vw;
+            margin-left:10px;
+            margin-right:10px;
+        }
+        h1{
+            margin-left:10px;
+            margin-right:10px;
+        }
+        li{
+            margin-left:10px;
+            margin-right:10px;  
+        }
+        li:hover{
+            color:blue;
+        }
+        @media screen and (max-width: 1300px) {
+        .container1 {
+            flex-direction: column;
+        }
+        .ediv{
+            height:45vh;
+        }
+        
+        }
+
+
+   
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+    script(src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0")
+    script(src='/javascripts/DESplot.js')
+    
+    .container1
+        .ediv
+            canvas#temperature
+        .ediv
+            canvas#irradiation
+    h2 Profiles
+    canvas#graph4
+    .container1
+        .chart-container
+            canvas#rh1
+        .chart-container
+            canvas#rh2
+        .chart-container
+            canvas#rh3
+    h2 Transaction Hashes
+        #txhashes
+
+    
+

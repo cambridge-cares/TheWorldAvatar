@@ -1,0 +1,172 @@
+extends header.pug
+
+block title
+	title  Waste To Energy Scenario
+
+block sheets
+	link(rel="stylesheet" href='/stylesheets/mpage.css')
+	link(href='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css', rel='stylesheet')
+
+
+block subtitle
+
+	| Waste To Energy Management Systems Design
+	
+block readme
+	span#readme-button
+		| ?    
+	span#readme-text
+		| This shows a map of Singapore's foodcourts.
+		br
+		| The proposed decision support methodology (DSM) would address the rising energy consumption and food waste through waste-to-energy (WTE) technologies capable of generating electricity, heat and biogas.
+		br
+		| Both centralized and decentralized WTE systems are considered as alternatives for food waste treatment. 
+		br 
+		| The user can change the parameters by modifying the costs of creating a type of waste treatment facility, or of transportation, as well as the number of clusters to aggregate the foodcourts. 
+		br 
+		| Clicking on the button Run Simulation would cause the Matlab simulation to run using Gurobi optimization.
+		br 
+		| The greater the number of clusters, the smaller the number of food courts per cluster.
+		br 
+		| The default value of the number of clusters is 30 and will create a mixture of delivery to onsite as well as offsite waste treatment facilities.
+		br 
+		|Optimal number and location of WTE facilities would then be visualized on the map. 
+		
+block description
+	
+
+
+block content
+	style.
+		body {
+		font-family: "Lato", sans-serif;
+		}
+		.sidenav {
+		height: 100%;
+		width: 0;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background-color: #FFF;
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 60px;
+		}
+		.sidenav a {
+		padding: 8px 8px 8px 32px;
+		text-decoration: none;
+		font-size: 25px;
+		color: #818181;
+		display: block;
+		transition: 0.3s;
+		}
+		.sidenav a:hover {
+		color: #f1f1f1;
+		}
+		.sidenav .closebtn {
+		position: absolute;
+		top: 0;
+		right: 25px;
+		font-size: 36px;
+		margin-left: 50px;
+		}
+		@media screen and (max-height: 450px) {
+		.sidenav {padding-top: 15px;}
+		.sidenav a {font-size: 18px;}
+		}
+		.slidecontainer {
+			width: 80%;
+			float:left;
+			margin: 5px;
+			}
+
+		.slider {
+		-webkit-appearance: none;
+		width: 100%;
+		height: 30px;
+		border-radius: 5px;
+		background: #d3d3d3;
+		outline: none;
+		opacity: 0.7;
+		-webkit-transition: .2s;
+		transition: opacity .2s;
+		}
+
+		.slider:hover {
+		opacity: 1;
+		}
+
+		.slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 25px;
+		height: 25px;
+		border-radius: 50%;
+		background: #4CAF50;
+		cursor: pointer;
+		}
+
+		.slider::-moz-range-thumb {
+		width: 25px;
+		height: 25px;
+		border-radius: 50%;
+		background: #4CAF50;
+		cursor: pointer;
+		}
+	#loader(style='display:none;')
+	div#wrapper2
+		p(style='text-align: center; float:left; margin-top: 10px; margin-left: 15px;')
+			span#label_myRange
+			| Year&nbsp;
+			span#demo
+		.slidecontainer
+			input#myRange.slider(type='range', min='1', max='15', value='1')
+		
+		p(style='text-align: center; margin-top: 15px; margin-left: 15px;')
+			span#label_cluster
+			| Number of Clusters
+			input#noOfCluster(type='text', value='')
+	div#wrapper
+		div.overlay-panel-wrapper(width='200')
+			div#overlay-setting-panel.panel.panel-default
+				div.panel-body.container-fluid
+					div#setting-panel-body
+						div#text-panel(style='overflow-x:scroll;')
+							div#chart
+						br
+						button#run-btn.btn.btn-primary Run Simulation
+
+						   
+	div#map
+	div#co2-sum-panel2
+		table(style=" font-size:30px; margin-left:auto; margin-right:auto; padding:2px; and border-spacing:20px;")
+			tr 
+				td Resource Consumption Cost (USD)
+				td Transport Cost (USD)
+				td Pollution Treatment Tax (USD)
+				td Land Cost (USD)
+				td Manpower Cost (USD)
+				td Operation Cost (USD)
+				td Installation Cost (USD)
+				td Total Revenue (USD)
+
+
+			tr
+				td#RCC  #{RCC}
+				td#TC  #{TC}
+				td#PTT  #{PTT}
+				td#LC  #{LC}
+				td#MC  #{MC}
+				td#OC  #{OC}
+				td#IC  #{IC}
+				td#TR  #{TR}
+	script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+	script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+	script(src="/javascripts/wte.js")
+	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&libraries=visualization&callback=initMap")
+	script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous")
+	script(src='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js')
+	script(src='https://unpkg.com/d3@5.7.0/dist/d3.min.js')
+	script(src='https://unpkg.com/d3fc@14.0.27/build/d3fc.js')
+

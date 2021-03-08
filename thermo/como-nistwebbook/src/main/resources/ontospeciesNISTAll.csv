@@ -1,0 +1,121 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+Species,Class,,,,,,Chemical entities which represent real physical molecules.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+EmpiricalFormula,Class,,,,,,A chemical formula that indicates the relative number of each constituting chemical element of a species or molecular entity.,http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,Class,,,,,,A combined representation of a number indicating the amount of an element in a species and the element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,Class,,,,,,An atom or isotope.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+Weblink,Class,,,,,,The address of a web page that describes a resource.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEmpiricalFormula,Object Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species,EmpiricalFormula,only,A relation between a species or molecular entity and the chemical formula describing the relative number of each constituting chemical element of the species or molecular entity.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement,Object Property,,,EmpiricalFormula,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,only,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber,Object Property,,,EmpiricalFormula,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,only,A relation that defines a combined representation of a number indicating the amount of an element in a species and the element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf,Object Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,only,A relation that defines the number of atoms of a given element contained in a species or molecular entity.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,String,,A number that indicates the amount of an element in a species.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+mass,Data Property,,,Species,Float,,"The combined masses of all atoms of a molecule. In ChEBI, http://purl.obolibrary.org/obo/chebi/mass is defined as an annotation property.",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+inChI,Data Property,,,Species,String,,"An identifier designed to codify chemical species, molecules or substances. In ChEBI, http://purl.obolibrary.org/obo/chebi/inchi is defined as an annotation property.",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+inChIKey,Data Property,,,Species,String,,"A fixed-length representation of InChI. In ChEBI, http://purl.obolibrary.org/obo/chebi/inchikey is defined as an annotation property.",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+casRegistryID,Data Property,,,Species,String,,"A numerical identifier designed to uniquely identify all chemical substances. Also in PeriodicTable, http://www.daml.org/2003/01/periodictable/PeriodicTable#casRegistryID is defined as a data type property.",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+http://www.w3.org/2004/02/skos/core#altLabel,Data Property,,,Species,String,,"An alternative name of a chemical species, molecule or substance.",http://www.w3.org/2004/02/skos/core
+dateOfAccess,Data Property,,,Species,String,,The date when a web page was accessed.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+value,Data Property,,,Weblink,String,,"The value of a property. Also in OntoCAPE, http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#value is designed as a data type property.",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Heat Capacity|Thermal Capacity|Molar Heat Capacity,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Constant Pressure Heat Capacity,Class,Heat Capacity|Thermal Capacity|Molar Heat Capacity,IS-A,,,,The amount of energy required to raise the temperature of 1 mole of a substance in the gas-phase by 1K.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Constant Pressure Heat Capacity of Gas,Class,Constant Pressure Heat Capacity,IS-A,,,,The amount of energy required to raise the temperature of 1 mole of a substance in the gas-phase by 1K at constant pressure [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Constant Pressure Heat Capacity of Liquid,Class,Constant Pressure Heat Capacity,IS-A,,,,The amount of energy required to raise the temperature of 1 mole of a substance in the liquid-phase by 1K at constant pressure [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Constant Pressure Heat Capacity of Solid,Class,Constant Pressure Heat Capacity,IS-A,,,,The amount of energy required to raise the temperature of 1 mole of a substance in the solid-phase by 1K at constant pressure [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasHeatCapacity,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasConstantPressureHeatCapacity,Object Property,hasHeatCapacity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasConstantPressureHeatCapacityOfGas,Object Property,hasConstantPressureHeatCapacity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasConstantPressureHeatCapacityOfLiquid,Object Property,hasConstantPressureHeatCapacity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasConstantPressureHeatCapacityOfSolid,Object Property,hasConstantPressureHeatCapacity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Energy,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Appearance Energy,Class,Energy,IS-A,,,,The lowest energy which must be supplied to the parent molecule to cause it to produce a particular specified ion [EVISA].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnergy,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasAppearanceEnergy,Object Property,hasEnergy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Ionization energy,Class,Energy,IS-A,,,,The minimum energy required to remove an electron from an atom or molecule in order to produce a positive ion [EVISA].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasIonizationEnergy,Object Property,hasEnergy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Pressure,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Critical Pressure,Class,Pressure,IS-A,,,,The minimum pressure needed to liquefy a substance at the critical temperature [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasPressure,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasCriticalPressure,Object Property,hasPressure,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Entropy,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Entropy Of Liquid,Class,Entropy,IS-A,,,,A measure of how much the energy of atoms and molecules becomes more spread out in a process in the liquid phase [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Entropy of Liquid At Standard Conditions,Class,Entropy Of Liquid,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEntropy,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEntropyOfLiquid,Object Property,hasEntropy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEntropyOfLiquidAtStandardConditions,Object Property,hasEntropyOfLiquid,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Entropy Of Solid,Class,Entropy,IS-A,,,,A measure of how much the energy of atoms and molecules becomes more spread out in a process in the solid phase [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Entropy Of Solid At Standard Conditions,Class,Entropy Of Solid,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Entropy Of Solid At Standard Conditions (1 bar),Class,Entropy Of Solid At Standard Conditions,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEntropyOfSolid,Object Property,hasEntropy,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEntropyOfSolidAtStandardConditions(1bar),Object Property,hasEntropyOfSolid,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Temperature,Class,,,,,,"A measure of the average amount of energy of motion, or kinetic energy, a system contains [Chemistry LibreTexts].",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasTemperature,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Boiling Point,Class,Temerature,IS-A,,,,"Temperature at which the pressure exerted by the surroundings upon a liquid is equalled by the pressure exerted by the vapour of the liquid; under this condition, addition of heat results in the transformation of the liquid into its vapour without raising the temperature [Encyclopedia of Britanica].",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasBoilingPoint,Object Property,hasTemperature,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Critical temperature,Class,Temerature,IS-A,,,,The highest temperature at which a substance can exist as a liquid [Chemistry LibreTexts] or the maximum temperature at which a gas can be liquefied by pressure [Encyclopedia of Britannica].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasCriticalTemperature,Object Property,hasTemperature,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Fusion Point|Melting Point,Class,Temerature,IS-A,,,,The temperature at which a solid changes into a liquid [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasFusionPoint,Object Property,hasTemperature,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasMeltingPoint,Object Property,hasTemperature,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Triple Point Temperature,Class,Temerature,IS-A,,,,The state where both the temperature and pressure of the three phases of a substance coexist in equilibrium [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasTriplePointTemperature,Object Property,hasTemperature,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Volume,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Critical Volume,Class,Volume,IS-A,,,,The volume of a fixed mass of fluid at the critical temperature and pressure [Chemistry Glossary].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasVolume,Object Property,,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasCriticalVolume,Object Property,hasVolume,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Parameter,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Dependent Parameter,Class,Parameter,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Temperature Dependent Parameter,Class,Dependent Parameter,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasParameter,Object Property,,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasDependentParameter,Object Property,hasParameter,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasTemperatureDependentParameter,Object Property,hasDependentParameter,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Constant,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Henry's Law Constant,Class,Constant,IS-A,,,,kH(T) = k°H exp(d(ln(kH))/d(1/T) ((1/T) - 1/(298.15 K))) Henry’s law says that the solubility of a gas in a liquid is directly proportional to the partial pressure of the gas above the liquid: C = kPgas [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasConstant,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasHenry'sLawConstant,Object Property,hasConstant,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Formation,Class,Enthalpy,IS-A,,,,The enthalpy change for a reaction in which exactly 1 mole of a pure substance is formed from free elements in their most stable states under standard state conditions.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Combustion,Class,Enthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Vaporization,Class,Enthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Sublimation,Class,Enthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Fusion,Class,Enthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Combustion Of Liquid,Class,Enthalpy Of Combustion,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Combustion Of Liquid At Standard Conditions,Class,Enthalpy Of Combustion Of Liquid,IS-A,,,,The enthalpy change when 1 mole of a liquid substance burns (combines vigorously with oxygen) under standard state conditions; it is sometimes called “heat of combustion” [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of  Formation Of Gas,Class,Enthalpy Of Formation,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Formation Of Gas At Standard Conditions,Class,Enthalpy Of  Formation Of Gas,IS-A,,,,The enthalpy change when 1 mole of a gaseous substance forms from its constituting elements under standard state conditions.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Formation Of Liquid,Class,Enthalpy Of Formation,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Formation Of Liquid At Standard Conditions,Class,Enthalpy Of Formation Of Liquid,IS-A,,,,The enthalpy change when 1 mole of a liquid substance forms from its constituting elements under standard state conditions.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Reaction,Class,Enthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Reaction At Standard Conditions,Class,Enthalpy Of Reaction,IS-A,,,,The difference in enthalpy between products and reactants under standard state conditions [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Sublimation At Standard Conditions,Class,Enthalpy Of Sublimation,IS-A,,,,The energy that must be supplied as heat per mole of molecules converted to vapor from a solid [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Enthalpy Of Vaporization At Standard Conditions,Class,Enthalpy Of Vaporization,IS-A,,,,The energy that must be supplied as heat per mole of molecules vaporized from a liquid [Chemistry LibreTexts].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Entropy Of Reaction,Class,Entropy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpy,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfFormation,Object Property,hasEnthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfFormationOfLiquid,Object Property,hasEnthalpyOfFormation,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfFormationOfGas,Object Property,hasEnthalpyOfFormation,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfFormationOfGasAtStandardConditions,Object Property,hasEnthalpyOfFormationOfGas,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfFormationOfLiquidAtStandardConditions,Object Property,hasEnthalpyOfFormationOfLiquid,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfCombustion,Object Property,hasEnthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfCombustionOfLiquid,Object Property,hasEnthalpyOfCombustion,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfCombustionOfLiquidAtStandardConditions,Object Property,hasEnthalpyOfCombustionOfLiquid,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfFusion,Object Property,hasEnthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfReaction,Object Property,hasEnthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfReactionAtStandardConditions,Object Property,hasEnthalpyOfReaction,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfSublimation,Object Property,hasEnthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfSublimationAtStandardConditions,Object Property,hasEnthalpyOfSublimation,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfVaporization,Object Property,hasEnthalpy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEnthalpyOfVaporizationAtStandardConditions,Object Property,hasEnthalpyOfVaporization,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEntropyOfReaction,Object Property,hasEntropy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEntropyOfReactionAtStandardConditions,Object Property,hasEntropyOfReaction,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Free Energy Of Reaction,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Free Energy Of Reaction At Standard Conditions,Class,Free Energy Of Reaction,IS-A,,,,The energy associated with a chemical reaction that can be used to do work. The free energy of a system is the sum of its enthalpy (H) plus the product of the temperature (Kelvin) and the entropy (S) of the system [Chem.Tamu].,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+EntropyOfFusion,Class,Entropy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasEntropyOfFusion,Object Property,hasEntropy,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Density,Class,,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Critical Density,Class,Density,IS-A,,,,The density of a substance at the critical point.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasDensity,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasCriticalDensity,Object Property,hasDensity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Units,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Reference,Class,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasUnits,Data Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasReference,Object Property,,,,,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl

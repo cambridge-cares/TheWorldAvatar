@@ -1,0 +1,44 @@
+extends header.pug
+block title
+        title  CO2 Emission Meter
+
+block sheets
+        link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |CO
+    sub 2
+    |&nbsp;Emission Meter
+
+block description
+    |A CO
+    sub 2
+    |&nbsp;emission meter estimating the total CO
+    sub 2
+    |&nbsp;emission from Singapore's Jurong Island.
+
+block content
+
+    div#co2-sum-panel
+        p
+            | Jurong Island CO
+            sub 2
+            | &nbsp;Emission:
+        p
+        span#co2Value  #{co2Value}
+        span  tonnes/seconds
+
+        p.textsmall
+            | The total CO
+            sub 2
+            |&nbsp;emission from Jurong Island is estimated 
+            | using the Carnegie Mellon (US 2002 Producer Price) Model.
+            br
+            |A random number with normal distribution and standard deviation of 0.1 is added to mimic noise and fluctuations.
+
+				
+
+            script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+
+            script(src="/javascripts//co2.js")

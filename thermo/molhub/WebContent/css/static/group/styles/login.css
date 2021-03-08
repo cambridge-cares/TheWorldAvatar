@@ -1,0 +1,24 @@
+#form-login {
+    width: 250px;
+    margin: auto;
+    padding: 20px;
+    padding-bottom: 50px;
+}
+
+#form-login table {
+    padding: 0px;
+    border-spacing: 0px;
+}
+#form-login table td {
+    padding: 5px 5px 5px 0px;
+    border-spacing: 0px;
+}
+
+#form-login input[type="text"], #form-login input[type="password"] {
+    width: 150px;
+    margin-left: 10px;
+}
+
+#form-login input:focus {
+    box-shadow: 0px 0px 3px #66aaee;
+}

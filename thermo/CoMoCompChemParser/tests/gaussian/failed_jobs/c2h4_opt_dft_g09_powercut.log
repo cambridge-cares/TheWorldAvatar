@@ -1,0 +1,5 @@
+ Entering Gaussian System, Link 0=g09
+ Input=c2h4_geom_b971.gau
+ Output=c2h4_geom_b971.log
+ Initial command:
+ /opt/g09/l1.exe "/scratch/dln22/Gau-19905.inp" -scrdir="/scratch/dln22/"

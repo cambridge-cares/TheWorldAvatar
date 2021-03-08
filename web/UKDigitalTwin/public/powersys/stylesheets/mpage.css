@@ -1,0 +1,493 @@
+body {
+    overflow-x: hidden;
+    font: 20px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+}
+
+h1{
+    color: white;
+}
+a {
+    color: #00B7FF;
+}
+
+h2{
+    font-size: 18px;
+}
+/*
+################
+              BMS
+################
+*/
+
+div.aGraph {
+    margin-bottom: 30px;
+}
+
+svg.line-graph text {
+    cursor: default;
+}
+
+svg.line-graph .hover-line {
+    stroke: #6E7B8B;
+}
+
+svg.line-graph .hide {
+    opacity: 0;
+}
+
+svg.line-graph .axis {
+    shape-rendering: crispEdges;
+}
+
+svg.line-graph .x.axis line {
+    stroke: #D3D3D3;
+
+}
+
+svg.line-graph .x.axis .minor {
+    stroke-opacity: .5;
+}
+
+svg.line-graph .x.axis path {
+    display: none;
+}
+
+svg.line-graph .x.axis text {
+    font-size: 10px;
+}
+
+svg.line-graph .y.axis line, .y.axis path {
+    fill: none;
+    stroke: #000;
+}
+
+svg.line-graph .y.axis text {
+    font-size: 12px;
+}
+
+svg.line-graph .scale-button:not(.selected):hover {
+    text-decoration: underline;
+    cursor: pointer !important;
+}
+
+svg.line-graph .date-label {
+    fill: #6E7B8B;
+}
+
+#sensor-select-panel{
+    margin-top: 30px;
+
+}
+/*
+################
+  MAP
+################
+*/
+#map {
+    height: 1400px;
+    width: 100%;}
+
+/***
+Visual Page
+ */
+
+.link {
+    fill: none;
+    stroke: #666;
+    stroke-width: 2px;
+}
+
+#licensing {
+    fill: green;
+
+}
+
+.link.licensing {
+    stroke: #666;
+    stroke-width: 4px;
+    opacity: 0.5;
+
+}
+.agl{
+    stroke: #96fa5a !important;
+    fill: #96fa5a;
+    stroke-width: 5px;
+    opacity: 0.5;
+
+}
+.link.resolved {
+    stroke-dasharray: 0,2 1;
+}
+
+circle.nodes {
+    stroke: #666;
+    stroke-width: 4px;
+}
+
+circle.selected {
+    stroke: #fffb68;
+    stroke-width: 6px;
+}
+
+circle.hovered {
+    stroke: #fff;
+    stroke-width: 6px;
+}
+
+text.nodeTag {
+    font: 15px sans-serif;
+    pointer-events: none;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+}
+#choice-panel{
+    height: 150px;
+    width:200px;
+}
+
+#draw-panel{
+    left:0px;
+    top:0px;
+    padding-top: 0px;
+    padding-left: 0px;
+
+}
+#checkShowImport{
+    margin-left: 0px;
+}
+
+.legend rect {
+    fill:white;
+    stroke:black;
+    opacity:0.8;}
+
+
+.title{
+
+    font-size: 20px;
+}
+
+#choice-div{
+    z-index:111;
+
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    float:left;
+}
+
+/* Toggle Styles */
+
+#wrapper {
+    position: relative;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+
+    font-size:30px;
+
+
+}
+
+#sidebar-wrapper.toggled {
+    width: 350px;
+}
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    width: 0;
+    height: 50%;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    background: #aaaaaa;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+
+
+
+#page-content-wrapper {
+    width: 100%;
+    position: relative;
+    padding: 15px;
+}
+
+
+/*Side bar*******************/
+/* Sidebar Styles */
+
+.sidebar-nav {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 18px;
+    color:white;
+}
+
+.sidebar-nav li {
+    line-height: 40px;
+}
+
+.sidebar-nav tr{
+    line-height: 40px;
+
+}
+.sidebar-nav td{
+    width:40%
+}
+.sidebar-nav button{
+    margin-top: 20px;
+}
+.sidebar-nav li a {
+    display: block;
+    text-decoration: none;
+    color: #999999;
+}
+
+.sidebar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+.sidebar-nav input{
+    color: #6E7B8B;
+}
+.customHr {
+    width: 100%;
+    font-size: 1px;
+    color: #fefff3;
+    height: 4px;
+
+    background-color: grey;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+/**restruct settings menu*/
+#menu-toggle{
+    position: fixed;
+    z-index: 100;
+    background-color: #6E7B8B;
+    bottom: 0;
+
+}
+.glyphicon {
+    font-size: 50px;
+    color: #ffffff;
+}
+
+/**content***/
+
+/**draw panel*/
+
+#draw-panel{
+    position: relative;
+    display: block;
+}
+
+#geo-search-result-panel
+{
+    position: relative;
+    display: block;
+
+}
+
+#geo-search-result-panel table
+{
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 50%;
+}
+#geo-search-result-panel table td, #geo-search-result-panel table tr
+{
+    border: 2px solid  #ddd;
+    padding: 5px;
+}
+
+#geo-search-result-panel table tr:nth-child(even).default
+{
+    background-color: #aaaaaa;
+}
+
+#geo-search-result-panel table tr.selected{
+    background-color: #fbff83;
+}
+
+#geo-search-result-panel table tr:hover {background-color: #ddd;}
+
+
+/**
+################
+CO2Page
+
+ */
+
+
+
+#co2-sum-panel {
+    padding: 320px 15px;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 300;
+
+}
+#co2-sum-panel2 {
+    padding: 15px 15px;
+    text-align: center;
+    font-size: 35px;
+    font-weight: 100;
+
+}
+
+
+.textsmall{
+    padding-top:50px;
+    font-size: 20px;
+
+
+}
+
+
+.mypanel{
+    padding: 50px;
+    font: 20px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+}
+
+table {
+    font-size:20px;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+td,  th {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 0px;
+    width: 75px;
+}
+
+tr:nth-child(even):hover{
+    background-color: #b4b4b4;
+
+}
+tr:nth-child(odd):hover{
+    background-color: #b4b4b4;
+
+}
+tr:nth-child(even){background-color: #f2f2f2}
+
+th {
+    padding-top: 11px;
+    padding-bottom: 11px;
+    background-color: #4CAF50;
+    color: white;
+}
+
+#err-msg-panel {
+    margin:20px
+}
+
+/*********Overlay Panel*******************/
+.overlay-panel-wrapper {
+    opacity: 1;
+    z-index: 100;
+    position: absolute;
+    width: 560px;
+    top: 0;
+}
+
+.overlay-panel-wrapper:hover{
+    opacity: 1;
+}
+
+#overlay-setting-panel {
+    height:auto;
+}
+
+.plot-title {
+    font-size: 20px
+}
+
+
+#readme-button {
+    float: right;
+    cursor: pointer;
+    color: white;
+    background: transparent;
+
+    /*position: absolute;*/
+    /*top: 55px;*/
+    /*right: 690px;*/
+    font-size: 20px;
+    width: 30px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+    margin: 0px 100px 0px 0px;
+}
+
+#readme-text {
+    display: none;
+    box-sizing: border-box;
+    height: 271px;
+    width: 709px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin: 0px 100px 0px 0px;
+
+    position: absolute;
+    top: 25px;
+    right: 28px;
+
+    background: white;
+    z-index: 1;
+
+    text-align: left;
+    overflow-y: scroll;
+	font-size: 16px;
+	color: black;
+}
+
+#loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+  }
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  

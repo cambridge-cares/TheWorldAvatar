@@ -1,0 +1,43 @@
+extends header.pug
+block title
+    title MAU Simulation
+
+block sheets
+    link(rel='stylesheet', href='/stylesheets/mpage.css', type='text/css')
+
+block subtitle
+    |BMS Sensor Data Plot
+block readme
+    span#readme-button
+        | ?    
+    span#readme-text
+        | The Makeup Air Unit, or MAU, is part of the CARES Lab heating, ventilation and air conditioning (HVAC) system. MAU is also connected to the CARES Lab BMS. The MAU is a device used to regulate and circulate air and typically consists of the air filter, heating and cooling coils and blower. By modelling the MAU and using real-time ambient humidity and air temperature measurements, we can derive the MAU’s total cooling duty, sensible and latent duty and required cooling water circulation rate for a specified room’s temperature, humidity set point and air volumetric flow rate.
+    
+    
+block description
+    |Plot of BMS sensor data
+
+block content
+    script(src='http://d3js.org/d3.v2.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+    script(src='/javascripts/async.js')
+
+    script(src='/javascripts/line-graph.js')
+    script(src='/javascripts/Plot.js')
+    script(src='/javascripts/Sim.js')
+    script(src='/javascripts/MauSimPlot.js')
+    h1 Inputs
+    div#input-plot-panel
+    h1 Set point inputs
+    div#input-plot-set-panel
+        table
+            tr
+                td name
+                td value
+                td unit
+
+    h1 Outputs
+    div#output-plot-panel
+    div#loading-sign-panel
+        img#loading-sign(src="/images/loading.gif")

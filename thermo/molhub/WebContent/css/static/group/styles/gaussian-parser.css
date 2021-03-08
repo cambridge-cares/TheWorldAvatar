@@ -1,0 +1,24 @@
+
+div#text>pre {
+    font-size: 13px;
+    margin: auto;
+    width: 640px;
+    padding: 10px;
+}
+div#text>p {
+    margin: auto;
+    width: 640px;
+    padding: 10px;
+}
+
+#page-body form {
+    margin: auto;
+    width: 400px;
+    padding-top: 20px;
+}
+
+#page-body form#thermo_form {
+    margin: auto;
+    width: 700px;
+    padding-top: 20px;
+}
