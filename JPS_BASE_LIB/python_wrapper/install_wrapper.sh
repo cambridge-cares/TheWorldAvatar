@@ -12,13 +12,10 @@ CREATE_VENV='n'
 VENV_NAME='py4jps_venv'
 VENV_DIR=$SPATH
 DEV_INSTALL=''
-GET_RES='n'
-TARGET_DIR=$SPATH"/../target"
-JPS_JAR="jps-base-lib.jar"
 
 function usage {
     echo "==============================================================================================================="
-    echo "OSCML project installation script."
+    echo "python jps wrapper installation script."
     echo
     echo "Please run the script with one of the following flags set:"
     echo "--------------------------------------------------------------------------------------------------------"
@@ -29,12 +26,9 @@ function usage {
 	echo "                    the virtual environment will be created in the root of the project directory"
 	echo "  -i              : installs the project in currently active virtual environment in a developer mode"
 	echo "  -e              : enables developer mode installation"
-	echo "  -r              : downloads the project resources"
 	echo "  -h              : print this help message"
 	echo
 	echo "Example usage:"
-	echo "./install_wrapper.sh -r             - this will download project resources - resources MUST EXIST before"
-	echo "                                      the project installation"
 	echo "./install_wrapper.sh -i             - this will install the project in the currently active virtual environment"
 	echo "./install_wrapper.sh -v -i          - this will create default virtual environment in the project root and"
 	echo "                                      install the project in it"
@@ -64,23 +58,6 @@ function create_env {
 			exit -1
 		fi
 		echo ""
-}
-
-function get_resources {
-	if [ -d "$TARGET_DIR" ]; then
-
-	    echo "Copying resources files..."
-		if [ -d "$SPATH/py4jps/resources/" ]; then
-			rm -r $SPATH"/py4jps/resources/"
-		fi
-		mkdir $SPATH"/py4jps/resources/"
-        cp $TARGET_DIR"/"$JPS_JAR $SPATH"/py4jps/resources/."
-		cp -R $TARGET_DIR"/lib" $SPATH"/py4jps/resources/"
-		echo "Copying done"
-	else
-	    echo "ERROR: targer directory does not exists, build the jps-base-lib project first."
-	fi
-
 }
 
 function install_project {
@@ -130,7 +107,6 @@ case $key in
 	-d) VENV_DIR=$2; shift 2;;
     -i) INSTALL_PROJ='y'; shift;;
 	-e) DEV_INSTALL=' -e '; shift;;
-	-r) GET_RES='y'; shift;;
     *)
 	# otherwise print the usage
     usage
@@ -142,10 +118,6 @@ done
 if [[ $CREATE_VENV == 'y' ]]
 then
     create_env
-fi
-if [[ $GET_RES == 'y' ]]
-then
-    get_resources
 fi
 if [[ $INSTALL_PROJ == 'y' ]]
 then
