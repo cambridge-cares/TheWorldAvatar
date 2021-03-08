@@ -1,0 +1,44 @@
+extends header.pug
+block title
+    title  World Power Plants on Google Map
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |Wasteheat Network
+block readme
+    span#readme-button
+        | ?    
+    span#readme-text
+        | This agent considers five plants (Zeon, ExxonMobil, Singapore Refining, Lanxess and Chang Chun) for optimisation of a small inter-plant waste heat recovery network. The objective function of the optimisation is to maximise the overall energy efficiency of the overall waste heat recovery network by exploring the solution of a mixed-integer non-linear programming problem. <br/><br/>
+        | The boundary conditions for the optimisation are the individual plant’s waste heat source (or supply) and sink (or demand) quality and quantity. By analysing the boundary conditions, superstructure of the waste heat recovery network can be formulated and optimised. The user can modify the value of the individual plant’s waste heat source (or supply) and sink (or demand) quality and quantity in the interface on the left and execute the simulation to determine the corresponding optimal configuration for waste heat recovery. <br/><br/>
+        | All of the possible waste heat recovery configurations for a specified set of waste heat source and sink quality and quantity will be indicated in the interface on the left. The optimal waste heat recovery network configuration will be visualised on the map with the direction and quantity of the energy flow indicated in the interface. <br/>
+        <a href = "https://doi.org/10.1016/j.apenergy.2016.10.016">Link to the paper</a>	
+block description
+
+
+block content
+
+    div#wrapper
+        div.overlay-panel-wrapper
+            div#overlay-setting-panel.panel.panel-default
+                div.panel-heading Run
+                div.panel-body.container-fluid
+                    div#setting-panel-body
+                        button#run-btn.btn.btn-primary Run Simulation
+
+                        div#text-panel
+                        div#result-panel
+                        div#draw-panel
+
+        div#map
+
+
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src="/javascripts/PopUpmap.js")
+    script(src="https://d3js.org/d3.v4.min.js")
+    script(src="/javascripts/Heatwaste.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")

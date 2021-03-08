@@ -1,0 +1,72 @@
+extends header.pug
+
+block title
+    title  Nuclear Power Plant
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |Nuclear Power Plant
+    
+block readme
+    span#readme-button
+        | ?    
+    span#readme-text
+        |This agent identifies the optimal number and locations for modular nuclear power plants in order to satisfy the overall electricity demand.
+        br
+        br
+        |The computation is based on considering each land lot and evaluating the costs and risks associated with having a modular nuclear power plant there.
+        |The risk is related to the population density around the area and the distance to the nearest cooling water source. The cost includes the capital cost of the plant and the operating cost involved in transmitting power to the consumers.
+        br
+        br
+        |These parameters are used to create a multi objective mixed integer nonlinear programming (MINLP) optimisation model to determine the locations with minimum risks and costs. The model is executed in GAMS using the BARON solver. The model involves three user input parameters in order to execute the optimisation: the weighing factors for the cost and risk objective functions and the overdesign factor (excess factor) for the electricity demand.
+        br
+        br
+        |As the computation time for the simulation is long, three scenarios with different specified sets of user input parameters have been pre-computed and are available for selection. The user can modify the scenarios by selecting from the dropdown list and executing the simulation. The optimal number and locations for modular nuclear power plants will be visualised on the map.
+
+block description
+
+
+block content
+    div#wrapper
+        div.overlay-panel-wrapper
+            div#overlay-setting-panel.panel.panel-default
+                div.panel-heading Run
+                div.panel-body.container-fluid
+                    div#setting-panel-body
+
+
+                        div#text-panel
+                            select#predefined-select
+                                option(value='1') 1
+                                option(value='2') 2
+                                option(value='3') 3
+                            table
+                                tr
+                                    td(title ="The risk is related to the population density around the area and the distance to the nearest cooling water source.") risk factor
+                                    td
+                                        input(type='text' id='riskF' contenteditable='false')
+                                tr
+                                    td(title = "The cost includes the capital cost of the plant and the operating cost involved in transmitting power to the consumers.") cost factor
+                                    td
+                                        input(type='text' id='costF' contenteditable='false')
+                                tr
+                                    td(title = "The overdesign factor for the electricity demand.") excess factor(%)
+                                    td
+                                        input(type='text' id='excessF' contenteditable='false')
+                        br
+                        button#run-btn.btn.btn-primary Run Simulation
+                        div#result-panel
+                        div#draw-panel
+
+
+    div#map
+
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src="/javascripts/PopUpmap.js")
+    script(src="/javascripts/mapPPAlt.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?k" +
+    "ey=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")
