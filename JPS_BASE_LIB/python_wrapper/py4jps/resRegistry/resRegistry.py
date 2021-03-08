@@ -126,18 +126,26 @@ class resRegistry:
                     self._removeResRegEntry(resName)
         print("Info: Removing registry entries complete.")
 
-    def _isResInReg(self, resName):
-        return resName in self.resReg['resources']
+    def getResMainFilePath(self, resName):
+        """
+        Returns an absolute path to the resource main jar file.
 
-    def _getResPath(self, resName):
-        return os.path.abspath(os.path.join(_RES_DIR,resName))
-
-    def _getResMainFilePath(self, resName):
+        Arguments:
+        ----------
+        resName : str
+            resource name
+        """
         if resName in self.resReg['resources']:
             mainFile = self.resReg['resources'][resName]['mainJarFile']
             return os.path.join(self._getResPath(resName),mainFile)
         else:
             return None
+
+    def _isResInReg(self, resName):
+        return resName in self.resReg['resources']
+
+    def _getResPath(self, resName):
+        return os.path.abspath(os.path.join(_RES_DIR,resName))
 
     def _getResName(self, resDict):
         return list(resDict.keys())[0]
@@ -187,7 +195,7 @@ class resRegistry:
                 self._addResInfoFile(resName)
 
     def _addResClass(self, resName):
-        mainFile = self._getResMainFilePath(resName).replace('\\','\\\\')
+        mainFile = self.getResMainFilePath(resName).replace('\\','\\\\')
         # create the class definition and init file
         _class_template = """
         from py4jps import JPSGateway
