@@ -1,10 +1,14 @@
 package uk.ac.cam.cares.jps.agent.iri.resolution;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
+
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
  * IRI Resolution Agent is developed to ensure the resolvability of all IRIs<br>
@@ -20,6 +24,9 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 @Controller
 public class IRIResolutionAgent extends JPSAgent{
 
+	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
+	public static final String UNKNOWN_REQUEST = "The request is unknown to the IRI Resolution Agent";
+	
 	public static final String SHORT_JPS_IRI = "/onto*/*/*";
 	public static final String LONG_JPS_IRI = "/onto*/*/*/*";
 	
@@ -66,4 +73,38 @@ public class IRIResolutionAgent extends JPSAgent{
 			return null;
 		}
 	}
+	
+	/**
+	 * Receives and processes HTTP requests that match with the URL patterns<br>
+	 * listed in the annotations of this class.
+	 * 
+	 */
+    @Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		boolean isValidInput = false;
+		System.out.println("A request has been received..............................");
+		try {
+			isValidInput = validateInput(requestParams);
+		} catch (BadRequestException e) {
+			return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
+		}
+		if (isValidInput) {
+			return requestParams;
+		} else {
+			System.out.println("Unknown request");
+			throw new JPSRuntimeException(UNKNOWN_REQUEST);
+		}
+	}
+    
+    /**
+     * Validates input parameters specific to IRI Resolution Agent to decide whether<br>
+     * a request can be served.
+     */
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        return true;
+    }
 }
