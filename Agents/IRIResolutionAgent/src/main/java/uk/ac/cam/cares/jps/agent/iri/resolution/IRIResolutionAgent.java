@@ -30,7 +30,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
  *
  */
 @Controller
-@WebServlet(urlPatterns = {IRIResolutionAgent.SHORT_JPS_IRI, IRIResolutionAgent.LONG_JPS_IRI})
+@WebServlet(urlPatterns = { IRIResolutionAgent.SHORT_JPS_IRI, IRIResolutionAgent.MEDIUM_JPS_IRI,
+		IRIResolutionAgent.LONG_JPS_IRI })
 public class IRIResolutionAgent extends JPSAgent{
 
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
@@ -118,8 +119,8 @@ public class IRIResolutionAgent extends JPSAgent{
 	 * @throws Exception
 	 */
 	private String getResourceTarget(String IRI){
-		KnowledgeBaseClient kbClient = KGRouter.getKnowledgeBaseClient(getKBName(KGRouter.HTTP.concat(IRI)), true, false);
-		String json = kbClient.execute(retrievePredicateAndObject(IRI));
+		KnowledgeBaseClient kbClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX.concat(getKBName(IRI)), true, false);
+		String json = kbClient.execute(formIRIResolutionQuery(IRI));
 		JSONArray jsonArray = new JSONArray(json);
 		for (int i = 0; i<jsonArray.length(); i++){
 			JSONObject obj = jsonArray.getJSONObject(i);
@@ -131,13 +132,15 @@ public class IRIResolutionAgent extends JPSAgent{
 		return null;
 	}
 	
+	
+	
 	/**
-	 * For a given IRI retrieves all predicates and objects connected to it. 
+	 * For a given IRI forms a query to retrieve all predicates and objects connected to it. 
 	 * 
 	 * @param IRI
 	 * @return
 	 */
-	private String retrievePredicateAndObject(String IRI){
+	private String formIRIResolutionQuery(String IRI){
 		SelectBuilder builder = new SelectBuilder()
 				.addVar( KGRouter.QUESTION_MARK.concat(PREDICATE) )
 				.addVar( KGRouter.QUESTION_MARK.concat(OBJECT) )
@@ -209,5 +212,9 @@ public class IRIResolutionAgent extends JPSAgent{
             throw new BadRequestException();
         }
         return true;
+    }
+    
+    public static void main(String[] args){
+    	new IRIResolutionAgent().getResourceTarget("http://www.theworldavatar.com/kb/ontokin/POLIMI_H2CO_1412.owl/ArrheniusCoefficient_182161099217501");
     }
 }

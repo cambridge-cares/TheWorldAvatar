@@ -23,7 +23,7 @@ public class KGRouter{
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
 	public static final String KB="kb";
-	public static final String BACKSLASH="kb";
+	public static final String BACKSLASH="/";
 	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(BACKSLASH);
 	public static final String EMPTY = "";
 	private static final String KGROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
