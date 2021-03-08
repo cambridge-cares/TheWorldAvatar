@@ -13,6 +13,7 @@ from rdflib.namespace import RDF, RDFS, Namespace
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
+import uuid 
 import PropertyReader as propread
 import ABoxGeneration as aboxgen
 import os.path as path
