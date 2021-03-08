@@ -147,7 +147,7 @@ The module view should be created for each Python module in your application tha
 # The purpose of this module is to create and start single
 # gateway objects to be used in all of your other modules
 #============================================================
-from py4jps import jpsBaseLib
+from py4jps.resources import jpsBaseLib
 
 jpsBaseLibGW = jpsBaseLib()
 jpsBaseLibGW.start()
