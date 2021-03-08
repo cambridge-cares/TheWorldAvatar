@@ -1,11 +1,10 @@
 import unittest
-from py4jps import JPSGateway
-from os import path
+from py4jps.resources import jpsBaseLib
 
 class TestWrapper(unittest.TestCase):
 
     def fileReading(self):
-        jps = JPSGateway()
+        jps = jpsBaseLib()
         jps.start()
         module1_view = jps.createModuleView()
         jps.importPackages(module1_view,'uk.ac.cam.cares.jps.base.util.*')
@@ -16,13 +15,13 @@ class TestWrapper(unittest.TestCase):
         jps.shutdown()
 
     def remoteKGquery(self):
-        jps = JPSGateway()
+        jps = jpsBaseLib()
         jps.start()
         module1_view = jps.createModuleView()
         jps.importPackages(module1_view,"uk.ac.cam.cares.jps.base.query.*")
 
         KGRouter = module1_view.KGRouter
-        KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+'ontokin', True, False)
+        KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontokin', True, False)
         response = KGClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
                                         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>	SELECT ?mechanismIRI \
                                         WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))

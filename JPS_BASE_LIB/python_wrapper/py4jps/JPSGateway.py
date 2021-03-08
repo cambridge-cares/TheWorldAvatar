@@ -1,16 +1,20 @@
 from py4j.java_gateway import JavaGateway, java_import
 from os import path
+from py4jps.resRegistry.resManager import resReg
 
 class JPSGateway:
-    _jarPath = path.join(path.dirname(__file__),'resources','jps-base-lib.jar')
-
-    def __init__(self):
+    def __init__(self, resName=None, jarPath=None):
         self.gateway = None
+        self.resName = resName
+        if jarPath is None:
+            self.jarPath = resReg.getResMainFilePath(resName)
+        else:
+            self.jarPath = jarPath
         self._isStarted = False
 
     def start(self):
         if not self._isStarted:
-            self.gateway = JavaGateway.launch_gateway(jarpath=self._jarPath,  die_on_exit=True)
+            self.gateway = JavaGateway.launch_gateway(jarpath=self.jarPath,  die_on_exit=True)
             self._isStarted = True
         else:
             print('Info: JPSGateway already started.')
