@@ -25,5 +25,5 @@ COPY . /app
 RUN useradd appuser && chown -R appuser /app
 USER appuser
 
-# Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'simple_agent' module
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "simple_agent:app"]
+# Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'python_agent' module
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "python_agent:app"]
