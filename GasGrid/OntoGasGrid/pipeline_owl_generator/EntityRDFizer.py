@@ -69,19 +69,27 @@ def process_data(row):
         if row[1].strip().lower() == TYPE_INSTANCE.lower():
             if (row[3].strip() is None or row[3].strip() == '') \
                     and (row[4].strip() is None or row[4].strip() == ''):
-                aboxgen.create_instance(g,
-                                        URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
-                                        propread.getABoxIRI()+SLASH+format_iri(row[0]),
-                                        row[0])
-                instances[row[0].strip()] = row[2].strip()
+
+                if row[2].strip()[:4] == 'http':
+                    aboxgen.create_instance(g,
+                                            URIRef(row[2]),
+                                            propread.getABoxIRI()+SLASH+format_iri(row[0]),
+                                            row[0])
+                    instances[row[0].strip()] = row[2].strip()
+                else:
+                    aboxgen.create_instance(g,
+                                            URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
+                                            propread.getABoxIRI()+SLASH+format_iri(row[0]),
+                                            row[0])
+                    instances[row[0].strip()] = row[2].strip()
 
             elif row[2].strip() in instances:
                 if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
                     aboxgen.link_instance(g, URIRef(row[3]),
-                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
-                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
+                                            URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
+                                            URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
 
         elif row[1].strip().lower() == TYPE_DATA.lower():
             if row[2].strip() in instances and not row[4].strip() == '':
