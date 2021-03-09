@@ -135,6 +135,7 @@ public class RenamingTool {
 			if(strMatch == null) {strMatch = strTarget;};		
 		
 			exprMatch = exprFactory.asExpr(strMatch);
+			exprTarget = exprFactory.asExpr(strTarget);
 			
 			WhereBuilder whereFilter = whereMatchString();
 			WhereBuilder whereUpdate = whereUpdateString();
@@ -172,12 +173,12 @@ public class RenamingTool {
 			
 			//// For URI renaming
 			// targetURI
-			varTarget = Var.alloc("targetURI");
-			exprTarget = new ExprVar(varTarget);
+			varTargetURI = Var.alloc("targetURI");
+			exprTargetURI = new ExprVar(varTargetURI);
 			
 			//replacementURI
-			varReplacement = Var.alloc("replacementURI");
-			exprReplacement = new ExprVar(varReplacement);
+			varReplacementURI = Var.alloc("replacementURI");
+			exprReplacementURI = new ExprVar(varReplacementURI);
 			
 			WhereBuilder whereUpdate = whereUpdateURI();
 			WhereBuilder whereFilter = whereMatchURI();
@@ -232,7 +233,7 @@ public class RenamingTool {
 		
 	}
 	
-	//////////////////////////////// methods to construct sparql queries
+	//// Methods to construct sparql queries
 	
 	/**
 	 * Variables for sparql builder
@@ -246,16 +247,18 @@ public class RenamingTool {
 		
 	//// For URI renaming
 	// targetURI
-	Var varTarget;
-	ExprVar exprTarget;
+	Var varTargetURI;
+	ExprVar exprTargetURI;
 	
 	//replacementURI
-	Var varReplacement;
-	ExprVar exprReplacement;
+	Var varReplacementURI;
+	ExprVar exprReplacementURI;
 	
 	//// For string renaming
 	// Match string as expression
 	Expr exprMatch;
+	// Target string as expression
+	Expr exprTarget;
 	
 	//// SPARQL expressions
 	
@@ -360,7 +363,7 @@ public class RenamingTool {
 		return builder.buildRequest();
 	}
 	
-	//// SPARQL where for URIs
+	//// SPARQL wherebuilder for URIs
 	
 	/**
 	 * Create sparql where to filter triples matching renaming criteria 
@@ -371,9 +374,9 @@ public class RenamingTool {
 	private WhereBuilder whereMatchURI() throws ParseException {
 		
 		// Filter OR expression: FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI )
-		Expr eqS = new E_Equals(exprS, exprTarget);
-		Expr eqP = new E_Equals(exprP, exprTarget);
-		Expr eqO = new E_Equals(exprO, exprTarget);
+		Expr eqS = new E_Equals(exprS, exprTargetURI);
+		Expr eqP = new E_Equals(exprP, exprTargetURI);
+		Expr eqO = new E_Equals(exprO, exprTargetURI);
 		Expr orSPO = new E_LogicalOr(eqS, new E_LogicalOr(eqP, eqO));
 		
 		////Build WHERE statement of the form:
@@ -392,8 +395,8 @@ public class RenamingTool {
 		}
 		
 		where.addWhere(varS, varP, varO)
-			.addBind( "<" + strTarget + ">", varTarget)
-			.addBind( "<" + strReplacement + ">", varReplacement)
+			.addBind( "<" + strTarget + ">", varTargetURI)
+			.addBind( "<" + strReplacement + ">", varReplacementURI)
 			.addFilter(orSPO);
 						
 		return where;
@@ -421,9 +424,9 @@ public class RenamingTool {
 		
 		// EXPRESSIONS
 		// IF statements: IF(?s = ?targetURI, ?replacementURI, ?s)
-		Expr ifS = new E_Conditional(new E_Equals(exprS, exprTarget), exprReplacement, exprS);
-		Expr ifP = new E_Conditional(new E_Equals(exprP, exprTarget), exprReplacement, exprP);
-		Expr ifO = new E_Conditional(new E_Equals(exprO, exprTarget), exprReplacement, exprO);
+		Expr ifS = new E_Conditional(new E_Equals(exprS, exprTargetURI), exprReplacementURI, exprS);
+		Expr ifP = new E_Conditional(new E_Equals(exprP, exprTargetURI), exprReplacementURI, exprP);
+		Expr ifO = new E_Conditional(new E_Equals(exprO, exprTargetURI), exprReplacementURI, exprO);
 		
 		Expr ifSBlank = new E_Conditional(new E_IsBlank(exprS), exprS, ifS);
 		Expr ifPBlank = new E_Conditional(new E_IsBlank(exprP), exprP, ifP);
@@ -438,7 +441,7 @@ public class RenamingTool {
 		return where;
 	}
 	
-	///// SPARQL where for strings
+	///// SPARQL wherebuilder for strings
 	
 	/**
 	 * Create sparql where to filter triples matching renaming criteria
@@ -450,17 +453,34 @@ public class RenamingTool {
 		
 		////    "WHERE\n"+
 		////	"  { ?s  ?p  ?o\n"+
-		////	"    BIND(regex(str(?s), exprMatch) AS ?matchS)\n"+
-		////	"    BIND(regex(str(?p), exprMatch) AS ?matchP)\n"+
-		////	"    BIND(regex(str(?o), exprMatch) AS ?matchO)\n"+
+		////	"    BIND((regex(str(?s), exprMatch) && regex(str(?s), exprTarget)) AS ?matchS)\n"+
+		////	"    BIND((regex(str(?p), exprMatch) && regex(str(?p), exprTarget)) AS ?matchP)\n"+
+		////	"    BIND((regex(str(?o), exprMatch) && regex(str(?o), exprTarget)) AS ?matchO)\n"+
 		////	"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
 		////	"  }\n";
 		
 		// EXPRESSIONS
-		// REGEX expressions: REGEX(str(?s), target)
-		Expr regexS = new E_Regex( new E_Str(exprS), exprMatch, null);
-		Expr regexP = new E_Regex( new E_Str(exprP), exprMatch, null);
-		Expr regexO = new E_Regex( new E_Str(exprO), exprMatch, null);
+		// REGEX expressions: REGEX(str(?s), match)
+		Expr regexSmatch = new E_Regex( new E_Str(exprS), exprMatch, null);
+		Expr regexPmatch = new E_Regex( new E_Str(exprP), exprMatch, null);
+		Expr regexOmatch = new E_Regex( new E_Str(exprO), exprMatch, null);
+		
+		Expr regexStarget = new E_Regex( new E_Str(exprS), exprTarget, null);
+		Expr regexPtarget = new E_Regex( new E_Str(exprP), exprTarget, null);
+		Expr regexOtarget = new E_Regex( new E_Str(exprO), exprTarget, null);
+		
+		Expr regexS;
+		Expr regexP;
+		Expr regexO;
+		if(exprMatch != exprTarget) {
+			regexS = exprFactory.and(regexSmatch, regexStarget);
+			regexP = exprFactory.and(regexPmatch, regexPtarget);
+			regexO = exprFactory.and(regexOmatch, regexOtarget);
+		}else {
+			regexS = regexSmatch;
+			regexP = regexPmatch;
+			regexO = regexOmatch;
+		}
 		
 		// OR expression for filter: 
 		// (?matchS || ?matchP || ?matchO)
@@ -501,10 +521,7 @@ public class RenamingTool {
 	////			BIND(if(isBlank(?p), ?p, if(?matchP, uri(replace(str(?p), exprTarget, exprReplacement)), ?p)) AS ?newP)
 	////			BIND(if(isBlank(?o), ?o, if(?matchO, uri(replace(str(?o), exprTarget, exprReplacement)), ?o)) AS ?newO)
 	////		}
-		
-		// Replacement target string as expression
-		Expr exprTarget = exprFactory.asExpr(strTarget);
-		
+				
 		// Replacement string as expression
 		Expr exprReplacement = exprFactory.asExpr(strReplacement); 
 				

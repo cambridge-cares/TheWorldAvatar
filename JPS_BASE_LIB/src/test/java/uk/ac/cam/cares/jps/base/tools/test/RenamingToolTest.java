@@ -428,23 +428,23 @@ public class RenamingToolTest {
 		Var varReplacement = Var.alloc("replacementURI");
 		ExprVar exprReplacement = new ExprVar(varReplacement);
 		
-		assertNotNull(renamingTool.getClass().getDeclaredField("varTarget"));
-		Field field1 = renamingTool.getClass().getDeclaredField("varTarget");
+		assertNotNull(renamingTool.getClass().getDeclaredField("varTargetURI"));
+		Field field1 = renamingTool.getClass().getDeclaredField("varTargetURI");
 		field1.setAccessible(true);
 		field1.set(renamingTool, varTarget);
 		
-		assertNotNull(renamingTool.getClass().getDeclaredField("exprTarget"));
-		Field field2 = renamingTool.getClass().getDeclaredField("exprTarget");
+		assertNotNull(renamingTool.getClass().getDeclaredField("exprTargetURI"));
+		Field field2 = renamingTool.getClass().getDeclaredField("exprTargetURI");
 		field2.setAccessible(true);
 		field2.set(renamingTool, exprTarget);
 		
-		assertNotNull(renamingTool.getClass().getDeclaredField("varReplacement"));
-		Field field3 = renamingTool.getClass().getDeclaredField("varReplacement");
+		assertNotNull(renamingTool.getClass().getDeclaredField("varReplacementURI"));
+		Field field3 = renamingTool.getClass().getDeclaredField("varReplacementURI");
 		field3.setAccessible(true);
 		field3.set(renamingTool, varReplacement);
 		
-		assertNotNull(renamingTool.getClass().getDeclaredField("exprReplacement"));
-		Field field4 = renamingTool.getClass().getDeclaredField("exprReplacement");
+		assertNotNull(renamingTool.getClass().getDeclaredField("exprReplacementURI"));
+		Field field4 = renamingTool.getClass().getDeclaredField("exprReplacementURI");
 		field4.setAccessible(true);
 		field4.set(renamingTool, exprReplacement);
 		
@@ -492,15 +492,28 @@ public class RenamingToolTest {
 	@Test
 	public void testWhereString() throws NoSuchMethodException, SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		
-		RenamingTool renamingTool = new RenamingTool("http://example.com/test/target","http://example.com/test/replacement");
-		
-		//set variables
 		ExprFactory exprFactory = new ExprFactory();
-		Expr exprMatch = exprFactory.asExpr("http://example.com/test/match");
+		
+		String strTarget = "http://example.com/test/target";
+		Expr exprTarget = exprFactory.asExpr(strTarget);
+		
+		String strMatch = "http://example.com/test/match";
+		Expr exprMatch = exprFactory.asExpr(strMatch);
+		
+		String strReplacement = "http://example.com/test/replacement";
+		
+		RenamingTool renamingTool = new RenamingTool(strTarget,strReplacement);
+		
+		//set variables		
 		assertNotNull(renamingTool.getClass().getDeclaredField("exprMatch"));
 		Field field1 = renamingTool.getClass().getDeclaredField("exprMatch");
 		field1.setAccessible(true);
-		field1.set(renamingTool, exprMatch);
+		field1.set(renamingTool, exprTarget);
+		
+		assertNotNull(renamingTool.getClass().getDeclaredField("exprTarget"));
+		Field field2 = renamingTool.getClass().getDeclaredField("exprTarget");
+		field2.setAccessible(true);
+		field2.set(renamingTool, exprTarget);
 		
 		//test optional filter expression
 		
@@ -511,18 +524,18 @@ public class RenamingToolTest {
 		
 		//assert filter variable set correctly
 		assertNotNull(renamingTool.getClass().getDeclaredField("exprFilter"));
-		Field field2 = renamingTool.getClass().getDeclaredField("exprFilter");
-		field2.setAccessible(true);
-		Expr filter = (Expr) field2.get(renamingTool);
+		Field field3 = renamingTool.getClass().getDeclaredField("exprFilter");
+		field3.setAccessible(true);
+		Expr filter = (Expr) field3.get(renamingTool);
 		assertEquals(filterExpected,filter);
 		
 		//Test method whereMatchString
 		String expectedMatch = "WHERE\n"+
 				"  { ?s  ?p  ?o\n"+
 				"    FILTER strstarts(str(?s), \"http://www.theworldavatar.com/\")\n"+
-				"    BIND(regex(str(?s), \"http://example.com/test/match\") AS ?matchS)\n"+
-				"    BIND(regex(str(?p), \"http://example.com/test/match\") AS ?matchP)\n"+
-				"    BIND(regex(str(?o), \"http://example.com/test/match\") AS ?matchO)\n"+
+				"    BIND(regex(str(?s), \""+strTarget+"\") AS ?matchS)\n"+
+				"    BIND(regex(str(?p), \""+strTarget+"\") AS ?matchP)\n"+
+				"    BIND(regex(str(?o), \""+strTarget+"\") AS ?matchO)\n"+
 				"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
 				"  }\n";
 		assertNotNull(renamingTool.getClass().getDeclaredMethod("whereMatchString"));
@@ -532,17 +545,31 @@ public class RenamingToolTest {
 		String strWhereMatch = whereMatch.toString();	
 		assertEquals(expectedMatch, strWhereMatch);
 	
+		//Test whereMatchString with match =/= target
+		expectedMatch = "WHERE\n"+
+				"  { ?s  ?p  ?o\n"+
+				"    FILTER strstarts(str(?s), \"http://www.theworldavatar.com/\")\n"+
+				"    BIND(( regex(str(?s), \""+strMatch+"\") && regex(str(?s), \""+strTarget+"\") ) AS ?matchS)\n"+
+				"    BIND(( regex(str(?p), \""+strMatch+"\") && regex(str(?p), \""+strTarget+"\") ) AS ?matchP)\n"+
+				"    BIND(( regex(str(?o), \""+strMatch+"\") && regex(str(?o), \""+strTarget+"\") ) AS ?matchO)\n"+
+				"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
+				"  }\n";
+		field1.set(renamingTool, exprMatch);
+		whereMatch = (WhereBuilder) method.invoke(renamingTool);	
+		strWhereMatch = whereMatch.toString();	
+		assertEquals(expectedMatch, strWhereMatch);
+		
 		//Test method whereUpdateString
 		String expectedUpdate = "WHERE\n"+
 				"  { ?s  ?p  ?o\n"+
 				"    FILTER strstarts(str(?s), \"http://www.theworldavatar.com/\")\n"+
-				"    BIND(regex(str(?s), \"http://example.com/test/match\") AS ?matchS)\n"+
-				"    BIND(regex(str(?p), \"http://example.com/test/match\") AS ?matchP)\n"+
-				"    BIND(regex(str(?o), \"http://example.com/test/match\") AS ?matchO)\n"+
+				"    BIND(( regex(str(?s), \""+strMatch+"\") && regex(str(?s), \""+strTarget+"\") ) AS ?matchS)\n"+
+				"    BIND(( regex(str(?p), \""+strMatch+"\") && regex(str(?p), \""+strTarget+"\") ) AS ?matchP)\n"+
+				"    BIND(( regex(str(?o), \""+strMatch+"\") && regex(str(?o), \""+strTarget+"\") ) AS ?matchO)\n"+
 				"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
-				"    BIND(if(isBlank(?s), ?s, if(?matchS, uri(replace(str(?s), \"http://example.com/test/target\", \"http://example.com/test/replacement\")), ?s)) AS ?newS)\n"+ 
-			    "    BIND(if(isBlank(?p), ?p, if(?matchP, uri(replace(str(?p), \"http://example.com/test/target\", \"http://example.com/test/replacement\")), ?p)) AS ?newP)\n"+ 
-			    "    BIND(if(isBlank(?o), ?o, if(?matchO, uri(replace(str(?o), \"http://example.com/test/target\", \"http://example.com/test/replacement\")), ?o)) AS ?newO)\n"+ 
+				"    BIND(if(isBlank(?s), ?s, if(?matchS, uri(replace(str(?s), \""+strTarget+"\", \""+strReplacement+"\")), ?s)) AS ?newS)\n"+ 
+			    "    BIND(if(isBlank(?p), ?p, if(?matchP, uri(replace(str(?p), \""+strTarget+"\", \""+strReplacement+"\")), ?p)) AS ?newP)\n"+ 
+			    "    BIND(if(isBlank(?o), ?o, if(?matchO, uri(replace(str(?o), \""+strTarget+"\", \""+strReplacement+"\")), ?o)) AS ?newO)\n"+ 
 				"  }\n";
 		assertNotNull(renamingTool.getClass().getDeclaredMethod("whereUpdateString"));
 		Method method2 = renamingTool.getClass().getDeclaredMethod("whereUpdateString");
@@ -551,6 +578,8 @@ public class RenamingToolTest {
 		String strWhereUpdate = whereUpdate.toString();	
 		assertEquals(expectedUpdate, strWhereUpdate);	
 	}
+	
+	//TODO add match=target test
 	
 	/**
 	 * Test method buildSparqlUpdate with and without named graph
