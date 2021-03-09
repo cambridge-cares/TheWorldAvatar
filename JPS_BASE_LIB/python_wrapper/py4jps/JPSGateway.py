@@ -14,7 +14,7 @@ class JPSGateway:
         self.gateway = JavaGateway(**JGkwargs)
         self._isStarted = False
 
-    def start(self, **LGkwargs):
+    def launchGateway(self, **LGkwargs):
         if not self._isStarted:
             if 'jarpath' in LGkwargs:
                 LGkwargs.pop("jarpath")
