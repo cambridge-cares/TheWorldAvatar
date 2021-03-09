@@ -318,6 +318,13 @@ public class RenamingTool {
 	 */
 	private UpdateRequest buildSparqlUpdate(String graph, WhereBuilder where, int limit) {
 		
+		////	DELETE {?s ?p ?o}
+		////	INSERT {?newS ?newP ?newO}
+		////	WHERE { 
+		////		SELECT ?s ?p ?o ?newS ?newP ?newO
+		////		WHERE{
+		////		} LIMIT 1000000 }
+		
 		// subquery selects new and old triples
 		SelectBuilder select = new SelectBuilder();
 		
@@ -402,11 +409,7 @@ public class RenamingTool {
 	 */
 	private WhereBuilder whereUpdateURI() throws ParseException {
 		
-	//// DELETE {?s ?p ?o}
-	//// INSERT	{?newS ?newP ?newO}
-	//// WHERE{	
-	//// 		SELECT ?s ?p ?o ?newS ?newP ?newO
-	//// 		WHERE {?s ?p ?o .
+	////		WHERE {?s ?p ?o .
 	////			FILTER(...optional filter...).
 	////			BIND( <target> AS ?targetURI ) .
 	////			BIND( <replacement> AS ?replacementURI ) .
@@ -414,7 +417,7 @@ public class RenamingTool {
 	////			BIND ( IF(isblank(?s), ?s, IF( ?s = ?targetURI, ?replacementURI, ?s)) AS ?newS) .
 	////	  		BIND ( IF(isblank(?p), ?p, IF( ?p = ?targetURI, ?replacementURI, ?p)) AS ?newP) .
 	////	    	BIND ( IF(isblank(?o), ?o, IF( ?o = ?targetURI, ?replacementURI, ?o)) AS ?newO) . 
-	////		} LIMIT 1000000 }
+	////		}
 		
 		// EXPRESSIONS
 		// IF statements: IF(?s = ?targetURI, ?replacementURI, ?s)
@@ -444,6 +447,14 @@ public class RenamingTool {
 	 * @throws ParseException
 	 */
 	private WhereBuilder whereMatchString() throws ParseException {
+		
+		////    "WHERE\n"+
+		////	"  { ?s  ?p  ?o\n"+
+		////	"    BIND(regex(str(?s), exprMatch) AS ?matchS)\n"+
+		////	"    BIND(regex(str(?p), exprMatch) AS ?matchP)\n"+
+		////	"    BIND(regex(str(?o), exprMatch) AS ?matchO)\n"+
+		////	"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
+		////	"  }\n";
 		
 		// EXPRESSIONS
 		// REGEX expressions: REGEX(str(?s), target)
@@ -479,10 +490,6 @@ public class RenamingTool {
 	 */
 	private WhereBuilder whereUpdateString() throws ParseException {
 			
-	////	DELETE {?s ?p ?o}
-	////	INSERT {?newS ?newP ?newO}
-	////	WHERE { 
-	////		SELECT ?s ?p ?o ?newS ?newP ?newO
 	////		WHERE{
 	////			?s ?p ?o
 	////			FILTER ( ... optional filter ... )
@@ -493,7 +500,7 @@ public class RenamingTool {
 	////    		BIND(if(isBlank(?s), ?s, if(?matchS, uri(replace(str(?s), exprTarget, exprReplacement)), ?s)) AS ?newS)
 	////			BIND(if(isBlank(?p), ?p, if(?matchP, uri(replace(str(?p), exprTarget, exprReplacement)), ?p)) AS ?newP)
 	////			BIND(if(isBlank(?o), ?o, if(?matchO, uri(replace(str(?o), exprTarget, exprReplacement)), ?o)) AS ?newO)
-	////		} LIMIT 1000000	}
+	////		}
 		
 		// Replacement target string as expression
 		Expr exprTarget = exprFactory.asExpr(strTarget);
