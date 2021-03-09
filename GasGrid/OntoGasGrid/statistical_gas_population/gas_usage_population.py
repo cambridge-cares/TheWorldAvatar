@@ -9,7 +9,6 @@ from tabulate import tabulate
 import os
 import numpy as np 
 import bs4 as bs 
-from requests_html import HTMLSession
 import datetime
 import uuid
 from datetime import  timezone
@@ -43,30 +42,78 @@ for g in tqdm(range(len(len_query)-1)):
 
     used_uuid = uuid.uuid1()
     met_uuid = uuid.uuid1()
+    kw_uuid = uuid.uuid1()
+    mes_uuid = uuid.uuid1()
 
+    # query = '''PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    # PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    # PREFIX comp:    <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
+    # PREFIX gas:    <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#>
+    # PREFIX compa:   <http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>
+    # PREFIX ons:     <http://statistics.data.gov.uk/id/statistical-geography/>
+
+    # INSERT DATA
+    # { compa:%s rdf:type comp:OfftakenGas.
+    #   ons:%s comp:hasUsed compa:%s.
+    #   compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+    #   compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
+    #   compa:%s comp:hasGasEnergy %s.
+    #   compa:%s rdf:type gas:GasMeters.
+    #   ons:%s gas:hasGasMeters compa:%s.
+    #   compa:%s gas:hasConsumingGasMeters %s.
+    #   compa:%s gas:hasNonConsumingGasMeters %s. 
+    #   compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
+    #   compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
+    #    '''%(used_uuid,region,used_uuid,used_uuid,start_time,\
+    #      used_uuid,end_time,used_uuid,cons,met_uuid,region,\
+    #        met_uuid,met_uuid,meters,met_uuid,non_meters,met_uuid,start_time,met_uuid,end_time)
+    
     query = '''PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX comp:    <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
     PREFIX gas:    <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#>
     PREFIX compa:   <http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>
     PREFIX ons:     <http://statistics.data.gov.uk/id/statistical-geography/>
+    PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
     INSERT DATA
-    { compa:%s rdf:type comp:OfftakenGas.
+     { compa:%s rdf:type om:Measure.
+      compa:%s om:hasUnit om:kilowattHour.
+      compa:%s rdf:type comp:OfftakenGas;
+               comp:hasStartUTC "%s"^^xsd:dateTime ;
+               comp:hasEndUTC "%s"^^xsd:dateTime .
       ons:%s comp:hasUsed compa:%s.
-      compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
-      compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
-      compa:%s comp:hasGasEnergy %s.
+      compa:%s rdf:type om:Energy;
+               om:hasPhenomenon compa:%s;
+               om:hasValue compa:%s.
+      compa:%s om:hasNumericalValue %s.
       compa:%s rdf:type gas:GasMeters.
       ons:%s gas:hasGasMeters compa:%s.
-      compa:%s gas:hasConsumingGasMeters %s.
-      compa:%s gas:hasNonConsumingGasMeters %s. 
-      compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
-      compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
-       '''%(used_uuid,region,used_uuid,used_uuid,start_time,\
-         used_uuid,end_time,used_uuid,cons,met_uuid,region,\
-           met_uuid,met_uuid,meters,met_uuid,non_meters,met_uuid,start_time,met_uuid,end_time)
-    
+      compa:%s gas:hasConsumingGasMeters %s;
+               gas:hasNonConsumingGasMeters %s;
+               comp:hasStartUTC "%s"^^xsd:dateTime;
+               comp:hasEndUTC "%s"^^xsd:dateTime.
+       '''%(mes_uuid,
+       mes_uuid, 
+       used_uuid, 
+       start_time,
+       end_time,
+       region, 
+       used_uuid, 
+       kw_uuid, 
+       used_uuid, 
+       mes_uuid,
+       mes_uuid,
+       cons,
+       met_uuid,
+       region, 
+       met_uuid, 
+       met_uuid, 
+       meters,
+       non_meters,
+       start_time,
+       end_time)
+
     middle_num = int(len_query[g+1]-len_query[g])-2
     for j in range(middle_num):
         region = LSOA_codes[i+j+1]
@@ -76,22 +123,45 @@ for g in tqdm(range(len(len_query)-1)):
 
         used_uuid = uuid.uuid1()
         met_uuid = uuid.uuid1()
+        kw_uuid = uuid.uuid1()
+        mes_uuid = uuid.uuid1()
 
-        query += '''
-        compa:%s rdf:type comp:OfftakenGas.
+        query += '''compa:%s rdf:type om:Measure.
+        compa:%s om:hasUnit om:kilowattHour.
+        compa:%s rdf:type comp:OfftakenGas;
+                comp:hasStartUTC "%s"^^xsd:dateTime ;
+                comp:hasEndUTC "%s"^^xsd:dateTime .
         ons:%s comp:hasUsed compa:%s.
-        compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
-        compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
-        compa:%s comp:hasGasEnergy %s.
+        compa:%s rdf:type om:Energy;
+                om:hasPhenomenon compa:%s;
+                om:hasValue compa:%s.
+        compa:%s om:hasNumericalValue %s.
         compa:%s rdf:type gas:GasMeters.
         ons:%s gas:hasGasMeters compa:%s.
-        compa:%s gas:hasConsumingGasMeters %s.
-        compa:%s gas:hasNonConsumingGasMeters %s. 
-        compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
-        compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
-        '''%(used_uuid,region,used_uuid,used_uuid,start_time,\
-          used_uuid,end_time,used_uuid,cons,met_uuid,region,\
-            met_uuid,met_uuid,meters,met_uuid,non_meters,met_uuid,start_time,met_uuid,end_time)
+        compa:%s gas:hasConsumingGasMeters %s;
+                gas:hasNonConsumingGasMeters %s;
+                comp:hasStartUTC "%s"^^xsd:dateTime;
+                comp:hasEndUTC "%s"^^xsd:dateTime.
+        '''%(mes_uuid,
+        mes_uuid, 
+        used_uuid, 
+        start_time,
+        end_time,
+        region, 
+        used_uuid, 
+        kw_uuid, 
+        used_uuid, 
+        mes_uuid,
+        mes_uuid,
+        cons,
+        met_uuid,
+        region, 
+        met_uuid, 
+        met_uuid, 
+        meters,
+        non_meters,
+        start_time,
+        end_time)
       
         
     region = LSOA_codes[int(len_query[g+1])-1]
@@ -101,23 +171,45 @@ for g in tqdm(range(len(len_query)-1)):
 
     used_uuid = uuid.uuid1()
     met_uuid = uuid.uuid1()
+    kw_uuid = uuid.uuid1()
+    mes_uuid = uuid.uuid1()
 
-    query += '''
-        compa:%s rdf:type comp:OfftakenGas.
-        ons:%s comp:hasUsed compa:%s.
-        compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
-        compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .
-        compa:%s comp:hasGasEnergy %s.
-        compa:%s rdf:type gas:GasMeters.
-        ons:%s gas:hasGasMeters compa:%s.
-        compa:%s gas:hasConsumingGasMeters %s.
-        compa:%s gas:hasNonConsumingGasMeters %s. 
-        compa:%s comp:hasStartUTC "%s"^^xsd:dateTime .
-        compa:%s comp:hasEndUTC "%s"^^xsd:dateTime .}
-        '''%(used_uuid,region,used_uuid,used_uuid,start_time,\
-          used_uuid,end_time,used_uuid,cons,met_uuid,region,\
-            met_uuid,met_uuid,meters,met_uuid,non_meters,met_uuid,start_time,met_uuid,end_time)
-
+    query += '''compa:%s rdf:type om:Measure.
+  compa:%s om:hasUnit om:kilowattHour.
+  compa:%s rdf:type comp:OfftakenGas;
+            comp:hasStartUTC "%s"^^xsd:dateTime ;
+            comp:hasEndUTC "%s"^^xsd:dateTime .
+  ons:%s comp:hasUsed compa:%s.
+  compa:%s rdf:type om:Energy;
+            om:hasPhenomenon compa:%s;
+            om:hasValue compa:%s.
+  compa:%s om:hasNumericalValue %s.
+  compa:%s rdf:type gas:GasMeters.
+  ons:%s gas:hasGasMeters compa:%s.
+  compa:%s gas:hasConsumingGasMeters %s;
+            gas:hasNonConsumingGasMeters %s;
+            comp:hasStartUTC "%s"^^xsd:dateTime;
+            comp:hasEndUTC "%s"^^xsd:dateTime.}
+    '''%(mes_uuid,
+    mes_uuid, 
+    used_uuid, 
+    start_time,
+    end_time,
+    region, 
+    used_uuid, 
+    kw_uuid, 
+    used_uuid, 
+    mes_uuid,
+    mes_uuid,
+    cons,
+    met_uuid,
+    region, 
+    met_uuid, 
+    met_uuid, 
+    meters,
+    non_meters,
+    start_time,
+    end_time)
     sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
     sparql.setMethod(POST) # POST query, not GET
     sparql.setQuery(query)
