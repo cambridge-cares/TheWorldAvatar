@@ -374,10 +374,10 @@ public class RenamingTool {
 	private WhereBuilder whereMatchURI() throws ParseException {
 		
 		// Filter OR expression: FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI )
-		Expr eqS = new E_Equals(exprS, exprTargetURI);
-		Expr eqP = new E_Equals(exprP, exprTargetURI);
-		Expr eqO = new E_Equals(exprO, exprTargetURI);
-		Expr orSPO = new E_LogicalOr(eqS, new E_LogicalOr(eqP, eqO));
+		Expr eqS = exprFactory.eq(exprS, exprTargetURI);
+		Expr eqP = exprFactory.eq(exprP, exprTargetURI);
+		Expr eqO = exprFactory.eq(exprO, exprTargetURI);
+		Expr orSPO = exprFactory.or(eqS, exprFactory.or(eqP, eqO));
 		
 		////Build WHERE statement of the form:
 		////"WHERE {" +
@@ -424,13 +424,13 @@ public class RenamingTool {
 		
 		// EXPRESSIONS
 		// IF statements: IF(?s = ?targetURI, ?replacementURI, ?s)
-		Expr ifS = new E_Conditional(new E_Equals(exprS, exprTargetURI), exprReplacementURI, exprS);
-		Expr ifP = new E_Conditional(new E_Equals(exprP, exprTargetURI), exprReplacementURI, exprP);
-		Expr ifO = new E_Conditional(new E_Equals(exprO, exprTargetURI), exprReplacementURI, exprO);
+		Expr ifS = exprFactory.cond(exprFactory.eq(exprS, exprTargetURI), exprReplacementURI, exprS);
+		Expr ifP = exprFactory.cond(exprFactory.eq(exprP, exprTargetURI), exprReplacementURI, exprP);
+		Expr ifO = exprFactory.cond(exprFactory.eq(exprO, exprTargetURI), exprReplacementURI, exprO);
 		
-		Expr ifSBlank = new E_Conditional(new E_IsBlank(exprS), exprS, ifS);
-		Expr ifPBlank = new E_Conditional(new E_IsBlank(exprP), exprP, ifP);
-		Expr ifOBlank = new E_Conditional(new E_IsBlank(exprO), exprO, ifO);
+		Expr ifSBlank = exprFactory.cond(exprFactory.isBlank(exprS), exprS, ifS);
+		Expr ifPBlank = exprFactory.cond(exprFactory.isBlank(exprP), exprP, ifP);
+		Expr ifOBlank = exprFactory.cond(exprFactory.isBlank(exprO), exprO, ifO);
 		
 		//// new triple
 		WhereBuilder where = whereMatchURI()
@@ -461,13 +461,13 @@ public class RenamingTool {
 		
 		// EXPRESSIONS
 		// REGEX expressions: REGEX(str(?s), match)
-		Expr regexSmatch = new E_Regex( new E_Str(exprS), exprMatch, null);
-		Expr regexPmatch = new E_Regex( new E_Str(exprP), exprMatch, null);
-		Expr regexOmatch = new E_Regex( new E_Str(exprO), exprMatch, null);
+		Expr regexSmatch = new E_Regex(exprFactory.str(exprS), exprMatch, null);
+		Expr regexPmatch = new E_Regex(exprFactory.str(exprP), exprMatch, null);
+		Expr regexOmatch = new E_Regex(exprFactory.str(exprO), exprMatch, null);
 		
-		Expr regexStarget = new E_Regex( new E_Str(exprS), exprTarget, null);
-		Expr regexPtarget = new E_Regex( new E_Str(exprP), exprTarget, null);
-		Expr regexOtarget = new E_Regex( new E_Str(exprO), exprTarget, null);
+		Expr regexStarget = new E_Regex(exprFactory.str(exprS), exprTarget, null);
+		Expr regexPtarget = new E_Regex(exprFactory.str(exprP), exprTarget, null);
+		Expr regexOtarget = new E_Regex(exprFactory.str(exprO), exprTarget, null);
 		
 		Expr regexS;
 		Expr regexP;
@@ -484,7 +484,7 @@ public class RenamingTool {
 		
 		// OR expression for filter: 
 		// (?matchS || ?matchP || ?matchO)
-		Expr or = new E_LogicalOr(exprMatchS, new E_LogicalOr(exprMatchP, exprMatchO));
+		Expr or = exprFactory.or(exprMatchS, exprFactory.or(exprMatchP, exprMatchO));
 					
 		WhereBuilder where = new WhereBuilder()
 				.addWhere(varS, varP, varO);
@@ -517,9 +517,9 @@ public class RenamingTool {
 	////			BIND( REGEX(str(?p), exprMatch) AS ?matchP ) .
 	////			BIND( REGEX(str(?o), exprMatch) AS ?matchO ) .
 	////    		FILTER ( ?matchS || ( ?matchP || ?matchO ) )
-	////    		BIND(if(isBlank(?s), ?s, if(?matchS, uri(replace(str(?s), exprTarget, exprReplacement)), ?s)) AS ?newS)
-	////			BIND(if(isBlank(?p), ?p, if(?matchP, uri(replace(str(?p), exprTarget, exprReplacement)), ?p)) AS ?newP)
-	////			BIND(if(isBlank(?o), ?o, if(?matchO, uri(replace(str(?o), exprTarget, exprReplacement)), ?o)) AS ?newO)
+	////    		BIND(if(isBlank(?s), ?s, if(?matchS, iri(replace(str(?s), exprTarget, exprReplacement)), ?s)) AS ?newS)
+	////			BIND(if(isBlank(?p), ?p, if(?matchP, iri(replace(str(?p), exprTarget, exprReplacement)), ?p)) AS ?newP)
+	////			BIND(if(isBlank(?o), ?o, if(?matchO, iri(replace(str(?o), exprTarget, exprReplacement)), ?o)) AS ?newO)
 	////		}
 				
 		// Replacement string as expression
@@ -529,19 +529,19 @@ public class RenamingTool {
 		
 		// String replace: 
 		// REPLACE(STR(?s), target, replacement)
-		Expr replaceS = new E_StrReplace(new E_Str(exprS), exprTarget,  exprReplacement, null);
-		Expr replaceP = new E_StrReplace(new E_Str(exprP), exprTarget,  exprReplacement, null);
-		Expr replaceO = new E_StrReplace(new E_Str(exprO), exprTarget,  exprReplacement, null);
+		Expr replaceS = exprFactory.replace(exprFactory.str(exprS), exprTarget,  exprReplacement);
+		Expr replaceP = exprFactory.replace(exprFactory.str(exprP), exprTarget,  exprReplacement);
+		Expr replaceO = exprFactory.replace(exprFactory.str(exprO), exprTarget,  exprReplacement);
 		
 		// If statements: 
 		// IF( ?matchS, URI(REPLACE(STR(?s), target, replacement)), ?s)
-		Expr ifS = new E_Conditional(exprMatchS, new E_URI(replaceS), exprS);
-		Expr ifP = new E_Conditional(exprMatchP, new E_URI(replaceP), exprP);
-		Expr ifO = new E_Conditional(exprMatchO, new E_URI(replaceO), exprO);
+		Expr ifS = exprFactory.cond(exprMatchS, exprFactory.iri(replaceS), exprS);
+		Expr ifP = exprFactory.cond(exprMatchP, exprFactory.iri(replaceP), exprP);
+		Expr ifO = exprFactory.cond(exprMatchO, exprFactory.iri(replaceO), exprO);
 		
-		Expr ifSBlank = new E_Conditional(new E_IsBlank(exprS), exprS, ifS);
-		Expr ifPBlank = new E_Conditional(new E_IsBlank(exprP), exprP, ifP);
-		Expr ifOBlank = new E_Conditional(new E_IsBlank(exprO), exprO, ifO);
+		Expr ifSBlank = exprFactory.cond(exprFactory.isBlank(exprS), exprS, ifS);
+		Expr ifPBlank = exprFactory.cond(exprFactory.isBlank(exprP), exprP, ifP);
+		Expr ifOBlank = exprFactory.cond(exprFactory.isBlank(exprO), exprO, ifO);
 		
 		// where
 		WhereBuilder where = whereMatchString()
