@@ -1,28 +1,27 @@
 import unittest
-from py4jps import JPSGateway
+from py4jps.resources import jpsBaseLib
 from os import path
-
 class TestWrapper(unittest.TestCase):
 
     def fileReading(self):
-        jps = JPSGateway()
-        jps.start()
-        module1_view = jps.createModuleView()
-        jps.importPackages(module1_view,'uk.ac.cam.cares.jps.base.util.*')
+        jps = jpsBaseLib()
+        jps.launchGateway()
+        tw_jpsBaseLib_view = jps.createModuleView()
+        jps.importPackages(tw_jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.*')
 
-        FileUtil = module1_view.FileUtil
+        FileUtil = tw_jpsBaseLib_view.FileUtil
         file_str = FileUtil.readFileLocally(path.abspath(path.join(path.dirname(__file__),'test_file1.txt')))
         self.assertEqual("test file1", file_str)
         jps.shutdown()
 
     def remoteKGquery(self):
-        jps = JPSGateway()
-        jps.start()
-        module1_view = jps.createModuleView()
-        jps.importPackages(module1_view,"uk.ac.cam.cares.jps.base.query.*")
+        jps = jpsBaseLib()
+        jps.launchGateway()
+        tw_jpsBaseLib_view = jps.createModuleView()
+        jps.importPackages(tw_jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
-        KGRouter = module1_view.KGRouter
-        KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+'ontokin', True, False)
+        KGRouter = tw_jpsBaseLib_view.KGRouter
+        KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontokin', True, False)
         response = KGClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
                                         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>	SELECT ?mechanismIRI \
                                         WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))
