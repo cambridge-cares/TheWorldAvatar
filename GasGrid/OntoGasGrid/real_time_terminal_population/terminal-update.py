@@ -90,20 +90,40 @@ def update_triple_store():
         for i in range(len(term_uris)):
             # convert to proper datetime format
             time_UTC = str(terminal_supply.values[i,1].strftime("%Y-%m-%dT%H:%M:%S"))
-            # get gas volume
-            gas_volume = str(terminal_supply.values[i,2])
-            # create UUID for IntakenGas
+            # get gas volume from MCM/Day to cubicMetrePerSecond
+            gas_volume = str((terminal_supply.values[i,2]*1000000)/(24*60*60))
+            # create UUID for IntakenGas, quantity and measurement. 
             gas_uuid = uuid.uuid1()
+            quan_uuid = uuid.uuid1()
+            mes_uuid = uuid.uuid1()
+            
             query = '''PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX comp:    <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
             PREFIX compa:   <http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>
+            PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
             INSERT DATA
             { compa:%s rdf:type comp:IntakenGas.
             %s comp:hasTaken compa:%s.
-            compa:%s comp:atGasVolumeRate %s.
-            compa:%s comp:atUTC "%s"^^xsd:dateTime .} '''%(gas_uuid,term_uris[i],gas_uuid,gas_uuid,gas_volume,gas_uuid,time_UTC)
+            compa:%s rdf:type om:Measure;
+                     om:hasNumericalValue %s;
+                    om:hasUnit om:cubicMetrePerSecond-Time.
+            
+            compa:%s rdf:type om:VolumetricFlowRate;
+                  om:hasPhenomenon compa:%s;
+                  om:hasValue compa:%s.
+                    
+            compa:%s comp:atUTC "%s"^^xsd:dateTime .} '''%(gas_uuid,
+                                                           term_uris[i],
+                                                           gas_uuid,
+                                                           mes_uuid,
+                                                           gas_volume,
+                                                           quan_uuid,
+                                                           gas_uuid,
+                                                           mes_uuid,
+                                                           gas_uuid,
+                                                           time_UTC)
             sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
             sparql.setMethod(POST) # POST query, not GET
             sparql.setQuery(query)
