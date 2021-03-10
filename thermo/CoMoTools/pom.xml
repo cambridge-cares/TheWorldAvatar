@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>uk.ac.cam.ceb.como</groupId>
+    <artifactId>CoMoTools</artifactId>
+    <version>0.0.0</version>
+    <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <!--
+        Version updated from 2.3.1 to 2.4.1 by nk510 on 04 Apr 2018.
+        Commented out by sm453 on 31 Oct 2018.
+        -->
+        <!--
+        <dependency>
+            <groupId>JOpenBabel</groupId>
+            <artifactId>JOpenBabel</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>CoMoChemistry</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>CoMoCompChem</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>CoMoOpenBabel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <!--removed org: 04th-April-2018-->
+            <!--<groupId>org.com.cmclinnovations</groupId> -->
+            
+            <groupId>com.cmclinnovations</groupId>
+            
+            <artifactId>CMCLIO</artifactId>
+            
+            <!-- old version commented: 04th-April2018-->
+            <!--<version>0.0.1</version>-->
+            
+            <!-- new version added: 04th-April2018-->
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <repositories>
+    
+        <!-- This repository does not exist any more. -->
+        <!--
+        <repository>
+            <id>maven.ch</id>
+            <name>ch.cam.ac.uk Maven2</name>
+            <url>https://maven.ch.cam.ac.uk/m2repo</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        -->
+        <repository>
+            <id>com.hp.hpl.jena</id>
+            <url>http://openjena.org/repo</url>
+        </repository>
+    </repositories>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+</project>

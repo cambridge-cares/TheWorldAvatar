@@ -1,0 +1,82 @@
+body {
+  overflow-x: hidden; }
+
+#readme-button {
+  cursor: pointer;
+  color: white;
+  background: transparent;
+  font-size: 20px;
+  width: 30px;
+  border: 2px solid white;
+  border-radius: 50%; }
+
+@media only screen and (max-width: 1113px) {
+  #readme-button {
+    display: block;
+    margin: 0 auto;
+    position: static; } }
+@media only screen and (min-width: 1114px) {
+  #readme-button {
+    position: absolute;
+    margin: 38px 0 0px 250px; } }
+#readme-text {
+  display: none;
+  box-sizing: border-box;
+  height: 271px;
+  width: 709px;
+  border: 2px solid black;
+  border-radius: 5px;
+  padding: 5px 5px;
+  position: absolute;
+  top: 150px;
+  right: 115px;
+  background: white;
+  z-index: 1;
+  text-align: left;
+  overflow-y: scroll; }
+
+#top-banner {
+  background-color: #10616C;
+  border-radius: 0px;
+  margin: 0px; }
+
+h1#title {
+  display: inline-block; }
+
+h1#title, p#description {
+  color: white; }
+
+img.emission-fig, img.carbon, img#annual-baseline {
+  max-width: 100%;
+  max-height: 100%;
+  padding: 0 0; }
+
+img#annual-baseline {
+  max-height: 300px; }
+
+.row {
+  margin: 0 0;
+  max-height: 300px; }
+
+img.carbon {
+  max-height: 300px; }
+
+[class^="col"].emission-fig {
+  padding: 0;
+  max-height: 100%; }
+
+[class^="col"].carbon {
+  max-height: 300px;
+  padding: 0; }
+
+[class^="col"].carbon:nth-child(1) {
+  text-align: right; }
+
+.row.main {
+  min-height: 300px; }
+
+form {
+  margin: 20px 0 0 20px; }
+
+select {
+  height: 26px; }
