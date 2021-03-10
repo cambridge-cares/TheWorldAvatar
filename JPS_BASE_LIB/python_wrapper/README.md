@@ -174,7 +174,7 @@ The resource gateway class is automatically created upon the resource installati
 
 To give a simple example, after installing the `jpsBaseLib` resource one can import and use its gateway in a following way:
 ```python
-from py4jps.resources.jpsBaseLib
+from py4jps.resources import jpsBaseLib
 
 jpsBaseLibGW = jpsBaseLib(**JGkwargs)
 jpsBaseLibGW.launchGatewa(**LGkwargs)
