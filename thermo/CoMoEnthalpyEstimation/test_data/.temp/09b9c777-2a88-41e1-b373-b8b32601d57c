@@ -1,0 +1,62 @@
+Problem:    C3H8
+Rows:       22
+Columns:    16 (16 integer, 0 binary)
+Non-zeros:  68
+Status:     INTEGER OPTIMAL
+Objective:  R0 = 40 (MINimum)
+
+   No.   Row name        Activity     Lower bound   Upper bound
+------ ------------    ------------- ------------- -------------
+     1 R0                         40                             
+     2 R1                          0                           0 
+     3 R2                          0                           0 
+     4 R3                          0                           0 
+     5 R4                          0                           0 
+     6 R5                          0                           0 
+     7 R6                          0                           0 
+     8 R7                          0                           0 
+     9 R8                          0                           0 
+    10 R9                          0                           0 
+    11 R10                         0                           0 
+    12 R11                        -2                           0 
+    13 R12                         0                           0 
+    14 R13                         0                           0 
+    15 R14                        -2                           0 
+    16 R15                        -2                           0 
+    17 R16                         0                           0 
+    18 R17                         0             0             = 
+    19 R18                         0             0             = 
+    20 R19                         0             0             = 
+    21 R20                         0             0             = 
+    22 main                        1             1               
+
+   No. Column name       Activity     Lower bound   Upper bound
+------ ------------    ------------- ------------- -------------
+     1 v[0]         *              1                             
+     2 v[2]         *              0                             
+     3 v[1]         *             -1                             
+     4 absV[7]      *              0                             
+     5 absV[6]      *              0                             
+     6 absV[5]      *              1                             
+     7 absV[0]      *              1                             
+     8 absV[4]      *              0                             
+     9 absV[3]      *              0                             
+    10 absV[2]      *              0                             
+    11 absV[1]      *              1                             
+    12 v[3]         *              0                             
+    13 v[4]         *              0                             
+    14 v[5]         *             -1                             
+    15 v[6]         *              0                             
+    16 v[7]         *              0                             
+
+Integer feasibility conditions:
+
+KKT.PE: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+KKT.PB: max.abs.err = 0.00e+000 on row 0
+        max.rel.err = 0.00e+000 on row 0
+        High quality
+
+End of output

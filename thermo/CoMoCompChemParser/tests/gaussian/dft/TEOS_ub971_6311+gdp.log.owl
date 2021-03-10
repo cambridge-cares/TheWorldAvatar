@@ -1,0 +1,1180 @@
+@prefix gc: <http://purl.org/gc/> .
+@prefix ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix table: <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#> .
+@prefix unit: <http://data.nasa.gov/qudt/owl/unit#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#> a owl:Ontology ;
+    owl:imports <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#TEOS_ub971_6311+gdp> a ontocompchem:G03,
+        owl:Thing ;
+    gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_electronic_and_zpe_energy_C8H20O4Si1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_geometry_optimization_C8H20O4Si1_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_geometry_type_C8H20O4Si1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_electronic_energy_C8H20O4Si1_7bdc9c28-f33d-359c-a265-7ccc679804af_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_minus_one_electronic_energy_C8H20O4Si1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_minus_two_electronic_energy_C8H20O4Si1_227a9315-b21e-3c18-8589-9ed236d5f00a_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_electronic_energy_C8H20O4Si1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_plus_one_electronic_energy_C8H20O4Si1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_plus_two_electronic_energy_C8H20O4Si1_422306b5-3f92-37fb-b83f-636dbe097c5b_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_rotational_constants_C8H20O4Si1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_rotational_symmetry_C8H20O4Si1_ef2af78c-70f9-394e-8e62-f4a5d32e719e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_scf_energy_C8H20O4Si1_dbb0518a-18e9-3b85-99bc-8a38879462de_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_vibrations_C8H20O4Si1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_1> ;
+    ontocompchem:hasEnvironment <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#job_module_has_environment_module_C8H20O4Si1_1> ;
+    ontocompchem:hasInitialization <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#job_module_has_initilization_module_C8H20O4Si1_1> .
+
+<http://theworldavatar.com/data/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log> a ontocompchem:OutputSource,
+        owl:Thing .
+
+<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl> a ontocompchem:OutputSource,
+        owl:Thing .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_electronic_and_zpe_energy_C8H20O4Si1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1> a ontocompchem:ElectronicAndZPEEnergy,
+        owl:Thing ;
+    gc:hasElectronicEnergy <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_electronic_and_zpe_energy_value_C8H20O4Si1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_electronic_and_zpe_energy_value_C8H20O4Si1_0d8efdfd-b852-36aa-9389-cba8fac293fd_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -9.071325e+02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_geometry_optimization_C8H20O4Si1_1> a gc:GeometryOptimization,
+        owl:Thing ;
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_molecule_C8H20O4Si1_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_geometry_type_C8H20O4Si1_fdaeecd5-2035-3a84-8874-7161078bd0c0_1> a ontocompchem:GeometryType,
+        owl:Thing ;
+    ontocompchem:hasGeometryType "nonlinear" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:O .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:O .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:O .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:O .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:Si .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.935072e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.131132e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.808983e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.572756e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.080795e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.6428e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.609736e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.094404e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.800319e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.04328e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.26749e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.930377e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.102961e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.579602e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.439989e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.003267e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.491043e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.532719e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.84557e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.307778e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.635395e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -3.399395e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -3.483856e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.093984e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 7.39573e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.337675e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.002262e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.403015e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.328624e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 6.902e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -9.27602e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 5.50595e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.53697e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.027249e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.998283e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.077063e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.282999e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 8.659e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -6.67493e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.472276e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.610117e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 8.752e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -5.1195e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.217641e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.484585e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.26744e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.30466e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.100903e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.559034e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.905732e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.639899e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.811697e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.381047e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.203246e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.788667e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.504196e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.848825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.421356e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.674809e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 4.26507e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 4.35767e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.26834e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -4.05576e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -8.56292e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.327654e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.3362e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -3.038249e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.919738e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.248682e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.270877e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.684415e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.420808e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 5.9042e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -9.92571e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.394553e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -3.10271e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -4.96759e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.90447e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.9062e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.216817e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.6303e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -3.254369e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -3.97464e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.356162e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.750513e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.530755e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.47777e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 3.125574e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.500438e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.550216e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.966884e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.763591e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.043361e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 2.432628e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 5.36297e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 8.40385e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.196596e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.317178e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -2.84223e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.2e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.007825e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.599491e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.599491e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.599491e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.599491e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 2.797693e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_molecule_C8H20O4Si1_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasFormalCharge <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_molecule_formal_charge_C8H20O4Si1_1> ;
+    ontocompchem:hasSpinMultiplicity "1"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_molecule_formal_charge_C8H20O4Si1_1> a gc:IntegerValue,
+        owl:Thing ;
+    gc:hasUnit gc:atomicUnit ;
+    gc:hasValue 0 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_electronic_energy_C8H20O4Si1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> a ontocompchem:HomoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_electronic_energy_value_C8H20O4Si1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_electronic_energy_value_C8H20O4Si1_7bdc9c28-f33d-359c-a265-7ccc679804af_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -2.8106e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_minus_one_electronic_energy_C8H20O4Si1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> a ontocompchem:HomoMinusOneEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_minus_one_electronic_energy_value_C8H20O4Si1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_minus_one_electronic_energy_value_C8H20O4Si1_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -2.8114e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_minus_two_electronic_energy_C8H20O4Si1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> a ontocompchem:HomoMinusTwoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_minus_two_electronic_energy_value_C8H20O4Si1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_homo_minus_two_electronic_energy_value_C8H20O4Si1_227a9315-b21e-3c18-8589-9ed236d5f00a_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -2.8985e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_electronic_energy_C8H20O4Si1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> a ontocompchem:LumoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_electronic_energy_value_C8H20O4Si1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_electronic_energy_value_C8H20O4Si1_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 8.03e-03 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_plus_one_electronic_energy_C8H20O4Si1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> a ontocompchem:LumoPlusOneEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_plus_one_electronic_energy_value_C8H20O4Si1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_plus_one_electronic_energy_value_C8H20O4Si1_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 2.17e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_plus_two_electronic_energy_C8H20O4Si1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> a ontocompchem:LumoPlusTwoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_plus_two_electronic_energy_value_C8H20O4Si1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_lumo_plus_two_electronic_energy_value_C8H20O4Si1_422306b5-3f92-37fb-b83f-636dbe097c5b_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 2.185e-02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_rotational_constants_C8H20O4Si1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1> a ontocompchem:RotationalConstants,
+        owl:Thing ;
+    gc:hasUnit unit:GigaHertz ;
+    ontocompchem:hasRotationalConstants "0.45074000 0.47949000 0.48037000"^^xsd:string ;
+    ontocompchem:hasRotationalConstantsCount "3"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_rotational_symmetry_C8H20O4Si1_ef2af78c-70f9-394e-8e62-f4a5d32e719e_1> a ontocompchem:RotationalSymmetry,
+        owl:Thing ;
+    ontocompchem:hasRotationalSymmetryNumber "1.0"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_scf_energy_C8H20O4Si1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a ontocompchem:ScfEnergy,
+        owl:Thing ;
+    gc:hasElectronicEnergy <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_scf_energy_value_C8H20O4Si1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_scf_energy_value_C8H20O4Si1_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -9.074157e+02 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_vibrations_C8H20O4Si1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_1> a gc:VibrationalAnalysis,
+        owl:Thing ;
+    gc:hasResult <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_vibrations_frequencies_C8H20O4Si1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_vibrations_frequencies_C8H20O4Si1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_1> a gc:Frequency,
+        owl:Thing ;
+    gc:hasUnit gc:cm-1 ;
+    gc:hasVibrationCount "93"^^xsd:string ;
+    ontocompchem:hasFrequencies "3105.2014 3105.0515 3104.9133 3104.8673 3096.2917 3096.2325 3096.2216 3096.1211 3041.0022 3040.7609 3040.3582 3040.3097 3024.6793 3024.4011 3024.3909 3024.3563 2998.8857 2998.5297 2998.3230 2998.3032 1520.4705 1520.2903 1518.2175 1518.2017 1495.3047 1494.6478 1494.6227 1494.5764 1478.8872 1478.8494 1478.7865 1478.7475 1416.8556 1416.5684 1416.3386 1414.0492 1390.3608 1390.1014 1390.0261 1389.9108 1307.4503 1307.0420 1306.5492 1306.2671 1173.5962 1173.2541 1173.2487 1173.0398 1148.7698 1124.0265 1123.9114 1118.9342 1108.4422 1108.4126 1108.0433 1101.1001 980.1406 980.1240 973.0663 950.1832 811.4061 811.3314 809.8104 808.5835 806.6866 806.4393 784.2648 668.5474 477.0077 459.8067 459.5736 312.4136 310.2910 309.8809 306.3177 291.4079 286.7210 254.7485 254.6625 240.3680 233.9148 167.6907 121.6209 121.0398 62.0816 59.3719 58.7239 53.5658 52.7476 29.8132 29.1100 23.3692 18.5376"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_C8_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_H20_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_O4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:O .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_Si1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:Si .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_basis_set_parameter_C8H20O4Si1_1> a gc:BasisSet,
+        owl:Thing ;
+    gc:hasBasisSet "6-311+G(d,p)" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_level_of_theory_parameter_C8H20O4Si1_1> a gc:MethodologyFeature,
+        ontocompchem:LevelOfTheory,
+        owl:Thing ;
+    ontocompchem:hasLevelOfTheory "UB971/6-311+G(d,p)" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_C8_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_C8_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "8"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_H20_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_H20_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "20"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_O4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_O4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "4"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_Si1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_Si1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "1"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_property_C8H20O4Si1_1> a gc:MoleculeProperty,
+        owl:Thing ;
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_C8_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_H20_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_O4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_Si1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasName "C8H20O4Si1" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#job_module_has_environment_module_C8H20O4Si1_1> a gc:SourcePackage,
+        owl:Thing ;
+    gc:hasOutputFile <http://theworldavatar.com/data/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log>,
+        <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl> ;
+    ontocompchem:hasProgram "Gaussian"^^xsd:string ;
+    ontocompchem:hasProgramVersion "2003+E.01"^^xsd:string ;
+    ontocompchem:hasRunDate "Thu Apr 16 21:50:19 2009"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#job_module_has_initilization_module_C8H20O4Si1_1> a ontocompchem:InitializationModule,
+        owl:Thing ;
+    gc:hasMoleculeProperty <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_property_C8H20O4Si1_1> ;
+    gc:hasParameter <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_basis_set_parameter_C8H20O4Si1_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_level_of_theory_parameter_C8H20O4Si1_1> .
+
+table:Si a table:Element,
+        owl:Thing .
+
+table:O a table:Element,
+        owl:Thing .
+
+table:C a table:Element,
+        owl:Thing .
+
+table:H a table:Element,
+        owl:Thing .
+

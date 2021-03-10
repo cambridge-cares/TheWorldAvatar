@@ -1,0 +1,61 @@
+Problem:    C2H4
+Rows:       17
+Columns:    12
+Non-zeros:  49
+Status:     OPTIMAL
+Objective:  R0 = 24 (MINimum)
+
+   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 R0           B             24                             
+     2 R1           B      -0.857143                           0 
+     3 R2           NU             0                           0           -14 
+     4 R3           B      -0.285714                           0 
+     5 R4           NU             0                           0           -42 
+     6 R5           B              0                           0 
+     7 R6           NU             0                           0           -24 
+     8 R7           NU             0                           0         < eps
+     9 R8           NU             0                           0           -16 
+    10 R9           NU             0                           0           -12 
+    11 R10          B             -2                           0 
+    12 R11          B              0                           0 
+    13 R12          NU             0                           0           -18 
+    14 R13          B              0             0             = 
+    15 R14          NS             0             0             =         < eps
+    16 R15          NS             0             0             =            -1 
+    17 main         NL             1             1                          24 
+
+   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 absV[0]      B              1                             
+     2 absV[4]      B       0.142857                             
+     3 v[0]         B              1                             
+     4 absV[3]      NF             0                                     < eps
+     5 absV[2]      NF             0                                     < eps
+     6 v[2]         B              0                             
+     7 absV[1]      B       0.428571                             
+     8 v[1]         B      -0.428571                             
+     9 v[4]         B      -0.142857                             
+    10 v[3]         B              0                             
+    11 v[5]         B              0                             
+    12 absV[5]      B              0                             
+
+Karush-Kuhn-Tucker optimality conditions:
+
+KKT.PE: max.abs.err = 1.78e-015 on row 16
+        max.rel.err = 7.40e-017 on row 10
+        High quality
+
+KKT.PB: max.abs.err = 4.44e-016 on row 14
+        max.rel.err = 4.44e-016 on row 14
+        High quality
+
+KKT.DE: max.abs.err = 7.11e-015 on column 9
+        max.rel.err = 1.08e-016 on column 11
+        High quality
+
+KKT.DB: max.abs.err = 3.55e-015 on column 4
+        max.rel.err = 3.55e-015 on column 4
+        High quality
+
+End of output

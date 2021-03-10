@@ -1,0 +1,67 @@
+body {
+  font: 20px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+#co2-sum-panel {
+  padding: 320px 15px;
+  text-align: center;
+  font-size: 70px;
+  font-weight: 300;
+
+}
+
+h1{
+  color: white;
+}
+
+.textsmall{
+	padding-top:50px;
+	  font-size: 20px;
+
+	
+}
+
+
+.mypanel{
+    padding: 50px;
+    font: 20px "Lucida Grande", Helvetica, Arial, sans-serif;
+
+}
+
+table {
+    font-size:20px;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+ td,  th {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+ tr:nth-child(even):hover{
+     background-color: #b4b4b4;
+
+ }
+tr:nth-child(odd):hover{
+    background-color: #b4b4b4;
+
+}
+ tr:nth-child(even){background-color: #f2f2f2}
+
+ th {
+    padding-top: 11px;
+    padding-bottom: 11px;
+    background-color: #4CAF50;
+    color: white;
+}
+
+#err-msg-panel {
+    margin:20px
+}
