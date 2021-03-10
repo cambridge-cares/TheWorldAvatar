@@ -425,9 +425,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
 		double x0 = sc.getScopeCentre()[0]; // value not used in simulation, but needs to be within domain
 		double y0 = sc.getScopeCentre()[1];
-		double[] locationshipconverted0 = CRSTransformer.transform("EPSG:4326", epsgActive,
+		double[] locationshipconverted0 = CRSTransformer.transform(sc.getCRSName(), epsgActive,
 				new double[] { x0, y0 });
-		double[] locationshipconverted1 = CRSTransformer.transform("EPSG:4326", epsgActive,
+		double[] locationshipconverted1 = CRSTransformer.transform(sc.getCRSName(), epsgActive,
 				new double[] { x0+0.1, y0+0.1 });
 		try {
 			String fileContext = FileUtils.readFileToString(file);
