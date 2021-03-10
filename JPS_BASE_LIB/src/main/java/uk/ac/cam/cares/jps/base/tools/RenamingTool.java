@@ -7,14 +7,6 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.expr.E_Conditional;
-import org.apache.jena.sparql.expr.E_Equals;
-import org.apache.jena.sparql.expr.E_IsBlank;
-import org.apache.jena.sparql.expr.E_LogicalOr;
-import org.apache.jena.sparql.expr.E_Regex;
-import org.apache.jena.sparql.expr.E_Str;
-import org.apache.jena.sparql.expr.E_StrReplace;
-import org.apache.jena.sparql.expr.E_URI;
 import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.sparql.expr.ExprVar;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -461,13 +453,13 @@ public class RenamingTool {
 		
 		// EXPRESSIONS
 		// REGEX expressions: REGEX(str(?s), match)
-		Expr regexSmatch = new E_Regex(exprFactory.str(exprS), exprMatch, null);
-		Expr regexPmatch = new E_Regex(exprFactory.str(exprP), exprMatch, null);
-		Expr regexOmatch = new E_Regex(exprFactory.str(exprO), exprMatch, null);
+		Expr regexSmatch = exprFactory.contains(exprFactory.str(exprS), exprMatch);
+		Expr regexPmatch = exprFactory.contains(exprFactory.str(exprP), exprMatch);
+		Expr regexOmatch = exprFactory.contains(exprFactory.str(exprO), exprMatch);
 		
-		Expr regexStarget = new E_Regex(exprFactory.str(exprS), exprTarget, null);
-		Expr regexPtarget = new E_Regex(exprFactory.str(exprP), exprTarget, null);
-		Expr regexOtarget = new E_Regex(exprFactory.str(exprO), exprTarget, null);
+		Expr regexStarget = exprFactory.contains(exprFactory.str(exprS), exprTarget);
+		Expr regexPtarget = exprFactory.contains(exprFactory.str(exprP), exprTarget);
+		Expr regexOtarget = exprFactory.contains(exprFactory.str(exprO), exprTarget);
 		
 		Expr regexS;
 		Expr regexP;

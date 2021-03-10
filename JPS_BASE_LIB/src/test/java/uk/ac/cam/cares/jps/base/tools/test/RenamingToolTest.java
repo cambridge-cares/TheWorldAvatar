@@ -533,9 +533,9 @@ public class RenamingToolTest {
 		String expectedMatch = "WHERE\n"+
 				"  { ?s  ?p  ?o\n"+
 				"    FILTER strstarts(str(?s), \"http://www.theworldavatar.com/\")\n"+
-				"    BIND(regex(str(?s), \""+strTarget+"\") AS ?matchS)\n"+
-				"    BIND(regex(str(?p), \""+strTarget+"\") AS ?matchP)\n"+
-				"    BIND(regex(str(?o), \""+strTarget+"\") AS ?matchO)\n"+
+				"    BIND(contains(str(?s), \""+strTarget+"\") AS ?matchS)\n"+
+				"    BIND(contains(str(?p), \""+strTarget+"\") AS ?matchP)\n"+
+				"    BIND(contains(str(?o), \""+strTarget+"\") AS ?matchO)\n"+
 				"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
 				"  }\n";
 		assertNotNull(renamingTool.getClass().getDeclaredMethod("whereMatchString"));
@@ -549,9 +549,9 @@ public class RenamingToolTest {
 		expectedMatch = "WHERE\n"+
 				"  { ?s  ?p  ?o\n"+
 				"    FILTER strstarts(str(?s), \"http://www.theworldavatar.com/\")\n"+
-				"    BIND(( regex(str(?s), \""+strMatch+"\") && regex(str(?s), \""+strTarget+"\") ) AS ?matchS)\n"+
-				"    BIND(( regex(str(?p), \""+strMatch+"\") && regex(str(?p), \""+strTarget+"\") ) AS ?matchP)\n"+
-				"    BIND(( regex(str(?o), \""+strMatch+"\") && regex(str(?o), \""+strTarget+"\") ) AS ?matchO)\n"+
+				"    BIND(( contains(str(?s), \""+strMatch+"\") && contains(str(?s), \""+strTarget+"\") ) AS ?matchS)\n"+
+				"    BIND(( contains(str(?p), \""+strMatch+"\") && contains(str(?p), \""+strTarget+"\") ) AS ?matchP)\n"+
+				"    BIND(( contains(str(?o), \""+strMatch+"\") && contains(str(?o), \""+strTarget+"\") ) AS ?matchO)\n"+
 				"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
 				"  }\n";
 		field1.set(renamingTool, exprMatch);
@@ -563,9 +563,9 @@ public class RenamingToolTest {
 		String expectedUpdate = "WHERE\n"+
 				"  { ?s  ?p  ?o\n"+
 				"    FILTER strstarts(str(?s), \"http://www.theworldavatar.com/\")\n"+
-				"    BIND(( regex(str(?s), \""+strMatch+"\") && regex(str(?s), \""+strTarget+"\") ) AS ?matchS)\n"+
-				"    BIND(( regex(str(?p), \""+strMatch+"\") && regex(str(?p), \""+strTarget+"\") ) AS ?matchP)\n"+
-				"    BIND(( regex(str(?o), \""+strMatch+"\") && regex(str(?o), \""+strTarget+"\") ) AS ?matchO)\n"+
+				"    BIND(( contains(str(?s), \""+strMatch+"\") && contains(str(?s), \""+strTarget+"\") ) AS ?matchS)\n"+
+				"    BIND(( contains(str(?p), \""+strMatch+"\") && contains(str(?p), \""+strTarget+"\") ) AS ?matchP)\n"+
+				"    BIND(( contains(str(?o), \""+strMatch+"\") && contains(str(?o), \""+strTarget+"\") ) AS ?matchO)\n"+
 				"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
 				"    BIND(if(isBlank(?s), ?s, if(?matchS, iri(replace(str(?s), \""+strTarget+"\", \""+strReplacement+"\")), ?s)) AS ?newS)\n"+ 
 			    "    BIND(if(isBlank(?p), ?p, if(?matchP, iri(replace(str(?p), \""+strTarget+"\", \""+strReplacement+"\")), ?p)) AS ?newP)\n"+ 
