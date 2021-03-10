@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.Chimney;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 @WebServlet("/ShipAgent")
 public class ShipAgent extends JPSAgent{
@@ -21,6 +22,7 @@ public class ShipAgent extends JPSAgent{
 			// only call SpeedLoadMapAgent, may extend to include SRM agent in the future
 			JSONObject result= new JSONObject(AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/SpeedLoadMapAgent", requestParams.toString()));
 		    Chimney chim = new Chimney(result);
+		    ShipSparql.UpdateShipChimney(requestParams.getString("shipIRI"), chim);
 		    response = requestParams;
 		}
 		return response;
