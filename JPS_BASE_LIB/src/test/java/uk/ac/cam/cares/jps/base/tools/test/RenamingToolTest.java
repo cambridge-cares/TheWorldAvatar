@@ -106,7 +106,7 @@ public class RenamingToolTest {
 		//constructor
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
 		
-		//get fields
+		//get private variables
 		assertNotNull(renamingTool.getClass().getDeclaredField("strReplacement"));
 		Field field1 = renamingTool.getClass().getDeclaredField("strReplacement");
 		field1.setAccessible(true);
@@ -195,15 +195,15 @@ public class RenamingToolTest {
 		//create kbClient
 		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
-		//perform update
+		//perform renaming as single update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
 		renamingTool.setSingleUpdate();
-		renamingTool.renameURI(kbClient);
+		renamingTool.renameIRI(kbClient);
 		
 		//select query to check result: predicate renamed
 		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
 		
-		//check result
+		//check result (subject)
 		Iterator<Object> iteratorP = resultP.iterator();
 		while(iteratorP.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -214,7 +214,7 @@ public class RenamingToolTest {
 		//select query to check result: subject renamed
 		JSONArray resultS = kbClient.executeQuery(sparqlQueryS);
 		
-		//check result
+		//check result (predicate)
 		Iterator<Object> iteratorS = resultS.iterator();
 		while(iteratorS.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -245,7 +245,7 @@ public class RenamingToolTest {
 		//create kbClient
 		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
-		//perform update
+		//perform renaming as single update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
 		renamingTool.setSingleUpdate();
 		renamingTool.renameString(kbClient);
@@ -253,7 +253,7 @@ public class RenamingToolTest {
 		//select query to check result: predicate renamed
 		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
 		
-		//check result
+		//check result (predicate)
 		Iterator<Object> iteratorP = resultP.iterator();
 		while(iteratorP.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -264,7 +264,7 @@ public class RenamingToolTest {
 		//select query to check result: subject renamed
 		JSONArray resultS = kbClient.executeQuery(sparqlQueryS);
 		
-		//check result
+		//check result (subject)
 		Iterator<Object> iteratorS = resultS.iterator();
 		while(iteratorS.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -302,7 +302,7 @@ public class RenamingToolTest {
 		//select query to check result: predicate renamed
 		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
 		
-		//check result
+		//check result (predicate)
 		Iterator<Object> iteratorP = resultP.iterator();
 		while(iteratorP.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -313,7 +313,7 @@ public class RenamingToolTest {
 		//select query to check result: subject renamed
 		JSONArray resultS = kbClient.executeQuery(sparqlQueryS);
 		
-		//check result
+		//check result (subject)
 		Iterator<Object> iteratorS = resultS.iterator();
 		while(iteratorS.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -346,12 +346,12 @@ public class RenamingToolTest {
 		//perform update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
 		renamingTool.setUpdateSize(2); //update 2 triples at a time
-		renamingTool.renameURI(kbClient);
+		renamingTool.renameIRI(kbClient);
 		
 		//select query to check result: predicate renamed
 		JSONArray resultP = kbClient.executeQuery(sparqlQueryP);
 		
-		//check result
+		//check result (predicate)
 		Iterator<Object> iteratorP = resultP.iterator();
 		while(iteratorP.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -362,7 +362,7 @@ public class RenamingToolTest {
 		//select query to check result: subject renamed
 		JSONArray resultS = kbClient.executeQuery(sparqlQueryS);
 		
-		//check result
+		//check result (subject)
 		Iterator<Object> iteratorS = resultS.iterator();
 		while(iteratorS.hasNext()) {
 			JSONObject ob = new JSONObject();
@@ -400,7 +400,7 @@ public class RenamingToolTest {
 				  "  { GRAPH <http://example.com/test/graph>\n"+
 			      "      { ?s  ?p  ?o }\n  }\n";
 		
-		//call method
+		//invoke private method
 		assertNotNull(renamingTool.getClass().getDeclaredMethod("countQuery", String.class, WhereBuilder.class));
 		Method method = renamingTool.getClass().getDeclaredMethod("countQuery", String.class, WhereBuilder.class);
 		method.setAccessible(true);
@@ -504,7 +504,7 @@ public class RenamingToolTest {
 		
 		RenamingTool renamingTool = new RenamingTool(strTarget,strReplacement);
 		
-		//set variables		
+		//set variables:	match = target
 		assertNotNull(renamingTool.getClass().getDeclaredField("exprMatch"));
 		Field field1 = renamingTool.getClass().getDeclaredField("exprMatch");
 		field1.setAccessible(true);
@@ -545,7 +545,7 @@ public class RenamingToolTest {
 		String strWhereMatch = whereMatch.toString();	
 		assertEquals(expectedMatch, strWhereMatch);
 	
-		//Test whereMatchString with match =/= target
+		//Test whereMatchString with match != target
 		expectedMatch = "WHERE\n"+
 				"  { ?s  ?p  ?o\n"+
 				"    FILTER strstarts(str(?s), \"http://www.theworldavatar.com/\")\n"+
@@ -554,7 +554,7 @@ public class RenamingToolTest {
 				"    BIND(( contains(str(?o), \""+strMatch+"\") && contains(str(?o), \""+strTarget+"\") ) AS ?matchO)\n"+
 				"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
 				"  }\n";
-		field1.set(renamingTool, exprMatch);
+		field1.set(renamingTool, exprMatch); //set match != target
 		whereMatch = (WhereBuilder) method.invoke(renamingTool);	
 		strWhereMatch = whereMatch.toString();	
 		assertEquals(expectedMatch, strWhereMatch);
@@ -578,8 +578,6 @@ public class RenamingToolTest {
 		String strWhereUpdate = whereUpdate.toString();	
 		assertEquals(expectedUpdate, strWhereUpdate);	
 	}
-	
-	//TODO add match=target test
 	
 	/**
 	 * Test method buildSparqlUpdate with and without named graph

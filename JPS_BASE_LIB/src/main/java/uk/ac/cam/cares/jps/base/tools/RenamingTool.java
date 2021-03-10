@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.base.tools;
 
-import java.sql.SQLException;
-
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
@@ -17,39 +15,49 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 
+/**
+ * Renaming Tool
+ * 
+ * This tool renames IRIs and literals from target to replacement in the supplied KnowledgeBaseClient.
+ * Where the target and replacement are IRIs use the method renameIRI(...). 
+ * Where the target and replacement are strings/substrings use the method renameString(...).
+ * In the case of renameString a match string can also be supplied. In this case, the tool will   
+ * select triples containing both match and target, and replace the target with the replacement string.
+ * Renaming is by default performed over multiple steps, updating a sub-set of triples in the 
+ * KnowledgeBaseClient every step. This feature can be turned off using setSingleUpdate(...) and 
+ * the number of triples updated every step can be set through setUpdateSize(...).
+ * An optional filter expression can be applied through setFilter(...).
+ * 
+ * @author Casper Lindberg
+ *
+ */
 public class RenamingTool {
 	
-	/*
-	 *strMatch			match string in s/p/o to be renamed. Usually the same as strTarget.
-	 *strTarget 		target string to be replaced in matching s/p/o.
-	 *strReplacement 	replacement string.
-	 *exprFilter 		additional filter expression can be applied to the update
-	 *splitUpdate 		(boolean) split the renaming sparql update into multiple smaller updates
-	 *stepSize			number of triples processed per update
-	*/
-	String strMatch;
-	String strTarget;
-	String strReplacement;
-	Expr exprFilter = null;
-	boolean splitUpdate = true;
-	int stepSize = 1000000;
+	String strMatch; 			//string to match in triple (s/p/o). Not used for renameURI
+	String strTarget;			//target string (or IRI as string) to be replaced.
+	String strReplacement;		//replacement string (or IRI as string).
+	Expr exprFilter = null; 	//optional additional filer 
+	boolean splitUpdate = true;	//flag: splits the renaming operation in multiple smaller updates 
+	int stepSize = 1000000;		//number of triples processed per update
 	
 	//// Constructors
 	
 	/**
-	 * @param strTarget 		target string or uri to be replaced in matching s/p/o
-	 * @param strReplacement 	replacement string or uri
+	 * Class constructor. Initialises the target and replacement strings or IRIs
+	 * @param strTarget 		target string or IRI (as string) to be replaced
+	 * @param strReplacement 	replacement string or IRI (as string)
 	 * */
 	public RenamingTool(String strTarget, String strReplacement) {
-		this.strMatch = strTarget;
+		this.strMatch = strTarget; //set match = target
 		this.strTarget = strTarget;
 		this.strReplacement = strReplacement;	
 	}
 	
 	/**
-	 * @param strMatch			match string in s/p/o to be renamed
-	 * @param strTarget 		target string or uri to be replaced in matching s/p/o
-	 * @param strReplacement 	replacement string or uri
+	 * Class constructor. Initialises the match, target and replacement strings. 
+	 * @param strMatch			string to match in triple (s/p/o). 
+	 * @param strTarget 		target string or IRI (as string)
+	 * @param strReplacement 	replacement string or IRI (as string)
 	 * */
 	public RenamingTool(String strMatch, String strTarget, String strReplacement) {
 		this.strMatch = strMatch;
@@ -63,19 +71,32 @@ public class RenamingTool {
 	 * The filter expression should created in the calling class using ExprFactory. 
 	 * The static variables exprS, exprP, exprO from this class should be accessed for 
 	 * {?s ?p ?o} to ensure compatibility with variables in the SPARQL update.
-	 * */ 
+	 * @param filter
+	 */ 
 	public void setFilter(Expr filter) {
 		exprFilter = filter;
 	}
 	
+	/**
+	 * Set the match string 
+	 * @param match
+	 */
 	public void setMatch(String match) {
 		strMatch = match;
 	}
 	
+	/**
+	 * Set the target string or IRI (as string)
+	 * @param target
+	 */
 	public void setTarget(String target) {
 		strTarget = target;
 	}
 	
+	/**
+	 * Set the replacement string or IRI (as string)
+	 * @param replacement
+	 */
 	public void setReplacement(String replacement) {
 		strReplacement = replacement;
 	}
@@ -99,26 +120,23 @@ public class RenamingTool {
 	//// Rename string
 	
 	/**
-	 * Replace a target string in all URIs or literals containing the match string 
-	 * in the default graph.
+	 * Replace a target string in all IRIs or literals also containing the match string 
+	 * (if different/specified) in the default graph.
 	 * 
 	 * @param kbClient
-	 * @throws ParseException
 	 */
-	public void renameString(KnowledgeBaseClient kbClient) throws ParseException {
+	public void renameString(KnowledgeBaseClient kbClient) {
 		renameString(kbClient, null);
 	}
 	
 	/**
-	 * Replace a target string in all URIs or literals containing the match string
-	 * in a named graph.
+	 * Replace a target string in all URIs or literals also containing the match string 
+	 * (if different/specified) in a named graph.
 	 * 
 	 * @param KnowledgeBaseClient
 	 * @param graph
-	 * @throws SQLException
-	 * @throws ParseException
 	 */
-	public void renameString(KnowledgeBaseClient kbClient, String graph) throws ParseException {		
+	public void renameString(KnowledgeBaseClient kbClient, String graph) {		
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -139,36 +157,33 @@ public class RenamingTool {
 	//// Rename URI
 	
 	/**
-	 * Replaces a target URI with the replacement URI in the default graph.
+	 * Replaces a target IRI with the replacement IRI in the default graph.
 	 * 
 	 * @param KnowledgeBaseClient
-	 * @throws SQLException
-	 * @throws ParseException
 	 */
-	public void renameURI(KnowledgeBaseClient kbClient) throws ParseException {
-		renameURI(kbClient, null);
+	public void renameIRI(KnowledgeBaseClient kbClient) {
+		renameIRI(kbClient, null);
 	}
 	
 	/**
-	 * Replaces a target URI with the replacement URI in a named graph.
+	 * Replaces a target IRI with the replacement IRI in a named graph.
 	 * 
 	 * @param kbClient KnowledgeBaseClient
 	 * @param graph
-	 * @throws SQLException
-	 * @throws ParseException
 	 */
-	public void renameURI(KnowledgeBaseClient kbClient, String graph) throws ParseException {
+	public void renameIRI(KnowledgeBaseClient kbClient, String graph) {
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
 		}else {
 			
-			//// For URI renaming
-			// targetURI
+			//TODO check IRIs
+			
+			// targetURI sparql variable
 			varTargetURI = Var.alloc("targetURI");
 			exprTargetURI = new ExprVar(varTargetURI);
 			
-			//replacementURI
+			//replacementURI sparql variable
 			varReplacementURI = Var.alloc("replacementURI");
 			exprReplacementURI = new ExprVar(varReplacementURI);
 			
@@ -185,9 +200,8 @@ public class RenamingTool {
 	 * @param graph
 	 * @param whereFilter
 	 * @param whereUpdate
-	 * @throws ParseException
 	 */
-	private void performRename(KnowledgeBaseClient kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) throws ParseException {
+	private void performRename(KnowledgeBaseClient kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
 		
 		if(splitUpdate == true) {
 			
@@ -205,11 +219,11 @@ public class RenamingTool {
 			UpdateRequest sparqlUpdate = buildSparqlUpdate(graph, whereUpdate, stepSize);
 			
 			//loop over splits 
-			for(int offset = 0; offset<steps; offset++) {
+			for(int i = 0; i<steps; i++) {
 				 kbClient.executeUpdate(sparqlUpdate);
 			}
 			
-			//check all triples have been renamed, if not update all
+			//check all triples have been renamed, if not then update all
 			result = kbClient.executeQuery(query);
 			jsonobject = result.getJSONObject(0);
 		    count = jsonobject.getInt(varCount);
@@ -225,34 +239,28 @@ public class RenamingTool {
 		
 	}
 	
+	////////////////////////////////////////
 	//// Methods to construct sparql queries
 	
 	/**
-	 * Variables for sparql builder
+	 * Variables used by sparql builder
 	 */
 	
-	// Create expression factory
+	// Expression factory
 	ExprFactory exprFactory = new ExprFactory();
 	
-	// count variable
+	// Count sparql variable
 	String varCount = "count";
 		
-	//// For URI renaming
-	// targetURI
+	// For IRI renaming
 	Var varTargetURI;
 	ExprVar exprTargetURI;
-	
-	//replacementURI
 	Var varReplacementURI;
 	ExprVar exprReplacementURI;
 	
-	//// For string renaming
-	// Match string as expression
-	Expr exprMatch;
-	// Target string as expression
-	Expr exprTarget;
-	
-	//// SPARQL expressions
+	// For string renaming
+	Expr exprMatch;		// Match string as expression
+	Expr exprTarget;	// Target string as expression
 	
 	// new s, p, o		
 	static Var newS = Var.alloc("newS");
@@ -263,9 +271,8 @@ public class RenamingTool {
 	static Var varS = Var.alloc("s");
 	static Var varP = Var.alloc("p");
 	static Var varO = Var.alloc("o");
-	/**
-	 * (Old) s,p,o variables accessible to calling methods in order to build filter expression
-	 */
+	
+	//(Old) s,p,o variables accessible to calling methods in order to build optional filter expression
 	public static ExprVar exprS = new ExprVar(varS);
 	public static ExprVar exprP = new ExprVar(varP);
 	public static ExprVar exprO = new ExprVar(varO);
@@ -279,17 +286,16 @@ public class RenamingTool {
 	static ExprVar exprMatchO = new ExprVar(matchO);
 	
 	/**
-	 * Return sparql count query as string to count number of triples matching renaming criteria 
+	 * Build sparql count query as string 
+	 * Counts the number of triples matching the renaming criteria 
 	 * @param graph
 	 * @param whereFilter
 	 * @return count query
-	 * @throws ParseException
 	 */
-	private String countQuery(String graph, WhereBuilder whereFilter) throws ParseException {
+	private String countQuery(String graph, WhereBuilder whereFilter){
 		
 		WhereBuilder where = null;
 
-		// Add where 
 		if (graph != null) {	
 			where = new WhereBuilder();
 			// Graph
@@ -305,10 +311,10 @@ public class RenamingTool {
 	}
 
 	/**
-	 * Build sparql update
+	 * Build the sparql update
 	 * @param named graph (optional)
-	 * @param where
-	 * @param limit
+	 * @param sparql where builder
+	 * @param limit (number of triples to update)
 	 * @return
 	 */
 	private UpdateRequest buildSparqlUpdate(String graph, WhereBuilder where, int limit) {
@@ -334,7 +340,6 @@ public class RenamingTool {
 			select.setLimit(limit);
 		}
 		
-		// Build update
 		UpdateBuilder builder = new UpdateBuilder();
 		
 		// Add select subquery and optional graph
@@ -355,15 +360,15 @@ public class RenamingTool {
 		return builder.buildRequest();
 	}
 	
-	//// SPARQL wherebuilder for URIs
+	//// SPARQL wherebuilder for IRI renaming
 	
 	/**
 	 * Create sparql where to filter triples matching renaming criteria 
-	 * Matches complete URIs. target and replacement are URIs.
+	 * Matches complete IRIs. target and replacement are IRIs.
 	 * @return
 	 * @throws ParseException
 	 */
-	private WhereBuilder whereMatchURI() throws ParseException {
+	private WhereBuilder whereMatchURI() {
 		
 		// Filter OR expression: FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI )
 		Expr eqS = exprFactory.eq(exprS, exprTargetURI);
@@ -386,23 +391,27 @@ public class RenamingTool {
 			where.addFilter(exprFilter);
 		}
 		
-		where.addWhere(varS, varP, varO)
-			.addBind( "<" + strTarget + ">", varTargetURI)
-			.addBind( "<" + strReplacement + ">", varReplacementURI)
-			.addFilter(orSPO);
+		try {
+			where.addWhere(varS, varP, varO)
+				.addBind( "<" + strTarget + ">", varTargetURI)
+				.addBind( "<" + strReplacement + ">", varReplacementURI)
+				.addFilter(orSPO);
+		} catch (ParseException e) {
+			throw new JPSRuntimeException(e);
+		}
 						
 		return where;
 	}
 	
 	
 	/**
-	 * Create sparql where to filter matching triples and bind replacement URI 
+	 * Create sparql where to filter matching triples and bind replacement IRIs 
 	 * 
 	 * @param graph
 	 * @return sparql update request
 	 * @throws ParseException
 	 */
-	private WhereBuilder whereUpdateURI() throws ParseException {
+	private WhereBuilder whereUpdateURI(){
 		
 	////		WHERE {?s ?p ?o .
 	////			FILTER(...optional filter...).
@@ -433,45 +442,42 @@ public class RenamingTool {
 		return where;
 	}
 	
-	///// SPARQL wherebuilder for strings
+	///// SPARQL wherebuilder for renaming strings
 	
 	/**
 	 * Create sparql where to filter triples matching renaming criteria
-	 * Matches uri or literals containing strMatch. 
+	 * Matches IRIs or literals containing strMatch and strTarget. 
 	 * @return
 	 * @throws ParseException
 	 */
-	private WhereBuilder whereMatchString() throws ParseException {
+	private WhereBuilder whereMatchString() {
 		
 		////    "WHERE\n"+
 		////	"  { ?s  ?p  ?o\n"+
-		////	"    BIND((regex(str(?s), exprMatch) && regex(str(?s), exprTarget)) AS ?matchS)\n"+
-		////	"    BIND((regex(str(?p), exprMatch) && regex(str(?p), exprTarget)) AS ?matchP)\n"+
-		////	"    BIND((regex(str(?o), exprMatch) && regex(str(?o), exprTarget)) AS ?matchO)\n"+
+		////	"    BIND((contains(str(?s), exprMatch) && contains(str(?s), exprTarget)) AS ?matchS)\n"+
+		////	"    BIND((contains(str(?p), exprMatch) && contains(str(?p), exprTarget)) AS ?matchP)\n"+
+		////	"    BIND((contains(str(?o), exprMatch) && contains(str(?o), exprTarget)) AS ?matchO)\n"+
 		////	"    FILTER ( ?matchS || ( ?matchP || ?matchO ) )\n"+ 
 		////	"  }\n";
 		
 		// EXPRESSIONS
-		// REGEX expressions: REGEX(str(?s), match)
-		Expr regexSmatch = exprFactory.contains(exprFactory.str(exprS), exprMatch);
-		Expr regexPmatch = exprFactory.contains(exprFactory.str(exprP), exprMatch);
-		Expr regexOmatch = exprFactory.contains(exprFactory.str(exprO), exprMatch);
+		// Contains expressions: contains(str(?s), match)
+		Expr SContainsMatch = exprFactory.contains(exprFactory.str(exprS), exprMatch);
+		Expr PContainsMatch = exprFactory.contains(exprFactory.str(exprP), exprMatch);
+		Expr OContainsMatch = exprFactory.contains(exprFactory.str(exprO), exprMatch);
 		
-		Expr regexStarget = exprFactory.contains(exprFactory.str(exprS), exprTarget);
-		Expr regexPtarget = exprFactory.contains(exprFactory.str(exprP), exprTarget);
-		Expr regexOtarget = exprFactory.contains(exprFactory.str(exprO), exprTarget);
+		// Contains expressions: contains(str(?s), target)
+		Expr SContainsTarget = exprFactory.contains(exprFactory.str(exprS), exprTarget);
+		Expr PContainsTarget = exprFactory.contains(exprFactory.str(exprP), exprTarget);
+		Expr OContainsTarget = exprFactory.contains(exprFactory.str(exprO), exprTarget);
 		
-		Expr regexS;
-		Expr regexP;
-		Expr regexO;
+		Expr SContains = SContainsMatch;
+		Expr PContains = PContainsMatch;
+		Expr OContains = OContainsMatch;
 		if(exprMatch != exprTarget) {
-			regexS = exprFactory.and(regexSmatch, regexStarget);
-			regexP = exprFactory.and(regexPmatch, regexPtarget);
-			regexO = exprFactory.and(regexOmatch, regexOtarget);
-		}else {
-			regexS = regexSmatch;
-			regexP = regexPmatch;
-			regexO = regexOmatch;
+			SContains = exprFactory.and(SContainsMatch, SContainsTarget);
+			PContains = exprFactory.and(PContainsMatch, PContainsTarget);
+			OContains = exprFactory.and(OContainsMatch, OContainsTarget);
 		}
 		
 		// OR expression for filter: 
@@ -486,9 +492,9 @@ public class RenamingTool {
 			where.addFilter(exprFilter);
 		}
 				
-		where.addBind(regexS, matchS)
-			.addBind(regexP, matchP)
-			.addBind(regexO, matchO)
+		where.addBind(SContains, matchS)
+			.addBind(PContains, matchP)
+			.addBind(OContains, matchO)
 			.addFilter(or);
 		
 		return where;
@@ -500,14 +506,14 @@ public class RenamingTool {
 	 * @return
 	 * @throws ParseException
 	 */
-	private WhereBuilder whereUpdateString() throws ParseException {
+	private WhereBuilder whereUpdateString() {
 			
 	////		WHERE{
 	////			?s ?p ?o
 	////			FILTER ( ... optional filter ... )
-	////			BIND( REGEX(str(?s), exprMatch) AS ?matchS ) .
-	////			BIND( REGEX(str(?p), exprMatch) AS ?matchP ) .
-	////			BIND( REGEX(str(?o), exprMatch) AS ?matchO ) .
+	////			BIND( contains(str(?s), exprMatch) AS ?matchS ) .
+	////			BIND( contains(str(?p), exprMatch) AS ?matchP ) .
+	////			BIND( contains(str(?o), exprMatch) AS ?matchO ) .
 	////    		FILTER ( ?matchS || ( ?matchP || ?matchO ) )
 	////    		BIND(if(isBlank(?s), ?s, if(?matchS, iri(replace(str(?s), exprTarget, exprReplacement)), ?s)) AS ?newS)
 	////			BIND(if(isBlank(?p), ?p, if(?matchP, iri(replace(str(?p), exprTarget, exprReplacement)), ?p)) AS ?newP)
