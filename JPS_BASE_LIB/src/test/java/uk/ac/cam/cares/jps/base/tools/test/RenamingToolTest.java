@@ -19,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.sparql.expr.ExprVar;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -418,35 +417,9 @@ public class RenamingToolTest {
 	 * @throws NoSuchFieldException
 	 */
 	@Test
-	public void testWhereURI() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+	public void testWhereIRI() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
 		
 		RenamingTool renamingTool = new RenamingTool("http://example.com/test/target","http://example.com/test/replacement");
-		
-		//set variables
-		Var varTarget = Var.alloc("targetURI");
-		ExprVar exprTarget = new ExprVar(varTarget);
-		Var varReplacement = Var.alloc("replacementURI");
-		ExprVar exprReplacement = new ExprVar(varReplacement);
-		
-		assertNotNull(renamingTool.getClass().getDeclaredField("varTargetURI"));
-		Field field1 = renamingTool.getClass().getDeclaredField("varTargetURI");
-		field1.setAccessible(true);
-		field1.set(renamingTool, varTarget);
-		
-		assertNotNull(renamingTool.getClass().getDeclaredField("exprTargetURI"));
-		Field field2 = renamingTool.getClass().getDeclaredField("exprTargetURI");
-		field2.setAccessible(true);
-		field2.set(renamingTool, exprTarget);
-		
-		assertNotNull(renamingTool.getClass().getDeclaredField("varReplacementURI"));
-		Field field3 = renamingTool.getClass().getDeclaredField("varReplacementURI");
-		field3.setAccessible(true);
-		field3.set(renamingTool, varReplacement);
-		
-		assertNotNull(renamingTool.getClass().getDeclaredField("exprReplacementURI"));
-		Field field4 = renamingTool.getClass().getDeclaredField("exprReplacementURI");
-		field4.setAccessible(true);
-		field4.set(renamingTool, exprReplacement);
 		
 		//Test method whereMatchURI
 		String expectedMatch = "WHERE\n" +
@@ -455,8 +428,8 @@ public class RenamingToolTest {
 				"    BIND(<http://example.com/test/replacement> AS ?replacementURI)\n" +
 				"    FILTER ( ( ?s = ?targetURI ) || ( ( ?p = ?targetURI ) || ( ?o = ?targetURI ) ) )\n" +
 				"  }\n";
-		assertNotNull(renamingTool.getClass().getDeclaredMethod("whereMatchURI"));
-		Method method = renamingTool.getClass().getDeclaredMethod("whereMatchURI");
+		assertNotNull(renamingTool.getClass().getDeclaredMethod("whereMatchIRI"));
+		Method method = renamingTool.getClass().getDeclaredMethod("whereMatchIRI");
 		method.setAccessible(true);
 		WhereBuilder whereMatch = (WhereBuilder) method.invoke(renamingTool);
 		String strWhereMatch = whereMatch.toString();
@@ -472,8 +445,8 @@ public class RenamingToolTest {
 				"    BIND(if(isBlank(?p), ?p, if(( ?p = ?targetURI ), ?replacementURI, ?p)) AS ?newP)\n"+
 			   	"    BIND(if(isBlank(?o), ?o, if(( ?o = ?targetURI ), ?replacementURI, ?o)) AS ?newO)\n"+
 				"  }\n";
-		assertNotNull(renamingTool.getClass().getDeclaredMethod("whereUpdateURI"));
-		Method method2 = renamingTool.getClass().getDeclaredMethod("whereUpdateURI");
+		assertNotNull(renamingTool.getClass().getDeclaredMethod("whereUpdateIRI"));
+		Method method2 = renamingTool.getClass().getDeclaredMethod("whereUpdateIRI");
 		method2.setAccessible(true);
 		WhereBuilder whereUpdate = (WhereBuilder) method2.invoke(renamingTool);	
 		String strWhereUpdate = whereUpdate.toString();	

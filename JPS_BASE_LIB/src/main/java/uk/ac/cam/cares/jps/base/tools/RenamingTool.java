@@ -177,18 +177,8 @@ public class RenamingTool {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
 		}else {
 			
-			//TODO check IRIs
-			
-			// targetURI sparql variable
-			varTargetURI = Var.alloc("targetURI");
-			exprTargetURI = new ExprVar(varTargetURI);
-			
-			//replacementURI sparql variable
-			varReplacementURI = Var.alloc("replacementURI");
-			exprReplacementURI = new ExprVar(varReplacementURI);
-			
-			WhereBuilder whereUpdate = whereUpdateURI();
-			WhereBuilder whereFilter = whereMatchURI();
+			WhereBuilder whereUpdate = whereUpdateIRI();
+			WhereBuilder whereFilter = whereMatchIRI();
 			
 			performRename(kbClient, graph, whereFilter, whereUpdate);
 		}
@@ -250,13 +240,14 @@ public class RenamingTool {
 	ExprFactory exprFactory = new ExprFactory();
 	
 	// Count sparql variable
-	String varCount = "count";
+	static String varCount = "count";
 		
 	// For IRI renaming
-	Var varTargetURI;
-	ExprVar exprTargetURI;
-	Var varReplacementURI;
-	ExprVar exprReplacementURI;
+	static Var varTargetURI = Var.alloc("targetURI");
+	static 	ExprVar exprTargetURI = new ExprVar(varTargetURI);
+	
+	static Var varReplacementURI = Var.alloc("replacementURI");
+	static ExprVar exprReplacementURI = new ExprVar(varReplacementURI);
 	
 	// For string renaming
 	Expr exprMatch;		// Match string as expression
@@ -368,7 +359,7 @@ public class RenamingTool {
 	 * @return
 	 * @throws ParseException
 	 */
-	private WhereBuilder whereMatchURI() {
+	private WhereBuilder whereMatchIRI() {
 		
 		// Filter OR expression: FILTER( ?s = ?targetURI || ?p = ?targetURI || ?o = ?targetURI )
 		Expr eqS = exprFactory.eq(exprS, exprTargetURI);
@@ -411,7 +402,7 @@ public class RenamingTool {
 	 * @return sparql update request
 	 * @throws ParseException
 	 */
-	private WhereBuilder whereUpdateURI(){
+	private WhereBuilder whereUpdateIRI(){
 		
 	////		WHERE {?s ?p ?o .
 	////			FILTER(...optional filter...).
@@ -434,7 +425,7 @@ public class RenamingTool {
 		Expr ifOBlank = exprFactory.cond(exprFactory.isBlank(exprO), exprO, ifO);
 		
 		//// new triple
-		WhereBuilder where = whereMatchURI()
+		WhereBuilder where = whereMatchIRI()
 				.addBind(ifSBlank, newS)
 				.addBind(ifPBlank, newP)
 				.addBind(ifOBlank, newO);
