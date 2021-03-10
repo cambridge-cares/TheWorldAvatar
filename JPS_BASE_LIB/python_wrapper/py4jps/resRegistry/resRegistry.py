@@ -200,8 +200,8 @@ class resRegistry:
         _class_template = """
         from py4jps import JPSGateway
         class {0}(JPSGateway):
-        ****def __init__(self):
-        ********super({0}, self).__init__(resName='{0}')""".format(resName).replace('  ','').replace('*',' ')
+        ----def __init__(self):
+        --------super({0}, self).__init__(resName='{0}')""".format(resName).replace('  ','').replace('-',' ')
 
         _ini_class_template="from py4jps.resources.{0}.{0} import {0}".format(resName)
 
