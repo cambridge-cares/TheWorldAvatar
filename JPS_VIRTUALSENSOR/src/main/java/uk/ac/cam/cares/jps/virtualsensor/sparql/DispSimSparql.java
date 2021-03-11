@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.virtualsensor.sparql;
 
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.region.Region;
+import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
@@ -9,8 +12,13 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
+import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 
 public class DispSimSparql {
@@ -43,6 +51,8 @@ public class DispSimSparql {
     private static Iri hasProjectedCoordinate_y = p_space_time_extended.iri("hasProjectedCoordinate_y");
     private static Iri hasValue = p_system.iri("hasValue");
     private static Iri numericalValue = p_system.iri("numericalValue");
+    private static Iri hasMainStation = p_dispsim.iri("hasMainStation");
+    private static Iri hasSubStation = p_dispsim.iri("hasSubStation");
     
     //endpoint
     private static Iri sim_graph = p_dispsim.iri("Simulations");
@@ -107,4 +117,103 @@ public class DispSimSparql {
     	modify.prefix(prefixes).with(sim_graph).where().insert(combined_tp);
     	SparqlGeneral.performUpdate(modify);
     }
+	
+	public static Scope GetScope(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		
+		SelectQuery query = Queries.SELECT();
+		
+		//variables to query
+		Variable lowerx = SparqlBuilder.var(Region.keyLowerx);
+		Variable lowery = SparqlBuilder.var(Region.keyLowery);
+		Variable upperx = SparqlBuilder.var(Region.keyUpperx);
+		Variable uppery = SparqlBuilder.var(Region.keyUppery);
+		Variable crs = SparqlBuilder.var(Region.keySrsname);
+		
+		// intermediate variables
+		Variable envelope = query.var();
+		Variable lowerCornerCoordinates = query.var();
+		Variable upperCornerCoordinates = query.var();
+		
+		Iri[] sim2envelope_predicates = {hasEnvelope};
+		GraphPattern sim2envelope = SparqlGeneral.GetQueryGraphPattern(query, sim2envelope_predicates, null, sim_iri, envelope);
+		
+		Iri[] env2srs_predicates = {srsname};
+		GraphPattern env2srs = SparqlGeneral.GetQueryGraphPattern(query, env2srs_predicates, null, envelope, crs);
+		
+		Iri[] envelope2lowercoord_predicates = {lowerCornerPoint,hasGISCoordinateSystem};
+		GraphPattern envelope2lowercoord = SparqlGeneral.GetQueryGraphPattern(query, envelope2lowercoord_predicates, null, envelope, lowerCornerCoordinates);
+		
+		Iri[] coord2x_predicates = {hasProjectedCoordinate_x,hasValue,numericalValue};
+		GraphPattern lower2x = SparqlGeneral.GetQueryGraphPattern(query, coord2x_predicates, null, lowerCornerCoordinates, lowerx);
+		
+		Iri[] coord2y_predicates = {hasProjectedCoordinate_y,hasValue,numericalValue};
+		GraphPattern lower2y = SparqlGeneral.GetQueryGraphPattern(query, coord2y_predicates, null, lowerCornerCoordinates, lowery);
+		
+		Iri[] envelope2uppercoord_predicates = {upperCornerPoint,hasGISCoordinateSystem};
+		GraphPattern envelope2uppercoord = SparqlGeneral.GetQueryGraphPattern(query, envelope2uppercoord_predicates, null, envelope, upperCornerCoordinates);
+		
+		GraphPattern upper2x = SparqlGeneral.GetQueryGraphPattern(query, coord2x_predicates, null, upperCornerCoordinates, upperx);
+		GraphPattern upper2y = SparqlGeneral.GetQueryGraphPattern(query, coord2y_predicates, null, upperCornerCoordinates, uppery);
+		
+		GraphPattern queryPattern = GraphPatterns.and(sim2envelope,envelope2lowercoord,lower2x,lower2y,envelope2uppercoord,upper2x,upper2y,env2srs);
+		
+		query.prefix(prefixes).from(FromGraph).select(lowerx,lowery,upperx,uppery,crs).where(queryPattern);
+		JSONObject queryResult = SparqlGeneral.performQuery(query).getJSONObject(0);
+		
+		Scope sc = new Scope();
+		sc.setLowerx(queryResult.getDouble(Region.keyLowerx));
+		sc.setLowery(queryResult.getDouble(Region.keyLowery));
+		sc.setUpperx(queryResult.getDouble(Region.keyUpperx));
+		sc.setUppery(queryResult.getDouble(Region.keyUppery));
+		sc.setCRSName(queryResult.getString(Region.keySrsname));
+		
+		return sc;
+	}
+	
+	/** 
+	 * Insert main weather station used for this simulation
+	 */
+	public static void AddMainStation(String sim_iri_string, String station_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+
+		Variable oldmain = SparqlBuilder.var("oldmain");
+		
+		TriplePattern delete_tp = sim_iri.has(hasMainStation,oldmain);
+		
+		SubSelect sub = GraphPatterns.select();
+		sub.select(oldmain).where(delete_tp);
+		
+		TriplePattern insert_tp = sim_iri.has(hasMainStation,iri(station_iri_string));
+		
+		ModifyQuery modify = Queries.MODIFY();
+		modify.prefix(p_dispsim).insert(insert_tp).with(sim_graph).where(sub).delete(delete_tp);
+		
+		SparqlGeneral.performUpdate(modify);
+	}
+	
+	/**
+	 * 
+	 */
+	public static void AddSubStations(String sim_iri_string, String[] station_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		Variable stations = SparqlBuilder.var("stations");
+		
+		// find old stations to delete
+		SubSelect sub = GraphPatterns.select();
+		TriplePattern deletePattern = sim_iri.has(hasSubStation,stations);
+		sub.select(stations).where(deletePattern);
+		
+		// new stations to add
+		TriplePattern[] insert_tp = new TriplePattern[station_iri_string.length];
+		for (int i = 0; i < station_iri_string.length; i++) {
+			Iri station_iri = iri(station_iri_string[i]);
+			insert_tp[i] = sim_iri.has(hasSubStation,station_iri);
+		}
+		
+		ModifyQuery modify = Queries.MODIFY();
+		modify.prefix(p_dispsim).where(sub).delete(deletePattern).with(sim_graph).insert(insert_tp);
+		
+		SparqlGeneral.performUpdate(modify);
+	}
 }

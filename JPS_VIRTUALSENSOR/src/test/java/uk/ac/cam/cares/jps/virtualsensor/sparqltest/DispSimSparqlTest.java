@@ -22,4 +22,29 @@ public class DispSimSparqlTest extends TestCase{
 	    	DispSimSparql.InitSim(i, sim);
     	}
     }
+    
+    public void testGetScope() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	DispSimSparql.GetScope(sim_iri);
+    }
+    
+    public void testAddMainStation() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation5";
+    	DispSimSparql.AddMainStation(sim_iri, station_iri);
+    }
+    
+    public void testAddSubStations() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	String[] station_iri_string = new String [2];
+    	station_iri_string[0] = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1";
+    	station_iri_string[1] = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation2";
+    	DispSimSparql.AddSubStations(sim_iri,station_iri_string);
+    }
+    
+    public void testAddShip() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
+    	
+    }
 }
