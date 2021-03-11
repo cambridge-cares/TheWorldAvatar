@@ -212,6 +212,16 @@ public class IRIResolutionAgent extends JPSAgent{
 		if(aBoxManager == null){
 			aBoxManager = new  ABoxManagement();
 		}
+		// Assigns classes to the current instance.
+		for (int i = 0; i<jsonArray.length(); i++){
+			JSONObject obj = jsonArray.getJSONObject(i);
+			// Assigns anything found at the target of rdf:type as the class of the current instance
+			// except owl:NamedIndividual.
+			if(obj.getString(PREDICATE).equals(ABoxManagement.RDF_URL.concat(ABoxManagement.RDF_TYPE)) 
+					&& !obj.getString(OBJECT).equals(ABoxManagement.OWL_URL.concat(ABoxManagement.OWL_NAMED_INDIVIDUAL))){
+				aBoxManager.createIndividual(ontology, obj.getString(OBJECT), null, aBoxIRI, null);
+			}
+		}
 		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();    
 		System.setOut(new java.io.PrintStream(out));  
 		manager.saveOntology(ontology, System.out);
