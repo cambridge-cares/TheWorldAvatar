@@ -222,6 +222,19 @@ public class IRIResolutionAgent extends JPSAgent{
 				aBoxManager.createIndividual(ontology, obj.getString(OBJECT), null, aBoxIRI, null);
 			}
 		}
+		// Assigns both object and data properties to the current instance.
+		for (int i = 0; i<jsonArray.length(); i++){
+			JSONObject obj = jsonArray.getJSONObject(i);
+			// Ignores classes of the current instance.
+			if(!obj.getString(PREDICATE).equals(ABoxManagement.RDF_URL.concat(ABoxManagement.RDF_TYPE)) ){
+				// Presence of an IRI indicates that an object property should be created. 
+				if(obj.getString(OBJECT).trim().startsWith(KGRouter.HTTP) || obj.getString(OBJECT).trim().startsWith(KGRouter.HTTPS)){
+					aBoxManager.addObjectProperty(ontology, aBoxIRI, IRI.create(obj.getString(PREDICATE)), aBoxIRI, obj.getString(OBJECT));					
+				}else{ // A value indicates that a data property should be created.
+					aBoxManager.addDataProperty(ontology, aBoxIRI, null, IRI.create(obj.getString(PREDICATE)), obj.getString(OBJECT), "unknown");
+				}
+			}
+		}		
 		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();    
 		System.setOut(new java.io.PrintStream(out));  
 		manager.saveOntology(ontology, System.out);
