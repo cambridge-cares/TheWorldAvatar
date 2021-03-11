@@ -211,7 +211,16 @@ class JPSGateway:
             self._launchGatewayUserParams = LGkwargs
 
             # this launches the java process
-            _ret = launch_gateway(jarpath=self.jarPath, **LGkwargs)
+            try:
+                _ret = launch_gateway(jarpath=self.jarPath, **LGkwargs)
+            except Exception as e:
+                print(textwrap.dedent("""
+                Error: Could not launch the resource gateway. Make sure that:
+                        1 - the resource jarPath is correct
+                        2 - java runtime environment 7+ is installed
+                        3 - java runtime environment 7+ is correctly added to the system path"""))
+                raise e
+
             if LGkwargs['enable_auth']:
                 _port, _auth_token, proc = _ret
             else:
