@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.virtualsensor.sparql;
+package uk.ac.cam.cares.jps.virtualsensor.objects;
 
 public class Particle {
 	private double flowrate;

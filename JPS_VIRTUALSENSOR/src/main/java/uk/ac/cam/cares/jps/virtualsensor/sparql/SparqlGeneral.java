@@ -38,7 +38,7 @@ public class SparqlGeneral {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setUpdateEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
-        System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
+        kbClient.executeUpdate();
     }
 	
 	public static JSONArray performQuery(SelectQuery query) {

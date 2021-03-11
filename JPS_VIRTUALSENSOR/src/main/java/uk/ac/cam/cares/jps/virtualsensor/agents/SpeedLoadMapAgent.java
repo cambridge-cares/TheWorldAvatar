@@ -13,7 +13,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.Ship;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 
 @WebServlet("/SpeedLoadMapAgent")
 public class SpeedLoadMapAgent extends JPSAgent {

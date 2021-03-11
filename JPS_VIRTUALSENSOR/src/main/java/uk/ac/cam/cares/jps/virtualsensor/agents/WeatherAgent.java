@@ -18,8 +18,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.virtualsensor.episode.CalculationUtils;
+import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

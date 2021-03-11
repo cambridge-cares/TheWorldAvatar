@@ -12,8 +12,8 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.Chimney;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.Ship;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 public class ShipSparqlTest extends TestCase {

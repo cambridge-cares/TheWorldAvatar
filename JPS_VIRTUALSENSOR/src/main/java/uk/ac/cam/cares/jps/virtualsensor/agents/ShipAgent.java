@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.Chimney;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 @WebServlet("/ShipAgent")

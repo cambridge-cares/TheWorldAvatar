@@ -1,6 +1,8 @@
-package uk.ac.cam.cares.jps.virtualsensor.sparql;
+package uk.ac.cam.cares.jps.virtualsensor.objects;
 
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 public class Ship {
 	private double speed; // speed is in knot!

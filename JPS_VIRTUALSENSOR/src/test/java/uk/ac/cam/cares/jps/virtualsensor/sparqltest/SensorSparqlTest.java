@@ -10,8 +10,8 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
 
 public class SensorSparqlTest extends TestCase{
 	public void testCreateWeatherStation() {
@@ -57,8 +57,7 @@ public class SensorSparqlTest extends TestCase{
 		String station_name = "virtualsensor1";
 		double [] xyz_coord = {104,2,9};
 		
-		SensorSparql ws = new SensorSparql();
-		ws.createAirQualityStation(station_name, xyz_coord);
+		SensorSparql.createAirQualityStation(station_name, xyz_coord);
 	}
 
 	public void testQueryAirStationsWithinScope() {

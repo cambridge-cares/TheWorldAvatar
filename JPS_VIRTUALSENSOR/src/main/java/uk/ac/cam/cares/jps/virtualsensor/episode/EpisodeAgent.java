@@ -54,8 +54,8 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeConfig;
 import uk.ac.cam.cares.jps.virtualsensor.general.DispersionModellingAgent;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.Ship;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
+import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 
 public class EpisodeAgent extends DispersionModellingAgent {
 	

@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 

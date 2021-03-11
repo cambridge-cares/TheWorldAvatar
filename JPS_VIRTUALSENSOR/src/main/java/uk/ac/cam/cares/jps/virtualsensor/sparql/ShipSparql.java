@@ -29,6 +29,8 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.SparqlAuthentication;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Particle;
 
 public class ShipSparql {
     private static Prefix p_ship = SparqlBuilder.prefix("ship",iri("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"));
