@@ -1,6 +1,6 @@
 # What is py4jps
 
-`Py4jps` is a thin Python wrapper for the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project. The code is heavily based on the [py4j](https://www.py4j.org/index.html) package, which enables Python programs running in a Python interpreter to dynamically access the Java objects in a Java Virtual Machine.
+`Py4jps` is a thin Python wrapper for the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project. The code is heavily based on the [py4j](https://www.py4j.org/index.html) package, which enables Python programs running in a Python interpreter to dynamically access Java objects in a Java Virtual Machine.
 
 # Requirements
 
@@ -122,26 +122,40 @@ Here is how to execute the `devinstall` command:
 
 This section explains how to effectively use the `py4jps` package by following the best practices. Note that `py4jps` is a very thin wrapper, thus it does not provide a high level abstraction to the java classes. Therefore, the java project documentation must be consulted with to know which java objects to call in order to perform a desired task.
 
-## Python-Java communication
+## Python-Java communication via Python's JPSGateway wrapper class
 
-The Python-Java communication, handled by the `py4j` package, happens via the local network sockets. The main interaction point between a Python and Java is provided by the [py4j JavaGateway](https://www.py4j.org/py4j_java_gateway.html#javagateway) class. This class is wrapped within the `py4jps JPSGateway` class for convenience. The `JPSGateway` class is the parent class for any installed java resources that one wishes to access. **Although, it is not recommended to use it directly**, the `JPSGateway` class can be useful in experimenting with different resources without installing them first, as it allows to change the resources at runtime. The class also accepts any `py4j JavaGateway` arguments as defined by the [py4j API](https://www.py4j.org/py4j_python.html). Please see the [JPSGateway help](https://github.com/cambridge-cares/TheWorldAvatar/blob/master/JPS_BASE_LIB/python_wrapper/py4jps/JPSGateway.py) to learn more, whereas below, only most important aspects are covered.
+The Python-Java communication, handled by the `py4j` package, happens via the local network sockets. The main interaction point between a Python and Java is provided by the [py4j JavaGateway](https://www.py4j.org/py4j_java_gateway.html#javagateway) class. This class is wrapped within the `py4jps JPSGateway` class for convenience. The `JPSGateway` class is the parent class for any installed java resources that one wishes to access. **Although, it is not recommended to use it directly**, the `JPSGateway` class can be useful in experimenting with different resources without installing them first, as it allows to change the resources at runtime. Please see the [JPSGateway help](https://github.com/cambridge-cares/TheWorldAvatar/blob/master/JPS_BASE_LIB/python_wrapper/py4jps/JPSGateway.py) to learn more, whereas below, only the most important aspects are covered.
 
-The `py4jps JPSGateway` class can be imported to your project via the following command `from py4jps import JPSGateway`. The class can be used to instantiate the gateway objects in a following way:
+The `py4jps JPSGateway` class can be imported to your project via the following command `from py4jps import JPSGateway`. The class can be used in a following way:
+
 ```python
 from py4jps import JPSGateway
 
-yourGateway = JPSGateway(resName=yourResName,jarPath=yourResJarPath,**JGkwargs)
+yourGateway = JPSGateway(resName=yourResName, jarPath=yourResJarPath, **JGkwargs)
 ```
 
-where `resName` is the name you wish to give to your resource, `yourResJarPath` is the absolute path to the resource main jar file and `**JGkwargs` represents a dictionary of any optional argument: value pairs to pass to the [py4j JavaGateway](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.launch_gateway) class. Note that if you wish to access an already installed resource, the `jarPath` argument can be omitted as it can be looked up by the resource name.
+where `resName` is the name you wish to give to your resource, `yourResJarPath` is the absolute path to the resource main jar file and `**JGkwargs` is a dictionary of any optional `argument: value` pairs one wishes to pass to the [py4j JavaGateway](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.JavaGateway) constructor. Note that if you wish to access an already installed resource through the `JPSGateway` (not recommended), then the `jarPath` argument can be omitted as it can be looked up by the resource name in the resource registry. Also note that some of the `py4j JavaGateway` constructor arguments are not allowed, or should be passed to the `py4j launch_gateway` method instead. If that is the case, the code will print a warning message which shows how to set the desired argument correctly. Please also note that according to the `py4j` documentation, the `gateway_parameters` argument to the `py4j JavaGateway` constructor must have the type of the [py4j GatewayParameters](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.GatewayParameters) object. However, to make it easy for the `py4jps` users, this argument can be passed as a dictionary which then is automatically converted into the `py4j GatewayParameters` object. Here is an example call to the `JPSGateway` constructor with extra `py4j JavaGateway` arguments:
 
-To actually start the communication with the Java side, please run the following command:
+```python
+from py4jps import JPSGateway
+
+yourGateway = JPSGateway(**{'eager_load': True, 'gateway_parameters': {'auto_field': True}})
+```
+
+Please refer to the [py4j documentation](https://www.py4j.org/py4j_java_gateway.html) for the descirption of all the possible arguments. The most important and useful settings are set by defualt in the `py4jps JPSGateway` constructor so a user hardly ever need to pass any arguments in that call. If required, however, the `py4jps JPSGateway` constructor defaults can be overwritten by simply passing their new values. Please also note that the `JPSGateway` constructor only instantiates the `JPSGateway` object, and it DOES NOT instantiate the `py4j JavaGateway`, which only happens in the `py4jps launchGateway` method explained in detail below.
+
+## JPSGateway.launchGateway wrapper method
+
+To start the communication with the Java side, please run the following method on your gateway object:
 
 ```python
 yourGateway.launchGateway(**LGkwargs)
 ```
 
-where the `**LGkwargs` represents a dictionary of any optional argument: value pairs supported by the [py4j JavaGateway.launch_gateway](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.launch_gateway) method. Note that the `py4j jarpath` argument cannot be changed in this call and will be omitted from the `**LGkwargs` dictionary. The proper way to set the jarpath is via the `JPSGateway` constructor. One example of the optional `py4j JavaGateway.launch_gateway` arguments that could be useful to pass are the `redirect_stdout=stdout_file_handle` and `redirect_stderr=std_err_file_handle`. These arguments direct the stdout and stderr streams to a file, which might be useful for debugging pruposes. Here is a full example on how to do it:
+where the `**LGkwargs` argument represents a dictionary of any optional `argument: value` pairs one wishes to pass to the [py4j launch_gateway](https://www.py4j.org/py4j_java_gateway.html#py4j.java_gateway.launch_gateway) method. Please refer to the method documentation for the descirption of all the possible arguments. The most important and useful settings are set by defualt in the `py4jps launchGateway` method so a user hardly ever need to pass any arguments in that call. If required, however, the `py4jps launchGateway` method defaults can be overwritten by simply passing their new values.
+
+The code below shows an example `py4jps launchGateway` method call with custom arguments.
+
 ```python
 # The file paths are exemplary only, please change
 # according to your needs
@@ -151,40 +165,51 @@ sterr_file_handle = open('D:\\stderr_file.out','w')
 yourGateway.launchGateway(**{'redirect_stdout':stdout_file_handle,'redirect_stderr':sterr_file_handle})
 ```
 
-Once your resource gateway is launched you can access any public classess and methods in a following way:
+The example above shows how to set the optional `py4j JavaGateway.launch_gateway` arguments: `redirect_stdout` and `redirect_stderr` that might be useful for debugging purposes.
+
+## Accessing Java classes and methods
+
+Once your resource gateway is launched you can access any **public** classess and methods in a following way:
 
 ```python
 KGRouter = yourGateway.gateway.jvm.uk.ac.cam.cares.jps.base.query.KGRouter
 ```
 
-As can be seen, the gateway's jvm class serves as an entry point to any java classes and objects you wish to access. Simply provide the fully qualified name of the resource to access it. The `uk.ac.cam.cares.jps.base.query.KGRouter` path is for example purposes only, and depends on the java resource and object you are working with. **Please note that though accessing objects via their fully qualified names is possible, it is not recommended**. A much simpler way exists, through the java import statemets explained in the **JVM module views** section.
+As can be seen, the gateway's jvm class serves as an entry point to any java classes and objects you wish to access. Simply provide the fully qualified name of the resource to access it. The `uk.ac.cam.cares.jps.base.query.KGRouter` path is for example purposes only. **Please note that though accessing objects via their fully qualified names is possible, it is not recommended**. A much simpler way exists, through the java import statemets explained in the **JVM module views** section.
 
-Please also note that via the `jvm` field you can access any default java collections and arrays as these are automatically mapped to Python collections. Here is an example from the [py4j documentaion](https://www.py4j.org/advanced_topics.html):
+It is also important to understand a difference in accessing the **java static and non-static methods**. The former can be done without the object instantiation, e.g.
+
 ```python
-int_class = yourGateway.gateway.jvm.int
-int_array = yourGateway.gateway.new_array(int_class,2)
-int_array[0] = 1
-# etc..
+KGRouter = yourGateway.gateway.jvm.uk.ac.cam.cares.jps.base.query.KGRouter
+KGRouter.getKnowledgeBaseClient('http://kb/ontokin', True, False)
 ```
-Construction of java collections such as the `int_array` or `string_array` could be needed if one wishes to call a java method that requires them as arguments and the call fails with the default Python int / string lists. **This however, should be very rare** given that the auto conversion of Python objects like sequences and maps to Java Objects is enabled by default in `py4jps` by setting the `py4j JavaGateway` argument, `auto_convert`, to True.
+
+here the KGRouter static getKnowledgeBaseClient class can be directly called without the KGRouter instantiation. The non-static methods can only be accessed once the object is instantiated, e.g
+
+```python
+# create a FileUtil instance in order to access its non static getDirectoryFiles method
+FileUtil = tw_jpsBaseLib_view.FileUtil()
+# call the getDirectoryFiles method
+output = FileUtil.getDirectoryFiles(method_arguments)
+```
 
 ## Resource gateways
 
 The resource gateway class is automatically created upon the resource installation. The class name is the same as the name of the resource given during the installation. Furthermore, **each resource gateway class inherits from the `py4jps JPSGateway` class**. Therefore, **one should ideally only work with the resource classes rather than with the parent JPSGateway class**. It is also recommended to have only one gateway object in your Python application per java resource you wish to access. This can be easily achieved by instantiating and starting the resource gateway objects in a specially designed module e.g. `jpsSingletons` and then to import these objects instances to any other module that requires it.
 
-To give a simple example, after installing the `jpsBaseLib` resource one can import and use its gateway in a following way:
+To give a simple example, after installing the `jpsBaseLib` resource one can import and use it in a following way:
 ```python
 from py4jps.resources import jpsBaseLib
 
 jpsBaseLibGW = jpsBaseLib(**JGkwargs)
-jpsBaseLibGW.launchGatewa(**LGkwargs)
+jpsBaseLibGW.launchGateway(**LGkwargs)
 ```
 
 Do note that compared to the `JPSGateway` class the `jpsBaseLib` constructor call neither accepts the resource name nor the resource jar path as arguments. This ensures that the resource is properly encapsulated.
 
 ## JVM module views
 
-`Py4j` allows importing Java packages so that you don't have to type the fully qualified names of the classes you want to instantiate. However, any such import statement is global in Python, e.g. the `jvm` instance can be shared across multiple Python modules. Therefore, the recommended way is to use one Java Virtual Machine View (JVMView) per Python module (file). A convenience method has been added to the `py4jps` gateway class that allows to create the module views (see [py4j](https://www.py4j.org/advanced_topics.html#importing-packages-with-jvm-views) documentation for further details on module views):
+`Py4j` allows importing Java packages so that you don't have to type the fully qualified names of the classes you want to access. However, any such import statement is global in Python, e.g. the `jvm` instance can be shared across multiple Python modules. Therefore, the recommended way is to use one Java Virtual Machine View (JVMView) per Python module (file). A convenience method has been added to the `py4jps` gateway class that allows to create the module views (see [py4j](https://www.py4j.org/advanced_topics.html#importing-packages-with-jvm-views) documentation for further details on module views):
 ```python
 # create the module view
 moduleViewInstance = resGateway.createModuleView()
@@ -198,6 +223,83 @@ resGateway.importPackages(moduleViewInstance,"uk.ac.cam.cares.jps.base.query.*")
 KGRouter = moduleViewInstance.KGRouter
 ```
 The module view should be created for each Python module in your application that requires access to the java resource, followed by any desired import statements. The name of the module view is arbitrary, though it is recommended to name it after your Python module file name and the parent resource to avoid confusion and potential name clashes.
+
+## Python-Java objects translation
+
+It is important to understand that calling the Java methods from Python requries a bit of attention to the type of arguments on the Java side. The simplest case is when the Java method arguments are of any primitive type (e.g. int, float, String, etc..). Then on the Python side it is enough to pass Python primitives (e.g 5 - int, 3.4 - float, 'a_string', etc..) without even declaring their types. Primitives are automatically converted between Python and Java. Another case is when the Java method arguments are of any collections type (e.g. Array, java.util.List, java.util.Set, etc..). If the `py4j JavaGateway` option `auto_convert` is set to True, then the Python - Java collections objects translation happens automatically. Please see the [py4j documentation](https://www.py4j.org/advanced_topics.html#accessing-java-collections-and-arrays-from-python) for a detailed explanation of what is converted into what. As explained in the **Python-Java communication via Python's JPSGateway wrapper class** section, in `py4jps` the `auto_convert` option is set to True by default so a user does not need to worry about it. Here are some code examples:
+```python
+# example of calling a Java aMethod1 with an int argument
+moduleViewInstance.aMethod1(5)
+# example of calling a Java aMethod2 with a float argument
+moduleViewInstance.aMethod2(3.4)
+# example of calling a Java aMethod3 with a string argument
+moduleViewInstance.aMethod3('a_string')
+# example of calling a Java aMethod4 with a list of strings argument
+# this only works because the auto_convert option is enabled by default in py4jps
+moduleViewInstance.aMethod4(['a_string'])
+```
+
+However, there could be cases where a Java object of specific type needs to be created for the method call. As an example, the `FileUtil` class in the `jpsBaseLib` resource has a method called `getDirectoryFiles`. The method simply returns a list of files in a directory that matches the provided file extensions. Here is its Java interface:
+```java
+public List<File> getDirectoryFiles(File folder, List<String> fileExtensions)
+```
+
+As can be seen the first argument is of type `File`, and the second is of type `List<String>`. Additonally, the method is not static so the `FileUtil` object needs to be instantiated first to be able to access this method. Since the Java `File` object needs to be created on the Python side so that the method can be called with the correct arguments, the question arises on how to do it. Now it is important to understand that the launched resource gateway allows you to not only access the resource classes and methods, but it also allows you to access any default Java classes and methods. This can be done in two ways: either via the `resGateway.gateway.jvm` field (not recommended) or via the created resource `moduleViewInstance` (recommended). Here is an example:
+
+```python
+# create and launch the jpsBaseLib gateway
+jpsBaseLibGW = jpsBaseLib()
+jpsBaseLibGW.launchGateway()
+# create the separate JVM view
+a_jpsBaseLibGW_view = jpsBaseLibGW.createModuleView()
+# import required Java packages into the created JVM view
+jpsBaseLibGW.importPackages(a_jpsBaseLibGW_view,'uk.ac.cam.cares.jps.base.util.*')
+
+# create a FileUtil instance in order to access its non static methods
+# compare it with the KGRouter example, where there was no need to add
+# () brackets to the router, so we were only retrieving the KGRouter class
+FileUtil = a_jpsBaseLibGW_view.FileUtil()
+
+# create the required `File folder` argument to be passed to the `getDirectoryFiles` method
+
+# option 1 - NOT RECOMMENDED
+# not recommended use of a gateway.jvm class to access the default java classes and methods
+# here we are instantiating the java.io.File class
+javaFolder = jpsBaseLibGW.gateway.jvm.java.io.File('D:\\my_dir')
+
+# option 2 - RECOMMENDED
+# recommended use of JVM view to access default java classes and methods
+javaFolder = a_jpsBaseLibGW_view.java.io.File('D:\\my_dir')
+
+# call the getDirectoryFiles
+# Note that the `List<String> fileExtensions` argument can be passed
+# as a simple Python list of strings thanks to the enabled auto conversion
+fileListArray = FileUtil.getDirectoryFiles(javaFolder, [".txt"])
+
+# The returned object is of Java List<File> type. So, one needs to know a bit
+# of Java in order to extract information. Here is an example:
+files_list = []
+for i in range(fileListArray.size()):
+    files_list.append(fileListArray.get(i).toString())
+
+# An extra example
+# If the Java method requires as an input a list of Java objects,
+# where the objects are not primitives e.g a list of file objects
+# that is returned as an output from the getDirectoryFiles call.
+# Then one can simply create such list as follows:
+
+javaFileObj = a_jpsBaseLibGW_view.java.io.File(path_to_a_folder)
+# this creates a Python List which stores a javaFileObj inside
+PythonList = [javaFileObj]
+
+# or
+
+# this creates a javaArray which stores the javaFileObj inside
+# this example, however, is not needed thanks to the auto conversion
+# so one can simply pass the PythonList created above to the method
+javaArray = a_jpsBaseLibGW_view.java.util.ArrayList()
+javaArray.append(javaFileObj)
+```
 
 ## Example code:
 
@@ -292,6 +394,8 @@ jpsBaseLibGW.importPackages(apm2_jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.
 def doTask2():
     FileUtil = apm2_jpsBaseLib_view.FileUtil
     # any paths passed to the jps-base-lib FileUtil object should be absolute paths
+    # here the FileUtil object does not need to be instatiated as the readFileLocally
+    # method is static
     response = FileUtil.readFileLocally('<your_absolute_file_path>')
     return response
 #============================================================
