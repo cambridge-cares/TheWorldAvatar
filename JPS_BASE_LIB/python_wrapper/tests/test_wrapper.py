@@ -79,19 +79,6 @@ class TestWrapper(unittest.TestCase):
         self.assertEqual(py4jGWparams.auth_token is not None, enable_auth)
 
     def fileReadingTest(self):
-        #jps = jpsBaseLib(**{'gateway_parameters':{'auto_field':True}})
-        #jps.launchGateway()
-        #tw_jpsBaseLib_view = jps.createModuleView()
-        #jps.importPackages(tw_jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.*')
-
-        #folder = tw_jpsBaseLib_view.java.io.File("D:\\Projects\\Chemistry_KG\\jpsml\\data\\test_dir")
-        #sarray = tw_jpsBaseLib_view.java.util.ArrayList()
-        #sarray = tw_jpsBaseLib_view.new_array(tw_jpsBaseLib_view.java.lang.String,1)
-        #sarray[0] = '.xml'
-        #sarray.append("")
-        #farray = tw_jpsBaseLib_view.java.util.ArrayList()
-        #farray = tw_jpsBaseLib_view.FileUtil.getDirectoryFiles("D:\\Projects\\Chemistry_KG\\jpsml\\data\\test_dir", [''])
-
         jps = jpsBaseLib()
         jps.launchGateway()
         tw_jpsBaseLib_view = jps.createModuleView()
@@ -115,11 +102,33 @@ class TestWrapper(unittest.TestCase):
                                         WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))
         jps.shutdown()
 
+    def javaPythonObjConversionTest(self):
+        jps = jpsBaseLib()
+        jps.launchGateway()
+        tw_jpsBaseLib_view = jps.createModuleView()
+        jps.importPackages(tw_jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.*')
+
+        # craete tje Java File object instance
+        javaFolder = tw_jpsBaseLib_view.java.io.File(path.abspath(path.join(path.dirname(__file__))))
+        # create a FileUtil instance in order to access its non static methods
+        FileUtil = tw_jpsBaseLib_view.FileUtil()
+        # call the getDirectoryFiles method
+        # note that passed [".txt"] Python list is automatically converted to the Java List<String> instance
+        fileListArray = FileUtil.getDirectoryFiles(javaFolder, [".txt"])
+        # note that the returned value type is ArrayList<File>, so one needs to know a bit of Java
+        # to access its values
+        retFilesList = []
+        for i in range(fileListArray.size()):
+            retFilesList.append(fileListArray.get(i).toString())
+
+        self.assertEqual(retFilesList, [path.join(path.abspath(path.join(path.dirname(__file__))), 'test_file1.txt')])
+
 def runTests():
     suite = unittest.TestSuite()
     suite.addTest(TestWrapper('JGLGkwargsTest'))
     suite.addTest(TestWrapper('fileReadingTest'))
     suite.addTest(TestWrapper('remoteKGqueryTest'))
+    suite.addTest(TestWrapper('javaPythonObjConversionTest'))
     runner = unittest.TextTestRunner()
     runner.run(suite)
 
