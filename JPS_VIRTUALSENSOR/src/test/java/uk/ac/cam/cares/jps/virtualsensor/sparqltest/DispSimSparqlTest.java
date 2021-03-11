@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
+import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 

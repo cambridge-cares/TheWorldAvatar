@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
+import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.episode.EpisodeAgent;
 
 public class EpisodeAgentTest extends TestCase {

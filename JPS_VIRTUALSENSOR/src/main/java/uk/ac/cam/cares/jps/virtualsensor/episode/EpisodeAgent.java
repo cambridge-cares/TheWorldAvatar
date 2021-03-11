@@ -47,7 +47,7 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
+import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;

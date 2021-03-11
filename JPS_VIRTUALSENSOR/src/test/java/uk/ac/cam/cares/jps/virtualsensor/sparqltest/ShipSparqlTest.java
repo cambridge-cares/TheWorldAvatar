@@ -10,7 +10,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
+import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;

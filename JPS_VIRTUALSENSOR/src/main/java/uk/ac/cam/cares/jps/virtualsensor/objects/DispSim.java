@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.virtualsensor.objects;
 
-import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;;
+import uk.ac.cam.cares.jps.base.region.Scope;
 
 public class DispSim {
     private int nx;

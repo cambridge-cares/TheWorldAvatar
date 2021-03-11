@@ -3,10 +3,11 @@ package uk.ac.cam.cares.jps.virtualsensor.agents;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
+import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 @WebServlet(urlPatterns = {"/ShipDataAgent"})
