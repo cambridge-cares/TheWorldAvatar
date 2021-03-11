@@ -95,12 +95,36 @@ public class ABoxManagement implements IABoxManagement{
 	public static final String RDF_TYPE = "type";
 	public static final String RDF_URL = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";	
 	public static final String OWL = "owl";
+	public static final String OWL_NAMED_INDIVIDUAL = "NamedIndividual";
 	public static final String OWL_VERSIONINFO = "versionInfo";
 	public static final String OWL_URL = "http://www.w3.org/2002/07/owl#";
 	public static final String DUBLIN_CORE = "dc";
 	public static final String DUBLIN_CORE_ID = "identifier";
 	public static final String DUBLIN_CORE_URL = "http://purl.org/dc/elements/1.1/";
 
+	
+	/**
+	 * Creates an instance of the class defined in the clasName parameter and<br>
+	 * adds it to the given ontology.
+	 * 
+	 * @param ontology
+	 * @param clasName
+	 * @param basePathTBox
+	 * @param instance
+	 * @param basePathABox
+	 * @return
+	 * @throws ABoxManagementException
+	 */
+	public OWLIndividual createIndividual(OWLOntology ontology, String clasName, String basePathTBox, String instance, String basePathABox) throws ABoxManagementException {
+		// Creates a class.
+		OWLClass clas = createOWLClass(dataFactory, basePathTBox, clasName);
+		// Creates an instance.
+		OWLIndividual individual = createOWLIndividual(dataFactory, basePathABox, instance);
+		// Adds to the ontology the instance of the class
+		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLClassAssertionAxiom(clas, individual)));
+		return individual;
+	}
+	
 	/**
 	 * Creates an instance of a class based on the data provided.</p>
 	 * If the instance is not available, it will create the 
@@ -115,12 +139,38 @@ public class ABoxManagement implements IABoxManagement{
 		// Checks the validity of the ABox ontology and method parameters
 		validateParameter(clasName, instance);
 		// Creates a class.
-		OWLClass clas = getOWLClass(dataFactory, basePathTBox, clasName);
+		OWLClass clas = createOWLClass(dataFactory, basePathTBox, clasName);
 		// Creates an instance.
 		OWLIndividual individual = createOWLIndividual(dataFactory, basePathABox, instance);
 		// Adds to the ontology the instance of the class
 		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLClassAssertionAxiom(clas, individual)));
 		return individual;
+	}
+	
+	/**
+	 * Add a data property to an instance.</p>
+	 * If the instance is not available, it will create the 
+	 * instance before adding the property.</br>
+	 * 
+	 * @param ontology
+	 * @param instance
+	 * @param basePathTBox
+	 * @param dataPropertyIRI
+	 * @param dataPropertyValue
+	 * @param propertyType
+	 * @throws ABoxManagementException
+	 */
+	public void addDataProperty(OWLOntology ontology, String instance, String basePathTBox, IRI dataPropertyIRI, String dataPropertyValue, String propertyType) throws ABoxManagementException {
+		// Creates an instance.
+		OWLIndividual individual = createOWLIndividual(dataFactory, basePathABox, instance);
+		// Creates the value of the data property being created
+		OWLLiteral literal = createOWLLiteral(dataFactory, dataPropertyValue, propertyType);
+		// Reads the data property
+		OWLDataProperty dataProperty = dataFactory
+				.getOWLDataProperty(dataPropertyIRI);
+		// Adds the data property and value to the ABox ontology
+		manager.applyChange(new AddAxiom(ontology,
+				dataFactory.getOWLDataPropertyAssertionAxiom(dataProperty, individual, literal)));
 	}
 	
 	/**
@@ -248,6 +298,29 @@ public class ABoxManagement implements IABoxManagement{
 				.getOWLObjectProperty(basePathTBox.concat("#").concat(objectPropertyName));
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLObjectPropertyAssertionAxiom(objectProperty, domainInstance, rangeInstance)));
+	}
+	
+	/**
+	 * Add an object property to connect a domain object with a range object.
+	 * 
+	 * @param ontology
+	 * @param basePathABox
+	 * @param objectPropertyIri
+	 * @param domainInstanceName
+	 * @param rangeInstanceName
+	 * @throws ABoxManagementException
+	 */
+	public void addObjectProperty(OWLOntology ontology, String basePathABox, IRI objectPropertyIri, String domainInstanceName, String rangeInstanceName) throws ABoxManagementException {
+		// Creates the object property
+		OWLObjectProperty objectProperty = dataFactory
+				.getOWLObjectProperty(objectPropertyIri);
+		// Creates the domain instance
+		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox,
+				domainInstanceName);
+		// Creates the range instance
+		OWLIndividual rangeIndividual = createOWLIndividual(dataFactory, basePathABox, rangeInstanceName);
+		manager.applyChange(new AddAxiom(ontology,
+				dataFactory.getOWLObjectPropertyAssertionAxiom(objectProperty, domainIndividual, rangeIndividual)));
 	}
 	
 	/**
@@ -557,17 +630,28 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return an OWL class.
 	 * @see OWLDataFactory
 	 */
-	private OWLClass getOWLClass(OWLDataFactory ontoFactory, String owlFilePath, String className){
+	private OWLClass createOWLClass(OWLDataFactory ontoFactory, String owlFilePath, String className){
+		if(className!=null && (className.trim().startsWith("http://") || className.trim().startsWith("https://"))){
+			return ontoFactory.getOWLClass(className.trim());
+		}
 		return ontoFactory.getOWLClass(owlFilePath.concat("#").concat(className));
 	}
 	
 	private OWLIndividual createOWLIndividual(OWLDataFactory ontoFactory, String owlFilePath, String individualName){
-		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat(BACKSLASH).concat(individualName));
+		if(individualName!=null && (individualName.trim().startsWith("http://") || individualName.trim().startsWith("https://"))){
+			return ontoFactory.getOWLNamedIndividual(individualName.trim());
+		}
+		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat("#").concat(individualName));
 	}
 	
 	private OWLDataProperty createOWLDataProperty(OWLDataFactory dataFactory, String iri, String propertyName, String separator){
+		if(propertyName!=null && (propertyName.trim().startsWith("http://") || propertyName.trim().startsWith("https://"))){
+			return dataFactory.getOWLDataProperty(propertyName);
+		}
 		return dataFactory.getOWLDataProperty(iri.concat(separator).concat(propertyName));
 	}
+	
+	
 	
 	/**
 	 * Creates an OWL literal according to the data type.
