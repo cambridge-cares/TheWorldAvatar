@@ -78,11 +78,6 @@
 			<scope>compile</scope>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.eclipse.rdf4j</groupId>
-			<artifactId>rdf4j-runtime</artifactId>
-			<version>${rdf4j.version}</version>
-		</dependency>
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -100,17 +95,6 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${org.slf4j-version}</version>
 			<scope>runtime</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-model -->
-		<dependency>
-			<groupId>org.eclipse.rdf4j</groupId>
-			<artifactId>rdf4j-model</artifactId>
-			<version>2.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.55</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
 		<dependency>
@@ -140,6 +124,24 @@
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
 			<version>1.3.0</version>
+			<exclusions>
+	            <exclusion>
+					<groupId>com.jcraft</groupId>
+					<artifactId>jsch</artifactId>
+	          	</exclusion>
+	            <exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>jena-rdfconnection</artifactId>
+	          	</exclusion>	          		          		          		          		          	
+	            <exclusion>
+					<groupId>org.apache.jena</groupId>
+					<artifactId>jena-shaded-guava</artifactId>
+	          	</exclusion>	          		          		          		          		          	
+	            <exclusion>
+					<groupId>com.github.owlcs</groupId>
+					<artifactId>ontapi</artifactId>
+	          	</exclusion>	          		          		          		          		          	
+        	</exclusions>
 		</dependency>
 		
 		<!-- Used for common IO functionality -->
