@@ -21,9 +21,6 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.region.Scope;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
@@ -82,7 +79,6 @@ public class SensorSparql {
     private static Iri unit_ugm3 = p_derived_SI_unit.iri("ug_per_m.m.m");
 
     //endpoint
-    private static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
     private static Iri weather_graph = p_station.iri("WeatherStations");
     private static Iri airquality_graph = p_station.iri("AirQualityStations");
 
@@ -125,7 +121,7 @@ public class SensorSparql {
         ModifyQuery modify = Queries.MODIFY();
         
         modify.prefix(prefix_list).insert(combined_tp).where().with(weather_graph);
-        performUpdate(modify);
+        SparqlGeneral.performUpdate(modify);
     }
 
     private static TriplePattern [] getWeatherSensorTP(Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit, Iri time_iri) {
@@ -217,7 +213,7 @@ public class SensorSparql {
     	sub.select(datavalue_iri,oldvalue).where(weatherdata_gp).from(weather_graph);
     	ModifyQuery modify = Queries.MODIFY();
     	modify.prefix(p_system,p_ontosensor,p_station).delete(olddatavalue_tp).insert(newvalue_tp).where(sub).with(weather_graph);
-    	performUpdate(modify);
+    	SparqlGeneral.performUpdate(modify);
     }
     
     /**
@@ -244,7 +240,7 @@ public class SensorSparql {
         
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(p_system,p_ontosensor,p_time,p_station).delete(oldtime_tp).insert(newtime_tp).where(sub).with(weather_graph);
-        performUpdate(modify);
+        SparqlGeneral.performUpdate(modify);
     }
     
     /**
@@ -291,7 +287,7 @@ public class SensorSparql {
         Variable [] queryvariables = {xval,yval,zval,vcloud,vprecip,vpressure,vtemp,vhumidity,vwindspeed,vwinddirection,vtime};
         // distinct used here purely because time triple is shared by all data, hence giving multiple results
         query.from(queryGraph).prefix(getPrefix()).select(queryvariables).where(querypattern).distinct();
-        JSONArray queryresult = performQuery(query);
+        JSONArray queryresult = SparqlGeneral.performQuery(query);
         result = queryresult.getJSONObject(0);
     	return result;
     }
@@ -381,7 +377,7 @@ public class SensorSparql {
         
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(prefix_list).insert(combined_tp).where().with(airquality_graph);
-        performUpdate(modify);
+        SparqlGeneral.performUpdate(modify);
         //airqualitystation_iri.toString() does not work, hence this awkward solution
         return ontostation + station_name;
     }
@@ -443,7 +439,7 @@ public class SensorSparql {
     	From queryGraph = SparqlBuilder.from(airquality_graph);
     	
     	query.from(queryGraph).prefix(p_station,p_system,p_ontosensor).select(data_iri,datavalue_iri).where(querypattern);
-    	JSONArray queryresult = performQuery(query);
+    	JSONArray queryresult = SparqlGeneral.performQuery(query);
 
     	// there will be only one data_iri in each sensor
     	// data_iri can contain a number of values (time series data)
@@ -487,7 +483,7 @@ public class SensorSparql {
     		modify.delete(delete_tp);
     	}
         modify.with(airquality_graph).prefix(p_station,p_system,p_ontosensor,p_time).insert(data_tp,datavalue_tp).where();
-        performUpdate(modify);
+        SparqlGeneral.performUpdate(modify);
     }
     
     public static JSONArray queryAirStationsWithinScope(Scope sc) {
@@ -536,7 +532,7 @@ public class SensorSparql {
         
     	query.from(queryGraph).prefix(p_station,p_space_time_extended, p_system).select(station,xvalue,yvalue).where(querypattern);
 
-    	return performQuery(query);
+    	return SparqlGeneral.performQuery(query);
     }
 
     public static long queryWeatherStationTimeStamp(String stationiri_string) {
@@ -546,7 +542,7 @@ public class SensorSparql {
     	GraphPattern querypattern = getStationTimeGP(query,stationiri,vtime);
     	From queryGraph = SparqlBuilder.from(weather_graph);
     	query.from(queryGraph).prefix(p_station,p_ontosensor,p_time,p_system).select(vtime).where(querypattern).distinct();
-    	JSONArray queryresult = performQuery(query);
+    	JSONArray queryresult = SparqlGeneral.performQuery(query);
     	long timestamp = queryresult.getJSONObject(0).getLong("vtime");
     	return timestamp;
     }
@@ -564,7 +560,7 @@ public class SensorSparql {
     	From queryGraph = SparqlBuilder.from(airquality_graph);
     	query.from(queryGraph).prefix(p_station).select(station).where(querypattern);
 
-    	return performQuery(query);
+    	return SparqlGeneral.performQuery(query);
     }
 
     /**
@@ -603,7 +599,7 @@ public class SensorSparql {
         
         query.from(queryGraph).prefix(p_station,p_space_time_extended,p_system).select(xvalue,yvalue).where(querypattern);
         
-        JSONArray queryresult = performQuery(query);
+        JSONArray queryresult = SparqlGeneral.performQuery(query);
         
         double [] coordinates_xy = {queryresult.getJSONObject(0).getDouble("xvalue"),
         		queryresult.getJSONObject(0).getDouble("yvalue")};
@@ -637,23 +633,7 @@ public class SensorSparql {
         From queryGraph = SparqlBuilder.from(airquality_graph);
         
         query.from(queryGraph).prefix(p_station,p_system,p_ontosensor).select(data_type,numvalue).where(querypattern);
-    	return performQuery(query);
-    }
-    
-    private static void performUpdate(ModifyQuery query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-        kbClient.setUpdateEndpoint(endpoint);
-        kbClient.setQuery(query.getQueryString());
-        System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
-    }
-
-    private static JSONArray performQuery(SelectQuery query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-        kbClient.setQueryEndpoint(endpoint);
-        kbClient.setQuery(query.getQueryString());
-        JSONArray result = kbClient.executeQuery();
-        System.out.println("kbClient.executeQuery():"+result);
-        return result;
+    	return SparqlGeneral.performQuery(query);
     }
 }
 

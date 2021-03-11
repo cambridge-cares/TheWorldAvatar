@@ -11,6 +11,13 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.json.JSONArray;
+
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.SparqlAuthentication;
+
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 /**
@@ -19,12 +26,32 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
  *
  */
 
-public class SparqlPatternGenerator {
+public class SparqlGeneral {
+	private static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
+	
 	private static Iri numericalValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	private static Iri hasValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
 	private static Iri ScalarValue = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
 	private static Iri hasUnitOfMeasure = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 	
+	public static void performUpdate(ModifyQuery query) {
+        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        kbClient.setUpdateEndpoint(endpoint);
+        kbClient.setQuery(query.getQueryString());
+        System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
+    }
+	
+	public static JSONArray performQuery(SelectQuery query) {
+        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        kbClient.setUser(SparqlAuthentication.getUser());
+        kbClient.setPassword(SparqlAuthentication.getPassword());
+        kbClient.setQueryEndpoint(endpoint);
+        kbClient.setQuery(query.getQueryString());
+        JSONArray result = null;
+        result = kbClient.executeQuery(); 
+        return result;
+    }
+
 	public static TriplePattern[] GetScalarTP(Iri Property, Iri PropertyValue, double value, Iri unit) {
     	TriplePattern Property_tp = Property.has(hasValue,PropertyValue);
     	TriplePattern PropertyValue_tp = PropertyValue.isA(ScalarValue)

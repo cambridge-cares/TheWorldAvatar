@@ -31,8 +31,6 @@ import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.SparqlAuthentication;
 
 public class ShipSparql {
-    private static String endpoint = KeyValueManager.get(IKeys.URL_VIRTUALSENSOR);
-
     private static Prefix p_ship = SparqlBuilder.prefix("ship",iri("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"));
     private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
     private static Prefix p_derived_SI_unit = SparqlBuilder.prefix("derived_SI_unit",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"));
@@ -219,7 +217,7 @@ public class ShipSparql {
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(prefix_list).insert(combined_tp).where().with(ship_graph);
 
-        performUpdate(modify);
+        SparqlGeneral.performUpdate(modify);
     }
 
     /** 
@@ -306,7 +304,7 @@ public class ShipSparql {
         query.from(queryGraph).prefix(p_ship,p_space_time_extended, p_system).select(mmsi_value,type,al,aw,ss,cu,lon,lat).where(querypattern)
         .orderBy(speedDesc).orderBy(alDesc).orderBy(awDesc).limit(300);
 
-        JSONArray result = performQuery(query);
+        JSONArray result = SparqlGeneral.performQuery(query);
 
         return result;
     }
@@ -331,25 +329,25 @@ public class ShipSparql {
         
         // for coordinates
         Iri[] XcoordPredicates = {hasProjectedCoordinate_x,hasValue,numericalValue};
-        GraphPattern xcoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, XcoordPredicates, null, coord, lon);
+        GraphPattern xcoord_gp = SparqlGeneral.GetQueryGraphPattern(query, XcoordPredicates, null, coord, lon);
         
         Iri[] YcoordPredicates = {hasProjectedCoordinate_y,hasValue,numericalValue};
-        GraphPattern ycoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, YcoordPredicates, null, coord, lat);
+        GraphPattern ycoord_gp = SparqlGeneral.GetQueryGraphPattern(query, YcoordPredicates, null, coord, lat);
         
         // length query
         
         Iri[] LengthQueryPredicates = {hasDimension, hasValue, QuantitativeValue};
         Iri[] LengthQueryRdfTypes = {null, p_ship.iri("ShipLength"), null};
-        GraphPattern length_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, LengthQueryPredicates, LengthQueryRdfTypes, ship, al);
+        GraphPattern length_gp = SparqlGeneral.GetQueryGraphPattern(query, LengthQueryPredicates, LengthQueryRdfTypes, ship, al);
         
         // beam query
         Iri[] BeamQueryPredicates = {hasDimension,hasValue,QuantitativeValue};
         Iri[] BeamQueryRdfTypes = {null, p_ship.iri("ShipBeam"), null};
-        GraphPattern beam_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, BeamQueryPredicates, BeamQueryRdfTypes, ship, aw);
+        GraphPattern beam_gp = SparqlGeneral.GetQueryGraphPattern(query, BeamQueryPredicates, BeamQueryRdfTypes, ship, aw);
         
         // speed query
         Iri[] SpeedQueryPredicates = {hasSOG,hasValue,numericalValue};
-        GraphPattern speed_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship, ss);
+        GraphPattern speed_gp = SparqlGeneral.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship, ss);
         
         // named graph
         From queryGraph = SparqlBuilder.from(ship_graph);
@@ -370,7 +368,7 @@ public class ShipSparql {
         query.from(queryGraph).prefix(p_ship,p_space_time_extended, p_system).select(ship).where(queryPattern)
         .orderBy(ssDesc).orderBy(alDesc).orderBy(awDesc).limit(300);
 
-        JSONArray queryresult = performQuery(query);
+        JSONArray queryresult = SparqlGeneral.performQuery(query);
         
         JSONArray shipIRI = new JSONArray();
         for (int i=0; i < queryresult.length(); i++) {
@@ -392,14 +390,14 @@ public class ShipSparql {
         
         // ship type query
         Iri[] TypeQueryPredicates = {hasShipType,hasValue,Value};
-        GraphPattern type_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, TypeQueryPredicates, null, ship_iri, type);
+        GraphPattern type_gp = SparqlGeneral.GetQueryGraphPattern(query, TypeQueryPredicates, null, ship_iri, type);
         
         // speed query
         Iri[] SpeedQueryPredicates = {hasSOG,hasValue,numericalValue};
-        GraphPattern speed_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship_iri, ss);
+        GraphPattern speed_gp = SparqlGeneral.GetQueryGraphPattern(query, SpeedQueryPredicates, null, ship_iri, ss);
         
         query.from(FromGraph).prefix(p_ship,p_system).select(type,ss).where(type_gp,speed_gp);
-        JSONArray queryresult = performQuery(query);
+        JSONArray queryresult = SparqlGeneral.performQuery(query);
         
         JSONObject response = queryresult.getJSONObject(0);
         return response;
@@ -412,24 +410,24 @@ public class ShipSparql {
     	
     	//coord node
     	Iri[] ship2coord_predicates = {hasGISCoordinateSystem};
-    	GraphPattern ship2coord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, ship2coord_predicates,null,ship_iri,coord);
+    	GraphPattern ship2coord_gp = SparqlGeneral.GetQueryGraphPattern(query, ship2coord_predicates,null,ship_iri,coord);
     	
     	//x node
     	Variable x = SparqlBuilder.var("x");
     	Iri[] coord2xcoord_predicates = {hasProjectedCoordinate_x,hasValue,numericalValue};
-    	GraphPattern coord2xcoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, coord2xcoord_predicates,null,coord, x);
+    	GraphPattern coord2xcoord_gp = SparqlGeneral.GetQueryGraphPattern(query, coord2xcoord_predicates,null,coord, x);
     	
     	//y 
     	Variable y = SparqlBuilder.var("y");
     	Iri[] coord2ycoord_predicates = {hasProjectedCoordinate_y,hasValue,numericalValue};
-    	GraphPattern coord2ycoord_gp = SparqlPatternGenerator.GetQueryGraphPattern(query, coord2ycoord_predicates, null, coord, y);
+    	GraphPattern coord2ycoord_gp = SparqlGeneral.GetQueryGraphPattern(query, coord2ycoord_predicates, null, coord, y);
     	
     	// combined query graph
     	GraphPattern combined_gp = GraphPatterns.and(ship2coord_gp,coord2xcoord_gp,coord2ycoord_gp);
     	
     	query.prefix(p_space_time_extended,p_system,p_ship).from(FromGraph).select(x,y).where(combined_gp);
     	
-    	JSONArray queryresult = performQuery(query);
+    	JSONArray queryresult = SparqlGeneral.performQuery(query);
     	double xvalue = queryresult.getJSONObject(0).getDouble("x");
     	double yvalue = queryresult.getJSONObject(0).getDouble("y");
     	double[] result = {xvalue,yvalue};
@@ -472,10 +470,10 @@ public class ShipSparql {
     			.andHas(realizes,release);
     	
     	TriplePattern diameter_tp = diameter.isA(p_ship.iri("DimensionOfBow"));
-    	TriplePattern[] v_diameter_tp = SparqlPatternGenerator.GetScalarTP(diameter,v_diameter,1.0,unit_m);
+    	TriplePattern[] v_diameter_tp = SparqlGeneral.GetScalarTP(diameter,v_diameter,1.0,unit_m);
     	
     	TriplePattern height_tp = height.isA(p_ship.iri("DimensionOfBow"));
-    	TriplePattern[] v_height_tp = SparqlPatternGenerator.GetScalarTP(height,v_height,20.0,unit_m);
+    	TriplePattern[] v_height_tp = SparqlGeneral.GetScalarTP(height,v_height,20.0,unit_m);
     	
     	TriplePattern release_tp = release.isA(p_process.iri("ReleaseEmission")).andHas(hasOutput,wasteproduct);
     	TriplePattern waste_tp = wasteproduct.isA(p_process.iri("NonReusableWasteProduct")).andHas(refersToGeneralizedAmount,generalizedamount);
@@ -488,10 +486,10 @@ public class ShipSparql {
     	// particle total flowrate
     	TriplePattern particulateamount_tp = particulateamount.isA(p_behaviour.iri("ParticulateMaterialAmount")).andHas(hasProperty,particlerate);
     	TriplePattern particlerate_tp = particlerate.isA(ConvectiveMassFlowrate);
-    	TriplePattern[] particleratevalue_tp = SparqlPatternGenerator.GetScalarTP(particlerate,particleratevalue,0,unit_kg_per_s);
+    	TriplePattern[] particleratevalue_tp = SparqlGeneral.GetScalarTP(particlerate,particleratevalue,0,unit_kg_per_s);
     	
     	TriplePattern massflow_tp = massflow.isA(ConvectiveMassFlowrate);
-    	TriplePattern[] massflowvalue_tp = SparqlPatternGenerator.GetScalarTP(massflow,massflowvalue,0,unit_kg_per_s);
+    	TriplePattern[] massflowvalue_tp = SparqlGeneral.GetScalarTP(massflow,massflowvalue,0,unit_kg_per_s);
     	
     	TriplePattern materialamount_tp = materialamount.isA(p_behaviour.iri("MaterialAmount"))
     			.andHas(refersToMaterial,material);
@@ -504,19 +502,19 @@ public class ShipSparql {
     			.andHas(has_density,density);
     	
     	TriplePattern cp_tp = cp.isA(ThermodynamicStateProperty);
-    	TriplePattern[] cpvalue_tp = SparqlPatternGenerator.GetScalarTP(cp,cp_value,0,unit_JperkgK);
+    	TriplePattern[] cpvalue_tp = SparqlGeneral.GetScalarTP(cp,cp_value,0,unit_JperkgK);
     	
     	TriplePattern temperature_tp = temperature.isA(p_phase_system.iri("Temperature"));
-    	TriplePattern[] tempvalue_tp = SparqlPatternGenerator.GetScalarTP(temperature,temperature_value,0,unit_celcius);
+    	TriplePattern[] tempvalue_tp = SparqlGeneral.GetScalarTP(temperature,temperature_value,0,unit_celcius);
     	
     	TriplePattern pressure_tp = pressure.isA(p_phase_system.iri("Pressure"));
-    	TriplePattern[] pressurevalue_tp = SparqlPatternGenerator.GetScalarTP(pressure,pressure_value,0,unit_bar);
+    	TriplePattern[] pressurevalue_tp = SparqlGeneral.GetScalarTP(pressure,pressure_value,0,unit_bar);
     	
     	TriplePattern molWeight_tp = molWeight.isA(MolecularWeight);
-    	TriplePattern[] molWeightValue_tp = SparqlPatternGenerator.GetScalarTP(molWeight, molWeightValue, 0, unit_kg_per_mol);
+    	TriplePattern[] molWeightValue_tp = SparqlGeneral.GetScalarTP(molWeight, molWeightValue, 0, unit_kg_per_mol);
     	
     	TriplePattern density_tp = density.isA(p_phase_system.iri("Density"));
-    	TriplePattern[] densityvalue_tp = SparqlPatternGenerator.GetScalarTP(density, densityValue, 0, unit_kg_m3);
+    	TriplePattern[] densityvalue_tp = SparqlGeneral.GetScalarTP(density, densityValue, 0, unit_kg_m3);
     	
     	TriplePattern [] combined_tp = {pipe_tp,diameter_tp,height_tp,release_tp,waste_tp,particulateamount_tp,particlerate_tp,
     			amount_tp,massflow_tp,materialamount_tp,material_tp,singlephase_tp,cp_tp,temperature_tp,pressure_tp,molWeight_tp,density_tp};
@@ -574,10 +572,10 @@ public class ShipSparql {
     	TriplePattern vmass_tp = vmassfraction_iri.isA(p_system.iri("ScalarValue")).andHas(numericalValue,0);
     	
     	TriplePattern density_tp = density_iri.isA(p_phase_system.iri("Density"));
-    	TriplePattern[] densityvalue_tp = SparqlPatternGenerator.GetScalarTP(density_iri, vdensity_iri, 0, unit_kg_m3);
+    	TriplePattern[] densityvalue_tp = SparqlGeneral.GetScalarTP(density_iri, vdensity_iri, 0, unit_kg_m3);
     	
     	TriplePattern diameter_tp = diameter_iri.isA(p_geometry.iri("Diameter"));
-    	TriplePattern[] diametervalue_tp = SparqlPatternGenerator.GetScalarTP(diameter_iri, vdiameter_iri, 0, unit_m);
+    	TriplePattern[] diametervalue_tp = SparqlGeneral.GetScalarTP(diameter_iri, vdiameter_iri, 0, unit_m);
     	
     	TriplePattern[] combined_tp = {entity_tp,particle_tp,mass_tp,vmass_tp,density_tp,diameter_tp};
     	
@@ -610,7 +608,7 @@ public class ShipSparql {
         		.andHas(hasProperty,massFlow);
         TriplePattern species_tp = species.isA(species_type);
         TriplePattern massFlow_tp = massFlow.isA(ConvectiveMassFlowrate);
-        TriplePattern[] value_tp = SparqlPatternGenerator.GetScalarTP(massFlow,massFlowValue,0.0,unit_kg_per_s);
+        TriplePattern[] value_tp = SparqlGeneral.GetScalarTP(massFlow,massFlowValue,0.0,unit_kg_per_s);
         
         TriplePattern[] combined_tp = {material_tp,mixture_tp,massFlow_tp,species_tp};
         combined_tp = ArrayUtils.addAll(combined_tp, value_tp);
@@ -626,29 +624,29 @@ public class ShipSparql {
     	Iri[] molWeightRdfTypes = new Iri[molWeightPredicates.length+1];
     	molWeightRdfTypes[8] = MolecularWeight;
     	
-    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, molWeightPredicates, molWeightRdfTypes, ship_iri, chim.getMixtureMolWeight(), ship_graph));
+    	SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, molWeightPredicates, molWeightRdfTypes, ship_iri, chim.getMixtureMolWeight(), ship_graph));
     	
     	//cp
     	Iri[] cpPredicates = molWeightPredicates;
     	Iri[] cpRdfTypes = new Iri[cpPredicates.length+1];
     	cpRdfTypes[8] = ThermodynamicStateProperty;
-    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, cpPredicates, cpRdfTypes, ship_iri, chim.getMixtureCp(), ship_graph));
+    	SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, cpPredicates, cpRdfTypes, ship_iri, chim.getMixtureCp(), ship_graph));
     	
     	//temperature
     	Iri[] tempPredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,
     			refersToMaterial,thermodynamicBehaviour,has_temperature,hasValue,numericalValue};
-    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, tempPredicates, null, ship_iri, chim.getMixtureTemperature(), ship_graph));
+    	SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, tempPredicates, null, ship_iri, chim.getMixtureTemperature(), ship_graph));
     	
     	// mass flux
     	Iri[] massFluxPredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasProperty,hasValue,numericalValue};
     	Iri[] massFluxRdfTypes = new Iri[massFluxPredicates.length+1];
     	massFluxRdfTypes[5] = ConvectiveMassFlowrate;
-    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, massFluxPredicates, massFluxRdfTypes, ship_iri, chim.getMixtureMassFlux(), ship_graph));
+    	SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, massFluxPredicates, massFluxRdfTypes, ship_iri, chim.getMixtureMassFlux(), ship_graph));
     	
     	// density
     	Iri[] densityPredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,
     			refersToMaterial,thermodynamicBehaviour,has_density,hasValue,numericalValue};
-    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, densityPredicates, null, ship_iri, chim.getMixtureDensity(), ship_graph));
+    	SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, densityPredicates, null, ship_iri, chim.getMixtureDensity(), ship_graph));
     
     	// particles
     	// first query the IRIs of the representative particles, it is assumed that the number is always the same with the ones in chimney
@@ -656,9 +654,9 @@ public class ShipSparql {
     	SelectQuery query = Queries.SELECT();
     	String particlekey = "particleIRI";
     	Variable particleIRI = SparqlBuilder.var(particlekey);
-    	GraphPattern queryPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, particlePredicates, null, ship_iri, particleIRI);
+    	GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, particlePredicates, null, ship_iri, particleIRI);
     	query.prefix(Prefixes).select(particleIRI).where(queryPattern).from(FromGraph);
-    	JSONArray particles = performQuery(query);
+    	JSONArray particles = SparqlGeneral.performQuery(query);
     	
     	// then update each particle
     	if (particles.length() == chim.getNumpar()) {
@@ -667,21 +665,21 @@ public class ShipSparql {
     			
     			// update density
     			Iri[] partDenPredicates = {has_density,hasValue,numericalValue};
-    			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, partDenPredicates, null, particle_iri, chim.getParticle(i).getDensity(), ship_graph));
+    			SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, partDenPredicates, null, particle_iri, chim.getParticle(i).getDensity(), ship_graph));
     			
     			// update diameter
     			Iri[] partDiameterPredicates = {has_length,hasValue,numericalValue};
-    			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, partDiameterPredicates, null, particle_iri, chim.getParticle(i).getDiameter(), ship_graph));
+    			SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, partDiameterPredicates, null, particle_iri, chim.getParticle(i).getDiameter(), ship_graph));
     		    
     			// update mass fraction
     			Iri[] partmassPredicates = {hasProperty,hasValue,numericalValue};
-    			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, partmassPredicates, null, particle_iri, chim.getParticle(i).getMassFraction(), ship_graph));
+    			SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, partmassPredicates, null, particle_iri, chim.getParticle(i).getMassFraction(), ship_graph));
     		}
     	}
     	
     	// overall particulate flow rate
     	Iri[] particleRatePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,contains,hasProperty,hasValue,numericalValue};
-    	performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, particleRatePredicates, null, ship_iri, chim.getTotalParticleFlowrate(), ship_graph));
+    	SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, particleRatePredicates, null, ship_iri, chim.getTotalParticleFlowrate(), ship_graph));
     
     	// gas phase
     	for (int i=0; i < chim.getNumpol(); i++) {
@@ -695,21 +693,21 @@ public class ShipSparql {
     			Variable mixture = SparqlBuilder.var("mixture");
     			
     			Iri[] mixturePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,refersToMaterial,intrinsicCharacteristics};
-    			GraphPattern ship2mixture_gp = SparqlPatternGenerator.GetQueryGraphPattern(MixtureQuery,mixturePredicates,null,ship_iri,mixture);
+    			GraphPattern ship2mixture_gp = SparqlGeneral.GetQueryGraphPattern(MixtureQuery,mixturePredicates,null,ship_iri,mixture);
     			
     			Iri[] speciesPredicates = {containsDirectly};
     			Iri[] speciesRdfTypes = new Iri[speciesPredicates.length+1];
     			speciesRdfTypes[1] = speciesIri;
-    			GraphPattern mixture2species_gp = SparqlPatternGenerator.GetQueryGraphPattern(MixtureQuery,speciesPredicates,speciesRdfTypes,mixture);
+    			GraphPattern mixture2species_gp = SparqlGeneral.GetQueryGraphPattern(MixtureQuery,speciesPredicates,speciesRdfTypes,mixture);
     			
     			GraphPattern mixtureQueryPattern = GraphPatterns.and(ship2mixture_gp,mixture2species_gp);
     			MixtureQuery.select(mixture).where(mixtureQueryPattern).from(FromGraph).prefix(Prefixes);
     			
-    			JSONArray mixtureQueryResult = performQuery(MixtureQuery);
+    			JSONArray mixtureQueryResult = SparqlGeneral.performQuery(MixtureQuery);
  
     			Iri MixtureIri = iri(mixtureQueryResult.getJSONObject(0).getString("mixture"));
     			Iri[] flowratePredicates = {hasProperty,hasValue,numericalValue};
-    			performUpdate(SparqlPatternGenerator.UpdateValue(Prefixes, flowratePredicates, null, MixtureIri, chim.getPollutant(i).getFlowrate(), ship_graph));
+    			SparqlGeneral.performUpdate(SparqlGeneral.UpdateValue(Prefixes, flowratePredicates, null, MixtureIri, chim.getPollutant(i).getFlowrate(), ship_graph));
     		}
     	}
     }
@@ -730,37 +728,37 @@ public class ShipSparql {
     	Variable chimney = query.var(); Variable generalizeAmount = query.var(); Variable singlephase = query.var();
     	
     	Iri[] chimneyPredicates = {hasSubsystem};
-    	GraphPattern ship2chimney = SparqlPatternGenerator.GetQueryGraphPattern(query, chimneyPredicates, null, ship_iri,chimney);
+    	GraphPattern ship2chimney = SparqlGeneral.GetQueryGraphPattern(query, chimneyPredicates, null, ship_iri,chimney);
     	
     	Iri[] diameterPredicates = {hasInsideDiameter,hasValue,numericalValue};
-    	GraphPattern chimney2diameter = SparqlPatternGenerator.GetQueryGraphPattern(query, diameterPredicates, null, chimney, diameter);
+    	GraphPattern chimney2diameter = SparqlGeneral.GetQueryGraphPattern(query, diameterPredicates, null, chimney, diameter);
     	
     	Iri[] generalPredicates = {realizes,hasOutput,refersToGeneralizedAmount};
-    	GraphPattern chimney2general = SparqlPatternGenerator.GetQueryGraphPattern(query, generalPredicates, null, chimney, generalizeAmount);
+    	GraphPattern chimney2general = SparqlGeneral.GetQueryGraphPattern(query, generalPredicates, null, chimney, generalizeAmount);
     	
     	Iri[] flowratePredicates = {hasProperty,hasValue,numericalValue};
-    	GraphPattern general2flowrate = SparqlPatternGenerator.GetQueryGraphPattern(query, flowratePredicates, null, generalizeAmount,overallFlowrate);
+    	GraphPattern general2flowrate = SparqlGeneral.GetQueryGraphPattern(query, flowratePredicates, null, generalizeAmount,overallFlowrate);
     	
     	Iri[] singlephasePredicates = {hasSubsystem,refersToMaterial,thermodynamicBehaviour};
-    	GraphPattern general2singlephase = SparqlPatternGenerator.GetQueryGraphPattern(query, singlephasePredicates, null, generalizeAmount,singlephase);
+    	GraphPattern general2singlephase = SparqlGeneral.GetQueryGraphPattern(query, singlephasePredicates, null, generalizeAmount,singlephase);
     	
     	Iri[] particlePredicates = {contains,hasProperty,hasValue,numericalValue};
-    	GraphPattern general2particlerate = SparqlPatternGenerator.GetQueryGraphPattern(query, particlePredicates, null, generalizeAmount,particleFlowrate);
+    	GraphPattern general2particlerate = SparqlGeneral.GetQueryGraphPattern(query, particlePredicates, null, generalizeAmount,particleFlowrate);
     	
     	Iri[] densityPredicates = {has_density,hasValue,numericalValue};
-    	GraphPattern singlephase2density = SparqlPatternGenerator.GetQueryGraphPattern(query, densityPredicates, null, singlephase,density);
+    	GraphPattern singlephase2density = SparqlGeneral.GetQueryGraphPattern(query, densityPredicates, null, singlephase,density);
     	
     	Iri[] tempPredicates = {has_temperature,hasValue,numericalValue};
-    	GraphPattern singlephase2temp = SparqlPatternGenerator.GetQueryGraphPattern(query, tempPredicates, null, singlephase,temp);
+    	GraphPattern singlephase2temp = SparqlGeneral.GetQueryGraphPattern(query, tempPredicates, null, singlephase,temp);
     	
     	Iri[] heightPredicates = {hasHeight,hasValue,numericalValue};
-    	GraphPattern chimney2height = SparqlPatternGenerator.GetQueryGraphPattern(query, heightPredicates, null, chimney,height);
+    	GraphPattern chimney2height = SparqlGeneral.GetQueryGraphPattern(query, heightPredicates, null, chimney,height);
     	
     	GraphPattern queryPattern = GraphPatterns.and(ship2chimney,chimney2diameter,chimney2general,general2flowrate,general2singlephase,
     			singlephase2density,singlephase2temp,chimney2height,general2particlerate);
     	
     	query.from(FromGraph).select(diameter,overallFlowrate,density,height,temp,particleFlowrate).where(queryPattern).prefix(Prefixes);
-    	JSONArray queryresult = performQuery(query);
+    	JSONArray queryresult = SparqlGeneral.performQuery(query);
     	
     	return queryresult;
     }
@@ -774,22 +772,22 @@ public class ShipSparql {
     	Variable mixture = query.var();
     	
     	Iri[] mixturePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,hasSubsystem,refersToMaterial,intrinsicCharacteristics};
-    	GraphPattern mixturePattern = SparqlPatternGenerator.GetQueryGraphPattern(query, mixturePredicates, null, ship_iri, mixture);
+    	GraphPattern mixturePattern = SparqlGeneral.GetQueryGraphPattern(query, mixturePredicates, null, ship_iri, mixture);
     	
     	// match species
     	Iri[] speciesPredicates = {containsDirectly};
     	Iri[] rdfTypes = {null,speciesIriMap.get(species)};
-    	GraphPattern speciesPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, speciesPredicates, rdfTypes, mixture);
+    	GraphPattern speciesPattern = SparqlGeneral.GetQueryGraphPattern(query, speciesPredicates, rdfTypes, mixture);
     	
     	// flowrate
     	Iri[] flowratePredicates = {hasProperty,hasValue,numericalValue};
-    	GraphPattern flowratePattern = SparqlPatternGenerator.GetQueryGraphPattern(query, flowratePredicates, null, mixture,flowrate);
+    	GraphPattern flowratePattern = SparqlGeneral.GetQueryGraphPattern(query, flowratePredicates, null, mixture,flowrate);
     	
     	GraphPattern queryPattern = GraphPatterns.and(mixturePattern,speciesPattern,flowratePattern);
     	
     	query.from(FromGraph).prefix(Prefixes).select(flowrate).where(queryPattern);
     	
-    	double result = performQuery(query).getJSONObject(0).getDouble("flowrate");
+    	double result = SparqlGeneral.performQuery(query).getJSONObject(0).getDouble("flowrate");
     	return result;
     }
     
@@ -801,11 +799,11 @@ public class ShipSparql {
     	Variable particle = SparqlBuilder.var(particlekey);
     	
     	Iri [] particlePredicates = {hasSubsystem,realizes,hasOutput,refersToGeneralizedAmount,contains,hasRepresentativeParticle};
-    	GraphPattern queryPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, particlePredicates, null, ship_iri,particle);
+    	GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, particlePredicates, null, ship_iri,particle);
     	
     	query.prefix(Prefixes).from(FromGraph).select(particle).where(queryPattern);
     	
-    	JSONArray queryresult = performQuery(query);
+    	JSONArray queryresult = SparqlGeneral.performQuery(query);
     	String[] particles = new String[queryresult.length()];
     	
     	for (int i = 0; i<queryresult.length(); i++) {
@@ -828,20 +826,20 @@ public class ShipSparql {
     	SelectQuery query = Queries.SELECT();
     	
     	Iri[] massPredicates = {hasProperty,hasValue,numericalValue};
-    	GraphPattern massPattern = SparqlPatternGenerator.GetQueryGraphPattern(query,massPredicates,null,particle_iri,massfraction);
+    	GraphPattern massPattern = SparqlGeneral.GetQueryGraphPattern(query,massPredicates,null,particle_iri,massfraction);
     	
     	Iri[] diameterPredicates = {has_length,hasValue,numericalValue};
-    	GraphPattern diameterPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, diameterPredicates, null, particle_iri, diameter);
+    	GraphPattern diameterPattern = SparqlGeneral.GetQueryGraphPattern(query, diameterPredicates, null, particle_iri, diameter);
     	
     	Iri[] densityPredicates = {has_density,hasValue,numericalValue};
-    	GraphPattern densityPattern = SparqlPatternGenerator.GetQueryGraphPattern(query, densityPredicates, null, particle_iri, density);
+    	GraphPattern densityPattern = SparqlGeneral.GetQueryGraphPattern(query, densityPredicates, null, particle_iri, density);
     	
     	GraphPattern combinedGraph = GraphPatterns.and(massPattern,diameterPattern,densityPattern);
     	
     	// construct query
     	query.select(massfraction,diameter,density).from(FromGraph).prefix(Prefixes).where(combinedGraph);
     	
-    	JSONObject queryresult = performQuery(query).getJSONObject(0);
+    	JSONObject queryresult = SparqlGeneral.performQuery(query).getJSONObject(0);
     	
     	Particle part = new Particle();
     	part.setDensity(queryresult.getDouble(densityKey));
@@ -849,23 +847,5 @@ public class ShipSparql {
     	part.setMassFraction(queryresult.getDouble(massfractionKey));
     	
     	return part;
-    }
-    
-    private static void performUpdate(ModifyQuery query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-        kbClient.setUpdateEndpoint(endpoint);
-        kbClient.setQuery(query.getQueryString());
-        System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
-    }
-
-    private static JSONArray performQuery(SelectQuery query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-        kbClient.setUser(SparqlAuthentication.getUser());
-        kbClient.setPassword(SparqlAuthentication.getPassword());
-        kbClient.setQueryEndpoint(endpoint);
-        kbClient.setQuery(query.getQueryString());
-        JSONArray result = null;
-        result = kbClient.executeQuery(); 
-        return result;
     }
 }
