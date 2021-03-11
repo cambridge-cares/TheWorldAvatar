@@ -194,12 +194,12 @@ def read_xyz(filename):
    return atoms, coordinates, mult
 
 
-def write_gauss(filename, atoms, coordinates,mult, functional,bset):
+def write_gauss(filename, atoms, coordinates,mult,job_type,functional,bset):
     gauss_out = open(filename, "w")
     gauss_out.write("%NProcShared=20\n")
     gauss_out.write("%mem=32GB\n")
     gauss_out.write("%Chk="+os.path.basename(filename).replace(".com",'') +".chk" + "\n")
-    gauss_out.write("#n" + " " + functional +"/" + bset + " " + "Opt Freq\n")
+    gauss_out.write("#n" + " " + functional +"/" + bset + " " + job_type + "\n")
     gauss_out.write("\n")
     gauss_out.write(os.path.basename(filename).replace(".com",'')+"\n")
     gauss_out.write("\n")
@@ -209,11 +209,23 @@ def write_gauss(filename, atoms, coordinates,mult, functional,bset):
     gauss_out.write("\n")
     gauss_out.close()
 
+def scan_edit(filename,functional,bset): #This function will edit a gaussian log file in order to run a potential energy surface scan
+    gauss_file = open(filename, "r")
+    gauss_lines = gauss_file.readlines()
+    gauss_lines[3] = ("#n" + " " + functional +"/" + bset + " " + "Opt=ModRedundant" + "\n") #set upt the modredundant input
+    gauss_file = open(filename, "w")
+    gauss_file.writelines(gauss_lines)
+    gauss_file.write("B " + input("First atom in Bond ") + " " + input("Second atom in Bond ") + " " + "S " + 
+                     input("Number of scan steps ") + " " + input("step size "))
+    gauss_file.write("\n")
+    gauss_file.close()
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--directory", "-d", help="Directory to write output files to", required = True)
 parser.add_argument("--owl", "-o", help="Species IRI or owl file to perform calculation for", required = True)
 parser.add_argument("--inchi", "-i", help="Write Gaussian file based on inchi string")
 parser.add_argument("--smiles", "-s", help="Write Gaussian file based on SMILES string")
+parser.add_argument("--pes", "-p", help="Add potential energy surface scan of bond to input file")
 args = parser.parse_args()
 
 if args.inchi:
@@ -221,11 +233,18 @@ if args.inchi:
     IRI = sys.argv[4]
     name = inchi_to_xyz(folder_path, IRI)
     atoms, coordinates, mult = read_xyz(folder_path + '\\' +  name + '.xyz')                
-    write_gauss(folder_path + '\\'  + name + '.com', atoms, coordinates, mult, "B3LYP", "6-31G(d)")
+    write_gauss(folder_path + '\\'  + name + '.com', atoms, coordinates, mult, "Opt Freq", "B3LYP", "6-31G(d)")
 
 if args.smiles:
     folder_path = sys.argv[2]
     IRI = sys.argv[4]
     name = smi_to_xyz(folder_path, IRI)
     atoms, coordinates, mult = read_xyz(folder_path + '\\' + name + '.xyz')                
-    write_gauss(folder_path + '\\'  + name + '.com', atoms, coordinates, mult, "B3LYP", "6-31G(d)")
+    write_gauss(folder_path + '\\'  + name + '.com', atoms, coordinates, mult, "Opt Freq", "B3LYP", "6-31G(d)")
+
+if args.pes:
+    scan_edit(folder_path + '\\'  + name + '.com',"B3LYP","6-31G(d)")
+
+if args.pes and (args.inchi is None and args.smiles is None):
+    parser.error("--pes requires --inchi or --smiles.")
+
