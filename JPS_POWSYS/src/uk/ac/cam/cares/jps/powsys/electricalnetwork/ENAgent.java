@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +44,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
@@ -754,34 +756,47 @@ public class ENAgent extends JPSAgent{
 			
 				return result;
 		}
-	public ArrayList<String[]> readResult(String outputfiledir, int colnum) throws IOException {
-		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
+	/** reads the result from the csv file produced and returns as List<String[]>
+	 * 
+	 * @param baseUrl String
+	 * @param filename name of the file. 
+	 * @return
+	 * @throws IOException
+	 */
+	public ArrayList<String[]> readResult(String outputFile) throws IOException {
+        String csv = new QueryBroker().readFileLocal(outputFile);
+        ArrayList<String[]> simulationResult = new ArrayList<String[]> (fromCsvToArray(csv));
 		
-		logger.info("reading result from " + outputfiledir);
-		String content = new QueryBroker().readFileLocal(outputfiledir);
-		StringReader stringreader = new StringReader(content);
-		CSVReader reader = null;
-		try {
-			reader = new CSVReader(stringreader, '\t');
-			//CSVReader reader = new CSVReader(new FileReader(outputfiledir), '\t');
-			String[] record;
-			while ((record = reader.readNext()) != null) {
-				int element = 0;
-				String[] entityline = new String[colnum];
-				for (String value : record) {
-	
-					entityline[element] = value;
-					element++;
-				}
-				entryinstance.add(entityline);
-	
-			}
-		} finally {
-			reader.close();
-		}
-		return entryinstance;
+		return simulationResult;
 	}
-
+	/** cannot use MatrixConverter as they're separated by \t
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public List<String[]> fromCsvToArray(String s) {
+		
+		List<String[]> result = new ArrayList<String[]>();
+		
+		StringTokenizer tokenizer = new StringTokenizer(s, "\n");
+		
+		while (tokenizer.hasMoreTokens()) {
+			String[] row = tokenizer.nextToken().split("\t");
+			result.add(row);
+		}
+		
+		return result;
+	}
+	/** Start loading output from csv and store in KG
+	 * 
+	 * @param model
+	 * @param iriofnetwork
+	 * @param baseUrl
+	 * @param modeltype
+	 * @param buslist
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
 	public void doConversion(OntModel model, String iriofnetwork, String baseUrl, String modeltype, List<String[]> buslist)
 			throws URISyntaxException, IOException {
 
@@ -893,8 +908,7 @@ public class ENAgent extends JPSAgent{
 
 		logger.info("extractOWLinArray for bus entities");
 		List<String[]> busoutputlist = extractOWLinArray(model, iriofnetwork, busoutputInfo, "output", baseUrl);
-		ArrayList<String[]> resultfrommodelbus = readResult(baseUrl + "/outputBus" + modeltype.toUpperCase() + ".txt",
-				7);
+		ArrayList<String[]> resultfrommodelbus = readResult(baseUrl + "/outputBus" + modeltype.toUpperCase() + ".txt");
 
 		int amountofbus = busoutputlist.size();
 		IriMapper map2 = new IriMapper();
@@ -942,8 +956,7 @@ public class ENAgent extends JPSAgent{
 		
 		logger.info("extractOWLinArray for generator entities");
 		List<String[]> genoutputlist = extractOWLinArray(model, iriofnetwork, genoutputInfo, "output", baseUrl);
-		ArrayList<String[]> resultfrommodelgen = readResult(baseUrl + "/outputGen" + modeltype.toUpperCase() + ".txt",
-				3);
+		ArrayList<String[]> resultfrommodelgen = readResult(baseUrl + "/outputGen" + modeltype.toUpperCase() + ".txt");
 
 		IriMapper map3 = new IriMapper();
 		List<IriMapping> originalforgen = map3.deserialize2(baseUrl + "/mappingforgenerator.csv");
@@ -977,7 +990,7 @@ public class ENAgent extends JPSAgent{
 		logger.info("extractOWLinArray for branch entities");
 		List<String[]> branchoutputlist = extractOWLinArray(model, iriofnetwork, branchoutputInfo, "output", baseUrl);
 		ArrayList<String[]> resultfrommodelbranch = readResult(
-				baseUrl + "/outputBranch" + modeltype.toUpperCase() + ".txt", 6);
+				baseUrl + "/outputBranch" + modeltype.toUpperCase() + ".txt");
 
 		IriMapper map = new IriMapper();
 		List<IriMapping> originalforbranch = map.deserialize2(baseUrl + "/mappingforbranch.csv");
@@ -1012,7 +1025,10 @@ public class ENAgent extends JPSAgent{
 			broker.putOld(currentIri, content);
 		}
 	}
-
+	/** Update the carbon emission value in each generator
+	 * 
+	 * @param model
+	 */
 	public void updateGeneratorEmission(OntModel model) {
 		String genInfo = new SelectBuilder()
 			.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
@@ -1048,12 +1064,11 @@ public class ENAgent extends JPSAgent{
 		double actualem=pvalue*emissionf;
 		Individual vemissioninstance = model.getIndividual(resultListfromquery.get(c)[2]);
 		vemissioninstance.setPropertyValue(numval, model.createTypedLiteral(new Double(actualem)));
-		//logger.info("updated Pout= "+pvalue);
 		}
 		
 		
 	}
-//	@Override
+	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
     	if (requestParams.isEmpty()) {
             throw new BadRequestException();
