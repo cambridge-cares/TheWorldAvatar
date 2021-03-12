@@ -98,15 +98,12 @@ public class ENVisualization extends JPSAgent{
   }
   @Override
   public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-    boolean v = validateInput(requestParams);
-    System.gc();
-    if (v == false) {
+    if (!validateInput(requestParams)) {
       throw new JSONException("ENVisualization Agent input parameters invalid!");
     }
-    String path = requestParams.getString("path");
+    String path = requestParams.getString("requestUrl");
     String iriofnetwork = requestParams.getString("electricalnetwork");
     OntModel model = Util.readModelGreedy(iriofnetwork);
-    logger.info("path called= "+path);
     if (path.contains("/ENVisualization/createLineJS")) {
       String g=createLineJS(model);
       return new JSONObject(g);
@@ -134,15 +131,11 @@ public class ENVisualization extends JPSAgent{
     }
     
     else if (path.contains("/ENVisualization/createMarkers")) {
-
-      logger.info("path called here= " + path);
       String g=createMarkers(model);
       
       return new JSONObject(g);
     }
     else if (path.contains("/ENVisualization/readGenerator")) {
-
-      logger.info("path called here= " + path);
       String g=readGenerator( model);
 
       return new JSONObject(g);

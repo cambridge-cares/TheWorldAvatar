@@ -39,7 +39,7 @@ public class TestScenarioManagement extends TestCase {
 	
 	public void testListScenariosAndAgentsAsJson() {
 		
-		String result =  new ScenarioManagementAgent().listScenariosAndAgentsAsJson();		
+		JSONObject result =  new ScenarioManagementAgent().listScenariosAndAgentsAsJson();		
 		//String result = new ScenarioManagementAgent().listAgentsAsJson();
 		//String result = new ScenarioManagementAgent().listScenariosAsJson();
 		System.out.println(result);

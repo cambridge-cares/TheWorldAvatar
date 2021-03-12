@@ -34,6 +34,9 @@ public class CoordinationESSAgent extends JPSAgent {
     }
     @Override
    	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    	if (!validateInput(requestParams)) {
+			throw new JSONException ("CoordinationAgent: Input parameters not found.\n");
+		}
 		try {
 			return startSimulation(requestParams);
 		} catch (IOException e) {
@@ -65,9 +68,8 @@ public class CoordinationESSAgent extends JPSAgent {
 			}
 	        return w;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
+        	return false;
         }
-        return false;
     }
 	public JSONObject startSimulation(JSONObject jo) throws IOException {
 		

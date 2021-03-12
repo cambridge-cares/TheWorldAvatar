@@ -51,6 +51,9 @@ public class ResidentialAgent extends JPSAgent {
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request)  {
+		if (!validateInput(requestParams)) {
+    		throw new JSONException("ResidentialAgent:  Input parameters not found.\n");
+    	}
 		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
 		
 		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
@@ -77,8 +80,7 @@ public class ResidentialAgent extends JPSAgent {
         String iriofdistrict = requestParams.getString("district");
         return InputValidator.checkIfValidIRI(iriofdistrict); 
         }catch (JSONException ex) {
-        	ex.printStackTrace();
-        	throw new JSONException("Sensor not present in getString");
+        	return false;
         }
     }
 	/** general function for extracting Residential Data

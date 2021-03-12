@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -27,16 +28,23 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
-public class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
+public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		
-    @Override
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(GeneralRetrofitAgent.class);
     }
     Logger logger = LoggerFactory.getLogger(GeneralRetrofitAgent.class);
     
-    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		return processRequestParameters(requestParams,request);
+    //This method should not be called, but overriden by something else
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+		return processRequestParameters(requestParams, null);
 	}
     
     

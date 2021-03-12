@@ -260,7 +260,8 @@ public class TestScenariosWithKnowledgeBaseClient extends TestKnowledgeBaseClien
 		assertEquals(1 , secondResultList.size());
 		assertEquals("0.181", secondResultList.get(0)[0]);
 	}
-	
+	//Can't run the same test more than once in a setting. Restart the server
+	//or restart the scenario with this folder because it deletes the data. 
 	public void testQueryBrokerRemoteSparqlDeleteData() {
 		
 		String scenarioName = "testScenariosQueryBrokerRemoteSparqlDeleteData";
@@ -274,6 +275,7 @@ public class TestScenariosWithKnowledgeBaseClient extends TestKnowledgeBaseClien
 		sparqlQuery = MiscUtil.format(sparqlQuery, "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
 		System.out.println(sparqlQuery);
 		String result = broker.queryFile(ELECTRICAL_NETWORK_IRI, sparqlQuery);
+		System.out.println(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, "s");
 		// we queried for a specific instance; thus we expect only one result row
 		assertEquals(1, resultList.size());
