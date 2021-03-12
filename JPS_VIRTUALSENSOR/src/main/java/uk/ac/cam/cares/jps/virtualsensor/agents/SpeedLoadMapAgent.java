@@ -14,6 +14,7 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 @WebServlet("/SpeedLoadMapAgent")
 public class SpeedLoadMapAgent extends JPSAgent {
@@ -38,7 +39,7 @@ public class SpeedLoadMapAgent extends JPSAgent {
 		JSONObject response = new JSONObject();
 		
 		if (validateInput(requestParams)) {
-			Ship ship = new Ship(requestParams.getString("shipIRI"),false);
+			Ship ship = new Ship(requestParams.getString(ShipSparql.shipKey),false);
 
 			double valuecalc=ship.getSpeed()*2500/58.1;
 			if(valuecalc>2500) {
@@ -67,7 +68,7 @@ public class SpeedLoadMapAgent extends JPSAgent {
     	boolean valid = false;
     	try {
     		// ensure ship IRI is valid
-    		new URL(requestParams.getString("shipIRI")).toURI();
+    		new URL(requestParams.getString(ShipSparql.shipKey)).toURI();
     		valid = true;
     	} catch (Exception e) {
     		throw new BadRequestException(e);

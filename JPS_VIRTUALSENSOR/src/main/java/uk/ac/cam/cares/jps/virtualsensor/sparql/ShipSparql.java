@@ -17,7 +17,6 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
@@ -29,6 +28,7 @@ import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Particle;
 
 public class ShipSparql {
+	public static String shipKey = "ship";
     private static Prefix p_ship = SparqlBuilder.prefix("ship",iri("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"));
     private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
     private static Prefix p_derived_SI_unit = SparqlBuilder.prefix("derived_SI_unit",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"));
@@ -218,7 +218,7 @@ public class ShipSparql {
         SparqlGeneral.performUpdate(modify);
     }
 
-    public static JSONObject GetShipIriWithinScope(Scope sc) {
+    public static String[] GetShipIriWithinScope(Scope sc) {
     	SelectQuery query = Queries.SELECT();
 
     	String shipkey = "ship";
@@ -275,19 +275,16 @@ public class ShipSparql {
         GraphPattern queryPattern = GraphPatterns.and(ship_gp,xcoord_gp,ycoord_gp,length_gp,beam_gp,speed_gp).filter(overallconstraint);
         
         query.from(queryGraph).prefix(p_ship,p_space_time_extended, p_system).select(ship).where(queryPattern)
-        .orderBy(ssDesc).orderBy(alDesc).orderBy(awDesc).limit(300);
+        .orderBy(ssDesc).orderBy(alDesc).orderBy(awDesc).limit(30);
 
         JSONArray queryresult = SparqlGeneral.performQuery(query);
         
-        JSONArray shipIRI = new JSONArray();
+        String[] shipIRI = new String[queryresult.length()];
         for (int i=0; i < queryresult.length(); i++) {
-        	shipIRI.put(queryresult.getJSONObject(i).getString(shipkey));
+        	shipIRI[i] = queryresult.getJSONObject(i).getString(shipkey);
         }
         
-        JSONObject response = new JSONObject();
-        response.put(shipkey, shipIRI);
-        
-        return response;
+        return shipIRI;
     }
     
     public static JSONObject queryShipProperties(String ship_iri_string) {
