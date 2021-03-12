@@ -30,7 +30,6 @@ def real_time_intakes():
     r.html.render()
     # convert to soup to parse as table
     soup = bs.BeautifulSoup(r.html.html,'lxml') 
-
     # parse table from HTML
     table = []
     for tr in soup.find_all('tr')[1:]:
@@ -43,7 +42,6 @@ def real_time_intakes():
     table = pd.DataFrame(table)
     # converting to numpy with only desired bits
     table = table.to_numpy()[4:,1:]
-
     # terminal names from tables
     terminal_names = table[43:52,0]
     data = []
@@ -56,11 +54,8 @@ def real_time_intakes():
         time = [now.replace(hour=int(time[:2]), minute=int(time[-2:]),second = 0,microsecond=0) for i in range(len(latest_terminal_value))]
         # creating row in table 
         terminal_supply = np.concatenate(([terminal_names],[time],[latest_terminal_value]),axis=0).T
-
         terminal_supply_pd = pd.DataFrame(terminal_supply)
-
         overall_df = terminal_supply_pd
-
         data.append(terminal_supply_pd)
     # return data table
     return data
@@ -147,4 +142,4 @@ def single_update():
         update_triple_store()
         return 
 
-continuous_update()
+single_update()
