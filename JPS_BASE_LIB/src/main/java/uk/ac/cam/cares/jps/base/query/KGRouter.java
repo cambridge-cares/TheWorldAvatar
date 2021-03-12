@@ -43,6 +43,8 @@ public class KGRouter{
 	public static final String COLON = ":";
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
+	public static final String OWL_FILE_EXTENSION = ".owl";
+	public static final String RDF_FILE_EXTENSION = ".rdf";
 	
 	static KGRouter kgRouter = null;
 	

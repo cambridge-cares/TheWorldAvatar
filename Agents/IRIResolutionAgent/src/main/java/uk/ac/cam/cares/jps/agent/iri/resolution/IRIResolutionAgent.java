@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.iri.resolution;
 
+import java.io.FileNotFoundException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -70,7 +71,7 @@ public class IRIResolutionAgent extends JPSAgent{
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(SHORT_JPS_IRI)
+	@RequestMapping(value=SHORT_JPS_IRI, produces = "application/xml")
 	@ResponseBody
 	public String resolveShortIRI(HttpServletRequest request) {
 		// If any user runs the IRI resolver from a localhost, the URL will<br>
@@ -85,7 +86,7 @@ public class IRIResolutionAgent extends JPSAgent{
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(MEDIUM_JPS_IRI)
+	@RequestMapping(value=MEDIUM_JPS_IRI, produces = "application/xml")
 	@ResponseBody
 	public String resolveMediumIRI(HttpServletRequest request){
 		// If any user runs the IRI resolver from a localhost, the URL will<br>
@@ -101,7 +102,7 @@ public class IRIResolutionAgent extends JPSAgent{
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(LONG_JPS_IRI)
+	@RequestMapping(value=LONG_JPS_IRI, produces = "application/xml")
 	@ResponseBody
 	public String resolveLongIRI(HttpServletRequest request){
 		// If any user runs the IRI resolver from a localhost, the URL will<br>
@@ -140,7 +141,7 @@ public class IRIResolutionAgent extends JPSAgent{
 		JSONArray jsonArray = new JSONArray(json);
 		try {
 			return createABox(IRI, jsonArray);
-		} catch (OWLOntologyCreationException | OWLOntologyStorageException | ABoxManagementException e) {
+		} catch (OWLOntologyCreationException | OWLOntologyStorageException | ABoxManagementException | FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -205,13 +206,15 @@ public class IRIResolutionAgent extends JPSAgent{
 	 * @throws OWLOntologyCreationException
 	 * @throws OWLOntologyStorageException
 	 * @throws ABoxManagementException
+	 * @throws FileNotFoundException 
 	 */
-	private String createABox(String aBoxIRI, JSONArray jsonArray) throws OWLOntologyCreationException, OWLOntologyStorageException, ABoxManagementException {
+	private String createABox(String aBoxIRI, JSONArray jsonArray) throws OWLOntologyCreationException, OWLOntologyStorageException, ABoxManagementException, FileNotFoundException {
 		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 		OWLOntology ontology = manager.createOntology(IRI.create(aBoxIRI));
 		if(aBoxManager == null){
 			aBoxManager = new  ABoxManagement();
 		}
+		boolean aBoxAvailabilityFlag = false;
 		// Assigns classes to the current instance.
 		for (int i = 0; i<jsonArray.length(); i++){
 			JSONObject obj = jsonArray.getJSONObject(i);
@@ -220,6 +223,7 @@ public class IRIResolutionAgent extends JPSAgent{
 			if(obj.getString(PREDICATE).equals(ABoxManagement.RDF_URL.concat(ABoxManagement.RDF_TYPE)) 
 					&& !obj.getString(OBJECT).equals(ABoxManagement.OWL_URL.concat(ABoxManagement.OWL_NAMED_INDIVIDUAL))){
 				aBoxManager.createIndividual(ontology, obj.getString(OBJECT), null, aBoxIRI, null);
+				aBoxAvailabilityFlag = true;
 			}
 		}
 		// Assigns both object and data properties to the current instance.
@@ -227,6 +231,7 @@ public class IRIResolutionAgent extends JPSAgent{
 			JSONObject obj = jsonArray.getJSONObject(i);
 			// Ignores classes of the current instance.
 			if(!obj.getString(PREDICATE).equals(ABoxManagement.RDF_URL.concat(ABoxManagement.RDF_TYPE)) ){
+				aBoxAvailabilityFlag = true;
 				// Presence of an IRI indicates that an object property should be created. 
 				if(obj.getString(OBJECT).trim().startsWith(KGRouter.HTTP) || obj.getString(OBJECT).trim().startsWith(KGRouter.HTTPS)){
 					aBoxManager.addObjectProperty(ontology, aBoxIRI, IRI.create(obj.getString(PREDICATE)), aBoxIRI, obj.getString(OBJECT));					
@@ -234,15 +239,19 @@ public class IRIResolutionAgent extends JPSAgent{
 					aBoxManager.addDataProperty(ontology, aBoxIRI, null, IRI.create(obj.getString(PREDICATE)), obj.getString(OBJECT), "unknown");
 				}
 			}
-		}		
+		}
+		// If ABox is not available, an empty value is returned.
+		if(!aBoxAvailabilityFlag){
+			return KGRouter.EMPTY;
+		}
+		// The ontology model is printed and then captured to return to the caller method.
 		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();    
-		System.setOut(new java.io.PrintStream(out));  
+		System.setOut(new java.io.PrintStream(out));
 		manager.saveOntology(ontology, System.out);
 		System.err.println(out.toString());
-		String ontologyInString = out.toString().replaceAll(" rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\"", "");
-		return ontologyInString;
+		return out.toString().replaceAll(" rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\"", "");
 	}
-	
+
 	/**
 	 * Receives and processes HTTP requests that match with the URL patterns<br>
 	 * listed in the annotations of this class.
