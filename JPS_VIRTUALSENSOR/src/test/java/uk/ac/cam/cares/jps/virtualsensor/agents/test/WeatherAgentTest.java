@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.agents.WeatherAgent;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
 public class WeatherAgentTest extends TestCase {
 	
@@ -30,7 +31,7 @@ public class WeatherAgentTest extends TestCase {
 	 */
 	public void testWeatherAgentCall() {
 		JSONObject jo = new JSONObject();
-		Region.putRegion(jo,2);
-		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/WeatherAgent", jo.getJSONObject("region").toString());
+		jo.put(DispSimSparql.SimKey, "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5");
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/WeatherAgent", jo.toString());
 	}
 }
