@@ -1014,60 +1014,32 @@ public class ENAgent extends JPSAgent{
 	}
 
 	public void updateGeneratorEmission(OntModel model) {
-//		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-//				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-//				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-//				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-//				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-//				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-//				+ "PREFIX j10:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-//				+ "SELECT ?entity ?Pvalue ?valueemm ?emissionfactor " 
-//				+ "WHERE {?entity  a  j1:PowerGenerator  ."
-//				+ "?entity   j2:isModeledBy ?model ."
-//				+ "?model   j5:hasModelVariable ?p ." 
-//				+ "?p  a  j3:Pg  ." 
-//				+ "?p  j2:hasValue ?vp ."
-//				+ "?vp   j2:numericalValue ?Pvalue ." // p
-//				+" ?entity j6:realizes ?genprocess ."
-//				+ "?genprocess j9:hasEmission ?emm ."
-//				+ "?emm a j9:Actual_CO2_Emission ."
-//				+ "?emm j2:hasValue ?valueemm ." //iriofco2 emission
-//				
-//				+ "?genprocess j10:usesGenerationTechnology ?tech ."
-//				+ "?tech j10:hasEmissionFactor ?emmfac ."
-//				+ "?emmfac j2:hasValue ?valueemmfac ."
-//				+ "?valueemmfac j2:numericalValue ?emissionfactor ." //emission factor 
-//				
-//				+ "}";
 		String genInfo = new SelectBuilder()
-				.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
-				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-				.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
-				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#")
-				.addPrefix("j10", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#")
-				.addVar("?entity").addVar("?Pvalue").addVar("?valueemm").addVar("?emissionfactor")
-				.addWhere("?entity", "a", "j1:PowerGenerator")
-				.addWhere("?entity", "j2:isModeledBy", "?model")
-				.addWhere("?model", "j5:hasModelVariable", "?p")
-		        .addWhere("?p","a","j3:Pg")
-		        .addWhere("?p","j2:hasValue", "?vp")
-		        .addWhere("?vp","j2:numericalValue", "?Pvalue")
-		        
-				.addWhere("?entity", "j4:realizes", "?genprocess")
-		        .addWhere( "?genprocess", "j9:hasEmission", "?emission")
-		        .addWhere("?emission", "a", "j9:Actual_CO2_Emission")
-		        .addWhere("?emission","j2:hasValue", "?valueemission")	
-		        
-				.addWhere("?genprocess", "j10:usesGenerationTechnology", "?tech")
-		        .addWhere("?tech","j10:hasEmissionFactor","?emm")
-		        .addWhere("?emm","j2:hasValue", "?valueemm")
-		        .addWhere("?valueemm","j2:numericalValue", "?emissionfactor")
-				.buildString();
+			.addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+			.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+			.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
+			.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+			.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+			.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#")
+			.addPrefix("j10", "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#")
+			.addVar("?entity").addVar("?Pvalue").addVar("?valueemm").addVar("?emissionfactor")
+			.addWhere("?entity", "a", "j1:PowerGenerator")
+			.addWhere("?entity", "j2:isModeledBy", "?model")
+			.addWhere("?model", "j5:hasModelVariable", "?p")
+	        .addWhere("?p","a","j3:Pg")
+	        .addWhere("?p","j2:hasValue", "?vp")
+	        .addWhere("?vp","j2:numericalValue", "?Pvalue")
+	        
+			.addWhere("?entity", "j6:realizes", "?genprocess")
+	        .addWhere( "?genprocess", "j9:hasEmission", "?emm")
+	        .addWhere("?emm", "a", "j9:Actual_CO2_Emission")
+	        .addWhere("?emm","j2:hasValue", "?valueemm")	
+	        
+			.addWhere("?genprocess", "j10:usesGenerationTechnology", "?tech")
+	        .addWhere("?tech","j10:hasEmissionFactor","?emmfac")
+	        .addWhere("?emmfac","j2:hasValue", "?valueemmfac")
+	        .addWhere("?valueemmfac","j2:numericalValue", "?emissionfactor")
+			.buildString();
 		List<String[]> resultListfromquery = Util.queryResult(model, genInfo);
 		DatatypeProperty numval = getNumericalValueProperty(model);
 		for (int c = 0; c < resultListfromquery.size(); c++) {

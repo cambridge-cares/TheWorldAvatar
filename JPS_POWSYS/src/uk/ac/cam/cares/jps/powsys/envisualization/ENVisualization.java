@@ -98,9 +98,7 @@ public class ENVisualization extends JPSAgent{
   }
   @Override
   public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-    boolean v = validateInput(requestParams);
-    System.gc();
-    if (v == false) {
+    if (!validateInput(requestParams)) {
       throw new JSONException("ENVisualization Agent input parameters invalid!");
     }
     String path = requestParams.getString("requestUrl");
