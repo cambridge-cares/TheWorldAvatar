@@ -98,11 +98,10 @@ public class ENVisualization extends JPSAgent{
   }
   @Override
   public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-   System.gc();    
     if (!validateInput(requestParams)) {
-		throw new JSONException("ENVisualization Agent: Input parameters not found.\n");
-	}
-    String path = requestParams.getString("path");
+      throw new JSONException("ENVisualization Agent input parameters invalid!");
+    }
+    String path = requestParams.getString("requestUrl");
     String iriofnetwork = requestParams.getString("electricalnetwork");
     OntModel model = Util.readModelGreedy(iriofnetwork);
     logger.info("path called= "+path);
@@ -124,9 +123,9 @@ public class ENVisualization extends JPSAgent{
         bw.close();
         
         } catch (TransformerException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+          e.printStackTrace();
         } catch (IOException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
+          e.printStackTrace();
         }
       
       return new JSONObject();
@@ -161,7 +160,8 @@ public class ENVisualization extends JPSAgent{
         String iriofnetwork = requestParams.getString("electricalnetwork");
         return InputValidator.checkIfValidIRI(iriofnetwork);
         } catch (JSONException ex) {
-          return false;
+          ex.printStackTrace();
+          throw new JSONException("electrical network not found");
         }
     }
   public static SelectBuilder createLocationQuery() {
@@ -217,6 +217,7 @@ public class ENVisualization extends JPSAgent{
         logger.info("uploading file successful");
         
     } catch (Exception e) {
+      e.printStackTrace();
       throw new JPSRuntimeException(e.getMessage(), e);
     }
   }

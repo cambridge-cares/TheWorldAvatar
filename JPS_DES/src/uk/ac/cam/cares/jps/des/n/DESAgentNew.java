@@ -75,6 +75,7 @@ public class DESAgentNew extends JPSAgent {
 			String agent = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
 			createTimer(baseUrl);
 			//TODO: This uses RDF4J metadata Annotator
+			baseUrl = new File(baseUrl).toURI().toString();
 			MetaDataAnnotator.annotate(baseUrl, null, agent, true, null);
 
 			responseParams.put("result", result);
