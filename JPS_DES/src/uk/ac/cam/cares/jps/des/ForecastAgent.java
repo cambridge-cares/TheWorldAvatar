@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -30,8 +31,8 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns = {"/GetForecastData" })
 public class ForecastAgent extends JPSAgent{
 	private static final long serialVersionUID = 1L;
-	private static String SolCastURL= "https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=API_KEY";
-	private static String AccuWeatherURL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=API_KEY=true&metric=true";
+	private static String SolCastURL= "https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN";
+	private static String AccuWeatherURL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true";
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    requestParams = processRequestParameters(requestParams, null);
@@ -40,7 +41,9 @@ public class ForecastAgent extends JPSAgent{
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-    	validateInput(requestParams);
+    	if (!validateInput(requestParams)) {
+    		throw new JSONException("ForecastAgent:  Input parameters not found.\n");
+    	}
     	try {
 			forecastNextDay();
 		
