@@ -24,11 +24,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.region.Scope;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.SparqlAuthentication;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Particle;
 
@@ -220,95 +216,6 @@ public class ShipSparql {
         modify.prefix(prefix_list).insert(combined_tp).where().with(ship_graph);
 
         SparqlGeneral.performUpdate(modify);
-    }
-
-    /** 
-     * Returns 300 ships located within the provided scope
-     * @param sc
-     * @return
-     */
-    public static JSONArray queryShipWithinScope(Scope sc) {
-        SelectQuery query = Queries.SELECT();
-
-        // values we want to obtain
-        Variable ship = SparqlBuilder.var("ship");
-        Variable mmsi_value = SparqlBuilder.var("mmsi");
-        Variable type = SparqlBuilder.var("type");
-        Variable al = SparqlBuilder.var("al");
-        Variable aw = SparqlBuilder.var("aw");
-        Variable ss = SparqlBuilder.var("ss");
-        Variable cu = SparqlBuilder.var("cu");
-        Variable lon = SparqlBuilder.var("lon");
-        Variable lat = SparqlBuilder.var("lat");
-
-        // variables below are IRIs that we don't need
-        Variable mmsi = query.var(); Variable vmmsi = query.var();
-        Variable shiptype = query.var(); Variable vshiptype = query.var();
-        Variable length = query.var(); Variable vlength = query.var();
-        Variable beam = query.var(); Variable vbeam = query.var();
-        Variable speed = query.var(); Variable vspeed = query.var();
-        Variable course = query.var(); Variable vcourse = query.var();
-
-        Variable coord = query.var();
-        Variable xcoord = query.var();Variable ycoord = query.var();
-        Variable vxcoord = query.var();Variable vycoord = query.var();
-
-        GraphPattern ship_gp = GraphPatterns.and(ship.has(p_ship.iri("hasMMSI"),mmsi).andHas(p_ship.iri("hasShipType"),shiptype)
-                .andHas(p_ship.iri("hasSOG"),speed).andHas(p_ship.iri("hasCOG"), course)
-                .andHas(p_system.iri("hasDimension"),length).andHas(p_system.iri("hasDimension"),beam)
-                .andHas(hasGISCoordinateSystem,coord));
-        
-        // patterns to match for each quantity we want to query
-        GraphPattern mmsi_gp = GraphPatterns.and(mmsi.has(p_system.iri("hasValue"), vmmsi),
-                vmmsi.has(p_system.iri("numericalValue"), mmsi_value));
-
-        GraphPattern type_gp = GraphPatterns.and(shiptype.has(p_system.iri("hasValue"), vshiptype),
-                vshiptype.has(p_system.iri("Value"),type));
-
-        // because ShipLength and ShipBeam both use hasDimension, isA ShipLength and isA ShipBeam are necessary here
-        GraphPattern length_gp = GraphPatterns.and(length.isA(p_ship.iri("ShipLength")).andHas(p_system.iri("hasValue"),vlength),
-                vlength.has(p_system.iri("QuantitativeValue"), al));
-
-        GraphPattern beam_gp = GraphPatterns.and(beam.isA(p_ship.iri("ShipBeam")).andHas(p_system.iri("hasValue"),vbeam),
-                vbeam.has(p_system.iri("QuantitativeValue"), aw));
-
-        GraphPattern speed_gp = GraphPatterns.and(speed.has(p_system.iri("hasValue"), vspeed),
-                vspeed.has(p_system.iri("numericalValue"), ss));
-        
-        GraphPattern course_gp = GraphPatterns.and(course.has(p_system.iri("hasValue"), vcourse),
-                vcourse.has(p_system.iri("numericalValue"), cu));
-
-        GraphPattern coordinates_gp = GraphPatterns.and(coord.has(p_space_time_extended.iri("hasProjectedCoordinate_x"),xcoord)
-                .andHas(p_space_time_extended.iri("hasProjectedCoordinate_y"),ycoord),
-                xcoord.has(p_system.iri("hasValue"),vxcoord),
-                ycoord.has(p_system.iri("hasValue"),vycoord),
-                vxcoord.has(p_system.iri("numericalValue"), lon),
-                vycoord.has(p_system.iri("numericalValue"), lat));
-
-        // constraint to ships within scope
-        // ship coordinates are in EPSG:4326
-        sc.transform("EPSG:4326");
-        Expression<?> xconstraint = Expressions.and(Expressions.lt(lon, sc.getUpperx()),Expressions.gt(lon, sc.getLowerx()));
-        Expression<?> yconstraint = Expressions.and(Expressions.lt(lat, sc.getUppery()),Expressions.gt(lat, sc.getLowery()));
-        Expression<?> overallconstraint = Expressions.and(xconstraint,yconstraint);
-
-        GraphPatternNotTriples querypattern = GraphPatterns.and(ship_gp,mmsi_gp,type_gp,length_gp,beam_gp,speed_gp,course_gp,coordinates_gp)
-                .filter(overallconstraint);
-
-        // prioritise ships that are moving and the large ones
-        OrderCondition speedDesc = SparqlBuilder.desc(ss);
-        OrderCondition alDesc = SparqlBuilder.desc(al);
-        OrderCondition awDesc = SparqlBuilder.desc(aw);
-
-        // named graph
-        From queryGraph = SparqlBuilder.from(ship_graph);
-        
-        query.from(queryGraph).prefix(p_ship,p_space_time_extended, p_system).select(mmsi_value,type,al,aw,ss,cu,lon,lat).where(querypattern)
-        .orderBy(speedDesc).orderBy(alDesc).orderBy(awDesc).limit(300);
-
-        JSONArray result = SparqlGeneral.performQuery(query);
-
-        return result;
     }
 
     public static JSONObject GetShipIriWithinScope(Scope sc) {

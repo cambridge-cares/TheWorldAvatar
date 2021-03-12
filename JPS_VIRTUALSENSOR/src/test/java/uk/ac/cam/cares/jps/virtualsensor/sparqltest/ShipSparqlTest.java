@@ -68,15 +68,6 @@ public class ShipSparqlTest extends TestCase {
             }
         }
     }
-
-    public void testQuery() {
-        JSONObject jo = new JSONObject();
-        Region.putRegion(jo, 4);
-        
-        Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
-        
-        ShipSparql.queryShipWithinScope(sc);
-    }
     
     public void testQueryShipIRI() {
     	JSONObject jo = new JSONObject();
