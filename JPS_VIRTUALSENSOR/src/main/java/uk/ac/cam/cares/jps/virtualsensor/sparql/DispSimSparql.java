@@ -10,6 +10,7 @@ import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -57,6 +58,10 @@ public class DispSimSparql {
     private static Iri hasMainStation = p_dispsim.iri("hasMainStation"); // not yet in ontology
     private static Iri hasSubStation = p_dispsim.iri("hasSubStation"); // not yet in ontology
     private static Iri hasEmissionSource = p_dispsim.iri("hasEmissionSource"); // not yet in ontology
+    private static Iri hasNumSubStations = p_dispsim.iri("hasNumSubStations");
+    
+    //unit
+    private static Iri dimensionless = iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#dimensionless");
     
     //endpoint
     private static Iri sim_graph = p_dispsim.iri("Simulations");
@@ -71,6 +76,9 @@ public class DispSimSparql {
     	Iri nxValue = p_dispsim.iri(sim_id+"NxValue");
     	Iri nyValue = p_dispsim.iri(sim_id+"NyValue");
     	Iri ny = p_dispsim.iri(sim_id+"Ny");
+    	Iri numsub = p_dispsim.iri(sim_id+"NumSubStation");
+    	Iri numsubvalue = p_dispsim.iri(sim_id+"NumSubStationValue");
+    	
     	Iri envelope = p_dispsim.iri(sim_id+"Envelope");
     	Iri lowerCorner = p_dispsim.iri(sim_id+"LowerCorner");
     	Iri lowerCornerCoordinates = p_dispsim.iri(sim_id+"LowerCornerCoordinates");
@@ -87,7 +95,7 @@ public class DispSimSparql {
     	Iri upperCornerY = p_dispsim.iri(sim_id+"UpperCornerY");
     	Iri upperCornerYValue = p_dispsim.iri(sim_id+"UpperCornerYValue");
     	
-    	TriplePattern sim_tp = sim_iri.isA(dispersionSim).andHas(hasNx,nx).andHas(hasNy,ny).andHas(hasEnvelope,envelope);
+    	TriplePattern sim_tp = sim_iri.isA(dispersionSim).andHas(hasNx,nx).andHas(hasNy,ny).andHas(hasEnvelope,envelope).andHas(hasNumSubStations,numsub);
     	
     	TriplePattern envelope_tp = envelope.isA(EnvelopeType).andHas(lowerCornerPoint,lowerCorner).andHas(upperCornerPoint,upperCorner).andHas(srsname,sim.getScope().getCRSName());
     	
@@ -109,13 +117,16 @@ public class DispSimSparql {
     	
     	// envelope done
     	// model grid information
-    	TriplePattern nx_tp = nx.has(hasValue,nxValue);
-    	TriplePattern nxval_tp = nxValue.has(numericalValue,sim.getNx());
-    	TriplePattern ny_tp = ny.has(hasValue,nyValue);
-    	TriplePattern nyval_tp = nyValue.has(numericalValue,sim.getNy());
+    	TriplePattern[] nx_tp = SparqlGeneral.GetScalarTP(nx, nxValue, sim.getNx(), dimensionless);
+    	TriplePattern[] ny_tp = SparqlGeneral.GetScalarTP(ny, nyValue, sim.getNy(), dimensionless);
+    	TriplePattern[] numsub_tp = SparqlGeneral.GetScalarTP(numsub, numsubvalue, sim.getNumSubStations(), dimensionless);
     	
     	TriplePattern[] combined_tp = {sim_tp,envelope_tp,lowercorner_tp,lowercoord_tp,lowerxcoord_tp,lowerycoord_tp,vlowerxcoord_tp,vlowerycoord_tp,
-    			uppercorner_tp,uppercoord_tp,upperxcoord_tp,upperycoord_tp,vupperxcoord_tp,vupperycoord_tp,nx_tp,nxval_tp,ny_tp,nyval_tp};
+    			uppercorner_tp,uppercoord_tp,upperxcoord_tp,upperycoord_tp,vupperxcoord_tp,vupperycoord_tp};
+    	
+    	combined_tp = ArrayUtils.addAll(combined_tp, nx_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, ny_tp);
+    	combined_tp = ArrayUtils.addAll(combined_tp, numsub_tp);
     	
     	ModifyQuery modify = Queries.MODIFY();
     	modify.prefix(prefixes).with(sim_graph).where().insert(combined_tp);
@@ -173,6 +184,21 @@ public class DispSimSparql {
 		sc.setCRSName(queryResult.getString(Region.keySrsname));
 		
 		return sc;
+	}
+	
+	public static int GetNumSubStations(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		String queryKey = "numsub";
+		Variable numsub = SparqlBuilder.var(queryKey);
+		
+		SelectQuery query = Queries.SELECT();
+		
+		Iri[] numsub_predicates = {hasNumSubStations,hasValue,numericalValue};
+	    GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, numsub_predicates, null, sim_iri, numsub);
+		
+		query.select(numsub).prefix(p_system,p_dispsim).from(FromGraph).where(queryPattern);
+		int result = SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
+		return result;
 	}
 	
 	/** 

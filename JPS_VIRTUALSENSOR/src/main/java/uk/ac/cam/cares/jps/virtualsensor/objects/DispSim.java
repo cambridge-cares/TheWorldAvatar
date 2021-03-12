@@ -7,6 +7,8 @@ public class DispSim {
     private int ny;
     private double[] z;
     private Scope sc;
+    private int numSubStations;
+    
 	public int getNx() {
 		return nx;
 	}
@@ -30,5 +32,11 @@ public class DispSim {
 	}
 	public void setZ(double[] z) {
 		this.z = z;
+	}
+	public int getNumSubStations() {
+		return numSubStations;
+	}
+	public void setNumSubStations(int numSubStations) {
+		this.numSubStations = numSubStations;
 	}
 }

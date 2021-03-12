@@ -19,6 +19,7 @@ public class DispSimSparqlTest extends TestCase{
 	    	sim.setScope(sc);
 	    	sim.setNx(10);
 	    	sim.setNy(10);
+	    	sim.setNumSubStations(1);
 	    	DispSimSparql.InitSim(i, sim);
     	}
     }
@@ -63,5 +64,10 @@ public class DispSimSparqlTest extends TestCase{
     public void testGetEmissionSources() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
     	DispSimSparql.GetEmissionSources(sim_iri);
+    }
+    
+    public void testGetNumSubstations() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	DispSimSparql.GetNumSubStations(sim_iri);
     }
 }
