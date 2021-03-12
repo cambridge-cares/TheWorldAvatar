@@ -11,6 +11,7 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -35,6 +36,9 @@ public class SolarAgent extends JPSAgent {
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 		JSONObject responseParams = requestParams;	
+		if (!validateInput(requestParams)) {
+			throw new JSONException ("SolarAgent: Input parameters not found.\n");
+		}
         String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
         String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
