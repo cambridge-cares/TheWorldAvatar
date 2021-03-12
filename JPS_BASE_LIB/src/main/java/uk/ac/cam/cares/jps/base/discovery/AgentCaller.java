@@ -282,8 +282,9 @@ public class AgentCaller {
                 		jo.put(JPSConstants.CONTENT, json);//string content
             			
                 	}
-                	jo.put(JPSConstants.HEADERS, getAccept(request));
-                	jo.put(JPSConstants.METHOD, request.getMethod())
+                	jo.put(JPSConstants.HEADERS, getAccept(request))
+                	.put(JPSConstants.METHOD, request.getMethod())
+        			.put(JPSConstants.PATH, request.getPathInfo())
         			.put(JPSConstants.CONTENTTYPE, request.getContentType())
         			.put(JPSConstants.REQUESTURL, request.getRequestURL().toString());
                     return jo;
@@ -314,6 +315,7 @@ public class AgentCaller {
             jsonobject.put(JPSConstants.METHOD, request.getMethod())
             .put(JPSConstants.HEADERS, getAccept(request))
 			.put(JPSConstants.CONTENT, json)
+			.put(JPSConstants.PATH, request.getPathInfo())
 			.put(JPSConstants.CONTENTTYPE, request.getContentType())
 			.put(JPSConstants.REQUESTURL, request.getRequestURL().toString());
             return jsonobject;

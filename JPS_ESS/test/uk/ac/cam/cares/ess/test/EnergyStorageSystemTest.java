@@ -219,16 +219,16 @@ public class EnergyStorageSystemTest extends TestCase {
 		jo.put("BatteryCatalog", batIRI);
 		jo.put("RenewableEnergyGenerator", pvgeniris);
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/RenewableGenRetrofit", jo.toString());
-//		String usecaseUrl = JPSContext.getUsecaseUrl();	
-//		result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/ESSAgent", jo.toString());
-//		JSONObject res1=new JSONObject(result);
-//		jo.put("storage",res1.getString("storage"));
-//		String result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/OptimizationAgent", jo.toString());
-//		JSONObject res2=new JSONObject(result2);		
-//		String optimizationresult=res2.getString("optimization");
-//		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/"+optimizationresult, jo.toString());
-//		jo.put("batterylist",new JSONObject(result2).getJSONArray("batterylist"));
-//		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
+		String usecaseUrl = JPSContext.getUsecaseUrl();	
+		result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/ESSAgent", jo.toString());
+		JSONObject res1=new JSONObject(result);
+		jo.put("storage",res1.getString("storage"));
+		String result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/OptimizationAgent", jo.toString());
+		JSONObject res2=new JSONObject(result2);		
+		String optimizationresult=res2.getString("optimization");
+		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/"+optimizationresult, jo.toString());
+		jo.put("batterylist",new JSONObject(result2).getJSONArray("batterylist"));
+		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
 		
 	}
 	
