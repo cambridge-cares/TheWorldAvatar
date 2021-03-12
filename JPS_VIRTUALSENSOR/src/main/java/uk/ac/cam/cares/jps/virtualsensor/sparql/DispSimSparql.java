@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.virtualsensor.sparql;
 
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.region.Region;
@@ -22,6 +23,8 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 
 public class DispSimSparql {
+	public static String SimKey = "simIRI";
+	
     private static Prefix p_dispsim = SparqlBuilder.prefix("dispsim",iri("http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#"));
 	private static Prefix p_citygml = SparqlBuilder.prefix("city",iri("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#"));
 	private static Prefix p_space_time_extended = SparqlBuilder.prefix("space_time_extended",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"));
@@ -51,8 +54,9 @@ public class DispSimSparql {
     private static Iri hasProjectedCoordinate_y = p_space_time_extended.iri("hasProjectedCoordinate_y");
     private static Iri hasValue = p_system.iri("hasValue");
     private static Iri numericalValue = p_system.iri("numericalValue");
-    private static Iri hasMainStation = p_dispsim.iri("hasMainStation");
-    private static Iri hasSubStation = p_dispsim.iri("hasSubStation");
+    private static Iri hasMainStation = p_dispsim.iri("hasMainStation"); // not yet in ontology
+    private static Iri hasSubStation = p_dispsim.iri("hasSubStation"); // not yet in ontology
+    private static Iri hasEmissionSource = p_dispsim.iri("hasEmissionSource"); // not yet in ontology
     
     //endpoint
     private static Iri sim_graph = p_dispsim.iri("Simulations");
@@ -177,19 +181,31 @@ public class DispSimSparql {
 	public static void AddMainStation(String sim_iri_string, String station_iri_string) {
 		Iri sim_iri = iri(sim_iri_string);
 
-		Variable oldmain = SparqlBuilder.var("oldmain");
-		
-		TriplePattern delete_tp = sim_iri.has(hasMainStation,oldmain);
-		
+		// delete existing main station
 		SubSelect sub = GraphPatterns.select();
+		Variable oldmain = sub.var();
+		TriplePattern delete_tp = sim_iri.has(hasMainStation,oldmain);
 		sub.select(oldmain).where(delete_tp);
+		ModifyQuery deleteQuery = Queries.MODIFY();
+		deleteQuery.prefix(p_dispsim).with(sim_graph).where(sub).delete(delete_tp);
+		SparqlGeneral.performUpdate(deleteQuery);
 		
+		//insert new station
 		TriplePattern insert_tp = sim_iri.has(hasMainStation,iri(station_iri_string));
-		
-		ModifyQuery modify = Queries.MODIFY();
-		modify.prefix(p_dispsim).insert(insert_tp).with(sim_graph).where(sub).delete(delete_tp);
-		
-		SparqlGeneral.performUpdate(modify);
+		ModifyQuery insertQuery = Queries.MODIFY();
+		insertQuery.prefix(p_dispsim).with(sim_graph).insert(insert_tp);
+		SparqlGeneral.performUpdate(insertQuery);
+	}
+	
+	public static String GetMainStation(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		String stationKey = "station";
+		Variable station = SparqlBuilder.var(stationKey);
+		GraphPattern queryPattern = sim_iri.has(hasMainStation,station);
+		SelectQuery query = Queries.SELECT();
+		query.select(station).from(FromGraph).where(queryPattern).prefix(p_dispsim);
+		String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(stationKey);
+		return result;
 	}
 	
 	/**
@@ -197,12 +213,16 @@ public class DispSimSparql {
 	 */
 	public static void AddSubStations(String sim_iri_string, String[] station_iri_string) {
 		Iri sim_iri = iri(sim_iri_string);
-		Variable stations = SparqlBuilder.var("stations");
 		
 		// find old stations to delete
 		SubSelect sub = GraphPatterns.select();
+		Variable stations = sub.var();
 		TriplePattern deletePattern = sim_iri.has(hasSubStation,stations);
 		sub.select(stations).where(deletePattern);
+		
+		ModifyQuery deleteQuery = Queries.MODIFY();
+		deleteQuery.prefix(p_dispsim).where(sub).delete(deletePattern).with(sim_graph);
+		SparqlGeneral.performUpdate(deleteQuery);
 		
 		// new stations to add
 		TriplePattern[] insert_tp = new TriplePattern[station_iri_string.length];
@@ -211,9 +231,69 @@ public class DispSimSparql {
 			insert_tp[i] = sim_iri.has(hasSubStation,station_iri);
 		}
 		
-		ModifyQuery modify = Queries.MODIFY();
-		modify.prefix(p_dispsim).where(sub).delete(deletePattern).with(sim_graph).insert(insert_tp);
+		ModifyQuery insertQuery = Queries.MODIFY();
+		insertQuery.prefix(p_dispsim).with(sim_graph).insert(insert_tp);
+		SparqlGeneral.performUpdate(insertQuery);
+	}
+	
+	public static String[] GetSubStations(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		String stationKey = "station";
+		Variable station = SparqlBuilder.var(stationKey);
+		GraphPattern queryPattern = sim_iri.has(hasSubStation,station);
+		SelectQuery query = Queries.SELECT();
+		query.select(station).from(FromGraph).where(queryPattern).prefix(p_dispsim);
 		
-		SparqlGeneral.performUpdate(modify);
+		JSONArray queryResult = SparqlGeneral.performQuery(query);
+		String[] stationIRI = new String[queryResult.length()];
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			stationIRI[i] = queryResult.getJSONObject(i).getString(stationKey);
+		}
+		
+		return stationIRI;
+	}
+	
+	public static void AddEmissionSources(String sim_iri_string, String[] ship_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		
+		// old ship IRIs to delete
+		SubSelect sub = GraphPatterns.select();
+		Variable oldships = sub.var();
+		TriplePattern deletePattern = sim_iri.has(hasEmissionSource,oldships);
+		sub.select(oldships).where(deletePattern);
+		
+		ModifyQuery deleteQuery = Queries.MODIFY();
+		deleteQuery.prefix(p_dispsim).where(sub).delete(deletePattern).with(sim_graph);
+		SparqlGeneral.performUpdate(deleteQuery);
+		
+		// add new ships
+		TriplePattern[] insert_tp = new TriplePattern[ship_iri_string.length];
+		for (int i = 0; i < ship_iri_string.length; i++) {
+			Iri ship_iri = iri(ship_iri_string[i]);
+			insert_tp[i] = sim_iri.has(hasEmissionSource,ship_iri);
+		}
+		
+		ModifyQuery insertQuery = Queries.MODIFY();
+		insertQuery.prefix(p_dispsim).with(sim_graph).insert(insert_tp);
+		SparqlGeneral.performUpdate(insertQuery);
+	}
+	
+	public static String[] GetEmissionSources(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		String shipKey = "ship";
+		Variable ship = SparqlBuilder.var(shipKey);
+		GraphPattern queryPattern = sim_iri.has(hasEmissionSource,ship);
+		SelectQuery query = Queries.SELECT();
+		query.select(ship).from(FromGraph).where(queryPattern).prefix(p_dispsim);
+		
+		JSONArray queryResult = SparqlGeneral.performQuery(query);
+		String[] shipIRI = new String[queryResult.length()];
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			shipIRI[i] = queryResult.getJSONObject(i).getString(shipKey);
+		}
+		
+		return shipIRI;
 	}
 }

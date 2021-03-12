@@ -30,21 +30,38 @@ public class DispSimSparqlTest extends TestCase{
     
     public void testAddMainStation() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
-    	String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation5";
+    	String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation4";
     	DispSimSparql.AddMainStation(sim_iri, station_iri);
     }
     
     public void testAddSubStations() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
     	String[] station_iri_string = new String [2];
-    	station_iri_string[0] = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation1";
-    	station_iri_string[1] = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation2";
+    	station_iri_string[0] = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation4";
+    	station_iri_string[1] = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#weatherstation5";
     	DispSimSparql.AddSubStations(sim_iri,station_iri_string);
     }
     
-    public void testAddShip() {
+    public void testAddShips() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
-    	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
-    	
+    	String[] ship_iri = new String[2];
+    	ship_iri[0] = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship41";
+    	ship_iri[1] = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship5";
+    	DispSimSparql.AddEmissionSources(sim_iri, ship_iri);
+    }
+    
+    public void testGetMainStation() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	DispSimSparql.GetMainStation(sim_iri);
+    }
+    
+    public void testGetSubStations() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	DispSimSparql.GetSubStations(sim_iri);
+    }
+    
+    public void testGetEmissionSources() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	DispSimSparql.GetEmissionSources(sim_iri);
     }
 }
