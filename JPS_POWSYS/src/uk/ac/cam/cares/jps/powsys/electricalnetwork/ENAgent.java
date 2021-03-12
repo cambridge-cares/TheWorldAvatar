@@ -5,13 +5,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,18 +28,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.opencsv.CSVReader;
-
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
@@ -76,19 +67,8 @@ public class ENAgent extends JPSAgent{
 			throw new JSONException("ENAgent input parameters invalid");
 		}
 		String iriofnetwork = requestParams.getString("electricalnetwork");
-		String modeltype = null;
-
-		String path = requestParams.getString("path");
-
-		if (path.contains("/ENAgent/startsimulationPF")) {
-			modeltype = "PF";// PF or OPF
-		} else if (path.contains("/ENAgent/startsimulationOPF")) {
-			modeltype = "OPF";
-		}
-		modeltype = "OPF";
-
+		String modeltype = "OPF";
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
-		
 		JSONObject result;
 		try {
 			result = startSimulation(iriofnetwork, baseUrl, modeltype);
@@ -100,7 +80,14 @@ public class ENAgent extends JPSAgent{
 		}
 		return null;
 	}
-	
+	/** main function for ENAgent
+	 * 
+	 * @param iriofnetwork
+	 * @param baseUrl
+	 * @param modeltype
+	 * @return
+	 * @throws IOException
+	 */
 	public JSONObject startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
 		
 		JSONObject resjo=new JSONObject();
@@ -537,13 +524,6 @@ public class ENAgent extends JPSAgent{
 		String resourceDir = Util.getResourceDir(this);
 		File file = new File(resourceDir + "/baseMVA.txt");
 		broker.putLocal(baseUrl + "/baseMVA.txt", file);
-
-//		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
-//		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
-
-//		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
-//		broker.putLocal(baseUrl + "/runpy.bat", file3);
-		
 		
 		return buslist;
 	}
@@ -683,45 +663,6 @@ public class ENAgent extends JPSAgent{
 		return writer.toString();
 
 	}
-	
-	public String executeSingleCommand(String targetFolder , String command) 
-	{  
-	 
-		logger.info("In folder: " + targetFolder + " Excuted: " + command);
-		Runtime rt = Runtime.getRuntime();
-		Process pr = null;
-		try {
-			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
-
-		} catch (IOException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
-		
-				 
-		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-		String line = "";
-		String resultString = "";
-		try {
-			
-			while((line = bfr.readLine()) != null) {
-				resultString += line;
-
-			}
-		} catch (IOException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
-		
-		return resultString; 
-	}
-	
-	/*
-	public void runModel(String baseUrl) throws IOException {
-		//String result = CommandHelper.executeCommands(baseUrl, args);
-		String startbatCommand =baseUrl+"/runpy.bat";
-		String result= executeSingleCommand(baseUrl,startbatCommand);
-		logger.info("final after calling: "+result);
-	}
-	*/
 	 /** run Python Script in folder
 		 * 
 		 * @param script
@@ -741,15 +682,6 @@ public class ENAgent extends JPSAgent{
 						+fileNames[6] + " 1" + " 1" 
 						+ " " +folder +fileNames[7] + " " +folder 
 						+fileNames[8] + " " +folder +fileNames[9];
-				/*String command = "python " + path+ "/python/model/" +script 
-				+ " " +folder +"/baseMVA.txt" + " " +folder 
-				+"/bus.txt"+ " " +folder +"/gen.txt"+ " " 
-				+folder +"/branch.txt" +" 1" + " " +folder 
-				+"/outputBusOPF.txt"+ " " +folder 
-				+"/outputBranchOPF.txt"+ " " +folder 
-				+"/outputGenOPF.txt"+ " 1" + " 1" 
-				+ " " +folder +"/areas.txt"+ " " +folder 
-				+"/genCost.txt" + " " +folder +"/outputStatus.txt";*/
 				System.out.println(command);
 				result = CommandHelper.executeSingleCommand( path, command);
 			
