@@ -103,7 +103,7 @@ public class ENVisualization extends JPSAgent{
     if (v == false) {
       throw new JSONException("ENVisualization Agent input parameters invalid!");
     }
-    String path = requestParams.getString("path");
+    String path = requestParams.getString("requestUrl");
     String iriofnetwork = requestParams.getString("electricalnetwork");
     OntModel model = Util.readModelGreedy(iriofnetwork);
     logger.info("path called= "+path);
