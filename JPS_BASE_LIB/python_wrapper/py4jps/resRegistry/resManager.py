@@ -51,7 +51,7 @@ def _doDevinstall():
         shutil.rmtree(dst)
     shutil.copytree(os.path.join(src,'lib'), os.path.join(dst,'lib'))
     shutil.copyfile(os.path.join(src,'jps-base-lib.jar'), os.path.join(dst,'jps-base-lib.jar'))
-    resReg.addResToReg(resName='jpsBaseLib', resLoc=dst, resMainJarFile='jps-base-lib.jar')
+    resReg.addResToReg(resName='JpsBaseLib', resLoc=dst, resMainJarFile='jps-base-lib.jar')
     shutil.rmtree(dst)
 
 if __name__ == '__main__':

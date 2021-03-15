@@ -1,5 +1,5 @@
 import unittest
-from py4jps.resources import jpsBaseLib
+from py4jps.resources import JpsBaseLib
 from py4j.java_gateway import GatewayParameters
 from os import path
 class TestWrapper(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestWrapper(unittest.TestCase):
         # JGkwargs
         eager_load = True   # py4j default is False, tested if can be changed to True
         auto_field = True   # py4j default is False, tested if can be changed to True
-        auth_token = True   # py4j default is None, shouldnt be set by a user, tested if removed correctly
+        auth_token = True   # py4j default is None, shouldn't be set by a user, tested if removed correctly
         auto_convert = True # py4j default is False, tested if can be changed to True
         auto_close = False  # py4j default is True, tested if can be changed to False
         # LGkwargs
@@ -19,7 +19,7 @@ class TestWrapper(unittest.TestCase):
         port = 49154 # tested if correctly set by the launch_gateway call
 
         # instantiate jsp gatway object using the JGkwargs values defined above
-        jps = jpsBaseLib(**{'eager_load': eager_load,
+        jpsGW = JpsBaseLib(**{'eager_load': eager_load,
                             'java_process': 1,
                             'auto_convert': auto_convert,
                             'gateway_parameters':{
@@ -30,24 +30,24 @@ class TestWrapper(unittest.TestCase):
                                 'eager_load': eager_load}
                             })
         # check user provided JGkwargs pre-processing
-        self.assertEqual('java_process' in jps._gatewayUserParams, False)
-        self.assertEqual('auth_token' in jps._gatewayUserParams['gateway_parameters'], False)
-        self.assertEqual(jps._gatewayUserParams['eager_load'], eager_load)
-        self.assertEqual(jps._gatewayUserParams['auto_convert'], auto_convert)
-        self.assertEqual(jps._gatewayUserParams['gateway_parameters']['auto_convert'], auto_convert)
-        self.assertEqual(jps._gatewayUserParams['gateway_parameters']['auto_field'], auto_field)
-        self.assertEqual(jps._gatewayUserParams['gateway_parameters']['auto_close'], auto_close)
-        self.assertEqual('port' in jps._gatewayUserParams['gateway_parameters'], False)
+        self.assertEqual('java_process' in jpsGW._gatewayUserParams, False)
+        self.assertEqual('auth_token' in jpsGW._gatewayUserParams['gateway_parameters'], False)
+        self.assertEqual(jpsGW._gatewayUserParams['eager_load'], eager_load)
+        self.assertEqual(jpsGW._gatewayUserParams['auto_convert'], auto_convert)
+        self.assertEqual(jpsGW._gatewayUserParams['gateway_parameters']['auto_convert'], auto_convert)
+        self.assertEqual(jpsGW._gatewayUserParams['gateway_parameters']['auto_field'], auto_field)
+        self.assertEqual(jpsGW._gatewayUserParams['gateway_parameters']['auto_close'], auto_close)
+        self.assertEqual('port' in jpsGW._gatewayUserParams['gateway_parameters'], False)
 
         # launch the gateway with the LGkwargs values defined above
-        jps.launchGateway(**{'port':port, 'jarpath':jarpath})
+        jpsGW.launchGateway(**{'port':port, 'jarpath':jarpath})
 
         # check adding connection params to JGkwargs
-        self.assertEqual('java_process' in jps._gatewayUserParams, True)
-        self.assertEqual(jps.jarPath != jarpath, True) # check if dummy jarpath removed
+        self.assertEqual('java_process' in jpsGW._gatewayUserParams, True)
+        self.assertEqual(jpsGW.jarPath != jarpath, True) # check if dummy jarpath removed
         # check for correct gateway_parameters type conversion
-        self.assertEqual(isinstance(jps._gatewayUserParams['gateway_parameters'], GatewayParameters), True)
-        JGparams = jps._gatewayUserParams['gateway_parameters']
+        self.assertEqual(isinstance(jpsGW._gatewayUserParams['gateway_parameters'], GatewayParameters), True)
+        JGparams = jpsGW._gatewayUserParams['gateway_parameters']
         # check paratemers values
         self.assertEqual(JGparams.port, port)
         self.assertEqual(JGparams.auto_convert, auto_convert)
@@ -56,62 +56,62 @@ class TestWrapper(unittest.TestCase):
         self.assertEqual(JGparams.eager_load, eager_load)
 
         # now check if the internal py4j gateway params match the user settings
-        py4jGWparams = jps.gateway.gateway_parameters
+        py4jGWparams = jpsGW.gateway.gateway_parameters
         self.assertEqual(py4jGWparams.port, port)
         self.assertEqual(py4jGWparams.auto_convert, auto_convert)
         self.assertEqual(py4jGWparams.auto_field, auto_field)
         self.assertEqual(py4jGWparams.auto_close, auto_close)
         self.assertEqual(py4jGWparams.eager_load, eager_load)
 
-        jps.shutdown()
+        jpsGW.shutdown()
         # ===============================================================================================
         # sub test 2  - checks the enable_auth = True option
         # LGkwargs
         enable_auth = True  # py4j default is False, tested if can be changed to True
-        jps = jpsBaseLib()
-        jps.launchGateway(**{'enable_auth': enable_auth})
+        jpsGW = JpsBaseLib()
+        jpsGW.launchGateway(**{'enable_auth': enable_auth})
 
         # check user provided JGkwargs pre-processing
-        JGparams = jps._gatewayUserParams['gateway_parameters']
+        JGparams = jpsGW._gatewayUserParams['gateway_parameters']
         self.assertEqual(JGparams.auth_token is not None, enable_auth)
         # now check if the internal py4j gateway params match the user settings
-        py4jGWparams = jps.gateway.gateway_parameters
+        py4jGWparams = jpsGW.gateway.gateway_parameters
         self.assertEqual(py4jGWparams.auth_token is not None, enable_auth)
 
     def fileReadingTest(self):
-        jps = jpsBaseLib()
-        jps.launchGateway()
-        tw_jpsBaseLib_view = jps.createModuleView()
-        jps.importPackages(tw_jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.*')
+        jpsGW = JpsBaseLib()
+        jpsGW.launchGateway()
+        jpsGW_view = jpsGW.createModuleView()
+        jpsGW.importPackages(jpsGW_view,'uk.ac.cam.cares.jps.base.util.*')
 
-        FileUtil = tw_jpsBaseLib_view.FileUtil
+        FileUtil = jpsGW_view.FileUtil
         file_str = FileUtil.readFileLocally(path.abspath(path.join(path.dirname(__file__),'test_file1.txt')))
         self.assertEqual("test file1", file_str)
-        jps.shutdown()
+        jpsGW.shutdown()
 
     def remoteKGqueryTest(self):
-        jps = jpsBaseLib()
-        jps.launchGateway()
-        tw_jpsBaseLib_view = jps.createModuleView()
-        jps.importPackages(tw_jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+        jpsGW = JpsBaseLib()
+        jpsGW.launchGateway()
+        jpsGW_view = jpsGW.createModuleView()
+        jpsGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
 
-        KGRouter = tw_jpsBaseLib_view.KGRouter
+        KGRouter = jpsGW_view.KGRouter
         KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontokin', True, False)
         response = KGClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
                                         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>	SELECT ?mechanismIRI \
                                         WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))
-        jps.shutdown()
+        jpsGW.shutdown()
 
     def javaPythonObjConversionTest(self):
-        jps = jpsBaseLib()
-        jps.launchGateway()
-        tw_jpsBaseLib_view = jps.createModuleView()
-        jps.importPackages(tw_jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.*')
+        jpsGW = JpsBaseLib()
+        jpsGW.launchGateway()
+        jpsGW_view = jpsGW.createModuleView()
+        jpsGW.importPackages(jpsGW_view,'uk.ac.cam.cares.jps.base.util.*')
 
-        # craete tje Java File object instance
-        javaFolder = tw_jpsBaseLib_view.java.io.File(path.abspath(path.join(path.dirname(__file__))))
+        # craete the Java File object instance
+        javaFolder = jpsGW_view.java.io.File(path.abspath(path.join(path.dirname(__file__))))
         # create a FileUtil instance in order to access its non static methods
-        FileUtil = tw_jpsBaseLib_view.FileUtil()
+        FileUtil = jpsGW_view.FileUtil()
         # call the getDirectoryFiles method
         # note that passed [".txt"] Python list is automatically converted to the Java List<String> instance
         fileListArray = FileUtil.getDirectoryFiles(javaFolder, [".txt"])
