@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.coordination.DMSCoordinationAgent;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
 public class DMSCoordinationAgentTest extends TestCase {
 	// local parameters
@@ -62,7 +63,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		JSONObject jo = new JSONObject();
 		Region.putRegionAndStation(jo,5);
 		jo.put(keyAgent,episodeIRI);
-		jo.put(keyReactionmechanism, mech_none);
+		jo.put(DispSimSparql.SimKey, "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5");
 		AgentCaller.executeGetWithJsonParameter(episode_url,jo.toString());
 	}
 }

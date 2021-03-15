@@ -2,57 +2,42 @@ package uk.ac.cam.cares.jps.virtualsensor.coordination;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpPost;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.virtualsensor.general.DispersionModellingAgent;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 //@WebServlet("/DMSCoordinationAgent")
 @WebServlet(urlPatterns = { "/episode/dispersion/coordination", "/adms/dispersion/coordination" })
 public class DMSCoordinationAgent extends JPSHttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(DMSCoordinationAgent.class);
-	private static final String PARAM_KEY_SHIP = "ship";
 	public static final String DISPERSION_PATH = "/JPS_VIRTUALSENSOR";
 	public static final String EPISODE_PATH = "/episode/dispersion/coordination";
 	public static final String ADMS_PATH = "/adms/dispersion/coordination";
 
-	private void RunShipAsync(JSONArray jsonShip) {
-		JSONArray newwaste = new JSONArray();
-		ArrayList<CompletableFuture> wastes = new ArrayList<>();;
-		int sizeofshipselected = jsonShip.length();
+	private void RunShipAsync(String[] shipIRI) {
+		CompletableFuture<String> getAsync = null;
 
-		for (int i = 0; i < sizeofshipselected; i++) {
+		for (int i = 0; i < shipIRI.length; i++) {
 			logger.info("Ship AGENT called: " + i);
 			JSONObject shiprequest = new JSONObject();
-			shiprequest.put("shipIRI", jsonShip.getString(i));
+			shiprequest.put(ShipSparql.shipKey, shipIRI[i]);
 
-			CompletableFuture<String> getAsync = CompletableFuture
+			getAsync = CompletableFuture
 					.supplyAsync(() -> execute("/JPS_VIRTUALSENSOR/ShipAgent", shiprequest.toString()));
-
-			CompletableFuture<String> processAsync = getAsync
-					.thenApply(wasteResult -> new JSONObject(wasteResult).getString("shipIRI"));
-			wastes.add(processAsync);
 		}
-
-		for (CompletableFuture waste : wastes) {
-			try {
-				newwaste.put(waste.get());
-			} catch (InterruptedException | ExecutionException e) {
-				throw new JPSRuntimeException(e.getMessage());
-			}
-		}
+        getAsync.join(); // ensure all calculations are completed before proceeding
 	}
 	
 	@Override
@@ -64,20 +49,15 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
 		String result;
 
-		result = execute("/JPS_VIRTUALSENSOR/WeatherAgent", requestParams.getJSONObject("region").toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/WeatherAgent", requestParams.toString());
 
-		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
-		requestParams.put("stationiri", stationiri);
+		logger.info("calling ship data agent = " + requestParams.toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/ShipDataAgent", requestParams.toString());
 
-		logger.info("calling ship data agent = " + requestParams.getJSONObject("region").toString());
-		String resultship = AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/ShipDataAgent", 
-				requestParams.getJSONObject("region").toString());
-
-		JSONArray jsonShip = new JSONObject(resultship).getJSONArray(PARAM_KEY_SHIP);
-		requestParams.put(PARAM_KEY_SHIP, jsonShip);
-
-		if (jsonShip.length() != 0) {
-			RunShipAsync(jsonShip);
+		String[] shipIRI = DispSimSparql.GetEmissionSources(requestParams.getString(DispSimSparql.SimKey));
+		
+		if (shipIRI.length != 0) {
+			RunShipAsync(shipIRI);
 
 			String resultPath = DISPERSION_PATH;
 			if (path.equals(ADMS_PATH)) {
