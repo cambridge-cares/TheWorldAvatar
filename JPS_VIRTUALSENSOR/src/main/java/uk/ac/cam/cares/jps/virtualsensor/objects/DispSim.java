@@ -8,6 +8,7 @@ public class DispSim {
     private double[] z;
     private Scope sc;
     private int numSubStations;
+    private String serviceAgent;
     
 	public int getNx() {
 		return nx;
@@ -38,5 +39,11 @@ public class DispSim {
 	}
 	public void setNumSubStations(int numSubStations) {
 		this.numSubStations = numSubStations;
+	}
+	public String getServiceAgent() {
+		return serviceAgent;
+	}
+	public void setServiceAgent(String serviceAgent) {
+		this.serviceAgent = serviceAgent;
 	}
 }

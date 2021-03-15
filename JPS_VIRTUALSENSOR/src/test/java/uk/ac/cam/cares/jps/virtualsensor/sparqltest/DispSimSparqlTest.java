@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
 public class DispSimSparqlTest extends TestCase{
+	String episode_iri = "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service";
     public void testInitSim() {
     	for (int i=1; i<6; i++) {
 	    	JSONObject jo_region = new JSONObject();
@@ -20,6 +21,7 @@ public class DispSimSparqlTest extends TestCase{
 	    	sim.setNx(10);
 	    	sim.setNy(10);
 	    	sim.setNumSubStations(1);
+	    	sim.setServiceAgent(episode_iri);
 	    	DispSimSparql.InitSim(i, sim);
     	}
     }
@@ -69,5 +71,11 @@ public class DispSimSparqlTest extends TestCase{
     public void testGetNumSubstations() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
     	DispSimSparql.GetNumSubStations(sim_iri);
+    }
+    
+    public void testInitService() {
+    	String service_iri = episode_iri;
+    	String httpURL = "JPS_VIRTUALSENSOR/episode/dispersion";
+    	DispSimSparql.InitService(service_iri, httpURL);
     }
 }

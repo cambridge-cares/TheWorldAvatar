@@ -32,11 +32,12 @@ public class DispSimSparql {
 	private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
 	private static Prefix p_coordsys = SparqlBuilder.prefix("coordsys",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"));
 	private static Prefix p_space_time = SparqlBuilder.prefix("space_time",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"));
+	private static Prefix p_msm = SparqlBuilder.prefix("msm",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
 	
 	private static Prefix[] prefixes = {p_dispsim,p_citygml,p_space_time_extended,p_system,p_coordsys,p_space_time};
 	
     // rdf type
-    private static Iri dispersionSim = p_dispsim.iri("dispersionSim");
+    private static Iri DispersionSim = p_dispsim.iri("DispersionSim");
     private static Iri EnvelopeType = p_citygml.iri("EnvelopeType");
     private static Iri PointType = p_citygml.iri("PointType");
     private static Iri CoordinateValue = p_coordsys.iri("CoordinateValue");
@@ -59,6 +60,8 @@ public class DispSimSparql {
     private static Iri hasSubStation = p_dispsim.iri("hasSubStation"); // not yet in ontology
     private static Iri hasEmissionSource = p_dispsim.iri("hasEmissionSource"); // not yet in ontology
     private static Iri hasNumSubStations = p_dispsim.iri("hasNumSubStations");
+    private static Iri hasServiceAgent = p_dispsim.iri("hasServiceAgent");
+    private static Iri hasHttpUrl = p_msm.iri("hasHttpUrl");
     
     //unit
     private static Iri dimensionless = iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#dimensionless");
@@ -66,6 +69,18 @@ public class DispSimSparql {
     //endpoint
     private static Iri sim_graph = p_dispsim.iri("Simulations");
     private static From FromGraph = SparqlBuilder.from(sim_graph);
+    
+    /** 
+     * Initialise Episode/ADMS agent
+     */
+    public static void InitService(String service_iri_string, String httpURL) {
+    	Iri service_iri = iri(service_iri_string);
+    	TriplePattern service_tp = service_iri.has(hasHttpUrl,httpURL);
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.prefix(p_msm,p_dispsim).with(sim_graph).insert(service_tp).where();
+    	SparqlGeneral.performUpdate(modify);
+    }
+    
     /**
 	 * Initialise a simulation on triple-store
 	 */
@@ -95,7 +110,7 @@ public class DispSimSparql {
     	Iri upperCornerY = p_dispsim.iri(sim_id+"UpperCornerY");
     	Iri upperCornerYValue = p_dispsim.iri(sim_id+"UpperCornerYValue");
     	
-    	TriplePattern sim_tp = sim_iri.isA(dispersionSim).andHas(hasNx,nx).andHas(hasNy,ny).andHas(hasEnvelope,envelope).andHas(hasNumSubStations,numsub);
+    	TriplePattern sim_tp = sim_iri.isA(DispersionSim).andHas(hasNx,nx).andHas(hasNy,ny).andHas(hasEnvelope,envelope).andHas(hasNumSubStations,numsub).andHas(hasServiceAgent,iri(sim.getServiceAgent()));
     	
     	TriplePattern envelope_tp = envelope.isA(EnvelopeType).andHas(lowerCornerPoint,lowerCorner).andHas(upperCornerPoint,upperCorner).andHas(srsname,sim.getScope().getCRSName());
     	
