@@ -39,11 +39,11 @@ This type of installation is recommended for non-developers where the `py4jps` p
 (py4jps_venv) $ pip install <provided_py4jps_wheel_file_name>.whl
 ```
 
-The above command will install the `py4jps` package including the `jpsBaseLib` library that has been packaged together with the code.
+The above command will install the `py4jps` package including the `JpsBaseLib` library that has been packaged together with the code.
 
 ## Installation from the tarball
 
-Another way of installing the `py4jps` is from its tarball. Similarly, to the wheel installation, this option is recommended for non-developers where the `py4jps` source code and default `jpsBaseLib` library are zipped together into the final tar.gz file. To install the package simply run:
+Another way of installing the `py4jps` is from its tarball. Similarly, to the wheel installation, this option is recommended for non-developers where the `py4jps` source code and default `JpsBaseLib` library are zipped together into the final tar.gz file. To install the package simply run:
 ```bash
 (py4jps_venv) $ pip install <provided_py4jps_tarball>.tar.gz
 ```
@@ -66,11 +66,11 @@ $ install_wrapper.sh -v -i
 $ install_wrapper.sh -v -i -e
 ```
 
-The above commands will install the `py4jps` package only. To include the [jpsBaseLib](https://github.com/cambridge-cares/TheWorldAvatar/tree/master/JPS_BASE_LIB) library, please see the next section.
+The above commands will install the `py4jps` package only. To include the [JpsBaseLib](https://github.com/cambridge-cares/TheWorldAvatar/tree/master/JPS_BASE_LIB) library, please see the next section.
 
 ## Installing additional java resources
 
-The `py4jps` project can be easily extended to provide wrapping for other `TheWorldAvatar` java projects. To do that, all resource files and their dependencies must be collated into a single directory, with the main jar file located at the directory root. The `jpsBaseLib pom.xml` file shows an example of how to do it with maven. If you wish to do it for other `TheWorldAvatar` project, simply copy the `maven-jar-plugin` and `maven-dependency-plugin` plugins into the project pom file and add the `net.sf.py4j` dependency. These changes will collate all the project dependencies into the `target\lib` directory and include the required `py4j` package in your project. Once that is done and the project is successfully built, the `py4jps` resource manager command-line utility, `jpsrm`, can be used to install and register the resource. Here are the steps:
+The `py4jps` project can be easily extended to provide wrapping for other `TheWorldAvatar` java projects. To do that, all resource files and their dependencies must be collated into a single directory, with the main jar file located at the directory root. The `JpsBaseLib pom.xml` file shows an example of how to do it with maven. If you wish to do it for other `TheWorldAvatar` project, simply copy the `maven-jar-plugin` and `maven-dependency-plugin` plugins into the project pom file and add the `net.sf.py4j` dependency. These changes will collate all the project dependencies into the `target\lib` directory and include the required `py4j` package in your project. Once that is done and the project is successfully built, the `py4jps` resource manager command-line utility, `jpsrm`, can be used to install and register the resource. Here are the steps:
 
 1. Copy the project main jar file and the entire `lib` folder a temporary directory, e.g., `tmp_dir`.
 2. Run the following command in the terminal (with `py4jps_venv` virtual environment activated):
@@ -95,18 +95,18 @@ These instructions explain how to install the `JPS_BASE_LIB` library and are use
 Steps to install the `JPS_BASE_LIB` library:
 
 1. Build the `JPS_BASE_LIB` project.
-2. Go to the `JPS_BASE_LIB/target` directory and copy the main project jar file, `jps-base-lib.jar`, and the entire `lib` folder containing the project dependencies into a temporary directory, let us call it `tmp_jpsBaseLib`.
+2. Go to the `JPS_BASE_LIB/target` directory and copy the main project jar file, `jps-base-lib.jar`, and the entire `lib` folder containing the project dependencies into a temporary directory, let us call it `tmp_JpsBaseLib`.
 3. Run the following command in the terminal (with `py4jps_venv` virtual environment activated):
 ```bash
-(py4jps_venv) $ jpsrm install jpsBaseLib <path_to_the_tmp_jpsBaseLib_directory> --jar jps-base-lib.jar
+(py4jps_venv) $ jpsrm install JpsBaseLib <path_to_the_tmp_JpsBaseLib_directory> --jar jps-base-lib.jar
 ```
-4. After successful installation you can access the `jpsBaseLib` resource (classes and methods) in `py4jps` by simply importing it:
+4. After successful installation you can access the `JpsBaseLib` resource (classes and methods) in `py4jps` by simply importing it:
 ```python
-from py4jps.resources import jpsBaseLib
+from py4jps.resources import JpsBaseLib
 ```
-5. Remove the no longer needed `tmp_jpsBaseLib` directory.
+5. Remove the no longer needed `tmp_JpsBaseLib` directory.
 
-Note. The `jpsrm` includes a developer-only convenience command `devinstall` which will run all the above steps and install the `jpsBaseLib` resource. The command will only work if:
+Note. The `jpsrm` includes a developer-only convenience command `devinstall` which will run all the above steps and install the `JpsBaseLib` resource. The command will only work if:
  - the `JPS_BASE_LIB` project is present and was successfully built
  - the `py4jps` project was installed in a developer mode (-e option) inside the `TheWorldAvatar` repository
 
@@ -183,11 +183,11 @@ KGRouter = yourGateway.gateway.jvm.uk.ac.cam.cares.jps.base.query.KGRouter
 KGRouter.getKnowledgeBaseClient('http://kb/ontokin', True, False)
 ```
 
-here the KGRouter static getKnowledgeBaseClient class can be directly called without the KGRouter instantiation. The non-static methods can only be accessed once the object is instantiated, e.g
+here the `KGRouter static getKnowledgeBaseClient` class can be directly called without the `KGRouter` instantiation. The non-static methods can only be accessed once the object is instantiated, e.g
 
 ```python
 # create a FileUtil instance to access its non static getDirectoryFiles method
-FileUtil = tw_jpsBaseLib_view.FileUtil()
+FileUtil = jpsBaseLib_view.FileUtil()
 # call the getDirectoryFiles method
 output = FileUtil.getDirectoryFiles(method_arguments)
 ```
@@ -196,15 +196,15 @@ output = FileUtil.getDirectoryFiles(method_arguments)
 
 The resource gateway class is automatically created upon the resource installation. The class name is the same as the name of the resource given during the installation. Furthermore, **each resource gateway class inherits from the `py4jps JPSGateway` class**. Therefore, **one should ideally only work with the resource classes rather than with the parent JPSGateway class**. It is also recommended to have only one gateway object in your Python application per java resource you wish to access. This can be easily achieved by instantiating and starting the resource gateway objects in a specially designed module e.g., `jpsSingletons` and then to import these objects instances to any other module that requires it.
 
-To give a simple example, after installing the `jpsBaseLib` resource one can import and use it in the following way:
+To give a simple example, after installing the `JpsBaseLib` resource, one can import and use it in the following way:
 ```python
-from py4jps.resources import jpsBaseLib
+from py4jps.resources import JpsBaseLib
 
-jpsBaseLibGW = jpsBaseLib(**JGkwargs)
+jpsBaseLibGW = JpsBaseLib(**JGkwargs)
 jpsBaseLibGW.launchGateway(**LGkwargs)
 ```
 
-Do note that compared to the `JPSGateway` class the `jpsBaseLib` constructor call neither accepts the resource name nor the resource jar path as arguments. This ensures that the resource is properly encapsulated.
+Do note that compared to the `JPSGateway` class the `JpsBaseLib` constructor call neither accepts the resource name nor the resource jar path as arguments. This ensures that the resource is properly encapsulated.
 
 ## JVM module views
 
@@ -221,7 +221,7 @@ resGateway.importPackages(moduleViewInstance,"uk.ac.cam.cares.jps.base.query.*")
 # once classes are imported, they can be accesses as follows
 KGRouter = moduleViewInstance.KGRouter
 ```
-The module view should be created for each Python module in your application that requires access to the java resource, followed by any desired import statements. The name of the module view is arbitrary, though it is recommended to name it after your Python module file name and the parent resource to avoid confusion and potential name clashes.
+The module view should be created for each Python module in your application that requires access to the java resource, followed by any desired import statements. The name of the module view is arbitrary, though it is recommended to name it after your parent resource to avoid confusion.
 
 ## Python-Java objects translation
 
@@ -238,7 +238,7 @@ moduleViewInstance.aMethod3('a_string')
 moduleViewInstance.aMethod4(['a_string'])
 ```
 
-However, there could be cases where a Java object of a specific type needs to be created for the method call. As an example, the `FileUtil` class in the `jpsBaseLib` resource has a method called `getDirectoryFiles`. The method simply returns a list of files in a directory that matches the provided file extensions. Here is its Java interface:
+However, there could be cases where a Java object of a specific type needs to be created for the method call. As an example, the `FileUtil` class in the `JpsBaseLib` resource has a method called `getDirectoryFiles`. The method simply returns a list of files in a directory that matches the provided file extensions. Here is its Java interface:
 ```java
 public List<File> getDirectoryFiles(File folder, List<String> fileExtensions)
 ```
@@ -247,17 +247,17 @@ As can be seen, the first argument is of type `File`, and the second is of type 
 
 ```python
 # create and launch the jpsBaseLib gateway
-jpsBaseLibGW = jpsBaseLib()
+jpsBaseLibGW = JpsBaseLib()
 jpsBaseLibGW.launchGateway()
 # create the separate JVM view
-a_jpsBaseLibGW_view = jpsBaseLibGW.createModuleView()
+jpsBaseLibGW_view = jpsBaseLibGW.createModuleView()
 # import required Java packages into the created JVM view
-jpsBaseLibGW.importPackages(a_jpsBaseLibGW_view,'uk.ac.cam.cares.jps.base.util.*')
+jpsBaseLibGW.importPackages(jpsBaseLibGW_view,'uk.ac.cam.cares.jps.base.util.*')
 
 # create a FileUtil instance to access its non-static methods
 # compare it with the KGRouter example, where there was no need to add
 # () brackets to the router, so we were only retrieving the KGRouter class
-FileUtil = a_jpsBaseLibGW_view.FileUtil()
+FileUtil = jpsBaseLibGW_view.FileUtil()
 
 # create the required `File folder` argument to be passed to the `getDirectoryFiles` method
 
@@ -268,7 +268,7 @@ javaFolder = jpsBaseLibGW.gateway.jvm.java.io.File('D:\\my_dir')
 
 # option 2 - RECOMMENDED
 # recommended use of JVM view to access default java classes and methods
-javaFolder = a_jpsBaseLibGW_view.java.io.File('D:\\my_dir')
+javaFolder = jpsBaseLibGW_view.java.io.File('D:\\my_dir')
 
 # call the getDirectoryFiles
 # Note that the `List<String> fileExtensions` argument can be passed
@@ -287,7 +287,7 @@ for i in range(fileListArray.size()):
 # that is returned as an output from the getDirectoryFiles call.
 # Then one can simply create such list as follows:
 
-javaFileObj = a_jpsBaseLibGW_view.java.io.File(path_to_a_folder)
+javaFileObj = jpsBaseLibGW_view.java.io.File(path_to_a_folder)
 # this creates a Python List which stores a javaFileObj inside
 PythonList = [javaFileObj]
 
@@ -296,7 +296,7 @@ PythonList = [javaFileObj]
 # this creates a javaArray which stores the javaFileObj inside
 # this example, however, is not needed thanks to the auto conversion
 # so, one can simply pass the PythonList created above to the method
-javaArray = a_jpsBaseLibGW_view.java.util.ArrayList()
+javaArray = jpsBaseLibGW_view.java.util.ArrayList()
 javaArray.append(javaFileObj)
 ```
 
@@ -324,11 +324,11 @@ Please note that the above project layout is extremely simple just to show an ex
 # The purpose of this module is to create and start resource
 # gateway objects to be used in all your other modules
 #============================================================
-from py4jps.resources import jpsBaseLib
+from py4jps.resources import JpsBaseLib
 
 # jpsBaseLib resource gateway
 # you may also wish to pass any **JGkwargs
-jpsBaseLibGW = jpsBaseLib()
+jpsBaseLibGW = JpsBaseLib()
 
 # you may also wish to pass any **LGkwargs
 jpsBaseLibGW.launchGateway()
@@ -359,15 +359,14 @@ response2 = doTask2()
 # get the jpsBaseLibGW instance from the jpsSingletons module
 from jpsSingletons import jpsBaseLibGW
 
-# create a JVM module view for this module and resource and use it to import
-# the required java classes
-apm1_jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-jpsBaseLibGW.importPackages(apm1_jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+# create a JVM module view and use it to import the required java classes
+jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
 # this function shows how to do a simple KG query
 def doTask1():
     # perform an example sparqle query, see the jps-base-lib docs for further details
-    KGRouter = apm1_jpsBaseLib_view.KGRouter
+    KGRouter = jpsBaseLib_view.KGRouter
     KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+'ontokin', True, False)
     response = KGClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
                                     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>   SELECT ?mechanismIRI \
@@ -383,14 +382,13 @@ def doTask1():
 # get the jpsBaseLibGW instance from the jpsSingletons module
 from jpsSingletons import jpsBaseLibGW
 
-# create a JVM module view for this module and use it to import
-# the required java classes
-apm2_jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-jpsBaseLibGW.importPackages(apm2_jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.*')
+# create a JVM module view and use it to import the required java classes
+jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+jpsBaseLibGW.importPackages(jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.*')
 
 # this function shows how to use jps-base-lib file util object to read a local file
 def doTask2():
-    FileUtil = apm2_jpsBaseLib_view.FileUtil
+    FileUtil = jpsBaseLib_view.FileUtil
     # any paths passed to the jps-base-lib FileUtil object should be absolute paths
     # here the FileUtil object does not need to be instantiated as the readFileLocally
     # method is static
