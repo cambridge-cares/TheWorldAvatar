@@ -41,8 +41,8 @@ import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.virtualsensor.agents.ADMSAgent;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.DispersionAgentConfiguration;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.DispersionAgentProperty;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentConfiguration;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentProperty;
 import uk.ac.cam.cares.jps.virtualsensor.episode.EpisodeAgent;
 
 @Controller
@@ -71,7 +71,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 	
 	public static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContextDispersionAgent;
-	public static DispersionAgentProperty dispersionAgentProperty;
+	public static EpisodeAgentProperty dispersionAgentProperty;
 	private File jobSpace;
 	
 	@Override
@@ -123,10 +123,10 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		// initialising classes to read properties from the dft-agent.properites
 		// file
 		if (applicationContextDispersionAgent == null) {
-			applicationContextDispersionAgent = new AnnotationConfigApplicationContext(DispersionAgentConfiguration.class);
+			applicationContextDispersionAgent = new AnnotationConfigApplicationContext(EpisodeAgentConfiguration.class);
 		}
 		if (dispersionAgentProperty == null) {
-			dispersionAgentProperty = applicationContextDispersionAgent.getBean(DispersionAgentProperty.class);
+			dispersionAgentProperty = applicationContextDispersionAgent.getBean(EpisodeAgentProperty.class);
 		}
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(dispersionAgentProperty.getAgentClass(), dispersionAgentProperty.getHpcAddress());

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @PropertySource("classpath:dispersion-agent.properties")
-public class DispersionAgentProperty {
+public class EpisodeAgentProperty {
 	@Value("${hpc.server.login.user.name}")
 	private String hpcServerLoginUserName;
 
