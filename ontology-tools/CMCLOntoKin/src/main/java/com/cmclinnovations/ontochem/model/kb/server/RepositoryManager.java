@@ -105,6 +105,49 @@ public class RepositoryManager implements IRepositoryManager{
 	 * @param repositoryID
 	 * @throws OntoException
 	 */
+	public void loadOntology1(String serverURL, String mechanismName, String mechanismFilePath, String baseURI, String repositoryID) throws OntoException{
+		// Checks the validity of all parameters of this method.
+		checkUploadParameterValidity(serverURL, mechanismName, mechanismFilePath, baseURI, repositoryID);
+		try {
+			Repository repo = new HTTPRepository(serverURL, repositoryID);
+			repo.initialize();
+			RepositoryConnection con = repo.getConnection();
+			ValueFactory f = repo.getValueFactory();
+			org.eclipse.rdf4j.model.IRI context = f.createIRI(ONTOCHEM_KB_URL.concat(mechanismName));
+			
+			try {
+				String urlString = "";
+				if(mechanismFilePath.startsWith("/")) {
+					urlString = "file:".concat(mechanismFilePath).concat(mechanismName);
+				}else {
+					urlString = "file:/".concat(mechanismFilePath).concat(mechanismName);
+				}
+				URL url = new URL(urlString);				
+				con.add(url, url.toString(), RDFFormat.RDFXML, context);
+			} finally {
+				con.close();
+			}
+		} catch (RDF4JException e) {
+			logger.error("RDF4JException occurred.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("IOException occurred.");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Loads an ontology to the OntoChem KB repository. It also creates</br>
+	 * a context, which is a necessary feature to delete the mechanism</br>
+	 * if user wants.
+	 * 
+	 * @param serverURL
+	 * @param mechanismName
+	 * @param mechanismFilePath
+	 * @param baseURI
+	 * @param repositoryID
+	 * @throws OntoException
+	 */
 	public void loadOntology(String serverURL, String mechanismName, String mechanismFilePath, String baseURI, String repositoryID) throws OntoException{
 		// Checks the validity of all parameters of this method.
 		checkUploadParameterValidity(serverURL, mechanismName, mechanismFilePath, baseURI, repositoryID);
