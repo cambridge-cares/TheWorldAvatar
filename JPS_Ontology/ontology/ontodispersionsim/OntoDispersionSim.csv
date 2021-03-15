@@ -1,15 +1,19 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-dispersionSim,Class,,,,,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-simCRS,Class,http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname,IS-A,,,,CRS used for simulation,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-nx,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,"Number of cells in the x direction, a scalar value and cells are uniform",http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-ny,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,"Number of cells in the y direction, a scalar value and cells are uniform",http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-z_cell,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,"Value of each cell in the vertical direction, can be non-uniform",http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-resultsFile,Class,http://www.theworldavatar.com/kb/ontocsv/OntoDSV.owl#dsvFile,IS-A,,,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-simAgent,Class,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,IS-A,,,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-hasEnvelope,Object Property,,,dispersionSim,http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType,,The envelope defines the simulation domain and contains the upper and lower corners.,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-hasNx,Object Property,,,dispersionSim,nx,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-hasNy,Object Property,,,dispersionSim,ny,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-hasSimCRS,Object Property,,,dispersionSim,simCRS,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-hasZ_cell,Object Property,,,dispersionSim,z_cell,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-hasResultsFile,Object Property,,,dispersionSim,resultsFile,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
-hasSimAgent,Object Property,,,dispersionSim,simAgent,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+DispersionSim,Class,,,,,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+SimCRS,Class,http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#srsname,IS-A,,,,CRS used for simulation,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+Nx,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,"Number of cells in the x direction, a scalar value and cells are uniform",http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+Ny,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,"Number of cells in the y direction, a scalar value and cells are uniform",http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+Z_cell,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,"Value of each cell in the vertical direction, can be non-uniform",http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+ResultsFile,Class,http://www.theworldavatar.com/kb/ontocsv/OntoDSV.owl#dsvFile,IS-A,,,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+NumSubStations,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasEnvelope,Object Property,,,DispersionSim,http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType,,The envelope defines the simulation domain and contains the upper and lower corners.,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasNx,Object Property,,,DispersionSim,Nx,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasNy,Object Property,,,DispersionSim,Ny,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasSimCRS,Object Property,,,DispersionSim,SimCRS,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasZ_cell,Object Property,,,DispersionSim,Z_cell,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasResultsFile,Object Property,,,DispersionSim,ResultsFile,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasServiceAgent,Object Property,,,DispersionSim,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasEmissionSource,Object Property,,,DispersionSim,http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasMainStation,Object Property,,,DispersionSim,http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WeatherStation,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasSubStation,Object Property,,,DispersionSim,http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WeatherStation,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
+hasNumSubStations,Object Property,,,DispersionSim,NumSubStations,,,http://www.theworldavatar.com/kb/ontocsv/OntoDispersionSim.owl
