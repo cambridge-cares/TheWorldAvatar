@@ -75,7 +75,12 @@ public class DispSimSparqlTest extends TestCase{
     
     public void testInitService() {
     	String service_iri = episode_iri;
-    	String httpURL = "JPS_VIRTUALSENSOR/episode/dispersion";
+    	String httpURL = "http://localhost:8080/JPS_VIRTUALSENSOR/EpisodeAgent";
     	DispSimSparql.InitService(service_iri, httpURL);
+    }
+    
+    public void testGetServiceURL() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	DispSimSparql.GetServiceURL(sim_iri);
     }
 }

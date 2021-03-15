@@ -75,10 +75,24 @@ public class DispSimSparql {
      */
     public static void InitService(String service_iri_string, String httpURL) {
     	Iri service_iri = iri(service_iri_string);
-    	TriplePattern service_tp = service_iri.has(hasHttpUrl,httpURL);
+    	TriplePattern service_tp = service_iri.has(hasHttpUrl,iri(httpURL));
     	ModifyQuery modify = Queries.MODIFY();
     	modify.prefix(p_msm,p_dispsim).with(sim_graph).insert(service_tp).where();
     	SparqlGeneral.performUpdate(modify);
+    }
+    
+    public static String GetServiceURL(String sim_iri_string) {
+    	Iri sim_iri = iri(sim_iri_string);
+    	String queryKey = "url";
+    	Variable url = SparqlBuilder.var(queryKey);
+    	
+    	SelectQuery query = Queries.SELECT();
+    	Iri[] predicates = {hasServiceAgent,hasHttpUrl};
+    	GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, predicates, null, sim_iri,url);
+    	
+    	query.prefix(p_msm,p_dispsim).from(FromGraph).where(queryPattern).select(url);
+    	String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
+    	return result;
     }
     
     /**
