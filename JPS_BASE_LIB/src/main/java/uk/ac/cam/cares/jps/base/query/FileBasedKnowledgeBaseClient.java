@@ -17,6 +17,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.TxnType;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.riot.Lang;
@@ -639,7 +640,12 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			Iterator<String> it = qs.varNames(); 
 			while(it.hasNext()) {
 				String var = it.next(); 
-				obj.put(var, qs.get(var));
+				RDFNode node = qs.get(var);
+				if(node.isLiteral()) {
+					obj.put(var, node.asLiteral().getValue());	
+				}else {
+					obj.put(var, node);
+				}
 			}
 			json.put(obj);
 		}
