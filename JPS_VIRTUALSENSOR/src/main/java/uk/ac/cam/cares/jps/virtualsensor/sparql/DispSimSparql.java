@@ -4,11 +4,16 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
@@ -38,7 +43,7 @@ public class DispSimSparql {
 	
     // rdf type
     private static Iri DispersionSim = p_dispsim.iri("DispersionSim");
-    private static Iri EnvelopeType = p_citygml.iri("EnvelopeType");
+    private static Iri Scope = p_dispsim.iri("Scope");
     private static Iri PointType = p_citygml.iri("PointType");
     private static Iri CoordinateValue = p_coordsys.iri("CoordinateValue");
     private static Iri StraightCoordinate = p_space_time.iri("StraightCoordinate");
@@ -47,21 +52,24 @@ public class DispSimSparql {
     //relations
     private static Iri hasNx = p_dispsim.iri("hasNx");
     private static Iri hasNy = p_dispsim.iri("hasNy");
-    private static Iri hasEnvelope = p_citygml.iri("hasEnvelope");
-    private static Iri srsname = p_citygml.iri("srsname");
-    private static Iri lowerCornerPoint = p_citygml.iri("lowerCornerPoint");
-    private static Iri upperCornerPoint = p_citygml.iri("upperCornerPoint");
+    private static Iri hasScope = p_dispsim.iri("hasScope");
+    private static Iri hasLowerCornerPoint = p_dispsim.iri("lowerCornerPoint");
+    private static Iri hasUpperCornerPoint = p_dispsim.iri("upperCornerPoint");
     private static Iri hasGISCoordinateSystem = p_space_time_extended.iri("hasGISCoordinateSystem");
     private static Iri hasProjectedCoordinate_x = p_space_time_extended.iri("hasProjectedCoordinate_x");
     private static Iri hasProjectedCoordinate_y = p_space_time_extended.iri("hasProjectedCoordinate_y");
     private static Iri hasValue = p_system.iri("hasValue");
+    private static Iri value = p_system.iri("value");
     private static Iri numericalValue = p_system.iri("numericalValue");
-    private static Iri hasMainStation = p_dispsim.iri("hasMainStation"); // not yet in ontology
-    private static Iri hasSubStation = p_dispsim.iri("hasSubStation"); // not yet in ontology
-    private static Iri hasEmissionSource = p_dispsim.iri("hasEmissionSource"); // not yet in ontology
+    private static Iri hasMainStation = p_dispsim.iri("hasMainStation"); 
+    private static Iri hasSubStation = p_dispsim.iri("hasSubStation");
+    private static Iri hasEmissionSource = p_dispsim.iri("hasEmissionSource"); 
     private static Iri hasNumSubStations = p_dispsim.iri("hasNumSubStations");
     private static Iri hasServiceAgent = p_dispsim.iri("hasServiceAgent");
     private static Iri hasHttpUrl = p_msm.iri("hasHttpUrl");
+    private static Iri hasSimCRS = p_dispsim.iri("hasSimCRS");
+    private static Iri hasScopeCRS = p_dispsim.iri("hasScopeCRS");
+    private static Iri hasDataPath = p_dispsim.iri("hasDataPath");
     
     //unit
     private static Iri dimensionless = iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#dimensionless");
@@ -107,8 +115,12 @@ public class DispSimSparql {
     	Iri ny = p_dispsim.iri(sim_id+"Ny");
     	Iri numsub = p_dispsim.iri(sim_id+"NumSubStation");
     	Iri numsubvalue = p_dispsim.iri(sim_id+"NumSubStationValue");
+    	Iri simCRS = p_dispsim.iri(sim_id+"SimCRS");
+    	Iri simCRSValue = p_dispsim.iri(sim_id+"SimCRSValue");
     	
-    	Iri envelope = p_dispsim.iri(sim_id+"Envelope");
+    	Iri scope = p_dispsim.iri(sim_id+"Scope");
+    	Iri ScopeCRS = p_dispsim.iri(sim_id+"ScopeCRS");
+    	Iri ScopeCRSValue = p_dispsim.iri(sim_id+"ScopeCRSValue");
     	Iri lowerCorner = p_dispsim.iri(sim_id+"LowerCorner");
     	Iri lowerCornerCoordinates = p_dispsim.iri(sim_id+"LowerCornerCoordinates");
     	Iri upperCorner = p_dispsim.iri(sim_id+"UpperCorner");
@@ -124,9 +136,18 @@ public class DispSimSparql {
     	Iri upperCornerY = p_dispsim.iri(sim_id+"UpperCornerY");
     	Iri upperCornerYValue = p_dispsim.iri(sim_id+"UpperCornerYValue");
     	
-    	TriplePattern sim_tp = sim_iri.isA(DispersionSim).andHas(hasNx,nx).andHas(hasNy,ny).andHas(hasEnvelope,envelope).andHas(hasNumSubStations,numsub).andHas(hasServiceAgent,iri(sim.getServiceAgent()));
+    	TriplePattern sim_tp = sim_iri.isA(DispersionSim).andHas(hasNx,nx).andHas(hasNy,ny)
+    			.andHas(hasScope,scope).andHas(hasNumSubStations,numsub).andHas(hasServiceAgent,iri(sim.getServiceAgent()))
+    			.andHas(hasSimCRS,simCRS);
     	
-    	TriplePattern envelope_tp = envelope.isA(EnvelopeType).andHas(lowerCornerPoint,lowerCorner).andHas(upperCornerPoint,upperCorner).andHas(srsname,sim.getScope().getCRSName());
+    	TriplePattern simCRS_tp = simCRS.has(hasValue,simCRSValue);
+    	TriplePattern simCRSValue_tp = simCRSValue.has(value,sim.getSimCRS());
+    	
+    	TriplePattern scope_tp = scope.isA(Scope).andHas(hasLowerCornerPoint,lowerCorner).andHas(hasUpperCornerPoint,upperCorner).andHas(hasScopeCRS,ScopeCRS);
+    	
+    	// scope CRS
+    	TriplePattern ScopeCRS_tp = ScopeCRS.has(hasValue,ScopeCRSValue);
+    	TriplePattern ScopeCRSValue_tp =  ScopeCRSValue.has(value,sim.getScope().getCRSName());
     	
     	// lower corner
     	TriplePattern lowercorner_tp = lowerCorner.isA(PointType).andHas(hasGISCoordinateSystem,lowerCornerCoordinates);
@@ -144,14 +165,14 @@ public class DispSimSparql {
     	TriplePattern vupperxcoord_tp =  upperCornerXValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getUpperx());
     	TriplePattern vupperycoord_tp = upperCornerYValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getUppery());
     	
-    	// envelope done
+    	// scope done
     	// model grid information
     	TriplePattern[] nx_tp = SparqlGeneral.GetScalarTP(nx, nxValue, sim.getNx(), dimensionless);
     	TriplePattern[] ny_tp = SparqlGeneral.GetScalarTP(ny, nyValue, sim.getNy(), dimensionless);
     	TriplePattern[] numsub_tp = SparqlGeneral.GetScalarTP(numsub, numsubvalue, sim.getNumSubStations(), dimensionless);
     	
-    	TriplePattern[] combined_tp = {sim_tp,envelope_tp,lowercorner_tp,lowercoord_tp,lowerxcoord_tp,lowerycoord_tp,vlowerxcoord_tp,vlowerycoord_tp,
-    			uppercorner_tp,uppercoord_tp,upperxcoord_tp,upperycoord_tp,vupperxcoord_tp,vupperycoord_tp};
+    	TriplePattern[] combined_tp = {sim_tp,scope_tp,lowercorner_tp,lowercoord_tp,lowerxcoord_tp,lowerycoord_tp,vlowerxcoord_tp,vlowerycoord_tp,
+    			uppercorner_tp,uppercoord_tp,upperxcoord_tp,upperycoord_tp,vupperxcoord_tp,vupperycoord_tp,simCRS_tp,simCRSValue_tp,ScopeCRS_tp,ScopeCRSValue_tp};
     	
     	combined_tp = ArrayUtils.addAll(combined_tp, nx_tp);
     	combined_tp = ArrayUtils.addAll(combined_tp, ny_tp);
@@ -175,18 +196,18 @@ public class DispSimSparql {
 		Variable crs = SparqlBuilder.var(Region.keySrsname);
 		
 		// intermediate variables
-		Variable envelope = query.var();
+		Variable scope = query.var();
 		Variable lowerCornerCoordinates = query.var();
 		Variable upperCornerCoordinates = query.var();
 		
-		Iri[] sim2envelope_predicates = {hasEnvelope};
-		GraphPattern sim2envelope = SparqlGeneral.GetQueryGraphPattern(query, sim2envelope_predicates, null, sim_iri, envelope);
+		Iri[] sim2scope_predicates = {hasScope};
+		GraphPattern sim2envelope = SparqlGeneral.GetQueryGraphPattern(query, sim2scope_predicates, null, sim_iri, scope);
 		
-		Iri[] env2srs_predicates = {srsname};
-		GraphPattern env2srs = SparqlGeneral.GetQueryGraphPattern(query, env2srs_predicates, null, envelope, crs);
+		Iri[] scope2srs_predicates = {hasScopeCRS,hasValue,value};
+		GraphPattern scope2srs = SparqlGeneral.GetQueryGraphPattern(query, scope2srs_predicates, null, scope, crs);
 		
-		Iri[] envelope2lowercoord_predicates = {lowerCornerPoint,hasGISCoordinateSystem};
-		GraphPattern envelope2lowercoord = SparqlGeneral.GetQueryGraphPattern(query, envelope2lowercoord_predicates, null, envelope, lowerCornerCoordinates);
+		Iri[] scope2lowercoord_predicates = {hasLowerCornerPoint,hasGISCoordinateSystem};
+		GraphPattern scope2lowercoord = SparqlGeneral.GetQueryGraphPattern(query, scope2lowercoord_predicates, null, scope, lowerCornerCoordinates);
 		
 		Iri[] coord2x_predicates = {hasProjectedCoordinate_x,hasValue,numericalValue};
 		GraphPattern lower2x = SparqlGeneral.GetQueryGraphPattern(query, coord2x_predicates, null, lowerCornerCoordinates, lowerx);
@@ -194,13 +215,13 @@ public class DispSimSparql {
 		Iri[] coord2y_predicates = {hasProjectedCoordinate_y,hasValue,numericalValue};
 		GraphPattern lower2y = SparqlGeneral.GetQueryGraphPattern(query, coord2y_predicates, null, lowerCornerCoordinates, lowery);
 		
-		Iri[] envelope2uppercoord_predicates = {upperCornerPoint,hasGISCoordinateSystem};
-		GraphPattern envelope2uppercoord = SparqlGeneral.GetQueryGraphPattern(query, envelope2uppercoord_predicates, null, envelope, upperCornerCoordinates);
+		Iri[] scope2uppercoord_predicates = {hasUpperCornerPoint,hasGISCoordinateSystem};
+		GraphPattern scope2uppercoord = SparqlGeneral.GetQueryGraphPattern(query, scope2uppercoord_predicates, null, scope, upperCornerCoordinates);
 		
 		GraphPattern upper2x = SparqlGeneral.GetQueryGraphPattern(query, coord2x_predicates, null, upperCornerCoordinates, upperx);
 		GraphPattern upper2y = SparqlGeneral.GetQueryGraphPattern(query, coord2y_predicates, null, upperCornerCoordinates, uppery);
 		
-		GraphPattern queryPattern = GraphPatterns.and(sim2envelope,envelope2lowercoord,lower2x,lower2y,envelope2uppercoord,upper2x,upper2y,env2srs);
+		GraphPattern queryPattern = GraphPatterns.and(sim2envelope,scope2lowercoord,lower2x,lower2y,scope2uppercoord,upper2x,upper2y,scope2srs);
 		
 		query.prefix(prefixes).from(FromGraph).select(lowerx,lowery,upperx,uppery,crs).where(queryPattern);
 		JSONObject queryResult = SparqlGeneral.performQuery(query).getJSONObject(0);
@@ -242,7 +263,7 @@ public class DispSimSparql {
 		TriplePattern delete_tp = sim_iri.has(hasMainStation,oldmain);
 		sub.select(oldmain).where(delete_tp);
 		ModifyQuery deleteQuery = Queries.MODIFY();
-		deleteQuery.prefix(p_dispsim).with(sim_graph).where(sub).delete(delete_tp);
+		deleteQuery.prefix(p_dispsim).from(sim_graph).where(sub).delete(delete_tp);
 		SparqlGeneral.performUpdate(deleteQuery);
 		
 		//insert new station
@@ -350,5 +371,63 @@ public class DispSimSparql {
 		}
 		
 		return shipIRI;
+	}
+	
+	public static void AddDataPath(String sim_iri_string,String dataPath_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		
+		// ensure data path is a valid uri
+		Iri dataPath = iri(new File(dataPath_string).toURI().toString());
+		
+		// delete old datapath
+		Variable oldPath = SparqlBuilder.var("oldPath");
+		TriplePattern deleteTriple = sim_iri.has(hasDataPath,oldPath);
+		SubSelect sub = GraphPatterns.select();
+		sub.select(oldPath).where(deleteTriple);
+		
+		ModifyQuery deleteQuery = Queries.MODIFY();
+		
+		deleteQuery.prefix(p_dispsim).from(sim_graph).delete(deleteTriple).where(sub);
+		SparqlGeneral.performUpdate(deleteQuery);
+		
+		// insert new datapath
+		ModifyQuery insertQuery = Queries.MODIFY();
+		TriplePattern insertTriple = sim_iri.has(hasDataPath,dataPath);
+		insertQuery.prefix(p_dispsim).with(sim_graph).insert(insertTriple).where();
+		SparqlGeneral.performUpdate(insertQuery);
+	}
+	
+	public static String GetDataPath(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		
+		String queryKey = "datapath";
+		Variable datapath = SparqlBuilder.var(queryKey);
+		TriplePattern queryPattern = sim_iri.has(hasDataPath,datapath);
+		
+		SelectQuery query = Queries.SELECT();
+		query.from(FromGraph).select(datapath).where(queryPattern).prefix(p_dispsim);
+
+		String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
+		try {
+			String path = new URI(result).getPath();
+			return path;
+		} catch (URISyntaxException e) {
+			throw new JPSRuntimeException(e);
+		}
+	}
+	
+	public static String GetSimCRS(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		String queryKey = "crs";
+		Variable crs = SparqlBuilder.var(queryKey);
+		
+		SelectQuery query = Queries.SELECT();
+		Iri[] predicates = {hasSimCRS,hasValue,value};
+		GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, predicates, null, sim_iri,crs);
+		
+		query.from(FromGraph).select(crs).prefix(p_system,p_dispsim).where(queryPattern);
+		
+		String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
+		return result;
 	}
 }

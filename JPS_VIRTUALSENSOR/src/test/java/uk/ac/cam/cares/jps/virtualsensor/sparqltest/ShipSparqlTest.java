@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.virtualsensor.sparqltest;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -25,7 +26,7 @@ public class ShipSparqlTest extends TestCase {
      * @throws InterruptedException 
      */
     public void testCreateShip () throws InterruptedException {
-        String csvPath = AgentLocator.getPathToWorkingDir(this) + "/ship_latest_consolidated_plymouth.csv";
+        String csvPath = Paths.get(AgentLocator.getPathToWorkingDir(this), "ship_latest_consolidated_plymouth.csv").toString();
         String csvFile=new QueryBroker().readFileLocal(csvPath);
         List<String[]> csv_array = MatrixConverter.fromCsvToArray(csvFile);
         int mmsi, al, aw, ts, tst; double ss, cu, lat, lon; String type;

@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.virtualsensor.sparqltest;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
@@ -11,6 +12,12 @@ import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 public class DispSimSparqlTest extends TestCase{
 	String episode_iri = "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service";
     public void testInitSim() {
+    	String[] SimCRS = new String[5];
+    	SimCRS[0] = "EPSG:3414";
+    	SimCRS[1] = "EPSG:32648";
+    	SimCRS[2] = "EPSG:2326";
+    	SimCRS[3] = "EPSG:32650";
+    	SimCRS[4] = "EPSG:32630";
     	for (int i=1; i<6; i++) {
 	    	JSONObject jo_region = new JSONObject();
 	        Region.putRegion(jo_region, i);
@@ -22,6 +29,7 @@ public class DispSimSparqlTest extends TestCase{
 	    	sim.setNy(10);
 	    	sim.setNumSubStations(1);
 	    	sim.setServiceAgent(episode_iri);
+	    	sim.setSimCRS(SimCRS[i-1]);
 	    	DispSimSparql.InitSim(i, sim);
     	}
     }
@@ -82,5 +90,21 @@ public class DispSimSparqlTest extends TestCase{
     public void testGetServiceURL() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
     	DispSimSparql.GetServiceURL(sim_iri);
+    }
+    
+    public void testGetSimCRS() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.GetSimCRS(sim_iri);
+    }
+    
+    public void testAddDataPath() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	String dataPath = QueryBroker.getLocalDataPath();
+    	DispSimSparql.AddDataPath(sim_iri, dataPath);
+    }
+    
+    public void testGetDataPath() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.GetDataPath(sim_iri);
     }
 }

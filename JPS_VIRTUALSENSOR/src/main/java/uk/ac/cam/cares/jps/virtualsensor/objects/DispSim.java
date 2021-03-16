@@ -9,6 +9,7 @@ public class DispSim {
     private Scope sc;
     private int numSubStations;
     private String serviceAgent;
+    private String simCRS; // used for simulation
     
 	public int getNx() {
 		return nx;
@@ -45,5 +46,11 @@ public class DispSim {
 	}
 	public void setServiceAgent(String serviceAgent) {
 		this.serviceAgent = serviceAgent;
+	}
+	public String getSimCRS() {
+		return simCRS;
+	}
+	public void setSimCRS(String simCRS) {
+		this.simCRS = simCRS;
 	}
 }
