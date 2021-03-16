@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
  * File Based Knowledge Base Client. This class uses RDFConnection to load
@@ -38,7 +39,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author Casper Lindberg
  *
  */
-public class FileBasedKnowledgeBaseClient extends AbstractKnowledgeBaseClient {
+public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 
 	private Dataset dataset;
 	private RDFConnection conn;

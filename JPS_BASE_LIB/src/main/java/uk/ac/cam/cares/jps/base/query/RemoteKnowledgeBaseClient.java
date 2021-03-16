@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
  * This class allows to establish connection with remote knowledge repositories<p>
@@ -41,7 +42,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteKnowledgeBaseClient extends AbstractKnowledgeBaseClient {
+public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 
 	private static final String HTTP_PROTOCOL= "http:";
 	private static final String HTTPS_PROTOCOL = "https:";
