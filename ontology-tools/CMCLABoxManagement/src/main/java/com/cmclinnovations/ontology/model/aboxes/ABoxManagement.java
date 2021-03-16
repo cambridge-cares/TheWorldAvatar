@@ -85,8 +85,8 @@ public class ABoxManagement implements IABoxManagement{
 	public static final String SPACE = " ";
 	public static final String COLON = ":";
 	public static final String UNDERSCORE = "_";
-	public static final String BACKSLASH = "/";
-	public static final String FRONTSLASH = "\\";
+	public static final String FORWARD_SLASH = "/";
+	public static final String BACK_SLASH = "\\";
 	public static final String RDFS = "rdfs";
 	public static final String RDFS_LABEL = "label";
 	public static final String RDFS_COMMENT = "comment";
@@ -641,7 +641,7 @@ public class ABoxManagement implements IABoxManagement{
 		if(individualName!=null && (individualName.trim().startsWith("http://") || individualName.trim().startsWith("https://"))){
 			return ontoFactory.getOWLNamedIndividual(individualName.trim());
 		}
-		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat("#").concat(individualName));
+		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat(FORWARD_SLASH).concat(individualName));
 	}
 	
 	private OWLDataProperty createOWLDataProperty(OWLDataFactory dataFactory, String iri, String propertyName, String separator){
@@ -834,8 +834,8 @@ public class ABoxManagement implements IABoxManagement{
 				if(tokens.length>1){
 					return tokens[1];
 				}
-			} else if(result.contains(BACKSLASH)){
-				String[] tokens = result.split(BACKSLASH);
+			} else if(result.contains(FORWARD_SLASH)){
+				String[] tokens = result.split(FORWARD_SLASH);
 				if(tokens.length>1){
 					return tokens[tokens.length-1];
 				}
@@ -859,8 +859,8 @@ public class ABoxManagement implements IABoxManagement{
 		try{
 		if (resultLength > 32) {
 			if(result.substring(32)!=null){
-				if(result.substring(32).contains(BACKSLASH)){
-					String[] resultParts = result.substring(32).split(BACKSLASH);
+				if(result.substring(32).contains(FORWARD_SLASH)){
+					String[] resultParts = result.substring(32).split(FORWARD_SLASH);
 					if(resultParts.length>1){
 						return resultParts[resultParts.length-1];
 					}
@@ -911,7 +911,7 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return
 	 */
 	public String formQueryWithAStandardVocabulary(String vocabulary, String vocabURL, String object, String property) {
-		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(BACKSLASH+">\n")
+		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(FORWARD_SLASH+">\n")
 				.concat("PREFIX ").concat(vocabulary).concat(": <").concat(vocabURL).concat(">\n")
 				.concat("SELECT ?v WHERE {\n")
 				.concat("PropertyValue(base:").concat(object)
@@ -928,7 +928,7 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return
 	 */
 	public String formSubjectRetrievalQuery(String object, String property) {
-		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(BACKSLASH+">\n")
+		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(FORWARD_SLASH+">\n")
 				.concat("SELECT ?v WHERE {\n")
 				.concat("PropertyValue(?v, base:").concat(property).concat(", base:")
 				.concat(object).concat(")\n")
@@ -948,7 +948,7 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return the value of the property being searched
 	 */
 	public String formQueryWithBaseURL(String tBoxPrefix, String tBoxIri, String object, String queryItem){
-		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(BACKSLASH+">\n")
+		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(FORWARD_SLASH+">\n")
 				.concat("PREFIX ".concat(tBoxPrefix).concat(" <").concat(tBoxIri).concat("#>\n"))
 				.concat("SELECT ?v WHERE {\n")
 				.concat("PropertyValue(base:").concat(object)
@@ -982,7 +982,7 @@ public class ABoxManagement implements IABoxManagement{
 	 * @return
 	 */
 	public String formTypeQueryWithAnInstance(String instance) {
-		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(BACKSLASH+">\n")
+		String q = "PREFIX base: <".concat(ontologyIRI.toString()).concat(FORWARD_SLASH+">\n")
 				.concat("SELECT ?v WHERE {\n")
 				.concat("Type(base:").concat(instance).concat(", ")
 				.concat("?v")
