@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 
-import uk.ac.cam.cares.jps.base.query.AbstractKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
  * This tool clones a graph from one repository to another.
@@ -36,7 +36,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param targetGraph
 	 */
-	public static void clone(AbstractKnowledgeBaseClient sourceKB, String sourceGraph, AbstractKnowledgeBaseClient targetKB, String targetGraph) {
+	public static void clone(KnowledgeBaseClientInterface sourceKB, String sourceGraph, KnowledgeBaseClientInterface targetKB, String targetGraph) {
 	
 		//Get model using construct query
 		Query construct = buildSparqlConstruct(sourceGraph);

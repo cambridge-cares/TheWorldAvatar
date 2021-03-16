@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 public class SparqlOverHttpService {
 	
@@ -34,7 +35,7 @@ public class SparqlOverHttpService {
 	private String sparqlServiceURIForUpdate = null;
 	
 	// Declared the kbClient variable
-	private AbstractKnowledgeBaseClient kbClient;
+	private KnowledgeBaseClientInterface kbClient;
 	
 	public SparqlOverHttpService(String datasetUrl) {
 		
