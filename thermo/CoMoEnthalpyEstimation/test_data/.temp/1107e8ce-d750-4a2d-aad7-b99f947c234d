@@ -1,0 +1,71 @@
+Problem:    C2H6O
+Rows:       23
+Columns:    16
+Non-zeros:  76
+Status:     OPTIMAL
+Objective:  R0 = 52 (MINimum)
+
+   No.   Row name   St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 R0           B             52                             
+     2 R1           B           -0.5                           0 
+     3 R2           NU             0                           0           -26 
+     4 R3           B           -0.5                           0 
+     5 R4           NU             0                           0           -24 
+     6 R5           NU             0                           0         < eps
+     7 R6           NU             0                           0           -10 
+     8 R7           B           -1.5                           0 
+     9 R8           NU             0                           0           -18 
+    10 R9           B              0                           0 
+    11 R10          NU             0                           0           -18 
+    12 R11          NU             0                           0           -26 
+    13 R12          B             -2                           0 
+    14 R13          B              0                           0 
+    15 R14          NU             0                           0           -24 
+    16 R15          B              0                           0 
+    17 R16          NU             0                           0           -16 
+    18 R17          B              0             0             = 
+    19 R18          NS             0             0             =            -1 
+    20 R19          NS             0             0             =            -8 
+    21 R20          B              0             0             = 
+    22 R21          NS             0             0             =            -3 
+    23 main         NL             1             1                          52 
+
+   No. Column name  St   Activity     Lower bound   Upper bound    Marginal
+------ ------------ -- ------------- ------------- ------------- -------------
+     1 v[0]         B              1                             
+     2 v[2]         B          -0.75                             
+     3 v[1]         B              0                             
+     4 absV[7]      B              0                             
+     5 absV[6]      NF             0                                     < eps
+     6 absV[5]      B           0.25                             
+     7 absV[0]      B              1                             
+     8 absV[4]      B           0.25                             
+     9 absV[3]      NF             0                                     < eps
+    10 absV[2]      B           0.75                             
+    11 absV[1]      NF             0                                     < eps
+    12 v[4]         B          -0.25                             
+    13 v[3]         B              0                             
+    14 v[5]         B          -0.25                             
+    15 v[6]         B              0                             
+    16 v[7]         B              0                             
+
+Karush-Kuhn-Tucker optimality conditions:
+
+KKT.PE: max.abs.err = 2.78e-017 on row 3
+        max.rel.err = 1.85e-017 on row 3
+        High quality
+
+KKT.PB: max.abs.err = 1.78e-015 on row 21
+        max.rel.err = 1.78e-015 on row 21
+        High quality
+
+KKT.DE: max.abs.err = 3.55e-015 on column 3
+        max.rel.err = 1.08e-016 on column 15
+        High quality
+
+KKT.DB: max.abs.err = 3.55e-015 on column 5
+        max.rel.err = 3.55e-015 on column 5
+        High quality
+
+End of output

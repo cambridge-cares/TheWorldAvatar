@@ -1,1 +1,2 @@
-recursive-include py4jps/resources *
+include py4jps/resources/resources_registry.json
+recursive-include py4jps/resources/jpsBaseLib *

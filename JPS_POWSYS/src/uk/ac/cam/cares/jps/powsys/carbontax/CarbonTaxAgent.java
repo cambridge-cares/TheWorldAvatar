@@ -61,15 +61,14 @@ public class CarbonTaxAgent extends JPSAgent {
 	        String ENIRI = requestParams.getString("electricalnetwork");
 	        boolean w = InputValidator.checkIfValidIRI(ENIRI);
 	        return w;
-        } catch (JSONException ex) {
-        	ex.printStackTrace();
+        } catch (JSONException ex) 
+        {return false;
         }
-        return false;
     }
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		if (!validateInput(requestParams)) {
-			throw new JSONException ("CarbonTaxAgent input parameters invalid");
+			throw new JSONException ("CarbonTaxAgent: Input parameters not found.\n");
 		}
 		// put the template file
 		String newdir = QueryBroker.getLocalDataPath() + "/GAMS_CarbonTaxAgent";

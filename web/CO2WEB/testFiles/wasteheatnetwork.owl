@@ -1,0 +1,461 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.jparksimulator.com#"
+     xml:base="http://www.jparksimulator.com"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com#hasQuality -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com#hasQuality">
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergySink"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#EnergySinkQuality"/>
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergySource"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#EnergySourceQuality"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.jparksimulator.com#hasQuantity -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com#hasQuantity">
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergySink"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#EnergySinkQuantity"/>
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergySource"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#EnergySourceQuantity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.jparksimulator.com#hasSink -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com#hasSink">
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergyNetwork"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#EnergySink"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.jparksimulator.com#hasSource -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com#hasSource">
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergyNetwork"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#EnergySource"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.jparksimulator.com#hasSubsystem -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com#hasSubsystem">
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EcoIndustrialPark"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#EnergyNetwork"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.jparksimulator.com#isDesignedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com#isDesignedBy">
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergyNetwork"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#IntegrationMethodology"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.jparksimulator.com#isManagedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com#isManagedBy">
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergyNetwork"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#MathematicalProgrammingModel"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.jparksimulator.com#isRealizedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.jparksimulator.com#isRealizedBy">
+        <rdfs:domain rdf:resource="http://www.jparksimulator.com#EnergyNetwork"/>
+        <rdfs:range rdf:resource="http://www.jparksimulator.com#EnergyNetworkInfrastructure"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com#EcoIndustrialPark -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EcoIndustrialPark"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#EnergyNetwork -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EnergyNetwork"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#EnergyNetworkInfrastructure -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EnergyNetworkInfrastructure"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#EnergySink -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EnergySink"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#EnergySinkQuality -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EnergySinkQuality"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#EnergySinkQuantity -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EnergySinkQuantity"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#EnergySource -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EnergySource"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#EnergySourceQuality -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EnergySourceQuality"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#EnergySourceQuantity -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#EnergySourceQuantity"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#IntegrationMethodology -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#IntegrationMethodology"/>
+    
+
+
+    <!-- http://www.jparksimulator.com#MathematicalProgrammingModel -->
+
+    <owl:Class rdf:about="http://www.jparksimulator.com#MathematicalProgrammingModel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant1">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySink"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant1Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant1Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">140.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant1Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant1Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">1512.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant2">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySink"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant2Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant2Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">80.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant2Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant2Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">895.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant3">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySink"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant3Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant3Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">125.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant3Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant3Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">1645.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant4">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySink"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant4Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant4Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">240.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant4Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant4Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">1465.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant5">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySink"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant5Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant5Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">130.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SinkPlant5Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SinkPlant5Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySinkQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">994.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant1">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySource"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant1Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant1Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">120.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant1Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant1Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">5766.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant2">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySource"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant2Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant2Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">60.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant2Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant2Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">162.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant3">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySource"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant3Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant3Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">100.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant3Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant3Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">2164.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant4">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySource"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant4Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant4Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">185.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant4Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant4Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">2150.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant5 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant5">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySource"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant5Quality -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant5Quality">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuality"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">115.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com#SourcePlant5Quantity -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com#SourcePlant5Quantity">
+        <rdf:type rdf:resource="http://www.jparksimulator.com#EnergySourceQuantity"/>
+        <owl:topDataProperty rdf:datatype="&xsd;float">1467.0</owl:topDataProperty>
+    </owl:NamedIndividual>
+
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

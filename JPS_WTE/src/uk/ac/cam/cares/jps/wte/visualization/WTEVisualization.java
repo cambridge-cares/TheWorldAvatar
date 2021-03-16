@@ -34,7 +34,9 @@ public class WTEVisualization extends JPSAgent{
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-		validateInput(requestParams);
+		if (!validateInput(requestParams)) {
+			throw new JSONException("WTE:WTEVisualizationAgent: Input parameters not found.\n");
+		}
 		String iriofnetwork = requestParams.getString("wastenetwork");
 
 		String path = requestParams.getString("path");
@@ -67,8 +69,8 @@ public class WTEVisualization extends JPSAgent{
         		path.contains("queryOnsite");
         return InputValidator.checkIfValidIRI(iriofnetwork) & relevant;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
-        	throw new JSONException("wastenetwork not found");
+        	return false;
+        
         }
     }
 	/** get wastesite arrangement in input

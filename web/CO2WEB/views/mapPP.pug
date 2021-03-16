@@ -1,0 +1,47 @@
+extends header.pug
+
+block title
+    title  World Power Plants on Google Map
+
+block sheets
+    link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+    |World Power Plants on Google Map
+    span#readme-button
+        | ?    
+    span#readme-text
+        | We have visualised the coal, natural gas, diesel oil, nuclear and wind power plants obtained from the Global Energy Observatory website #[a(href='http://globalenergyobservatory.org') (http://globalenergyobservatory.org)]. 
+        br
+        br
+        | Upon clicking on the individual marker, a pop-up window containing the information about the selected power plant will appear. The information is (if available): 
+        br
+        br
+        ol
+            li Power plant’s coordinate
+            li Power plant’s country
+            li Name of power plant’s owner     
+            li Power plant’s capacity in MW
+            li Type of power plant
+            li Power plant’s main fuel type
+
+        
+block description
+    |The World Power Plants data is obtained from Global Energy Observatory (GEO)
+    |Only Coal, Natural Gas, Diesel Oil, Nuclear and Wind Powerplants are shown.
+    br
+    |Source for world power plant: http://globalenergyobservatory.org
+
+block content
+    div#wrapper
+        div.overlay-panel-wrapper
+
+    div#map
+
+    script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+    script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+    script(src="/javascripts/PopUpmap.js")
+    script(src="/javascripts/PPMap.js")
+    script(async defer src="https://maps.googleapis.com/maps/api/js?k" +
+    "ey=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -49,8 +50,8 @@ public class RenewableGeneratorRetrofit extends JPSAgent{
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 
-		if (validateInput(requestParams) == false) {
-			throw new JSONException("RenewableGenerator Retrofit Input Parameters invalid");
+		if (!validateInput(requestParams)) {
+			throw new JSONException("RenewableGeneratorRetrofitAgent:  Input Parameters invalid.");
 		}
 		JPSBaseLogger.info(this,"Reached ProcessRequestParameters");
 		String electricalNetwork = requestParams.getString("electricalnetwork");
@@ -84,10 +85,9 @@ public class RenewableGeneratorRetrofit extends JPSAgent{
 				return false;
 			}
 	        return w;
-        } catch (JSONException ex) {
-        	ex.printStackTrace();
+        } catch (JSONException e) {
+        	return false;
         }
-        return false;
     }
 	/** Queries for list of buses
 	 * Find the slack Bus (aka the one where the PV can be connected to

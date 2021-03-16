@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 
 @WebServlet(urlPatterns = { "/DESCoordination" })
 
@@ -30,7 +31,7 @@ public class DESCoordination extends JPSAgent{
  	        requestParams.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
  	        requestParams.put("cityIRI", "http://dbpedia.org/page/Singapore");
  	        requestParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
- 	        validateInput(requestParams);
+ 	        new DESAgentNew().validateInput(requestParams);
  	        AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData", requestParams.toString());
  	        AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", requestParams.toString());
  	 	      

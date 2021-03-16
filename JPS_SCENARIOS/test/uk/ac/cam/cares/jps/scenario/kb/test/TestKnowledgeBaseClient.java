@@ -62,7 +62,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 
 		String accept = null;
 		String result = KnowledgeBaseClient.get(null, path, accept);
-		assertEquals(body, result);
+		assertEquals(body, new JSONObject(result).get("result"));
 	}
 	
 	public void testPutAndGetRdfFileWithAcceptAndWithoutConversionForPath() {
@@ -70,7 +70,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		String body = putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.APPLICATION_RDF_XML.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
-		assertEquals(body, result);
+		assertEquals(body,  new JSONObject(result).get("result"));
 	}
 	
     private String complete(String path) {
@@ -82,7 +82,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.TEXT_TURTLE.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
-		assertEquals("@prefix", result.substring(0,7));
+		assertEquals("@prefix",  new JSONObject(result).getString("result").substring(0,7));
 	}
 	
 	public void testPutAndGetRdfFileWithAcceptAndConversionToJSONLD() {
@@ -90,15 +90,15 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.APPLICATION_LD_JSON.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
-		assertTrue(result.contains("@id"));
-		assertTrue(result.contains("@type"));
+		assertTrue( new JSONObject(result).getString("result").contains("@id"));
+		assertTrue( new JSONObject(result).getString("result").contains("@type"));
 	}
 	
 	public void internClientSparqlQueryDirect(String dataset, String target) {
 		putE303LoadRemoteKBCOnly(dataset, target, null);
 		String sparql = "SELECT ?s ?p ?o WHERE { ?s ?p <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerLoad> } ";
 		String result = KnowledgeBaseClient.query(dataset, target, sparql);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
 		assertEquals("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#E-303load", subject);
@@ -125,7 +125,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		String sparqlquery = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"SELECT ?s ?p ?o WHERE { ?s dcterms:created ?o } ";
 		String result = KnowledgeBaseClient.query(dataset, target, sparqlquery);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
 		assertEquals("http://example.com/zzz", subject);
@@ -150,7 +150,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 
 		String accept = null;
 		String result = KnowledgeBaseClient.get(datasetUrl, target, accept);
-		assertEquals(body, result);
+		assertEquals(body,new JSONObject(result).getString("result"));
 	}
 	
 	private void assertKnowledgeBaseAbstracQuery(InputStream inputStream) {

@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -29,23 +28,21 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 	public static final String EPISODE_PATH = "/episode/dispersion/coordination";
 	public static final String ADMS_PATH = "/adms/dispersion/coordination";
 
-	private JSONArray getNewWasteAsync(String reactionMechanism, JSONObject jsonShip) {
+	private void RunShipAsync(JSONArray jsonShip) {
 		JSONArray newwaste = new JSONArray();
-		ArrayList<CompletableFuture> wastes = new ArrayList<>();
-		JSONArray ships = jsonShip.getJSONObject("collection").getJSONArray("items");
-		int sizeofshipselected = ships.length();
+		ArrayList<CompletableFuture> wastes = new ArrayList<>();;
+		int sizeofshipselected = jsonShip.length();
 
 		for (int i = 0; i < sizeofshipselected; i++) {
 			logger.info("Ship AGENT called: " + i);
-			JSONObject jsonReactionShip = new JSONObject();
-			jsonReactionShip.put("reactionmechanism", reactionMechanism);
-			jsonReactionShip.put("ship", ships.getJSONObject(i));
+			JSONObject shiprequest = new JSONObject();
+			shiprequest.put("shipIRI", jsonShip.getString(i));
 
 			CompletableFuture<String> getAsync = CompletableFuture
-					.supplyAsync(() -> execute("/JPS_VIRTUALSENSOR/ShipAgent", jsonReactionShip.toString()));
+					.supplyAsync(() -> execute("/JPS_VIRTUALSENSOR/ShipAgent", shiprequest.toString()));
 
 			CompletableFuture<String> processAsync = getAsync
-					.thenApply(wasteResult -> new JSONObject(wasteResult).getString("waste"));
+					.thenApply(wasteResult -> new JSONObject(wasteResult).getString("shipIRI"));
 			wastes.add(processAsync);
 		}
 
@@ -56,8 +53,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		}
-
-		return newwaste;
 	}
 	
 	@Override
@@ -69,7 +64,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
 		String result;
 
-		// @TODO - improve weather update frequency
 		result = execute("/JPS_VIRTUALSENSOR/WeatherAgent", requestParams.getJSONObject("region").toString());
 
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
@@ -79,16 +73,11 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		String resultship = AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/ShipDataAgent", 
 				requestParams.getJSONObject("region").toString());
 
-		JSONObject jsonShip = new JSONObject(resultship);
+		JSONArray jsonShip = new JSONObject(resultship).getJSONArray(PARAM_KEY_SHIP);
 		requestParams.put(PARAM_KEY_SHIP, jsonShip);
 
-		if (((JSONArray) ((JSONObject) jsonShip.get("collection")).get("items")).length() != 0) {
-			String reactionMechanism = requestParams.optString("reactionmechanism");
-			JSONArray newwaste;
-
-			newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
-
-			requestParams.put("waste", newwaste);
+		if (jsonShip.length() != 0) {
+			RunShipAsync(jsonShip);
 
 			String resultPath = DISPERSION_PATH;
 			if (path.equals(ADMS_PATH)) {

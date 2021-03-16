@@ -1,0 +1,23 @@
+{
+  "name": "emitChangerTry",
+  "version": "0.9.2",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "./node_modules/.bin/mocha"
+  },
+  "dependencies": {
+    "async": "^2.4.1",
+    "chai": "^3.5.0",
+    "debug": "~2.6.0",
+    "express": "~4.14.1",
+    "mocha": "^3.2.0",
+    "nock": "^9.0.13",
+    "pug": "^2.0.0-beta11",
+    "request": "^2.81.0",
+    "serve-favicon": "~2.3.2",
+    "sinon": "^2.3.2",
+    "xml2js": "^0.4.17",
+    "xml2js-xpath": "^0.8.0"
+  }
+}

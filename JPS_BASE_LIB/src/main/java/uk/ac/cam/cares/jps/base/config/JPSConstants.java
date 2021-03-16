@@ -24,6 +24,13 @@ public interface JPSConstants {
 	
 	static String RUN_SIMULATION = "runsimulation";
 	
+	static String CONTENT = "body";
+	static String REQUESTURL = "requestUrl";
+	static String PATH = "path";
+	static String CONTENTTYPE = "contentType";
+	static String METHOD = "method";
+	static String HEADERS = "acceptHeaders";
+	
 	/**
 	 * If true then all read files are copied into the scenario bucket.
 	 * If false then copy-on-write, i.e. files are only copied into the scenario bucket if they are changed.

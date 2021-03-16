@@ -1,0 +1,69 @@
+#banner {
+    width: 900px;
+    height: 80px;
+    text-align: left;
+    margin: auto;
+}
+
+#banner #logo {
+    margin-top: 10px;
+    border-style: none;
+}
+
+/* Login Style */
+#banner-login form {
+    float: right;
+    padding: 0px;
+    margin: 0px;
+    color: #fff;
+    background-image:url('../images/login-bg.png');
+    background-repeat: repeat-x;
+    background-position: top;
+    font-size: 0.9em;
+}
+
+#banner-login span {
+    float: right;
+    padding: 7px;
+    margin: 0px;
+    color: #fff;
+    background-image:url('../images/login-bg.png');
+    background-repeat: repeat-x;
+    background-position: top;
+    font-size: 0.9em;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+#banner-login table {
+    border-spacing: 0px;
+    padding: 3px 6px 3px 6px;
+    margin: 0px;
+}
+
+#banner-login td, banner-#login tr {
+    border-spacing: 0px;
+    padding: 3px;
+    margin: 0px;
+}
+
+#banner-login input {
+    font-size: 1em;
+}
+
+#banner-login input.text {
+    width: 80px;
+    height: 15px;
+    font-size: 1em;
+    border: 1px solid #444;
+    margin-top: 3px;
+    border-radius: 2px;
+}
+
+#banner-login input.text:focus {
+    border: 1px solid #d85b0f;
+}
+
+#banner-login label {
+    font-size: 1em;
+}

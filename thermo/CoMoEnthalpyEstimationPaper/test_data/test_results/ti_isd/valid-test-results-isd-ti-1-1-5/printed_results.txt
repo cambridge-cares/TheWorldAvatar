@@ -1,0 +1,1448 @@
+REF: Processing 1 / 25
+ClOClO.g09: 
+REF: Processing 2 / 25
+Cl2O3.g09: 
+REF: Processing 3 / 25
+Cl2O4.g09: 
+REF: Processing 4 / 25
+Cl2O7.g09: 
+REF: Processing 5 / 25
+ClClO2.g09: 
+REF: Processing 6 / 25
+ClOO.g09: 
+REF: Processing 7 / 25
+ClOCl.g09: 
+REF: Processing 8 / 25
+ClO_2let.g09: 
+REF: Processing 9 / 25
+ClO3.g09: 
+REF: Processing 10 / 25
+ClOOCl.g09: 
+REF: Processing 11 / 25
+ClClO.g09: 
+REF: Processing 12 / 25
+Cl2O5.g09: 
+REF: Processing 13 / 25
+Cl2O6.g09: 
+REF: Processing 14 / 25
+ClO4_2let.g09: 
+REF: Processing 15 / 25
+OClO.g09: 
+REF: Processing 16 / 25
+O2_3let.g09: 
+REF: Processing 17 / 25
+Cl2.g09: 
+REF: Processing 18 / 25
+TiCl3.g09: 
+REF: Processing 19 / 25
+Ti(O)(Cl)2.g09: 
+REF: Processing 20 / 25
+TiCl2.g09: 
+REF: Processing 21 / 25
+TiCl.g09: 
+REF: Processing 22 / 25
+TiO2.g09: 
+REF: Processing 23 / 25
+TiO.g09: 
+REF: Processing 24 / 25
+TiCl4.g09: 
+REF: Processing 25 / 25
+Ti(Cl)(O).g09: 
+refSpecies.isEmpty() before solver (main method): false
+- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -
+Process configuration isg_runs1_res1_radicals5_1500s
+refSpecies.isEmpty()(getPreProcessingCorssValidation method i class DataPreProcessing) : false
+Estimating dHf(298.15K) for species ClOClO (1 / 25)
+Ref species name: ClOClO  ref species Hf: 175.5
+reactionList.size(): 1
+Species name for reaction list : ClOClO
+Writting complete reaction list...
+ Reaction(0): ClOClO: 1.0x"ClOClO" <-> 0.166667x"Cl2O7" + 0.833333x"ClOCl" Species (ref) enthalpy: 175.5 Calculated Hf for reaction(0): 145.0066546031041
+Median Reaction: ClOClO: 1.0x"ClOClO" <-> 0.166667x"Cl2O7" + 0.833333x"ClOCl" medianReaction species Hf: 175.5 : medianReaction.calculateHf(): 145.0066546031041[ Species name: ClOClO  Species (reference) enthalpy: 175.5 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O3 (2 / 25)
+Ref species name: Cl2O3  ref species Hf: 137.0
+reactionList.size(): 1
+Species name for reaction list : Cl2O3
+Writting complete reaction list...
+ Reaction(0): Cl2O3: 1.0x"Cl2O3" <-> 0.2x"Cl2O7" + 0.8x"ClOClO" Species (ref) enthalpy: 137.0 Calculated Hf for reaction(0): 151.41359999993819
+Median Reaction: Cl2O3: 1.0x"Cl2O3" <-> 0.2x"Cl2O7" + 0.8x"ClOClO" medianReaction species Hf: 137.0 : medianReaction.calculateHf(): 151.41359999993819[ Species name: Cl2O3  Species (reference) enthalpy: 137.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O4 (3 / 25)
+Ref species name: Cl2O4  ref species Hf: 186.1
+reactionList.size(): 1
+Species name for reaction list : Cl2O4
+Writting complete reaction list...
+ Reaction(0): Cl2O4: 1.0x"Cl2O4" <-> 0.4x"Cl2O7" + 0.6x"ClOClO" Species (ref) enthalpy: 186.1 Calculated Hf for reaction(0): 203.78520000044256
+Median Reaction: Cl2O4: 1.0x"Cl2O4" <-> 0.4x"Cl2O7" + 0.6x"ClOClO" medianReaction species Hf: 186.1 : medianReaction.calculateHf(): 203.78520000044256[ Species name: Cl2O4  Species (reference) enthalpy: 186.1 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O7 (4 / 25)
+Ref species name: Cl2O7  ref species Hf: 321.3
+reactionList.size(): 1
+Species name for reaction list : Cl2O7
+Writting complete reaction list...
+ Reaction(0): Cl2O7: 0.25x"ClOO" + 1.0x"Cl2O7" <-> 1.0x"Cl2O6" + 0.25x"ClO4_2let" + 0.25x"O2_3let" Species (ref) enthalpy: 321.3 Calculated Hf for reaction(0): 353.86592500017883
+Median Reaction: Cl2O7: 0.25x"ClOO" + 1.0x"Cl2O7" <-> 1.0x"Cl2O6" + 0.25x"ClO4_2let" + 0.25x"O2_3let" medianReaction species Hf: 321.3 : medianReaction.calculateHf(): 353.86592500017883[ Species name: Cl2O7  Species (reference) enthalpy: 321.3 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClClO2 (5 / 25)
+Ref species name: ClClO2  ref species Hf: 154.2
+reactionList.size(): 1
+Species name for reaction list : ClClO2
+Writting complete reaction list...
+ Reaction(0): ClClO2: 1.0x"ClClO2" <-> 2.0x"ClO_2let" Species (ref) enthalpy: 154.2 Calculated Hf for reaction(0): 245.25372000011177
+Median Reaction: ClClO2: 1.0x"ClClO2" <-> 2.0x"ClO_2let" medianReaction species Hf: 154.2 : medianReaction.calculateHf(): 245.25372000011177[ Species name: ClClO2  Species (reference) enthalpy: 154.2 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClOO (6 / 25)
+Ref species name: ClOO  ref species Hf: 98.0
+reactionList.size(): 1
+Species name for reaction list : ClOO
+Writting complete reaction list...
+ Reaction(0): ClOO: 1.0x"ClOO" + 0.166667x"Cl2O7" <-> 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" Species (ref) enthalpy: 98.0 Calculated Hf for reaction(0): 120.49334539652334
+Median Reaction: ClOO: 1.0x"ClOO" + 0.166667x"Cl2O7" <-> 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" medianReaction species Hf: 98.0 : medianReaction.calculateHf(): 120.49334539652334[ Species name: ClOO  Species (reference) enthalpy: 98.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClOCl (7 / 25)
+Ref species name: ClOCl  ref species Hf: 82.8
+reactionList.size(): 1
+Species name for reaction list : ClOCl
+Writting complete reaction list...
+ Reaction(0): ClOCl: 1.0x"ClOCl" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClOClO" Species (ref) enthalpy: 82.8 Calculated Hf for reaction(0): 104.66007499989198
+Median Reaction: ClOCl: 1.0x"ClOCl" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClOClO" medianReaction species Hf: 82.8 : medianReaction.calculateHf(): 104.66007499989198[ Species name: ClOCl  Species (reference) enthalpy: 82.8 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClO_2let (8 / 25)
+Ref species name: ClO_2let  ref species Hf: 101.62936
+reactionList.size(): 1
+Species name for reaction list : ClO_2let
+Writting complete reaction list...
+ Reaction(0): ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" Species (ref) enthalpy: 101.62936 Calculated Hf for reaction(0): 56.102499999944115
+Median Reaction: ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" medianReaction species Hf: 101.62936 : medianReaction.calculateHf(): 56.102499999944115[ Species name: ClO_2let  Species (reference) enthalpy: 101.62936 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClO3 (9 / 25)
+Ref species name: ClO3  ref species Hf: 201.0
+reactionList.size(): 1
+Species name for reaction list : ClO3
+Writting complete reaction list...
+ Reaction(0): ClO3: 1.0x"ClO3" <-> 0.166667x"ClClO2" + 0.666667x"ClO4_2let" Species (ref) enthalpy: 201.0 Calculated Hf for reaction(0): 196.49692374032122
+Median Reaction: ClO3: 1.0x"ClO3" <-> 0.166667x"ClClO2" + 0.666667x"ClO4_2let" medianReaction species Hf: 201.0 : medianReaction.calculateHf(): 196.49692374032122[ Species name: ClO3  Species (reference) enthalpy: 201.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClOOCl (10 / 25)
+Ref species name: ClOOCl  ref species Hf: 133.0
+reactionList.size(): 1
+Species name for reaction list : ClOOCl
+Writting complete reaction list...
+ Reaction(0): ClOOCl: 1.0x"ClOOCl" + 0.75x"ClO4_2let" + 0.75x"O2_3let" <-> 1.0x"Cl2O5" + 0.75x"ClOO" Species (ref) enthalpy: 133.0 Calculated Hf for reaction(0): 125.23022500032783
+Median Reaction: ClOOCl: 1.0x"ClOOCl" + 0.75x"ClO4_2let" + 0.75x"O2_3let" <-> 1.0x"Cl2O5" + 0.75x"ClOO" medianReaction species Hf: 133.0 : medianReaction.calculateHf(): 125.23022500032783[ Species name: ClOOCl  Species (reference) enthalpy: 133.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClClO (11 / 25)
+Ref species name: ClClO  ref species Hf: 90.0
+reactionList.size(): 1
+Species name for reaction list : ClClO
+Writting complete reaction list...
+ Reaction(0): ClClO: 0.25x"ClOO" + 1.0x"ClClO" <-> 0.25x"ClO4_2let" + 1.0x"Cl2" + 0.25x"O2_3let" Species (ref) enthalpy: 90.0 Calculated Hf for reaction(0): 100.9909250001788
+Median Reaction: ClClO: 0.25x"ClOO" + 1.0x"ClClO" <-> 0.25x"ClO4_2let" + 1.0x"Cl2" + 0.25x"O2_3let" medianReaction species Hf: 90.0 : medianReaction.calculateHf(): 100.9909250001788[ Species name: ClClO  Species (reference) enthalpy: 90.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O5 (12 / 25)
+Ref species name: Cl2O5  ref species Hf: 258.3
+reactionList.size(): 1
+Species name for reaction list : Cl2O5
+Writting complete reaction list...
+ Reaction(0): Cl2O5: 0.75x"ClOO" + 1.0x"Cl2O5" <-> 0.75x"ClO4_2let" + 1.0x"ClOOCl" + 0.75x"O2_3let" Species (ref) enthalpy: 258.3 Calculated Hf for reaction(0): 266.0697749996722
+Median Reaction: Cl2O5: 0.75x"ClOO" + 1.0x"Cl2O5" <-> 0.75x"ClO4_2let" + 1.0x"ClOOCl" + 0.75x"O2_3let" medianReaction species Hf: 258.3 : medianReaction.calculateHf(): 266.0697749996722[ Species name: Cl2O5  Species (reference) enthalpy: 258.3 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O6 (13 / 25)
+Ref species name: Cl2O6  ref species Hf: 278.5
+reactionList.size(): 1
+Species name for reaction list : Cl2O6
+Writting complete reaction list...
+ Reaction(0): Cl2O6: 1.0x"Cl2O6" <-> 0.8x"Cl2O7" + 0.2x"ClOClO" Species (ref) enthalpy: 278.5 Calculated Hf for reaction(0): 261.1394000005536
+Median Reaction: Cl2O6: 1.0x"Cl2O6" <-> 0.8x"Cl2O7" + 0.2x"ClOClO" medianReaction species Hf: 278.5 : medianReaction.calculateHf(): 261.1394000005536[ Species name: Cl2O6  Species (reference) enthalpy: 278.5 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClO4_2let (14 / 25)
+Ref species name: ClO4_2let  ref species Hf: 229.2832
+reactionList.size(): 1
+Species name for reaction list : ClO4_2let
+Writting complete reaction list...
+ Reaction(0): ClO4_2let: 1.0x"ClO4_2let" + 0.166667x"ClOCl" <-> 1.0x"ClO3" + 0.166667x"Cl2O7" Species (ref) enthalpy: 229.2832 Calculated Hf for reaction(0): 231.3756546028657
+Median Reaction: ClO4_2let: 1.0x"ClO4_2let" + 0.166667x"ClOCl" <-> 1.0x"ClO3" + 0.166667x"Cl2O7" medianReaction species Hf: 229.2832 : medianReaction.calculateHf(): 231.3756546028657[ Species name: ClO4_2let  Species (reference) enthalpy: 229.2832 ]
+Writting species list...
+Estimating dHf(298.15K) for species OClO (15 / 25)
+Ref species name: OClO  ref species Hf: 94.5584
+reactionList.size(): 1
+Species name for reaction list : OClO
+Writting complete reaction list...
+ Reaction(0): OClO: 1.0x"OClO" <-> 0.333333x"ClClO2" + 0.333333x"ClO4_2let" Species (ref) enthalpy: 94.5584 Calculated Hf for reaction(0): 65.96577625943848
+Median Reaction: OClO: 1.0x"OClO" <-> 0.333333x"ClClO2" + 0.333333x"ClO4_2let" medianReaction species Hf: 94.5584 : medianReaction.calculateHf(): 65.96577625943848[ Species name: OClO  Species (reference) enthalpy: 94.5584 ]
+Writting species list...
+Estimating dHf(298.15K) for species O2_3let (16 / 25)
+Ref species name: O2_3let  ref species Hf: 0.0
+reactionList.size(): 1
+Species name for reaction list : O2_3let
+Writting complete reaction list...
+ Reaction(0): O2_3let: 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" <-> 1.0x"ClOO" + 0.166667x"Cl2O7" Species (ref) enthalpy: 0.0 Calculated Hf for reaction(0): -22.493345396523353
+Median Reaction: O2_3let: 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" <-> 1.0x"ClOO" + 0.166667x"Cl2O7" medianReaction species Hf: 0.0 : medianReaction.calculateHf(): -22.493345396523353[ Species name: O2_3let  Species (reference) enthalpy: 0.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2 (17 / 25)
+Ref species name: Cl2  ref species Hf: 0.0
+reactionList.size(): 1
+Species name for reaction list : Cl2
+Writting complete reaction list...
+ Reaction(0): Cl2: 1.0x"Cl2" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClClO" Species (ref) enthalpy: 0.0 Calculated Hf for reaction(0): -10.990925000178812
+Median Reaction: Cl2: 1.0x"Cl2" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClClO" medianReaction species Hf: 0.0 : medianReaction.calculateHf(): -10.990925000178812[ Species name: Cl2  Species (reference) enthalpy: 0.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiCl3 (18 / 25)
+Ref species name: TiCl3  ref species Hf: -508.356
+reactionList.size(): 1
+Species name for reaction list : TiCl3
+Writting complete reaction list...
+ Reaction(0): TiCl3: 1.0x"TiCl3" <-> 0.333333x"TiCl" + 0.666667x"TiCl4" Species (ref) enthalpy: -508.356 Calculated Hf for reaction(0): -514.5350207990997
+Median Reaction: TiCl3: 1.0x"TiCl3" <-> 0.333333x"TiCl" + 0.666667x"TiCl4" medianReaction species Hf: -508.356 : medianReaction.calculateHf(): -514.5350207990997[ Species name: TiCl3  Species (reference) enthalpy: -508.356 ]
+Writting species list...
+Estimating dHf(298.15K) for species Ti(O)(Cl)2 (19 / 25)
+Ref species name: Ti(O)(Cl)2  ref species Hf: -593.2912
+reactionList.size(): 1
+Species name for reaction list : Ti(O)(Cl)2
+Writting complete reaction list...
+ Reaction(0): Ti(O)(Cl)2: 1.0x"Ti(O)(Cl)2" <-> 0.5x"TiO2" + 0.5x"TiCl4" Species (ref) enthalpy: -593.2912 Calculated Hf for reaction(0): -591.0400000001117
+Median Reaction: Ti(O)(Cl)2: 1.0x"Ti(O)(Cl)2" <-> 0.5x"TiO2" + 0.5x"TiCl4" medianReaction species Hf: -593.2912 : medianReaction.calculateHf(): -591.0400000001117[ Species name: Ti(O)(Cl)2  Species (reference) enthalpy: -593.2912 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiCl2 (20 / 25)
+Ref species name: TiCl2  ref species Hf: -205.016
+reactionList.size(): 1
+Species name for reaction list : TiCl2
+Writting complete reaction list...
+ Reaction(0): TiCl2: 1.0x"TiCl2" <-> 0.666667x"TiCl" + 0.333333x"TiCl4" Species (ref) enthalpy: -205.016 Calculated Hf for reaction(0): -203.0353792021445
+Median Reaction: TiCl2: 1.0x"TiCl2" <-> 0.666667x"TiCl" + 0.333333x"TiCl4" medianReaction species Hf: -205.016 : medianReaction.calculateHf(): -203.0353792021445[ Species name: TiCl2  Species (reference) enthalpy: -205.016 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiCl (21 / 25)
+Ref species name: TiCl  ref species Hf: 171.1256
+reactionList.size(): 1
+Species name for reaction list : TiCl
+Writting complete reaction list...
+ Reaction(0): TiCl: 0.5x"TiO2" + 1.0x"TiCl" <-> 0.5x"TiCl2" + 1.0x"TiO" Species (ref) enthalpy: 171.1256 Calculated Hf for reaction(0): 169.58349999964983
+Median Reaction: TiCl: 0.5x"TiO2" + 1.0x"TiCl" <-> 0.5x"TiCl2" + 1.0x"TiO" medianReaction species Hf: 171.1256 : medianReaction.calculateHf(): 169.58349999964983[ Species name: TiCl  Species (reference) enthalpy: 171.1256 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiO2 (22 / 25)
+Ref species name: TiO2  ref species Hf: -305.43
+reactionList.size(): 1
+Species name for reaction list : TiO2
+Writting complete reaction list...
+ Reaction(0): TiO2: 1.0x"TiCl" + 1.0x"TiO2" <-> 1.0x"TiO" + 1.0x"Ti(Cl)(O)" Species (ref) enthalpy: -305.43 Calculated Hf for reaction(0): -305.9430000004172
+Median Reaction: TiO2: 1.0x"TiCl" + 1.0x"TiO2" <-> 1.0x"TiO" + 1.0x"Ti(Cl)(O)" medianReaction species Hf: -305.43 : medianReaction.calculateHf(): -305.9430000004172[ Species name: TiO2  Species (reference) enthalpy: -305.43 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiO (23 / 25)
+Ref species name: TiO  ref species Hf: 54.39
+reactionList.size(): 1
+Species name for reaction list : TiO
+Writting complete reaction list...
+ Reaction(0): TiO: 1.0x"TiO" + 0.166667x"TiCl4" <-> 0.5x"TiO2" + 0.666667x"TiCl" Species (ref) enthalpy: 54.39 Calculated Hf for reaction(0): 53.12962079860054
+Median Reaction: TiO: 1.0x"TiO" + 0.166667x"TiCl4" <-> 0.5x"TiO2" + 0.666667x"TiCl" medianReaction species Hf: 54.39 : medianReaction.calculateHf(): 53.12962079860054[ Species name: TiO  Species (reference) enthalpy: 54.39 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiCl4 (24 / 25)
+Ref species name: TiCl4  ref species Hf: -763.16
+reactionList.size(): 1
+Species name for reaction list : TiCl4
+Writting complete reaction list...
+ Reaction(0): TiCl4: 0.5x"TiCl" + 1.0x"TiCl4" <-> 1.5x"TiCl3" Species (ref) enthalpy: -763.16 Calculated Hf for reaction(0): -752.0792999999255
+Median Reaction: TiCl4: 0.5x"TiCl" + 1.0x"TiCl4" <-> 1.5x"TiCl3" medianReaction species Hf: -763.16 : medianReaction.calculateHf(): -752.0792999999255[ Species name: TiCl4  Species (reference) enthalpy: -763.16 ]
+Writting species list...
+Estimating dHf(298.15K) for species Ti(Cl)(O) (25 / 25)
+Ref species name: Ti(Cl)(O)  ref species Hf: -286.2844
+reactionList.size(): 1
+Species name for reaction list : Ti(Cl)(O)
+Writting complete reaction list...
+ Reaction(0): Ti(Cl)(O): 1.0x"Ti(Cl)(O)" <-> 0.5x"TiO2" + 0.166667x"TiCl4" + 0.333333x"TiCl" Species (ref) enthalpy: -286.2844 Calculated Hf for reaction(0): -284.51102079771766
+Median Reaction: Ti(Cl)(O): 1.0x"Ti(Cl)(O)" <-> 0.5x"TiO2" + 0.166667x"TiCl4" + 0.333333x"TiCl" medianReaction species Hf: -286.2844 : medianReaction.calculateHf(): -284.51102079771766[ Species name: Ti(Cl)(O)  Species (reference) enthalpy: -286.2844 ]
+Writting species list...
+Valid reactions writing . . . 
+Reaction: Cl2O3: 1.0x"Cl2O3" <-> 0.2x"Cl2O7" + 0.8x"ClOClO" Calc enthalpy: 151.41359999993819 Ref enthalpy: 137.0 (error: 14.413599999938185 )
+Reaction: Cl2O4: 1.0x"Cl2O4" <-> 0.4x"Cl2O7" + 0.6x"ClOClO" Calc enthalpy: 203.78520000044256 Ref enthalpy: 186.1 (error: 17.685200000442563 )
+Reaction: ClO3: 1.0x"ClO3" <-> 0.166667x"ClClO2" + 0.666667x"ClO4_2let" Calc enthalpy: 196.49692374032122 Ref enthalpy: 201.0 (error: 4.503076259678778 )
+Reaction: ClOOCl: 1.0x"ClOOCl" + 0.75x"ClO4_2let" + 0.75x"O2_3let" <-> 1.0x"Cl2O5" + 0.75x"ClOO" Calc enthalpy: 125.23022500032783 Ref enthalpy: 133.0 (error: 7.7697749996721654 )
+Reaction: ClClO: 0.25x"ClOO" + 1.0x"ClClO" <-> 0.25x"ClO4_2let" + 1.0x"Cl2" + 0.25x"O2_3let" Calc enthalpy: 100.9909250001788 Ref enthalpy: 90.0 (error: 10.990925000178805 )
+Reaction: Cl2O5: 0.75x"ClOO" + 1.0x"Cl2O5" <-> 0.75x"ClO4_2let" + 1.0x"ClOOCl" + 0.75x"O2_3let" Calc enthalpy: 266.0697749996722 Ref enthalpy: 258.3 (error: 7.7697749996721654 )
+Reaction: Cl2O6: 1.0x"Cl2O6" <-> 0.8x"Cl2O7" + 0.2x"ClOClO" Calc enthalpy: 261.1394000005536 Ref enthalpy: 278.5 (error: 17.36059999944638 )
+Reaction: ClO4_2let: 1.0x"ClO4_2let" + 0.166667x"ClOCl" <-> 1.0x"ClO3" + 0.166667x"Cl2O7" Calc enthalpy: 231.3756546028657 Ref enthalpy: 229.2832 (error: 2.0924546028657005 )
+Reaction: Cl2: 1.0x"Cl2" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClClO" Calc enthalpy: -10.990925000178812 Ref enthalpy: 0.0 (error: 10.990925000178812 )
+Reaction: TiCl3: 1.0x"TiCl3" <-> 0.333333x"TiCl" + 0.666667x"TiCl4" Calc enthalpy: -514.5350207990997 Ref enthalpy: -508.356 (error: 6.179020799099703 )
+Reaction: Ti(O)(Cl)2: 1.0x"Ti(O)(Cl)2" <-> 0.5x"TiO2" + 0.5x"TiCl4" Calc enthalpy: -591.0400000001117 Ref enthalpy: -593.2912 (error: 2.2511999998882857 )
+Reaction: TiCl2: 1.0x"TiCl2" <-> 0.666667x"TiCl" + 0.333333x"TiCl4" Calc enthalpy: -203.0353792021445 Ref enthalpy: -205.016 (error: 1.9806207978554937 )
+Reaction: TiCl: 0.5x"TiO2" + 1.0x"TiCl" <-> 0.5x"TiCl2" + 1.0x"TiO" Calc enthalpy: 169.58349999964983 Ref enthalpy: 171.1256 (error: 1.5421000003501604 )
+Reaction: TiO2: 1.0x"TiCl" + 1.0x"TiO2" <-> 1.0x"TiO" + 1.0x"Ti(Cl)(O)" Calc enthalpy: -305.9430000004172 Ref enthalpy: -305.43 (error: 0.5130000004172075 )
+Reaction: TiO: 1.0x"TiO" + 0.166667x"TiCl4" <-> 0.5x"TiO2" + 0.666667x"TiCl" Calc enthalpy: 53.12962079860054 Ref enthalpy: 54.39 (error: 1.2603792013994592 )
+Reaction: TiCl4: 0.5x"TiCl" + 1.0x"TiCl4" <-> 1.5x"TiCl3" Calc enthalpy: -752.0792999999255 Ref enthalpy: -763.16 (error: 11.080700000074444 )
+Reaction: Ti(Cl)(O): 1.0x"Ti(Cl)(O)" <-> 0.5x"TiO2" + 0.166667x"TiCl4" + 0.333333x"TiCl" Calc enthalpy: -284.51102079771766 Ref enthalpy: -286.2844 (error: 1.7733792022823422 )
+Invalid reactions writing . . .
+Reaction: ClOClO: 1.0x"ClOClO" <-> 0.166667x"Cl2O7" + 0.833333x"ClOCl" Calc enthalpy: 145.0066546031041 Ref enthalpy: 175.5 (error: 30.493345396895904 )
+Reaction: Cl2O7: 0.25x"ClOO" + 1.0x"Cl2O7" <-> 1.0x"Cl2O6" + 0.25x"ClO4_2let" + 0.25x"O2_3let" Calc enthalpy: 353.86592500017883 Ref enthalpy: 321.3 (error: 32.56592500017882 )
+Reaction: ClClO2: 1.0x"ClClO2" <-> 2.0x"ClO_2let" Calc enthalpy: 245.25372000011177 Ref enthalpy: 154.2 (error: 91.05372000011178 )
+Reaction: ClOO: 1.0x"ClOO" + 0.166667x"Cl2O7" <-> 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" Calc enthalpy: 120.49334539652334 Ref enthalpy: 98.0 (error: 22.49334539652334 )
+Reaction: ClOCl: 1.0x"ClOCl" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClOClO" Calc enthalpy: 104.66007499989198 Ref enthalpy: 82.8 (error: 21.860074999891978 )
+Reaction: ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" Calc enthalpy: 56.102499999944115 Ref enthalpy: 101.62936 (error: 45.52686000005589 )
+Reaction: OClO: 1.0x"OClO" <-> 0.333333x"ClClO2" + 0.333333x"ClO4_2let" Calc enthalpy: 65.96577625943848 Ref enthalpy: 94.5584 (error: 28.59262374056152 )
+Reaction: O2_3let: 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" <-> 1.0x"ClOO" + 0.166667x"Cl2O7" Calc enthalpy: -22.493345396523353 Ref enthalpy: 0.0 (error: 22.493345396523353 )
+Valid species writing . . . 
+Species name: Cl2O3
+Species name: Cl2O4
+Species name: ClO3
+Species name: ClOOCl
+Species name: ClClO
+Species name: Cl2O5
+Species name: Cl2O6
+Species name: ClO4_2let
+Species name: Cl2
+Species name: TiCl3
+Species name: Ti(O)(Cl)2
+Species name: TiCl2
+Species name: TiCl
+Species name: TiO2
+Species name: TiO
+Species name: TiCl4
+Species name: Ti(Cl)(O)
+Invalid species writing . . .
+Species name: ClOClO
+Species name: Cl2O7
+Species name: ClClO2
+Species name: ClOO
+Species name: ClOCl
+Species name: ClO_2let
+Species name: OClO
+Species name: O2_3let
+- - - -  - - - Unique species names from invalid reactions:  - - - - - -  - - - - - - 
+Species name: ClClO2
+Species name: ClOCl
+Species name: ClOO
+Species name: O2_3let
+Species name: ClOClO
+Species name: ClO_2let
+Species name: Cl2O7
+Species name: OClO
+- - - -  - - -  Species names from invalid reactions and their error bars: - - - - - -  - - - - - - 
+Species name: ClClO2 , error bar: 91.05372000011178
+Species name: ClOCl , error bar: 21.860074999891978
+Species name: ClOO , error bar: 22.49334539652334
+Species name: O2_3let , error bar: 22.493345396523353
+Species name: ClOClO , error bar: 30.493345396895904
+Species name: ClO_2let , error bar: 45.52686000005589
+Species name: Cl2O7 , error bar: 32.56592500017882
+Species name: OClO , error bar: 28.59262374056152
+-----------------Species from invalid (rejected) list with error bar: 
+ClClO2 91.05372000011178
+ClOCl 21.860074999891978
+ClOO 22.49334539652334
+O2_3let 22.493345396523353
+ClOClO 30.493345396895904
+ClO_2let 45.52686000005589
+Cl2O7 32.56592500017882
+OClO 28.59262374056152
+Sorted species compared by error bars:
+ClClO2 91.05372000011178
+ClO_2let 45.52686000005589
+Cl2O7 32.56592500017882
+ClOClO 30.493345396895904
+OClO 28.59262374056152
+O2_3let 22.493345396523353
+ClOO 22.49334539652334
+ClOCl 21.860074999891978
+- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -
+Loop number: 1 Iteration number: 1 in Initial analysis of species: ClClO2
+Iteration number: 1
+Species reference list used in loop (1) and interation (1):
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+Soi species name: ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2]
+targetSpeciesEnthalpy: 154.2
+After updated Hf: 
+Species of interest (target species): ClClO2 , 0.0 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2]
+REF: Processing 1 / 18
+Cl2O3.g09: 
+REF: Processing 2 / 18
+Cl2O4.g09: 
+REF: Processing 3 / 18
+ClO3.g09: 
+REF: Processing 4 / 18
+ClOOCl.g09: 
+REF: Processing 5 / 18
+ClClO.g09: 
+REF: Processing 6 / 18
+Cl2O5.g09: 
+REF: Processing 7 / 18
+Cl2O6.g09: 
+REF: Processing 8 / 18
+ClO4_2let.g09: 
+REF: Processing 9 / 18
+Cl2.g09: 
+REF: Processing 10 / 18
+TiCl3.g09: 
+REF: Processing 11 / 18
+Ti(O)(Cl)2.g09: 
+REF: Processing 12 / 18
+TiCl2.g09: 
+REF: Processing 13 / 18
+TiCl.g09: 
+REF: Processing 14 / 18
+TiO2.g09: 
+REF: Processing 15 / 18
+TiO.g09: 
+REF: Processing 16 / 18
+TiCl4.g09: 
+REF: Processing 17 / 18
+Ti(Cl)(O).g09: 
+REF: Processing 18 / 18
+ClClO2.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species ClClO2 (1 / 1)
+rList:
+Species name : ClClO2 enthalpy: 0.0
+reactionList.size(): 1
+Species name : ClClO2 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: ClClO2 =  Target species name : ClClO2 Median species enthalpy: 160.26350405989388
+target species name: ClClO2 ,  target ref enthalpy: 154.2
+ Reaction(0): ClClO2: 1.0x"ClClO2" + 1.33333x"Cl2O5" <-> 2.0x"ClO3" + 1.33333x"ClOOCl" Species (target ref) enthalpy: 154.2 Calculated Hf for reaction(0): 160.26350405989388 error: 6.063504059893887
+species name: ClClO2 error bar: 6.063504059893887
+Writting species list...
+TTIP Species: 
+ClClO2 154.2
+Loop number: 1 Iteration number: 2 in Initial analysis of species: ClO_2let
+Iteration number: 2
+Species reference list used in loop (1) and interation (2):
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+ClO_2let , 101.62936 , -1405319.262 , {O1=O, Cl1=Cl}[[Cl]{1}[O]]
+Soi species name: ClO_2let , 101.62936 , -1405319.262 , {O1=O, Cl1=Cl} , [[Cl]{1}[O]]
+targetSpeciesEnthalpy: 101.62936
+After updated Hf: 
+Species of interest (target species): ClO_2let , 0.0 , -1405319.262 , {O1=O, Cl1=Cl} , [[Cl]{1}[O]]
+REF: Processing 1 / 19
+Cl2O3.g09: 
+REF: Processing 2 / 19
+Cl2O4.g09: 
+REF: Processing 3 / 19
+ClClO2.g09: 
+REF: Processing 4 / 19
+ClO3.g09: 
+REF: Processing 5 / 19
+ClOOCl.g09: 
+REF: Processing 6 / 19
+ClClO.g09: 
+REF: Processing 7 / 19
+Cl2O5.g09: 
+REF: Processing 8 / 19
+Cl2O6.g09: 
+REF: Processing 9 / 19
+ClO4_2let.g09: 
+REF: Processing 10 / 19
+Cl2.g09: 
+REF: Processing 11 / 19
+TiCl3.g09: 
+REF: Processing 12 / 19
+Ti(O)(Cl)2.g09: 
+REF: Processing 13 / 19
+TiCl2.g09: 
+REF: Processing 14 / 19
+TiCl.g09: 
+REF: Processing 15 / 19
+TiO2.g09: 
+REF: Processing 16 / 19
+TiO.g09: 
+REF: Processing 17 / 19
+TiCl4.g09: 
+REF: Processing 18 / 19
+Ti(Cl)(O).g09: 
+REF: Processing 19 / 19
+ClO_2let.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species ClO_2let (1 / 1)
+rList:
+Species name : ClO_2let enthalpy: 0.0
+reactionList.size(): 1
+Species name : ClO_2let enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: ClO_2let =  Target species name : ClO_2let Median species enthalpy: 56.102499999944115
+target species name: ClO_2let ,  target ref enthalpy: 101.62936
+ Reaction(0): ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" Species (target ref) enthalpy: 101.62936 Calculated Hf for reaction(0): 56.102499999944115 error: 45.52686000005589
+species name: ClO_2let error bar: 45.52686000005589
+Writting species list...
+TTIP Species: 
+ClO_2let 101.62936
+Loop number: 1 Iteration number: 3 in Initial analysis of species: Cl2O7
+Iteration number: 3
+Species reference list used in loop (1) and interation (3):
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+Soi species name: Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl} , [[Cl]{1}[O] x 8]
+targetSpeciesEnthalpy: 321.3
+After updated Hf: 
+Species of interest (target species): Cl2O7 , 0.0 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl} , [[Cl]{1}[O] x 8]
+REF: Processing 1 / 19
+Cl2O3.g09: 
+REF: Processing 2 / 19
+Cl2O4.g09: 
+REF: Processing 3 / 19
+ClClO2.g09: 
+REF: Processing 4 / 19
+ClO3.g09: 
+REF: Processing 5 / 19
+ClOOCl.g09: 
+REF: Processing 6 / 19
+ClClO.g09: 
+REF: Processing 7 / 19
+Cl2O5.g09: 
+REF: Processing 8 / 19
+Cl2O6.g09: 
+REF: Processing 9 / 19
+ClO4_2let.g09: 
+REF: Processing 10 / 19
+Cl2.g09: 
+REF: Processing 11 / 19
+TiCl3.g09: 
+REF: Processing 12 / 19
+Ti(O)(Cl)2.g09: 
+REF: Processing 13 / 19
+TiCl2.g09: 
+REF: Processing 14 / 19
+TiCl.g09: 
+REF: Processing 15 / 19
+TiO2.g09: 
+REF: Processing 16 / 19
+TiO.g09: 
+REF: Processing 17 / 19
+TiCl4.g09: 
+REF: Processing 18 / 19
+Ti(Cl)(O).g09: 
+REF: Processing 19 / 19
+Cl2O7.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species Cl2O7 (1 / 1)
+rList:
+Species name : Cl2O7 enthalpy: 0.0
+reactionList.size(): 1
+Species name : Cl2O7 enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: Cl2O7 =  Target species name : Cl2O7 Median species enthalpy: 347.6432762590566
+target species name: Cl2O7 ,  target ref enthalpy: 321.3
+ Reaction(0): Cl2O7: 1.0x"Cl2O7" + 0.166667x"ClClO2" <-> 0.333333x"ClO4_2let" + 1.0x"Cl2O6" Species (target ref) enthalpy: 321.3 Calculated Hf for reaction(0): 347.6432762590566 error: 26.34327625905661
+species name: Cl2O7 error bar: 26.34327625905661
+Writting species list...
+TTIP Species: 
+Cl2O7 321.3
+Loop number: 1 Iteration number: 4 in Initial analysis of species: ClOClO
+Iteration number: 4
+Species reference list used in loop (1) and interation (4):
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Soi species name: ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 3]
+targetSpeciesEnthalpy: 175.5
+After updated Hf: 
+Species of interest (target species): ClOClO , 0.0 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 3]
+REF: Processing 1 / 20
+Cl2O3.g09: 
+REF: Processing 2 / 20
+Cl2O4.g09: 
+REF: Processing 3 / 20
+Cl2O7.g09: 
+REF: Processing 4 / 20
+ClClO2.g09: 
+REF: Processing 5 / 20
+ClO3.g09: 
+REF: Processing 6 / 20
+ClOOCl.g09: 
+REF: Processing 7 / 20
+ClClO.g09: 
+REF: Processing 8 / 20
+Cl2O5.g09: 
+REF: Processing 9 / 20
+Cl2O6.g09: 
+REF: Processing 10 / 20
+ClO4_2let.g09: 
+REF: Processing 11 / 20
+Cl2.g09: 
+REF: Processing 12 / 20
+TiCl3.g09: 
+REF: Processing 13 / 20
+Ti(O)(Cl)2.g09: 
+REF: Processing 14 / 20
+TiCl2.g09: 
+REF: Processing 15 / 20
+TiCl.g09: 
+REF: Processing 16 / 20
+TiO2.g09: 
+REF: Processing 17 / 20
+TiO.g09: 
+REF: Processing 18 / 20
+TiCl4.g09: 
+REF: Processing 19 / 20
+Ti(Cl)(O).g09: 
+REF: Processing 20 / 20
+ClOClO.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species ClOClO (1 / 1)
+rList:
+Species name : ClOClO enthalpy: 0.0
+reactionList.size(): 1
+Species name : ClOClO enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: ClOClO =  Target species name : ClOClO Median species enthalpy: 152.1037237409173
+target species name: ClOClO ,  target ref enthalpy: 175.5
+ Reaction(0): ClOClO: 1.0x"ClOClO" + 0.333333x"ClO4_2let" <-> 1.0x"Cl2O3" + 0.166667x"ClClO2" Species (target ref) enthalpy: 175.5 Calculated Hf for reaction(0): 152.1037237409173 error: 23.396276259082697
+species name: ClOClO error bar: 23.396276259082697
+Writting species list...
+TTIP Species: 
+ClOClO 175.5
+Loop number: 1 Iteration number: 5 in Initial analysis of species: OClO
+Iteration number: 5
+Species reference list used in loop (1) and interation (5):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+OClO , 94.5584 , -1602556.172 , {O1=O, O2=O, Cl1=Cl}[[Cl]{1}[O] x 2]
+Soi species name: OClO , 94.5584 , -1602556.172 , {O1=O, O2=O, Cl1=Cl} , [[Cl]{1}[O] x 2]
+targetSpeciesEnthalpy: 94.5584
+After updated Hf: 
+Species of interest (target species): OClO , 0.0 , -1602556.172 , {O1=O, O2=O, Cl1=Cl} , [[Cl]{1}[O] x 2]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+OClO.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species OClO (1 / 1)
+rList:
+Species name : OClO enthalpy: 0.0
+reactionList.size(): 1
+Species name : OClO enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: OClO =  Target species name : OClO Median species enthalpy: 65.96577625943848
+target species name: OClO ,  target ref enthalpy: 94.5584
+ Reaction(0): OClO: 1.0x"OClO" <-> 0.333333x"ClO4_2let" + 0.333333x"ClClO2" Species (target ref) enthalpy: 94.5584 Calculated Hf for reaction(0): 65.96577625943848 error: 28.59262374056152
+species name: OClO error bar: 28.59262374056152
+Writting species list...
+TTIP Species: 
+OClO 94.5584
+Loop number: 1 Iteration number: 6 in Initial analysis of species: O2_3let
+Iteration number: 6
+Species reference list used in loop (1) and interation (6):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+O2_3let , 0.0 , -394667.7885 , {O1=O, O2=O}[[O]{2}[O]]
+Soi species name: O2_3let , 0.0 , -394667.7885 , {O1=O, O2=O} , [[O]{2}[O]]
+targetSpeciesEnthalpy: 0.0
+After updated Hf: 
+Species of interest (target species): O2_3let , 0.0 , -394667.7885 , {O1=O, O2=O} , [[O]{2}[O]]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+O2_3let.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species O2_3let (1 / 1)
+rList:
+No data were calculated for O2_3let
+Loop number: 1 Iteration number: 7 in Initial analysis of species: ClOO
+Iteration number: 7
+Species reference list used in loop (1) and interation (7):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+ClOO , 98.0 , -1602678.297 , {O1=O, O2=O, Cl1=Cl}[[O]{2}[O]]
+Soi species name: ClOO , 98.0 , -1602678.297 , {O1=O, O2=O, Cl1=Cl} , [[O]{2}[O]]
+targetSpeciesEnthalpy: 98.0
+After updated Hf: 
+Species of interest (target species): ClOO , 0.0 , -1602678.297 , {O1=O, O2=O, Cl1=Cl} , [[O]{2}[O]]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+ClOO.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species ClOO (1 / 1)
+rList:
+No data were calculated for ClOO
+Loop number: 1 Iteration number: 8 in Initial analysis of species: ClOCl
+Iteration number: 8
+Species reference list used in loop (1) and interation (8):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+ClOCl , 82.8 , -2613441.678 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+Soi species name: ClOCl , 82.8 , -2613441.678 , {O1=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2]
+targetSpeciesEnthalpy: 82.8
+After updated Hf: 
+Species of interest (target species): ClOCl , 0.0 , -2613441.678 , {O1=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+ClOCl.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species ClOCl (1 / 1)
+rList:
+Species name : ClOCl enthalpy: 0.0
+reactionList.size(): 1
+Species name : ClOCl enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: ClOCl =  Target species name : ClOCl Median species enthalpy: 110.88272374054849
+target species name: ClOCl ,  target ref enthalpy: 82.8
+ Reaction(0): ClOCl: 0.333333x"ClO4_2let" + 1.0x"ClOCl" <-> 0.166667x"ClClO2" + 1.0x"ClOClO" Species (target ref) enthalpy: 82.8 Calculated Hf for reaction(0): 110.88272374054849 error: 28.082723740548488
+species name: ClOCl error bar: 28.082723740548488
+Writting species list...
+TTIP Species: 
+ClOCl 82.8
+Updated valid set of species after (1.) loop through the set of invalid species in initial analysis:
+1. species name: Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 4]
+2. species name: Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 5]
+3. species name: ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl} , [[Cl]{1}[O] x 3]
+4. species name: ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2, [O]{1}[O]]
+5. species name: ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O], [Cl]{1}[Cl]]
+6. species name: Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 5, [O]{1}[O]]
+7. species name: Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 7]
+8. species name: ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl} , [[Cl]{1}[O] x 4]
+9. species name: Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl} , [[Cl]{1}[Cl]]
+10. species name: TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti} , [[Cl]{1}[Ti] x 3]
+11. species name: Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti} , [[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+12. species name: TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti} , [[Cl]{1}[Ti] x 2]
+13. species name: TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti} , [[Cl]{1}[Ti]]
+14. species name: TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti} , [[O]{2}[Ti] x 2]
+15. species name: TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti} , [[O]{2}[Ti]]
+16. species name: TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti} , [[Cl]{1}[Ti] x 4]
+17. species name: Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti} , [[Cl]{1}[Ti], [O]{2}[Ti]]
+18. species name: ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2]
+19. species name: Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl} , [[Cl]{1}[O] x 8]
+20. species name: ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 3]
+Invalid species file after (1.) loop through invalid species list with error bar . . .
+Species name: ClOO
+Species name: ClOCl
+Species name: ClO_2let
+Species name: OClO
+Species name: O2_3let
+addedSpeciesToValidSet: true
+After (1.) loop the set of invalid species is:
+ClOO 0.0
+ClOCl 82.8
+ClO_2let 101.62936
+OClO 94.5584
+O2_3let 0.0
+Loop number: 2 Iteration number: 1 in Initial analysis of species: ClClO2
+Species skipped: ClClO2
+Loop number: 2 Iteration number: 1 in Initial analysis of species: ClO_2let
+Iteration number: 1
+Species reference list used in loop (2) and interation (1):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+ClO_2let , 101.62936 , -1405319.262 , {O1=O, Cl1=Cl}[[Cl]{1}[O]]
+Soi species name: ClO_2let , 101.62936 , -1405319.262 , {O1=O, Cl1=Cl} , [[Cl]{1}[O]]
+targetSpeciesEnthalpy: 101.62936
+After updated Hf: 
+Species of interest (target species): ClO_2let , 0.0 , -1405319.262 , {O1=O, Cl1=Cl} , [[Cl]{1}[O]]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+ClO_2let.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species ClO_2let (1 / 1)
+rList:
+Species name : ClO_2let enthalpy: 0.0
+reactionList.size(): 1
+Species name : ClO_2let enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: ClO_2let =  Target species name : ClO_2let Median species enthalpy: 56.102499999944115
+target species name: ClO_2let ,  target ref enthalpy: 101.62936
+ Reaction(0): ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" Species (target ref) enthalpy: 101.62936 Calculated Hf for reaction(0): 56.102499999944115 error: 45.52686000005589
+species name: ClO_2let error bar: 45.52686000005589
+Writting species list...
+TTIP Species: 
+ClO_2let 101.62936
+Loop number: 2 Iteration number: 2 in Initial analysis of species: Cl2O7
+Species skipped: Cl2O7
+Loop number: 2 Iteration number: 2 in Initial analysis of species: ClOClO
+Species skipped: ClOClO
+Loop number: 2 Iteration number: 2 in Initial analysis of species: OClO
+Iteration number: 2
+Species reference list used in loop (2) and interation (2):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+OClO , 94.5584 , -1602556.172 , {O1=O, O2=O, Cl1=Cl}[[Cl]{1}[O] x 2]
+Soi species name: OClO , 94.5584 , -1602556.172 , {O1=O, O2=O, Cl1=Cl} , [[Cl]{1}[O] x 2]
+targetSpeciesEnthalpy: 94.5584
+After updated Hf: 
+Species of interest (target species): OClO , 0.0 , -1602556.172 , {O1=O, O2=O, Cl1=Cl} , [[Cl]{1}[O] x 2]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+OClO.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species OClO (1 / 1)
+rList:
+Species name : OClO enthalpy: 0.0
+reactionList.size(): 1
+Species name : OClO enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: OClO =  Target species name : OClO Median species enthalpy: 65.96577625943848
+target species name: OClO ,  target ref enthalpy: 94.5584
+ Reaction(0): OClO: 1.0x"OClO" <-> 0.333333x"ClO4_2let" + 0.333333x"ClClO2" Species (target ref) enthalpy: 94.5584 Calculated Hf for reaction(0): 65.96577625943848 error: 28.59262374056152
+species name: OClO error bar: 28.59262374056152
+Writting species list...
+TTIP Species: 
+OClO 94.5584
+Loop number: 2 Iteration number: 3 in Initial analysis of species: O2_3let
+Iteration number: 3
+Species reference list used in loop (2) and interation (3):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+O2_3let , 0.0 , -394667.7885 , {O1=O, O2=O}[[O]{2}[O]]
+Soi species name: O2_3let , 0.0 , -394667.7885 , {O1=O, O2=O} , [[O]{2}[O]]
+targetSpeciesEnthalpy: 0.0
+After updated Hf: 
+Species of interest (target species): O2_3let , 0.0 , -394667.7885 , {O1=O, O2=O} , [[O]{2}[O]]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+O2_3let.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species O2_3let (1 / 1)
+rList:
+No data were calculated for O2_3let
+Loop number: 2 Iteration number: 4 in Initial analysis of species: ClOO
+Iteration number: 4
+Species reference list used in loop (2) and interation (4):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+ClOO , 0.0 , -1602678.297 , {O1=O, O2=O, Cl1=Cl}[[O]{2}[O]]
+Soi species name: ClOO , 0.0 , -1602678.297 , {O1=O, O2=O, Cl1=Cl} , [[O]{2}[O]]
+targetSpeciesEnthalpy: 0.0
+After updated Hf: 
+Species of interest (target species): ClOO , 0.0 , -1602678.297 , {O1=O, O2=O, Cl1=Cl} , [[O]{2}[O]]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+ClOO.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species ClOO (1 / 1)
+rList:
+No data were calculated for ClOO
+Loop number: 2 Iteration number: 5 in Initial analysis of species: ClOCl
+Iteration number: 5
+Species reference list used in loop (2) and interation (5):
+ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 3]
+Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5]
+Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl}[[Cl]{1}[O] x 8]
+ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl}[[Cl]{1}[O] x 3]
+ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2, [O]{1}[O]]
+ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O], [Cl]{1}[Cl]]
+Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 5, [O]{1}[O]]
+Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 7]
+ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl}[[Cl]{1}[O] x 4]
+Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl}[[Cl]{1}[Cl]]
+TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 3]
+Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 2]
+TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti]]
+TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti}[[O]{2}[Ti] x 2]
+TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti}[[O]{2}[Ti]]
+TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti}[[Cl]{1}[Ti] x 4]
+Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti}[[Cl]{1}[Ti], [O]{2}[Ti]]
+ClOCl , 82.8 , -2613441.678 , {O1=O, Cl2=Cl, Cl1=Cl}[[Cl]{1}[O] x 2]
+Soi species name: ClOCl , 82.8 , -2613441.678 , {O1=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2]
+targetSpeciesEnthalpy: 82.8
+After updated Hf: 
+Species of interest (target species): ClOCl , 0.0 , -2613441.678 , {O1=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2]
+REF: Processing 1 / 21
+ClOClO.g09: 
+REF: Processing 2 / 21
+Cl2O3.g09: 
+REF: Processing 3 / 21
+Cl2O4.g09: 
+REF: Processing 4 / 21
+Cl2O7.g09: 
+REF: Processing 5 / 21
+ClClO2.g09: 
+REF: Processing 6 / 21
+ClO3.g09: 
+REF: Processing 7 / 21
+ClOOCl.g09: 
+REF: Processing 8 / 21
+ClClO.g09: 
+REF: Processing 9 / 21
+Cl2O5.g09: 
+REF: Processing 10 / 21
+Cl2O6.g09: 
+REF: Processing 11 / 21
+ClO4_2let.g09: 
+REF: Processing 12 / 21
+Cl2.g09: 
+REF: Processing 13 / 21
+TiCl3.g09: 
+REF: Processing 14 / 21
+Ti(O)(Cl)2.g09: 
+REF: Processing 15 / 21
+TiCl2.g09: 
+REF: Processing 16 / 21
+TiCl.g09: 
+REF: Processing 17 / 21
+TiO2.g09: 
+REF: Processing 18 / 21
+TiO.g09: 
+REF: Processing 19 / 21
+TiCl4.g09: 
+REF: Processing 20 / 21
+Ti(Cl)(O).g09: 
+REF: Processing 21 / 21
+ClOCl.g09: 
+Process configuration isg_runs1_res1_radicals5_1500s
+Estimating dHf(298.15K) for species ClOCl (1 / 1)
+rList:
+Species name : ClOCl enthalpy: 0.0
+reactionList.size(): 1
+Species name : ClOCl enthalpy: 0.0
+Writting complete reaction list...
+Ref species name: ClOCl =  Target species name : ClOCl Median species enthalpy: 110.88272374054849
+target species name: ClOCl ,  target ref enthalpy: 82.8
+ Reaction(0): ClOCl: 0.333333x"ClO4_2let" + 1.0x"ClOCl" <-> 0.166667x"ClClO2" + 1.0x"ClOClO" Species (target ref) enthalpy: 82.8 Calculated Hf for reaction(0): 110.88272374054849 error: 28.082723740548488
+species name: ClOCl error bar: 28.082723740548488
+Writting species list...
+TTIP Species: 
+ClOCl 82.8
+Updated valid set of species after (2.) loop through the set of invalid species in initial analysis:
+1. species name: Cl2O3 , 137.0 , -3007885.711 , {O1=O, O2=O, O3=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 4]
+2. species name: Cl2O4 , 186.1 , -3205071.13 , {O1=O, O2=O, O3=O, O4=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 5]
+3. species name: ClO3 , 201.0 , -1799677.222 , {O1=O, O2=O, O3=O, Cl1=Cl} , [[Cl]{1}[O] x 3]
+4. species name: ClOOCl , 133.0 , -2810728.42 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2, [O]{1}[O]]
+5. species name: ClClO , 90.0 , -2613353.415 , {O1=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O], [Cl]{1}[Cl]]
+6. species name: Cl2O5 , 258.3 , -3402354.338 , {O1=O, O2=O, O3=O, O4=O, O5=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 5, [O]{1}[O]]
+7. species name: Cl2O6 , 278.5 , -3599489.357 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 7]
+8. species name: ClO4_2let , 229.2832 , -1996891.209 , {O1=O, O2=O, O3=O, O4=O, Cl1=Cl} , [[Cl]{1}[O] x 4]
+9. species name: Cl2 , 0.0 , -2416201.41 , {Cl2=Cl, Cl1=Cl} , [[Cl]{1}[Cl]]
+10. species name: TiCl3 , -508.356 , -5855016.093 , {Cl2=Cl, Cl1=Cl, Cl3=Cl, Ti1=Ti} , [[Cl]{1}[Ti] x 3]
+11. species name: Ti(O)(Cl)2 , -593.2912 , -4844302.285 , {O1=O, Cl2=Cl, Cl1=Cl, Ti1=Ti} , [[Cl]{1}[Ti] x 2, [O]{2}[Ti]]
+12. species name: TiCl2 , -205.016 , -4646589.642 , {Cl2=Cl, Cl1=Cl, Ti1=Ti} , [[Cl]{1}[Ti] x 2]
+13. species name: TiCl , 171.1256 , -3438104.154 , {Cl1=Cl, Ti1=Ti} , [[Cl]{1}[Ti]]
+14. species name: TiO2 , -305.43 , -2625115.035 , {O1=O, O2=O, Ti1=Ti} , [[O]{2}[Ti] x 2]
+15. species name: TiO , 54.39 , -2427431.837 , {O1=O, Ti1=Ti} , [[O]{2}[Ti]]
+16. species name: TiCl4 , -763.16 , -7063376.045 , {Cl2=Cl, Cl1=Cl, Cl4=Cl, Cl3=Cl, Ti1=Ti} , [[Cl]{1}[Ti] x 4]
+17. species name: Ti(Cl)(O) , -286.2844 , -3635884.429 , {O1=O, Cl1=Cl, Ti1=Ti} , [[Cl]{1}[Ti], [O]{2}[Ti]]
+18. species name: ClClO2 , 154.2 , -2810596.529 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 2]
+19. species name: Cl2O7 , 321.3 , -3796666.987 , {O1=O, O2=O, O3=O, O4=O, O5=O, O6=O, Cl2=Cl, O7=O, Cl1=Cl} , [[Cl]{1}[O] x 8]
+20. species name: ClOClO , 175.5 , -2810623.834 , {O1=O, O2=O, Cl2=Cl, Cl1=Cl} , [[Cl]{1}[O] x 3]
+Invalid species file after (2.) loop through invalid species list with error bar . . .
+Species name: ClOO
+Species name: ClOCl
+Species name: ClO_2let
+Species name: OClO
+Species name: O2_3let
+addedSpeciesToValidSet: true
+After (2.) loop the set of invalid species is:
+ClOO 0.0
+ClOCl 82.8
+ClO_2let 101.62936
+OClO 94.5584
+O2_3let 0.0
+

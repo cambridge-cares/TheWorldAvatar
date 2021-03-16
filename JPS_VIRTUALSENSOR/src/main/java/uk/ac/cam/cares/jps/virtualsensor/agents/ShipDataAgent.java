@@ -16,18 +16,13 @@ public class ShipDataAgent extends JPSAgent {
      * 
      */
     private static final long serialVersionUID = 1L;
-    private static final String keyCollection = "collection";
-    private static final String keyItems = "items";
     
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
     	JSONObject response = new JSONObject();
     	if (validateInput(requestParams)) {
 	        Scope sc = new Scope(requestParams);
-	        JSONArray result = ShipSparql.queryShipWithinScope(sc);
-	        JSONObject items = new JSONObject();
-	        items.put(keyItems, result);
-	        response.put(keyCollection, items);
+	        response = ShipSparql.GetShipIriWithinScope(sc);
     	}
         return response;
     }

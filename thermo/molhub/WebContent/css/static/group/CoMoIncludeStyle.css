@@ -1,0 +1,2227 @@
+/* Included content stylesheet contains all the
+    styles for the php include pages.
+----------------------------------------------- */
+
+/*
+content -
+1. general styles
+2. welcome
+3. preprint 
+4. group members 
+5. publications
+6. software 
+7. soot database
+8. photo gallery
+9. teaching
+10. utility 
+11. Cluster load ('ups') 
+12. Seminars
+13. Calendar
+14. Dissertation
+15. Messaging
+
+*/
+
+
+/* ===================================== */
+/* ========= 1. general styles ========= */
+/* ===================================== */
+
+#MK_sig{
+    display:block;
+    float:right;
+    right:auto;
+    padding:0px 5px 0px 0px;
+}
+#MK_sig_caption{
+    clear:both;
+    text-align:right;
+    font-size:90%;
+    font-weight:bold;
+    padding:0px 10px 0px 0px;
+}
+
+#phpinclude {
+    width:670px;
+    background-color:#003399;
+    color:#CC0000;
+    font-family: Arial, Helvetica, sans-serif;
+    float:left;
+    margin:0px 0px 0px 0px;
+    padding:8px 0px 0px 3px;
+}
+
+.full_list {
+    text-align: right;
+    font-size:130%;
+    margin:0px 10px 0px 0px; 
+    padding:0px 0px 0px 0px;
+    }
+    
+.full_details {
+    clear: both;
+    text-align: right;
+    font-size:120%;
+    margin:0px 10px 0px 0px; 
+    padding:0px 0px 0px 0px;
+    }
+    
+.full_details a{
+    color:#CC0000;
+    text-decoration:none;
+    font-size:90%;
+    font-weight:bold;
+    padding:0px 0px 0px 0px;
+}
+
+
+.Recent-News{
+    /*border:#000000 thin solid;*/
+    padding:10px 10px 10px 10px;
+    clear: both;
+}
+
+.news-item{
+    border:#000000 thin solid;
+    background:#DDDDDD;
+    margin:0px 0px 10px 0px;
+    padding:10px 10px 10px 10px;
+}
+
+.news-date{
+    font-size:90%;
+}
+.news-picture{
+    padding:0px 0px 5px 5px;
+}
+
+
+.include-news-picture {
+    float:none;
+    background-color:#336666;
+    margin:10px 0px 10px 10px;
+}
+
+.news-item img{
+    float:right;
+    margin:00px 00px 00px 00px; 
+}
+
+.news-item h2 {
+    font-style:italic;
+}
+.news-item .abstract{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 10px 0px;
+}
+.news-item .abstract p{
+    font-weight:normal;
+    margin:5px 0px 0px 0px;
+}
+.news-item .abstract span.abstract-title{
+    padding:0px 0px 0px 10px;
+    font-weight:bold;
+    font-style:normal;
+}
+
+
+.Vacancies{
+    /*border:#000000 thin solid;*/
+    padding:10px 10px 10px 10px;
+}
+
+.vacancy{
+    border:#000000 thin solid;
+    background:#DDDDDD;
+    margin:0px 0px 10px 0px;
+    padding:10px 10px 10px 10px;
+}
+.vacancy h2{
+    font-style:italic;
+}
+
+
+/* ===================================== */
+/* ========= end general styles ======== */
+/* ===================================== */
+
+
+/* ===================================== */
+/* ========= 2. welcome styles ========= */
+/* ===================================== */
+
+#include-page {
+    width:655px;
+    background-color:#ffffff;
+    color:#000000;
+    float:left;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:110%;
+    margin:0px 0px 0px 0px;
+    padding:10px 10px 0px 0px;
+}
+#include-picture-right {
+    float:right;
+    width:250px;
+    margin-left:10px;
+}
+#include-picture-left {
+    float:left;
+    width:250px;
+    margin-right:10px;
+}
+#include-picture {
+    float:left;
+    clear:both;
+    margin:0px 0px 0px 0px;
+    border:0px none;    
+}
+#include-page p{
+    font-size:120%;
+    padding:0px 10px 0px 10px;
+    text-decoration:none;
+}
+#include-page p:link{
+    color:#000000;
+    text-decoration:none;
+}
+#include-page p:visited{
+    color:#000000;
+    text-decoration:none;
+}
+#include-page a{
+    font-size:120%;
+    padding:0px 0px 0px 0px;
+    text-decoration:none;
+}
+
+#include-page a:link{
+    color:#000000;
+    text-decoration:none;
+}
+#include-page a:visited{
+    color:#000000;
+    text-decoration:none;
+}
+
+
+/* ===================================== */
+/* ========= end welcome styles ======== */
+/* ===================================== */
+
+/* ===================================== */
+/* ========= 3. preprint styles ========= */
+/* ===================================== */
+
+#preprint-intro{
+    font-family:Arial, Helvetica, sans-serif;
+/* Put some specific attributes here if necessary */
+}
+
+
+#preprint-list {
+    color:#000000;
+    vertical-align:middle;
+    /*background-color:#FFFFFF;*/
+    font-size:90%;
+    margin-top:10px;
+}
+#preprint-list p.line1{
+    margin-top:5px;
+    margin-bottom:0px;
+}
+#preprint-list p.line2{
+    margin-top:0px;
+    margin-bottom:10px;
+}
+
+#preprint-list span.number{
+    font-size:130%;
+    font-weight:bold;
+
+}
+
+#preprint-list a.title{
+    color:#000000;
+    text-decoration:none;
+    font-size:130%;
+    padding:0px 0px 0px 0px;
+}
+#preprint-list span.title{
+    color:#000000;
+    text-decoration:none;
+    font-size:130%;
+    padding:0px 0px 0px 0px;
+}
+#preprint-list a.title:link{
+        text-decoration:none;
+        color:#990000;  
+}
+#preprint-list a.title:visited{
+        text-decoration:none;
+        color:#990000;  
+}
+#preprint-list a.title:hover{
+        text-decoration:underline;
+        color:#000000;
+        background-color:#FFFF99;
+}
+
+#preprint-list span.ref{
+    font-style:italic;
+    font-size:100%;
+}
+
+
+#preprint-list span.year{
+    font-size:100%;
+    font-weight:bold;
+}
+
+#preprint-list a.authors{
+    font-size:100%;
+    padding:0px 0px 0px 0px;
+}
+#preprint-list a.link, a.authors[href^="http://"]{
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+}
+#preprint-list a.secure, a.authors[href^="https://"]{
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+}
+#preprint-list a.link:hover, a.authors[href^="http://"]:hover{
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+#preprint-list a.secure:hover, a.authors[href^="https://"]:hover{
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+
+#preprint-item{
+    font-family:Arial, Helvetica, sans-serif;
+/* Put some specific attributes here if necessary */
+}
+
+#preprint-item span.preprint_title{
+    font-weight:bold;
+    font-style:normal;
+}
+
+#preprint-item #ref{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#preprint-item #ref p{
+    font-weight:normal;
+        font-style:italic;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+#preprint-item #authors{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#preprint-item #authors p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#preprint-item a.authors[href^="http://"] {
+    font-weight:normal;
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+}
+#preprint-item a.authors[href^="https://"] {
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+}
+
+#preprint-item #projects{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#preprint-item #projects p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#preprint-item #abstract{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#preprint-item #abstract p{
+    font-weight:normal;
+    margin:5px 0px 0px 0px;
+}
+
+#preprint-item #download{
+    font-size:100%;
+    margin:15px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+
+
+/* ===================================== */
+/* ========= end preprint styles ======= */
+/* ===================================== */
+
+
+/* ===================================== */
+/* ========= group member styles ======= */
+/* ===================================== */
+
+#people a:link{
+    color:#000000;
+    text-decoration:none;
+}
+#people a:visited{
+    color:#000000;
+    text-decoration:none;
+}
+#people a:hover{
+    color:#000000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+
+#personal_details{
+    color:#000000;
+    background-color:#FFFFFF;
+    padding:0px 5px 0px 10px;
+    }
+#personal_details td.email{
+    text-align:left;
+    font-weight:bold;
+    vertical-align:top;
+    padding:0px 0px 10px 0px;
+    }
+#personal_details td.email_entry{
+    text-align:left;
+    vertical-align:top;
+    padding:0px 0px 10px 10px;
+    }
+#personal_details a.email_entry{
+    background: url("./images/mail_icon.gif") center right no-repeat;
+    padding:0px 18px 0px 0px;
+}
+#personal_details a.email_entry:hover {
+    background: url("./images/mail_icon.gif") center right no-repeat;
+    padding:0px 18px 0px 0px;
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}   
+#personal_details td.address{
+    text-align:left;
+    font-weight:bold;
+    vertical-align:top;
+    padding:0px 0px 10px 0px;
+    }
+#personal_details td.address_entry{
+    text-align:left;
+    vertical-align:top;
+    padding:0px 0px 10px 10px;
+    }
+#personal_details td.telephone{
+    text-align:left;
+    font-weight:bold;
+    vertical-align:top;
+    padding:0px 0px 10px 0px;
+    }
+#personal_details td.telephone_entry{
+    text-align:left;
+    vertical-align:top;
+    padding:0px 0px 10px 10px;
+    }
+#personal_details td.website{
+    text-align:left;
+    font-weight:bold;
+    vertical-align:top;
+    padding:0px 0px 10px 0px;
+    }
+#personal_details td.website_entry{
+    text-align:left;
+    vertical-align:top;
+    padding:0px 0px 10px 10px;
+    }
+#personal_details td.download{
+    text-align:left;
+    font-weight:bold;
+    vertical-align:top;
+    padding:0px 0px 10px 0px;
+    }
+
+#personal_details td.vCard{
+    text-align:left;
+    vertical-align:top;
+    padding:0px 0px 10px 10px;
+    }
+#personal_details a.vCard{
+    background: url(vcard_icon.gif) center right no-repeat;
+    padding:0px 22px 0px 0px;
+}
+#personal_details a.vCard:hover {
+    background: url(vcard_icon.gif) center right no-repeat;
+    padding:0px 22px 0px 0px;
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+#people_pic{
+    float:right;
+    padding:0px 10px 5px 5px;
+    }
+#people_biog{
+    padding:10px 0px 0px 0px;
+    }
+
+#people_biog a[href^="http://"] {
+/* required to stop the external link icon displaying */
+    padding-right : 0px;
+    background-image : none;
+}
+	
+#biog_links{
+    padding:10px 0px 0px 10px;
+}
+#biog_links ul{
+    list-style:none;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#biog_links li{
+    list-style:none;    
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#people_table{
+    background-color:#ffffff;
+    display:table;
+    table-layout:auto;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+    border:none;
+}
+
+#people_table tr.span_row{
+    background-color:#ffffff;
+    min-height:30px;
+} 
+ 
+#people_table tr.odd_row{
+    background-color:#DDDDDD;
+    min-height:30px;
+        height:36px;
+ }
+#people_table tr.even_row{
+    min-height:30px;
+        height:36px;
+} 
+
+
+#people_table td.people_table_icon{
+    vertical-align:middle;  
+    background-repeat:no-repeat;
+    background-position:center;
+    width:40px;
+    padding:0px 0px 0px 10px;
+}
+
+#people_table td.people_table_icon a:hover{
+    text-decoration:none;
+    background-color:transparent;
+}
+
+#people_table img.bw_image:hover{
+    visibility:hidden;
+}
+#people_table a.icon{
+    text-decoration:none;
+    color:#000000;
+}
+#people_table a.icon:link{
+    text-decoration:none;
+    color:#000000;  
+}
+#people_table a.icon:visited{
+    text-decoration:none;
+    color:#000000;  
+}
+#people_table a.icon:hover{
+    text-decoration:none;
+    color:#000000;
+    background-color:transparent;
+}
+
+#people_table td.people_table_name{
+    padding:0px 0px 0px 0px;
+    vertical-align:middle;  
+}
+#people_table a.name{
+    display:inline;
+    text-decoration:underline;
+    color:#000000;
+    font-size:110%;
+    font-weight:bold;
+    padding:0px 0px 0px 0px;
+}
+#people_table a.name:link {
+    text-decoration:underline;
+    color:#990000;  
+}
+#people_table a.name:visited{
+    text-decoration:underline;
+    color:#990000;  
+}
+#people_table a.name:hover{
+    text-decoration:underline;
+    color:#990000;
+    background-color:#FFFF99;
+}
+
+#people_table td.people_table_email{
+    vertical-align:middle;
+    text-align:right;
+    width:70px;   
+}
+#people_table a.email{
+    display:inline;
+    color:#000000;
+    font-size:100%;
+    background:none;
+    padding:0px;
+}
+#people_table a.email img {
+    vertical-align:middle;
+    margin-left:5px;
+}
+#people_table a.email:link a.email:visited{
+    text-decoration:none;
+}
+#people_table a.email:hover{
+    text-decoration:underline;
+    background-color:#FFFF99;
+}
+#people_table td.people_table_phone{
+    vertical-align:middle;  
+    width:135px;
+    padding:0px 10px 0px 15px;
+}
+#people_table a.phone{
+    display:inline;
+    color:#000000;
+    font-size:100%;
+}
+#people_table a.phone:link{
+    text-decoration:none;
+}
+#people_table a.phone:visited{
+    text-decoration:none;
+}
+#people_table a.phone:hover{
+    text-decoration:underline;
+    background-color:#FFFF99;
+}
+#people_table td.people_table_themes{
+    text-align:right;
+    padding:0px 0px 0px 10px;
+    width:240px;
+}
+#people_table a.themes{
+    text-decoration:none;
+    color:#000000;
+}
+#people_table a.themes:link{
+    text-decoration:none;
+    color:#000000;  
+}
+#people_table a.themes:visited{
+    text-decoration:none;
+    color:#000000;  
+}
+#people_table a.themes:hover{
+    text-decoration:none;
+    color:#000000;
+    background-color:transparent;
+}
+#people_table td.people_table_vCard{
+    text-align:center;
+    padding:0px 10px 0px 10px;
+}
+
+#people_table a.vCard{
+    text-decoration:none;
+    color:#000000;
+    padding:0px 0px 0px 0px;
+    background:none;
+}
+#people_table a.vCard:link{
+    text-decoration:none;
+    color:#000000;  
+}
+#people_table a.vCard:visited{
+    text-decoration:none;
+    color:#000000;  
+}
+#people_table a.vCard:hover{
+    text-decoration:none;
+    color:#000000;
+    background-color:transparent;
+}
+
+
+
+/* ===================================== */
+/* ====== end group member styles ====== */
+/* ===================================== */
+
+/* ===================================== */
+/* ======= 5. publication styles ======= */
+/* ===================================== */
+
+#pub-list{
+    font-family:Arial, Helvetica, sans-serif;
+/* Put some specific attributes here if necessary */
+}
+
+
+#pub-list{
+    color:#000000;
+    vertical-align:middle;
+    /*background-color:#FFFFFF;*/
+    font-size:90%;
+    margin-top:10px;
+}
+#pub-list p.line1{
+    margin-top:5px;
+    margin-bottom:0px;
+}
+#pub-list p.line2{
+    margin-top:0px;
+    margin-bottom:10px;
+}
+
+#pub-list a.title-plain{
+    color:#000000;
+    text-decoration:none;
+    font-size:130%;
+    padding:0px 0px 0px 0px;
+}
+#pub-list a.title-plain:link{
+        text-decoration:none;
+        color:#000000;  
+}
+#pub-list a.title-plain:visited{
+        text-decoration:none;
+        color:#000000;  
+}
+#pub-list a.title-plain:hover{
+        text-decoration:none;
+        color:#000000;
+        background-color:#FFFFFF;
+}
+#pub-list a.title{
+    color:#000000;
+    text-decoration:none;
+    font-size:130%;
+    padding:0px 0px 0px 0px;
+}
+#pub-list a.title:link{
+        text-decoration:none;
+        color:#990000;  
+}
+#pub-list a.title:visited{
+        text-decoration:none;
+        color:#990000;  
+}
+#pub-list a.title:hover{
+        text-decoration:underline;
+        color:#000000;
+        background-color:#FFFF99;
+}
+
+#pub-list a.authors{
+    font-size:100%;
+    padding:0px 0px 0px 0px;
+}
+#pub-list a.authors[href^="http://"] {
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+}
+#pub-list a.authors[href ^="https://"] {
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+}
+
+#pub-list a.journal{
+    font-size:100%;
+    font-style:italic;
+    padding:0px 0px 0px 0px;
+}
+#pub-list a.journal[href^="http://"] {
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+}
+#pub-list a.journal[href ^="https://"] {
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+}
+
+#pub-list span.volume{
+    font-size:100%;
+    font-weight:bold;
+}
+
+#pub-list span.pages{
+    font-size:100%;
+}
+
+#pub-list span.year{
+    font-size:100%;
+}
+
+#pub-item{
+    font-family:Arial, Helvetica, sans-serif;
+/* Put some specific attributes here if necessary */
+}
+#pub-item #ref{
+    font-size:100%;
+    margin:5px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#pub-item a.journal{
+    font-size:100%;
+/*    font-weight:bold;*/
+    font-style:italic;
+    padding:0px 0px 0px 0px;
+}
+#pub-item a.journal[href^="http://"] {
+    background: url("./images/external.png") center right no-repeat;
+    padding-right: 14px;
+}
+#pub-item a.journal[href ^="https://"] {
+    background: url(lock_icon.gif) center right no-repeat;
+    padding-right: 16px;
+}
+#pub-item span.volume{
+    font-size:100%;
+    font-weight:bold;
+}
+
+#pub-item span.pages, span.year{
+    font-size:100%;
+}
+
+#pub-item #authors{
+    font-size:100%;
+    margin:15px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#pub-item #authors p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+#pub-item span.pub_title{
+    font-weight:bold;
+}
+#pub-item a.authors[href^="http://"] {
+    font-weight:normal;
+    background: url("./images/external.png") center right no-repeat;
+    padding-right: 14px;
+}
+#pub-item a.authors[href ^="https://"] {
+    background: url(lock_icon.gif) center right no-repeat;
+    padding-right: 16px;
+}
+
+#pub-item #keywords{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#pub-item #keywords p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+
+#pub-item #projects{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#pub-item #projects p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#pub-item #pub_preprint_link{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#pub-item #pub_preprint_link p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#pub-item #abstract{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#pub-item #abstract p{
+    font-weight:normal;
+    margin:5px 0px 0px 0px;
+}
+
+#pub-item #corresponding_author{
+    display:block;
+    font-size:100%;
+    margin:15px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#pub-item #corresponding_author #text{
+    display:table-cell;
+    vertical-align:top;
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:2px 15px 0px 0px;
+}
+#pub-item #corresponding_author #address{
+    display:table-cell;
+    vertical-align:top;
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#pub-item #download{
+    float:none;
+}
+
+#pub-item #download span{
+    font-weight:bold;
+    font-size:100%;
+    margin:10px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#pub-item #download p.download_file{
+    font-weight:normal;
+    padding:0px 0px 0px 10px;
+}
+#pub-item #download a.download_file {
+    padding:0px 22px 0px 0px;
+    background: url("./images/pdf_icon.gif") center right no-repeat;
+}
+
+/* ===================================== */
+/* ======= end publication styles ====== */
+/* ===================================== */
+
+/* ===================================== */
+/* ======= 5. conference styles ======== */
+/* ===================================== */
+
+#conference{
+    color:#000000;
+    font-family:Arial, Helvetica, sans-serif;
+    vertical-align:middle;
+    /*background-color:#FFFFFF;*/
+    font-size:100%;
+    margin-top:10px;
+}
+
+div.conference-details{
+    color:#000000;
+    text-decoration:none;
+    padding:10px 0px 10px 0px;
+}
+
+div.conference-details a.conference-name-nosite{
+    color:#990000;
+    font-size:110%;
+    font-weight:bold;
+    padding:0px 0px 0px 0px;
+    background-color:#FFFFFF;
+    text-decoration:none;
+}
+#conference span.conference-name-nosite{
+    text-decoration:none;
+    color:#000000;  
+    font-size:110%;
+    font-weight:bold;
+    padding:0px 0px 0px 0px;
+}
+
+#conference a.conference-name-site{
+    color:#000000;
+    font-size:110%;
+    font-weight:bold;
+    padding:0px 0px 0px 0px;
+}
+#conference a.conference-name-site[href^="http://"] {
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+}
+#conference a.conference-name-site[href ^="https://"] {
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+}
+#conference a.conference-name-site:link{
+    text-decoration:none;
+    color:#990000;  
+}
+#conference a.conference-name-site:visited{
+    text-decoration:none;
+    color:#990000;  
+}
+#conference a.conference-name-site:hover{
+    text-decoration:underline;
+    color:#000000;
+    background-color:#FFFF99;
+}
+
+
+#conference span.conference-location{
+    font-size:90%;
+    font-weight:normal;
+    padding:0px 0px 0px 10px;
+}
+#conference span.conference-date{
+    font-size:90%;
+    font-weight:normal;
+    padding:0px 0px 0px 0px;
+}
+
+
+#conference div.conference-talks{
+    color:#000000;
+    text-decoration:none;
+    padding:0px 0px 10px 0px;
+}
+#conference div.conference-talks li{
+    font-size:100%;
+    font-weight:normal;
+    padding:0px 0px 5px 0px;
+}
+#conference div.conference-file{
+    color:#000000;
+    text-decoration:none;
+    display:inline;
+    position:absolute; 
+        left:500px;
+    padding:0px 0px 10px 0px;
+}
+
+/* ===================================== */
+/* ======= end conference styles ======= */
+/* ===================================== */
+
+/* ===================================== */
+/* ======== 6. software styles ========= */
+/* ===================================== */
+
+.software-intro{
+    font-family:Arial, Helvetica, sans-serif;
+/* Put some specific attributes here if necessary */
+}
+
+
+#software-list {
+    color:#000000;
+    vertical-align:middle;
+    /*background-color:#FFFFFF;*/
+    font-size:90%;
+    margin-top:10px;
+}
+#software-list p.line1{
+    margin-top:5px;
+    margin-bottom:0px;
+}
+#software-list p.line2{
+    margin-top:0px;
+    margin-bottom:10px;
+}
+
+#software-list span.number{
+    font-size:130%;
+    font-weight:bold;
+
+}
+
+#software-list a.title{
+    color:#000000;
+    text-decoration:none;
+    font-size:130%;
+    padding:0px 0px 0px 0px;
+}
+#software-list a.title:link{
+        text-decoration:none;
+        color:#990000;  
+}
+#software-list a.title:visited{
+        text-decoration:none;
+        color:#990000;  
+}
+#software-list a.title:hover{
+        text-decoration:underline;
+        color:#000000;
+        background-color:#FFFF99;
+}
+
+#software-list span.ref{
+    font-style:italic;
+    font-size:100%;
+}
+
+
+#software-list span.year{
+    font-size:100%;
+    font-weight:bold;
+}
+
+#software-list a.authors{
+    font-size:100%;
+    padding:0px 0px 0px 0px;
+}
+#software-list a.link, a.authors[href^="http://"]{
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+}
+#software-list a.secure, a.authors[href^="https://"]{
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+}
+#software-list a.link:hover, a.authors[href^="http://"]:hover{
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+#software-list a.secure:hover, a.authors[href^="https://"]:hover{
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+
+#software-item{
+    font-family:Arial, Helvetica, sans-serif;
+/* Put some specific attributes here if necessary */
+}
+
+#software-item span.software_title{
+    font-weight:bold;
+}
+
+#software-item .ref{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#software-item .ref p{
+    font-weight:normal;
+        font-style:italic;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+#software-item .authors{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#software-item .authors p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#software-item a.authors[href^="http://"] {
+    font-weight:normal;
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+}
+#software-item a.authors[href^="https://"] {
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+}
+
+#software-item .projects{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#software-item .projects p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+
+#software-item .abstract{
+    font-size:100%;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#software-item .abstract p{
+    font-weight:normal;
+    margin:5px 0px 0px 0px;
+}
+
+#software-item .download{
+    font-size:100%;
+    margin:15px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#software-item .download p{
+    font-weight:normal;
+    margin:5px 0px 0px 0px;
+}
+
+
+
+
+/* ===================================== */
+/* ========= end software styles ======= */
+/* ===================================== */
+
+
+
+/* ===================================== */
+/* ======== 7. soot DB  styles ========= */
+/* ===================================== */
+
+#sootdb_table{
+}
+
+table.soot_db_table {
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: green;
+}
+table.soot_db_table th{
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    text-align:center;
+}
+thead.sootdb_header{
+    border-bottom:5px #ff0000 solid;
+    padding:5px 0px 5px 0px;
+}
+
+table.soot_db_table td{
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: blue;
+}
+
+/* ===================================== */
+/* ========= end  soot DB styles ======= */
+/* ===================================== */
+
+
+/* ===================================== */
+/* ====== 8. Photo Gallery styles ====== */
+/* ===================================== */
+
+.photo_album{
+    padding:10px 10px 10px 10px;
+    }
+
+.photo_frame{
+    clear:both;
+    display:block;
+    margin:10px 10px 10px 10px;
+    padding:0px 10px 10px 10px;
+    border: 1px solid #000000;
+    background-color: #dddddd;
+}
+
+.photo_description{
+    text-align:left;
+    margin:10px 5px 10px 5px;
+}
+.photo_fieldname {
+    font-style:italic;
+    font-weight:bold;
+    width:7.2em;
+    float:left;
+    display:inline;
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+}
+.photo_field {
+    padding:0px 0px 0px 0px;
+    margin:5px 0px 5px 0px;
+}
+
+.photo_thumbnail{
+    float:right;
+    margin:10px 5px 10px 5px;
+    padding:0px 0px 0px 0px;
+    border: 2px solid #000000;
+
+}
+
+.photo_enlargement{
+    clear: both;
+    text-align: right;
+    font-size:120%;
+    margin:0px 10px 0px 0px; 
+    padding:0px 0px 0px 0px;
+}
+
+
+/* ===================================== */
+/* ===== End  Photo Gallery styles ===== */
+/* ===================================== */
+
+/* ===================================== */
+/* ======== 9. teaching styles ========= */
+/* ===================================== */
+
+#lectures{
+    color:#000000;
+    text-decoration:none;
+    font-size:100%;
+    padding:0px 0px 0px 20px;
+    margin:0px 0px 0px 0px;
+    display:inline;
+}
+#lectures ul.lecture-list {
+    list-style-type:none;
+    font-size:130%;
+    font-weight:bold;
+    margin:0px 0px 0px 25px;
+    padding:0px 0px 0px 0px;
+}
+
+.course-title{
+    color:#000000;
+    text-decoration:none;
+    font-size:130%;
+    font-weight:bold;
+/*  font-style:italic; */
+    padding:10px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+}
+.teaching-list{
+    font-family:Arial, Helvetica, sans-serif;
+    color:#000000;
+    vertical-align:middle;
+    /*background-color:#FFFFFF;*/
+    margin:0px 0px 0px 0px;
+}
+
+.teaching-list ul{
+    list-style-type:none;
+    margin:0px 0px 0px 5px;
+    padding:0px 0px 0px 0px;
+}
+
+
+.teaching-list .line1{
+    font-size:120%;
+    margin:5px 0px 2px 10px;
+    padding:0px 0px 0px 0px;
+}
+.teaching-list .line2{
+    font-size:100%;
+    margin:0px 0px 10px 0px;
+}
+
+.lecture_revision{
+    display:inline;
+    font-size:90%;
+    padding:0px 0px 0px 0px;
+}
+.lecture_authors{
+    display:inline;
+    font-size:90%;
+    padding:0px 0px 0px 0px;
+}
+
+.lecture_year{
+    display:inline;
+    font-size:90%;
+    padding:0px 0px 0px 0px;
+}
+
+.course{
+    display:inline;
+    font-size:100%;
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+}
+
+.tripos{
+    display:inline;
+    font-size:100%;
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+}
+
+.revision-list{
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+    list-style-type:none;
+    font-size:100%;
+}
+
+.revision-list-item{
+    padding:0px 0px 0px 5px;
+    margin:0px 0px 0px 0px;
+    list-style-type:none;
+}
+
+.links-title{
+    font-size:100%;
+    font-weight: bold;
+    margin:5px 10px 5px 15px;
+    padding:0px 0px 0px 0px;
+    display:block;
+}
+
+.link-list{
+    margin:0px 0px 0px 15px;
+    padding:0px 0px 0px 0px;
+}
+
+.link-list ul{
+    margin:0px 0px 10px 15px;
+    padding:0px 0px 0px 0px;
+    list-style-type:none;
+}
+
+.link-list li {
+   /* height:50px; */
+    background-image:none;
+    padding:0px 0px 0px 0px;
+}
+.link-list a{
+    background-image:none;
+    background-color:#3300FF;
+    padding:0px 0px 0px 0px;
+}
+
+
+#lectures-intro #authors{
+    font-size:100%;
+    margin:15px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#lectures-intro #authors p{
+    font-weight:normal;
+    margin:5px 0px 5px 0px;
+    padding:0px 0px 0px 0px;
+}
+#lectures-intro span.mini-title{
+    font-size:110%;
+    font-weight:bold;
+}
+
+
+/* ===================================== */
+/* ======== end teaching styles ======== */
+/* ===================================== */
+
+
+/* ===================================== */
+/* ======== 10. utility styles ========= */
+/* ===================================== */
+
+.shortlist-box {
+    clear:both;
+    margin:10px 10px 10px 10px;
+    padding:0px 10px 10px 10px;
+    border: 1px solid #000000;
+    background-color: #eeeeee;
+  }
+
+.full_list a{
+    color:#CC0000;
+    text-decoration:none;
+    font-size:90%;
+    font-weight:bold;
+    padding:0px 0px 0px 0px;
+}
+
+
+
+ /* 
+.short-list-box h2{
+    font-size:100%;
+    color: #000000;  
+    background: #96C8A2; 
+    font-weight: bold;  
+    text-align: center;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+    border-bottom: 1px dashed #96C8A2;
+}
+*/
+
+.contact-address{
+    border:#000000 thin solid;
+    background:#DDDDDD;
+    margin:0px 0px 20px 100px;
+    padding:10px 0px 10px 10px;
+    width:400px;
+}
+
+.quote{
+margin:20px;
+font-family:times;
+text-align:center;
+font-style: italic;
+font-size: larger;
+}
+.bigquotel{
+margin:20px;
+font-family:times;
+text-align:left;
+font-style: italic;
+font-size: larger;
+}
+.bigquoter{
+margin:20px;
+font-family:times;
+text-align:right;
+font-style: italic;
+font-size: larger;
+}
+.quoter{
+text-align:right;
+font-size: smaller;
+font-style: italic;
+}
+
+.quotel{
+text-align:left;
+font-size: smaller;
+font-style: italic;
+}
+
+
+/* ===================================== */
+/* ========= end utility styles ======== */
+/* ===================================== */
+
+
+
+
+
+/* ===================================== */
+/* ====== 11. Cluster load ('ups') ===== */
+/* ===================================== */
+
+.ups_table {font-size: 14px; padding: 0px; margin: 0px; border: 0px; text-align
+:left;}
+.ups_processtable {font-size: 10px;}
+.ups_processdiv {background-color:#eeeeee; display: none;}
+.ups_process_user_td {width: 25%; text-align:left;}
+.ups_process_command_td {width: 25%; text-align:left;}
+.ups_machine_notes_td {font-size: 80%;}
+
+/* ===================================== */
+/* ===== end cluster load styles ======= */
+/* ===================================== */
+
+
+
+/* ===================================== */
+/* ========= 12. Seminar Styles ======== */
+/* ===================================== */
+
+.seminar{
+    padding:5px 0px 5px 0px;
+}
+.seminar-title{
+    font-size:120%;
+    font-weight:bold;
+    padding:5px 0px 5px 0px;
+}
+.seminar-speaker{
+    font-size:100%;
+    background:url(speaker.jpg) center left no-repeat;
+    padding:2px 0px 3px 25px;
+    margin:0px 0px 0px 13px;
+}
+.seminar-speaker-internal{
+    font-size:100%;
+    padding:2px 0px 3px 0px;
+    margin:0px 0px 0px 10px;
+}
+.seminar-date{
+    font-size:100%;
+    background:url(time.jpg) center left no-repeat;
+    padding:2px 0px 3px 25px;
+    margin:0px 0px 0px 13px;
+}
+.seminar-location{
+    font-size:100%;
+    background:url(location.jpg) center left no-repeat;
+    padding:2px 0px 3px 25px;
+    margin:0px 0px 0px 13px;
+}
+
+/* ===================================== */
+/* ========= end Seminar styles ======== */
+/* ===================================== */
+
+/* ===================================== */
+/* ======== 13. Calendar Styles ======== */
+/* ===================================== */
+
+#upcoming{
+    margin:10px 10px 10px 10px;
+}
+.upcoming-list{
+    margin:10px 10px 10px 10px;
+    padding:10px 20px 10px 20px;
+    background-color:#DDDDDD;
+    border:1px solid black;
+}
+
+.upcoming-list h2 {
+    font-style:italic;
+}
+
+/* ===================================== */
+/* ========= end Calendar styles ======= */
+/* ===================================== */
+
+/* ===================================== */
+/* ===== 14. Dissertation styles ======= */
+/* ===================================== */
+
+#dissertation-list {
+    color:#000000;
+    vertical-align:middle;
+    /*background-color:#FFFFFF;*/
+    font-size:90%;
+    margin-top:10px;
+}
+#dissertation-list p.line1{
+    margin-top:5px;
+    margin-bottom:0px;
+}
+#dissertation-list p.line2{
+    margin-top:0px;
+    margin-bottom:10px;
+}
+
+#dissertation-list span.type{
+    font-size:130%;
+	font-weight:bold;
+}
+#dissertation-list span.hidden{
+    font-size:130%;
+	font-weight:bold;
+	color:#eeeeee;
+}
+
+#dissertation-list span.title{
+    font-size:130%;
+}
+
+#dissertation-list a.title{
+    color:#000000;
+    font-size:130%;
+}
+#dissertation-list a.title:link{
+        text-decoration:none;
+        color:#990000;  
+}
+#dissertation-list a.title:visited{
+        text-decoration:none;
+        color:#990000;  
+}
+#dissertation-list a.title:hover{
+        text-decoration:underline;
+        color:#000000;
+        background-color:#FFFF99;
+}
+
+#dissertation-list span.year{
+    font-size:100%;
+    font-weight:bold;
+}
+
+#dissertation-list a.authors{
+    font-size:100%;
+    padding:0px 0px 0px 0px;
+}
+#dissertation-list a.link, a.authors[href^="http://"]{
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+}
+#dissertation-list a.secure, a.authors[href^="https://"]{
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+}
+#dissertation-list a.link:hover, a.authors[href^="http://"]:hover{
+    background: url("./images/external.png") center right no-repeat;
+    padding:0px 14px 0px 0px;
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+#dissertation-list a.secure:hover, a.authors[href^="https://"]:hover{
+    background: url(lock_icon.gif) center right no-repeat;
+    padding:0px 16px 0px 0px;
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+
+/* ===================================== */
+/* ===== end Dissertation styles ======= */
+/* ===================================== */
+
+
+/* ===================================== */
+/* ======= 15. Messaging styles ======== */
+/* ===================================== */
+
+
+#messaging_table{
+    background-color:#ffffff;
+    display:table;
+    table-layout:auto;
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+    border:none;
+}
+
+#messaging_table tr.span_row{
+    background-color:#ffffff;
+    min-height:20px;
+} 
+ 
+#messaging_table tr.odd_row{
+    background-color:#DDDDDD;
+    min-height:20px;
+        height:20px;
+ }
+#messaging_table tr.even_row{
+    min-height:20px;
+        height:20px;
+} 
+
+
+#messaging_table td.messaging_table_icon{
+    vertical-align:middle;  
+    background-repeat:no-repeat;
+    background-position:center;
+    width:40px;
+    padding:5px 0px 0px 10px;
+}
+
+#messaging_table td.messaging_table_icon a:hover{
+    text-decoration:none;
+    background-color:transparent;
+}
+
+#messaging_table img.bw_image:hover{
+    visibility:hidden;
+}
+#messaging_table a.icon{
+    text-decoration:none;
+    color:#000000;
+}
+#messaging_table a.icon:link{
+    text-decoration:none;
+    color:#000000;  
+}
+#messaging_table a.icon:visited{
+    text-decoration:none;
+    color:#000000;  
+}
+#messaging_table a.icon:hover{
+    text-decoration:none;
+    color:#000000;
+    background-color:transparent;
+}
+
+#messaging_table td.messaging_table_name{
+    padding:0px 0px 0px 0px;
+    vertical-align:middle;  
+}
+#messaging_table a.name{
+    display:inline;
+    text-decoration:underline;
+    color:#000000;
+    font-size:110%;
+    font-weight:bold;
+    padding:0px 0px 0px 0px;
+}
+#messaging_table a.name:link {
+    text-decoration:underline;
+    color:#990000;  
+}
+#messaging_table a.name:visited{
+    text-decoration:underline;
+    color:#990000;  
+}
+#messaging_table a.name:hover{
+    text-decoration:underline;
+    color:#990000;
+    background-color:#FFFF99;
+}
+
+#messaging_table td.messaging_table_email{
+    vertical-align:middle;
+    text-align:left; 
+	padding:0px 0px 0px 0px;
+	margin:0px 0px 0px 0px;  
+}
+#messaging_table a.email{
+    display:inline;
+    color:#000000;
+    font-size:100%;
+    background:none;
+	padding:0px 0px 0px 0px;
+	margin:0px 0px 0px 0px;
+}
+#messaging_table a.email img {
+    vertical-align:middle;
+    margin-left:5px;
+}
+#messaging_table a.email:link a.email:visited{
+    text-decoration:none;
+}
+#messaging_table a.email:hover{
+    text-decoration:underline;
+    background-color:#FFFF99;
+}
+#messaging_table td.messaging_table_general_title {
+	font-weight:bold;
+	width:60px;
+	padding:0px 0px 0px 0px;
+	margin:0px 0px 0px 0px;
+}
+#messaging_table td.messaging_table_general_entry {
+	vertical-align:middle;
+    text-align:left;  
+	padding:0px 10px 0px 0px;
+	margin:0px 0px 0px 0px;
+}
+/* ===================================== */
+/* ======= end Messaging styles ======== */
+/* ===================================== */
+
+/* ===================================== */
+/* ====== 16. IIB Projects styles ====== */
+/* ===================================== */
+
+.iib-project{
+	padding:10px 10px 10px 10px;
+}
+.iib-form{
+	padding:10px 10px 10px 10px;
+}
+.iib-smallhead{
+	display:inline;
+	float:left;
+	font-weight:bold;
+	padding:0px 0px 0px 0px;
+	min-width:130px;
+}
+.iib-formitem{
+	width:100%;
+	padding:10px 0px 10px 0px;
+}
+.iib-counter{
+	display:block;
+	float:left; 
+	padding:0px 0px 0px 0px;
+	width:30px;
+}
+
+.iib-title{
+	display:block;
+	float:left;
+	padding:0px 0px 0px 10px;
+	width:92%;	
+}
+.iib-head{
+	font-weight:bold;
+	font-size:larger;
+	display:block;
+	float:left;
+	width:100%;
+}
+.iib-list{
+	font-weight:bold;
+	display:block;
+	width:100%;
+	padding:0px 0px 20px 10px;
+}
+.iib-workwith {
+	padding:0px 0px 0px 0px;
+	margin:0px 0px 0px 0px;
+}
+.iib-workwith p{
+	margin:0px 0px 0px 0px;
+	padding:0px 0px 0px 0px;
+}
+.iib-foot{
+	text-align:center;
+	padding:10px 0px 0px 0px;
+}
+.iib-supervisor{
+	font-style:italic;
+	margin:0px 0px 0px 40px;
+	display:inline;
+	
+}
+.iib-cosupervisor{
+	font-style:italic;
+	display:inline;
+}
+.iib-type{
+	padding:0px 0px 0px 40px;
+}
+.iib-description{
+	padding:10px 10px 0px 40px;
+}
+.iib-staffpic{
+	float:right;
+	margin:0px 0px 0px 0px;
+	padding:0px 0px 0px 5px;
+/*	border-left:thin solid #CCCCCC; */
+}
+.iib-studentpic{
+	float:right;
+	padding:0px 0px 0px 0px;
+	width:30px;
+	height:30px;
+	text-align:center;
+	vertical-align:middle;
+/*	border-left:thin solid #CCCCCC; */
+	margin:0px 0px 0px 10px;
+		padding:0px 0px 0px 3px;
+}
+.iib-typepic{
+	float:right;
+	padding:0px 0px 0px 0px;
+	width:38px;
+	height:30px;
+	vertical-align:middle;
+	text-align:center;
+/*	border-left:thin solid #CCCCCC; */
+	margin:0px 0px 0px 10px;
+	padding:0px 0px 0px 3px;
+}
+.iib-studentpic-wide{
+	float:right;
+	padding:0px 0px 0px 0px;
+	width:85px;
+	height:30px;
+	text-align:right;
+	vertical-align:middle;
+/*	border-left:thin solid #CCCCCC; */
+	margin:0px 0px 0px 10px;
+}
+.iib-typepic-wide{
+	float:right;
+	padding:0px 0px 0px 0px;
+	width:80px;
+	height:30px;
+	vertical-align:middle;
+	text-align:right;
+/*	border-left:thin solid #CCCCCC; */
+	margin:0px 0px 0px 10px;
+}
+
+.iib-allocatedstudent{
+	margin:0px 0px 0px 00px;
+	display:inline; 
+}
+.iib-allocations{
+	margin:10px 0px 0px 40px;
+}
+/* ===================================== */
+/* ===== end IIB Projects styles ======= */
+/* ===================================== */
+
+/* ===================================== */
+/* ======= 16. Supervision styles ====== */
+/* ===================================== */
+
+.sup-project{
+	padding:10px 10px 10px 10px;
+}
+.sup-form{
+	padding:10px 10px 10px 10px;
+}
+.sup-smallhead{
+	display:inline;
+	float:left;
+	font-weight:bold;
+	padding:0px 0px 0px 0px;
+	min-width:130px;
+}
+.sup-formitem{
+	width:100%;
+	padding:10px 0px 10px 0px;
+}
+.sup-counter{
+	display:block;
+	float:left; 
+	padding:0px 0px 0px 0px;
+	width:30px;
+}
+
+.sup-title{
+	display:block;
+	float:left;
+	padding:0px 0px 0px 10px;
+	width:92%;	
+}
+.sup-head{
+	font-weight:bold;
+	font-size:larger;
+	display:block;
+	float:left;
+	width:100%;
+}
+.sup-list{
+	font-weight:bold;
+	display:block;
+	width:100%;
+	padding:0px 0px 20px 10px;
+}
+.sup-workwith {
+	padding:0px 0px 0px 0px;
+	margin:0px 0px 0px 0px;
+}
+.sup-workwith p{
+	margin:0px 0px 0px 0px;
+	padding:0px 0px 0px 0px;
+}
+.sup-foot{
+	text-align:center;
+	padding:10px 0px 0px 0px;
+}
+.sup-supervisor{
+	font-style:italic;
+	margin:0px 0px 0px 40px;
+	display:inline;
+	
+}
+.sup-cosupervisor{
+	font-style:italic;
+	display:inline;
+}
+.sup-type{
+	padding:0px 0px 0px 40px;
+}
+.sup-description{
+	padding:10px 10px 0px 40px;
+}
+.sup-staffpic{
+	float:right;
+	margin:0px 0px 0px 0px;
+	padding:0px 0px 0px 5px;
+/*	border-left:thin solid #CCCCCC; */
+}
+.sup-studentpic{
+	float:left;
+	padding:0px 0px 0px 0px;
+	margin:0px 10px 0px 0px;
+	width:30px;
+	height:30px;
+	text-align:center;
+/*	vertical-align:middle; */
+/*	border-left:thin solid #CCCCCC; */
+}
+
+.sup-salutationbox{
+	display:block;
+	padding:0px 0px 0px 10px;
+	margin:0px 0px 10px 0px;
+	text-align:left;
+	height:30px;
+/*	border-left:thin solid #CCCCCC; */
+}
+
+.sup-salutation{
+	float:left;
+	padding:7px 0px 0px 0px;
+	margin:0px 0px 0px 0px;
+	text-align:left;
+	vertical-align:middle;
+/*	border-left:thin solid #CCCCCC; */
+}
+
+.sup-bookingcard{
+	float:left;
+	border:thin #000000 solid;
+	padding:0px 10px 10px 10px;
+	margin:0px 10px 10px 10px;
+	width:500px;
+}
+
+.sup-bookingform{
+	float:left;
+	border:thin #000000 solid;
+	padding:0px 10px 10px 10px;
+	margin:20px 10px 10px 10px;
+	width:700px;
+}
+
+.sup-summaryform{
+	float:left;
+	clear:both;
+	display:block;
+	border:thin #000000 solid;
+	padding:0px 10px 10px 10px;
+	margin:20px 10px 10px 10px;
+	width:500px;
+}
+
+.sup-sline{
+	display:block;
+	clear:both;
+	margin:10px 0px 0px 0px;
+	width:100%;
+	min-height:30px;
+}
+
+.sup-statusline{
+	display:block;
+	clear:both;
+	margin:40px 0px 0px 0px;
+	width:100%;
+	min-height:30px;
+}
+
+.sup-stitle{
+	font-weight:bold;
+	float:left;
+	width:90px;
+}
+
+.sup-sentry{
+	float:left;
+}
+
+.sup-status{
+	float:left;
+	font-size:150%;
+	padding:0px 0px 20px 0px;
+	margin:0px 0px 0px 0px;
+}
+
+.sup-suppic{
+	float:right;
+	padding:0px 0px 0px 0px;
+	margin:0px 0px 0px 10px;
+	width:30px;
+	height:30px;
+	text-align:center;
+/*	vertical-align:middle; */
+/*	border-left:thin solid #CCCCCC; */
+}
+
+.sup-supbox{
+	display:block;
+	clear:both;
+	padding:0px 0px 0px 10px;
+	margin:0px 0px 0px 0px;
+	text-align:left;
+/*	border-left:thin solid #CCCCCC; */
+}
+
+.sup-slotbox{
+	display:block;
+	clear:both;
+	float:left;
+	padding:0px 0px 0px 10px;
+	margin:0px 0px 0px 0px;
+	text-align:left;
+}
+
+.sup-sumbox{
+	display:block;
+	clear:both;
+	float:left;
+	padding:0px 0px 0px 10px;
+	margin:0px 0px 0px 0px;
+	text-align:left;
+}
+
+.sup-sup{
+	float:left;
+	padding:7px 0px 0px 0px;
+	margin:0px 0px 0px 0px;
+	text-align:left;
+	vertical-align:middle;
+/*	border-left:thin solid #CCCCCC; */
+}
+
+.sup-subselect{
+	float:left;
+	width:auto;
+	margin:10px 0px 0px 0px;
+}
+
+.sup-typepic-wide{
+	float:right;
+	padding:0px 0px 0px 0px;
+	width:80px;
+	height:30px;
+	vertical-align:middle;
+	text-align:right;
+/*	border-left:thin solid #CCCCCC; */
+	margin:0px 0px 0px 10px;
+}
+
+.sup-allocatedstudent{
+	margin:0px 0px 0px 00px;
+	display:inline; 
+}
+.sup-allocations{
+	margin:10px 0px 0px 40px;
+}
+
+.sup-tabhead{
+	font-weight:bold;
+	font-size:120%;
+	vertical-align:middle;
+}
+
+/* ===================================== */
+/* ====== end Supervision styles ======= */
+/* ===================================== */
+
