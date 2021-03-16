@@ -57,7 +57,7 @@ public class Test_DESWeatherAgents extends TestCase{
 	 * This test is disabled unless the entire process wants to be called. 
 	 * 
 	 */
-	public void xxtestStartCoordinationDESScenariobase() throws IOException  {
+	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
 
 		JSONObject jo = new JSONObject();

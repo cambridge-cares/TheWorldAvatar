@@ -44,9 +44,8 @@ public class MenAgent extends JPSAgent{
 			
 		
 		logger.info("MENAgent start");
-		boolean validInputs = validateInput(requestParams);
-		if (validInputs == false) {
-			throw new JSONException("Error caused by problematic inputs");
+		if (!validateInput(requestParams)) {
+			throw new JSONException("MenAgent: Input parameters not found.\n");
 		}
 		String transportationModes = requestParams.optString("transportationmodes", "http://www.jparksimulator.com/kb/sgp/jurongisland/MaterialTransportMode.owl");
 		
@@ -153,11 +152,7 @@ public class MenAgent extends JPSAgent{
         	boolean annuBool = doubleValidator.isValid(args.get("annualcostfactor").toString());
         	comp_opt = carbBool && intBool &&annuBool;
     	} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+    		return false;
 		}
     	 if (transport_opt &&chemical_opt&&bool_opt&&impf_opt&& comp_opt== true) {
     		 return  true;

@@ -1,6 +1,14 @@
 package uk.ac.cam.cares.jps.virtualsensor.sparql;
 
+import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
+import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
@@ -26,7 +34,220 @@ public class SparqlPatternGenerator {
     	return combined_tp;
     }
 	
-	public static void GetQueryGraphPattern (SelectQuery Query, Iri[] Predicates, Iri[] RdfType) {
+	/** 
+	 * Sizes of predicates and RdfType need to be equal
+	 * @param Query
+	 * @param Predicates
+	 * @param RdfType
+	 * @param FirstNode
+	 * @param LastNode
+	 * @return
+	 */
+	
+	public static GraphPattern GetQueryGraphPattern (SelectQuery Query, Iri[] Predicates, Iri[] RdfType, Variable FirstNode, Variable LastNode) {
+    	GraphPattern CombinedGP = null;
     	
+    	Variable[] Variables = new Variable[Predicates.length];
+    	
+    	// initialise intermediate nodes
+    	for (int i=0; i < Variables.length-1; i++) {
+    		Variables[i] = Query.var();
+    	}
+    	Variables[Variables.length-1] = LastNode;
+    	
+    	// first triple
+    	GraphPattern firstTriple = FirstNode.has(Predicates[0],Variables[0]);
+    	if (RdfType != null) {
+    		if (RdfType[0] != null) {
+    			CombinedGP = GraphPatterns.and(firstTriple,FirstNode.isA(RdfType[0]));
+    		} else {
+    			CombinedGP = GraphPatterns.and(firstTriple);
+    		}
+    	} else {
+    		CombinedGP = GraphPatterns.and(firstTriple);
+    	}
+    	
+    	// the remaining
+    	for (int i=0; i < Variables.length-1; i++) {
+    		GraphPattern triple = Variables[i].has(Predicates[i+1],Variables[i+1]);
+    		if (RdfType != null) {
+    			if (RdfType[i+1] != null) {
+    				CombinedGP.and(triple,Variables[i].isA(RdfType[i+1]));
+    			} else {
+    				CombinedGP.and(triple);
+    			}
+    		} else {
+    			CombinedGP.and(triple);
+    		}
+    	}
+    	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
+    		}
+    	}
+    	
+    	return CombinedGP;
     }
+	
+	public static GraphPattern GetQueryGraphPattern (SelectQuery Query, Iri[] Predicates, Iri[] RdfType, Iri FirstNode, Variable LastNode) {
+        GraphPattern CombinedGP = null;
+    	
+    	Variable[] Variables = new Variable[Predicates.length];
+    	
+    	// initialise intermediate nodes
+    	for (int i=0; i < Variables.length-1; i++) {
+    		Variables[i] = Query.var();
+    	}
+    	Variables[Variables.length-1] = LastNode;
+    	
+    	// first triple
+    	GraphPattern firstTriple = FirstNode.has(Predicates[0],Variables[0]);
+    	if (RdfType != null) {
+    		if (RdfType[0] != null) {
+    			CombinedGP = GraphPatterns.and(firstTriple,FirstNode.isA(RdfType[0]));
+    		} else {
+    			CombinedGP = GraphPatterns.and(firstTriple);
+    		}
+    	} else {
+    		CombinedGP = GraphPatterns.and(firstTriple);
+    	}
+    	
+    	// the remaining
+    	for (int i=0; i < Variables.length-1; i++) {
+    		GraphPattern triple = Variables[i].has(Predicates[i+1],Variables[i+1]);
+    		if (RdfType != null) {
+    			if (RdfType[i+1] != null) {
+    				CombinedGP.and(triple,Variables[i].isA(RdfType[i+1]));
+    			} else {
+    				CombinedGP.and(triple);
+    			}
+    		} else {
+    			CombinedGP.and(triple);
+    		}
+    	}
+    	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
+    		}
+    	}
+    	
+    	return CombinedGP;
+    }
+	
+	public static GraphPattern GetQueryGraphPattern (SelectQuery Query, Iri[] Predicates, Iri[] RdfType, Variable FirstNode) {
+        GraphPattern CombinedGP = null;
+    	
+    	Variable[] Variables = new Variable[Predicates.length];
+    	
+    	// initialise intermediate nodes
+    	for (int i=0; i < Variables.length; i++) {
+    		Variables[i] = Query.var();
+    	}
+    	
+    	// first triple
+    	GraphPattern firstTriple = FirstNode.has(Predicates[0],Variables[0]);
+    	if (RdfType != null) {
+    		if (RdfType[0] != null) {
+    			CombinedGP = GraphPatterns.and(firstTriple,FirstNode.isA(RdfType[0]));
+    		} else {
+    			CombinedGP = GraphPatterns.and(firstTriple);
+    		}
+    	} else {
+    		CombinedGP = GraphPatterns.and(firstTriple);
+    	}
+    	
+    	// the remaining
+    	for (int i=0; i < Variables.length-1; i++) {
+    		GraphPattern triple = Variables[i].has(Predicates[i+1],Variables[i+1]);
+    		if (RdfType != null) {
+    			if (RdfType[i+1] != null) {
+    				CombinedGP.and(triple,Variables[i].isA(RdfType[i+1]));
+    			} else {
+    				CombinedGP.and(triple);
+    			}
+    		} else {
+    			CombinedGP.and(triple);
+    		}
+    	}
+    	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
+    		}
+    	}
+    	
+    	return CombinedGP;
+    }
+	
+	public static GraphPattern GetQueryGraphPattern (SubSelect Query, Iri[] Predicates, Iri[] RdfType, Iri FirstNode, Variable LastSecondNode, Variable LastNode) {
+    	GraphPattern CombinedGP = null;
+    	
+    	Variable[] Variables = new Variable[Predicates.length];
+    	
+    	// initialise intermediate nodes
+    	for (int i=0; i < Variables.length-2; i++) {
+    		Variables[i] = Query.var();
+    	}
+    	Variables[Variables.length-2] = LastSecondNode;
+    	Variables[Variables.length-1] = LastNode;
+    	
+    	// first triple
+    	GraphPattern firstTriple = FirstNode.has(Predicates[0],Variables[0]);
+    	if (RdfType != null) {
+    		if (RdfType[0] != null) {
+    			CombinedGP = GraphPatterns.and(firstTriple,FirstNode.isA(RdfType[0]));
+    		} else {
+    			CombinedGP = GraphPatterns.and(firstTriple);
+    		}
+    	} else {
+    		CombinedGP = GraphPatterns.and(firstTriple);
+    	}
+    	
+    	// the remaining
+    	for (int i=0; i < Variables.length-1; i++) {
+    		GraphPattern triple = Variables[i].has(Predicates[i+1],Variables[i+1]);
+    		if (RdfType != null) {
+    			if (RdfType[i+1] != null) {
+    				CombinedGP.and(triple,Variables[i].isA(RdfType[i+1]));
+    			} else {
+    				CombinedGP.and(triple);
+    			}
+    		} else {
+    			CombinedGP.and(triple);
+    		}
+    	}
+    	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
+    		}
+    	}
+    	
+    	return CombinedGP;
+    }
+	
+	public static ModifyQuery UpdateValue(Prefix[] Prefixes,Iri[] Predicates, Iri[] RdfType, Iri FirstNode, double newvalue,Iri NamedGraph) {
+		SubSelect Sub = GraphPatterns.select();
+		
+		Variable datavalue_iri = SparqlBuilder.var("datavalue_iri");
+    	Variable oldvalue = SparqlBuilder.var("oldvalue");
+    	
+    	GraphPattern queryPattern = GetQueryGraphPattern(Sub,Predicates,RdfType,FirstNode,datavalue_iri,oldvalue);
+    	
+    	// triple to delete
+    	TriplePattern delete_tp = datavalue_iri.has(Predicates[Predicates.length-1],oldvalue);
+    	// new triple to add
+    	TriplePattern replace_tp = datavalue_iri.has(Predicates[Predicates.length-1],newvalue);
+    	
+    	Sub.select(datavalue_iri,oldvalue).where(queryPattern).from(NamedGraph);
+    	ModifyQuery modify = Queries.MODIFY();
+        modify.prefix(Prefixes).delete(delete_tp).insert(replace_tp).where(Sub).with(NamedGraph);
+        return modify;
+	}
 }

@@ -122,7 +122,9 @@ public class WastetoEnergyAgent extends JPSAgent {
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		validateInput(requestParams);
+		if (!validateInput(requestParams)) {
+			throw new JSONException("WTE:processSimulationAgent: Input parameters not found.\n");
+		}
 		String baseUrl= requestParams.getString("baseUrl");
 		String wasteIRI=requestParams.getString("wastenetwork");
 		//render ontological model of waste network
@@ -182,12 +184,8 @@ public class WastetoEnergyAgent extends JPSAgent {
         String nCluster = requestParams.getString("n_cluster");
         return InputValidator.checkIfValidIRI(iriofnetwork) & InputValidator.checkIfInteger(nCluster);
         } catch (JSONException ex) {
-        	ex.printStackTrace();
-            throw new JSONException("");
-        }catch (Exception ex) {
-        	ex.printStackTrace();
+        	return false;
         }
-        return false;
     }
 	
 	/** reads the topnode into an OntModel of all its subsystems. 

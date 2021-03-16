@@ -21,7 +21,10 @@ import org.slf4j.LoggerFactory;
 public class KGRouter{
 	private static Logger logger = LoggerFactory.getLogger(KGRouter.class);
 	public static final String HTTP="http://";
-	public static final String HTTP_KB_PREFIX = HTTP + "kb/";
+	public static final String HTTPS="https://";
+	public static final String KB="kb";
+	public static final String BACKSLASH="/";
+	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(BACKSLASH);
 	public static final String EMPTY = "";
 	private static final String KGROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
 	public static final String RDFS_PREFIX = "rdfs";
@@ -40,6 +43,8 @@ public class KGRouter{
 	public static final String COLON = ":";
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
+	public static final String OWL_FILE_EXTENSION = ".owl";
+	public static final String RDF_FILE_EXTENSION = ".rdf";
 	
 	static KGRouter kgRouter = null;
 	

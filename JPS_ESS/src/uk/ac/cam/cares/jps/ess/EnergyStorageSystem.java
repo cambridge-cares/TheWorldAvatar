@@ -54,12 +54,13 @@ public class EnergyStorageSystem extends JPSAgent {
 	    
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		
+		if (!validateInput(requestParams)) {
+			throw new JSONException ("ESSAgent: Input parameters not found.\n");
+		}
 			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 			System.out.println("baseURL: " + baseUrl);
-			boolean v = validateInput(requestParams);
-			if (v == false) {
-				throw new JSONException("INPUT no longer valid");
-			}
+			
 			String batIRI=requestParams.getString("BatteryCatalog");
 			String ENIRI=requestParams.getString("electricalnetwork");
 			
@@ -86,9 +87,8 @@ public class EnergyStorageSystem extends JPSAgent {
 	        boolean q = InputValidator.checkIfValidIRI(batIRI); 
 	        return w&q;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
+            return false;
         }
-        return false;
     }
     /** code that should run GAMS
      * 

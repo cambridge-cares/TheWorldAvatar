@@ -38,7 +38,7 @@ public class SemakauPVCoordination extends JPSAgent {
 			requestParams.put("temperaturesensor",irioftempS);
 			requestParams.put("windspeedsensor",iriofwindS);
 			startSimulation(requestParams);
-			return requestParams;
+			return new JSONObject();
 		
 	}
 	/** Main method coordinating both DES project and JPS Semakau Project
