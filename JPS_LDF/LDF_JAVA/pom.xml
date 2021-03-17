@@ -9,6 +9,13 @@
 	    <artifactId>jena</artifactId>
 	    <version>2.6.4</version>
 	</dependency>
+	
+	<dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>jena-arq</artifactId>
+    <version>3.17.0</version>
+</dependency>
+
   </dependencies>
   <packaging>war</packaging>
   <build>
