@@ -761,6 +761,7 @@ public class KnowledgeRepository {
 			kr.ontologyDirectory = args[2];
 			try{
 				kr.uploadOntologies();
+				System.out.println("To upload the already uploaded files, please delete the imported-file.log file.");
 				System.exit(0);
 			}catch(Exception e){
 				System.out.println(e.getMessage());
