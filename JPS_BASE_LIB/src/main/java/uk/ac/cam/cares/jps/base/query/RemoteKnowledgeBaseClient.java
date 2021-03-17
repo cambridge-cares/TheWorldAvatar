@@ -366,6 +366,54 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 		}
 		return results;
 	}
+		
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
+	@Override
+	public Model executeConstruct(Query sparql) {
+		return executeConstruct(sparql.toString());
+	}
+	
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
+	@Override
+	public Model executeConstruct(String sparql) {
+		
+		RDFConnection conn = connectQuery();
+		
+		if (conn != null) {
+			conn.begin( TxnType.READ );	
+			try {
+				QueryExecution queryExec = conn.query(sparql);
+				Model results = queryExec.execConstruct();
+				return results;
+			} finally {
+				conn.end();
+			}
+		} else {
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
+		}
+	}
+	
+	/**
+	 * Return RDFConnection to sparql query endpoint
+	 * @return
+	 */
+	private RDFConnection connectQuery() {
+		
+		RDFConnectionRemoteBuilder builder = null;
+		if(queryEndpoint != null) {
+			builder = RDFConnectionRemote.create().destination(queryEndpoint);
+		}else {
+			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
+		}
+		
+		return builder.build();
+	}
 	
 	/**
 	 * Generates the URL of the remote data repository's EndPoint, which<br>
@@ -576,44 +624,5 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	private String getUpdateEndpointConnectionParameter(){
 		return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
 				.concat("=");
-	}
-	
-	/**
-	 * Return RDFConnection to sparql query endpoint
-	 * @return
-	 */
-	private RDFConnection connectQuery() {
-		
-		RDFConnectionRemoteBuilder builder = null;
-		if(queryEndpoint != null) {
-			builder = RDFConnectionRemote.create().destination(queryEndpoint);
-		}else {
-			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
-		}
-		
-		return builder.build();
-	}
-	
-	/**
-	 * Perform a sparql construct query
-	 * @return RDF model
-	 */
-	@Override
-	public Model queryConstruct(Query sparql) {
-		
-		RDFConnection conn = connectQuery();
-		
-		if (conn != null) {
-			conn.begin( TxnType.READ );	
-			try {
-				QueryExecution queryExec = conn.query(sparql);
-				Model results = queryExec.execConstruct();
-				return results;
-			} finally {
-				conn.end();
-			}
-		} else {
-			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
-		}
 	}
 }

@@ -48,12 +48,21 @@ public interface KnowledgeBaseClientInterface {
 	 */
 	String execute(String query);
 	
+	// SPARQL Construct query methods
+	
 	/**
 	 * Execute sparql construct query.
 	 * @param sparql
 	 * @return
 	 */
-	Model queryConstruct(Query sparql);
+	Model executeConstruct(Query sparql);
+	
+	/**
+	 * Execute sparql construct query.
+	 * @param sparql
+	 * @return
+	 */
+	Model executeConstruct(String sparql);
 	
 	// SPARQL update methods
 	
@@ -87,7 +96,7 @@ public interface KnowledgeBaseClientInterface {
 	 */
 	void end();
 	
-	// Variable access
+	// Set/Get varaible methods
 	
 	/**
 	 * Sets the query. 
@@ -121,5 +130,13 @@ public interface KnowledgeBaseClientInterface {
 	 * @param updateEndpoint
 	 */
 	String setUpdateEndpoint(String updateEndpoint);
+
+	// Authentication
+	String getUser();
+
+	void setUser(String userName);
 	
+	String getPassword();
+
+	void setPassword(String password);
 }

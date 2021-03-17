@@ -40,7 +40,7 @@ public class CloningTool {
 	
 		//Get model using construct query
 		Query construct = buildSparqlConstruct(sourceGraph);
-		Model results = sourceKB.queryConstruct(construct);
+		Model results = sourceKB.executeConstruct(construct);
 		
 		//Update target
 		UpdateRequest update = buildSparqlUpdate(targetGraph, results);

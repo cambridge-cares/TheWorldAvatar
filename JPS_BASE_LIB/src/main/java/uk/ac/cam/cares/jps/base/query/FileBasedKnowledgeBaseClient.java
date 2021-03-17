@@ -374,6 +374,29 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	// Variable access methods
 	///////////////////////////
 	
+	//Authentication 
+	@Override
+	public String getUser() {
+		// no authentication for FileBaseKBClient
+		return null;
+	}
+
+	@Override
+	public void setUser(String userName) {
+		// no authentication for FileBaseKBClient
+	}
+
+	@Override
+	public String getPassword() {
+		// no authentication for FileBaseKBClient
+		return null;
+	}
+
+	@Override
+	public void setPassword(String password) {
+		// no authentication for FileBaseKBClient
+	}
+	
 	/**
 	 * Set default graph file path variable
 	 * @param filePath
@@ -658,7 +681,16 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 * @return RDF model
 	 */
 	@Override
-	public Model queryConstruct(Query sparql) {
+	public Model executeConstruct(Query sparql) {
+		return executeConstruct(sparql.toString());
+	}
+	
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
+	@Override
+	public Model executeConstruct(String sparql) {
 		
 		if (conn != null) {
 			conn.begin( TxnType.READ );	
