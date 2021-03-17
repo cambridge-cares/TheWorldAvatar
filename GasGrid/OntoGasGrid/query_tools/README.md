@@ -16,4 +16,14 @@ This geoJSON file can then be displayed in a number of tools including:
 
 ### Note
 A key aspect of this code is that attributes of the locations (for example power station capacities) can be called from the triple store along with the locations. This information can then be encoded within the geoJSON file within the 'properties:' key. Therefore information can be displayed on a map without additional calls to the triple store. 
-
+---
+### Potential Errors 
+If you're hosting the geoJSON file locally and plan to run the HTML locally, you'll need to do so with a local server, otherwise the .geoJSON file wont appear on the map. 
+This can be done with the command:
+'''
+python -m http.server 
+'''
+'''
+python3 -m http.server 
+'''
+Or alternativly in VSCode, using the 'Live Server' extension 
