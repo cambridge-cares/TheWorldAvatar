@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+
 /**
  * This class is developed to work as an instance factory for KnowledgeBaseClient.<br>
  * It reduces the burden of users to modify the SPARQL Endpoints for different<br>
@@ -68,10 +70,10 @@ public class KGRouter{
 	 *  can be true at the same time.
 	 * @return
 	 */
-	public static KnowledgeBaseClient getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
+	public static KnowledgeBaseClientInterface getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
 		String queryIRI = null;
 		String updateIRI = null;
-		KnowledgeBaseClient kbClient = null;
+		KnowledgeBaseClientInterface kbClient = null;
 		if (targetResourceIRIOrPath != null && !targetResourceIRIOrPath.isEmpty()) {
 			if (targetResourceIRIOrPath.trim().startsWith(HTTP_KB_PREFIX)) {
 				if (kgRouter == null) {

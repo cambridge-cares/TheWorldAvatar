@@ -13,7 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
  * Renaming Tool
@@ -125,7 +125,7 @@ public class RenamingTool {
 	 * 
 	 * @param kbClient
 	 */
-	public void renameString(KnowledgeBaseClient kbClient) {
+	public void renameString(KnowledgeBaseClientInterface kbClient) {
 		renameString(kbClient, null);
 	}
 	
@@ -136,7 +136,7 @@ public class RenamingTool {
 	 * @param KnowledgeBaseClient
 	 * @param graph
 	 */
-	public void renameString(KnowledgeBaseClient kbClient, String graph) {		
+	public void renameString(KnowledgeBaseClientInterface kbClient, String graph) {		
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -161,7 +161,7 @@ public class RenamingTool {
 	 * 
 	 * @param KnowledgeBaseClient
 	 */
-	public void renameIRI(KnowledgeBaseClient kbClient) {
+	public void renameIRI(KnowledgeBaseClientInterface kbClient) {
 		renameIRI(kbClient, null);
 	}
 	
@@ -171,7 +171,7 @@ public class RenamingTool {
 	 * @param kbClient KnowledgeBaseClient
 	 * @param graph
 	 */
-	public void renameIRI(KnowledgeBaseClient kbClient, String graph) {
+	public void renameIRI(KnowledgeBaseClientInterface kbClient, String graph) {
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -191,7 +191,7 @@ public class RenamingTool {
 	 * @param whereFilter
 	 * @param whereUpdate
 	 */
-	private void performRename(KnowledgeBaseClient kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
+	private void performRename(KnowledgeBaseClientInterface kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
 		
 		if(splitUpdate == true) {
 			
