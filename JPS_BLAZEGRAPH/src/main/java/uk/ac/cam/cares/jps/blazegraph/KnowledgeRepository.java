@@ -349,7 +349,7 @@ public class KnowledgeRepository {
 		}
 		RemoteRepository repository = null;
 		if(storeType.toString().equals(RDFStoreType.BLAZEGRAPH.toString())){
-			RemoteRepositoryManager repositoryManager = new RemoteRepositoryManager(endPointURL, true);
+			RemoteRepositoryManager repositoryManager = new RemoteRepositoryManager(endPointURL, false);
 			if(repositoryExists(endPointURL, repositoryName, repositoryManager)){
 				repository = repositoryManager.getRepositoryForNamespace(repositoryName);
 				repositoryManager.close();
