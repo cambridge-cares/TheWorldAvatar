@@ -15,7 +15,8 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
+import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -38,6 +39,7 @@ public class DispSimSparql {
 	private static Prefix p_coordsys = SparqlBuilder.prefix("coordsys",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"));
 	private static Prefix p_space_time = SparqlBuilder.prefix("space_time",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"));
 	private static Prefix p_msm = SparqlBuilder.prefix("msm",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
+	private static Prefix p_time = SparqlBuilder.prefix("time",iri("http://www.w3.org/2006/time#"));
 	
 	private static Prefix[] prefixes = {p_dispsim,p_citygml,p_space_time_extended,p_system,p_coordsys,p_space_time};
 	
@@ -69,10 +71,15 @@ public class DispSimSparql {
     private static Iri hasHttpUrl = p_msm.iri("hasHttpUrl");
     private static Iri hasSimCRS = p_dispsim.iri("hasSimCRS");
     private static Iri hasScopeCRS = p_dispsim.iri("hasScopeCRS");
-    private static Iri hasDataPath = p_dispsim.iri("hasDataPath");
+    private static Iri hasOutputPath = p_dispsim.iri("hasOutputPath");
+    private static Iri hasDz = p_dispsim.iri("hasDz");
+    private static Iri hasIndex = p_dispsim.iri("hasIndex");
+    private static Iri hasTime = p_time.iri("hasTime");
+    private static Iri numericPosition = p_time.iri("numericPosition");
     
     //unit
     private static Iri dimensionless = iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#dimensionless");
+    private static Iri unit_m = iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
     
     //endpoint
     private static Iri sim_graph = p_dispsim.iri("Simulations");
@@ -136,6 +143,8 @@ public class DispSimSparql {
     	Iri upperCornerY = p_dispsim.iri(sim_id+"UpperCornerY");
     	Iri upperCornerYValue = p_dispsim.iri(sim_id+"UpperCornerYValue");
     	
+    	ModifyQuery modify = Queries.MODIFY();
+    	
     	TriplePattern sim_tp = sim_iri.isA(DispersionSim).andHas(hasNx,nx).andHas(hasNy,ny)
     			.andHas(hasScope,scope).andHas(hasNumSubStations,numsub).andHas(hasServiceAgent,iri(sim.getServiceAgent()))
     			.andHas(hasSimCRS,simCRS);
@@ -164,21 +173,37 @@ public class DispSimSparql {
     	TriplePattern upperycoord_tp = upperCornerY.isA(StraightCoordinate).andHas(hasValue,upperCornerYValue);
     	TriplePattern vupperxcoord_tp =  upperCornerXValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getUpperx());
     	TriplePattern vupperycoord_tp = upperCornerYValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getUppery());
-    	
     	// scope done
-    	// model grid information
-    	TriplePattern[] nx_tp = SparqlGeneral.GetScalarTP(nx, nxValue, sim.getNx(), dimensionless);
-    	TriplePattern[] ny_tp = SparqlGeneral.GetScalarTP(ny, nyValue, sim.getNy(), dimensionless);
-    	TriplePattern[] numsub_tp = SparqlGeneral.GetScalarTP(numsub, numsubvalue, sim.getNumSubStations(), dimensionless);
     	
+    	// number of sub stations (min 1 for Episode, 0 for ADMS)
+    	SparqlGeneral.InsertScalarTP(modify,numsub, numsubvalue, sim.getNumSubStations(), dimensionless);
+    	
+    	// model grid information
+    	SparqlGeneral.InsertScalarTP(modify,nx, nxValue, sim.getNx(), dimensionless);
+    	SparqlGeneral.InsertScalarTP(modify,ny, nyValue, sim.getNy(), dimensionless);
+    	
+    	// dz is non-uniform
+    	for (int i = 0; i < sim.getDz().length; i++) {
+    		Iri dz =  p_dispsim.iri(sim_id+"Dz"+i);
+    		Iri dzValue = p_dispsim.iri(sim_id+"Dz"+i+"Value");
+    		
+    		Iri dzIndex = p_dispsim.iri(sim_id+"DzIndex"+i);
+    		Iri dzIndexValue = p_dispsim.iri(sim_id+"DzIndexValue"+i);
+    		
+    		// dz value
+    		TriplePattern dz_tp = sim_iri.has(hasDz,dz);
+    		SparqlGeneral.InsertScalarTP(modify, dz, dzValue, sim.getDz()[i], unit_m);
+    		
+    		// position in the array
+    		TriplePattern dzIndex_tp = dz.has(hasIndex,dzIndex);
+    		SparqlGeneral.InsertScalarTP(modify, dzIndex, dzIndexValue, i, dimensionless);
+    		
+    		modify.insert(dz_tp,dzIndex_tp);
+    	}
+
     	TriplePattern[] combined_tp = {sim_tp,scope_tp,lowercorner_tp,lowercoord_tp,lowerxcoord_tp,lowerycoord_tp,vlowerxcoord_tp,vlowerycoord_tp,
     			uppercorner_tp,uppercoord_tp,upperxcoord_tp,upperycoord_tp,vupperxcoord_tp,vupperycoord_tp,simCRS_tp,simCRSValue_tp,ScopeCRS_tp,ScopeCRSValue_tp};
     	
-    	combined_tp = ArrayUtils.addAll(combined_tp, nx_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, ny_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, numsub_tp);
-    	
-    	ModifyQuery modify = Queries.MODIFY();
     	modify.prefix(prefixes).with(sim_graph).where().insert(combined_tp);
     	SparqlGeneral.performUpdate(modify);
     }
@@ -373,39 +398,40 @@ public class DispSimSparql {
 		return shipIRI;
 	}
 	
-	public static void AddDataPath(String sim_iri_string,String dataPath_string) {
+	public static void AddOutputPath(String sim_iri_string,String outputPath_string,long timeStamp) {
 		Iri sim_iri = iri(sim_iri_string);
 		
 		// ensure data path is a valid uri
-		Iri dataPath = iri(new File(dataPath_string).toURI().toString());
+		Iri outputPath = iri(new File(outputPath_string).toURI().toString());
+
+		// get number of existing outputs to write IRI for timestamp
+		int numOutput = GetNumOutput(sim_iri_string);
+		Iri time_iri = iri(sim_iri_string + "TimeStamp" + String.valueOf(numOutput+1));
 		
-		// delete old datapath
-		Variable oldPath = SparqlBuilder.var("oldPath");
-		TriplePattern deleteTriple = sim_iri.has(hasDataPath,oldPath);
-		SubSelect sub = GraphPatterns.select();
-		sub.select(oldPath).where(deleteTriple);
-		
-		ModifyQuery deleteQuery = Queries.MODIFY();
-		
-		deleteQuery.prefix(p_dispsim).from(sim_graph).delete(deleteTriple).where(sub);
-		SparqlGeneral.performUpdate(deleteQuery);
-		
-		// insert new datapath
 		ModifyQuery insertQuery = Queries.MODIFY();
-		TriplePattern insertTriple = sim_iri.has(hasDataPath,dataPath);
-		insertQuery.prefix(p_dispsim).with(sim_graph).insert(insertTriple).where();
+		
+		// insert location
+		TriplePattern insertPath = sim_iri.has(hasOutputPath,outputPath);
+		
+		//tag with timestamp
+		TriplePattern time_tp = outputPath.has(hasTime,time_iri);
+		TriplePattern timevalue_tp = time_iri.isA(p_time.iri("TimePosition"))
+				.andHas(p_time.iri("hasTRS"),iri("http://dbpedia.org/resource/Unix_time"))
+				.andHas(numericPosition, timeStamp);
+		
+		insertQuery.prefix(p_time,p_dispsim).with(sim_graph).insert(insertPath,time_tp,timevalue_tp).where();
 		SparqlGeneral.performUpdate(insertQuery);
 	}
 	
-	public static String GetDataPath(String sim_iri_string) {
+	public static String GetOutputPath(String sim_iri_string) {
 		Iri sim_iri = iri(sim_iri_string);
 		
-		String queryKey = "datapath";
-		Variable datapath = SparqlBuilder.var(queryKey);
-		TriplePattern queryPattern = sim_iri.has(hasDataPath,datapath);
+		String queryKey = "outputPath";
+		Variable outputPath = SparqlBuilder.var(queryKey);
+		TriplePattern queryPattern = sim_iri.has(hasOutputPath,outputPath);
 		
 		SelectQuery query = Queries.SELECT();
-		query.from(FromGraph).select(datapath).where(queryPattern).prefix(p_dispsim);
+		query.from(FromGraph).select(outputPath).where(queryPattern).prefix(p_dispsim);
 
 		String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
 		try {
@@ -414,6 +440,30 @@ public class DispSimSparql {
 		} catch (URISyntaxException e) {
 			throw new JPSRuntimeException(e);
 		}
+	}
+	
+	/**
+	 * Returns number of output files associated with this simulation
+	 * @param sim_iri_string
+	 * @return
+	 */
+	public static int GetNumOutput(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		
+		String queryKey = "num";
+		
+		SelectQuery query = Queries.SELECT();
+		Variable outputPath = query.var();
+		Variable numOutput = SparqlBuilder.var(queryKey);
+		
+	    Assignment assign = Expressions.count(outputPath).as(numOutput);
+	    GraphPattern queryPattern = sim_iri.has(hasOutputPath,outputPath);
+	    
+	    query.from(FromGraph).select(assign).where(queryPattern).prefix(p_dispsim);
+	    
+	    int result = SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
+	    
+		return result;
 	}
 	
 	public static String GetSimCRS(String sim_iri_string) {
