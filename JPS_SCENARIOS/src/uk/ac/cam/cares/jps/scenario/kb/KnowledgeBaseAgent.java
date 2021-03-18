@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
-@WebServlet(urlPatterns = {"/kb/*", "/data/*", "/dataset/*"})
+@WebServlet(urlPatterns = {"/data/*", "/dataset/*"})
 public class KnowledgeBaseAgent extends JPSAgent {
 
 	private static final long serialVersionUID = -4195274773048314961L;
@@ -38,6 +38,7 @@ public class KnowledgeBaseAgent extends JPSAgent {
 		String requestUrl = req.getRequestURL().toString();
 		String path = req.getPathInfo();
 		JSONObject input = Http.readJsonParameter(req);
+		logger.info("GET JSONPARAMS: " + input.toString());
 		String sparql = MiscUtil.optNullKey(input, JPSConstants.QUERY_SPARQL_QUERY);
 		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
 		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
@@ -84,6 +85,7 @@ public class KnowledgeBaseAgent extends JPSAgent {
 		String requestUrl = req.getRequestURL().toString();
 		String path = req.getPathInfo();
 		JSONObject input = Http.readJsonParameter(req);
+		logger.info("PUT JSONPARAMS: " + input.toString());
 		String sparql = MiscUtil.optNullKey(input, JPSConstants.QUERY_SPARQL_UPDATE);
 		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
 		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
