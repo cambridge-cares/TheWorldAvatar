@@ -51,15 +51,6 @@ public class SparqlGeneral {
         result = kbClient.executeQuery(); 
         return result;
     }
-
-	public static TriplePattern[] GetScalarTP(Iri Property, Iri PropertyValue, double value, Iri unit) {
-    	TriplePattern Property_tp = Property.has(hasValue,PropertyValue);
-    	TriplePattern PropertyValue_tp = PropertyValue.isA(ScalarValue)
-    			.andHas(numericalValue,value)
-    			.andHas(hasUnitOfMeasure,unit);
-    	TriplePattern [] combined_tp = {Property_tp,PropertyValue_tp};
-    	return combined_tp;
-    }
 	
 	/** 
 	 * inserts triples into the query

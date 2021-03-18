@@ -5,7 +5,6 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
@@ -133,6 +132,8 @@ public class ShipSparql {
      */
     public static void createShip(int i, int mmsi, String type, int al, int aw, double ss, double cu,
             double lat, double lon, int timestamp) {
+    	ModifyQuery modify = Queries.MODIFY();
+    	
         String ship_name = "ship"+i;
         Iri ship_iri = p_ship.iri(ship_name);
         Iri chimney_iri = p_ship.iri(ship_name+"_Chimney");
@@ -208,11 +209,11 @@ public class ShipSparql {
         TriplePattern [] combined_tp = {ship_tp,mmsi_tp,vmmsi_tp,type_tp,vtype_tp,length_tp,vlength_tp,beam_tp,vbeam_tp,
                 speed_tp,vspeed_tp,course_tp,vcourse_tp,time_tp,projected_gp,xcoord_tp,ycoord_tp,vxcoord_tp,vycoord_tp};
 
-        combined_tp = ArrayUtils.addAll(combined_tp, GetChimneyTP(ship_name,chimney_iri));
+        InsertChimneyTP(modify,ship_name,chimney_iri);
         
         Prefix [] prefix_list = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_time,p_SI_unit,p_plant,p_technical,
-        		p_process,p_topology,p_chemprocess,p_behaviour,p_phase_system,p_geometry,p_material,p_substance};
-        ModifyQuery modify = Queries.MODIFY();
+        		p_process,p_topology,p_chemprocess,p_behaviour,p_phase_system,p_geometry,p_material,p_substance,p_chemspecies,p_pseudo};
+        
         modify.prefix(prefix_list).insert(combined_tp).where().with(ship_graph);
 
         SparqlGeneral.performUpdate(modify);
@@ -341,7 +342,7 @@ public class ShipSparql {
     	return result;
     }
     
-    private static TriplePattern[] GetChimneyTP(String ship_name, Iri chimney_iri) {
+    private static void InsertChimneyTP(ModifyQuery modify, String ship_name, Iri chimney_iri) {
     	String chimney = "_Chimney";
     	Iri diameter = p_ship.iri(ship_name+chimney+"Diameter");
     	Iri v_diameter = p_ship.iri(ship_name+chimney+"DiameterValue");
@@ -376,10 +377,10 @@ public class ShipSparql {
     			.andHas(realizes,release);
     	
     	TriplePattern diameter_tp = diameter.isA(p_ship.iri("DimensionOfBow"));
-    	TriplePattern[] v_diameter_tp = SparqlGeneral.GetScalarTP(diameter,v_diameter,1.0,unit_m);
+    	SparqlGeneral.InsertScalarTP(modify,diameter,v_diameter,1.0,unit_m);
     	
     	TriplePattern height_tp = height.isA(p_ship.iri("DimensionOfBow"));
-    	TriplePattern[] v_height_tp = SparqlGeneral.GetScalarTP(height,v_height,20.0,unit_m);
+    	SparqlGeneral.InsertScalarTP(modify,height,v_height,20.0,unit_m);
     	
     	TriplePattern release_tp = release.isA(p_process.iri("ReleaseEmission")).andHas(hasOutput,wasteproduct);
     	TriplePattern waste_tp = wasteproduct.isA(p_process.iri("NonReusableWasteProduct")).andHas(refersToGeneralizedAmount,generalizedamount);
@@ -392,10 +393,10 @@ public class ShipSparql {
     	// particle total flowrate
     	TriplePattern particulateamount_tp = particulateamount.isA(p_behaviour.iri("ParticulateMaterialAmount")).andHas(hasProperty,particlerate);
     	TriplePattern particlerate_tp = particlerate.isA(ConvectiveMassFlowrate);
-    	TriplePattern[] particleratevalue_tp = SparqlGeneral.GetScalarTP(particlerate,particleratevalue,0,unit_kg_per_s);
+    	SparqlGeneral.InsertScalarTP(modify,particlerate,particleratevalue,0,unit_kg_per_s);
     	
     	TriplePattern massflow_tp = massflow.isA(ConvectiveMassFlowrate);
-    	TriplePattern[] massflowvalue_tp = SparqlGeneral.GetScalarTP(massflow,massflowvalue,0,unit_kg_per_s);
+    	SparqlGeneral.InsertScalarTP(modify,massflow,massflowvalue,0,unit_kg_per_s);
     	
     	TriplePattern materialamount_tp = materialamount.isA(p_behaviour.iri("MaterialAmount"))
     			.andHas(refersToMaterial,material);
@@ -408,33 +409,22 @@ public class ShipSparql {
     			.andHas(has_density,density);
     	
     	TriplePattern cp_tp = cp.isA(ThermodynamicStateProperty);
-    	TriplePattern[] cpvalue_tp = SparqlGeneral.GetScalarTP(cp,cp_value,0,unit_JperkgK);
+    	SparqlGeneral.InsertScalarTP(modify,cp,cp_value,0,unit_JperkgK);
     	
     	TriplePattern temperature_tp = temperature.isA(p_phase_system.iri("Temperature"));
-    	TriplePattern[] tempvalue_tp = SparqlGeneral.GetScalarTP(temperature,temperature_value,0,unit_celcius);
+    	SparqlGeneral.InsertScalarTP(modify,temperature,temperature_value,0,unit_celcius);
     	
     	TriplePattern pressure_tp = pressure.isA(p_phase_system.iri("Pressure"));
-    	TriplePattern[] pressurevalue_tp = SparqlGeneral.GetScalarTP(pressure,pressure_value,0,unit_bar);
+        SparqlGeneral.InsertScalarTP(modify,pressure,pressure_value,0,unit_bar);
     	
     	TriplePattern molWeight_tp = molWeight.isA(MolecularWeight);
-    	TriplePattern[] molWeightValue_tp = SparqlGeneral.GetScalarTP(molWeight, molWeightValue, 0, unit_kg_per_mol);
+    	SparqlGeneral.InsertScalarTP(modify,molWeight, molWeightValue, 0, unit_kg_per_mol);
     	
     	TriplePattern density_tp = density.isA(p_phase_system.iri("Density"));
-    	TriplePattern[] densityvalue_tp = SparqlGeneral.GetScalarTP(density, densityValue, 0, unit_kg_m3);
+    	SparqlGeneral.InsertScalarTP(modify, density, densityValue, 0, unit_kg_m3);
     	
     	TriplePattern [] combined_tp = {pipe_tp,diameter_tp,height_tp,release_tp,waste_tp,particulateamount_tp,particlerate_tp,
     			amount_tp,massflow_tp,materialamount_tp,material_tp,singlephase_tp,cp_tp,temperature_tp,pressure_tp,molWeight_tp,density_tp};
-    	
-    	// the values triples are arrays
-    	combined_tp = ArrayUtils.addAll(combined_tp, v_height_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, v_diameter_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, cpvalue_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, tempvalue_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, pressurevalue_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, molWeightValue_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, massflowvalue_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, densityvalue_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, particleratevalue_tp);
     	
     	// 1 mixture for each species
     	for (int i=0; i < 7; i++) {
@@ -442,22 +432,21 @@ public class ShipSparql {
     		Iri massFlow = p_ship.iri(ship_name+chimney+"MassFlow"+String.valueOf(i+1));
     		Iri massFlowValue = p_ship.iri(ship_name+chimney+"MassFlowValue"+String.valueOf(i+1));
     		Iri mixtureSpecies = p_ship.iri(ship_name+chimney+"MixtureSpecies"+String.valueOf(i+1));
-    		TriplePattern[] mixture_tp = GetMixtureTP(material,mixture,mixtureSpecies,species[i],massFlow,massFlowValue);
-    		combined_tp = ArrayUtils.addAll(combined_tp, mixture_tp);
+    		InsertMixtureTP(modify,material,mixture,mixtureSpecies,species[i],massFlow,massFlowValue);
     	}
     	
     	for (int i = 0; i < getParticleNumber(); i++) {
-    		TriplePattern[] particle_tp = getParticleTP(ship_name,particulateamount,i+1);
-    		combined_tp = ArrayUtils.addAll(combined_tp, particle_tp);
+    		InsertParticleTP(modify,ship_name,particulateamount,i+1);
     	}
-    	return combined_tp;
+    	
+    	modify.insert(combined_tp);
     }
     
     /**
      * Provide graph for each particle
      * @param particulateamount
      */
-    private static TriplePattern [] getParticleTP(String ship_name, Iri particulateAmount, Integer particle_index) {
+    private static void InsertParticleTP(ModifyQuery modify, String ship_name, Iri particulateAmount, Integer particle_index) {
     	String chimney = "_Chimney";
     	Iri particle_iri = p_ship.iri(ship_name+chimney+"Particle" + particle_index);
     	Iri massfraction_iri = p_ship.iri(ship_name+chimney+"ParticleMassFraction"+particle_index);
@@ -478,16 +467,12 @@ public class ShipSparql {
     	TriplePattern vmass_tp = vmassfraction_iri.isA(p_system.iri("ScalarValue")).andHas(numericalValue,0);
     	
     	TriplePattern density_tp = density_iri.isA(p_phase_system.iri("Density"));
-    	TriplePattern[] densityvalue_tp = SparqlGeneral.GetScalarTP(density_iri, vdensity_iri, 0, unit_kg_m3);
+    	SparqlGeneral.InsertScalarTP(modify, density_iri, vdensity_iri, 0, unit_kg_m3);
     	
     	TriplePattern diameter_tp = diameter_iri.isA(p_geometry.iri("Diameter"));
-    	TriplePattern[] diametervalue_tp = SparqlGeneral.GetScalarTP(diameter_iri, vdiameter_iri, 0, unit_m);
+    	SparqlGeneral.InsertScalarTP(modify, diameter_iri, vdiameter_iri, 0, unit_m);
     	
-    	TriplePattern[] combined_tp = {entity_tp,particle_tp,mass_tp,vmass_tp,density_tp,diameter_tp};
-    	
-    	combined_tp = ArrayUtils.addAll(combined_tp, densityvalue_tp);
-    	combined_tp = ArrayUtils.addAll(combined_tp, diametervalue_tp);
-    	return combined_tp;
+    	modify.insert(entity_tp,particle_tp,mass_tp,vmass_tp,density_tp,diameter_tp);
     }
     
     /**
@@ -506,7 +491,7 @@ public class ShipSparql {
      * @param MassFlowValue
      */
     
-    private static TriplePattern[] GetMixtureTP(Iri material, Iri mixture, Iri species, Iri species_type, Iri massFlow, Iri massFlowValue) {
+    private static void InsertMixtureTP(ModifyQuery modify,Iri material, Iri mixture, Iri species, Iri species_type, Iri massFlow, Iri massFlowValue) {
     	Iri Mixture = iri("http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Mixture");
         
     	TriplePattern material_tp = material.has(intrinsicCharacteristics,mixture);
@@ -514,11 +499,9 @@ public class ShipSparql {
         		.andHas(hasProperty,massFlow);
         TriplePattern species_tp = species.isA(species_type);
         TriplePattern massFlow_tp = massFlow.isA(ConvectiveMassFlowrate);
-        TriplePattern[] value_tp = SparqlGeneral.GetScalarTP(massFlow,massFlowValue,0.0,unit_kg_per_s);
+        SparqlGeneral.InsertScalarTP(modify,massFlow,massFlowValue,0.0,unit_kg_per_s);
         
-        TriplePattern[] combined_tp = {material_tp,mixture_tp,massFlow_tp,species_tp};
-        combined_tp = ArrayUtils.addAll(combined_tp, value_tp);
-        return combined_tp;
+        modify.insert(material_tp,mixture_tp,massFlow_tp,species_tp);
     }
     
     public static void UpdateShipChimney(String ship_iri_string,Chimney chim) {
