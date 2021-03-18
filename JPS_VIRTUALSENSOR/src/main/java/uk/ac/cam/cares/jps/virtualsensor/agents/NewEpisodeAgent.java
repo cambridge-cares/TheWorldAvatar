@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -67,27 +68,32 @@ public class NewEpisodeAgent extends JPSAgent{
 	public static final String FILE_NAME_3D_MAIN_CONC_DATA = "3D_instantanous_mainconc_center.dat";
 	public static final String FILE_NAME_ICM_HOUR = "icmhour.nc";
 	public static final String FILE_NAME_PLUME_SEGMENT = "plume_segments.dat";
-	public static final String FILE_NAME_SIM_IRI = "sim_iri.txt";
 	private static final String separator="\t";
 	Logger logger = LoggerFactory.getLogger(NewEpisodeAgent.class);
     
 	// episode parameters
-	private double dx_rec; // decide the dx for the receptor
-	private double dy_rec;// decide the dy for the receptor
-	private double z_rec;//decide the base receptor level
-	private int nx ;//decide the dx for the scope
-	private int ny;//decide the dy for the scope	
-	private double dz;
-	private int nz;
-	private double upperheight;
-	private double lowerheight;
-	private double deltaT;
+	private double dx_rec=100.0; //TODO hardcoded? decide the dx for the receptor
+	private double dy_rec=100.0;//TODO hardcoded? decide the dy for the receptor
+	private int nx=10 ;//decide the nx for the scope
+	private int ny=10 ;//decide the ny for the scope	
+	private double dz=20;//10 previously
+	private int nz=30;//13 previously
+	private double z_rec=9.5;
+	private double upperheight=25.0;
+	private double lowerheight=2.0;
+	//typical gradient = 0.6K/100m
+	//therefore deltaT= 0.23*0.6= 0.138
+	private double deltaT=0.138; //the unit is on K , not K/m 
 	boolean restart=false;
 	
 	//below is based on location input
 	private String epsgInUTM;//48N
 	private String epsgActive;
 	private String gmttimedifference; //it should be dependent on the location it simulates
+	
+	//keys
+	private String outputPathKey = "outputPath";
+	private String simStartKey = "simStart";
 	
 	/**
 	 * Main execution code
@@ -103,12 +109,9 @@ public class NewEpisodeAgent extends JPSAgent{
         	String sim_iri = requestParams.getString(DispSimSparql.SimKey);
         	String[] ship_iri = DispSimSparql.GetEmissionSources(sim_iri);
         	String mainstn_iri = DispSimSparql.GetMainStation(sim_iri);
-        	String[] substn_iri = DispSimSparql.GetSubStations(sim_iri);
-        	
-        	// this will be processed during output annotation
-            new QueryBroker().putLocal(Paths.get(dataPath,FILE_NAME_SIM_IRI).toString(), sim_iri);			
+        	String[] substn_iri = DispSimSparql.GetSubStations(sim_iri);		
 
-            // create a Scope object
+            // get scope for this simulation
             Scope sc = DispSimSparql.GetScope(sim_iri);
 
             // collect region specific properties
@@ -157,11 +160,10 @@ public class NewEpisodeAgent extends JPSAgent{
 //              if (restart==true) {//all the time must be true??
 //                  value=false;
 //              }
-                long millis = System.currentTimeMillis();
-                String executiontime=MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
-                jsonforslurm.put("runWholeScript",value);
-                jsonforslurm.put("datapath",outputPath);
-                jsonforslurm.put("expectedtime", executiontime);
+                jsonforslurm.put("runWholeScript",value); // read by citychem shell script
+                jsonforslurm.put(outputPathKey,outputPath); // used in output annotation
+                jsonforslurm.put(simStartKey, Instant.now().getEpochSecond()); // used in output annotation
+                jsonforslurm.put(DispSimSparql.SimKey, sim_iri); // used in output annotation
                 setUpJob(jsonforslurm.toString(),dataPath);
             } catch (IOException | SlurmJobException e) {
                 // TODO Auto-generated catch block
@@ -951,20 +953,24 @@ public class NewEpisodeAgent extends JPSAgent{
 	private boolean annotateOutputs(File jobFolder, String zipFilePath) throws SlurmJobException {
 		try {
 			System.out.println("Annotating output has started");
-			Path sim_iri_path = Paths.get(jobFolder.getAbsolutePath(), FILE_NAME_SIM_IRI);
-			String sim_iri = Files.readAllLines(sim_iri_path).get(0);
-
+			
+			String jsonPath = Paths.get(jobFolder.getAbsolutePath(), "input.json").toString();
+			File json = new File(jsonPath);
+			JSONObject jobInfo = new JSONObject(json);
+			String outputPath = jobInfo.getString(outputPathKey); // scenario folder written during job submission
+			long simStart = jobInfo.getLong(simStartKey);
+			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
+			
 			String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
-			String datapath = DispSimSparql.GetDataPath(sim_iri); // scenario folder written by Episode agent before job submission
-
+			
 			File file = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
-			String destinationUrl = Paths.get(datapath, FILE_NAME_3D_MAIN_CONC_DATA).toString();
+			String destinationUrl = Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA).toString();
 
 			File file2 = new File(Paths.get(destDir, FILE_NAME_ICM_HOUR).toString());
-			String destinationUrl2 = Paths.get(datapath, FILE_NAME_ICM_HOUR).toString();
+			String destinationUrl2 = Paths.get(outputPath, FILE_NAME_ICM_HOUR).toString();
 
 			File file3 = new File(Paths.get(destDir, FILE_NAME_PLUME_SEGMENT).toString());
-			String destinationUrl3 = Paths.get(datapath, FILE_NAME_PLUME_SEGMENT).toString();
+			String destinationUrl3 = Paths.get(outputPath, FILE_NAME_PLUME_SEGMENT).toString();
 
 			// copy to scenario folder
 			new QueryBroker().putLocal(destinationUrl, file); 
@@ -973,6 +979,7 @@ public class NewEpisodeAgent extends JPSAgent{
 			System.out.println("metadata annotation started");
 
 			// update triple-store
+			DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart);
 
 			System.out.println("metadata annotation finished");
 		} catch (Exception e) {
