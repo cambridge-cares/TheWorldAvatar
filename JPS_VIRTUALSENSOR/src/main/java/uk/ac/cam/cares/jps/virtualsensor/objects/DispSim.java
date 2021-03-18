@@ -5,7 +5,7 @@ import uk.ac.cam.cares.jps.base.region.Scope;
 public class DispSim {
     private int nx;
     private int ny;
-    private double[] z;
+    private double[] dz;
     private Scope sc;
     private int numSubStations;
     private String serviceAgent;
@@ -29,11 +29,11 @@ public class DispSim {
 	public void setScope(Scope sc) {
 		this.sc = sc;
 	}
-	public double[] getZ() {
-		return z;
+	public double[] getDz() {
+		return dz;
 	}
-	public void setZ(double[] z) {
-		this.z = z;
+	public void setDz(double[] dz) {
+		this.dz = dz;
 	}
 	public int getNumSubStations() {
 		return numSubStations;

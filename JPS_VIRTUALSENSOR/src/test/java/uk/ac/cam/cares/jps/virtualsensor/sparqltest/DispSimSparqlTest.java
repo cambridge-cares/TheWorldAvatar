@@ -18,6 +18,7 @@ public class DispSimSparqlTest extends TestCase{
     	SimCRS[2] = "EPSG:2326";
     	SimCRS[3] = "EPSG:32650";
     	SimCRS[4] = "EPSG:32630";
+    	double[] dz = {10,10,15,25,40,100,300,500,500,500,500,500,500};
     	for (int i=1; i<6; i++) {
 	    	JSONObject jo_region = new JSONObject();
 	        Region.putRegion(jo_region, i);
@@ -30,12 +31,13 @@ public class DispSimSparqlTest extends TestCase{
 	    	sim.setNumSubStations(1);
 	    	sim.setServiceAgent(episode_iri);
 	    	sim.setSimCRS(SimCRS[i-1]);
+	    	sim.setDz(dz);
 	    	DispSimSparql.InitSim(i, sim);
     	}
     }
     
     public void testGetScope() {
-    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
     	DispSimSparql.GetScope(sim_iri);
     }
     
@@ -97,14 +99,19 @@ public class DispSimSparqlTest extends TestCase{
     	DispSimSparql.GetSimCRS(sim_iri);
     }
     
-    public void testAddDataPath() {
+    public void testAddOutputPath() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
     	String dataPath = QueryBroker.getLocalDataPath();
-    	DispSimSparql.AddDataPath(sim_iri, dataPath);
+    	DispSimSparql.AddOutputPath(sim_iri, dataPath,1);
     }
     
-    public void testGetDataPath() {
+    public void testGetOutputPath() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
-    	DispSimSparql.GetDataPath(sim_iri);
+    	DispSimSparql.GetOutputPath(sim_iri);
+    }
+    
+    public void testGetNumOutput() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.GetNumOutput(sim_iri);
     }
 }
