@@ -62,6 +62,22 @@ public class SparqlGeneral {
     }
 	
 	/** 
+	 * inserts triples into the query
+	 * @param modify
+	 * @param Property
+	 * @param PropertyValue
+	 * @param value
+	 * @param unit
+	 */
+	public static void InsertScalarTP(ModifyQuery modify, Iri Property, Iri PropertyValue, double value, Iri unit) {
+		TriplePattern Property_tp = Property.has(hasValue,PropertyValue);
+    	TriplePattern PropertyValue_tp = PropertyValue.isA(ScalarValue)
+    			.andHas(numericalValue,value)
+    			.andHas(hasUnitOfMeasure,unit);
+    	modify.insert(Property_tp,PropertyValue_tp);
+	}
+	
+	/** 
 	 * Sizes of predicates and RdfType need to be equal
 	 * @param Query
 	 * @param Predicates
