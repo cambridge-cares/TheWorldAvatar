@@ -121,6 +121,16 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.55</version>
 		</dependency>
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch.agentproxy.jsch</artifactId>
+			<version>0.0.9</version>
+		</dependency>
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch.agentproxy.pageant</artifactId>
+			<version>0.0.9</version>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
