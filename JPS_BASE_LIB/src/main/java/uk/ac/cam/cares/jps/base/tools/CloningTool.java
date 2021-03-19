@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.base.tools;
 
+import java.time.LocalDateTime;
+
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -23,19 +25,19 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 
 public class CloningTool {
 
-	String strTag = "_Tag"; 
-	boolean splitUpdate = true;
-	int stepSize = 1000000;
+	String strTag; 		//Tag ending
+	boolean splitUpdate;
+	int stepSize;
+	int countTotal = 0;	//Total number of triple to clone
 	
-	//// Sparql variables
+	///////////////////////// SPARQL variables
 	
-	// Expression factory
-	ExprFactory exprFactory = new ExprFactory();
+	static ExprFactory exprFactory = new ExprFactory();
 		
-	// Count sparql variable
+	// Count variable
 	static String varCount = "count";
 	
-	// new s	
+	// new s
 	static Var newS = Var.alloc("newS");
 	
 	// old s, p, o
@@ -45,141 +47,263 @@ public class CloningTool {
 	static ExprVar exprS = new ExprVar(varS);
 	static ExprVar exprP = new ExprVar(varP);
 	static ExprVar exprO = new ExprVar(varO);
+	// STR(?s)
+	static Expr exprStrS = exprFactory.str(exprS);
 	
+	///////////////////////// Constructors
 	
-	public void setUpdateSize(int stepSize) {
+	/**
+	 * Default constructor. Cloning split over multiple operations of 1 million triples
+	 */
+	CloningTool(){
+		//set defaults
+		splitUpdate = true;
+		stepSize = 1000000;
+	}
+	
+	/**
+	 * Constructor to set number of triples cloned per step. Cloning is split over multiple operations. 
+	 * @param stepSize
+	 */
+	CloningTool(int stepSize){
+		//set defaults
+		splitUpdate = true;
 		this.stepSize = stepSize;
 	}
 	
-	public void perfrom(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+	//TODO constructor for single step?
+	
+	///////////////////////// Set variables
+	
+	/**
+	 * Set number of triples cloned per step
+	 * @param stepSize
+	 */
+	public void setCloneSize(int stepSize) {
+		this.stepSize = stepSize;
+	}
+	
+	/**
+	 * Perform clone as a single operation
+	 */
+	public void setSingleStepClone() {
+		this.splitUpdate = false;
+	}
+
+	///////////////////////// Clone methods
+	
+	//TODO: check if context is lost
+	/**
+	 * Clone all triples from source repository to target repository.
+	 * @param sourceKB
+	 * @param targetKB
+	 */  
+	public void clone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB) {
+		clone(sourceKB, targetKB, null);
+	}
+	
+	/**
+	 * Clone a named graph from the source knowledge base to a named graph in the target knowledge base.
+	 * @param sourceKB
+	 * @param targetKB
+	 * @param graph
+	 */
+	public void clone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+
+		WhereBuilder whereCountAll = new WhereBuilder()
+				.addWhere(varS, varP, varO);		    
+	    countTotal = countTriples(sourceKB, graph, whereCountAll);
+	    
+		if(splitUpdate == false) {
+			performSingleClone(sourceKB, targetKB, graph);
+		}else {
+			//perform using single step process if count <= stepsize    
+		    if(countTotal <= stepSize) {
+		    	performSingleClone(sourceKB, targetKB, graph);
+		    }else {
+		    	performClone(sourceKB, targetKB, graph);
+		    }
+		}
 		
+		//TODO check count here
+	}
+	
+	//TODO: check graph clone : is context lost?
+	/**
+	 * Clone graph from source knowledge base to target knowledge base in a single step.
+	 * @param sourceKB
+	 * @param targetKB
+	 * @param graph
+	 */
+	public void performSingleClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
 		
-		////////////////////////////////  0
+		//Get model using construct query
+		Query construct = buildSparqlConstruct(graph);
+		Model results = sourceKB.queryConstruct(construct);
 		
-		//count triples excluding blanks
+		//Update target
+		UpdateRequest update = buildSparqlUpdate(graph, results);
+		targetKB.executeUpdate(update);
+	}
+	
+	//TODO: check graph clone
+	//TODO: describe method
+	/**
+	 * Clone graph from source knowledge base to target knowledge base over multiple steps.
+	 * @param sourceKB
+	 * @param targetKB
+	 * @param graph
+	 */
+	public void performClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+		
+		createTag(sourceKB);
+
+		// Count triples excluding blanks
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
 				.addFilter(exprFilterOutBlanks());
-		String query = countQuery(graph, whereCount);
-		
-		JSONArray result = sourceKB.executeQuery(query);
-	    JSONObject jsonobject = result.getJSONObject(0);
-	    int count = jsonobject.getInt(varCount);
-		
+	    int count = countTriples(sourceKB, graph, whereCount);
 		int steps = count/stepSize;
 		if(count%stepSize > 0) {steps++;}
-		
-		//////////////////////////////// Loop
-		
-		//loop over splits 
+				 
 		for(int i = 0; i<steps; i++) {
-			
-			//Iterate tag
+			// Iterate tag
 			Expr exprTagN = buildExprTagN(i);
 			
-			// tag
-			WhereBuilder whereNotTagged = whereNotTagged(exprTagN);
+			// Add tag to source
+			WhereBuilder whereNotTagged = new WhereBuilder()
+					.addWhere(varS, varP, varO)
+					.addFilter(exprFilterOutBlanks())
+					.addFilter(exprNotTagged())
+					.addBind(exprFactory.iri(exprFactory.concat(exprStrS,exprTagN)), newS);
 			UpdateRequest tagUpdate = buildTagUpdate(graph, whereNotTagged, stepSize); 
 			sourceKB.executeUpdate(tagUpdate);
 			
-			// construct model 
-			WhereBuilder whereConstruct = whereConstruct(exprTagN);
-			Query constructQuery = buildConstruct(graph, whereConstruct);
+			// Get triples 
+			WhereBuilder whereConstructTagged = new WhereBuilder()
+					.addWhere(varS, varP, varO)
+					.addFilter(exprFactory.strends(exprStrS, exprTagN));
+			Query constructQuery = buildConstruct(graph, whereConstructTagged);
 			Model triples = sourceKB.queryConstruct(constructQuery);
 			
-			//remove tag from model going to target
-			WhereBuilder whereTagged = whereTaggedAll(exprTagN);
-			UpdateRequest removeTagUpdate = buildTagUpdate(graph, whereTagged, stepSize);
-			
+			// Remove tag from triples going to target
+			WhereBuilder whereRemoveTag = new WhereBuilder()
+					.addWhere(varS, varP, varO)
+					.addBind(exprBindIriRemovedTag(exprTagN), newS);
+			UpdateRequest removeTagUpdate = buildTagUpdate(graph, whereRemoveTag, stepSize);
 			Dataset dataset = DatasetFactory.create(triples);
 			UpdateProcessor updateExec = UpdateExecutionFactory.create(removeTagUpdate, dataset);
 			updateExec.execute();
 		
-			//insert to target
+			// Insert triples to target
 			UpdateRequest update = buildInsert(graph, dataset.getDefaultModel());
 			targetKB.executeUpdate(update);
 		}
 		
-		//Clone everything not tagged (blank nodes)
-		// construct model 
-		WhereBuilder whereConstruct = whereConstructAll();
+		// Clone everything that is not tagged i.e. blank nodes
+		Expr filterTag = exprFactory.or(
+				exprNotTagged(),
+				exprFactory.isBlank(exprS));
+		WhereBuilder whereConstruct = new WhereBuilder()
+				.addWhere(varS, varP, varO)
+				.addFilter(filterTag);
 		Query constructQuery = buildConstruct(graph, whereConstruct);
 		Model triples = sourceKB.queryConstruct(constructQuery);
-		
-		//insert to target
 		UpdateRequest update = buildInsert(graph, triples);
 		targetKB.executeUpdate(update);
 		
-		//loop to remove tags from source
+		// Remove tags from source
 		for(int i = 0; i<steps; i++) {
-			//Iterate tag
 			Expr exprTagN = buildExprTagN(i);
-			
-			// remove tags
-			WhereBuilder whereTagged = whereTagged(exprTagN);
+			WhereBuilder whereTagged = new WhereBuilder()
+					.addWhere(varS, varP, varO)
+					.addFilter(exprFactory.strends(exprStrS, exprTagN)) //TODO necessary
+					.addBind(exprBindIriRemovedTag(exprTagN), newS);
 			UpdateRequest tagUpdate = buildTagUpdate(graph, whereTagged, stepSize);
 			sourceKB.executeUpdate(tagUpdate);
 		}
-		
-		//count triples
-		whereCount = new WhereBuilder()
+	}
+	
+	//TODO add more checks?
+	/**
+	 * Check the number of triples in target matches source
+	 * @return
+	 */
+	public boolean checkCount(KnowledgeBaseClient kbClient, String graph) {
+
+		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO);
-		query = countQuery(graph, whereCount);
-		
-		result = sourceKB.executeQuery(query);
-	    jsonobject = result.getJSONObject(0);
-	    int countSource = jsonobject.getInt(varCount);
+	    int count = countTriples(kbClient, graph, whereCount);
 	    
-	    result = targetKB.executeQuery(query);
-	    jsonobject = result.getJSONObject(0);
-	    int countTarget = jsonobject.getInt(varCount);
-	    
-	    System.out.println("Source count:"+countSource);
-	    System.out.println("Target count:"+countTarget);
+	    return count == countTotal;
 	}
 	
-	private static UpdateRequest buildInsert(String graph, Model triples) {
+	/////////////////////////
+	
+	//DONE
+	/**
+	 * Creates a tag by hashing the source KB endpoint and current date and time.
+	 * @param sourceKB
+	 */
+	private void createTag(KnowledgeBaseClient kbClient) {
+		LocalDateTime dateTime = LocalDateTime.now();
+		String name = kbClient.getQueryEndpoint() + dateTime.toString();
+		int hash = name.hashCode();
+		if(hash < 0) {hash *= -1;};
+		strTag = "_Tag"+String.valueOf(hash);
+	}
+	
+	///////////////////////// Count
+	
+	//DONE
+	/**
+	 * Count triples in knowledge base client matching where statement.
+	 * @param source knowledge base client
+	 * @param graph (can be null)
+	 * @param where statement
+	 * @return
+	 */
+	private int countTriples(KnowledgeBaseClient kbClient, String graph, WhereBuilder where) {
+		String query = countQuery(graph, where);
+		JSONArray result = kbClient.executeQuery(query);
+	    JSONObject jsonobject = result.getJSONObject(0);
+	    return jsonobject.getInt(varCount);
+	}
+	
+	//DONE
+	/**
+	 * Build count query.
+	 * @param graph
+	 * @param whereFilter
+	 * @return
+	 */
+	private String countQuery(String graph, WhereBuilder whereFilter){
 		
-		UpdateBuilder builder = new UpdateBuilder();
-				
-		// Add insert
-		if (graph == null) {
-			//Default graph
-			builder.addInsert(triples);
-		}else {	
-			//Named graph
+		WhereBuilder where = null;
+
+		if (graph != null) {	
+			where = new WhereBuilder();
+			// Graph
 			String graphURI = "<" + graph + ">";
-			builder.addInsert(graphURI, triples);	
+			where.addGraph(graphURI, whereFilter);
+		}else {
+			where = whereFilter;
 		}
-	
-		return builder.buildRequest();
-	}
-	
-	private WhereBuilder whereConstructAll() {
 		
-		Expr exprStrS = exprFactory.str(exprS);
-		Expr filterTag = exprFactory.or(exprFactory.not(exprFactory.strends(exprStrS, strTag)),
-				exprFactory.isBlank(exprS));
-		
-		WhereBuilder where = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addFilter(filterTag);
-		
-		return where;
+		String query = "SELECT (COUNT(*) AS ?"+varCount+") ";
+		query += where.toString();
+		return query;
 	}
 
-	private WhereBuilder whereConstruct(Expr exprTagN) {
-		
-		Expr exprStrS = exprFactory.str(exprS);
-		Expr filterTag = exprFactory.strends(exprStrS, exprTagN);
-		
-		WhereBuilder where = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addFilter(filterTag);
-		
-		return where;
-	}
+	///////////////////////// Sparql query/update builder	
 	
+	//DONE
+	/**
+	 * Build construct query to get triples.
+	 * @param graph
+	 * @param where
+	 * @return
+	 */
 	private Query buildConstruct(String graph, WhereBuilder where) {
 		ConstructBuilder builder = new ConstructBuilder()
 				.addConstruct(varS, varP, varO);
@@ -197,7 +321,40 @@ public class CloningTool {
 		return builder.build();
 	}
 	
+	//DONE
+	/**
+	 * Build SPARQL update to insert triples
+	 * @param graph
+	 * @param triples
+	 * @return
+	 */
+	private static UpdateRequest buildInsert(String graph, Model triples) {
+		
+		UpdateBuilder builder = new UpdateBuilder();
+				
+		// Add insert
+		if (graph == null) {
+			//Default graph
+			builder.addInsert(triples);
+		}else {	
+			//Named graph
+			String graphURI = "<" + graph + ">";
+			builder.addInsert(graphURI, triples);	
+		}
+	
+		return builder.buildRequest();
+	}
+
+	//DONE
+	/**
+	 * Build SPARQL update to tag triples
+	 * @param graph
+	 * @param where
+	 * @param limit: number of triples to update
+	 * @return
+	 */
 	public UpdateRequest buildTagUpdate(String graph, WhereBuilder where, int limit) {
+		
 		// subquery selects new and old triples
 		SelectBuilder select = new SelectBuilder();
 		
@@ -230,59 +387,23 @@ public class CloningTool {
 		return builder.buildRequest();
 	}
 
+	///////////////////////// Common expressions for filters
 	
-	private WhereBuilder whereTaggedAll(Expr exprTagN) {
-			
-		Expr exprStrS = exprFactory.str(exprS);
-		
-		Expr bind = exprFactory.iri(exprFactory.replace(exprStrS, exprTagN, ""));
-				
-		WhereBuilder where = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addBind(bind, newS);
-		
-		return where;
-	}
-	
-	private WhereBuilder whereNotTagged(Expr exprTagN) {
-	
-		Expr filterOutBlanks = exprFilterOutBlanks();
-	
-		Expr exprStrS = exprFactory.str(exprS);
-		Expr filterNoTag = exprFactory.not(exprFactory.strends(exprStrS, strTag));
-		
-		Expr bind = exprFactory.iri(exprFactory.concat(exprStrS,exprTagN));
-				
-		WhereBuilder where = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addFilter(filterOutBlanks)
-				.addFilter(filterNoTag)
-				.addBind(bind, newS);
-		
-		return where;
-	}
-	
-	public WhereBuilder whereTagged(Expr exprTagN) {
-		
-		//Expr filterOutBlanks = exprFilterOutBlanks();	//not needed
-	
-		Expr exprStrS = exprFactory.str(exprS);
-		Expr filterTag = exprFactory.strends(exprStrS, exprTagN); //filter necessary?
-		
-		Expr bind = exprFactory.iri(exprFactory.replace(exprStrS, exprTagN, ""));
-				
-		WhereBuilder where = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addFilter(filterTag)
-				.addBind(bind, newS);
-		
-		return where;
-	}
-	
+	//DONE
+	/**
+	 * Create full tag with counter.
+	 * @param counter i
+	 * @return
+	 */
 	private Expr buildExprTagN(int i) {
 		return exprFactory.asExpr("_"+Integer.toString(i)+strTag);
 	}
 	
+	//DONE
+	/**
+	 * Expression to filer out triples with blank nodes.
+	 * @return
+	 */
 	private Expr exprFilterOutBlanks() {
 		// FILTER (!isblank(?s) && (!isblank(?p) && !isblank(?o))) 
 		return exprFactory.and(exprFactory.not(exprFactory.isBlank(exprS)),
@@ -290,21 +411,71 @@ public class CloningTool {
 								exprFactory.not(exprFactory.isBlank(exprO))));
 	}
 	
-	private String countQuery(String graph, WhereBuilder whereFilter){
-		
-		WhereBuilder where = null;
+	//DONE
+	/**
+	 * Expression to filter out tagged triples
+	 * @return
+	 */
+	private Expr exprNotTagged() {
+		return exprFactory.not(exprFactory.strends(exprStrS, strTag));
+	}
+	
+	//DONE
+	/**
+	 * Bind new IRI with tag removed
+	 * @param tag expression
+	 * @return
+	 */
+	private Expr exprBindIriRemovedTag(Expr exprTagN) {
+		return exprFactory.iri(exprFactory.replace(exprStrS, exprTagN, ""));
+	}
 
-		if (graph != null) {	
-			where = new WhereBuilder();
-			// Graph
-			String graphURI = "<" + graph + ">";
-			where.addGraph(graphURI, whereFilter);
-		}else {
-			where = whereFilter;
-		}
+	///////////////////////// SPARQL query builder for single step clone
+	
+	/**
+	 * Build sparql construct query to get triples.
+	 * @param graph/context (optional)
+	 * @return construct query
+	 */
+	private static Query buildSparqlConstruct(String graph) {
 		
-		String query = "SELECT (COUNT(*) AS ?"+varCount+") ";
-		query += where.toString();
-		return query;
+		ConstructBuilder builder = new ConstructBuilder()
+				.addConstruct(varS, varP, varO);
+				
+		// Add where 
+		if (graph == null) {
+			//Default graph
+			builder.addWhere(varS, varP, varO);
+		}else {	
+			//Named graph
+			String graphURI = "<" + graph + ">";
+			builder.addGraph(graphURI, varS, varP, varO);	
+		}
+	
+		return builder.build();
+	}
+	
+	/**
+	 * Build sparql update to insert triples.
+	 * @param graph
+	 * @param results
+	 * @return updaterequest
+	 */
+	private static UpdateRequest buildSparqlUpdate(String graph, Model results) {
+		
+		// Build update
+		UpdateBuilder builder = new UpdateBuilder();
+				
+		// Add insert
+		if (graph == null) {
+			//Default graph
+			builder.addInsert(results);
+		}else {	
+			//Named graph
+			String graphURI = "<" + graph + ">";
+			builder.addInsert(graphURI, results);	
+		}
+	
+		return builder.buildRequest();
 	}
 }
