@@ -74,10 +74,9 @@ public class NewEpisodeAgent extends JPSAgent{
 	// episode parameters
 	private double dx_rec=100.0; //TODO hardcoded? decide the dx for the receptor
 	private double dy_rec=100.0;//TODO hardcoded? decide the dy for the receptor
-	private int nx=10 ;//decide the nx for the scope
-	private int ny=10 ;//decide the ny for the scope	
-	private double dz=20;//10 previously
-	private int nz=30;//13 previously
+	private int nx;//decide the nx for the scope
+	private int ny;//decide the ny for the scope	
+	private double[] dz;//10 previously
 	private double z_rec=9.5;
 	private double upperheight=25.0;
 	private double lowerheight=2.0;
@@ -109,7 +108,10 @@ public class NewEpisodeAgent extends JPSAgent{
         	String sim_iri = requestParams.getString(DispSimSparql.SimKey);
         	String[] ship_iri = DispSimSparql.GetEmissionSources(sim_iri);
         	String mainstn_iri = DispSimSparql.GetMainStation(sim_iri);
-        	String[] substn_iri = DispSimSparql.GetSubStations(sim_iri);		
+        	String[] substn_iri = DispSimSparql.GetSubStations(sim_iri);
+        	nx = DispSimSparql.GetNx(sim_iri);
+        	ny = DispSimSparql.GetNy(sim_iri);
+        	dz = DispSimSparql.GetDz(sim_iri);
 
             // get scope for this simulation
             Scope sc = DispSimSparql.GetScope(sim_iri);
@@ -148,7 +150,6 @@ public class NewEpisodeAgent extends JPSAgent{
             File inputfile=null;
             try {
                 inputfile=getZipFile(inputPath);
-
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -425,7 +426,7 @@ public class NewEpisodeAgent extends JPSAgent{
 		double[] dcell = calculateEachDistanceCellDetails(procupx, procupy, proclowx, proclowy, nx, ny);
 
 		if (filename.contentEquals("aermap.inp")) { // assume srtm=1
-			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir", filename).toString());
 			fileContext = FileUtils.readFileToString(file);
 			int sizeofsrtm=inputparameter.getJSONArray("srtminput").length();
 			String srtmin1 = inputparameter.getJSONArray("srtminput").get(0).toString();
@@ -466,7 +467,7 @@ public class NewEpisodeAgent extends JPSAgent{
 		} else if (filename.contains("cctapm_meta_LSE")||filename.contains("cctapm_meta_PSE")) {
 			int size = inputparameter.getInt("sourceinput");
             String lseORpse=filename.split("_")[2].split(".inp")[0];     
-            File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/cctapm_meta.inp");
+            File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir","cctapm_meta.inp").toString());
    			fileContext = FileUtils.readFileToString(file);   
 			String[] line = fileContext.split("\n");
 			List<String> lineoffile = Arrays.asList(line);
@@ -523,7 +524,7 @@ public class NewEpisodeAgent extends JPSAgent{
 				line502="../INPUT/other/icmhour.nc"+"\n";
 				restartindex=1;	
 			}
-			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir", filename).toString());
 			fileContext = FileUtils.readFileToString(file);
 			String timeinput=time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0];
 			fileContext=fileContext.replace("20191118_20191118", timeinput+"_"+timeinput);
@@ -564,14 +565,14 @@ public class NewEpisodeAgent extends JPSAgent{
 			for (int r = 52; r < 55; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(nx+","+ny+","+nz+","+"1,1,1\n"); //line 56
+			newcontent.add(nx+","+ny+","+dz.length+","+"1,1,1\n"); //line 56
 			for (int r = 56; r < 61; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
 			String line62=dcell[0]+","+dcell[1];
 			String line62b="";
-			for(int x=0;x<nz;x++) {
-				line62b=line62b+","+dz;
+			for(int x=0;x<dz.length;x++) {
+				line62b=line62b+","+dz[x];
 			}
 			newcontent.add(line62+line62b+"\n"); //line 62
 			for (int r = 62; r < 93; r++) {
@@ -612,7 +613,7 @@ public class NewEpisodeAgent extends JPSAgent{
 			}
 			String segmentfraction="0.25";
 			String line650=segmentfraction;
-			for(int x=0;x<nz;x++) {
+			for(int x=0;x<dz.length;x++) {
 				line650=line650+","+segmentfraction;
 			}
 			newcontent.add(line650+"\n"); //line 650
@@ -629,7 +630,7 @@ public class NewEpisodeAgent extends JPSAgent{
 			return contentupdate;
 
 		} else if (filename.contentEquals("run_file.asc")) {
-			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir", filename).toString());
 			fileContext = FileUtils.readFileToString(file);
 			String timeinput=time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0];
 			fileContext=fileContext.replaceAll("20191118_20191118", timeinput+"_"+timeinput);
@@ -679,7 +680,7 @@ public class NewEpisodeAgent extends JPSAgent{
 			newcontent.add(lineoffile.get(25));
 			String line26b = lineoffile.get(26).split("!")[1] + "!" + lineoffile.get(26).split("!")[2] + "!"
 					+ lineoffile.get(26).split("!")[3];
-			String line26 = " "+nx + " " + ny + " " + nz + separator + "!" + line26b;
+			String line26 = " "+nx + " " + ny + " " + dz.length + separator + "!" + line26b;
 			newcontent.add(line26);
 			System.out.println("line26= " + line26);
 
@@ -687,10 +688,10 @@ public class NewEpisodeAgent extends JPSAgent{
 			String line27 = " "+dcell[0] + " " + dcell[1] + separator + "!" + line27b;
 			newcontent.add(line27);
 			System.out.println("line27= " + line27);
-			newcontent.add(lineoffile.get(28));// base with stretch factor
-			newcontent.add(lineoffile.get(29));// base
-			for (int r = 1; r < nz; r++) {
-				newcontent.add(" "+dz + separator + "!" + "\n");
+			String stretchfactor = "-1.25";
+			newcontent.add(" "+String.valueOf(dz[0])+" "+stretchfactor+"\n");// base with stretch factor
+			for (int r = 0; r < dz.length; r++) {
+				newcontent.add(" "+dz[r] + separator + "!" + "\n");
 			}
 			for (int r = 42; r < 73; r++) {
 				newcontent.add(lineoffile.get(r));
@@ -953,10 +954,8 @@ public class NewEpisodeAgent extends JPSAgent{
 	private boolean annotateOutputs(File jobFolder, String zipFilePath) throws SlurmJobException {
 		try {
 			System.out.println("Annotating output has started");
-			
-			String jsonPath = Paths.get(jobFolder.getAbsolutePath(), "input.json").toString();
-			File json = new File(jsonPath);
-			JSONObject jobInfo = new JSONObject(json);
+
+			JSONObject jobInfo = new JSONObject(Files.readAllLines(Paths.get(jobFolder.getAbsolutePath(), "input.json")).get(0));
 			String outputPath = jobInfo.getString(outputPathKey); // scenario folder written during job submission
 			long simStart = jobInfo.getLong(simStartKey);
 			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
