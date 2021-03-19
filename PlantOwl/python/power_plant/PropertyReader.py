@@ -64,6 +64,7 @@ def readABoxFileExtension():
     aboxFileExtension = config.get('FileSection', 'kb.abox.file.extension')
     return aboxFileExtension
 
+
 if __name__ == '__main__':
     """Shows the default values available in the property file"""
     print(readTBoxIRI())

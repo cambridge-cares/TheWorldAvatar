@@ -59,12 +59,12 @@ def select_files():
     folder_path=select_folder()
     os.chdir(folder_path)
     filepaths=[]
+    abox_name=[]
     for file in glob.glob("*.csv"):
         csv_filepath=folder_path+'/'+file
+        abox_name.append(file.strip('.csv'))
         filepaths.append(csv_filepath)
-    return(filepaths)
-    print(filepaths)
-
+    return(filepaths,abox_name)
 
 """This function checks the validity of header in the ABox excel template"""
 def is_header_valid(row):
@@ -201,6 +201,9 @@ def convert_into_rdf(file_path):
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
     files=[]
-    files=select_files()
-    for i in files:
+    abox_filename=[]
+    files,abox_filename=select_files()
+    for (i,j) in zip(files,abox_filename):
+        propread.setABoxFileName(j)
+        propread.setABoxFileExtension('.owl')
         convert_into_rdf(i)
