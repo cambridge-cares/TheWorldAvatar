@@ -14,10 +14,12 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
+import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -423,15 +425,26 @@ public class DispSimSparql {
 		SparqlGeneral.performUpdate(insertQuery);
 	}
 	
-	public static String GetOutputPath(String sim_iri_string) {
+	public static String GetLatestOutputPath(String sim_iri_string) {
+		SelectQuery query = Queries.SELECT();
+		
 		Iri sim_iri = iri(sim_iri_string);
 		
 		String queryKey = "outputPath";
 		Variable outputPath = SparqlBuilder.var(queryKey);
-		TriplePattern queryPattern = sim_iri.has(hasOutputPath,outputPath);
+		Variable timeStamp = query.var();
 		
-		SelectQuery query = Queries.SELECT();
-		query.from(FromGraph).select(outputPath).where(queryPattern).prefix(p_dispsim);
+		TriplePattern output_gp = sim_iri.has(hasOutputPath,outputPath);
+		
+		Iri[] path2time_predicates = {hasTime,numericPosition};
+		GraphPattern path2time_gp = SparqlGeneral.GetQueryGraphPattern(query, path2time_predicates, null, outputPath,timeStamp);
+		
+		GraphPattern queryPattern = GraphPatterns.and(output_gp,path2time_gp);
+		
+		// sort according to timestamp
+		OrderCondition timeDesc = SparqlBuilder.desc(timeStamp);
+		
+		query.from(FromGraph).select(outputPath).where(queryPattern).prefix(p_dispsim,p_time).orderBy(timeDesc).limit(1);
 
 		String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
 		try {

@@ -105,9 +105,9 @@ public class DispSimSparqlTest extends TestCase{
     	DispSimSparql.AddOutputPath(sim_iri, dataPath,1);
     }
     
-    public void testGetOutputPath() {
+    public void testGetLatestOutputPath() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
-    	DispSimSparql.GetOutputPath(sim_iri);
+    	DispSimSparql.GetLatestOutputPath(sim_iri);
     }
     
     public void testGetNumOutput() {
