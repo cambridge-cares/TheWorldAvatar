@@ -53,6 +53,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	private ArrayList<String> graphFilePaths = new ArrayList<String>();
 	private ArrayList<Lang> graphLangs = new ArrayList<Lang>(); 
 		
+	private boolean autoWrite = true;
 	///////////////////////////
 	// Constructors
 	///////////////////////////
@@ -374,6 +375,14 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	///////////////////////////
 	
 	/**
+	 * Toggle the automatic write to file after update
+	 * @param value
+	 */
+	public void setAutoWrite(boolean value) {
+		this.autoWrite = value;
+	}
+	
+	/**
 	 * Set default graph file path variable
 	 * @param filePath
 	 */
@@ -528,6 +537,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			} finally {
 				conn.end();
 			}
+			if(autoWrite = true) {writeToFile();} //write changes to file (default behaviour)
 			return 0; //return a useful integer?
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
@@ -551,6 +561,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			}finally {
 				conn.end();
 			}
+			if(autoWrite = true) {writeToFile();} //write changes to file (default behaviour)
 			return 0; //return a useful integer?
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
