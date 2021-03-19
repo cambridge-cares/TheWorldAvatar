@@ -537,7 +537,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			} finally {
 				conn.end();
 			}
-			if(autoWrite = true) {writeToFile();} //write changes to file (default behaviour)
+			if(autoWrite == true) {writeToFile();} //write changes to file (default behaviour)
 			return 0; //return a useful integer?
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
@@ -561,7 +561,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			}finally {
 				conn.end();
 			}
-			if(autoWrite = true) {writeToFile();} //write changes to file (default behaviour)
+			if(autoWrite == true) {writeToFile();} //write changes to file (default behaviour)
 			return 0; //return a useful integer?
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
