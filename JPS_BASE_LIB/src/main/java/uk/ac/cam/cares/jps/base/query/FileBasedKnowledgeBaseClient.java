@@ -81,29 +81,8 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @param filePath
 	 */
 	public FileBasedKnowledgeBaseClient(String graph, String filePath) {
-		
 		init();
 		load(graph, filePath);
-	}
-	
-	/**
-	 * Constructor loads multiple file/contexts.
-	 * @param graphs
-	 * @param filePaths
-	 */
-	public FileBasedKnowledgeBaseClient(String[] graphs, String[] filePaths) {
-		
-		//graphs and filepaths should be the same length
-		if(graphs.length == filePaths.length) {
-			
-			this.graphs.addAll(Arrays.asList(graphs));
-			this.graphFilePaths.addAll(Arrays.asList(filePaths));
-			
-		}else {
-			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: file path or graph name missing (graphs.length != flePaths.length).");
-		}
-		init();
-		load();
 	}
 	
 	/**
@@ -170,6 +149,25 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		}
 		
 		loadGraph(graph, filePath);
+	}
+	
+	/**
+	 * Loads multiple file/contexts.
+	 * @param graphs
+	 * @param filePaths
+	 */
+	public void load(String[] graphs, String[] filePaths) {
+		
+		//graphs and filepaths should be the same length
+		if(graphs.length == filePaths.length) {
+			
+			this.graphs.addAll(Arrays.asList(graphs));
+			this.graphFilePaths.addAll(Arrays.asList(filePaths));
+			
+		}else {
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: file path or graph name missing (graphs.length != flePaths.length).");
+		}
+		load();
 	}
 	
 	/**

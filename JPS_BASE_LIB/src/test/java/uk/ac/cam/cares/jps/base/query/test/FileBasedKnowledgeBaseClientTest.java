@@ -144,7 +144,8 @@ public class FileBasedKnowledgeBaseClientTest {
 		graphs[0] = "http://example.com/triples";
 		graphs[1] = "http://example.com/context";
 				
-		kbClient = new FileBasedKnowledgeBaseClient(graphs, filePaths);
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.load(graphs, filePaths);
 		
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
