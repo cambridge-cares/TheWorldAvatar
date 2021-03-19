@@ -114,4 +114,19 @@ public class DispSimSparqlTest extends TestCase{
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
     	DispSimSparql.GetNumOutput(sim_iri);
     }
+    
+    public void testGetDz() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.GetDz(sim_iri);
+    }
+    
+    public void testGetNx() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.GetNx(sim_iri);
+    }
+    
+    public void testGetNy() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.GetNy(sim_iri);
+    }
 }

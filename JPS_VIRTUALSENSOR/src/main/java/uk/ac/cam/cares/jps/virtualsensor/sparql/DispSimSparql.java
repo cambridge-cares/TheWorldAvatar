@@ -447,12 +447,7 @@ public class DispSimSparql {
 		query.from(FromGraph).select(outputPath).where(queryPattern).prefix(p_dispsim,p_time).orderBy(timeDesc).limit(1);
 
 		String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
-		try {
-			String path = new URI(result).getPath();
-			return path;
-		} catch (URISyntaxException e) {
-			throw new JPSRuntimeException(e);
-		}
+		return result;
 	}
 	
 	/**
@@ -492,5 +487,71 @@ public class DispSimSparql {
 		
 		String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
 		return result;
+	}
+	
+	public static double[] GetDz(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		SelectQuery query = Queries.SELECT();
+		
+		String indexKey = "index";
+		String dzKey = "dzValue";
+		
+		Variable dz = query.var();
+		Variable dzValue = SparqlBuilder.var(dzKey);
+		Variable index = SparqlBuilder.var(indexKey);
+		
+		GraphPattern sim2dz_gp = sim_iri.has(hasDz,dz);
+		
+		Iri[] dz2value_pred = {hasValue,numericalValue};
+		GraphPattern dz2value_gp = SparqlGeneral.GetQueryGraphPattern(query, dz2value_pred, null, dz,dzValue);
+		
+		Iri[] dz2index_pred = {hasIndex,hasValue,numericalValue};
+		GraphPattern dz2index_gp = SparqlGeneral.GetQueryGraphPattern(query, dz2index_pred, null, dz,index);
+		
+		query.prefix(p_dispsim,p_system).where(sim2dz_gp,dz2value_gp,dz2index_gp).from(FromGraph).select(dzValue,index);
+		JSONArray queryResult = SparqlGeneral.performQuery(query);
+		
+		double[] vdz = new double [queryResult.length()];
+		
+		// results are not returned in numerical order
+		for (int i=0; i<queryResult.length(); i++) {
+			int vindex = queryResult.getJSONObject(i).getInt(indexKey);
+			vdz[vindex] = queryResult.getJSONObject(i).getDouble(dzKey);
+		}
+		return vdz;
+	}
+	
+	public static int GetNx(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		SelectQuery query = Queries.SELECT();
+		
+		String queryKey = "nx";
+		Variable nx = SparqlBuilder.var(queryKey);
+		
+		Iri[] predicates = {hasNx,hasValue,numericalValue};
+		GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, predicates, null, sim_iri, nx);
+		
+		query.from(FromGraph).select(nx).where(queryPattern).prefix(p_dispsim,p_system);
+		
+		int nxValue = SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
+		
+		return nxValue;
+	}
+	
+	public static int GetNy(String sim_iri_string) {
+		Iri sim_iri = iri(sim_iri_string);
+		SelectQuery query = Queries.SELECT();
+		
+		String queryKey = "ny";
+		Variable ny = SparqlBuilder.var(queryKey);
+		
+		Iri[] predicates = {hasNy,hasValue,numericalValue};
+		GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, predicates, null, sim_iri, ny);
+		
+		query.from(FromGraph).select(ny).where(queryPattern).prefix(p_dispsim,p_system);
+		
+		int nyValue = SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
+		
+		return nyValue;
 	}
 }
