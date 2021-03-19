@@ -76,15 +76,18 @@ public class CloningToolTest {
 			
 			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
 			
+			CloningTool cloningTool = new CloningTool();
+			cloningTool.setSingleStepClone();
+			
 			//copy graph 1
-			CloningTool.clone(source, "http://example.com/test1", target, "http://example.com/test1");
+			cloningTool.clone(source, target, "http://example.com/test1");
 			
 			//check copied
 			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery("http://example.com/test1", "1")));
 			assertEquals("[{\"O\":\"O\"}]", target.execute(getQuery("http://example.com/test1", "2")));
 			
 			//copy graph 2
-			CloningTool.clone(source, "http://example.com/test2", target, "http://example.com/test2");
+			cloningTool.clone(source, target, "http://example.com/test2");
 			
 			//check copied
 			assertEquals("[{\"O\":\"O2\"}]", target.execute(getQuery("http://example.com/test2", "3")));
@@ -126,11 +129,11 @@ public class CloningToolTest {
 			//Expected result
 			String expected = "CONSTRUCT \n"+
 					"  { \n"+
-					"    ?S ?P ?O .\n"+
+					"    ?s ?p ?o .\n"+
 					"  }\n"+
 					"WHERE\n"+
 					"  { GRAPH </test/target>\n"+
-					"      { ?S  ?P  ?O}}\n";
+					"      { ?s  ?p  ?o}}\n";
 			
 			//Invoke method
 			CloningTool cloningTool = new CloningTool();
@@ -157,10 +160,10 @@ public class CloningToolTest {
 			//Expected result
 			String expected = "CONSTRUCT \n"+
 					"  { \n"+
-					"    ?S ?P ?O .\n"+
+					"    ?s ?p ?o .\n"+
 					"  }\n"+
 					"WHERE\n"+
-					"  { ?S  ?P  ?O}\n";
+					"  { ?s  ?p  ?o}\n";
 			
 			//Invoke method
 			CloningTool cloningTool = new CloningTool();

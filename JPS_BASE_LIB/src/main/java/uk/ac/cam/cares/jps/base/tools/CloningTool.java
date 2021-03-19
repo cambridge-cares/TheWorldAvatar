@@ -55,7 +55,7 @@ public class CloningTool {
 	/**
 	 * Default constructor. Cloning split over multiple operations of 1 million triples
 	 */
-	CloningTool(){
+	public CloningTool(){
 		//set defaults
 		splitUpdate = true;
 		stepSize = 1000000;
@@ -65,7 +65,7 @@ public class CloningTool {
 	 * Constructor to set number of triples cloned per step. Cloning is split over multiple operations. 
 	 * @param stepSize
 	 */
-	CloningTool(int stepSize){
+	public CloningTool(int stepSize){
 		//set defaults
 		splitUpdate = true;
 		this.stepSize = stepSize;
@@ -125,7 +125,9 @@ public class CloningTool {
 		    }
 		}
 		
-		//TODO check count here
+		if(!checkCount(targetKB, graph)) {
+			throw new JPSRuntimeException("CloningTool: check failed, counts do not match!");
+		}
 	}
 	
 	//TODO: check graph clone : is context lost?
@@ -217,7 +219,7 @@ public class CloningTool {
 			Expr exprTagN = buildExprTagN(i);
 			WhereBuilder whereTagged = new WhereBuilder()
 					.addWhere(varS, varP, varO)
-					.addFilter(exprFactory.strends(exprStrS, exprTagN)) //TODO necessary
+					.addFilter(exprFactory.strends(exprStrS, exprTagN)) //TODO necessary?
 					.addBind(exprBindIriRemovedTag(exprTagN), newS);
 			UpdateRequest tagUpdate = buildTagUpdate(graph, whereTagged, stepSize);
 			sourceKB.executeUpdate(tagUpdate);
@@ -238,9 +240,16 @@ public class CloningTool {
 	    return count == countTotal;
 	}
 	
-	/////////////////////////
+	public int checkNoTags(KnowledgeBaseClient kbClient, String graph) {
+
+		WhereBuilder whereCount = new WhereBuilder()
+				.addWhere(varS, varP, varO)
+				.addFilter(exprTagged());
+	    return countTriples(kbClient, graph, whereCount);
+	}
 	
-	//DONE
+	////
+	
 	/**
 	 * Creates a tag by hashing the source KB endpoint and current date and time.
 	 * @param sourceKB
@@ -253,9 +262,8 @@ public class CloningTool {
 		strTag = "_Tag"+String.valueOf(hash);
 	}
 	
-	///////////////////////// Count
+	//// Count
 	
-	//DONE
 	/**
 	 * Count triples in knowledge base client matching where statement.
 	 * @param source knowledge base client
@@ -270,7 +278,6 @@ public class CloningTool {
 	    return jsonobject.getInt(varCount);
 	}
 	
-	//DONE
 	/**
 	 * Build count query.
 	 * @param graph
@@ -295,9 +302,8 @@ public class CloningTool {
 		return query;
 	}
 
-	///////////////////////// Sparql query/update builder	
+	//// Sparql query/update builder	
 	
-	//DONE
 	/**
 	 * Build construct query to get triples.
 	 * @param graph
@@ -321,7 +327,6 @@ public class CloningTool {
 		return builder.build();
 	}
 	
-	//DONE
 	/**
 	 * Build SPARQL update to insert triples
 	 * @param graph
@@ -345,7 +350,6 @@ public class CloningTool {
 		return builder.buildRequest();
 	}
 
-	//DONE
 	/**
 	 * Build SPARQL update to tag triples
 	 * @param graph
@@ -387,9 +391,8 @@ public class CloningTool {
 		return builder.buildRequest();
 	}
 
-	///////////////////////// Common expressions for filters
+	//// Expressions for filters
 	
-	//DONE
 	/**
 	 * Create full tag with counter.
 	 * @param counter i
@@ -399,7 +402,6 @@ public class CloningTool {
 		return exprFactory.asExpr("_"+Integer.toString(i)+strTag);
 	}
 	
-	//DONE
 	/**
 	 * Expression to filer out triples with blank nodes.
 	 * @return
@@ -411,16 +413,22 @@ public class CloningTool {
 								exprFactory.not(exprFactory.isBlank(exprO))));
 	}
 	
-	//DONE
 	/**
 	 * Expression to filter out tagged triples
 	 * @return
 	 */
 	private Expr exprNotTagged() {
-		return exprFactory.not(exprFactory.strends(exprStrS, strTag));
+		return exprFactory.not(exprTagged());
 	}
 	
-	//DONE
+	/**
+	 * Expression to filter tagged triples
+	 * @return
+	 */
+	private Expr exprTagged() {
+		return exprFactory.strends(exprStrS, strTag);
+	}
+	
 	/**
 	 * Bind new IRI with tag removed
 	 * @param tag expression
@@ -430,7 +438,7 @@ public class CloningTool {
 		return exprFactory.iri(exprFactory.replace(exprStrS, exprTagN, ""));
 	}
 
-	///////////////////////// SPARQL query builder for single step clone
+	//// SPARQL query builder for single step clone
 	
 	/**
 	 * Build sparql construct query to get triples.
