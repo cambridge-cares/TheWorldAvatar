@@ -1,8 +1,6 @@
-from SPARQLWrapper import SPARQLWrapper, CSV, JSON, POST
-import json 
 from tqdm import tqdm
 import time
-import numpy as np 
+from py4jps.resources import JpsBaseLib
 import pandas as pd
 import io
 from tabulate import tabulate
@@ -62,6 +60,13 @@ def real_time_intakes():
 
 
 def update_triple_store():
+    jpsBaseLibGW = JpsBaseLib()
+    jpsBaseLibGW.launchGateway()
+
+    jpsGW_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
+
+    KGRouter = jpsGW_view.KGRouter
     # calling function to get most recent values of terminal gas rate
     data = real_time_intakes()
     for terminal_supply in data:
@@ -119,10 +124,8 @@ def update_triple_store():
                                                            mes_uuid,
                                                            gas_uuid,
                                                            time_UTC)
-            sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
-            sparql.setMethod(POST) # POST query, not GET
-            sparql.setQuery(query)
-            ret = sparql.query()
+            KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)
+            ret = KGClient.executeQuery(query)
     # clear terminal
     os.system('cls' if os.name == 'nt' else 'clear')
     return 
