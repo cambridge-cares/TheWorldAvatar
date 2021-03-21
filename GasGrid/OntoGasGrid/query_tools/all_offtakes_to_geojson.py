@@ -1,5 +1,4 @@
-from SPARQLWrapper import SPARQLWrapper, CSV, JSON
-import json 
+from py4jps.resources import JpsBaseLib
 from tqdm import tqdm
 import time
 import numpy as np 
@@ -14,6 +13,14 @@ geojson_file = """
 
 offtake_types = ['LocalDistribution','PowerStation','IndustrialUser','Storage']
 colors = ['#f78086','#ca3549','#5c1d20','#f9372d']
+
+jpsBaseLibGW = JpsBaseLib()
+jpsBaseLibGW.launchGateway()
+
+jpsGW_view = jpsBaseLibGW.createModuleView()
+jpsBaseLibGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
+
+KGRouter = jpsGW_view.KGRouter
 
 for i in range(len(offtake_types)):
   offtake_type = offtake_types[i]
@@ -34,25 +41,18 @@ for i in range(len(offtake_types)):
   ?term loc:lat-lon ?location.
   }"""%(offtake_type)
   
-  sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
-  sparql.setReturnFormat(JSON) # return in JSON form
-  sparql.setQuery(queryString) # setting query
-  start = time.time()
-  print('Querying...')
-  ret = sparql.queryAndConvert() # performing query and returning to JSON
-  end = time.time()
-  print('Finished in ',np.round(end-start,2),' seconds')
-  # extracting data from JSON 
-  ret = ret['results']['bindings']
+  KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)
+  ret = KGClient.executeQuery(queryString)
+  ret = ret.toList()
   num_ret = len(ret)
   ret_array = np.zeros((num_ret,3),dtype='object')
   header = ['lat','lon','name']
   for i in tqdm(range(num_ret)):
       try:
-          lat,lon = ret[i]['location']['value'].split('#')
-          ret_array[i,:] = [lat,lon+',',ret[i]['label']['value']]
+          lat,lon = ret[i]['location'].split('#')
+          ret_array[i,:] = [lat,lon+',',ret[i]['label']]
       except:
-          ret_array[i,:] = ['','',ret[i]['label']['value']]
+          ret_array[i,:] = ['','',ret[i]['label']]
   ret = pd.DataFrame(ret_array,columns=header).values
   
 

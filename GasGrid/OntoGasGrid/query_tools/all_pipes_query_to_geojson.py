@@ -1,6 +1,5 @@
-from SPARQLWrapper import SPARQLWrapper, CSV, JSON
-import json 
 from tqdm import tqdm
+from py4jps.resources import JpsBaseLib
 import time
 import numpy as np 
 import pandas as pd
@@ -9,6 +8,14 @@ import pandas as pd
 First query location, name, and order of all PipeConnections
 --------------------------------------------------------
 '''
+
+jpsBaseLibGW = JpsBaseLib()
+jpsBaseLibGW.launchGateway()
+
+jpsGW_view = jpsBaseLibGW.createModuleView()
+jpsBaseLibGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
+
+KGRouter = jpsGW_view.KGRouter
 
 queryString = """PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX ns1:     <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
@@ -30,23 +37,15 @@ WHERE
 ?connection gasgrid:hasOrder ?order.
        
 }"""
- 
-sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
-sparql.setReturnFormat(JSON) # return in JSON form
-sparql.setQuery(queryString) # setting query
-start = time.time()
-print('Querying...')
-ret = sparql.queryAndConvert() # performing query and returning to JSON
-end = time.time()
-print('Finished in ',np.round(end-start,2),' seconds')
-# extracting data from JSON 
-ret = ret['results']['bindings']
+KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)
+ret = KGClient.executeQuery(queryString)
+ret = ret.toList()
 num_ret = len(ret)
 ret_array = np.zeros((num_ret,4),dtype='object')
 header = ['lat','lon','order','name']
 for i in tqdm(range(num_ret)):
-    lat,lon = ret[i]['location']['value'].split('#')
-    ret_array[i,:] = [lat,lon,float(ret[i]['order']['value']),ret[i]['label']['value']]
+    lat,lon = ret[i]['location'].split('#')
+    ret_array[i,:] = [lat,lon,float(ret[i]['order']),ret[i]['label']]
 ret = pd.DataFrame(ret_array,columns=header)
 
 unique_names = ret['name'].unique() # name of all individual pipes

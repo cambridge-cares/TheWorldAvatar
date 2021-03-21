@@ -1,10 +1,7 @@
-from SPARQLWrapper import SPARQLWrapper, CSV, JSON
-import json 
-from tqdm import tqdm
+from py4jps.resources import JpsBaseLib
 import time
 import numpy as np 
 import pandas as pd
-
 
 
 def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
@@ -22,6 +19,15 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
   OUTPUTS:
   A file of the form class_label.geoJSON in the working directory. 
   '''
+  jpsBaseLibGW = JpsBaseLib()
+  jpsBaseLibGW.launchGateway()
+
+
+  jpsGW_view = jpsBaseLibGW.createModuleView()
+  jpsBaseLibGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
+
+  KGRouter = jpsGW_view.KGRouter
+
   # defining the query string given the class URI
   queryString = """PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
@@ -37,24 +43,17 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
   }"""%(class_namespace,class_name)
 
  # performing SPARQL query  
-  sparql = SPARQLWrapper(endpoint)
-  sparql.setReturnFormat(JSON) 
-  sparql.setQuery(queryString) 
-  start = time.time()
-  print('Querying...')
-  ret = sparql.queryAndConvert() 
-  end = time.time()
-  # parsing JSON SPARQL results into an array
-  print('Finished in ',np.round(end-start,2),' seconds')
-  ret = ret['results']['bindings']
+  KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)
+  ret = KGClient.executeQuery(queryString)
+  ret = ret.toList()
   num_ret = len(ret)
   # assigning memory to results array 
   ret_array = np.zeros((num_ret,3),dtype='object')
   header = ['lat','lon','name']
   # iterating over results and allocating properties from query 
-  for i in tqdm(range(num_ret)):
-      lat,lon = ret[i]['location']['value'].split('#')
-      ret_array[i,:] = [lat,lon,ret[i]['label']['value']]
+  for i in range(num_ret):
+      lat,lon = ret[i]['location'].split('#')
+      ret_array[i,:] = [lat,lon,ret[i]['label']]
   ret = ret_array 
   # allocating start of .geoJSON file 
   geojson_file = """
@@ -92,6 +91,7 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
   geojson_written = open(class_label+'.geojson','w')
   geojson_written.write(geojson_file)
   geojson_written.close() 
+  print('Succesfully created geoJSON file')
   return 
 
 
@@ -101,3 +101,4 @@ class_namespace = 'http://www.theworldavatar.com/ontology/ontogasgrid/gas_networ
 class_name = 'GasTerminal'
 class_label = 'terminals'
 query_to_geoJSON(class_namespace,class_name,class_label,endpoint)
+
