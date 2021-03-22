@@ -8,19 +8,19 @@ The following steps must be completed before attempting to build the KineticsAge
 
 1. Make a copy of the *settings-template.xml* and name it *settings.xml*.
 2. Add your Nexus username and password to the *settings.xml* file.
-..* Contact CMCL administrators for a username and password if you don't already have one.
+	* Contact CMCL administrators for a username and password if you don't already have one.
 3. Build the KineticsAgent.
-..* Locally build the KineticsAgent project into the KineticsAgent.war file.
-..* Before building, set the below values within the *kinetics-agent.properties* resource file. Do not commit these changes to the repository.
+	* Locally build the KineticsAgent project into the KineticsAgent.war file.
+	* Before building, set the below values within the *kinetics-agent.properties* resource file. Do not commit these changes to the repository.
 
-...hpc.server.loging.user.name=[ASK CMCL]
-...hpc.server.loging.user.password=[ASK CMCL]
-...hpc.address=[ASK CMCL]
-...slurm.script.file=docker-slurm.sh
-...agent.scripts.location=/usr/local/simdome
+* hpc.server.loging.user.name=[ASK CMCL]
+* hpc.server.loging.user.password=[ASK CMCL]
+* hpc.address=[ASK CMCL]
+* slurm.script.file=docker-slurm.sh
+* agent.scripts.location=/usr/local/simdome
 
 4. Update the *agent* stack of docker-compose files to ensure the details are still correct.
-..* If the version number of the KineticsAgent has been updated, this will need to be updated within the stack too.
+	* If the version number of the KineticsAgent has been updated, this will need to be updated within the stack too.
 
 ## Building the Image
 
@@ -36,6 +36,6 @@ Once the requirements have been addressed, the Image can be build using the foll
 To better facilitate the setup of the KineticsAgent Image, the following improvements to the source code should be considered.
 
 1. Change the *kinetics-agent.properties* file to become an external resource.
-..* Currently, as it's an internal resource that defines each HPC setup, a new release of the WAR file has to take place for each deployment setup. If the properties file is moved to an external resource (that sits along side the WAR file), then the compiled source code can be used for all HPCs.
+	* Currently, as it's an internal resource that defines each HPC setup, a new release of the WAR file has to take place for each deployment setup. If the properties file is moved to an external resource (that sits along side the WAR file), then the compiled source code can be used for all HPCs.
 2. Upload the built KineticsAgent.war file to the Nexus server at CMCL.
-..* This keeps a record of each version of the WAR file, and would also allow other developers to download the file without having to build the source code (and all it's prerequisites).
+	* This keeps a record of each version of the WAR file, and would also allow other developers to download the file without having to build the source code (and all it's prerequisites).
