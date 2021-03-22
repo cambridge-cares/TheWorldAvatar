@@ -85,8 +85,11 @@ You will need to have following tools installed:
 Deploying agents with war file
 ==============================
 
-* Open JPS_BASE##1.3.0.war as archive, get into file \JPS_BASE##1.3.0.war\conf\jps.properties
+* Open jps-base-lib-1.3.0.jar as archive, get into file jps.properties
+   - This file can be found in your .m2 folder under \.m2\repository\uk\ac\cam\cares\jps\jps-base-lib\1.3.0
    - Modify ${host} and ${port} according to the server
+   - To open .war files as archive, a tool like 7-zip is required
+   - Alternatively, set ${test} to true in order to use settings in jpstest.properties of the same archive folder
 * Open AutoMechCalibAgent.war as archive, get into file \AutoMechCalibAgent.war\WEB-INF\classes\automechcalib-agent.properties
    - Provide ${hpc.server.login.user.name} and ${hpc.server.login.user.password}
    - You may also want to change ${agent.initial.delay.to.start} and ${agent.periodic.action.interval}, they are in order of seconds
@@ -105,15 +108,19 @@ Deploying agents with war file
 Building the code from source
 =============================
 
-* Clone JPS git repo from ssh://<username>@vienna.cheng.cam.ac.uk/home/userspace/CoMoCommon/Codes/CARES/JParkSimulator-git
-* Modify \JParkSimulator-git\Agents\AutoMechCalibAgent\src\main\resources\automechcalib-agent.properties in the same way of modifying \AutoMechCalibAgent.war\WEB-INF\classes\automechcalib-agent.properties while deploying from AutoMechCalibAgent.war
+* Clone JPS git repo from https://github.com/cambridge-cares/TheWorldAvatar
+* Modify \TheWorldAvatar\JPS_BASE_LIB\src\main\resources\jps.properties in the same way of modifying \.m2\repository\uk\ac\cam\cares\jps\jps-base-lib\1.3.0\jps-base-lib-1.3.0.jar\jps.properties while deploying from AutoMechCalibAgent.war
+* Modify \TheWorldAvatar\Agents\AutoMechCalibAgent\src\main\resources\automechcalib-agent.properties in the same way of modifying \MoDSSensAnaAgent.war\WEB-INF\classes\modssensana-agent.properties while deploying from AutoMechCalibAgent.war
 * Make sure the ${tomcatPath} profile is correctly setup in settings.xml in \user.home\.m2 folder
 * Make sure the "CATALINA_HOME" environment variable is correctly setup
 * Build JPS_BASE
-   - Get into \JParkSimulator-git\JPS_BASE directory from cmd
+   - Get into \TheWorldAvatar\JPS_BASE directory from cmd
    - Run "mvn clean install -DskipTests"
 * Build JPS_BASE_LIB
-   - Get into \JParkSimulator-git\JPS_BASE_LIB directory from cmd
+   - Get into \TheWorldAvatar\JPS_BASE_LIB directory from cmd
+   - Run "mvn clean install -DskipTests"
+* Build CMCLOntoKin
+   - Get into \TheWorldAvatar\ontology-tools\CMCLOntoKin directory from cmd
    - Run "mvn clean install -DskipTests"
 * Build AutoMechCalibAgent
    - Get into \JParkSimulator-git\Agents\AutoMechCalibAgent directory from cmd
