@@ -85,8 +85,11 @@ You will need to have following tools installed:
 Deploying agents with war file
 ==============================
 
-* Open JPS_BASE##1.3.0.war as archive, get into file \JPS_BASE##1.3.0.war\conf\jps.properties
+* Open jps-base-lib-1.3.0.jar as archive, get into file jps.properties
+   - This file can be found in your .m2 folder under \.m2\repository\uk\ac\cam\cares\jps\jps-base-lib\1.3.0
    - Modify ${host} and ${port} according to the server
+   - To open .war files as archive, a tool like 7-zip is required
+   - Alternatively, set ${test} to true in order to use settings in jpstest.properties of the same archive folder
 * Open MoDSSensAnaAgent.war as archive, get into file \MoDSSensAnaAgent.war\WEB-INF\classes\modssensana-agent.properties
    - Modify ${kinetics.folder.path} with <yourAbsolutePathToKineticsDir> absolute path to "kinetics" directory on CSD3
    - Modify ${kinetics.executable.name} if you changed name of executable when uploading it to CSD3
@@ -107,16 +110,20 @@ Deploying agents with war file
 Building the code from source
 =============================
 
-* Clone JPS git repo from ssh://<username>@vienna.cheng.cam.ac.uk/home/userspace/CoMoCommon/Codes/CARES/JParkSimulator-git
-* Modify \JParkSimulator-git\Agents\MoDSSensAnaAgent\src\main\resources\modssensana-agent.properties in the same way of modifying \MoDSSensAnaAgent.war\WEB-INF\classes\modssensana-agent.properties while deploying from MoDSSensAnaAgent.war
+* Clone JPS git repo from https://github.com/cambridge-cares/TheWorldAvatar
+* Modify \TheWorldAvatar\JPS_BASE_LIB\src\main\resources\jps.properties in the same way of modifying \.m2\repository\uk\ac\cam\cares\jps\jps-base-lib\1.3.0\jps-base-lib-1.3.0.jar\jps.properties while deploying from MoDSSensAnaAgent.war
+* Modify \TheWorldAvatar\Agents\MoDSSensAnaAgent\src\main\resources\modssensana-agent.properties in the same way of modifying \MoDSSensAnaAgent.war\WEB-INF\classes\modssensana-agent.properties while deploying from MoDSSensAnaAgent.war
 * Make sure the ${tomcatPath} profile is correctly setup in settings.xml in \user.home\.m2 folder
 * Make sure the "CATALINA_HOME" environment variable is correctly setup
 * Build JPS_BASE
-   - Get into \JParkSimulator-git\JPS_BASE directory from cmd
+   - Get into \TheWorldAvatar\JPS_BASE directory from cmd
    - Run "mvn clean install -DskipTests"
 * Build JPS_BASE_LIB
-   - Get into \JParkSimulator-git\JPS_BASE_LIB directory from cmd
+   - Get into \TheWorldAvatar\JPS_BASE_LIB directory from cmd
+   - Run "mvn clean install -DskipTests"
+* Build CMCLOntoKin
+   - Get into \TheWorldAvatar\ontology-tools\CMCLOntoKin directory from cmd
    - Run "mvn clean install -DskipTests"
 * Build MoDSSensAnaAgent
-   - Get into \JParkSimulator-git\Agents\MoDSSensAnaAgent directory from cmd
+   - Get into \TheWorldAvatar\Agents\MoDSSensAnaAgent directory from cmd
    - Run "mvn clean install -DskipTests"
