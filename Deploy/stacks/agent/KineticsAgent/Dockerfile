@@ -22,13 +22,7 @@ FROM tomcat:jdk8-corretto as base
 
 # Update package repository
 RUN yum update -y
-
-# Install Java 11
-RUN echo "Installing OpenJDK 11..."
-RUN yum install -y java-11-openjdk-devel-11.0.8.10
-ENV JAVA_HOME="/etc/alternatives/java_sdk_11"
-RUN java --version
-RUN echo "OpenJDK 11 installed and configured."
+ENV JAVA_HOME="/etc/alternatives/java_sdk"
 
 # Install Maven
 RUN echo "Installing Maven..."
@@ -75,10 +69,9 @@ USER tomcat
 EXPOSE 8080
 
 # Java and Maven cleanup
+USER root
 RUN rm -rf ./target
 RUN rm -f pom.xml settings.xml
-RUN yum remove -y java-11-openjdk-devel-11.0.8.10
 RUN yum remove -y maven
-RUN unset JAVA_HOME
 RUN unset M2_HOME
 RUN unset MAVEN_HOME

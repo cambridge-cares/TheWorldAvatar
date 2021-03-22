@@ -1,5 +1,44 @@
 version: "3.8"
 
-networks:
-  default:
-    name: agent
+# Services
+services:
+
+  # Local execution environment for SRM Driver.
+  # Note: This Image contains the SRM Driver and Intel MPI files (without
+  #       any queueing functionality).
+  srm-driver:
+    image: docker.cmclinnovations.com/srm-driver:1.0.0-SNAPSHOT
+    container_name: "srm-driver-${MODE}"
+    restart: unless-stopped
+    hostname: "srm-driver"
+    mac_address: "1a:2b:3c:4d:5e:6f"
+    labels:
+      description: "Local execution environment for the SRM Driver (no Slurm)."
+      authors: "support@cmclinnovations.com"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+    volumes:
+      - driver:/usr/local/srm-driver
+      - mpi:/usr/local/intel-mpi
+    
+    
+  # Kinetics Agent.
+  # Note: This Image mounts a volume so that it can access the SRM Driver and
+  #	      Intel MPI files stored within the 'srm-driver' Image.
+  kinetics-agent:
+    image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
+    container_name: "kinetics-agent-${MODE}"
+    restart: unless-stopped
+    labels:
+       description: "Tomcat server hosting the KineticsAgent service."
+       authors: "support@cmclinnovations.com"
+       builder: "${BUILDER}"
+       hash: "${HASH}"
+    volumes:
+      - driver:/usr/local/srm-driver
+   
+
+# Volumes
+volumes:
+  driver:
+  mpi:
