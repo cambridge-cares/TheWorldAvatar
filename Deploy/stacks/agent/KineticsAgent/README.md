@@ -1,38 +1,41 @@
-The folder contains the required files to build a Docker image for the KG Website. The "Dockerfile"
-file contains the instructions to build an image; before making any changes to it, please consult
-the system administrators at CMCL (Michael Hillman <mdhillman@cmclinnovations.com>, 
-Owen Parry <oparry@cmclinnovations.com>).
+# KineticsAgent
 
+This directory contains the files required to build a Docker Image for execution of the KineticsAgent. Note that this setup is currently configured to use the KineticsAgent for the SimDOME project, as more capability is added to the agent in future, this setup will need updating.
 
-Please note the caveats below before continuing:
+## Requirements
 
-	- The site hosted within the Docker image will be based on the current commit 
-	of this repository, please ensure you're on the right one.
+The following steps must be completed before attempting to build the KineticsAgent Image.
 
-	- The "docker build" command should be run from within the website directory. 
-	
-	- Local changes to the site's files will not be reflected on the website until the image is rebuilt.
-	
+1. Make a copy of the *settings-template.xml* and name it *settings.xml*.
+2. Add your Nexus username and password to the *settings.xml* file.
+..* Contact CMCL administrators for a username and password if you don't already have one.
+3. Build the KineticsAgent.
+..* Locally build the KineticsAgent project into the KineticsAgent.war file.
+..* Before building, set the below values within the *kinetics-agent.properties* resource file. Do not commit these changes to the repository.
 
-To build the image:
-	docker build --rm --no-cache -t kg-website:`git rev-parse --short HEAD` .
-	
-To run the image and generate a container:
-	docker run -d -p 80:80 -p 443:443 --restart always --name "kg-website" -it kg-website:`git rev-parse --short HEAD`
+...hpc.server.loging.user.name=[ASK CMCL]
+...hpc.server.loging.user.password=[ASK CMCL]
+...hpc.address=[ASK CMCL]
+...slurm.script.file=docker-slurm.sh
+...agent.scripts.location=/usr/local/simdome
 
+4. Update the *agent* stack of docker-compose files to ensure the details are still correct.
+..* If the version number of the KineticsAgent has been updated, this will need to be updated within the stack too.
 
-===== Development ======
-	
-All website files are stored within the Deploy/web/website/site directory within the JPS repository; please refer to the Grav documentation for more information on the file hierarchy. We've made a design choice to follow the below procedure for KG service development and the website:
+## Building the Image
 
-- KG services should be run within their own Docker container, no services should be included within the website container.
-- KG services should contain minimal UI elements within their own code:
-	- It's the intention that KG services will be embedded within/called from pages on the website wherever possible; this should ensure we have a consistent style for all services. This means that if you create your KG service with existing UI content, it may no longer be possible for use in the overall website. If required, individual UIs can be created for local testing/development, but a version should exist without them; we've tried to mitigate this need by making it easy to host a version of the KG website, so you can develop and test with that instead of a bespoke UI for that service.
-	- For example, to support the integration of the UK Digital Twin on the site, the header banner was removed so that the service itself only shows the map element. This map element can then be loaded into an existing web page (that already has it's own header and footer) using an iframe.
-- Each KG service/demo should have it's own individual page:
-	- Whilst we can link to many services from a single page, each service demo should be within it's own page.
-- Each KG service should list the development partners:
-	- For now this is most likely CMCL, CoMo, and CARES. Using the prebuild partners page module should do.
-- Any additional entries in the CSS files should be commented, as should any JS files added to the site.
+Once the requirements have been addressed, the Image can be build using the following methods.
 
-Once you've made the desired changes to the website on your local clone of the repository, these changes can be seen on the hosted site by rebuilding the website image. This can either be done for the website on it's own using the individual docker commands shown later, or you can use the refresh-stack.sh script in Bash to reload the entire environment (see the README files within the repository for more details).
++ Use the *start-stack.sh* scripts with the *agent dev* arguments to build the entire stack.
+ + Using the *prod* mode will only download pre-built Images, the *dev* mode must be used to build Images from scratch.
++ Use the below command from this directory to build the KineticsAgent Image in isolation.
+ + `docker build --rm --no-cache -t kinetics-agent .`
+ 
+## Improvements
+
+To better facilitate the setup of the KineticsAgent Image, the following improvements to the source code should be considered.
+
+1. Change the *kinetics-agent.properties* file to become an external resource.
+..* Currently, as it's an internal resource that defines each HPC setup, a new release of the WAR file has to take place for each deployment setup. If the properties file is moved to an external resource (that sits along side the WAR file), then the compiled source code can be used for all HPCs.
+2. Upload the built KineticsAgent.war file to the Nexus server at CMCL.
+..* This keeps a record of each version of the WAR file, and would also allow other developers to download the file without having to build the source code (and all it's prerequisites).
