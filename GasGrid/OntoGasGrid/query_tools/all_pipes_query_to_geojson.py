@@ -1,6 +1,7 @@
 from tqdm import tqdm
 from py4jps.resources import JpsBaseLib
 import time
+import os 
 import numpy as np 
 import pandas as pd
 
@@ -84,7 +85,12 @@ end_geojson = """
 """
 geojson_file += end_geojson
 # saving as geoJSON
-geojson_written = open('pipe_network.geojson','w')
+output_folder = 'OntoGasGrid/query_tools/geoJSON_output'
+try:
+  os.mkdir(output_folder)
+except FileExistsError:
+  print('Directory already exists')
+geojson_written = open(output_folder+'/pipe_network.geojson','w')
 geojson_written.write(geojson_file)
 geojson_written.close() 
 

@@ -1,6 +1,7 @@
 from py4jps.resources import JpsBaseLib
 import time
 import numpy as np 
+import os 
 import pandas as pd
 
 
@@ -88,7 +89,12 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
   """
   geojson_file += end_geojson
   # saving as geoJSON
-  geojson_written = open(class_label+'.geojson','w')
+  output_folder = 'OntoGasGrid/query_tools/geoJSON_output'
+  try:
+    os.mkdir(output_folder)
+  except FileExistsError:
+    print('Directory already exists')
+  geojson_written = open(output_folder+'/'+class_label+'.geojson','w')
   geojson_written.write(geojson_file)
   geojson_written.close() 
   print('Succesfully created geoJSON file')

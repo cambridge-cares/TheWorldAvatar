@@ -1,4 +1,5 @@
 from py4jps.resources import JpsBaseLib
+import os
 from tqdm import tqdm
 import time
 import numpy as np 
@@ -106,7 +107,13 @@ end_geojson = """
 """
 geojson_file += end_geojson
 # saving as geoJSON
-geojson_written = open('offtakes.geojson','w')
+output_folder = 'OntoGasGrid/query_tools/geoJSON_output'
+try:
+  os.mkdir(output_folder)
+except FileExistsError:
+  print('Directory already exists')
+
+geojson_written = open(output_folder+'/offtakes.geojson','w')
 geojson_written.write(geojson_file)
 geojson_written.close() 
 

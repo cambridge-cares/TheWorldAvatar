@@ -1,14 +1,16 @@
 /OtherTools/.vscode
 /.vscode
-
 .vscode/
+OntoGasGrid/query_tools/geoJSON_output/
 __pycache__/
 node_modules/
 OntoGasGrid/abox-tbox/tbox/gas_grid_network_spin.ttl
+OntoGasGrid/abox-tbox/pipeline_abox/
 OntoGasGrid/pipeline_owl_generator/.vscode/settings.json
+OntoGasGrid/pipeline_owl_generator/pipeline_split.csv
 OntoGasGrid/statistical_gas_population/Copy of LSOA_domestic_gas_2010-19.xlsx
 OtherTools/Mapping and Location Tools/mapbox_CMCL/.vscode/launch.json
 OtherTools/Mapping and Location Tools/real_time_integration_example/.vscode/settings.json
 OtherTools/Mapping and Location Tools/real_time_integration_example/geckodriver.log
 /OntoGasGridOffline
-/venv
+/env
