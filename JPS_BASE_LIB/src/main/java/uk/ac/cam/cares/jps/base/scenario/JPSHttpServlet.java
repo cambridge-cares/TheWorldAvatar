@@ -18,8 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.http.Http;
 
 import javax.ws.rs.core.Response;
 
@@ -171,8 +173,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
     protected String getResponseBody(HttpServletRequest request) {
     	System.out.println("DO GET RESPONSE BODY: 1 ");
         JSONObject requestParams = AgentCaller.readJsonParameter(request);
+        requestParams.put(JPSConstants.PATH, request.getPathInfo());
         System.out.println("DO GET RESPONSE BODY: 2 ");
-        requestParams.put("path", request.getServletPath());
         JSONObject responseParams;
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
@@ -189,7 +191,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      */
     protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
         JSONObject responseParams;
-        requestParams.put("path", request.getServletPath());
+        requestParams.put(JPSConstants.PATH, request.getPathInfo());
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
             responseParams = processRequestParameters(requestParams, request);
@@ -220,28 +222,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
         return responseParams;
     }
 
-    /**
-     * Extracts agent input parameters from the request.
-     * - makes a difference between GET and POST requests
-     *
-     * @param request Should contain agent input params
-     * @return extracted parameters
-     */
-    private JSONObject getRequestParameters(HttpServletRequest request) {
-        JSONObject params;
-        try {
-            String request_params = "";
-            if (request.getMethod().equals(HttpPost.METHOD_NAME)) {
-                request_params = IOUtils.toString(request.getReader());
-            } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
-                request_params = request.getParameter(GET_AGENT_INPUT_PARAMS_KEY);
-            }
-            params = new JSONObject(request_params);
-        } catch (IOException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        }
-        return params;
-    }
+    
 
     /**
      * Method to call agents appropriate to the URI paths

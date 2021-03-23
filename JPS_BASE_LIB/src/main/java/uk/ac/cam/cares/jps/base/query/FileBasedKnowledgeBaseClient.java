@@ -17,6 +17,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.TxnType;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.riot.Lang;
@@ -27,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
  * File Based Knowledge Base Client. This class uses RDFConnection to load
@@ -38,7 +40,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author Casper Lindberg
  *
  */
-public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
+public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 
 	private Dataset dataset;
 	private RDFConnection conn;
@@ -372,6 +374,29 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	// Variable access methods
 	///////////////////////////
 	
+	//Authentication 
+	@Override
+	public String getUser() {
+		// no authentication for FileBaseKBClient
+		return null;
+	}
+
+	@Override
+	public void setUser(String userName) {
+		// no authentication for FileBaseKBClient
+	}
+
+	@Override
+	public String getPassword() {
+		// no authentication for FileBaseKBClient
+		return null;
+	}
+
+	@Override
+	public void setPassword(String password) {
+		// no authentication for FileBaseKBClient
+	}
+	
 	/**
 	 * Set default graph file path variable
 	 * @param filePath
@@ -639,7 +664,12 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 			Iterator<String> it = qs.varNames(); 
 			while(it.hasNext()) {
 				String var = it.next(); 
-				obj.put(var, qs.get(var));
+				RDFNode node = qs.get(var);
+				if(node.isLiteral()) {
+					obj.put(var, node.asLiteral().getValue());	
+				}else {
+					obj.put(var, node);
+				}
 			}
 			json.put(obj);
 		}
@@ -651,7 +681,16 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @return RDF model
 	 */
 	@Override
-	public Model queryConstruct(Query sparql) {
+	public Model executeConstruct(Query sparql) {
+		return executeConstruct(sparql.toString());
+	}
+	
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
+	@Override
+	public Model executeConstruct(String sparql) {
 		
 		if (conn != null) {
 			conn.begin( TxnType.READ );	

@@ -56,7 +56,9 @@ public class DESAgentNew extends JPSAgent {
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	JSONObject responseParams = new JSONObject();	
-    	validateInput(requestParams);
+    	if (!validateInput(requestParams)) {
+    		throw new JSONException("DESAgent:  Input parameters not found.\n");
+    	}
     	String iriofnetwork = requestParams.getString("electricalnetwork");
         String iriofdistrict = requestParams.getString("district");
         String irioftempF=requestParams.getString("temperatureforecast");

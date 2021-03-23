@@ -5,6 +5,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.system.IRIResolver;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class InputValidator {
 
@@ -73,7 +76,7 @@ public class InputValidator {
 			}else return false;
 		}return false;
 	}
-	/** checks if Integer by throwing exception otherwise
+	/** checks if Integer by throwing Exception otherwise
 	 * 
 	 * @param str
 	 * @return
@@ -86,4 +89,17 @@ public class InputValidator {
 	         return false;
 	     }
 	 }
+	/** checks if JSONOBject by throwing Exception otherwise. 
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static boolean checkIfValidJSONObject(String str) {
+		try {
+	        new JSONObject(str);
+	    } catch (JSONException ex) {
+	            return false;
+	    }
+	    return true;
+	}
 }

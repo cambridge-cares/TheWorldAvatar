@@ -17,6 +17,22 @@ import de.derivo.sparqldlapi.QueryEngine;
  *
  */
 public interface IABoxManagement {
+
+	/**
+	 * Creates an instance of the class defined in the clasName parameter and<br>
+	 * adds it to the given ontology.
+	 * 
+	 * @param ontology
+	 * @param clasName
+	 * @param basePathTBox
+	 * @param instance
+	 * @param basePathABox
+	 * @return
+	 * @throws ABoxManagementException
+	 */
+	public OWLIndividual createIndividual(OWLOntology ontology, String clasName, String basePathTBox, String instance, String basePathABox) throws ABoxManagementException;
+
+	
 	/**
 	 * Creates an instance of a class based on the data provided.</p>
 	 * If the instance is not available, it will create the 
@@ -28,6 +44,22 @@ public interface IABoxManagement {
 	 * @throws ABoxManagementException
 	 */
 	public OWLIndividual createIndividual(String clasName, String instance) throws ABoxManagementException;
+	
+	/**
+	 * Add a data property to an instance.</p>
+	 * If the instance is not available, it will create the 
+	 * instance before adding the property.</br>
+	 * 
+	 * @param ontology
+	 * @param instance
+	 * @param basePathTBox
+	 * @param dataPropertyIRI
+	 * @param dataPropertyValue
+	 * @param propertyType
+	 * @throws ABoxManagementException
+	 */
+	public void addDataProperty(OWLOntology ontology, String instance, String basePathTBox, IRI dataPropertyIRI, String dataPropertyValue, String propertyType) throws ABoxManagementException;
+	
 	/**
 	 * Add a data property to an already created instance.</p>
 	 * 
@@ -100,6 +132,20 @@ public interface IABoxManagement {
 	 */
 
 	public void addObjectProperty(IRI objectPropertyIri, String domainInstanceName, String rangeInstanceName) throws ABoxManagementException;
+	
+	/**
+	 * Add an object property to connect a domain object with a range object.
+	 * 
+	 * @param ontology
+	 * @param basePathABox
+	 * @param objectPropertyIri
+	 * @param domainInstanceName
+	 * @param rangeInstanceName
+	 * @throws ABoxManagementException
+	 */
+	public void addObjectProperty(OWLOntology ontology, String basePathABox, IRI objectPropertyIri, String domainInstanceName, String rangeInstanceName) throws ABoxManagementException;
+
+	
 	/**
 	 * Add an object property to connect a domain object with a range object.
 	 * 

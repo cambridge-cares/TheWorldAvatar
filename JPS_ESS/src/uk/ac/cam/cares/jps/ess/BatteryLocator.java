@@ -30,11 +30,10 @@ public class BatteryLocator extends JPSAgent {
 	}
     @Override
    	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-    	
-    	boolean validity = validateInput(requestParams);
-		if (validity == false) {
-			throw new JSONException("INPUT no longer valid");
+    	if (!validateInput(requestParams)) {
+			throw new JSONException ("BatteryLocatorAgent: Input parameters not found.\n");
 		}
+    	
 		//run the opf
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", requestParams.toString());
     	
@@ -56,8 +55,7 @@ public class BatteryLocator extends JPSAgent {
 	        
 	        return q&v;
         }catch (Exception ex) {
-        	ex.printStackTrace();
+        	return false;
         }
-        return false;
     }
 }

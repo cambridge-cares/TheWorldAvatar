@@ -1,6 +1,7 @@
 package com.cmclinnovations.ontochemexp.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
@@ -34,14 +35,14 @@ public class PrimeToOwl extends OntoChemExp{
 	/**
 	 * Parameterised Constructor of the PrimeToOwl class.
 	 * 
-	 * @param sourceFilePath String represents the path to PrIMe file(s), 
+	 * @param sourceFiles a list of string representing the paths to a set of PrIMe files, 
 	 * which will be converted into OWL.
 	 * @param destinationFilePath String represents the path to OWL file(s),
 	 * which will be generated from PrIMe.  
 	 */
-	public PrimeToOwl(ArrayList<String> sourceFiles, String destinationFilePath) {
+	public PrimeToOwl(List<String> sourceFiles, String destinationFilePath) {
 		super("PrIMe to OWL converter started running...");
-		this.sourceFiles = sourceFiles;
+		this.sourceFiles = (ArrayList<String>)sourceFiles;
 		this.destinationFilePath = destinationFilePath;
 	}
 	

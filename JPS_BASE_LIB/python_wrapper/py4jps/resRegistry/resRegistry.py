@@ -2,6 +2,9 @@ import pkg_resources
 import json
 import os
 import shutil
+import keyword
+import builtins
+import textwrap
 
 _RES_DIR = pkg_resources.resource_filename(__name__,os.path.join('..','resources'))
 _RES_REG_FILE = 'resources_registry.json'
@@ -60,6 +63,8 @@ class resRegistry:
         """
         if not self._isResInReg(resName):
             print("Info: Adding the {0} resource...".format(resName))
+            self._checkResName(resName)
+
             # TODO default resources
             #======================
             #if self._isResInDefReg(resName):
@@ -141,6 +146,30 @@ class resRegistry:
         else:
             return None
 
+    @staticmethod
+    def _checkResName(resName=None):
+        if not resName:
+            raise ValueError(textwrap.dedent("""
+                Error: Resource name cannot be empty.
+                       Please choose another name. Aborting the installation."""))
+        elif keyword.iskeyword(resName):
+            raise ValueError(textwrap.dedent("""
+                Error: Resource name '{0}' is a Python's keyword.
+                       Please choose another name. Aborting the installation.""".format(resName)))
+        elif resName in dir(builtins):
+            raise ValueError(textwrap.dedent("""
+                Error: Resource name '{0}' is a Python's builtins name.
+                       Please choose another name. Aborting the installation.""".format(resName)))
+        elif not resName[0].isalpha():
+            raise ValueError(textwrap.dedent("""
+                Error: Resource name '{0}' does not start with a letter.
+                       Please choose another name. Aborting the installation.""".format(resName)))
+        elif not resName.isidentifier():
+            # checks for the missed things above, such as, '-', '--', leading/trailing white spaces etc..
+            raise ValueError(textwrap.dedent("""
+                Error: Resource name '{0}' is not a valid Python identifier.
+                       Please choose another name. Aborting the installation.""".format(resName)))
+
     def _isResInReg(self, resName):
         return resName in self.resReg['resources']
 
@@ -197,11 +226,16 @@ class resRegistry:
     def _addResClass(self, resName):
         mainFile = self.getResMainFilePath(resName).replace('\\','\\\\')
         # create the class definition and init file
+        _new_init_doc_str = r"__init__.__doc__ = JPSGateway.__init__.__doc__.replace('        resName : str\n            name of the Java resource'\
+            +'\n        jarPath : str\n            absolute path to the main jar file of the java resource\n','')"
+
         _class_template = """
         from py4jps import JPSGateway
         class {0}(JPSGateway):
-        ****def __init__(self):
-        ********super({0}, self).__init__(resName='{0}')""".format(resName).replace('  ','').replace('*',' ')
+        ----def __init__(self,**JGkwargs):
+        --------super({0}, self).__init__(resName='{0}',**JGkwargs)""".format(resName).replace('  ','').replace('-',' ')
+
+        _class_template = _class_template + '\n    ' + _new_init_doc_str
 
         _ini_class_template="from py4jps.resources.{0}.{0} import {0}".format(resName)
 
