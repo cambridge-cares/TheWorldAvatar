@@ -124,7 +124,7 @@ def update_triple_store():
                                                            mes_uuid,
                                                            gas_uuid,
                                                            time_UTC)
-            KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)
+            KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, True)
             ret = KGClient.executeQuery(query)
     # clear terminal
     os.system('cls' if os.name == 'nt' else 'clear')
