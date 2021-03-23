@@ -13,7 +13,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.region.Scope;
-import uk.ac.cam.cares.jps.virtualsensor.episode.EpisodeAgent;
+import uk.ac.cam.cares.jps.virtualsensor.episode.OldEpisodeAgent;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
 public class EpisodeAgentTest extends TestCase {
@@ -47,7 +47,7 @@ public class EpisodeAgentTest extends TestCase {
 		String result = AgentCaller.executeGetWithURLAndJSON("http://www.theworldavatar.com:80/JPS_POSTGRESQL/getEntitiesWithinRegion", jo.toString());
 		System.out.println("result of the ship= "+result);
 	    JSONObject shipdata = new JSONObject(result);
-	    new EpisodeAgent().createEmissionInput(dataPath,"points_singapore_2019.csv",shipdata);
+	    new OldEpisodeAgent().createEmissionInput(dataPath,"points_singapore_2019.csv",shipdata);
 	}
 	
 	/**
@@ -58,7 +58,7 @@ public class EpisodeAgentTest extends TestCase {
 		String dataPath = QueryBroker.getLocalDataPath();
 		JSONObject input= new JSONObject (jsonparamsample2);
 		JSONObject shipdata=input.getJSONObject("ship");
-		new EpisodeAgent().createEmissionInput(dataPath,"points_singapore_2019.csv",shipdata);
+		new OldEpisodeAgent().createEmissionInput(dataPath,"points_singapore_2019.csv",shipdata);
 	}
 	
 	public void testEpisodeControlEmissionInput() throws IOException {
@@ -80,7 +80,7 @@ public class EpisodeAgentTest extends TestCase {
 		Region.putRegion(jo, 2);
 		Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
 		sc.transform(Region.getTargetCRSName("episode", Region.SINGAPORE_IRI));
-		new EpisodeAgent().createReceptorFile(dataPath,filename,sc);
+		new OldEpisodeAgent().createReceptorFile(dataPath,filename,sc);
 	}
 	
 	// need to modify these tests to use the new weather stations
@@ -116,11 +116,11 @@ public class EpisodeAgentTest extends TestCase {
 		Region.putRegion(jo, 2);
 		Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
 		sc.transform(Region.getTargetCRSName("episode", "Singapore"));
-		new EpisodeAgent().createControlTopologyFile(srtm, dataPath, "aermap.inp", sc) ;
+		new OldEpisodeAgent().createControlTopologyFile(srtm, dataPath, "aermap.inp", sc) ;
 	}
 	
 	public void testlastdirectory() {
-		EpisodeAgent a= new EpisodeAgent();
+		OldEpisodeAgent a= new OldEpisodeAgent();
 		String agent="http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service";
 		
 		String res=a.getPreviousHourDatapath(agent, Region.SINGAPORE_IRI);
@@ -128,7 +128,7 @@ public class EpisodeAgentTest extends TestCase {
 	}
 
     public void testvalidateInput() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
-        EpisodeAgent ea = new EpisodeAgent();
+        OldEpisodeAgent ea = new OldEpisodeAgent();
         Method validateInput = ea.getClass().getDeclaredMethod("validateInput",JSONObject.class);
         validateInput.setAccessible(true);
 
@@ -264,7 +264,7 @@ public class EpisodeAgentTest extends TestCase {
         assertTrue(checkInput(ea,validateInput,jo));
     }
 
-    private boolean checkInput(EpisodeAgent ea,Method validateInput,JSONObject jo) throws IllegalAccessException, IllegalArgumentException {
+    private boolean checkInput(OldEpisodeAgent ea,Method validateInput,JSONObject jo) throws IllegalAccessException, IllegalArgumentException {
 //      This method is used in the testvalidateInput method, returns true if all inputs are present
         boolean valid=false;
         try {

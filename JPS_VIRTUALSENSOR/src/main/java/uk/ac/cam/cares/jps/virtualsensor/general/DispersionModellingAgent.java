@@ -43,7 +43,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.virtualsensor.agents.ADMSAgent;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentConfiguration;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentProperty;
-import uk.ac.cam.cares.jps.virtualsensor.episode.EpisodeAgent;
+import uk.ac.cam.cares.jps.virtualsensor.episode.OldEpisodeAgent;
 
 @Controller
 @WebServlet(urlPatterns = {"/episode/dispersion","/adms/dispersion","/job/show/statistics"})
@@ -167,7 +167,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		if(path.equals(ADMS_PATH)) {
 			dmAgent = new ADMSAgent();
 		} else if (path.equals(EPISODE_PATH)) {
-			dmAgent = new EpisodeAgent();
+			dmAgent = new OldEpisodeAgent();
 		}else if(path.equals(STATISTIC_PATH)) {
 			try {
 				System.out.println("Received a request to show statistics.\n");

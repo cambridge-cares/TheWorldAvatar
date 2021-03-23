@@ -57,9 +57,9 @@ import uk.ac.cam.cares.jps.virtualsensor.general.DispersionModellingAgent;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 
-public class EpisodeAgent extends DispersionModellingAgent {
+public class OldEpisodeAgent extends DispersionModellingAgent {
 	
-	public  EpisodeAgent() {
+	public  OldEpisodeAgent() {
 		  EpisodeConfig episodeconfig= new EpisodeConfig();  // Set the initial value for config
 		  System.out.println("initializing the value of config properties");
 		 System.out.println("episode confif dxrec= "+episodeconfig.getDx_rec());
@@ -101,7 +101,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	private String gmttimedifference="-8"; //it should be dependent on the location it simulates
 	
 	public static void main(String[] args) throws ServletException{
-		EpisodeAgent episodeAgent = new EpisodeAgent();
+		OldEpisodeAgent episodeAgent = new OldEpisodeAgent();
 		episodeAgent.init();
 	}
     
@@ -149,9 +149,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	
 	@Override
     protected void setLogger() {
-        logger = LoggerFactory.getLogger(EpisodeAgent.class);
+        logger = LoggerFactory.getLogger(OldEpisodeAgent.class);
     }
-	 Logger logger = LoggerFactory.getLogger(EpisodeAgent.class);
+	 Logger logger = LoggerFactory.getLogger(OldEpisodeAgent.class);
 	
 	 
 	@Override

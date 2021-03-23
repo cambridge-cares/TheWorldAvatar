@@ -41,7 +41,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Scope;
@@ -60,7 +59,7 @@ import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
 @WebServlet(urlPatterns = {"/EpisodeAgent"})
-public class NewEpisodeAgent extends JPSAgent{
+public class EpisodeAgent extends JPSAgent{
 	private static EpisodeAgentProperty episodeAgentProperty;
 	public static ApplicationContext applicationContextEpisodeAgent;
 	public static JobSubmission jobSubmission;
@@ -69,7 +68,7 @@ public class NewEpisodeAgent extends JPSAgent{
 	public static final String FILE_NAME_ICM_HOUR = "icmhour.nc";
 	public static final String FILE_NAME_PLUME_SEGMENT = "plume_segments.dat";
 	private static final String separator="\t";
-	Logger logger = LoggerFactory.getLogger(NewEpisodeAgent.class);
+	Logger logger = LoggerFactory.getLogger(EpisodeAgent.class);
     
 	// episode parameters
 	private double dx_rec=100.0; //TODO hardcoded? decide the dx for the receptor
@@ -812,7 +811,7 @@ public class NewEpisodeAgent extends JPSAgent{
     
     @Override
     protected void setLogger() {
-        logger = LoggerFactory.getLogger(NewEpisodeAgent.class);
+        logger = LoggerFactory.getLogger(EpisodeAgent.class);
     }
     
     /**
@@ -823,7 +822,7 @@ public class NewEpisodeAgent extends JPSAgent{
         logger.info("---------- Episode Agent has started ----------");
         System.out.println("---------- Episode Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        NewEpisodeAgent episodeAgent = new NewEpisodeAgent();
+        EpisodeAgent episodeAgent = new EpisodeAgent();
 		// initialising classes to read properties from the dispersion-agent.properites file
         initAgentProperty();
 		// In the following method call, the parameter getAgentInitialDelay-<br>
