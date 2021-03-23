@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -95,7 +96,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	public void testConstructorWithFilePath() {
 		
 		kbClient = new FileBasedKnowledgeBaseClient(filePath);
-		assertEquals(filePath, kbClient.getFilePath());
+		assertEquals(filePath, kbClient.getPath(null));
 		assertEquals(null, kbClient.getQuery());
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
@@ -260,30 +261,31 @@ public class FileBasedKnowledgeBaseClientTest {
 	 * @throws IllegalArgumentException 
 	 * @throws SecurityException 
 	 * @throws NoSuchFieldException 
+	 * @throws NoSuchMethodException 
+	 * @throws InvocationTargetException 
 	 */
 	@Test
-	public void testLoadQuad() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+	public void testLoadQuad() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, NoSuchMethodException, InvocationTargetException {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
-		kbClient.load("http://example.com/differentContext", filePathNQ);
+		String wrongContext = "http://example.com/differentContext"; 
+		String context = "http://example.com/context";
+		
+		kbClient.load(wrongContext, filePathNQ);
 		
 		// check a model is loaded to the context given in the file
 		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
   		Field field = kbClient.getClass().getDeclaredField("dataset");;
   		field.setAccessible(true);
   		Dataset fieldValue = (Dataset) field.get(kbClient);
-  		Model model1 = fieldValue.getNamedModel("http://example.com/context");
+  		assertFalse(fieldValue.containsNamedModel(wrongContext));
+  		assertTrue(fieldValue.containsNamedModel(context));
+  		Model model1 = fieldValue.getNamedModel(context);
   		assertFalse(model1.isEmpty());
   		
-  		// check graphs variable has changed
-  		assertNotNull(kbClient.getClass().getDeclaredField("graphs"));
-  		Field field2 = kbClient.getClass().getDeclaredField("graphs");;
-  		field2.setAccessible(true);
-  		@SuppressWarnings("unchecked")
-		ArrayList<String> field2Value = (ArrayList<String>) field2.get(kbClient);
-  		assertTrue(field2Value.contains("http://example.com/context"));
-  		assertFalse(field2Value.contains("http://example.com/differentContext"));
+  		assertTrue(kbClient.containsGraph(context));
+  		assertFalse(kbClient.containsGraph(wrongContext));
 	}
 	 
 	/**
@@ -299,30 +301,27 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
+		String context = "http://example.com/context";
+		
 		//Try loading quad to default. Model should be loaded to a named graph
 		kbClient.load(filePathNQ);
 		
-		//Check the quad is loaded to the correct named grpah
+		//Check the quad is loaded to the correct named graph
 		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
   		Field field = kbClient.getClass().getDeclaredField("dataset");;
   		field.setAccessible(true);
-  		Dataset fieldValue = (Dataset) field.get(kbClient);
-  		Model model1 = fieldValue.getNamedModel("http://example.com/context");
+  		Dataset fieldValue = (Dataset) field.get(kbClient);		  		
+  		assertTrue(fieldValue.containsNamedModel(context));
+  		Model model1 = fieldValue.getNamedModel(context);
   		assertFalse(model1.isEmpty());
-  		
-  		//Check graphs variable contains the context
-  		assertNotNull(kbClient.getClass().getDeclaredField("graphs"));
-  		Field field2 = kbClient.getClass().getDeclaredField("graphs");;
-  		field2.setAccessible(true);
-  		@SuppressWarnings("unchecked")
-		ArrayList<String> field2Value = (ArrayList<String>) field2.get(kbClient);
-  		assertTrue(field2Value.contains("http://example.com/context"));
+		  		
+		assertTrue(kbClient.containsGraph(context));
   		
   		//Assert default graph is empty
   		Model model2 = fieldValue.getDefaultModel();
   		assertTrue(model2.isEmpty());
   		
-  		assertTrue(kbClient.getFilePath() == null);
+  		assertTrue(kbClient.getPath(null) == null);
 	}
 	
 	/**
@@ -335,7 +334,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		kbClient.load(filePath);
 		
-		assertEquals(filePath, kbClient.getFilePath());
+		assertEquals(filePath, kbClient.getPath(null));
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
 	}
@@ -455,7 +454,7 @@ public class FileBasedKnowledgeBaseClientTest {
 
 		//Change output path to check if file is written
 		String newFilePath = Paths.get(tempFolder.getRoot().toString() + "/newfile.owl").toString();
-		kbClient.setFilePath(newFilePath);
+		kbClient.setPath(null, newFilePath);
 		
 		kbClient.end();
 		
@@ -478,16 +477,9 @@ public class FileBasedKnowledgeBaseClientTest {
 	
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
-		kbClient.setFilePath(filePath);
-		
-		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("defaultFilePath"));
-	    Field field = kbClient.getClass().getDeclaredField("defaultFilePath");;
-	    field.setAccessible(true);
-	    String fieldValue = (String) field.get(kbClient);
+		kbClient.setPath(null, filePath);
 	    
-	    assertEquals(filePath, fieldValue);
-	    assertEquals(filePath, kbClient.getFilePath());
+	    assertEquals(filePath, kbClient.getPath(null));
 	}
 
 	/**
@@ -504,14 +496,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient = new FileBasedKnowledgeBaseClient();
 	
 		assertEquals(filePath, kbClient.setQueryEndpoint(filePath));
-		
-		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("defaultFilePath"));
-	    Field field = kbClient.getClass().getDeclaredField("defaultFilePath");;
-	    field.setAccessible(true);
-	    String fieldValue = (String) field.get(kbClient);
-	    
-	    assertEquals(filePath, fieldValue);
+	    assertEquals(filePath, kbClient.getPath(null));
 	    assertEquals(filePath, kbClient.getQueryEndpoint());
 	}
 	
@@ -529,14 +514,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
 		assertEquals(filePath, kbClient.setUpdateEndpoint(filePath));
-		
-		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("defaultFilePath"));
-	    Field field = kbClient.getClass().getDeclaredField("defaultFilePath");;
-	    field.setAccessible(true);
-	    String fieldValue = (String) field.get(kbClient);
-	    
-	    assertEquals(filePath, fieldValue);
+	    assertEquals(filePath, kbClient.getPath(null));
 	    assertEquals(filePath, kbClient.getUpdateEndpoint());
 	}
 	
@@ -578,18 +556,11 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
-		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("defaultLangOut"));
-	    Field field = kbClient.getClass().getDeclaredField("defaultLangOut");;
-	    field.setAccessible(true);
-	    
-	    Lang fieldValue = (Lang) field.get(kbClient);
-	    assertEquals(null,fieldValue); //default language
+	    assertEquals(null,kbClient.getLang(null));
 	    
 	    //Set lang to NQ
 		kbClient.setOutputLang(Lang.NQ);
-		fieldValue = (Lang) field.get(kbClient);
-		assertEquals(Lang.NQ,fieldValue);
+		assertEquals(Lang.NQ,kbClient.getLang(null));
 	}
 	
 	/**
@@ -607,22 +578,10 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
 		kbClient.load(filePathNQ);
+		List<String> names = kbClient.getGraphNames();
 		
-		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("defaultLangOut"));
-	    Field field = kbClient.getClass().getDeclaredField("defaultLangOut");;
-	    field.setAccessible(true);
-	    
-	    Lang fieldValue = (Lang) field.get(kbClient);
-	    
-	    assertEquals(null, fieldValue); 
-	    
-	    assertNotNull(kbClient.getClass().getDeclaredField("graphLangs"));
-  		Field field2 = kbClient.getClass().getDeclaredField("graphLangs");;
-  		field2.setAccessible(true);
-  		@SuppressWarnings("unchecked")
-		ArrayList<Lang> field2Value = (ArrayList<Lang>) field2.get(kbClient);
-  		assertTrue(field2Value.contains(Lang.NQUADS));   
+	    assertEquals(null, kbClient.getLang("default"));
+	    assertEquals(Lang.NQUADS, kbClient.getLang(names.get(0)));
 	}
 
 	/**
@@ -638,59 +597,20 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
 	
-		//Initialise variable
-		ArrayList<Lang> initialLangs = new ArrayList<Lang>();
-		initialLangs.add(Lang.RDFXML);
-		initialLangs.add(Lang.RDFXML);
-		initialLangs.add(Lang.RDFXML);
-		initialLangs.add(Lang.RDFXML);
+		kbClient.load(filePath);
+		kbClient.load(filePathNQ);
 		
-		assertNotNull(kbClient.getClass().getDeclaredField("graphLangs"));
-  		Field field2 = kbClient.getClass().getDeclaredField("graphLangs");;
-  		field2.setAccessible(true);
-		field2.set(kbClient, initialLangs);
-  		
-	    //Set lang array
-		Lang[] langOut = new Lang[4];
-		langOut[0] = Lang.NQUADS;
-		langOut[1] = Lang.NQUADS;
-		langOut[2] = Lang.NQUADS;
-		langOut[3] = Lang.NQUADS;
+		List<String> names = kbClient.getGraphNames();
 		
-		ArrayList<Lang> expected = new ArrayList<Lang>();
-		expected.addAll(Arrays.asList(langOut));
+		//Check loaded languages
+		assertEquals(Lang.RDFXML, kbClient.getLang(null));
+		assertEquals(1, names.size());
+		assertEquals(Lang.NQ, kbClient.getLang(names.get(0)));
 		
-		kbClient.setOutputLang(langOut);
+		//Change language
+		kbClient.setOutputLang(names.get(0), Lang.RDFXML);
 		
-		// check variable
-  		@SuppressWarnings("unchecked")
-		ArrayList<Lang> field2Value = (ArrayList<Lang>) field2.get(kbClient);
-  		assertEquals(expected, field2Value);   
-	}
-	
-	/**
-	 * Set output langs array. Throw error due to incorrect array size.
-	 * @throws NoSuchFieldException
-	 * @throws SecurityException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testSetOutputLangsError() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		
-		kbClient = new FileBasedKnowledgeBaseClient();
-	
-	    //Set lang array
-		Lang[] langOut = new Lang[4];
-		langOut[0] = Lang.NQUADS;
-		langOut[1] = Lang.NQUADS;
-		langOut[2] = Lang.NQUADS;
-		langOut[3] = Lang.NQUADS;
-		
-		ArrayList<Lang> expected = new ArrayList<Lang>();
-		expected.addAll(Arrays.asList(langOut));
-		
-		kbClient.setOutputLang(langOut); 
+		assertEquals(Lang.RDFXML,kbClient.getLang(names.get(0)));
 	}
 	
 	/**

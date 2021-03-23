@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
@@ -45,15 +45,30 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	private RDFConnection conn;
 	
 	private String query;
-	//Default graph
-	private Lang defaultLangOut; // RDFXML by default
-	private String defaultFilePath;
-	//Named graphs
-	private ArrayList<String> graphs = new ArrayList<String>();
-	private ArrayList<String> graphFilePaths = new ArrayList<String>();
-	private ArrayList<Lang> graphLangs = new ArrayList<Lang>(); 
+
+	// Object to store graph name, file path, serialization language
+	class GraphData{
+		String name = null;
+		String path = null;
+		Lang lang = null;
 		
-	private boolean autoWrite = true;
+		//Constructors
+		GraphData(){}
+		GraphData(String name, String filePath){
+			this.name = name;
+			this.path = filePath;
+		}
+	}
+	
+	// List of named graphs
+	private ArrayList<GraphData> namedGraphs = new ArrayList<GraphData>();
+	
+	// Default graph
+	private GraphData defaultGraph = new GraphData();
+	
+	// Write after update by default
+	private boolean autoWrite = true;	
+	
 	///////////////////////////
 	// Constructors
 	///////////////////////////
@@ -66,17 +81,16 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Constructor loads a file to the default graph.
+	 * Constructor loads a triples to the default graph and quads to named graph.
 	 * @param filePath
 	 */
 	public FileBasedKnowledgeBaseClient(String filePath) {
-		this.defaultFilePath = filePath;
 		init();
-		load();
+		load(filePath);
 	}
 	
 	/**
-	 * Constructor loads a file to a named graph
+	 * Constructor loads a file to a named graph.
 	 * @param graph name/context
 	 * @param filePath
 	 */
@@ -94,40 +108,39 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	///////////////////////////
-	// Read and write methods
+	// Load methods
 	///////////////////////////
 		
 	/**
-	 * Load the file to memory.
+	 * Load files to memory.
 	 */
 	@Override
-	public void load() {
+	public void load() { //TODO necessary?
 		
 		//No file path set
-		if(defaultFilePath == null && graphs.size() == 0) {
+		if(defaultGraph.path == null && namedGraphs.size() == 0) {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: no file path specified.");
 		}
 				
 		//Load multiple files if provided
-		if( graphs.size() > 0 ) {
+		if( namedGraphs.size() > 0 ) {
 			
-			for(int i=0; i<graphs.size(); i++) {
-				loadGraph(graphs.get(i), graphFilePaths.get(i));
+			for(int i=0; i<namedGraphs.size(); i++) {
+				loadGraph(namedGraphs.get(i));
 			}
 		}
 		
 		//Load single file to default graph		
-		if(defaultFilePath != null){
-			loadGraph(null, defaultFilePath);
+		if(defaultGraph.path != null){
+			loadGraph(defaultGraph);
 		}
 	}
 
 	/**
-	 * Set filePath variable and load file to default graph.
+	 * Load file to default graph.
 	 * @param filePath
 	 */
 	public void load(String filePath) {
-
 		//Load file
 		load(null, filePath);
 	}
@@ -137,45 +150,46 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @param graph
 	 * @param filePath
 	 */
-	public void load(String graph, String filePath) {
+	public void load(String graphName, String filePath) {
 	
-		if(graph == null) {
-			//Set default file path
-			this.defaultFilePath = filePath;	
-		}else {
-			//Add graph and filePath to array
-			graphs.add(graph);
-			graphFilePaths.add(filePath);
-		}
+		GraphData graph = new GraphData(graphName, filePath);
 		
-		loadGraph(graph, filePath);
+		loadGraph(graph);
+
+		if(graph != null) {
+			if(graph.name == null) {
+				//Set default file path
+				defaultGraph = graph;	
+			}else {	
+				//Add graph and filePath to array
+				namedGraphs.add(graph);
+			}
+		}
 	}
 	
 	/**
-	 * Loads multiple file/contexts.
+	 * Loads multiple files/contexts.
 	 * @param graphs
 	 * @param filePaths
 	 */
-	public void load(String[] graphs, String[] filePaths) {
+	public void load(String[] names, String[] filePaths) {
 		
-		//graphs and filepaths should be the same length
-		if(graphs.length == filePaths.length) {
-			
-			this.graphs.addAll(Arrays.asList(graphs));
-			this.graphFilePaths.addAll(Arrays.asList(filePaths));
-			
+		//graphs and file paths should be the same length
+		if(names.length == filePaths.length) {
+			for(int i=0; i<names.length; i++) {
+				load(names[i], filePaths[i]);
+			}
 		}else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: file path or graph name missing (graphs.length != flePaths.length).");
 		}
-		load();
-	}
+	}	
 	
 	/**
-	 * Loads a file to the dataset
+	 * Perform load to dataset
 	 * @param graph
 	 * @param filePath
 	 */
-	private void loadGraph(String graph, String filePath) {
+	private void loadGraph(GraphData graph) {
 	
 		//If not connected then initialise a connection 
 		if (!isConnected()) {
@@ -183,40 +197,36 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 		}
 			
 		//Check that the file exists
-		File f= new File(filePath);
+		File f= new File(graph.path);
 		if ( f.exists() ) {			
 			
 			//Get serialisation language
-			Lang lang = RDFLanguages.filenameToLang(filePath);
+			Lang lang = RDFLanguages.filenameToLang(graph.path);
 			System.out.println("FileBasedKnowledgeBaseClient: File language is: " + lang);
 			
 			//Set file output language to input language
-			if(graph == null) {
-				defaultLangOut = lang;
-			}else {
-				graphLangs.add(lang);	
-			}
+			graph.lang = lang;	
 			
 			//Data is triples
 			if(RDFLanguages.isTriples(lang)) {
 	
-				if(graph == null) {
+				if(graph.name == null) {
 					if(!dataset.getDefaultModel().isEmpty()) {
 						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: default graph already exists!");
 					}
 				}else {
-					if(dataset.containsNamedModel(graph)) { 
-						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + graph + " already exists!");
+					if(dataset.containsNamedModel(graph.name)) { 
+						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + graph.name + " already exists!");
 					}
 				}
 				
-				conn.load(graph, filePath);
+				conn.load(graph.name, graph.path);
 				
 			//Data is quads
 			}else {
 				
 				//Load quads to separate dataset first 
-				Dataset tempDataset = RDFDataMgr.loadDataset(filePath);
+				Dataset tempDataset = RDFDataMgr.loadDataset(graph.path);
 				
 				Iterator<String> it = tempDataset.listNames();
 				
@@ -244,25 +254,10 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 					}
 					
 					//context does not match the supplied graph name
-					if(!context.equals(graph)) {
-						if(graph == null) {
-							
-							//add named graph
-							graphs.add(context);
-							graphFilePaths.add(defaultFilePath);
-							graphLangs.add(lang);
-							
-							//set default graph to null
-							defaultFilePath = null;
-							defaultLangOut = null;
-							
-							System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph + " changed to " + context);
-							
-						}else {
-							//change graph name
-							graphs.set(graphs.indexOf(graph), context);
-							System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph + " changed to " + context);
-						}
+					if(!context.equals(graph.name)) {
+						//change graph name
+						System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph.name + " changed to " + context);
+						graph.name = context;
 					}
 				}		
 			
@@ -274,16 +269,19 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 				tempDataset.close();
 			}
 		} else {
-			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: cannot load " + filePath + ". File does not exist.");
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: cannot load " + graph.path + ". File does not exist.");
 		}
 	}	
+	
+	///////////////////////////
+	// Write methods
+	///////////////////////////
 	
 	/**
 	 * Writes the model to file and closes the connection.
 	 */
 	@Override
 	public void end() {
-		
 		writeToFile();
 		conn.close();
 		dataset.close();
@@ -296,15 +294,15 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	public void writeToFile(){
 		
 		//named graphs
-		if( graphFilePaths.size() > 0 ) { 
-			for(int i = 0; i < graphFilePaths.size(); i++) {
-				writeToFile(graphs.get(i), graphFilePaths.get(i), graphLangs.get(i));
+		if( namedGraphs.size() > 0 ) { 
+			for(int i = 0; i < namedGraphs.size(); i++) {
+				writeToFile(namedGraphs.get(i));
 			}
 		}
 		
 		//default graph
-		if(defaultFilePath != null){	
-			writeToFile(null, this.defaultFilePath, this.defaultLangOut);
+		if(defaultGraph.path != null){	
+			writeToFile(defaultGraph);
 		}
 	}
 	
@@ -312,16 +310,16 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * Write graph back to file. Null or "default" writes the default graph.
 	 * @param graph
 	 */
-	public void writeToFile(String graph) {		
+	public void writeToFile(String graphName) {
 		
-		if(graph == null || graph.equals("default")) {
-			if(defaultFilePath != null || defaultLangOut != null) {
-				writeToFile(null, this.defaultFilePath, this.defaultLangOut);
+		if(graphName == null || graphName.equals("default")) {
+			if(defaultGraph.path != null || defaultGraph.lang != null) {
+				writeToFile(defaultGraph);
 			}else {
-				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: no file path given.");
+				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: no file path.");
 			}
 		}else {
-			writeToFile(graph, graphFilePaths.get(graphs.indexOf(graph)), graphLangs.get(graphs.indexOf(graph)));
+			writeToFile(getGraph(graphName)); //TODO test null graph
 		}
 		
 	}
@@ -333,8 +331,12 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @throws IOException
 	 */
 	public void writeToFile(String filePath, Lang langOut) {
-		
 		writeToFile(null, filePath, langOut);
+	}
+	
+	//Helper function
+	private void writeToFile(GraphData graph) {
+		writeToFile(graph.name, graph.path, graph.lang);
 	}
 	
 	/**
@@ -344,24 +346,24 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * @param langOut 
 	 * @throws IOException
 	 */
-	public void writeToFile(String graph, String filePath, Lang langOut) {
+	public void writeToFile(String name, String filePath, Lang langOut) {
 		
 		try (OutputStream out = new FileOutputStream(filePath)){
 
 			//Default graph
-			if(graph == null) {
+			if(name == null || name.equals("default")) {
 				
 					RDFDataMgr.write(out, dataset.getDefaultModel(), langOut);	
 					out.flush();
 			
 			//Named graph
-			}else if(dataset.containsNamedModel(graph)) {
+			}else if(dataset.containsNamedModel(name)) {
 					
-					RDFDataMgr.write(out, dataset.getNamedModel(graph), langOut);
+					RDFDataMgr.write(out, dataset.getNamedModel(name), langOut);
 					out.flush();
 			
 			}else {
-				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + graph + " does not exist.");
+				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + name + " does not exist.");
 			}
 		}catch(IOException e) {
 			throw new JPSRuntimeException(e);
@@ -372,6 +374,75 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	// Variable access methods
 	///////////////////////////
 	
+	//// Methods to access graphs
+	
+	/**
+	 * Get graph matching name. Otherwise returns null.
+	 * @param name
+	 * @return
+	 */
+	private GraphData getGraph(String name) {
+		
+		if(name == null || name.equals("default")) {
+			return defaultGraph;
+		}else {
+			for(int i=0; i<namedGraphs.size(); i++) {
+				if (namedGraphs.get(i).name.equals(name)) {
+					return namedGraphs.get(i);
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Checks if the named graph exists in both the GraphData object and the Dataset
+	 * @param name
+	 * @return
+	 */
+	public boolean containsGraph(String name) {
+		GraphData graph = getGraph(name);	//contained in GraphData
+		if(graph != null) {
+			return dataset.containsNamedModel(name); //Contained in dataset
+		}else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns list of graph names 
+	 * @return
+	 */
+	public List<String> getGraphNames() {
+		List<String> names = new ArrayList<String>();
+		for(int i=0; i<namedGraphs.size(); i++) {
+			names.add(namedGraphs.get(i).name);
+		}
+		return names;
+	}
+	
+	/**
+	 * Get serialization language of graph.
+	 * @param name (null or "Default" for default graph)
+	 * @return
+	 */
+	public Lang getLang(String name) {
+		GraphData graph = getGraph(name);
+		return graph.lang;
+	}
+	
+	/**
+	 * Get file path of given graph.
+	 * @param name (null or "Default" for default graph)
+	 * @return
+	 */
+	public String getPath(String name) {
+		GraphData graph = getGraph(name);
+		return graph.path;
+	}
+	
+	////
+	
 	/**
 	 * Toggle the automatic write to file after update
 	 * @param value
@@ -381,47 +452,27 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Set default graph file path variable
-	 * @param filePath
-	 */
-	public void setFilePath(String filePath) {
-		this.defaultFilePath = filePath;
-	}
-	
-	/**
-	 * Get default graph file path variable
-	 */
-	public String getFilePath() {
-		return defaultFilePath;
-	}
-	
-	/**
-	 * Set output serialization language for default grpah
+	 * Set output serialization language for default graph
 	 * @param langOut
 	 */
 	public void setOutputLang(Lang langOut) {
-		this.defaultLangOut = langOut;
+		defaultGraph.lang = langOut;
 	}
 	
 	/**
-	 * Set output serialization language for named graphs
+	 * Set output serialization language for named graph if it exists
 	 * @param langOut
 	 */
-	public void setOutputLang(Lang[] langOut) {
+	public void setOutputLang(String name, Lang langOut) {
 		
-		//replace contents of langsOut
-		if(langOut.length == graphLangs.size() ) {
-			for(int i = 0; i < graphLangs.size(); i++) {
-				graphLangs.set(i, langOut[i]);
-			}
-		}else {
-			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: length of array does equal number of named graphs");
+		GraphData graph = getGraph(name);
+		if(graph != null) {
+			graph.lang = langOut;
 		}
 	}
 	
 	/**
-	 * Sets a query if provided.
-	 * 
+	 * Sets a query.
 	 * @param query
 	 * @return
 	 */
@@ -432,8 +483,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Returns the available query.
-	 * 
+	 * Returns the set query.
 	 * @return
 	 */
 	@Override
@@ -442,13 +492,33 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}	
 	
 	/**
+	 * Set the file path for default graph.
+	 * @param filePath
+	 */
+	public void setPath(String filePath) {
+		setPath(null, filePath);
+	}
+	
+	/**
+	 * Set the file path for named graph.
+	 * @param name (null or "default" for the default graph)
+	 * @param filePath
+	 */
+	public void setPath(String name, String filePath) {
+		GraphData graph = getGraph(name);
+		if(graph != null) {
+			graph.path= filePath;
+		}
+	}
+	
+	/**
 	 * Sets the default graph file path. Query and and update file paths are the same.
 	 * @param updateEndpoint
 	 */
 	@Override 
 	public String setUpdateEndpoint(String updateEndpoint) {
-		this.defaultFilePath = updateEndpoint;
-		return defaultFilePath;
+		defaultGraph.path = updateEndpoint;
+		return defaultGraph.path;
 	}
 	
 	/**
@@ -456,7 +526,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	@Override
 	public String getUpdateEndpoint() {
-		return defaultFilePath;
+		return defaultGraph.path;
 	}
 	
 	/**
@@ -465,8 +535,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	@Override 
 	public String setQueryEndpoint(String queryEndpoint) {
-		this.defaultFilePath = queryEndpoint;
-		return defaultFilePath;
+		return setUpdateEndpoint(queryEndpoint);
 	}
 	
 	/**
@@ -474,7 +543,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	@Override
 	public String getQueryEndpoint() {
-		return defaultFilePath;
+		return  getUpdateEndpoint();
 	}
 	
 	//// 
