@@ -171,6 +171,7 @@ public class EpisodeAgent extends JPSAgent{
             }
 
             responseParams.put("folder",Paths.get(outputPath,FILE_NAME_3D_MAIN_CONC_DATA).toString()); //or withtBCZ?
+            System.out.println(responseParams.toString());
         }
         return responseParams;
     }
