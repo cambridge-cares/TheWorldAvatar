@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "chart.js": "^2.9.4",
+    "dygraphs": "^2.1.0"
+  }
+}

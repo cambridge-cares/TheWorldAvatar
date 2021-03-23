@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lan="eng">
+
+<head>
+    <style>
+        h1 {
+            position: relative;
+            font-size: 20px;
+            text-align: left;
+            margin-left: 20px;
+            color: #C4C4C4;
+            font-family: Helvetica, sans-serif;
+        }
+
+        h2 {
+            text-align: center;
+            color: #C4C4C4;
+        }
+
+        h3 {
+            text-align: center;
+            color: #C4C4C4;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .reset {
+            font-family: Helvetica, sans-serif;
+            display: block;
+            position: relative;
+            margin-left: 20px;
+            width: 200px;
+            height: 30px;
+            padding: 0px;
+            font-size: 13px;
+            text-align: center;
+            color: #09101D;
+            background-color: #FFFFFF;
+            border-color: #c4c4c4;
+            border-width: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+        }
+
+
+        .reset:hover {
+            background-color: #09101D;
+            color: #FFFFFF;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: #191A1A
+        }
+    </style>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+
+<body>
+    <div id="map">
+    </div>
+
+    <h1 id='title'>
+        Tom Savage - CoMo 2020
+    </h1>
+    <button id="reset" class="reset">Reset Camera</button>
+    <nav id='menu'></nav>
+    <script>
+
+        title = document.getElementById('title');
+        but1 = document.getElementById('reset');
+        but2 = document.getElementById('but');
+        map_style = document.getElementById('map');
+
+
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGprMzVhajBlN3oyb29iY3B6dWRzdGgifQ.evsBbSjpJsxaw-6UzdvW4w';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/satellite-v9',
+            zoom: 6.,
+            center: [-2, 53.25],
+
+        });
+
+        map.on('load', function () {
+            map.addSource('National Transmission System', {
+                type: 'geojson',
+                data: '/geoJSON_assets/pipe_network.geojson'
+            });
+
+            pipe_color = '#FFFFFF';
+
+            map.addLayer({
+                'id': 'National Transmission System',
+                'type': 'line',
+                'source': 'National Transmission System',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': pipe_color,
+                    'line-opacity': 0.9,
+                    'line-width': 3
+                }
+            });
+
+
+            map.addSource('Pipe Buffer', {
+                type: 'geojson',
+                data: '/geoJSON_assets/pipe_buffer.geojson'
+            });
+
+            map.addLayer({
+                'id': 'Pipe Extrusion',
+                'type': 'fill-extrusion',
+                'source': 'Pipe Buffer',
+                'paint': {
+                    // See the Mapbox Style Specification for details on data expressions.
+                    // https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions
+
+                    // Get the fill-extrusion-color from the source 'color' property.
+                    'fill-extrusion-color': pipe_color,
+
+                    // Get fill-extrusion-height from the source 'height' property.
+                    'fill-extrusion-height': 15,
+
+                    // Get fill-extrusion-base from the source 'base_height' property.
+                    'fill-extrusion-base': 0,
+
+                    // Make extrusions slightly opaque for see through indoor walls.
+                    'fill-extrusion-opacity': 1
+                }
+            });
+
+            map.addSource('offtakes', {
+                type: 'geojson',
+                data: '/geoJSON_assets/offtakes.geojson'
+            });
+
+            map.addLayer({
+                'id': 'offtakes_loc',
+                'type': 'circle',
+                'source': 'offtakes',
+                'paint': {
+                    'circle-radius': 6,
+                    'circle-color': '#B42222',
+                    'circle-opacity': 0.9,
+                    "circle-stroke-width": 1,
+                    "circle-stroke-color": '#FFFFFF',
+                }
+            });
+
+            map.on('click', 'offtakes_loc', function (e) {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
+
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var name = e.features[0].properties["Offtake Point (Licence Name)"];
+                var type = e.features[0].properties["Type of Offtake"];
+
+                // Ensure that if the map is zoomed out such that multiple
+                // copies of the feature are visible, the popup appears
+                // over the copy being pointed to.
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML('<strong>' + name + '</strong><p>Offtake Type:' + type + '</p>')
+                    .addTo(map);
+
+                map.flyTo({
+                    center: coordinates,
+                    curve: 1.9,
+                    speed: 1.6,
+                    pitch: 45,
+                    zoom: 16,
+                    bearing: Math.random() * 360
+                });
+            });
+            map.on('mouseenter', 'offtakes_loc', function (e) {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', 'offtakes_loc', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+
+            // add a sky layer that will show when the map is highly pitched
+            map.addLayer({
+                'id': 'sky',
+                'type': 'sky',
+                'paint': {
+                    'sky-type': 'atmosphere'
+                }
+            });
+
+            document.getElementById('reset').addEventListener('click', function () {
+                map.flyTo({
+                    center: [-3, 54.25],
+                    curve: 2,
+                    speed: 1.7,
+                    pitch: 0,
+                    zoom: 5,
+                    bearing: 0
+                });
+            });
+
+            map.addSource('terminals_s', {
+                'type': 'geojson',
+                'data': '/geoJSON_assets/terminals.geojson'
+            });
+            term_name_color = '#C4C4C4'
+            term_outline_color = '#202028'
+            map.addLayer({
+                'id': 'terminals',
+                'type': 'circle',
+                'source': 'terminals_s',
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': '#108dcc',
+                    'circle-opacity': 0.9,
+                    "circle-stroke-width": 1,
+                    "circle-stroke-color": '#FFFFFF',
+                }
+            });
+            map.on('mouseenter', 'terminals', function (e) {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', 'terminals', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            map.on('click', 'terminals', function (e) {
+
+                var coordinates = e.features[0].geometry.coordinates;
+                var name = e.features[0].properties.name;
+                map.flyTo({
+                    center: coordinates,
+                    curve: 1.9,
+                    speed: 1.2,
+                    pitch: 45,
+                    zoom: 16,
+                    bearing: Math.random() * 360
+                });
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                }
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML('<strong>' + name + '</strong>')
+                    .addTo(map);
+            });
+
+            var layers = map.getStyle().layers;
+            var labelLayerId;
+            for (var i = 0; i < layers.length; i++) {
+                if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+                    labelLayerId = layers[i].id;
+                    break;
+                }
+            }
+
+            // Loading 3D buildings when zoomed in close enough 
+			if (!map.getSource('composite')) {
+				map.addSource('composite', {
+					type: 'vector', 
+					url: 'mapbox://mapbox.mapbox-streets-v7'}
+				);
+			} 
+			
+            map.addLayer(
+                {
+                    'id': '3d-buildings',
+                    'source': 'composite',
+                    'source-layer': 'building',
+                    'filter': ['==', 'extrude', 'true'],
+                    'type': 'fill-extrusion',
+                    'minzoom': 15,
+                    'paint': {
+                        'fill-extrusion-color': '#919191',
+
+                        // use an 'interpolate' expression to add a smooth transition effect to the
+                        // buildings as the user zooms in
+                        'fill-extrusion-height': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            15,
+                            0,
+                            15.05,
+                            ['get', 'height']
+                        ],
+                        'fill-extrusion-base': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            15,
+                            0,
+                            15.05,
+                            ['get', 'max_height']
+                        ],
+                        'fill-extrusion-opacity': 0.75
+                    }
+                },
+                labelLayerId
+            );
+
+
+        });
+
+
+
+    </script>
+</body>
+
+</html>
