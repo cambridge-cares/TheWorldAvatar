@@ -36,7 +36,7 @@ processpernode=1
 SRM=./driver
 
 # Execute the simulation
-CMD="mpirun -ppn $processpernode -np $numprocess \"$SRM\" -w $SRMWORKINGDIR"
+CMD="\"$SRM\" -s -w $SRMWORKINGDIR"
 echo -e "\nExecuting command:\n$CMD\n==================\n"
 eval $CMD
 
