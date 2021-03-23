@@ -1,8 +1,10 @@
 package uk.ac.cam.cares.jps.base.tools.test;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
@@ -12,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
@@ -19,6 +22,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.expr.Expr;
 import org.apache.jena.update.UpdateRequest;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,6 +68,59 @@ public class CloningToolTest {
 			filePath2 = tempFilePath2.toString();
 		}
 		
+		@Test
+		public void testConstructorAndSetter() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+			
+			int stepSize = 99;
+			CloningTool cloningTool = new CloningTool();
+			
+			Field field = null;
+			
+			assertNotNull(cloningTool.getClass().getDeclaredField("splitUpdate"));
+			field = cloningTool.getClass().getDeclaredField("splitUpdate");
+			field.setAccessible(true);
+			boolean value = (boolean) field.get(cloningTool);
+			assertTrue(value);
+			
+			//set single step clone
+			cloningTool.setSingleStepClone();
+			value = (boolean) field.get(cloningTool);
+			assertFalse(value);
+			
+			assertNotNull(cloningTool.getClass().getDeclaredField("stepSize"));
+			field = cloningTool.getClass().getDeclaredField("stepSize");
+			field.setAccessible(true);
+			int value2 = (int) field.get(cloningTool);
+			assertEquals(1000000,value2);
+			
+			//set step size
+			cloningTool.setCloneSize(stepSize);
+			value2 = (int) field.get(cloningTool);
+			assertEquals(stepSize,value2);
+		}
+		
+		@Test
+		public void testConstructorStepSize() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+			
+			int stepSize = 99;
+			CloningTool cloningTool = new CloningTool(stepSize);
+			
+			Field field = null;
+			
+			//get private variables
+			assertNotNull(cloningTool.getClass().getDeclaredField("splitUpdate"));
+			field = cloningTool.getClass().getDeclaredField("splitUpdate");
+			field.setAccessible(true);
+			boolean value = (boolean) field.get(cloningTool);
+			assertTrue(value);
+			
+			assertNotNull(cloningTool.getClass().getDeclaredField("stepSize"));
+			field = cloningTool.getClass().getDeclaredField("stepSize");
+			field.setAccessible(true);
+			int value2 = (int) field.get(cloningTool);
+			assertEquals(stepSize,value2);
+		}
+	
 		/**
 		 *  Test clone tool from a FileBasedKBClient to another FileBasedKBClient
 		 */
@@ -113,6 +170,275 @@ public class CloningToolTest {
 					
 			return builder.build().toString();
 		}
+		
+		//TODO testClone
+		//TODO testCloneGraph
+		//TODO testPerfromSingleStepClone
+		//TODO testPerfromClone
+		//TODO testCreateTag
+		//TODO testCheckCount
+		//TODO testCheckTags
+		
+		//// Count methods
+		
+		//TODO testCountTriples
+		
+		@Test
+		public void testCountQuery() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+			
+			CloningTool cloningTool = new CloningTool();
+			
+			//Check count variable
+			Field field = null;
+			assertNotNull(cloningTool.getClass().getDeclaredField("varCount"));
+			field = cloningTool.getClass().getDeclaredField("varCount");
+			field.setAccessible(true);
+			String countValue = (String) field.get(cloningTool);
+			assertEquals("count",countValue);
+			
+			Var[] sparqlArgs = getSparqlArgs();
+			Var varS = sparqlArgs[0];
+			Var varP = sparqlArgs[1];
+			Var varO = sparqlArgs[2];
+			
+			//test arguments -- default graph
+			WhereBuilder where = new WhereBuilder().addWhere(varS, varP, varO);
+			String graph = null;
+			
+			String expectedValue = "SELECT (COUNT(*) AS ?count) WHERE\n"+
+					"  { ?s  ?p  ?o }\n";
+			
+			Method method = null;
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("countQuery", String.class, WhereBuilder.class));
+			method = cloningTool.getClass().getDeclaredMethod("countQuery", String.class, WhereBuilder.class);
+			method.setAccessible(true);
+			String value = (String) method.invoke(cloningTool, graph, where);
+			assertEquals(expectedValue, value.toString());
+			
+			//test argument -- graph
+			graph = "http://example.com";
+			
+			expectedValue = "SELECT (COUNT(*) AS ?count) WHERE\n"+
+					"  { GRAPH <"+graph+">\n"+
+				    "      { ?s  ?p  ?o }\n"+
+		  			"  }\n";
+			value = (String) method.invoke(cloningTool, graph, where);
+			assertEquals(expectedValue, value.toString());
+		}
+		
+		//// Sparql builder methods
+		
+		@Test
+		public void testBuildConstruct() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			
+			CloningTool cloningTool = new CloningTool();
+			
+			Var[] sparqlArgs = getSparqlArgs();
+			Var varS = sparqlArgs[0];
+			Var varP = sparqlArgs[1];
+			Var varO = sparqlArgs[2];
+			
+			//test arguments -- default graph
+			WhereBuilder where = new WhereBuilder().addWhere(varS, varP, varO);
+			String graph = null;
+			
+			String expectedValue = "CONSTRUCT \n"+
+						"  { \n"+
+						"    ?s ?p ?o .\n"+
+						"  }\n"+
+						"WHERE\n"+
+						"  { ?s  ?p  ?o}\n";
+			
+			Method method = null;
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("buildConstruct", String.class, WhereBuilder.class));
+			method = cloningTool.getClass().getDeclaredMethod("buildConstruct", String.class, WhereBuilder.class);
+			method.setAccessible(true);
+			Query value = (Query) method.invoke(cloningTool, graph, where);
+			assertEquals(expectedValue, value.toString());
+			
+			//test argument -- graph
+			graph = "http://example.com";
+			
+			expectedValue = "CONSTRUCT \n"+
+					"  { \n"+
+					"    ?s ?p ?o .\n"+
+					"  }\n"+
+					"WHERE\n"+
+					"  { GRAPH <"+graph+">\n"+
+					"      { ?s  ?p  ?o}}\n";
+			
+			value = (Query) method.invoke(cloningTool, graph, where);
+			assertEquals(expectedValue, value.toString());
+		}
+		
+		@Test
+		public void testBuildInsert() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+			
+			CloningTool cloningTool = new CloningTool();
+			
+			//test arguments -- default graph
+			String graph = null;
+			Model model = getTestModel();
+			
+			String expectedValue = "INSERT DATA {\n"+
+						"  <http://example.com/S> <http://example.com/P> <http://example.com/O> .\n"+
+						"}\n";
+			
+			Method method = null;
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("buildInsert", String.class, Model.class));
+			method = cloningTool.getClass().getDeclaredMethod("buildInsert", String.class, Model.class);
+			method.setAccessible(true);
+			UpdateRequest value = (UpdateRequest) method.invoke(cloningTool, graph, model);
+			assertEquals(expectedValue, value.toString());
+			
+			//test argument -- graph
+			graph = "http://example.com";
+			
+			expectedValue = "INSERT DATA {\n"+
+					"  GRAPH <http://example.com> {\n"+
+					"    <http://example.com/S> <http://example.com/P> <http://example.com/O> .\n"+
+					"  }\n}\n";
+			
+			value = (UpdateRequest) method.invoke(cloningTool, graph, model);
+			assertEquals(expectedValue, value.toString());
+		}
+		
+		@Test
+		public void testBuildTagUpdate() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+			
+			CloningTool cloningTool = new CloningTool();
+			
+			Var[] sparqlArgs = getSparqlArgs();
+			Var varS = sparqlArgs[0];
+			Var varP = sparqlArgs[1];
+			Var varO = sparqlArgs[2];
+			
+			//test arguments -- default graph
+			int limit = 999;
+			WhereBuilder where = new WhereBuilder().addWhere(varS, varP, varO);
+			String graph = null;
+			
+			//expected
+			String expectedValue = "DELETE {\n"+
+					"  ?s ?p ?o .\n"+
+					"}\n"+
+					"INSERT {\n"+
+					"  ?newS ?p ?o .\n"+
+					"}\n"+
+					"WHERE\n"+
+					"  { { SELECT  ?s ?p ?o ?newS\n"+
+					"      WHERE\n"+
+					"        { ?s  ?p  ?o}\n"+
+					"      LIMIT   "+limit+
+					"\n    }\n  }\n";
+			
+			Method method = null;
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("buildTagUpdate", String.class, WhereBuilder.class, int.class));
+			method = cloningTool.getClass().getDeclaredMethod("buildTagUpdate", String.class, WhereBuilder.class, int.class);
+			method.setAccessible(true);
+			UpdateRequest value = (UpdateRequest) method.invoke(cloningTool, graph, where, limit);
+			assertEquals(expectedValue, value.toString());
+			
+			//test arguments -- graph
+			graph = "http://example.com";
+			
+			expectedValue = "DELETE {\n"+
+					"  GRAPH <"+graph+"> {\n"+
+					"    ?s ?p ?o .\n"+
+					"  }\n}\n"+
+					"INSERT {\n"+
+					"  GRAPH <"+graph+"> {\n"+
+					"    ?newS ?p ?o .\n"+
+					"  }\n}\n"+
+					"WHERE\n"+
+					"  { { SELECT  ?s ?p ?o ?newS\n"+
+					"      WHERE\n"+
+					"        { GRAPH \""+graph+"\"\n"+
+					"            { ?s  ?p  ?o}}\n"+
+					"      LIMIT   "+limit+
+					"\n    }\n  }\n";
+			
+			UpdateRequest value2 = (UpdateRequest) method.invoke(cloningTool, graph, where, limit);
+			assertEquals(expectedValue, value2.toString());
+		}
+		
+		private Var[] getSparqlArgs() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+			
+			CloningTool cloningTool = new CloningTool();
+			
+			//Get sparql variables
+			assertNotNull(cloningTool.getClass().getDeclaredField("varS"));
+			assertNotNull(cloningTool.getClass().getDeclaredField("varP"));
+			assertNotNull(cloningTool.getClass().getDeclaredField("varO"));
+			Field fieldS = cloningTool.getClass().getDeclaredField("varS");
+			fieldS.setAccessible(true);
+			Var varS = (Var) fieldS.get(cloningTool);
+			assertEquals("?s", varS.toString());
+			
+			Field fieldP = cloningTool.getClass().getDeclaredField("varP");
+			fieldP.setAccessible(true);
+			Var varP = (Var) fieldP.get(cloningTool);
+			assertEquals("?p", varP.toString());
+			
+			Field fieldO = cloningTool.getClass().getDeclaredField("varO");
+			fieldO.setAccessible(true);
+			Var varO = (Var) fieldO.get(cloningTool);
+			assertEquals("?o", varO.toString());
+			
+			Var[] args = {varS,varP,varO};
+			return args;
+		}
+		
+		//// Test filter expressions
+		
+		@Test
+		public void testExpressions() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
+			
+			CloningTool cloningTool = new CloningTool();
+			
+			String expectedTag = "_Tag";
+			
+			Field field = null;
+			assertNotNull(cloningTool.getClass().getDeclaredField("strTag"));
+			field = cloningTool.getClass().getDeclaredField("strTag");
+			field.setAccessible(true);
+			String tagValue = (String) field.get(cloningTool);
+			assertEquals(expectedTag,tagValue);
+			
+			Method method = null;
+			Expr value = null;
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("buildExprTagN", int.class));
+			method = cloningTool.getClass().getDeclaredMethod("buildExprTagN", int.class);
+			method.setAccessible(true);
+			value = (Expr) method.invoke(cloningTool, 1);
+			assertEquals("\"_1"+expectedTag+"\"", value.toString());
+			
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("exprFilterOutBlanks"));
+			method = cloningTool.getClass().getDeclaredMethod("exprFilterOutBlanks");
+			method.setAccessible(true);
+			value = (Expr) method.invoke(cloningTool);
+			assertEquals("(&& (! (isBlank ?s)) (&& (! (isBlank ?p)) (! (isBlank ?o))))", value.toString());
+			
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("exprTagged"));
+			method = cloningTool.getClass().getDeclaredMethod("exprTagged");
+			method.setAccessible(true);
+			value = (Expr) method.invoke(cloningTool);
+			assertEquals("(strends (str ?s) \""+expectedTag+"\")", value.toString());
+			
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("exprNotTagged"));
+			method = cloningTool.getClass().getDeclaredMethod("exprNotTagged");
+			method.setAccessible(true);
+			value = (Expr) method.invoke(cloningTool);
+			assertEquals("(! (strends (str ?s) \""+expectedTag+"\"))", value.toString());
+			
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("exprBindIriRemoveTag", Expr.class));
+			method = cloningTool.getClass().getDeclaredMethod("exprBindIriRemoveTag", Expr.class);
+			method.setAccessible(true);
+			value = (Expr) method.invoke(cloningTool, (Expr) null);
+			assertEquals("(iri (replace (str ?s) NONE \"\"))", value.toString());
+		}
+		
+		//// Test sparql builder for single step clone 
 		
 		/**
 		 * Test sparql construct builder.

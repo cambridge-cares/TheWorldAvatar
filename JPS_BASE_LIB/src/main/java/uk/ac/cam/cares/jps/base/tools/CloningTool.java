@@ -25,12 +25,12 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 
 public class CloningTool {
 
-	String strTag; 		//Tag ending
+	String strTag = "_Tag";	//Tag ending
 	boolean splitUpdate;
 	int stepSize;
-	int countTotal = 0;	//Total number of triple to clone
+	int countTotal;		//Total number of triple to clone
 	
-	///////////////////////// SPARQL variables
+	//// SPARQL variables
 	
 	static ExprFactory exprFactory = new ExprFactory();
 		
@@ -71,8 +71,6 @@ public class CloningTool {
 		this.stepSize = stepSize;
 	}
 	
-	//TODO constructor for single step?
-	
 	///////////////////////// Set variables
 	
 	/**
@@ -92,9 +90,9 @@ public class CloningTool {
 
 	///////////////////////// Clone methods
 	
-	//TODO: check if context is lost
 	/**
 	 * Clone all triples from source repository to target repository.
+	 * WARNING: any context will be lost.
 	 * @param sourceKB
 	 * @param targetKB
 	 */  
@@ -115,11 +113,11 @@ public class CloningTool {
 	    countTotal = countTriples(sourceKB, graph, whereCountAll);
 	    
 		if(splitUpdate == false) {
-			performSingleClone(sourceKB, targetKB, graph);
+			performSingleStepClone(sourceKB, targetKB, graph);
 		}else {
 			//perform using single step process if count <= stepsize    
 		    if(countTotal <= stepSize) {
-		    	performSingleClone(sourceKB, targetKB, graph);
+		    	performSingleStepClone(sourceKB, targetKB, graph);
 		    }else {
 		    	performClone(sourceKB, targetKB, graph);
 		    }
@@ -137,7 +135,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void performSingleClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+	public void performSingleStepClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
 		
 		//Get model using construct query
 		Query construct = buildSparqlConstruct(graph);
@@ -191,7 +189,7 @@ public class CloningTool {
 			// Remove tag from triples going to target
 			WhereBuilder whereRemoveTag = new WhereBuilder()
 					.addWhere(varS, varP, varO)
-					.addBind(exprBindIriRemovedTag(exprTagN), newS);
+					.addBind(exprBindIriRemoveTag(exprTagN), newS);
 			UpdateRequest removeTagUpdate = buildTagUpdate(graph, whereRemoveTag, stepSize);
 			Dataset dataset = DatasetFactory.create(triples);
 			UpdateProcessor updateExec = UpdateExecutionFactory.create(removeTagUpdate, dataset);
@@ -219,36 +217,12 @@ public class CloningTool {
 			Expr exprTagN = buildExprTagN(i);
 			WhereBuilder whereTagged = new WhereBuilder()
 					.addWhere(varS, varP, varO)
-					.addFilter(exprFactory.strends(exprStrS, exprTagN)) //TODO necessary?
-					.addBind(exprBindIriRemovedTag(exprTagN), newS);
+					.addFilter(exprFactory.strends(exprStrS, exprTagN))
+					.addBind(exprBindIriRemoveTag(exprTagN), newS);
 			UpdateRequest tagUpdate = buildTagUpdate(graph, whereTagged, stepSize);
 			sourceKB.executeUpdate(tagUpdate);
 		}
 	}
-	
-	//TODO add more checks?
-	/**
-	 * Check the number of triples in target matches source
-	 * @return
-	 */
-	public boolean checkCount(KnowledgeBaseClient kbClient, String graph) {
-
-		WhereBuilder whereCount = new WhereBuilder()
-				.addWhere(varS, varP, varO);
-	    int count = countTriples(kbClient, graph, whereCount);
-	    
-	    return count == countTotal;
-	}
-	
-	public int checkNoTags(KnowledgeBaseClient kbClient, String graph) {
-
-		WhereBuilder whereCount = new WhereBuilder()
-				.addWhere(varS, varP, varO)
-				.addFilter(exprTagged());
-	    return countTriples(kbClient, graph, whereCount);
-	}
-	
-	////
 	
 	/**
 	 * Creates a tag by hashing the source KB endpoint and current date and time.
@@ -259,7 +233,37 @@ public class CloningTool {
 		String name = kbClient.getQueryEndpoint() + dateTime.toString();
 		int hash = name.hashCode();
 		if(hash < 0) {hash *= -1;};
-		strTag = "_Tag"+String.valueOf(hash);
+		strTag += String.valueOf(hash);
+	}
+	
+	//// Checks
+	
+	/**
+	 * Check the number of triples in target matches source
+	 */
+	public boolean checkCount(KnowledgeBaseClient kbClient, String graph) {
+
+		WhereBuilder whereCount = new WhereBuilder()
+				.addWhere(varS, varP, varO);
+	    int count = countTriples(kbClient, graph, whereCount);
+	    
+	    return count == countTotal;
+	}
+	
+	/**
+	 * Check no tags remain
+	 */
+	public boolean checkNoTags(KnowledgeBaseClient kbClient, String graph) {
+
+		WhereBuilder whereCount = new WhereBuilder()
+				.addWhere(varS, varP, varO)
+				.addFilter(exprTagged());
+	    int count = countTriples(kbClient, graph, whereCount);
+	    if(count==0) {
+	    	return true;
+	    }else {
+	    	return false;
+	    }
 	}
 	
 	//// Count
@@ -357,7 +361,7 @@ public class CloningTool {
 	 * @param limit: number of triples to update
 	 * @return
 	 */
-	public UpdateRequest buildTagUpdate(String graph, WhereBuilder where, int limit) {
+	private UpdateRequest buildTagUpdate(String graph, WhereBuilder where, int limit) {
 		
 		// subquery selects new and old triples
 		SelectBuilder select = new SelectBuilder();
@@ -407,7 +411,7 @@ public class CloningTool {
 	 * @return
 	 */
 	private Expr exprFilterOutBlanks() {
-		// FILTER (!isblank(?s) && (!isblank(?p) && !isblank(?o))) 
+		// (!isblank(?s) && (!isblank(?p) && !isblank(?o))) 
 		return exprFactory.and(exprFactory.not(exprFactory.isBlank(exprS)),
 				exprFactory.and(exprFactory.not(exprFactory.isBlank(exprP)),
 								exprFactory.not(exprFactory.isBlank(exprO))));
@@ -434,7 +438,7 @@ public class CloningTool {
 	 * @param tag expression
 	 * @return
 	 */
-	private Expr exprBindIriRemovedTag(Expr exprTagN) {
+	private Expr exprBindIriRemoveTag(Expr exprTagN) {
 		return exprFactory.iri(exprFactory.replace(exprStrS, exprTagN, ""));
 	}
 
