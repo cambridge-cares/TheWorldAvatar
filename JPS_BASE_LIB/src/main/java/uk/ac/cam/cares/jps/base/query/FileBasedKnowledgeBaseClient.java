@@ -32,9 +32,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 /**
  * File Based Knowledge Base Client. This class uses RDFConnection to load
  * and provide SPARQL access to file based datasets.
- * The file must first be loaded using the constructor or load methods.
- * If sparql update operations have been performed, the data must be written
- * to file using the writeToFile or end methods. 
+ * The file must first be loaded using the constructor or load methods. 
  * 
  * @author Casper Lindberg
  *
@@ -115,7 +113,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 * Load files to memory.
 	 */
 	@Override
-	public void load() { //TODO necessary?
+	public void load() {
 		
 		//No file path set
 		if(defaultGraph.path == null && namedGraphs.size() == 0) {
@@ -319,7 +317,12 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: no file path.");
 			}
 		}else {
-			writeToFile(getGraph(graphName)); //TODO test null graph
+			GraphData graph = getGraph(graphName); 
+			if(graph!=null) {
+				writeToFile(graph);
+			}else {
+				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: graph not found.");
+			}
 		}
 		
 	}
