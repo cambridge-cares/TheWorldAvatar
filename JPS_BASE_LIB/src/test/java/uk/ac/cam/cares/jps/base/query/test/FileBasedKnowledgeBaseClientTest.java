@@ -126,6 +126,31 @@ public class FileBasedKnowledgeBaseClientTest {
 	}
 	
 	/**
+	 * Test initialisation of Dataset and RDFConnection.
+	 * 
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 */
+	@Test
+	public void testInit() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		
+		// access private member
+		assertNotNull(kbClient.getClass().getDeclaredMethod("init"));
+	    Method init = kbClient.getClass().getDeclaredMethod("init");
+	    init.setAccessible(true);
+		
+	    init.invoke(kbClient);
+	    
+		assertTrue(kbClient.isConnected());
+		assertTrue(kbClient.isEmpty());
+	}
+	
+	/**
 	 * Test constructor with multiple files and contexts.
 	 * @throws SecurityException 
 	 * @throws NoSuchFieldException 
@@ -133,7 +158,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	 * @throws IllegalArgumentException 
 	 */
 	@Test
-	public void testConstructorWithArray() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void testLoadMultipleGraphs() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		
 		String[] filePaths = new String[2];
 		filePaths[0] = filePath;
@@ -158,34 +183,16 @@ public class FileBasedKnowledgeBaseClientTest {
 			    
 		Model model0 = fieldValue.getNamedModel(graphs[0]);
 		Model model1 = fieldValue.getNamedModel(graphs[1]);
+		Model modelNull = fieldValue.getDefaultModel();
 		
+		assertTrue(modelNull.isEmpty());
 		assertFalse(model0.isEmpty());
 		assertFalse(model1.isEmpty());
-	}
-	
-	/**
-	 * Test initialisation of Dataset and RDFConnection.
-	 * 
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
-	 */
-	@Test
-	public void testInit() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
-		
-		// access private member
-		assertNotNull(kbClient.getClass().getDeclaredMethod("init"));
-	    Method init = kbClient.getClass().getDeclaredMethod("init");
-	    init.setAccessible(true);
-		
-	    init.invoke(kbClient);
-	    
-		assertTrue(kbClient.isConnected());
-		assertTrue(kbClient.isEmpty());
+		//Load default graph
+		kbClient.load(filePathOWL);
+		modelNull = fieldValue.getDefaultModel();
+		assertFalse(modelNull.isEmpty());
 	}
 	
 	/**
@@ -237,7 +244,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		File file1 = new File(filePathOWL);
 		File file2 = new File(filePathNQ);
 		
-		//delete files
+		//delete files if they exist
 		Files.deleteIfExists(Paths.get(filePath));
 		assertFalse(file0.exists());
 		Files.deleteIfExists(Paths.get(filePathOWL));
@@ -263,7 +270,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	 * @throws InvocationTargetException 
 	 */
 	@Test
-	public void testLoadQuad() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, NoSuchMethodException, InvocationTargetException {
+	public void testLoadQuadOverwriteName() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, NoSuchMethodException, InvocationTargetException {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
@@ -281,6 +288,10 @@ public class FileBasedKnowledgeBaseClientTest {
   		assertTrue(fieldValue.containsNamedModel(context));
   		Model model1 = fieldValue.getNamedModel(context);
   		assertFalse(model1.isEmpty());
+  		
+  		List<String> names = kbClient.getGraphNames();
+  		assertEquals(1, names.size());
+  		assertEquals(context, names.get(0));
   		
   		assertTrue(kbClient.containsGraph(context));
   		assertFalse(kbClient.containsGraph(wrongContext));
@@ -318,8 +329,8 @@ public class FileBasedKnowledgeBaseClientTest {
   		//Assert default graph is empty
   		Model model2 = fieldValue.getDefaultModel();
   		assertTrue(model2.isEmpty());
-  		
   		assertTrue(kbClient.getPath(null) == null);
+  		assertTrue(kbClient.getLang(null) == null);
 	}
 	
 	/**
@@ -474,9 +485,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	public void testSetGetFilePath() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 	
 		kbClient = new FileBasedKnowledgeBaseClient();
-		
-		kbClient.setPath(null, filePath);
-	    
+		kbClient.setPath(filePath);
 	    assertEquals(filePath, kbClient.getPath(null));
 	}
 
@@ -632,6 +641,12 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		result = kbClient.execute(testQuery);
 		assertEquals("[{\"o\":\"TEST\"}]", result);
+		
+		//check file is written after update
+		FileBasedKnowledgeBaseClient kbClientNew = new FileBasedKnowledgeBaseClient();
+		kbClientNew.load(filePath);	
+		String resultNew = kbClientNew.execute(testQuery);
+		assertEquals("[{\"o\":\"TEST\"}]", resultNew);
 	}
 	
 	/**
@@ -641,10 +656,10 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testExecuteUpdateWithStringArgument() throws ParseException {
 
-
 		kbClient = new FileBasedKnowledgeBaseClient();
 		kbClient.load(filePath);
-
+		kbClient.setAutoWrite(false); //turn off autowrite
+		
 		String result = kbClient.execute(testQuery);
 		assertEquals("[{\"o\":\"OH\"}]", result);
 		
@@ -653,6 +668,12 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		result = kbClient.execute(testQuery);
 		assertEquals("[{\"o\":\"TEST\"}]", result);
+
+		//check file is not written after update
+		FileBasedKnowledgeBaseClient kbClientNew = new FileBasedKnowledgeBaseClient();
+		kbClientNew.load(filePath);	
+		String resultNew = kbClientNew.execute(testQuery);
+		assertEquals("[{\"o\":\"OH\"}]", resultNew);
 	}
 
 	/**
