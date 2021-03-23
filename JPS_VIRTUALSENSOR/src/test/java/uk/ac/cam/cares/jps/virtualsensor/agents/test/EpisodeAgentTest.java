@@ -25,8 +25,9 @@ public class EpisodeAgentTest extends TestCase {
 
 	public void testAgentCall() {
 		JSONObject jo = new JSONObject();
-		jo.put(DispSimSparql.SimKey, "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5");
-		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/EpisodeAgent", jo.toString());
+		String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+		jo.put(DispSimSparql.SimKey, sim_iri);
+		AgentCaller.executeGetWithURLAndJSON(DispSimSparql.GetServiceURL(sim_iri), jo.toString());
 	}
 	
 	public void testepisodeweatherinput() {

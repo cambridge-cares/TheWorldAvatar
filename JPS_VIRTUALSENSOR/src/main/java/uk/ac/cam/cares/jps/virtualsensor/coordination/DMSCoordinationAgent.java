@@ -1,31 +1,59 @@
 package uk.ac.cam.cares.jps.virtualsensor.coordination;
 
-import java.util.ArrayList;
+import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
-import org.apache.http.client.methods.HttpPost;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.virtualsensor.general.DispersionModellingAgent;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
-//@WebServlet("/DMSCoordinationAgent")
-@WebServlet(urlPatterns = { "/episode/dispersion/coordination", "/adms/dispersion/coordination" })
-public class DMSCoordinationAgent extends JPSHttpServlet {
+@WebServlet("/DMSCoordinationAgent")
+public class DMSCoordinationAgent extends JPSAgent {
 
 	Logger logger = LoggerFactory.getLogger(DMSCoordinationAgent.class);
-	public static final String DISPERSION_PATH = "/JPS_VIRTUALSENSOR";
-	public static final String EPISODE_PATH = "/episode/dispersion/coordination";
-	public static final String ADMS_PATH = "/adms/dispersion/coordination";
-
+	
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		JSONObject response = new JSONObject();
+		
+		if (validateInput(requestParams)) {
+			String sim_iri = requestParams.getString(DispSimSparql.SimKey);
+			AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/WeatherAgent", requestParams.toString());
+	
+			logger.info("calling ship data agent = " + requestParams.toString());
+			AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/ShipDataAgent", requestParams.toString());
+	
+			String[] shipIRI = DispSimSparql.GetEmissionSources(sim_iri);
+			
+			if (shipIRI.length != 0) {
+				RunShipAsync(shipIRI);
+				String result = AgentCaller.executeGetWithURLAndJSON(DispSimSparql.GetServiceURL(sim_iri), requestParams.toString());
+				response.put("folder", new JSONObject(result).getString("folder"));
+			}
+		}
+		return response;
+	}
+	
+	@Override
+    public boolean validateInput(JSONObject requestParams) {
+    	boolean valid = false;
+    	try {
+    		new URL(requestParams.getString(DispSimSparql.SimKey)).toURI();
+    		valid = true;
+    	} catch (Exception e) {
+    		throw new BadRequestException();
+    	}
+    	return valid;
+    }
+	
 	private void RunShipAsync(String[] shipIRI) {
 		CompletableFuture<String> getAsync = null;
 
@@ -38,54 +66,5 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 					.supplyAsync(() -> execute("/JPS_VIRTUALSENSOR/ShipAgent", shiprequest.toString()));
 		}
         getAsync.join(); // ensure all calculations are completed before proceeding
-	}
-	
-	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		String path = request.getServletPath();
-
-		// temporary workaround until we remove city IRIs completely!
-		String city = requestParams.getString("city");
-
-		String result;
-
-		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/WeatherAgent", requestParams.toString());
-
-		logger.info("calling ship data agent = " + requestParams.toString());
-		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/ShipDataAgent", requestParams.toString());
-
-		String[] shipIRI = DispSimSparql.GetEmissionSources(requestParams.getString(DispSimSparql.SimKey));
-		
-		if (shipIRI.length != 0) {
-			RunShipAsync(shipIRI);
-
-			String resultPath = DISPERSION_PATH;
-			if (path.equals(ADMS_PATH)) {
-				resultPath = resultPath + DispersionModellingAgent.ADMS_PATH;
-				result = execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
-
-				String folder = new JSONObject(result).getString("folder");
-				requestParams.put("folder", folder);
-
-				JSONObject newJo = new JSONObject();
-				newJo.put("city", city);
-				newJo.put("airStationIRI", requestParams.get("airStationIRI").toString());
-				newJo.put("agent", requestParams.get("agent").toString());
-				String interpolationcall = execute("/JPS_VIRTUALSENSOR/InterpolationAgent/startSimulation",
-						newJo.toString());
-
-				String statisticcall = execute("/JPS_VIRTUALSENSOR/StatisticAnalysis", newJo.toString());
-
-			} else if (path.equals(EPISODE_PATH)) {
-				resultPath = resultPath + DispersionModellingAgent.EPISODE_PATH;
-				result = execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
-
-				String folder = new JSONObject(result).getString("folder");
-				requestParams.put("folder", folder);
-			}
-		}
-
-		return requestParams;
-
 	}
 }
