@@ -22,7 +22,7 @@ public class DMSCoordinationAgent extends JPSAgent {
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		JSONObject response = new JSONObject();
+		JSONObject response = null;
 		
 		if (validateInput(requestParams)) {
 			String sim_iri = requestParams.getString(DispSimSparql.SimKey);
@@ -36,7 +36,7 @@ public class DMSCoordinationAgent extends JPSAgent {
 			if (shipIRI.length != 0) {
 				RunShipAsync(shipIRI);
 				String result = AgentCaller.executeGetWithURLAndJSON(DispSimSparql.GetServiceURL(sim_iri), requestParams.toString());
-				response.put("folder", new JSONObject(result).getString("folder"));
+				response = new JSONObject(result);
 			}
 		}
 		return response;
