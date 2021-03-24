@@ -44,7 +44,9 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	
 	private String query;
 
-	// Object to store graph name, file path, serialization language
+	/**
+	 *  Object to store the graph name, file path, and serialization language
+	 */
 	class GraphData{
 		String name = null;
 		String path = null;
@@ -64,7 +66,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	// Default graph
 	private GraphData defaultGraph = new GraphData();
 	
-	// Write after update by default
+	// Dataset written to file after sparql update by default
 	private boolean autoWrite = true;	
 	
 	///////////////////////////
@@ -79,7 +81,7 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Constructor loads a triples to the default graph and quads to named graph.
+	 * Constructor loads a triples to the default graph and quads to a named graph.
 	 * @param filePath
 	 */
 	public FileBasedKnowledgeBaseClient(String filePath) {
@@ -599,6 +601,8 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	@Override
 	public int executeUpdate(String update) {
 
+		if(isEmpty()) {load();} //attempt to load files if dataset is empty
+		
 		if( conn != null) {
 			conn.begin( TxnType.WRITE );
 			try {
@@ -622,6 +626,8 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	@Override
 	public int executeUpdate(UpdateRequest update) {
+		
+		if(isEmpty()) {load();} //attempt to load files if dataset is empty
 		
 		if( conn != null) {
 			conn.begin( TxnType.WRITE );
@@ -692,6 +698,8 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	private ResultSet perfromExecuteQuery(String sparql) {
 		
+		if(isEmpty()) {load();} //attempt to load files if dataset is empty
+		
 		if (conn != null) {
 			conn.begin( TxnType.READ );	
 			try {
@@ -739,6 +747,8 @@ public class FileBasedKnowledgeBaseClient extends KnowledgeBaseClient {
 	 */
 	@Override
 	public Model queryConstruct(Query sparql) {
+		
+		if(isEmpty()) {load();} //attempt to load files if dataset is empty
 		
 		if (conn != null) {
 			conn.begin( TxnType.READ );	
