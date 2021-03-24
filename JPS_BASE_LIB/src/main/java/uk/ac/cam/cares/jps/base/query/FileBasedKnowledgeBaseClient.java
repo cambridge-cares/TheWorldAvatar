@@ -124,7 +124,6 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	/**
 	 * Load files to memory.
 	 */
-	@Override
 	public void load() {
 		
 		//Load multiple files if provided
@@ -285,7 +284,6 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	/**
 	 * Writes the model to file and closes the connection.
 	 */
-	@Override
 	public void end() {
 		writeToFile();
 		conn.close();
@@ -711,7 +709,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 */
 	@Override
 	public JSONArray executeQuery(String sparql) {
-		ResultSet results = perfromExecuteQuery(sparql);
+		ResultSet results = performExecuteQuery(sparql);
 		return convert(results);
 	}	
 	
@@ -729,7 +727,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 * @param sparql
 	 * @return
 	 */
-	private ResultSet perfromExecuteQuery(String sparql) {
+	private ResultSet performExecuteQuery(String sparql) {
 		
 		//Attempt to load files if the dataset is empty.
 		if(isEmpty()) {load();} 
