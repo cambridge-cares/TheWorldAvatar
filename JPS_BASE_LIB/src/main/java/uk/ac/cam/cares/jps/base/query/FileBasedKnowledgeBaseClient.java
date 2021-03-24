@@ -31,9 +31,18 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
- * File Based Knowledge Base Client. This class uses RDFConnection to load
- * and provide SPARQL access to file based datasets.
- * The file must first be loaded using the constructor or load methods. 
+ * This class uses RDFConnection to load and provide SPARQL access to file based datasets.
+ * The behaviour is designed to be analogous to RemoteKnowledgeBaseClient with the methods
+ * declared in KnowledgeBaseClientInterface.
+ * Files are automatically loaded when a file path is supplied via the class constructor or 
+ * set methods (in this case, files are loaded prior to sparql query/update).
+ * By default, data is automatically written to file after a SPARQL update.
+ * Further read/write functionality is provided through the load and writeToFile methods 
+ * including support for multiple files loaded to different contexts/named graphs. 
+ * Note that the FileBasedKnowledgeBaseClient only supports loading a single file to a single 
+ * context (including the default graph) and will throw an error if a context already exists 
+ * in the dataset (or the default graph is not empty). 
+ * Files containing more than one context are also not supported.
  * 
  * @author Casper Lindberg
  *
@@ -75,7 +84,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	///////////////////////////
 	
 	/**
-	 * Default constructor. Creates a file-based client without loading a file. 	
+	 * Default constructor. Creates a file-based client without loading a file.
 	 */
 	public FileBasedKnowledgeBaseClient() {
 		init();
@@ -118,11 +127,6 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	@Override
 	public void load() {
 		
-		//No file path set
-		if(defaultGraph.path == null && namedGraphs.size() == 0) {
-			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: no file path specified.");
-		}
-				
 		//Load multiple files if provided
 		if( namedGraphs.size() > 0 ) {
 			
@@ -211,6 +215,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 			//Data is triples
 			if(RDFLanguages.isTriples(lang)) {
 	
+				//error: graph/context already exists in the dataset
 				if(graph.name == null) {
 					if(!dataset.getDefaultModel().isEmpty()) {
 						throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: default graph already exists!");
@@ -254,9 +259,8 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 						}
 					}
 					
-					//context does not match the supplied graph name
-					if(!context.equals(graph.name)) {
-						//change graph name
+					//context does not match the supplied graph name ... change graph name
+					if(!context.equals(graph.name)) {					
 						System.out.println("FileBasedKnowledgeBaseClient: graph name " + graph.name + " changed to " + context);
 						graph.name = context;
 					}
@@ -340,7 +344,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		writeToFile(null, filePath, langOut);
 	}
 	
-	//Helper function
+	//Helper function.
 	private void writeToFile(GraphData graph) {
 		writeToFile(graph.name, graph.path, graph.lang);
 	}
@@ -541,7 +545,8 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	}
 	
 	/**
-	 * Sets the default graph file path. Query and and update file paths are the same.
+	 * Sets the default graph file path. 
+	 * Query and and update file paths are the same.
 	 * @param updateEndpoint
 	 */
 	@Override 
@@ -559,12 +564,14 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	}
 	
 	/**
-	 * Sets the default graph file path. Query and and update file paths are the same.
+	 * Sets the default graph file path.
+	 * Query and and update file paths are the same.
 	 * @param queryEndpoint
 	 */
 	@Override 
 	public String setQueryEndpoint(String queryEndpoint) {
-		return setUpdateEndpoint(queryEndpoint);
+		defaultGraph.path = queryEndpoint;
+		return defaultGraph.path;
 	}
 	
 	/**
@@ -624,9 +631,10 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 */
 	@Override
 	public int executeUpdate(String update) {
-
-		if(isEmpty()) {load();} //attempt to load files if dataset is empty
 		
+		//Attempt to load files if the dataset is empty.
+		if(isEmpty()) {load();} 
+				
 		if( conn != null) {
 			conn.begin( TxnType.WRITE );
 			try {
@@ -651,7 +659,8 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	@Override
 	public int executeUpdate(UpdateRequest update) {
 		
-		if(isEmpty()) {load();} //attempt to load files if dataset is empty
+		//Attempt to load files if the dataset is empty.
+		if(isEmpty()) {load();}
 		
 		if( conn != null) {
 			conn.begin( TxnType.WRITE );
@@ -662,7 +671,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 				conn.end();
 			}
 			if(autoWrite == true) {writeToFile();} //write changes to file (default behaviour)
-			return 0; //return a useful integer?
+			return 0; //TODO return a useful integer?
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
 		}
@@ -722,7 +731,8 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 */
 	private ResultSet perfromExecuteQuery(String sparql) {
 		
-		if(isEmpty()) {load();} //attempt to load files if dataset is empty
+		//Attempt to load files if the dataset is empty.
+		if(isEmpty()) {load();} 
 		
 		if (conn != null) {
 			conn.begin( TxnType.READ );	
@@ -781,7 +791,8 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	@Override
 	public Model executeConstruct(String sparql) {
 		
-		if(isEmpty()) {load();} //attempt to load files if dataset is empty
+		//Attempt to load files if the dataset is empty.
+		if(isEmpty()) {load();}
 		
 		if (conn != null) {
 			conn.begin( TxnType.READ );	

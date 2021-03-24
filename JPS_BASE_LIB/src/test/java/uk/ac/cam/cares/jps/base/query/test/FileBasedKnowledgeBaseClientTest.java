@@ -357,16 +357,6 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient = new FileBasedKnowledgeBaseClient();
 		kbClient.load("Example/does/not/exist");
 	}
-
-	/**
-	 * Test exception when calling load without specifying a path
-	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testLoadNoFile() {
-		
-		kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.load();
-	}
 	
 	////  Test errors thrown by edge cases
 	
