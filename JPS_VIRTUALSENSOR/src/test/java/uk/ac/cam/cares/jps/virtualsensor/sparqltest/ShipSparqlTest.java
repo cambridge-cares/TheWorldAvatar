@@ -117,4 +117,8 @@ public class ShipSparqlTest extends TestCase {
     	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
     	ShipSparql.QueryParticleIRI(ship_iri);
     }
+    
+    public void testGetNumShips() {
+    	ShipSparql.GetNumShips();
+    }
 }

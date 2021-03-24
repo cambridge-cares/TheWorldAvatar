@@ -4,6 +4,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
+import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -67,6 +68,9 @@ public class SensorSparql {
     private static Prefix p_coordsys = SparqlBuilder.prefix("coordsys",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"));
     private static Prefix p_instrument = SparqlBuilder.prefix("instrument", iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#"));
     
+    // type
+    private static Iri WeatherStation = p_station.iri("WeatherStation");
+    
     // IRI of units used
     private static Iri unit_m = p_SI_unit.iri("m");
     private static Iri unit_mm = p_derived_SI_unit.iri("mm");
@@ -91,14 +95,15 @@ public class SensorSparql {
      * @param station_name
      * @param xyz_coord = x y coordinates are in EPSG:4326, z is the height in m 
      */
-    public static void createWeatherStation(String station_name, double [] xyz_coord) {
+    public static void createWeatherStation(int index, double [] xyz_coord) {
+    	String station_name = "weatherstation" + String.valueOf(index);
         Iri weatherstation_iri = p_station.iri(station_name);
         Iri stationcoordinates_iri = p_station.iri(station_name+"_coordinates");
         Iri time_iri = p_station.iri(station_name+"_time");
 
         ModifyQuery modify = Queries.MODIFY();
         
-        TriplePattern weatherstation_tp = weatherstation_iri.isA(p_station.iri("WeatherStation"))
+        TriplePattern weatherstation_tp = weatherstation_iri.isA(WeatherStation)
         		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
 
         InsertCoordinatesTP(modify,stationcoordinates_iri,station_name,xyz_coord);
@@ -624,6 +629,24 @@ public class SensorSparql {
         
         query.from(queryGraph).prefix(p_station,p_system,p_ontosensor).select(data_type,numvalue).where(querypattern);
     	return SparqlGeneral.performQuery(query);
+    }
+    
+    public static int GetNumWeatherStation() {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String queryKey = "numstn";
+    	Variable numstn = SparqlBuilder.var(queryKey);
+    	Variable stn = query.var();
+    	
+    	GraphPattern queryPattern = stn.isA(WeatherStation);
+    	Assignment assign = Expressions.count(stn).as(numstn);
+    	
+    	From FromGraph = SparqlBuilder.from(weather_graph);
+    	
+    	query.prefix(p_station).from(FromGraph).select(assign).where(queryPattern);
+    	
+    	int result = SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
+    	return result;
     }
 }
 

@@ -23,9 +23,8 @@ public class SensorSparqlTest extends TestCase{
 			double x = Double.parseDouble(csv_array.get(i)[0]);
 			double y = Double.parseDouble(csv_array.get(i)[1]);
 			double z = Double.parseDouble(csv_array.get(i)[2]);
-			String station_name = "weatherstation" + String.valueOf(i);
 			double [] xyz = {x,y,z};
-			SensorSparql.createWeatherStation(station_name, xyz);
+			SensorSparql.createWeatherStation(i, xyz);
 		}
 	}
 	
@@ -85,5 +84,9 @@ public class SensorSparqlTest extends TestCase{
 	
 	public void testQueryAllStations() {
 		SensorSparql.queryAllAirStations();
+	}
+	
+	public void testGetNumWeatherStation() {
+		SensorSparql.GetNumWeatherStation();
 	}
 }

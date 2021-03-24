@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
+import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.From;
 import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -87,6 +88,9 @@ public class ShipSparql {
     private static Iri ship_graph = p_ship.iri("Ships");
     private static From FromGraph = SparqlBuilder.from(ship_graph);
     
+    // type 
+    static Iri Ship = p_ship.iri("Ship");
+    
     // relations
     static Iri hasSubsystem = p_system.iri("hasSubsystem");
 	static Iri realizes = p_technical.iri("realizes");
@@ -163,7 +167,7 @@ public class ShipSparql {
         Iri vxcoord = p_ship.iri(ship_name+"_vxcoord");
         Iri vycoord = p_ship.iri(ship_name+"_vycoord");
 
-        TriplePattern ship_tp = ship_iri.isA(p_ship.iri("Ship")).andHas(p_ship.iri("hasMMSI"),mmsi_iri)
+        TriplePattern ship_tp = ship_iri.isA(Ship).andHas(p_ship.iri("hasMMSI"),mmsi_iri)
                 .andHas(hasShipType,type_iri).andHas(hasSOG,speed_iri)
                 .andHas(p_ship.iri("hasCOG"), course_iri).andHas(hasDimension,length_iri)
                 .andHas(hasDimension,beam_iri)
@@ -736,5 +740,22 @@ public class ShipSparql {
     	part.setMassFraction(queryresult.getDouble(massfractionKey));
     	
     	return part;
+    }
+    /** 
+     * returns number of ships in the knowledge graph
+     */
+    public static int GetNumShips() {
+    	SelectQuery query = Queries.SELECT();
+    	String queryKey = "numship";
+    	Variable numship = SparqlBuilder.var(queryKey);
+    	Variable ship = query.var();
+    	
+    	Assignment assign = Expressions.count(ship).as(numship);
+    	GraphPattern queryPattern = ship.isA(Ship);
+    	
+    	query.from(FromGraph).select(assign).where(queryPattern).prefix(p_ship);
+    	
+    	int result = SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
+    	return result;
     }
 }
