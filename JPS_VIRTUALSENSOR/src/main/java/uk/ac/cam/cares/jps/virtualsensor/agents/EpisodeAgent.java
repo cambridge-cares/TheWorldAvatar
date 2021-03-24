@@ -43,7 +43,8 @@ import java.nio.file.Files;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
@@ -297,11 +298,11 @@ public class EpisodeAgent extends JPSAgent{
     public void createLinesInput(String inputPath, String filename,Scope sc) {
     	String templateFile = Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir", filename).toString();
 		File file = new File(templateFile);
-		double x0 = sc.getScopeCentre()[0]; // value not used in simulation, but needs to be within domain
-		double y0 = sc.getScopeCentre()[1];
-		double[] locationshipconverted0 = CRSTransformer.transform(sc.getCRSName(), epsgActive,
+		double x0 = sc.getScopeCentre().getX(); // value not used in simulation, but needs to be within domain
+		double y0 = sc.getScopeCentre().getY();
+		double[] locationshipconverted0 = CRSTransformer.transform(sc.getSrsName(), epsgActive,
 				new double[] { x0, y0 });
-		double[] locationshipconverted1 = CRSTransformer.transform(sc.getCRSName(), epsgActive,
+		double[] locationshipconverted1 = CRSTransformer.transform(sc.getSrsName(), epsgActive,
 				new double[] { x0+0.1, y0+0.1 });
 		try {
 			String fileContext = FileUtils.readFileToString(file);
@@ -349,8 +350,8 @@ public class EpisodeAgent extends JPSAgent{
 		DecimalFormat df = new DecimalFormat("0.0");
 		df.setRoundingMode(RoundingMode.HALF_EVEN);
 
-		int nx_rec =(int) Math.round((sc.getUpperx()-sc.getLowerx())/dx_rec);
-		int ny_rec =(int) Math.round((sc.getUppery()-sc.getLowery())/dy_rec);
+		int nx_rec =(int) Math.round((sc.getUpperCorner().getX()-sc.getLowerCorner().getX())/dx_rec);
+		int ny_rec =(int) Math.round((sc.getUpperCorner().getY()-sc.getLowerCorner().getY())/dy_rec);
 
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + Filename);
 		String fileContext;
@@ -361,8 +362,8 @@ public class EpisodeAgent extends JPSAgent{
 			fileContext=fileContext.replaceAll("ccc",""+dx_rec);
 			fileContext=fileContext.replaceAll("ddd",""+dy_rec);
 			fileContext=fileContext.replaceAll("eee",""+z_rec);
-			fileContext=fileContext.replaceAll("fff",""+Double.valueOf(df.format(sc.getLowerx())));
-			fileContext=fileContext.replaceAll("ggg",""+Double.valueOf(df.format(sc.getLowery())));
+			fileContext=fileContext.replaceAll("fff",""+Double.valueOf(df.format(sc.getLowerCorner().getX())));
+			fileContext=fileContext.replaceAll("ggg",""+Double.valueOf(df.format(sc.getLowerCorner().getY())));
 			new QueryBroker().putLocal(Paths.get(inputPath,Filename).toString(), fileContext);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -412,16 +413,16 @@ public class EpisodeAgent extends JPSAgent{
 		DecimalFormat df = new DecimalFormat("0.0");
 		df.setRoundingMode(RoundingMode.HALF_EVEN);
 
-		double proclowx = sc.getLowerx();
+		double proclowx = sc.getLowerCorner().getX();
 		proclowx=Double.valueOf(df.format(proclowx));
-		double procupx = sc.getUpperx();
+		double procupx = sc.getUpperCorner().getX();
 		procupx=Double.valueOf(df.format(procupx));
-		double proclowy = sc.getLowery();
+		double proclowy = sc.getLowerCorner().getY();
 		proclowy=Double.valueOf(df.format(proclowy));
-		double procupy = sc.getUppery();
+		double procupy = sc.getUpperCorner().getY();
 		procupy=Double.valueOf(df.format(procupy));
 
-		double[] center = sc.getScopeCentre();
+		Point center = sc.getScopeCentre();
 		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
 		double[] dcell = calculateEachDistanceCellDetails(procupx, procupy, proclowx, proclowy, nx, ny);
 
@@ -451,9 +452,9 @@ public class EpisodeAgent extends JPSAgent{
 																						// xmax+1000
 			fileContext = fileContext.replaceAll("190000.0", "" + (procupy + 1000)); // replace with the new value
 																						// ymax+1000
-			fileContext = fileContext.replaceAll("366600.0", "" + center[0]); // replace with the new value x center
+			fileContext = fileContext.replaceAll("366600.0", "" + center.getX()); // replace with the new value x center
 																				// point
-			fileContext = fileContext.replaceAll("154000.0", "" + center[1]); // replace with the new value y center
+			fileContext = fileContext.replaceAll("154000.0", "" + center.getY()); // replace with the new value y center
 																				// point
 			fileContext = fileContext.replaceAll("-35000.0a", "" + leftcorner[0]);
 			fileContext = fileContext.replaceAll("35b", "" + nx );
@@ -663,7 +664,7 @@ public class EpisodeAgent extends JPSAgent{
 			}
 
 			double[] pmidconvert = CRSTransformer.transform(epsgActive, "EPSG:4326",
-					new double[] { center[0], center[1] });
+					new double[] { center.getX(), center.getY() });
 			DecimalFormat df2 = new DecimalFormat("#.#");
 			String xmid = df2.format(pmidconvert[0]);
 			System.out.println("xmid=" + xmid);

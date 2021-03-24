@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;

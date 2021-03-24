@@ -5,9 +5,12 @@ import org.json.JSONObject;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 public class DispSimSparqlTest extends TestCase{
 	String episode_iri = "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service";
@@ -36,8 +39,14 @@ public class DispSimSparqlTest extends TestCase{
     	}
     }
     
+    public void testInitService() {
+    	String service_iri = episode_iri;
+    	String httpURL = "http://localhost:8080/JPS_VIRTUALSENSOR/EpisodeAgent";
+    	DispSimSparql.InitService(service_iri, httpURL);
+    }
+    
     public void testGetScope() {
-    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
     	DispSimSparql.GetScope(sim_iri);
     }
     
@@ -83,12 +92,6 @@ public class DispSimSparqlTest extends TestCase{
     	DispSimSparql.GetNumSubStations(sim_iri);
     }
     
-    public void testInitService() {
-    	String service_iri = episode_iri;
-    	String httpURL = "http://localhost:8080/JPS_VIRTUALSENSOR/EpisodeAgent";
-    	DispSimSparql.InitService(service_iri, httpURL);
-    }
-    
     public void testGetServiceURL() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
     	DispSimSparql.GetServiceURL(sim_iri);
@@ -128,5 +131,55 @@ public class DispSimSparqlTest extends TestCase{
     public void testGetNy() {
     	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
     	DispSimSparql.GetNy(sim_iri);
+    }
+    
+    public void testGetNumSim() {
+    	DispSimSparql.GetNumSim();
+    }
+    
+    public void testCreateDispSim() { 
+    	double[] centre= {-1.913913,52.803439}; 
+    	double[] dimension = {20*1e3,20*1e3}; // [x,y]
+    	Scope sc = DispSimSparql.createScopeEpisode(centre, dimension);
+    	
+    	//create 1 dummy ship at the centre
+        int mmsi, al, aw, ts; double ss, cu, lat, lon; String type;
+        for (int i = 1; i < 2; i++) {
+            mmsi = 1;
+            type = "unknown type";
+            al = 37;
+            aw = 8;
+            ss = 0.1;
+            cu = 220.2;
+            lat = centre[1];
+            lon = centre[0];
+            ts = 1;
+            int shipindex = ShipSparql.GetNumShips() + 1;
+            ShipSparql.createShip(shipindex,mmsi,type,al,aw,ss,cu,lat,lon,ts);
+        }
+        
+        // create dummy weather stations
+        // create main station at the centre
+        int numstn = SensorSparql.GetNumWeatherStation();
+        double stnhgt = 10; // fixed height for now
+        double[] xyz_main = {centre[0],centre[1],stnhgt};
+        SensorSparql.createWeatherStation(numstn+1, xyz_main);
+        
+        // create sub station 100m away from bottom corner
+        double[] xy_sub = {sc.getLowerCorner().getX()+100 ,sc.getLowerCorner().getY()+100};
+        xy_sub = CRSTransformer.transform(sc.getSrsName(), CRSTransformer.EPSG_4326, xy_sub);
+        double[] xyz_sub = {xy_sub[0],xy_sub[1],stnhgt};
+        SensorSparql.createWeatherStation(numstn+2, xyz_sub);
+        
+        double[] dz = {10,10,15,25,40,100,300,500,500,500,500,500,500};
+        DispSim sim = new DispSim();
+    	sim.setScope(sc);
+    	sim.setNx(10);
+    	sim.setNy(10);
+    	sim.setNumSubStations(1);
+    	sim.setServiceAgent(episode_iri);
+    	sim.setSimCRS(sc.getSrsName());
+    	sim.setDz(dz);
+    	DispSimSparql.InitSim(DispSimSparql.GetNumSim()+1, sim);
     }
 }

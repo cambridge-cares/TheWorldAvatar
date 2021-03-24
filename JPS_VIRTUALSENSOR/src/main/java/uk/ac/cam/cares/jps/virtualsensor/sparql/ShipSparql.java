@@ -23,9 +23,9 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Particle;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 
 public class ShipSparql {
 	public static String shipKey = "ship";
@@ -268,8 +268,8 @@ public class ShipSparql {
         
         // constraint to get ships within provided scope
         sc.transform("EPSG:4326");
-        Expression<?> xconstraint = Expressions.and(Expressions.lt(lon, sc.getUpperx()),Expressions.gt(lon, sc.getLowerx()));
-        Expression<?> yconstraint = Expressions.and(Expressions.lt(lat, sc.getUppery()),Expressions.gt(lat, sc.getLowery()));
+        Expression<?> xconstraint = Expressions.and(Expressions.lt(lon, sc.getUpperCorner().getX()),Expressions.gt(lon, sc.getLowerCorner().getX()));
+        Expression<?> yconstraint = Expressions.and(Expressions.lt(lat, sc.getUpperCorner().getY()),Expressions.gt(lat, sc.getLowerCorner().getY()));
         Expression<?> overallconstraint = Expressions.and(xconstraint,yconstraint);
        
         // prioritise ships that are moving and large ones

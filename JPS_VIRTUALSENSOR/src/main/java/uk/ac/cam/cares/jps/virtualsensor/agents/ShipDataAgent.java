@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 

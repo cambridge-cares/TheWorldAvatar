@@ -4,17 +4,15 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
@@ -158,23 +156,23 @@ public class DispSimSparql {
     	
     	// scope CRS
     	TriplePattern ScopeCRS_tp = ScopeCRS.has(hasValue,ScopeCRSValue);
-    	TriplePattern ScopeCRSValue_tp =  ScopeCRSValue.has(value,sim.getScope().getCRSName());
+    	TriplePattern ScopeCRSValue_tp =  ScopeCRSValue.has(value,sim.getScope().getSrsName());
     	
     	// lower corner
     	TriplePattern lowercorner_tp = lowerCorner.isA(PointType).andHas(hasGISCoordinateSystem,lowerCornerCoordinates);
     	TriplePattern lowercoord_tp = lowerCornerCoordinates.isA(ProjectedCoordinateSystem).andHas(hasProjectedCoordinate_x,lowerCornerX).andHas(hasProjectedCoordinate_y,lowerCornerY);
     	TriplePattern lowerxcoord_tp = lowerCornerX.isA(StraightCoordinate).andHas(hasValue,lowerCornerXValue);
     	TriplePattern lowerycoord_tp = lowerCornerY.isA(StraightCoordinate).andHas(hasValue,lowerCornerYValue);
-    	TriplePattern vlowerxcoord_tp = lowerCornerXValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getLowerx());
-    	TriplePattern vlowerycoord_tp = lowerCornerYValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getLowery());
+    	TriplePattern vlowerxcoord_tp = lowerCornerXValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getLowerCorner().getX());
+    	TriplePattern vlowerycoord_tp = lowerCornerYValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getLowerCorner().getY());
     	
     	// repeat for upper corner
     	TriplePattern uppercorner_tp = upperCorner.isA(PointType).andHas(hasGISCoordinateSystem,upperCornerCoordinates);
     	TriplePattern uppercoord_tp = upperCornerCoordinates.isA(ProjectedCoordinateSystem).andHas(hasProjectedCoordinate_x,upperCornerX).andHas(hasProjectedCoordinate_y,upperCornerY);
     	TriplePattern upperxcoord_tp =  upperCornerX.isA(StraightCoordinate).andHas(hasValue,upperCornerXValue);
     	TriplePattern upperycoord_tp = upperCornerY.isA(StraightCoordinate).andHas(hasValue,upperCornerYValue);
-    	TriplePattern vupperxcoord_tp =  upperCornerXValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getUpperx());
-    	TriplePattern vupperycoord_tp = upperCornerYValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getUppery());
+    	TriplePattern vupperxcoord_tp =  upperCornerXValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getUpperCorner().getX());
+    	TriplePattern vupperycoord_tp = upperCornerYValue.isA(CoordinateValue).andHas(numericalValue, sim.getScope().getUpperCorner().getY());
     	// scope done
     	
     	// number of sub stations (min 1 for Episode, 0 for ADMS)
@@ -254,11 +252,19 @@ public class DispSimSparql {
 		JSONObject queryResult = SparqlGeneral.performQuery(query).getJSONObject(0);
 		
 		Scope sc = new Scope();
-		sc.setLowerx(queryResult.getDouble(Region.keyLowerx));
-		sc.setLowery(queryResult.getDouble(Region.keyLowery));
-		sc.setUpperx(queryResult.getDouble(Region.keyUpperx));
-		sc.setUppery(queryResult.getDouble(Region.keyUppery));
-		sc.setCRSName(queryResult.getString(Region.keySrsname));
+		Point lowerCorner = new Point();
+		lowerCorner.setX(queryResult.getDouble(Region.keyLowerx));
+		lowerCorner.setY(queryResult.getDouble(Region.keyLowery));
+		lowerCorner.setSrsname(queryResult.getString(Region.keySrsname));
+		
+		Point upperCorner = new Point();
+		upperCorner.setX(queryResult.getDouble(Region.keyUpperx));
+		upperCorner.setY(queryResult.getDouble(Region.keyUppery));
+		upperCorner.setSrsname(queryResult.getString(Region.keySrsname));
+
+		sc.setLowerCorner(lowerCorner);
+		sc.setUpperCorner(upperCorner);
+		sc.setSrsName(queryResult.getString(Region.keySrsname));
 		
 		return sc;
 	}
@@ -553,5 +559,62 @@ public class DispSimSparql {
 		int nyValue = SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
 		
 		return nyValue;
+	}
+	
+	public static int GetNumSim() {
+		SelectQuery query = Queries.SELECT();
+		String queryKey = "numsim";
+		Variable numsim = SparqlBuilder.var(queryKey);
+		Variable sim = query.var();
+		GraphPattern queryPattern = sim.isA(DispersionSim);
+		Assignment assign = Expressions.count(sim).as(numsim);
+		
+		query.from(FromGraph).prefix(p_dispsim).where(queryPattern).select(assign);
+		
+		int result = SparqlGeneral.performQuery(query).getJSONObject(0).getInt(queryKey);
+		return result;
+	}
+	
+	/**
+	 * centre needs to be in epsg:4326, assume input from map
+	 * @param centre
+	 * @param dimension
+	 * @return
+	 */
+	public static Scope createScopeEpisode(double[] centre, double[] dimension) {
+    	// first determine UTM zone of centre
+        // Determine zone based on longitude, the size of each UTM zone is 6 degrees
+        int centreZoneNumber = (int) Math.ceil((centre[0] + 180)/6);
+        String localCRS;
+        if (centre[1] < 0) {
+        	localCRS = "EPSG:327" + centreZoneNumber;
+        } else {
+        	localCRS = "EPSG:326" + centreZoneNumber;
+        }
+        
+        // currently not considering cases where simulation domain spans across two zones
+        double[] centre_m = CRSTransformer.transform(CRSTransformer.EPSG_4326, localCRS, centre);
+        
+        Scope sc = new Scope();
+        
+        Point upperCorner = new Point();
+        upperCorner.setX(centre_m[0]+dimension[0]/2);
+        upperCorner.setY(centre_m[1]+dimension[1]/2);
+        upperCorner.setSrsname(localCRS);
+        
+        Point lowerCorner = new Point();
+        lowerCorner.setX(centre_m[0]-dimension[0]/2);
+        lowerCorner.setY(centre_m[1]-dimension[1]/2);
+        lowerCorner.setSrsname(localCRS);
+        
+        sc.setLowerCorner(lowerCorner);
+        sc.setUpperCorner(upperCorner);
+        sc.setSrsName(localCRS);
+        
+        return sc;
+    }
+	
+	public static void CreateDispSim(double[] centre) {
+		
 	}
 }

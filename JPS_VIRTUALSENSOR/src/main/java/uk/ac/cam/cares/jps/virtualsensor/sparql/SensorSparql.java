@@ -21,7 +21,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
@@ -516,8 +517,8 @@ public class SensorSparql {
         
     	// constraint to stations within scope
     	sc.transform("EPSG:4326");
-        Expression<?> xconstraint = Expressions.and(Expressions.lt(xvalue, sc.getUpperx()),Expressions.gt(xvalue, sc.getLowerx()));
-        Expression<?> yconstraint = Expressions.and(Expressions.lt(yvalue, sc.getUppery()),Expressions.gt(yvalue, sc.getLowery()));
+        Expression<?> xconstraint = Expressions.and(Expressions.lt(xvalue, sc.getUpperCorner().getX()),Expressions.gt(xvalue, sc.getLowerCorner().getX()));
+        Expression<?> yconstraint = Expressions.and(Expressions.lt(yvalue, sc.getUpperCorner().getY()),Expressions.gt(yvalue, sc.getLowerCorner().getY()));
         Expression<?> overallconstraint = Expressions.and(xconstraint,yconstraint);
         
         GraphPatternNotTriples querypattern = GraphPatterns.and(station_gp,projected_gp,coord_gp,vcoord_gp)

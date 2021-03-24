@@ -17,8 +17,10 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.virtualsensor.episode.CalculationUtils;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
@@ -44,13 +46,15 @@ public class WeatherAgent extends JPSAgent {
 	        Scope sc = DispSimSparql.GetScope(sim_iri);
 	        int numsub = DispSimSparql.GetNumSubStations(sim_iri);
 	        
-	        JSONArray queryResult = SensorSparql.queryWeatherStationsWithinScope(sc);
+	        JSONArray queryResult = SensorSparql.queryWeatherStationsWithinScope(sc); // CRS transformed here to 4326, not good?
 	        
 	        if (queryResult.length() < numsub+1) {
-	        	throw new JPSRuntimeException("Not enough weather stations in the specified simulation domain");
+	        	String errormsg = "Not enough weather stations in the specified simulation domain";
+	        	System.out.println(errormsg);
+	        	throw new JPSRuntimeException(errormsg);
 	        }
 	        
-	        double[] centre = sc.getScopeCentre();
+	        Point centre = sc.getScopeCentre();
 	        // initialise weather stations
 	        WeatherStation[] weatherStations = new WeatherStation[queryResult.length()];
 	        for (int i = 0; i < queryResult.length(); i++) {
@@ -58,8 +62,11 @@ public class WeatherAgent extends JPSAgent {
 	        	weatherStations[i].setStationiri(queryResult.getJSONObject(i).getString("stationiri"));
 	            weatherStations[i].setXcoord(queryResult.getJSONObject(i).getDouble("xvalue"));
 	            weatherStations[i].setYcoord(queryResult.getJSONObject(i).getDouble("yvalue"));
-	            double distance = CalculationUtils.distanceWGS84(weatherStations[i].getYcoord(), weatherStations[i].getYcoord(), 
-	            		centre[1], centre[0], "K");
+	            Point stnloc = new Point();
+	            stnloc.setX(weatherStations[i].getXcoord());
+	            stnloc.setY(weatherStations[i].getYcoord());
+	            stnloc.setSrsname(CRSTransformer.EPSG_4326);
+	            double distance = centre.distance(stnloc);
 	            weatherStations[i].setDistance(distance);
 	        }
 	        
