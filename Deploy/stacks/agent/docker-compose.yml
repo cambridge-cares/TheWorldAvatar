@@ -24,7 +24,7 @@ services:
     
   # Kinetics Agent.
   # Note: This Image mounts a volume so that it can access the SRM Driver and
-  #	      Intel MPI files stored within the 'srm-driver' Image.
+  #        Intel MPI files stored within the 'srm-driver' Image.
   kinetics-agent:
     image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
     container_name: "kinetics-agent-${MODE}"
@@ -36,7 +36,35 @@ services:
        hash: "${HASH}"
     volumes:
       - driver:/usr/local/srm-driver
-   
+
+    
+  # Slurm compute node
+  slurm:
+    image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
+    container_name: "slurm-${MODE}"
+    restart: unless-stopped
+    privileged: true
+    cap_add:
+      - ALL
+    labels:
+       description: "Slurm compute node."
+       authors: "support@cmclinnovations.com"
+       builder: "${BUILDER}"
+       hash: "${HASH}"
+    volumes:
+      - driver:/usr/local/srm-driver
+      - mpi:/usr/local/intel-mpi
+    environment:
+      MYSQL_ROOT_PASS: /run/secrets/mysql_root_pass
+    secrets:
+      - mysql_root_pass
+
+  
+# Secrets
+secrets:
+  mysql_root_pass:
+    file: Slurm/mysql_root_pass
+
 
 # Volumes
 volumes:
