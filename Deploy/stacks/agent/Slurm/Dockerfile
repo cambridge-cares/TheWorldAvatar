@@ -10,7 +10,7 @@
 #########################
 
 # Use the CentOS 7 as the base
-FROM docker.cmclinnovations.com/centos7-systemd:latest
+FROM centos:7
 
 # Update package repository
 RUN yum update -y
@@ -48,13 +48,15 @@ RUN useradd slurm
 RUN mkdir /var/log/slurm
 RUN chown slurm. /var/log/slurm
 
-# TODO: Run the MYSQL setup script
-#WORKDIR /tmp
-#COPY mysql-setup.sh mysql-setup.sh
-#RUN chmod +x mysql-setup.sh
+# Start the MariaDB service
+#???
+
+# Copy in MySQL setup script
+COPY mysql-setup.sh /tmp/mysql-setup.sh
+RUN chmod +x /tmp/mysql-setup.sh
 
 # TODO: Setup SSH access
 #EXPOSE 22
 
-# Entrypoint
-CMD ["/usr/sbin/init"]
+# Entrypoint to keep the container running
+ENTRYPOINT ["tail", "-f", "/dev/null"]

@@ -1,11 +1,43 @@
 #!/usr/bin/expect
 
-#spawn mysql_secure_installation
+set timeout 10
 
-# Set the root password
-set password [printenv MYSQL_ROOT_PASS]
-send "echo Hello World"
-send "echo $password"
+# Read the root password
+set f [open "/usr/local/secrets/mysql_root_pass"]
+set password [split [read $f] "\n"]
+close $f
 
-#expect "*password for root*"
-#send "$password\r";
+# MySQL setup
+spawn mysql_secure_installation
+
+# Default MariaBd password is blank
+expect "Enter current password for root*"
+send "\r";
+
+# Change the root password
+expect "Change the root password*"
+send "Y\r";
+
+expect "New password:"
+send "$password\r";
+
+expect "Re-enter new password:"
+send "$password\r";
+
+# Delete anonymous users
+expect "*anonymous users*"
+send "Y\r";
+
+# Prevent remote login
+expect "*login remotely*"
+send "Y\r";
+
+# Delete test database
+expect "*test database*"
+send "Y\r";
+
+# Reload privilegesY
+expect "Reload privilege*"
+send "Y\r";
+
+interact
