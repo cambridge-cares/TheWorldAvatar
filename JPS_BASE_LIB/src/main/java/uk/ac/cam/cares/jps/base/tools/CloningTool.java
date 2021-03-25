@@ -113,11 +113,11 @@ public class CloningTool {
 	    countTotal = countTriples(sourceKB, graph, whereCountAll);
 	    
 		if(splitUpdate == false) {
-			performSingleStepClone(sourceKB, targetKB, graph);
+			singleStepClone(sourceKB, targetKB, graph);
 		}else {
 			//perform using single step process if count <= stepsize    
 		    if(countTotal <= stepSize) {
-		    	performSingleStepClone(sourceKB, targetKB, graph);
+		    	singleStepClone(sourceKB, targetKB, graph);
 		    }else {
 		    	performClone(sourceKB, targetKB, graph);
 		    }
@@ -135,7 +135,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void performSingleStepClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+	public void singleStepClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
 		
 		//Get model using construct query
 		Query construct = buildSparqlConstruct(graph);
@@ -154,7 +154,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void performClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+	private void performClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
 		
 		createTag(sourceKB);
 

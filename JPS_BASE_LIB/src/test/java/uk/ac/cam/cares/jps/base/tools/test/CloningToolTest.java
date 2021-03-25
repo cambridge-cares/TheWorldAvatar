@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
@@ -28,9 +29,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
-
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.tools.CloningTool;
 
 /**
@@ -47,6 +49,7 @@ public class CloningToolTest {
 		
 		private String filePath1;
 		private String filePath2;
+		private String testContext = "http://example.com/test";
 		
 		/**
 		 * Copy test resources into temporary folder.
@@ -123,65 +126,231 @@ public class CloningToolTest {
 	
 		/**
 		 *  Test clone tool from a FileBasedKBClient to another FileBasedKBClient
+		 * @throws SecurityException 
+		 * @throws NoSuchMethodException 
+		 * @throws InvocationTargetException 
+		 * @throws IllegalArgumentException 
+		 * @throws IllegalAccessException 
 		 */
 		@Test
-		public void testClone() {
-			
-			FileBasedKnowledgeBaseClient source = new FileBasedKnowledgeBaseClient();
-			source.load("http://example.com/test1", filePath1);
-			source.load("http://example.com/test2", filePath2);
-			
+		public void testSingleStepClone() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+			CloningTool cloningTool = new CloningTool();
+			KnowledgeBaseClient source = createTestClient();
 			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
 			
-			CloningTool cloningTool = new CloningTool();
-			cloningTool.setSingleStepClone();
+			String graph = null;
 			
-			//copy graph 1
-			cloningTool.clone(source, target, "http://example.com/test1");
+			//clone default
+			cloningTool.singleStepClone(source, target, graph);
+						
+			//check copied
+			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery(null, "1")));
+			assertEquals("[{\"O\":\"O\"}]", target.execute(getQuery(null, "2")));
+			assertEquals("[{\"O\":\"O2\"}]", target.execute(getQuery(null, "3")));
+			assertEquals("[]", target.execute(getQuery(null, "4")));
+			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned
+			
+			//clone named graph			
+			FileBasedKnowledgeBaseClient target2 = new FileBasedKnowledgeBaseClient();
+			cloningTool.singleStepClone(source, target2, testContext);
 			
 			//check copied
-			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery("http://example.com/test1", "1")));
-			assertEquals("[{\"O\":\"O\"}]", target.execute(getQuery("http://example.com/test1", "2")));
-			
-			//copy graph 2
-			cloningTool.clone(source, target, "http://example.com/test2");
-			
-			//check copied
-			assertEquals("[{\"O\":\"O2\"}]", target.execute(getQuery("http://example.com/test2", "3")));
-			assertEquals("[{\"O\":\"N2\"}]", target.execute(getQuery("http://example.com/test2", "4")));
+			assertEquals("[]", target2.execute(getQuery(testContext, "1")));
+			assertEquals("[]", target2.execute(getQuery(testContext, "2")));
+			assertEquals("[]", target2.execute(getQuery(testContext, "3")));
+			assertEquals("[{\"O\":\"N2\"}]", target2.execute(getQuery(testContext, "4")));
 		}
-		
-		/**
-		 * Get test query.
-		 * 
-		 * @param graph
-		 * @param species
-		 * @return
-		 */
-		private String getQuery(String graph, String species) {
 				
-			String G = "<" + graph + ">";
-			String S = "<http://www.theworldavatar.com/kb/species/species.owl#species_"+ species +">";
-			Var O = Var.alloc("O");
+		@Test
+		public void testClone() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
-			SelectBuilder builder = new SelectBuilder()
-					.addVar(O)
-					.addGraph(G, S,"<http://www.w3.org/2008/05/skos#altLabel>",O);
-					
-			return builder.build().toString();
+			CloningTool cloningTool = new CloningTool(1);
+			KnowledgeBaseClient source = createTestClient();
+			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			
+			cloningTool.clone(source, target);
+			
+			//check countTotal set
+			Field field = null;
+			assertNotNull(cloningTool.getClass().getDeclaredField("countTotal"));
+			field = cloningTool.getClass().getDeclaredField("countTotal");
+			field.setAccessible(true);
+			int intValue = (int) field.get(cloningTool);
+			assertEquals(12,intValue);
+			
+			//check tag variable set
+			assertNotNull(cloningTool.getClass().getDeclaredField("strTag"));
+			field = cloningTool.getClass().getDeclaredField("strTag");
+			field.setAccessible(true);
+			String value = (String) field.get(cloningTool);
+			assertTrue(value.contains("_Tag"));
+			assertTrue(value.length() > 4);
+						
+			//check no tags
+			assertTrue(cloningTool.checkNoTags(target, null));
+			
+			//check copied
+			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery(null, "1")));
+			assertEquals("[{\"O\":\"O\"}]", target.execute(getQuery(null, "2")));
+			assertEquals("[{\"O\":\"O2\"}]", target.execute(getQuery(null, "3")));
+			assertEquals("[]", target.execute(getQuery(null, "4")));
+			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned
+		}
+	
+		@Test
+		public void testCloneCountLessThanStepSize() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
+			
+			CloningTool cloningTool1 = new CloningTool();
+			CloningTool cloningTool = Mockito.spy(cloningTool1);
+			
+			KnowledgeBaseClient source = createTestClient();
+			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			
+			cloningTool.clone(source, target);
+			
+			//check singleStepClone is used
+			Mockito.verify(cloningTool).clone(source,target,null);
+			Mockito.verify(cloningTool).singleStepClone(source, target, null);
+			
+			//check cloned
+			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery(null, "1")));
+			assertEquals("[{\"O\":\"O\"}]", target.execute(getQuery(null, "2")));
+			assertEquals("[{\"O\":\"O2\"}]", target.execute(getQuery(null, "3")));
+			assertEquals("[]", target.execute(getQuery(null, "4")));
+			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned
 		}
 		
-		//TODO testClone
-		//TODO testCloneGraph
-		//TODO testPerfromSingleStepClone
-		//TODO testPerfromClone
-		//TODO testCreateTag
-		//TODO testCheckCount
-		//TODO testCheckTags
+		@Test
+		public void testCloneWithNamedGraph() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+			
+			CloningTool cloningTool = new CloningTool(1);
+			KnowledgeBaseClient source = createTestClient();
+			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			
+			cloningTool.clone(source, target, testContext);
+			
+			//check countTotal set
+			Field field = null;
+			assertNotNull(cloningTool.getClass().getDeclaredField("countTotal"));
+			field = cloningTool.getClass().getDeclaredField("countTotal");
+			field.setAccessible(true);
+			int intValue = (int) field.get(cloningTool);
+			assertEquals(6,intValue);
+			
+			//check tag variable set
+			assertNotNull(cloningTool.getClass().getDeclaredField("strTag"));
+			field = cloningTool.getClass().getDeclaredField("strTag");
+			field.setAccessible(true);
+			String value = (String) field.get(cloningTool);
+			assertTrue(value.contains("_Tag"));
+			assertTrue(value.length() > 4);
+
+			//check copied
+			assertEquals("[]", target.execute(getQuery(testContext, "1")));
+			assertEquals("[]", target.execute(getQuery(testContext, "2")));
+			assertEquals("[]", target.execute(getQuery(testContext, "3")));
+			assertEquals("[{\"O\":\"N2\"}]", target.execute(getQuery(testContext, "4")));			
+		}
+		
+		@Test
+		public void testCreateTag() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+			
+			CloningTool cloningTool = new CloningTool();
+			KnowledgeBaseClient kbClient = createTestClient();
+			
+			Method method = null;
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("createTag", KnowledgeBaseClient.class));
+			method = cloningTool.getClass().getDeclaredMethod("createTag", KnowledgeBaseClient.class);
+			method.setAccessible(true);
+			method.invoke(cloningTool, kbClient);
+			
+			Field field = null;
+			assertNotNull(cloningTool.getClass().getDeclaredField("strTag"));
+			field = cloningTool.getClass().getDeclaredField("strTag");
+			field.setAccessible(true);
+			String value = (String) field.get(cloningTool);
+			assertTrue(value.contains("_Tag"));
+			assertTrue(value.length() > 4);
+		}
+		
+		
+		@Test
+		public void testCheckCount() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+			
+			CloningTool cloningTool = new CloningTool();
+			KnowledgeBaseClient kbClient = createTestClient();
+			
+			assertFalse(cloningTool.checkCount(kbClient, null));
+			
+			//set countTotal variable
+			Field field = null;
+			assertNotNull(cloningTool.getClass().getDeclaredField("countTotal"));
+			field = cloningTool.getClass().getDeclaredField("countTotal");
+			field.setAccessible(true);
+			field.set(cloningTool, 12);
+		
+			assertTrue(cloningTool.checkCount(kbClient, null));
+		}
+		
+		@Test 
+		public void testCheckTags() {
+			
+			CloningTool cloningTool = new CloningTool();
+			
+			KnowledgeBaseClient kbClient = createTestClient();
+			String graph = null;
+			
+			assertTrue(cloningTool.checkNoTags(kbClient, graph));
+			assertTrue(cloningTool.checkNoTags(kbClient, testContext));
+			
+			//Test model
+			Model model = ModelFactory.createDefaultModel();	
+			Node  s = ResourceFactory.createResource("http://example.com/S_Tag").asNode();
+			Node  p = ResourceFactory.createResource("http://example.com/P").asNode();   
+			Node  o = ResourceFactory.createResource("http://example.com/O").asNode();
+			model.add( model.asStatement(new Triple(s,p,o)));
+			UpdateBuilder builder = new UpdateBuilder().addInsert(model);
+			
+			kbClient.executeUpdate(builder.buildRequest());
+			assertFalse(cloningTool.checkNoTags(kbClient, graph));			
+		}
 		
 		//// Count methods
 		
-		//TODO testCountTriples
+		@Test
+		public void testCountTriples() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
+			
+			CloningTool cloningTool = new CloningTool();
+			KnowledgeBaseClient kbClient = createTestClient();
+			
+			Var[] sparqlArgs = getSparqlArgs();
+			Var varS = sparqlArgs[0];
+			Var varP = sparqlArgs[1];
+			Var varO = sparqlArgs[2];
+			
+			//test arguments -- default graph
+			WhereBuilder where = new WhereBuilder().addWhere(varS, varP, varO);
+			String graph = null;
+			int expectedValue = 12;
+			
+			Method method = null;
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("countTriples", KnowledgeBaseClient.class, String.class, WhereBuilder.class));
+			method = cloningTool.getClass().getDeclaredMethod("countTriples", KnowledgeBaseClient.class, String.class, WhereBuilder.class);
+			method.setAccessible(true);
+			int value = (int) method.invoke(cloningTool, kbClient, graph, where);
+			assertEquals(expectedValue, value);
+			
+			//test argument -- graph
+			graph = testContext;
+			expectedValue = 6; 
+			
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("countTriples", KnowledgeBaseClient.class, String.class, WhereBuilder.class));
+			method = cloningTool.getClass().getDeclaredMethod("countTriples", KnowledgeBaseClient.class, String.class, WhereBuilder.class);
+			method.setAccessible(true);
+			value = (int) method.invoke(cloningTool, kbClient, graph, where);
+			assertEquals(expectedValue, value);
+		}
 		
 		@Test
 		public void testCountQuery() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
@@ -362,33 +531,6 @@ public class CloningToolTest {
 			assertEquals(expectedValue, value2.toString());
 		}
 		
-		private Var[] getSparqlArgs() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-			
-			CloningTool cloningTool = new CloningTool();
-			
-			//Get sparql variables
-			assertNotNull(cloningTool.getClass().getDeclaredField("varS"));
-			assertNotNull(cloningTool.getClass().getDeclaredField("varP"));
-			assertNotNull(cloningTool.getClass().getDeclaredField("varO"));
-			Field fieldS = cloningTool.getClass().getDeclaredField("varS");
-			fieldS.setAccessible(true);
-			Var varS = (Var) fieldS.get(cloningTool);
-			assertEquals("?s", varS.toString());
-			
-			Field fieldP = cloningTool.getClass().getDeclaredField("varP");
-			fieldP.setAccessible(true);
-			Var varP = (Var) fieldP.get(cloningTool);
-			assertEquals("?p", varP.toString());
-			
-			Field fieldO = cloningTool.getClass().getDeclaredField("varO");
-			fieldO.setAccessible(true);
-			Var varO = (Var) fieldO.get(cloningTool);
-			assertEquals("?o", varO.toString());
-			
-			Var[] args = {varS,varP,varO};
-			return args;
-		}
-		
 		//// Test filter expressions
 		
 		@Test
@@ -566,6 +708,8 @@ public class CloningToolTest {
 			assertEquals(expected, strResult);
 		}
 		
+		/////
+		
 		/**
 		 * Create a test model. 
 		 * @return
@@ -580,4 +724,62 @@ public class CloningToolTest {
 			model.add( model.asStatement(new Triple(s,p,o)));
 			return model;
 		}
+		
+		private KnowledgeBaseClient createTestClient() {
+			FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient();
+			kbClient.load(filePath1);
+			kbClient.load(testContext, filePath2);			
+			return kbClient;
+		}
+		
+		/**
+		 * Get test query.
+		 * 
+		 * @param graph
+		 * @param species
+		 * @return
+		 */
+		private String getQuery(String graph, String species) {
+				
+			String G = "<" + graph + ">";
+			String S = "<http://www.theworldavatar.com/kb/species/species.owl#species_"+ species +">";
+			Var O = Var.alloc("O");
+			
+			SelectBuilder builder = new SelectBuilder()
+					.addVar(O);
+			if(graph == null) {
+				builder.addWhere(S,"<http://www.w3.org/2008/05/skos#altLabel>",O);
+			}else {
+				builder.addGraph(G, S,"<http://www.w3.org/2008/05/skos#altLabel>",O);
+			}					
+			return builder.build().toString();
+		}
+
+		private Var[] getSparqlArgs() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+			
+			CloningTool cloningTool = new CloningTool();
+			
+			//Get sparql variables
+			assertNotNull(cloningTool.getClass().getDeclaredField("varS"));
+			assertNotNull(cloningTool.getClass().getDeclaredField("varP"));
+			assertNotNull(cloningTool.getClass().getDeclaredField("varO"));
+			Field fieldS = cloningTool.getClass().getDeclaredField("varS");
+			fieldS.setAccessible(true);
+			Var varS = (Var) fieldS.get(cloningTool);
+			assertEquals("?s", varS.toString());
+			
+			Field fieldP = cloningTool.getClass().getDeclaredField("varP");
+			fieldP.setAccessible(true);
+			Var varP = (Var) fieldP.get(cloningTool);
+			assertEquals("?p", varP.toString());
+			
+			Field fieldO = cloningTool.getClass().getDeclaredField("varO");
+			fieldO.setAccessible(true);
+			Var varO = (Var) fieldO.get(cloningTool);
+			assertEquals("?o", varO.toString());
+			
+			Var[] args = {varS,varP,varO};
+			return args;
+		}
+		
 }
