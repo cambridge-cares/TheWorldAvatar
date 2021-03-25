@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +19,15 @@ import org.slf4j.LoggerFactory;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.IdentityRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.agentproxy.AgentProxyException;
+import com.jcraft.jsch.agentproxy.Connector;
+import com.jcraft.jsch.agentproxy.RemoteIdentityRepository;
+import com.jcraft.jsch.agentproxy.connector.PageantConnector;
 
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 
@@ -439,6 +443,17 @@ public class JobSubmission{
 				session = jsch.getSession(slurmJobProperty.getHpcServerLoginUserName(), getHpcAddress(), 22);
 				String pwd = slurmJobProperty.getHpcServerLoginUserPassword();
 				session.setPassword(pwd);
+
+				try {
+					Connector con = new PageantConnector();
+					IdentityRepository irepo = new RemoteIdentityRepository(con);
+					jsch.setIdentityRepository(irepo);
+					session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+				} catch (AgentProxyException e) {
+					session.setConfig("PreferredAuthentications", "password");
+					logger.info("Failed to load identities from Pageant", e);
+				}
+
 				session.setConfig("StrictHostKeyChecking", "no");
 				session.connect();
 				scheduledIteration = 0;
@@ -1062,14 +1077,9 @@ public class JobSubmission{
 	 * @return
 	 */
 	public boolean hostAvailabilityCheck(String server, int port) {
-		boolean available = true;
-		try {
-			(new Socket(server, port)).close();
-		} catch (UnknownHostException e) {
-			available = false;
-		} catch (IOException e) {
-			available = false;
-		} catch (NullPointerException e) {
+		boolean available = true;server = "login-cpu.hpc.cam.ac.uk";
+		try (final Socket dummy = new Socket(server, port)){
+		} catch (IOException | NullPointerException e) {
 			available = false;
 		}
 		return available;
