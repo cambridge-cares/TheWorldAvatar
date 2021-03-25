@@ -512,4 +512,9 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	    }
 	    directoryToBeDeleted.delete();
 	}
+
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		return new JSONObject();
+	}
 }
