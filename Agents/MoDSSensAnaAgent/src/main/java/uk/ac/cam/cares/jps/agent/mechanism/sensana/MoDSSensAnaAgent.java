@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -80,7 +81,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 			}
 			try {
 				return setUpJob(requestParams.toString());
-			} catch (IOException | MoDSSensAnaAgentException | SlurmJobException e) {
+			} catch (IOException | MoDSSensAnaAgentException | SlurmJobException | URISyntaxException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
@@ -419,8 +420,9 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @throws IOException
 	 * @throws MoDSSensAnaAgentException
 	 * @throws SlurmJobException
+	 * @throws URISyntaxException
 	 */
-	public JSONObject setUpJob(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException {
+	public JSONObject setUpJob(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException, URISyntaxException {
 		String message = setUpJobOnAgentMachine(jsonString);
 		JSONObject obj = new JSONObject();
 		obj.put("jobFolderPath", message);
@@ -436,12 +438,12 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @throws MoDSSensAnaAgentException
 	 * @throws SlurmJobException
 	 */
-	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException {
+	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException, URISyntaxException {
 		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(modsSensAnaAgentProperty.getHpcAddress(), timeStamp);
 		String setUpMsg = jobSubmission.setUpJob(jsonString, 
-				new File(getClass().getClassLoader().getResource(modsSensAnaAgentProperty.getSlurmScriptFileName()).getPath()), 
+				new File(getClass().getClassLoader().getResource(modsSensAnaAgentProperty.getSlurmScriptFileName()).toURI()), 
 				getInputFile(jsonString, jobFolderName), timeStamp);
 		if (setUpMsg != null) {
 			deleteDirectory(new File(jobFolderPath));
