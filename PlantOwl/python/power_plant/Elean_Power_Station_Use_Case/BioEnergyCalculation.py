@@ -12,7 +12,7 @@ import Lucode as l
 import numpy as np
 
 """Sets the URL of the triple store deployed on Blazegraph to query test"""
-onto_crop_map_gml_endpoint = "http://www.theworldavatar.com/blazegraph/namespace/test/sparql"
+onto_crop_map_gml_endpoint = "http://www.theworldavatar.com/blazegraph/namespace/ontocropmapgml/sparql"
 """Sets the URL of the triple store deployed on Blazegraph to query test"""
 onto_crop_energy_endpoint = "http://www.theworldavatar.com/blazegraph/namespace/ontocropenergy/sparql"
 """Sets the URL of the triple store deployed on CoMo to query UK power plants"""
@@ -89,6 +89,7 @@ def get_lucode_crop_map(onto_crop_energy_endpoint):
         lucode = lucode_iri[-4:]
         """Creates the map between IRIs"""
         lucode_crop_map[lucode_iri] = crop_iri
+        lucode_crop_map[lucode_iri.replace("www.", "")] = crop_iri
         print('Crop: ', crop_iri)
         print(' LucodeIRI: ', lucode_iri)
         print(' Lucode: ', lucode)
