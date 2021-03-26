@@ -148,6 +148,8 @@ public class InputValidator {
 			return true;
 		}catch (UpdateException e) {
 			return false;
+		}catch (QueryParseException e) {
+			return false;
 		}catch (Exception e) { //Still not sure what the updateException is called. 
 			return false;
 		}

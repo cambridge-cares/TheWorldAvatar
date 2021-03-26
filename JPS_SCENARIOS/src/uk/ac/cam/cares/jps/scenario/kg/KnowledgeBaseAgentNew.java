@@ -29,7 +29,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {	
 		if (!validateInput(requestParams)) {
-			throw new JSONException("KBAgent: Input parameters not found.\n ");
+			throw new BadRequestException("KBAgent: Input parameters not found.\n ");
 		}
 		System.out.println("KBA: JSONPARAMS: " + requestParams.toString());
 		return main(requestParams);
