@@ -1,17 +1,10 @@
 package uk.ac.cam.cares.jps.scenario.kg;
 
 
-import java.io.File;
-import java.nio.file.Files;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import org.apache.jena.update.UpdateRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,8 +73,17 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	        boolean v = InputValidator.checkIfFilePath(iriOrPath);
 	        String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 			String sparqlupdate = MiscUtil.optNullKey(requestParams,  JPSConstants.QUERY_SPARQL_UPDATE);
-			if (sparqlquery == null && sparqlupdate == null ) {
+			if ((sparqlquery == null && sparqlupdate == null )||// if both are empty
+					(sparqlquery != null && sparqlupdate != null)) { //or if both are filled. 
 				return false;
+			}else if (sparqlquery != null) {
+				if (InputValidator.checkIfValidQuery(sparqlquery )!= true){
+					return false;
+					}
+			}else if (sparqlupdate!= null) {
+				if (InputValidator.checkIfValidUpdate(sparqlupdate)!= true){
+					return false;
+					}
 			}
 	        
 	        return( q || v);

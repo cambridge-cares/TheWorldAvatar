@@ -17,6 +17,7 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -107,18 +108,27 @@ public class TestKnowledgeBA   {
 		assertEquals("TEST",jo.get("o").toString());
 	}
 	/** test inputValidate() method of KnowledgeBaseAgent
+	 * @throws ParseException 
+	 * @throws JSONException 
 	 * 
 	 */
 	@Test
-	public void testValidateInput() {
+	public void testValidateInput() throws JSONException, ParseException {
 		JSONObject jo = new JSONObject()
 				.put("resourceURL",  filePath);
 
 		KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
-		assertFalse(jpsa.validateInput(jo));
+		assertFalse(jpsa.validateInput(jo)); // No query/update
 		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 		jo.put(JPSConstants.QUERY_SPARQL_QUERY , queryString );
-		assertTrue(jpsa.validateInput(jo));
+		assertTrue(jpsa.validateInput(jo));// Query present
+		jo.remove(JPSConstants.QUERY_SPARQL_QUERY );
+		jo.put(JPSConstants.QUERY_SPARQL_UPDATE , queryString);
+		assertFalse(jpsa.validateInput(jo));//Update wrong format
+		jo.remove(JPSConstants.QUERY_SPARQL_UPDATE );
+		jo.put(JPSConstants.QUERY_SPARQL_UPDATE , getUpdateRequest().toString());
+		assertTrue(jpsa.validateInput(jo));// Update present
+		
 	}
 	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
 	 *  Uses AgentCaller
