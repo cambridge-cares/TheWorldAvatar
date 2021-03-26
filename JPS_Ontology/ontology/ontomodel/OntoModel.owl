@@ -1,0 +1,369 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasDSVFile -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasDSVFile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVFileParam"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVFile"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasDSVLocation -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasDSVLocation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVFileParam"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasInputFileParam -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasInputFileParam">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#ExecutableModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#FileParam"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasInputParameter -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasInputParameter">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Model"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Parameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasOutputFileParam -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasOutputFileParam">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#ExecutableModel"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#FileParam"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasOutputParameter -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasOutputParameter">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Model"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Parameter"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasXMLFile -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasXMLFile">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#XMLFileParam"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#XMLFile"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasAtColName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasAtColName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameAtRowVal"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasAtColValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasAtColValue">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameAtRowVal"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasColName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasColName">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameAtRowVal"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameRowIdx"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasDelimiter -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasDelimiter">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVFile"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasExeFileName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasExeFileName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#ExecutableModel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasFileName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasFileName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#File"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasFilePath -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasFilePath">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#File"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasModelName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasModelName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Model"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasParameterName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasParameterName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Parameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasParameterType -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasParameterType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Parameter"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasRowIdx -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasRowIdx">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameRowIdx"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasSLURMScript -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasSLURMScript">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#ExecutableModel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasXPath -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#hasXPath">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#XMLFileParam"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#isInArchive -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#isInArchive">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#ExecutableModel"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVFile -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#File"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVFileParam -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVFileParam">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#FileParam"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameAtRowVal -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameAtRowVal">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameRowIdx -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocColNameRowIdx">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#DSVLocation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#ExecutableModel -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#ExecutableModel">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Model"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#File -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#File"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#FileParam -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#FileParam">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Model -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Model"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Parameter -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#Parameter"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#XMLFile -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#XMLFile">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#File"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#XMLFileParam -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#XMLFileParam">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomodel/OntoModel.owl#FileParam"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0) https://github.com/owlcs/owlapi/ -->
+
+

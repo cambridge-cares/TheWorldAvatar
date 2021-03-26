@@ -84,17 +84,6 @@ public interface KnowledgeBaseClientInterface {
 	 */
 	int executeUpdate(UpdateRequest update);
 	
-	// Load and write methods
-	
-	/**
-	 * Loads data to model (required for file-based client)
-	 */
-	void load();
-	
-	/**
-	 * Saves and closes connection. end must be called to save changes to file based data.
-	 */
-	void end();
 	
 	// Set/Get varaible methods
 	
