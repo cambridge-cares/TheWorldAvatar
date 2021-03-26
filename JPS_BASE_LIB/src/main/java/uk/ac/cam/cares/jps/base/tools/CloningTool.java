@@ -44,9 +44,11 @@ public class CloningTool {
 	static Var varS = Var.alloc("s");
 	static Var varP = Var.alloc("p");
 	static Var varO = Var.alloc("o");
+	static Var varG = Var.alloc("g");
 	static ExprVar exprS = new ExprVar(varS);
 	static ExprVar exprP = new ExprVar(varP);
 	static ExprVar exprO = new ExprVar(varO);
+	static ExprVar exprG = new ExprVar(varG);
 	// STR(?s)
 	static Expr exprStrS = exprFactory.str(exprS);
 	
@@ -133,10 +135,11 @@ public class CloningTool {
 		    	performClone(sourceKB, sourceGraph, targetKB, targetGraph);
 		    }
 		}
-		
+	/*	
 		if(!checkCount(targetKB, targetGraph)) {
 			throw new JPSRuntimeException("CloningTool: check failed, counts do not match!");
 		}
+		*/
 	}
 	
 	//TODO: check graph clone : is context lost?
@@ -187,7 +190,7 @@ public class CloningTool {
 					.addFilter(exprFilterOutBlanks())
 					.addFilter(exprNotTagged())
 					.addBind(exprFactory.iri(exprFactory.concat(exprStrS,exprTagN)), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereNotTagged, stepSize); 
+			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereNotTagged, stepSize, true); 
 			sourceKB.executeUpdate(tagUpdate);
 			
 			// Get triples 
@@ -201,7 +204,7 @@ public class CloningTool {
 			WhereBuilder whereRemoveTag = new WhereBuilder()
 					.addWhere(varS, varP, varO)
 					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest removeTagUpdate = buildTagUpdate(null, whereRemoveTag, stepSize);
+			UpdateRequest removeTagUpdate = buildTagUpdate(null, whereRemoveTag, stepSize, false); //TODO stepsize here should be 0 to update all?
 			Dataset dataset = DatasetFactory.create(triples); // put triple into the default graph of a temporary dataset
 			UpdateProcessor updateExec = UpdateExecutionFactory.create(removeTagUpdate, dataset);
 			updateExec.execute();
@@ -230,7 +233,7 @@ public class CloningTool {
 					.addWhere(varS, varP, varO)
 					.addFilter(exprFactory.strends(exprStrS, exprTagN))
 					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize);
+			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize, true);
 			sourceKB.executeUpdate(tagUpdate);
 		}
 	}
@@ -372,7 +375,7 @@ public class CloningTool {
 	 * @param limit: number of triples to update
 	 * @return
 	 */
-	private UpdateRequest buildTagUpdate(String graph, WhereBuilder where, int limit) {
+	private UpdateRequest buildTagUpdate(String graph, WhereBuilder where, int limit, boolean quads) {
 		
 		// subquery selects new and old triples
 		SelectBuilder select = new SelectBuilder();
@@ -389,20 +392,27 @@ public class CloningTool {
 		UpdateBuilder builder = new UpdateBuilder();
 		
 		// Add select subquery and optional graph
-		if (graph == null) {
+		if (quads == true ) {
+			if (graph == null) {
+				select.addVar(varG);
+				select.addGraph(varG, where);
+				builder.addInsert(varG, newS, varP, varO)
+					.addDelete(varG, varS, varP, varO)
+					.addSubQuery(select);
+			}else {	
+				String graphURI = "<" + graph + ">";
+				select.addGraph(graphURI, where);
+				// Graph
+				builder.addInsert(graphURI, newS, varP, varO)
+					.addDelete(graphURI, varS, varP, varO)
+					.addSubQuery(select);	
+			}
+		}else {
 			select.addWhere(where);
 			builder.addInsert(newS, varP, varO)
 				.addDelete(varS, varP, varO)
 				.addSubQuery(select);
-		}else {	
-			select.addGraph(graph, where);
-			// Graph
-			String graphURI = "<" + graph + ">";
-			builder.addInsert(graphURI, newS, varP, varO)
-				.addDelete(graphURI, varS, varP, varO)
-				.addSubQuery(select);	
 		}
-		
 		return builder.buildRequest();
 	}
 
