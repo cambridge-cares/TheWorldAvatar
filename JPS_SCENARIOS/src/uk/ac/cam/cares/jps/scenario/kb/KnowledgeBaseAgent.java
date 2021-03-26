@@ -258,7 +258,7 @@ public class KnowledgeBaseAgent extends JPSAgent {
 	        throw new BadRequestException();
 	    }
 	    try {
-	        boolean q = InputValidator.checkURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
+	        boolean q = InputValidator.checkIfURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
 	        String method = MiscUtil.optNullKey(requestParams,JPSConstants.METHOD);
 	        if (method == null) {
 	        	return false;

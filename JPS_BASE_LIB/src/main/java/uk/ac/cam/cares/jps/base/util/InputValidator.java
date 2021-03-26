@@ -39,9 +39,14 @@ public class InputValidator {
 			catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		return (!f& checkURLpattern(iriStr));
+		return (!f& checkIfURLpattern(iriStr));
 		}
-	public static boolean checkURLpattern(String iriStr) {
+	/** check if it fits a URL format
+	 * 
+	 * @param iriStr
+	 * @return
+	 */
+	public static boolean checkIfURLpattern(String iriStr) {
 		try {
 			URL url = new URL(iriStr); 
 			url.toURI(); 
@@ -49,6 +54,16 @@ public class InputValidator {
 			} catch (MalformedURLException | URISyntaxException e) {
 				return false;
 				}
+	}
+	/** Check if String represents a file
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public static boolean checkIfFilePath(String filePath) {
+		File file = new File(filePath);
+		return file.isFile();
+		
 	}
 	/** check if file exists in computer
 	 * Can't be used if the directory is not established (aka created)

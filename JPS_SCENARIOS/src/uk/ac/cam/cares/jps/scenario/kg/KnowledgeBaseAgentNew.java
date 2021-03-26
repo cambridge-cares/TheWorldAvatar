@@ -1,6 +1,9 @@
 package uk.ac.cam.cares.jps.scenario.kg;
 
 
+import java.io.File;
+import java.nio.file.Files;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -47,7 +50,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 		String sparqlupdate = MiscUtil.optNullKey(requestParams,  JPSConstants.QUERY_SPARQL_UPDATE);
 		if (sparqlquery != null) isQueryOperation = true;
 		else if (sparqlupdate != null) isUpdateOperation = true;
-		String targetResourceIRIOrPath = requestParams.getString(JPSConstants.SCENARIO_RESOURCE);
+		String targetResourceIRIOrPath = requestParams.getString("resourceURL");
 		KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, isQueryOperation,isUpdateOperation);
 		if (isQueryOperation) { 
 			String result = kbClient.execute(sparqlquery);
@@ -57,6 +60,12 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 			//perform update
 			kbClient.setQuery(sparqlupdate);
 			kbClient.executeUpdate();
+		}else { //perform post/creation of new file
+//			String newFilePath = MiscUtil.optNullKey(requestParams,  JPSConstants.SCENARIO_RESOURCE);
+//			kbClient.setPath(null, newFilePath);
+//			
+//			kbClient.end();
+			
 		}
 		return JSONresult; 
 	}
@@ -66,42 +75,19 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	        throw new BadRequestException();
 	    }
 	    try {
-	        boolean q = InputValidator.checkURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
-	        String method = MiscUtil.optNullKey(requestParams,JPSConstants.METHOD);
-	        if (method == null) {
-	        	return false;
-	        }
-	        return q;
+	    	String iriOrPath = requestParams.getString("resourceURL");
+	        boolean q = InputValidator.checkIfURLpattern(iriOrPath);
+	        boolean v = InputValidator.checkIfFilePath(iriOrPath);
+	        String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
+			String sparqlupdate = MiscUtil.optNullKey(requestParams,  JPSConstants.QUERY_SPARQL_UPDATE);
+			if (sparqlquery == null && sparqlupdate == null ) {
+				return false;
+			}
+	        
+	        return( q || v);
 	    }catch (JSONException ex) {
-	    	ex.printStackTrace();
 	    	return false;
 	    }
 	}
-	/**
-	 * Returns the test Sparql update.
-	 * 
-	 * @return UpdateRequest
-	 * @throws ParseException
-	 */
-	private static UpdateRequest getUpdateRequest() throws ParseException {
-		
-		//DELETE {?s ?p ?o} 
-		//INSERT {?s ?p \"TEST\" } 
-		//WHERE {?s ?p ?o.
-		//		 FILTER(?s = <http://www.theworldavatar.com/kb/species/species.owl#species_1> && ?p = <http://www.w3.org/2008/05/skos#altLabel>)}
-		
-		WhereBuilder where = new WhereBuilder()
-				.addWhere("?s", "?p", "?o")
-				.addFilter("?s = <http://www.theworldavatar.com/kb/species/species.owl#species_1> && ?p = <http://www.w3.org/2008/05/skos#altLabel>");
-				
-		// Build update
-		UpdateBuilder builder = new UpdateBuilder();
-				
-		// Add where 
-		builder.addInsert("?s", "?p", "TEST")
-			.addDelete("?s", "?p", "?o")
-			.addWhere(where);
-		
-		return builder.buildRequest();
-	}
+	
 }
