@@ -26,7 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.tools.RenamingTool;
 
@@ -192,7 +192,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
+		KnowledgeBaseClientInterface kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
 		//perform renaming as single update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -242,7 +242,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
+		KnowledgeBaseClientInterface kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
 		//perform renaming as single update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -291,7 +291,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
+		KnowledgeBaseClientInterface kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
 		//perform update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -340,7 +340,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		KnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
+		KnowledgeBaseClientInterface kbClient = new FileBasedKnowledgeBaseClient(tempFilePath.toString());
 		
 		//perform update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);

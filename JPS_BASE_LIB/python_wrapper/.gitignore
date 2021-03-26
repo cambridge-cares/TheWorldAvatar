@@ -6,6 +6,7 @@ dist/
 *venv/
 .mypy_cache/
 coverage.xml
+resources/
 .coverage
 *.gv
 *.png

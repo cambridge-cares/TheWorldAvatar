@@ -48,7 +48,7 @@ cp *.hgt ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
 #Copying the srtm file conversion script
 #cp ${inputDir}/input/srtm_generate_hdr.sh ${HOME}/citychem-1.3/preproc/auxiliary
 #cd ${HOME}/citychem-1.3/preproc/auxiliary
-#chmod +x srtm_generate_hdr.sh
+chmod +x srtm_generate_hdr.sh
 #Changing directory to srtm3
 cd ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
 files=$( ls *.hgt )

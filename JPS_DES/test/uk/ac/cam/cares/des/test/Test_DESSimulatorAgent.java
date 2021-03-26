@@ -201,6 +201,10 @@ public class Test_DESSimulatorAgent extends TestCase{
 		assertNotNull(jo);
 		
 	}
+	
+	public void testFrontEndTalk() {
+		FrontEndTalk();
+	}
 	/** test if validateInput method is working in Commercial Agent
 	 * 
 	 */

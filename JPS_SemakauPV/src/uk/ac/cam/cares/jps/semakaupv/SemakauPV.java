@@ -52,7 +52,9 @@ public class SemakauPV extends JPSAgent {
 	}
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	validateInput(requestParams);
+    	if (!validateInput(requestParams)) {
+    		throw new JSONException("SemakauPVAgent: Input parameters not found.\n");
+    	}
     	String ENIRI=requestParams.getString("electricalnetwork");
 		String irradSensorIRI=requestParams.getString("irradiationsensor");
 		OntModel model = readModelGreedy(ENIRI);
@@ -74,12 +76,8 @@ public class SemakauPV extends JPSAgent {
 	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
             return q&r;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
         	return false;
-        } catch (Exception ex) {
-        	ex.printStackTrace();
-            return false;
-        }
+        } 
     }
 
 	/** reads the topnode into an OntModel of all its subsystems. 

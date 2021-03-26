@@ -20,8 +20,7 @@ import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 public class CloningTool {
 
@@ -98,7 +97,7 @@ public class CloningTool {
 	 * @param sourceKB
 	 * @param targetKB
 	 */  
-	public void clone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB) {
+	public void clone(KnowledgeBaseClientInterface sourceKB, KnowledgeBaseClientInterface targetKB) {
 		clone(sourceKB, null, targetKB, null);
 	}
 	
@@ -108,7 +107,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void clone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+	public void clone(KnowledgeBaseClientInterface sourceKB, KnowledgeBaseClientInterface targetKB, String graph) {
 		clone(sourceKB, graph, targetKB, graph); 
 	}
 	
@@ -119,7 +118,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param targetGraph
 	 */
-	public void clone(KnowledgeBaseClient sourceKB, String sourceGraph, KnowledgeBaseClient targetKB, String targetGraph) {
+	public void clone(KnowledgeBaseClientInterface sourceKB, String sourceGraph, KnowledgeBaseClientInterface targetKB, String targetGraph) {
 		
 		WhereBuilder whereCountAll = new WhereBuilder()
 				.addWhere(varS, varP, varO);		    
@@ -149,11 +148,11 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void singleStepClone(KnowledgeBaseClient sourceKB, String sourceGraph, KnowledgeBaseClient targetKB, String targetGraph) {
+	public void singleStepClone(KnowledgeBaseClientInterface sourceKB, String sourceGraph, KnowledgeBaseClientInterface targetKB, String targetGraph) {
 		
 		//Get model using construct query
 		Query construct = buildSparqlConstruct(sourceGraph);
-		Model results = sourceKB.queryConstruct(construct);
+		Model results = sourceKB.executeConstruct(construct);
 		
 		//Update target
 		UpdateRequest update = buildSparqlUpdate(targetGraph, results);
@@ -168,7 +167,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	private void performClone(KnowledgeBaseClient sourceKB, String sourceGraph, KnowledgeBaseClient targetKB, String targetGraph) {
+	private void performClone(KnowledgeBaseClientInterface sourceKB, String sourceGraph, KnowledgeBaseClientInterface targetKB, String targetGraph) {
 		
 		createTag(sourceKB);
 
@@ -198,7 +197,7 @@ public class CloningTool {
 					.addWhere(varS, varP, varO)
 					.addFilter(exprFactory.strends(exprStrS, exprTagN));
 			Query constructQuery = buildConstruct(sourceGraph, whereConstructTagged);
-			Model triples = sourceKB.queryConstruct(constructQuery);
+			Model triples = sourceKB.executeConstruct(constructQuery);
 			
 			// Remove tag from triples going to target
 			WhereBuilder whereRemoveTag = new WhereBuilder()
@@ -222,7 +221,7 @@ public class CloningTool {
 				.addWhere(varS, varP, varO)
 				.addFilter(filterTag);
 		Query constructQuery = buildConstruct(sourceGraph, whereConstruct);
-		Model triples = sourceKB.queryConstruct(constructQuery);
+		Model triples = sourceKB.executeConstruct(constructQuery);
 		UpdateRequest update = buildInsert(targetGraph, triples);
 		targetKB.executeUpdate(update);
 		
@@ -242,7 +241,7 @@ public class CloningTool {
 	 * Creates a tag by hashing the source KB endpoint and current date and time.
 	 * @param sourceKB
 	 */
-	private void createTag(KnowledgeBaseClient kbClient) {
+	private void createTag(KnowledgeBaseClientInterface kbClient) {
 		LocalDateTime dateTime = LocalDateTime.now();
 		String name = kbClient.getQueryEndpoint() + dateTime.toString();
 		int hash = name.hashCode();
@@ -255,7 +254,7 @@ public class CloningTool {
 	/**
 	 * Check the number of triples in target matches source
 	 */
-	public boolean checkCount(KnowledgeBaseClient kbClient, String graph) {
+	public boolean checkCount(KnowledgeBaseClientInterface kbClient, String graph) {
 
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO);
@@ -267,7 +266,7 @@ public class CloningTool {
 	/**
 	 * Check no tags remain
 	 */
-	public boolean checkNoTags(KnowledgeBaseClient kbClient, String graph) {
+	public boolean checkNoTags(KnowledgeBaseClientInterface kbClient, String graph) {
 
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
@@ -289,7 +288,7 @@ public class CloningTool {
 	 * @param where statement
 	 * @return
 	 */
-	private int countTriples(KnowledgeBaseClient kbClient, String graph, WhereBuilder where) {
+	private int countTriples(KnowledgeBaseClientInterface kbClient, String graph, WhereBuilder where) {
 		String query = countQuery(graph, where);
 		JSONArray result = kbClient.executeQuery(query);
 	    JSONObject jsonobject = result.getJSONObject(0);
