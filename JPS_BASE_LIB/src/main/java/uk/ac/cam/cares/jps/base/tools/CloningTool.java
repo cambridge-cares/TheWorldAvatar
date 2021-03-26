@@ -97,7 +97,7 @@ public class CloningTool {
 	 * @param targetKB
 	 */  
 	public void clone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB) {
-		clone(sourceKB, targetKB, null);
+		clone(sourceKB, null, targetKB, null);
 	}
 	
 	/**
@@ -107,23 +107,34 @@ public class CloningTool {
 	 * @param graph
 	 */
 	public void clone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
-
+		clone(sourceKB, graph, targetKB, graph); 
+	}
+	
+	/**
+	 * Clone a named graph from the source knowledge base to a different named graph in the target knowledge base.
+	 * @param sourceKB
+	 * @param sourceGraph
+	 * @param targetKB
+	 * @param targetGraph
+	 */
+	public void clone(KnowledgeBaseClient sourceKB, String sourceGraph, KnowledgeBaseClient targetKB, String targetGraph) {
+		
 		WhereBuilder whereCountAll = new WhereBuilder()
 				.addWhere(varS, varP, varO);		    
-	    countTotal = countTriples(sourceKB, graph, whereCountAll);
+	    countTotal = countTriples(sourceKB, sourceGraph, whereCountAll);
 	    
 		if(splitUpdate == false) {
-			singleStepClone(sourceKB, targetKB, graph);
+			singleStepClone(sourceKB, sourceGraph, targetKB, targetGraph);
 		}else {
 			//perform using single step process if count <= stepsize    
 		    if(countTotal <= stepSize) {
-		    	singleStepClone(sourceKB, targetKB, graph);
+		    	singleStepClone(sourceKB, sourceGraph, targetKB, targetGraph);
 		    }else {
-		    	performClone(sourceKB, targetKB, graph);
+		    	performClone(sourceKB, sourceGraph, targetKB, targetGraph);
 		    }
 		}
 		
-		if(!checkCount(targetKB, graph)) {
+		if(!checkCount(targetKB, targetGraph)) {
 			throw new JPSRuntimeException("CloningTool: check failed, counts do not match!");
 		}
 	}
@@ -135,14 +146,14 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void singleStepClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+	public void singleStepClone(KnowledgeBaseClient sourceKB, String sourceGraph, KnowledgeBaseClient targetKB, String targetGraph) {
 		
 		//Get model using construct query
-		Query construct = buildSparqlConstruct(graph);
+		Query construct = buildSparqlConstruct(sourceGraph);
 		Model results = sourceKB.queryConstruct(construct);
 		
 		//Update target
-		UpdateRequest update = buildSparqlUpdate(graph, results);
+		UpdateRequest update = buildSparqlUpdate(targetGraph, results);
 		targetKB.executeUpdate(update);
 	}
 	
@@ -154,7 +165,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	private void performClone(KnowledgeBaseClient sourceKB, KnowledgeBaseClient targetKB, String graph) {
+	private void performClone(KnowledgeBaseClient sourceKB, String sourceGraph, KnowledgeBaseClient targetKB, String targetGraph) {
 		
 		createTag(sourceKB);
 
@@ -162,7 +173,7 @@ public class CloningTool {
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
 				.addFilter(exprFilterOutBlanks());
-	    int count = countTriples(sourceKB, graph, whereCount);
+	    int count = countTriples(sourceKB, sourceGraph, whereCount);
 		int steps = count/stepSize;
 		if(count%stepSize > 0) {steps++;}
 				 
@@ -176,27 +187,27 @@ public class CloningTool {
 					.addFilter(exprFilterOutBlanks())
 					.addFilter(exprNotTagged())
 					.addBind(exprFactory.iri(exprFactory.concat(exprStrS,exprTagN)), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(graph, whereNotTagged, stepSize); 
+			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereNotTagged, stepSize); 
 			sourceKB.executeUpdate(tagUpdate);
 			
 			// Get triples 
 			WhereBuilder whereConstructTagged = new WhereBuilder()
 					.addWhere(varS, varP, varO)
 					.addFilter(exprFactory.strends(exprStrS, exprTagN));
-			Query constructQuery = buildConstruct(graph, whereConstructTagged);
+			Query constructQuery = buildConstruct(sourceGraph, whereConstructTagged);
 			Model triples = sourceKB.queryConstruct(constructQuery);
 			
 			// Remove tag from triples going to target
 			WhereBuilder whereRemoveTag = new WhereBuilder()
 					.addWhere(varS, varP, varO)
 					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest removeTagUpdate = buildTagUpdate(graph, whereRemoveTag, stepSize);
-			Dataset dataset = DatasetFactory.create(triples);
+			UpdateRequest removeTagUpdate = buildTagUpdate(null, whereRemoveTag, stepSize);
+			Dataset dataset = DatasetFactory.create(triples); // put triple into the default graph of a temporary dataset
 			UpdateProcessor updateExec = UpdateExecutionFactory.create(removeTagUpdate, dataset);
 			updateExec.execute();
 		
 			// Insert triples to target
-			UpdateRequest update = buildInsert(graph, dataset.getDefaultModel());
+			UpdateRequest update = buildInsert(targetGraph, dataset.getDefaultModel());
 			targetKB.executeUpdate(update);
 		}
 		
@@ -207,9 +218,9 @@ public class CloningTool {
 		WhereBuilder whereConstruct = new WhereBuilder()
 				.addWhere(varS, varP, varO)
 				.addFilter(filterTag);
-		Query constructQuery = buildConstruct(graph, whereConstruct);
+		Query constructQuery = buildConstruct(sourceGraph, whereConstruct);
 		Model triples = sourceKB.queryConstruct(constructQuery);
-		UpdateRequest update = buildInsert(graph, triples);
+		UpdateRequest update = buildInsert(targetGraph, triples);
 		targetKB.executeUpdate(update);
 		
 		// Remove tags from source
@@ -219,7 +230,7 @@ public class CloningTool {
 					.addWhere(varS, varP, varO)
 					.addFilter(exprFactory.strends(exprStrS, exprTagN))
 					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(graph, whereTagged, stepSize);
+			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize);
 			sourceKB.executeUpdate(tagUpdate);
 		}
 	}

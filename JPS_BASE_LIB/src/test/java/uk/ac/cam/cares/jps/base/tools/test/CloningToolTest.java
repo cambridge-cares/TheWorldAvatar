@@ -142,7 +142,7 @@ public class CloningToolTest {
 			String graph = null;
 			
 			//clone default
-			cloningTool.singleStepClone(source, target, graph);
+			cloningTool.singleStepClone(source, graph, target, graph);
 						
 			//check copied
 			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery(null, "1")));
@@ -153,7 +153,7 @@ public class CloningToolTest {
 			
 			//clone named graph			
 			FileBasedKnowledgeBaseClient target2 = new FileBasedKnowledgeBaseClient();
-			cloningTool.singleStepClone(source, target2, testContext);
+			cloningTool.singleStepClone(source, testContext, target2, testContext);
 			
 			//check copied
 			assertEquals("[]", target2.execute(getQuery(testContext, "1")));
@@ -188,6 +188,7 @@ public class CloningToolTest {
 			assertTrue(value.length() > 4);
 						
 			//check no tags
+			assertTrue(cloningTool.checkNoTags(source, null));
 			assertTrue(cloningTool.checkNoTags(target, null));
 			
 			//check copied
@@ -210,8 +211,8 @@ public class CloningToolTest {
 			cloningTool.clone(source, target);
 			
 			//check singleStepClone is used
-			Mockito.verify(cloningTool).clone(source,target,null);
-			Mockito.verify(cloningTool).singleStepClone(source, target, null);
+			Mockito.verify(cloningTool).clone(source, null, target, null);
+			Mockito.verify(cloningTool).singleStepClone(source, null, target, null);
 			
 			//check cloned
 			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery(null, "1")));
