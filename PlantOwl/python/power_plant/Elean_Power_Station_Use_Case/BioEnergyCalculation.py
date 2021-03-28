@@ -10,13 +10,16 @@ import PowerPlant as pp
 import Queries as q
 import Lucode as l
 import numpy as np
+import json
 
-"""Sets the URL of the triple store deployed on Blazegraph to query test"""
-onto_crop_map_gml_endpoint = "http://www.theworldavatar.com/blazegraph/namespace/ontocropmapgml/sparql"
-"""Sets the URL of the triple store deployed on Blazegraph to query test"""
-onto_crop_energy_endpoint = "http://www.theworldavatar.com/blazegraph/namespace/ontocropenergy/sparql"
-"""Sets the URL of the triple store deployed on CoMo to query UK power plants"""
-uk_power_plant_endpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant"
+from kgConnection.app_module import doTask
+
+"""Sets the name of the OntoCropMapGML knowledge base"""
+onto_crop_map_gml_kb = "ontocropmapgml"
+"""Sets the name of the OntoCropEnergy knowledge base"""
+onto_crop_energy_kb = "ontocropenergy"
+"""Sets the name of the UKPowerPlant knowledge base"""
+uk_power_plant_kb = "ukpowerplant"
 """The name of power plant"""
 power_plant_name = "Ely UK"
 
@@ -37,38 +40,38 @@ def extract_name(iri):
 """Retrieves the details of the power plant required for the use case"""
 def get_power_plant_data(endpoint, query):
     """Sets the SPARQL query to retrieve IRIs of the UK power plant of interest"""
-    results = sq.query_endpoint(endpoint, query)
+    results = doTask(query, uk_power_plant_kb, True, True)
+    results = json.loads(results)
     countPowerPlant = 0
-
     print ('Retrieves and assigns the name, capacity, latitude, longitude and fuel type of all power plants:')
-    for result in results["results"]["bindings"]:
+    for result in results:
         countPowerPlant = countPowerPlant+ 1
         print('Plant %d:' %countPowerPlant)
         """Puts the IRI of power plant in a variable"""
-        power_plant_iri = result["powerPlantIRI"]['value']
+        power_plant_iri = result["powerPlantIRI"]
         """Creates an instance of the PowerPlant class to store the name, capacity, latitude, longitude and fuel type"""
         power_plant = pp.PowerPlant()
         """Extracts and assigns the name of power plant to the instance"""
         power_plant.name = extract_name(power_plant_iri)
         """Queries the latitude and longitude of power plant"""
-        coordinates = sq.query_endpoint(endpoint, q.get_power_plant_coordinates(power_plant_iri))
-        for coordinate in coordinates["results"]["bindings"]:
+        coordinates = json.loads(doTask(q.get_power_plant_coordinates(power_plant_iri), uk_power_plant_kb, True, True))
+        for coordinate in coordinates:
             """Assigns the latitude of power plant to the class instance"""
-            power_plant.latitude = coordinate["latitude"]['value']
+            power_plant.latitude = coordinate["latitude"]
             """Assigns the longitude of power plant to the class instance"""
-            power_plant.longitude = coordinate["longitude"]['value']
+            power_plant.longitude = coordinate["longitude"]
         """Queries the fuel type of power plant"""
-        fuel_types = sq.query_endpoint(endpoint, q.get_fuel_type(power_plant_iri))
-        for fuel_type in fuel_types["results"]["bindings"]:
+        fuel_types = json.loads(doTask(q.get_fuel_type(power_plant_iri), uk_power_plant_kb, True, True))
+        for fuel_type in fuel_types:
             """Assigns the fuel type of power plant to the class instance"""
-            power_plant.fuel_type = fuel_type["fuel"]['value']
+            power_plant.fuel_type = fuel_type["fuel"]
         """Queries the capacity of power plant"""
-        capacity = sq.query_endpoint(endpoint, q.get_capacity(power_plant_iri))
-        for c in capacity["results"]["bindings"]:
+        capacity = json.loads(doTask(q.get_capacity(power_plant_iri), uk_power_plant_kb, True, True))
+        for c in capacity:
             """Assigns the capacity of power plant to the class instance"""
-            power_plant.capacity = c["capacity"]['value']
+            power_plant.capacity = c["capacity"]
             """Assigns the units of capacity of power plant to the class instance"""
-            power_plant.capacity_units = c["capacity_units"]['value']
+            power_plant.capacity_units = c["capacity_units"]
         """Prints the name, capacity, latitude, longitude and fuel type of power plant so that you can see"""
         print(' Name: ', power_plant.name)
         print(' Capacity: ', power_plant.capacity, ' Units: ', power_plant.capacity_units)
@@ -80,12 +83,13 @@ def get_power_plant_data(endpoint, query):
 """Generates a map between LUCODE IRIs and crop map IRIs"""
 def get_lucode_crop_map(onto_crop_energy_endpoint):
     lucode_crop_map = dict()
-    crops = sq.query_endpoint(onto_crop_energy_endpoint, q.get_lucode_label())
-    for c in crops["results"]["bindings"]:
+    crops = json.loads(doTask(q.get_lucode_label(), onto_crop_energy_kb, True, True))
+    print('crops:', crops)
+    for c in crops:
         """Puts the IRI of the crop in a variable"""
-        crop_iri = c["Crop"]['value']
+        crop_iri = c["Crop"]
         """Assigns the lucode of crop to the class instance"""
-        lucode_iri = c["Lucode"]['value']
+        lucode_iri = c["Lucode"]
         lucode = lucode_iri[-4:]
         """Creates the map between IRIs"""
         lucode_crop_map[lucode_iri] = crop_iri
@@ -101,24 +105,24 @@ def calculate_crop_parameters(lucode_crop_map, onto_crop_map_gml_endpoint, onto_
     """Combines the desired coordinates into a usable form for the geospatial query"""
     latlon = '"' + str(power_plant.latitude) + '#' + str(power_plant.longitude) + '"'
     """Counts the number of polygons within a circle centred at the coordinates of a power plant"""
-    results = sq.query_endpoint(onto_crop_map_gml_endpoint, q.get_lucode_count(latlon))
-    for result in results["results"]["bindings"]:
+    results = json.loads(doTask(q.get_lucode_count(latlon), onto_crop_map_gml_kb, True, True))
+    for result in results:
         """Creates an instance of the Crop class to store the name, lucode, yeild and energy"""
         crop = l.Crop()
         """Assigns the number of instances of crop to the class instance"""
-        if result["Lucode"]['value'] in lucode_crop_map.keys():
-            crop.crop_number = result["LucodeTotal"]['value']
-            lucode_iri = result["Lucode"]['value']
+        if result["Lucode"] in lucode_crop_map.keys():
+            crop.crop_number = result["LucodeTotal"]
+            lucode_iri = result["Lucode"]
             print(lucode_crop_map.get(lucode_iri))
-            results_yield = sq.query_endpoint(onto_crop_energy_endpoint, q.get_crop_yield(lucode_crop_map.get(lucode_iri)))
-            for result in results_yield["results"]["bindings"]:
+            results_yield = json.loads(doTask(q.get_crop_yield(lucode_crop_map.get(lucode_iri)), onto_crop_energy_kb, True, True))
+            for result in results_yield:
                 """Assigns the yield of crop to the class instance"""
-                crop.crop_yield = result["Yield"]['value']
+                crop.crop_yield = result["Yield"]
             print(lucode_crop_map.get(lucode_iri))
-            results_energy = sq.query_endpoint(onto_crop_energy_endpoint, q.get_crop_energy(lucode_crop_map.get(lucode_iri)))
-            for result in results_energy["results"]["bindings"]:
+            results_energy = json.loads(doTask(q.get_crop_energy(lucode_crop_map.get(lucode_iri)), onto_crop_energy_kb, True, True))
+            for result in results_energy:
                 """Assigns the energy of crop to the class instance"""
-                crop.crop_energy = result["HHV"]['value']
+                crop.crop_energy = result["HHV"]
 
             print(' Quantity: ', crop.crop_number)
             print(' Yield: ', crop.crop_yield)
@@ -140,9 +144,9 @@ location of it and calculates the bioenergy available in its surroundings"""
 def execute_energy_use_case(power_plant_name):
     """Replaces spaces with underscores to form an IRI from the name"""
     power_plant_name = power_plant_name.replace(" ", "_")
-    power_plant = get_power_plant_data(uk_power_plant_endpoint, q.get_use_case_power_plant_iri(power_plant_name.replace(" ", "_")))
-    lucode_crop_map = get_lucode_crop_map(onto_crop_energy_endpoint)
-    calculate_crop_parameters(lucode_crop_map, onto_crop_map_gml_endpoint, onto_crop_energy_endpoint, power_plant)
+    power_plant = get_power_plant_data(uk_power_plant_kb, q.get_use_case_power_plant_iri(power_plant_name.replace(" ", "_")))
+    lucode_crop_map = get_lucode_crop_map(onto_crop_energy_kb)
+    calculate_crop_parameters(lucode_crop_map, onto_crop_map_gml_kb, onto_crop_energy_kb, power_plant)
 
 """The following block of code runs first if this module is executed"""
 if __name__ == '__main__':
