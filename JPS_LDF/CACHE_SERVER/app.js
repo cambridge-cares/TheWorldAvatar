@@ -24,6 +24,20 @@ const client = redis.createClient({
 client.on('error', err => {
     console.log('Error ' + err);
 });
+
+// ========================= testing the redis ===========
+client.set('foo', 'bar', (err, reply) => { // run a simple test with the redis first ... 
+    if (err) throw err;
+	console.log('setting foo bar');
+    console.log(reply);
+
+    client.get('foo', (err, reply) => {
+        if (err) throw err;
+		console.log('getting foo bar');
+        console.log(reply);
+    });
+}); 
+ 
  
 // ========================================================
 
