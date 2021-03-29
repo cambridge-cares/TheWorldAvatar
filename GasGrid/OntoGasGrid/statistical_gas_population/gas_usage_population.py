@@ -30,12 +30,12 @@ def upload_year(year):
         end_time = year+"-12-31T12:00:00"
 
         total = len(met_num)
-        n_compile = total / 100
-        remainder = total % 100 
+        n_compile = total / 10
+        remainder = total % 10
         n_compile = int(n_compile)
         len_query = np.zeros(n_compile+2)
         for i in range(1,len(len_query)-1):
-                len_query[i] = len_query[i-1] + 100
+                len_query[i] = len_query[i-1] + 10
                 len_query[-1] = len_query[-2] + remainder
 
         for g in tqdm(range(len(len_query)-1)):
@@ -58,6 +58,7 @@ def upload_year(year):
                 PREFIX compa:   <http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>
                 PREFIX ons:     <http://statistics.data.gov.uk/id/statistical-geography/>
                 PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+                PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
 
                 INSERT DATA
                 { compa:%s rdf:type om:Measure.
@@ -65,7 +66,10 @@ def upload_year(year):
                 compa:%s rdf:type comp:OfftakenGas;
                         comp:hasStartUTC "%s"^^xsd:dateTime ;
                         comp:hasEndUTC "%s"^^xsd:dateTime .
+                
+                ons:%s rdf:type ons_t:Statistical-Geography.
                 ons:%s comp:hasUsed compa:%s.
+
                 compa:%s rdf:type om:Energy;
                         om:hasPhenomenon compa:%s;
                         om:hasValue compa:%s.
@@ -81,6 +85,7 @@ def upload_year(year):
                 used_uuid, 
                 start_time,
                 end_time,
+                region,
                 region, 
                 used_uuid, 
                 kw_uuid, 
@@ -114,6 +119,7 @@ def upload_year(year):
                         compa:%s rdf:type comp:OfftakenGas;
                                 comp:hasStartUTC "%s"^^xsd:dateTime ;
                                 comp:hasEndUTC "%s"^^xsd:dateTime .
+                        ons:%s rdf:type ons_t:Statistical-Geography.
                         ons:%s comp:hasUsed compa:%s.
                         compa:%s rdf:type om:Energy;
                                 om:hasPhenomenon compa:%s;
@@ -131,6 +137,7 @@ def upload_year(year):
                         start_time,
                         end_time,
                         region, 
+                        region,
                         used_uuid, 
                         kw_uuid, 
                         used_uuid, 
@@ -145,7 +152,6 @@ def upload_year(year):
                         non_meters,
                         start_time,
                         end_time)
-                
                 
                 region = LSOA_codes[int(len_query[g+1])-1]
                 meters = met_num[int(len_query[g+1])-1]
@@ -162,6 +168,7 @@ def upload_year(year):
                 compa:%s rdf:type comp:OfftakenGas;
                         comp:hasStartUTC "%s"^^xsd:dateTime ;
                         comp:hasEndUTC "%s"^^xsd:dateTime .
+                ons:%s rdf:type ons_t:Statistical-Geography.
                 ons:%s comp:hasUsed compa:%s.
                 compa:%s rdf:type om:Energy;
                         om:hasPhenomenon compa:%s;
@@ -179,6 +186,7 @@ def upload_year(year):
                 start_time,
                 end_time,
                 region, 
+                region,
                 used_uuid, 
                 kw_uuid, 
                 used_uuid, 

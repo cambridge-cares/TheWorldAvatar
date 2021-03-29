@@ -22,11 +22,8 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
   '''
   jpsBaseLibGW = JpsBaseLib()
   jpsBaseLibGW.launchGateway()
-
-
   jpsGW_view = jpsBaseLibGW.createModuleView()
   jpsBaseLibGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
-
   KGRouter = jpsGW_view.KGRouter
 
   # defining the query string given the class URI

@@ -54,6 +54,15 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasClosestDistributionOfftake -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasClosestDistributionOfftake">
+        <rdfs:domain rdf:resource="http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LocalDistribution"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasConnectedComponent -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasConnectedComponent">
@@ -226,6 +235,12 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography -->
+
+    <owl:Class rdf:about="http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography"/>
     
 
 
