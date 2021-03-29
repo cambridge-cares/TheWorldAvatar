@@ -68,6 +68,7 @@ hasDataPointX,Object Property,,,DataPoint,X11,some,,http://www.theworldavatar.co
 hasSpeciesLink,Object Property,,,Component,SpeciesLink,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasAmount,Object Property,,,Component,Amount,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasUncertainty,Object Property,,,Component,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasUniqueSpecies,Object Property,,,SpeciesLink,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasFeature,Object Property,,,DerivedProperty,Feature,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasIndicator,Object Property,,,Feature,Indicator,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasObservable,Object Property,,,Feature,Observable,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
@@ -101,7 +102,6 @@ hasUnits,Data Property,,,Property,String,,,http://www.theworldavatar.com/ontolog
 hasDescription,Data Property,,,Property,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDerivedPropertyExists,Data Property,,,Property,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDatPreferredKey,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUniqueSpeciesIRI,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasUnits,Data Property,,,Amount,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasBound,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDatKind,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
