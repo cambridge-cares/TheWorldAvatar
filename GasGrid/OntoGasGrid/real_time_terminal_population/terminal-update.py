@@ -1,6 +1,7 @@
 from tqdm import tqdm
 import time
 from py4jps.resources import JpsBaseLib
+from SPARQLWrapper import SPARQLWrapper, CSV, JSON, POST
 import pandas as pd
 import io
 from tabulate import tabulate
@@ -109,11 +110,9 @@ def update_triple_store():
             compa:%s rdf:type om:Measure;
                      om:hasNumericalValue %s;
                     om:hasUnit om:cubicMetrePerSecond-Time.
-            
             compa:%s rdf:type om:VolumetricFlowRate;
                   om:hasPhenomenon compa:%s;
                   om:hasValue compa:%s.
-                    
             compa:%s comp:atUTC "%s"^^xsd:dateTime .} '''%(gas_uuid,
                                                            term_uris[i],
                                                            gas_uuid,
@@ -124,8 +123,18 @@ def update_triple_store():
                                                            mes_uuid,
                                                            gas_uuid,
                                                            time_UTC)
-            KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, True)
-            ret = KGClient.executeQuery(query)
+            DEF_NAMESPACE = 'ontogasgrid'
+            LOCAL_KG = "http://localhost:9999/bigdata"
+            LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+            # KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
+            # ret = KGClient.executeQuery(query)
+            # # --------------------
+            # KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid',True , True)
+            # ret = KGClient.executeQuery(query)
+            sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+            sparql.setMethod(POST) # POST query, not GET
+            sparql.setQuery(query)
+            ret = sparql.query()
     # clear terminal
     os.system('cls' if os.name == 'nt' else 'clear')
     return 

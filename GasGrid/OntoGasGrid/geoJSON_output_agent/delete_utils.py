@@ -138,30 +138,33 @@ def delete_usage_history():
     '''
 
 
-    query = '''PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ns1:     <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX gasgrid: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#>
-    PREFIX gas: <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#>
-    PREFIX loc:     <http://www.bigdata.com/rdf/geospatial/literals/v1#>
-    PREFIX geo:     <http://www.bigdata.com/rdf/geospatial#>
-    PREFIX comp:	<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
+    query = '''
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+                PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                PREFIX comp:    <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
+                PREFIX gas:    <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#>
+                PREFIX compa:   <http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>
+                PREFIX ons:     <http://statistics.data.gov.uk/id/statistical-geography/>
+                PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
     delete 
     where {
-       ?s rdf:type comp:OfftakenGas.
-       ?r comp:hasUsed ?s.
-       ?r gas:hasConsumingGasMeters ?m.
-       ?s comp:hasStartUTC ?st .
-       ?s comp:hasEndUTC ?en .
-       ?r gas:hasNonConsumingGasMeters ?nm. 
-       ?s comp:hasGasEnergy ?ge.
-       ?gm rdf:type gas:GasMeters.
-       ?ss gas:hasGasMeters ?gm.
-       ?gm gas:hasConsumingGasMeters %cgm.
-       ?gm gas:hasNonConsumingGasMeters %ncgm.
-       ?gm comp:hasStartUTC ?stm .
-       ?gm comp:hasEndUTC ?enm .
+    ?s rdf:type om:Measure;
+       om:hasUnit om:kilowattHour.
+    ?sp rdf:type comp:OfftakenGas;
+            comp:hasStartUTC ?o ;
+            comp:hasEndUTC ?oo .
+    ?kw rdf:type om:Energy;
+            om:hasPhenomenon ?sp;
+            om:hasValue ?s.
+    ?s om:hasNumericalValue ?num_val.
+    ?gm_i rdf:type gas:GasMeters;
+          gas:hasConsumingGasMeters ?cgm;
+            gas:hasNonConsumingGasMeters ?ncgs;
+            comp:hasStartUTC ?sd;
+            comp:hasEndUTC ?ed.
+    ?area comp:hasUsed ?sp;
+           gas:hasGasMeters ?gm_i.
        }'''
 
     sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
@@ -170,5 +173,6 @@ def delete_usage_history():
     ret = sparql.query()
 
     return
+
 
 delete_usage_history()

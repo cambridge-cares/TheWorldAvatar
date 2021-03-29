@@ -38,8 +38,15 @@ WHERE
 ?connection gasgrid:hasOrder ?order.
        
 }"""
-KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)
+DEF_NAMESPACE = 'ontogasgrid'
+LOCAL_KG = "http://localhost:9999/bigdata"
+LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
 ret = KGClient.executeQuery(queryString)
+
+# KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)
+# ret = KGClient.executeQuery(queryString)
+
 ret = ret.toList()
 num_ret = len(ret)
 ret_array = np.zeros((num_ret,4),dtype='object')
@@ -85,7 +92,7 @@ end_geojson = """
 """
 geojson_file += end_geojson
 # saving as geoJSON
-output_folder = 'OntoGasGrid/query_tools/geoJSON_output'
+output_folder = 'OntoGasGrid/geoJSON_output_agent/geoJSON_output'
 try:
   os.mkdir(output_folder)
 except FileExistsError:

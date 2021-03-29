@@ -17,8 +17,10 @@ from datetime import  timezone
 
 def upload_year(year):
         if year != '2019':
-                year_r = year + 'r' 
-        data = pd.read_excel('Copy of LSOA_domestic_gas_2010-19.xlsx',sheet_name=year_r,skiprows=1)
+                year_r = year + 'r'
+        else:
+                year_r = year
+        data = pd.read_excel('OntoGasGrid/statistical_gas_population/Copy of LSOA_domestic_gas_2010-19.xlsx',sheet_name=year_r,skiprows=1)
         LSOA_codes = data['Lower Layer Super Output Area (LSOA) Code'].values
         met_num = data['Number of consuming meters'].values
         consump = data['Consumption (kWh)'].values
@@ -48,7 +50,8 @@ def upload_year(year):
                 kw_uuid = uuid.uuid1()
                 mes_uuid = uuid.uuid1()
                 
-                query = '''PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+                query = '''
+                PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
                 PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                 PREFIX comp:    <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
                 PREFIX gas:    <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#>
@@ -190,13 +193,19 @@ def upload_year(year):
                 non_meters,
                 start_time,
                 end_time)
-                sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql")
+
+
+                DEF_NAMESPACE = 'ontogasgrid'
+                LOCAL_KG = "http://localhost:9999/bigdata"
+                LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+
+                sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
                 sparql.setMethod(POST) # POST query, not GET
                 sparql.setQuery(query)
                 ret = sparql.query()
 
 
-
+upload_year('2019')
 # years = ['2018','2017','2016','2015']
 # for year in years:
 #         upload_year(year)
