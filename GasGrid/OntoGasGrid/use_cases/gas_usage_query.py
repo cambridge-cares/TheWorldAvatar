@@ -25,26 +25,14 @@ def query_usage(limit):
     # KGRouter = jpsGW_view.KGRouter
 
     query='''
-    PREFIX ons: <http://statistics.data.gov.uk/id/statistical-geography/>
-    PREFIX gcomp: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
-    PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-    PREFIX gsp: <http://www.opengis.net/ont/geosparql#>
-    PREFIX geo: <http://www.opengis.net/ont/geosparql#> 
+    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
 
-
-            
-    SELECT ?s  ?geom
+    SELECT ?s 
     WHERE
     { 
-    {
     ?s rdf:type ons_t:Statistical-Geography.
-    } 
-    SERVICE <http://statistics.data.gov.uk/sparql>
-    {
-        ?s gsp:hasGeometry ?o .
-        ?o gsp:asWKT ?geom .
-    }}
+    }
     '''
     # KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid',True , False)
     # ret = KGClient.executeQuery(query)
@@ -87,8 +75,53 @@ def query_usage(limit):
             j += 1 
         i += 1 
 
-    # getting rid of head
-    usage_vals = res_array[1:,:]
+    locs = res_array[1:,:]
+
+    for g in tqdm(range(len(locs))):
+    # for g in range(100):
+        query='''
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX ons:     <http://statistics.data.gov.uk/id/statistical-geography/>
+        PREFIX geo:     <http://www.bigdata.com/rdf/geospatial#>
+        PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
+
+        SELECT ?geom
+        WHERE
+        { 
+        SERVICE <http://statistics.data.gov.uk/sparql>
+        {
+            ons:%s gsp:hasGeometry ?o .
+            ?o gsp:asWKT ?geom .
+        }}
+        '''%(locs[g,0].split('/')[-1])
+        DEF_NAMESPACE = 'ontogasgrid'
+        LOCAL_KG = "http://localhost:9999/bigdata"
+        LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+        # Querying using SPARQLWrapper for now
+        sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+        sparql.setMethod(POST) # POST query, not GET
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        start = time.time()
+        ret = sparql.query().convert()
+        end = time.time()
+
+        # parsing JSON into an array 
+        values = ret['results']['bindings']
+        res_array = np.zeros((len(values),len(head)),dtype='object')
+        i = 0
+        for row in values:
+            j = 0 
+            for val in row.values():
+                res_array[i,j] = val['value']
+                j += 1 
+            i += 1 
+        # getting rid of head
+        if g == 0:
+            usage_vals = np.array(res_array[:,:])
+        else:
+            usage_vals = np.append(usage_vals,res_array[:,:],axis=0)
+        
     # preassigning centroid array
     centroids = np.zeros((len(usage_vals),1),dtype='object')
     i = 0 
