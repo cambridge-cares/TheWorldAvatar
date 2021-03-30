@@ -225,16 +225,6 @@ let address = cmcl_address
 
   })(jQuery);
 
-    var socket = io();
-
-    socket.on('connect', function() {
-        socket.emit('message', {data: 'I\'m connected!'});
-    });
-
-    socket.on('coordinate_agent', function(msg) {
-        console.log('from coordinate agent', msg)
-        update_log(msg)
-    });
 
 
   var progress_counter = 1
@@ -559,6 +549,9 @@ function drawTable(result_array) {
 }
 
 function displayResults(question,myData, source) {
+
+    console.log("======================= my data ==================")
+    console.log(myData)
      myData = process_json_result(question, myData)
 
   $('#query_progress_bar').html('')
