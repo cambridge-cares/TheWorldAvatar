@@ -27,11 +27,14 @@ def query_usage(limit):
     query='''
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
 
-    SELECT ?s 
+    SELECT ?s ?geom
     WHERE
-    { 
+    {       
     ?s rdf:type ons_t:Statistical-Geography.
+    OPTIONAL{ ?s gsp:hasGeometry ?o.
+              ?o gsp:asWKT ?geom}
     }
     '''
     # KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid',True , False)
@@ -75,66 +78,29 @@ def query_usage(limit):
             j += 1 
         i += 1 
 
-    locs = res_array[1:,:]
+    usage_vals = res_array[1:,:]
 
-    for g in tqdm(range(len(locs))):
-    # for g in range(100):
-        query='''
-        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX ons:     <http://statistics.data.gov.uk/id/statistical-geography/>
-        PREFIX geo:     <http://www.bigdata.com/rdf/geospatial#>
-        PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
-
-        SELECT ?geom
-        WHERE
-        { 
-        SERVICE <http://statistics.data.gov.uk/sparql>
-        {
-            ons:%s gsp:hasGeometry ?o .
-            ?o gsp:asWKT ?geom .
-        }}
-        '''%(locs[g,0].split('/')[-1])
-        DEF_NAMESPACE = 'ontogasgrid'
-        LOCAL_KG = "http://localhost:9999/bigdata"
-        LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-        # Querying using SPARQLWrapper for now
-        sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-        sparql.setMethod(POST) # POST query, not GET
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        start = time.time()
-        ret = sparql.query().convert()
-        end = time.time()
-
-        # parsing JSON into an array 
-        values = ret['results']['bindings']
-        res_array = np.zeros((len(values),len(head)),dtype='object')
-        i = 0
-        for row in values:
-            j = 0 
-            for val in row.values():
-                res_array[i,j] = val['value']
-                j += 1 
-            i += 1 
-        # getting rid of head
-        if g == 0:
-            usage_vals = np.array(res_array[:,:])
-        else:
-            usage_vals = np.append(usage_vals,res_array[:,:],axis=0)
-        
     # preassigning centroid array
     centroids = np.zeros((len(usage_vals),1),dtype='object')
     i = 0 
+    del_index = [] 
     # iterating over WKT Literals
     for area in usage_vals: 
         # loading WKT
-        wkt_repr = wkt.loads(area[-1])
-        usage_vals[i,-1] = wkt_repr
-        # calculating and storing centroid
-        centroids[i,:] = [wkt_repr.centroid]
-        i += 1 
+        try:
+            wkt_repr = wkt.loads(area[-1])
+            usage_vals[i,-1] = wkt_repr
+            # calculating and storing centroid
+            centroids[i,:] = [wkt_repr.centroid]
+            i += 1 
+        except TypeError: 
+            del_index.append(i)
+            usage_vals[i,-1] = 'None'
+            centroids[i,:] = ['None']
+            i += 1 
     # concatenating results 
     usage_vals = np.concatenate((usage_vals,centroids),axis=1)
+    usage_vals = np.delete(usage_vals,del_index,axis=0)
     return usage_vals
 
 def query_localdistribution():
@@ -215,8 +181,9 @@ def area_nearest_dist(area_limit):
     # preassigning results array
     nearest_ld = np.zeros((len(area_centroids),2),dtype='object')
     i = 0 
+    print('Calculating nearest Local Distribution Offtakes')
     # calculating nearest LDZ for each LSOA offtake
-    for point in area_centroids:
+    for point in tqdm(area_centroids):
         # nearest
         nearest_ld[i,0] = ops.nearest_points(point,ld_points)[1]
         for j in range(len(ld_locs)):
