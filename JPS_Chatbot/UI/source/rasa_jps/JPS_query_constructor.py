@@ -59,7 +59,6 @@ def fire_query_ontochemcomp(query):
 
 
 def process_ontocompchem_results(rst):
-
     rst_lines = rst.split('\r\n')
     if len(rst_lines) <= 1:
         return None
@@ -155,9 +154,7 @@ class JPS_query_constructor:
             return result
 
         if intent == 'query_reaction_property':
-            result = {'intent': intent}
-            result['reactants'] = []
-            result['products'] = []
+            result = {'intent': intent, 'reactants': [], 'products': []}
             flag = False
             for e in intents['entities']:
                 entity_type = e['entity']
@@ -201,9 +198,7 @@ class JPS_query_constructor:
             print('-------------- result processed -------------', result)
             return result
         elif intent == 'select_mechanism_by_reaction':
-            result = {'intent': intent}
-            result['reactants'] = []
-            result['products'] = []
+            result = {'intent': intent, 'reactants': [], 'products': []}
             flag = False
             for e in intents['entities']:
                 entity_type = e['entity']
@@ -221,8 +216,9 @@ class JPS_query_constructor:
             print('========= select_mechanism_by_reaction ===========')
             return result
 
+    # This is the main interface for the query constructor
+    # It handles ontokin and ontocompchem queries.
     def construct_query(self, intents):
-        self.socketio.emit('coordinate_agent', 'Constructing SPARQL queries')
         print('=================== intents ================')
         pprint(intents['intent']['name'])
         result = self.extract_info(intents)
@@ -254,26 +250,14 @@ class JPS_query_constructor:
 
     def query_thermo_of_moleculars(self, intent, species, attribute):
 
-        print('=========== species received ===========')
-        print('species:', species)
-        print('=========== attribute received ============')
-        print('attribute:', attribute)
         species = species.upper()
         attribute_iri = self.attribute_mapper.find_closest_attribute(intent, attribute)
-        print('=========== attribute iri  ============')
-        print('attribute iri :', attribute_iri)
-        print('============= line 206 ============')
-        print('intent', intent)
-        print('species', species)
+        # the species validator transform species recieved into a proper form
         species = self.validator.validate(attribute, 'ontokin', intent, species)
-        print('======== species =======')
-        print(species)
 
         if intent == 'query_thermodynamic':
             attribute_name = attribute.replace(' ', '').upper()
             q = HIGH_SPEED_GENERAL_QUERY % (attribute_name, attribute_iri, attribute_name, species, attribute_iri)
-            # q = GENERAL_QUERY % (attribute.replace(' ', '').upper(), species, attribute_iri, attribute.replace(' ',
-            # '').upper(), attribute_iri)
             print('================ GENERAL QUERY ===============')
             print(q)
             rst = fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
@@ -293,10 +277,11 @@ class JPS_query_constructor:
             rst = json.dumps(rst)
             return rst
 
+    # Query ontocompchem ontology, the intent should be "query_quantum_chemistry"
+    # However, due to the inconsistency in ontocompchem, we need to further classify the questions
+    # currently, we use the attribute to find the according sub-intent and map question to templates.
+    # TODO: resolve the inconsistency in ontocompchem and use more general queries.
     def query_quantum_of_moleculars(self, intent, species, attribute):
-        # ROTATIONAL_CONSTANT_QUERY
-        # VIBRATION_FREQUENCY_QUERY
-        # ROTATIONAL_SYMMETRY_NUMBER
         original_species = species
         print('=========== line 238 =============')
         print('intent', intent)
@@ -373,5 +358,3 @@ class JPS_query_constructor:
             query = self.template_dict['query_reaction_property']['isReversible']
             rst = fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
             return rst
-
-

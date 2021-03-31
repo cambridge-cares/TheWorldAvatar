@@ -303,20 +303,14 @@ query_12 = `
 		?reaction ontokin:belongsToPhase ?Phase .
 		?Phase ontokin:containedIn ?MechanismIRI .
 		?MechanismIRI rdfs:label ?MechanismName .
-
-
 		{
 			SELECT DISTINCT ?reaction ?Equation
 			WHERE {
 				?reaction ontokin:hasEquation ?Equation .
-				FILTER regex(str(?Equation), "((^H2) .*=\])|(( H2 )=\]*)")
-				FILTER regex(str(?Equation), "((^OH) .*=\])|(( OH )=\]*)")
- 
-				
 			}
 		}
 
-        } LIMIT 10`;
+        } LIMIT 50`;
 		
 		
 		query_20 = `        
@@ -407,6 +401,151 @@ query_22 = `
 
         } LIMIT 10
 
+
+basic_query = `
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?reaction ?Equation  
+WHERE  {	
+	 	
+  	?reaction ontokin:hasEquation ?Equation .
+} 
+
+`;
+
+
+
+query = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?reaction ?Equation ?MechanismName 
+WHERE  {	
+	?MechanismIRI rdfs:label ?MechanismName .
+	?Phase ontokin:containedIn ?MechanismIRI .
+ 
+	{SELECT DISTINCT ?reaction ?Phase ?Equation
+	WHERE{		
+	?reaction ontokin:belongsToPhase ?Phase .
+ 	?reaction ontokin:hasEquation ?Equation .
+	}}
+ 
+	} GROUP BY ?reaction ?Equation ?MechanismName 
+`;
+
+
+
+q1 = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?reaction ?Equation ?ActivationEnergy  
+WHERE  {	
+ 
+ 		 ?ArrheniusCoefficient 	ontokin:hasActivationEnergy ?ActivationEnergy ;
+								ontokin:hasActivationEnergyUnits  ?ActivationEnergyUnits  ;
+								ontokin:hasPreExponentialFactor ?PreExponentialFactor ;
+								ontokin:hasPreExponentialFactorUnits ?PreExponentialFactorUnits ;
+								ontokin:hasTemperatureExponent ?TemperatureExponent ;
+								ontokin:hasTemperatureExponentUnits ?TemperatureExponentUnits .
+ 
+	{
+	SELECT ?reaction ?ArrheniusCoefficient
+	WHERE {
+			?reaction <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient> ?ArrheniusCoefficient .
+			?reaction ontokin:hasEquation ?Equation . 
+		}
+	}
+	
+
+	}   LIMIT 1
+`;
+
+
+q2 = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?Equation  
+WHERE  {		 
+ 
+ [
+  <http://www.theworldavatar.com/kb/ontokin/56_53.owl#ChemicalReaction_631070468656898_13>,
+  <http://www.theworldavatar.com/kb/ontokin/Andrae_2008.owl#ChemicalReaction_1749249908516854_88>
+ ] 
+ ontokin:hasEquation ?Equation .
+	 
+	}  
+
+`; 
+
+
+q3 = `
+ 
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?Species  ?LennardJonesWellDepth ?label  ?Unit
+{
+	
+	 
+     ?TransportModel ontokin:hasLennardJonesWellDepth ?LennardJonesWellDepth .
+     ?Species ontokin:hasTransportModel ?TransportModel .
+     ?Species rdfs:label ?label .
+	 ?Species rdfs:label "O2" .
+	 
+	  OPTIONAL{
+		?TransportModel ontokin:hasLennardJonesWellDepthUnits ?Unit .
+     } 
+ 
+ }  LIMIT 1
+`;
+
+q4 = `
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?Species ?label ?LennardJonesWellDepth ?Unit
+{
+	
+	
+	 ?TransportModel ontokin:hasPolarizability ?LennardJonesWellDepth .
+     ?Species ontokin:hasTransportModel ?TransportModel .
+     ?Species rdfs:label ?label .
+	 ?Species rdfs:label "O2" .
+	 
+	  OPTIONAL{
+		?TransportModel ontokin:hasPolarizabilityUnits ?Unit .
+     } 
+	
+	 
+}  LIMIT 1
+
+`;
+
+q_reversible = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?Equation ?isReversible
+WHERE  {		 
+ 
+			?reaction ontokin:isReversible ?isReversible .
+			?reaction ontokin:hasEquation ?Equation .
+	 
+	}  
+
+`;
  
 `
 

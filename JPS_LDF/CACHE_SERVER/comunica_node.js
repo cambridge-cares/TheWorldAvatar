@@ -2,196 +2,88 @@ const newEngine = require('@comunica/actor-init-sparql').newEngine;
 const fs = require('fs');
 const express = require('express');
 const path = require('path');
-
 const app = express();
 const router = express.Router();
 
-/*
-router.get('/',function(req,res){
-  res.sendFile(path.join(__dirname+'/index.html'));
-  //__dirname : It will resolve to your project folder.
-});
 
 router.get('/query', function(req,res){
-	
 	 
+	console.time('Execution time');
 	const myEngine = newEngine();
-	var query = req.query.query;
-	console.log('query', query);
 	
+	myEngine.invalidateHttpCache();
+
+	// console.log('query', req.query);
+	let parameters  = {sources: ['http://localhost:8080/ldfserver/ontokin']};
+	
+	let data = req.query;
+	
+	
+	let products = []
+	let reactants = []
+	if(data.products){
+		products = JSON.parse(data.products);
+		if (products.length === 0){
+			products = ["placeholder"]
+		}
+		else{
+			products =  Array.from(new Set(products.sort()));
+		}
+	}
+
+	if(data.reactants){
+		reactants = JSON.parse(data.reactants);
+		if (reactants.length === 0){
+			reactants = ["placeholder"]
+		}
+		else{
+			reactants =  Array.from(new Set(reactants.sort()));
+		}
+	}	
+	
+	
+	let query = data.query;
 	(async () => {
 		const result = await myEngine.query(query, {
-		  sources: ['http://localhost:8080/ldfserver/ontokin'],
+		     sources: ['http://localhost:8080/ldfserver/ontokin'], products: products, reactants: reactants 
 		});
 
-				result.bindingsStream.on('data', (binding) => {
-					console.log(binding.get('?Equation').value);
-					res.write(binding.get('?Equation').value)
-				});
-				
-				
-				result.bindingsStream.on('end', () => {
-					console.log('============= query finished ==============');
-					res.end('done')
-		});
 
-	})();
-	  
-	 
+		const bindings = await result.bindings();
+		 
+		let full_result = [];
+		for (let binding of bindings){
+			let row = parse_bindings(binding);
+			full_result.push(row);
+		}
+		full_result = JSON.stringify(full_result);
+		console.timeEnd('Execution time');
+		res.send(full_result);
+	})(); 
+})
+
+
+
+// make the result in the format that Marie's front end accepts 
+// array of rows
+// if the results is empty, return "Nothing"
+function parse_bindings(binding) {
+	let _rst = [];
+    let _obj = binding.toObject();
+	let _keys = Object.keys(_obj);
+	let	_row = {};
+
+	for (let key of _keys){
+		value = _obj[key].value;
+		key =  key.replace('?', '') ;
+		_row[key] = value;
+	}
 	
-	// res.send(query);
-}); */
-console.time('test');
+	return _row
+ }
 
-basic_query = `
-
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin:
-<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-SELECT  DISTINCT  ?reaction ?Equation  
-WHERE  {	
-	 	
-  	?reaction ontokin:hasEquation ?Equation .
-} 
-
-`;
-
-
-
-query = `
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin:
-<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-SELECT  DISTINCT  ?reaction ?Equation ?MechanismName 
-WHERE  {	
-	?MechanismIRI rdfs:label ?MechanismName .
-	?Phase ontokin:containedIn ?MechanismIRI .
- 
-	{SELECT DISTINCT ?reaction ?Phase ?Equation
-	WHERE{		
-	?reaction ontokin:belongsToPhase ?Phase .
- 	?reaction ontokin:hasEquation ?Equation .
-	}}
- 
-	} GROUP BY ?reaction ?Equation ?MechanismName 
-`;
-
-
-
-q1 = `
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin:
-<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-SELECT  DISTINCT  ?reaction ?Equation ?ActivationEnergy  
-WHERE  {	
- 
-	?ArrheniusCoefficient  ontokin:hasActivationEnergy ?ActivationEnergy .
-	?reaction <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient> ?ArrheniusCoefficient .
- 	?reaction ontokin:hasEquation ?Equation . 
-	}  GROUP BY ?reaction ?Equation ?ArrheniusCoefficient ?ActivationEnergy LIMIT 1
-`;
-
-
-q2 = `
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin:
-<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-SELECT  DISTINCT  ?Equation  
-WHERE  {		 
- 
- [
-  <http://www.theworldavatar.com/kb/ontokin/56_53.owl#ChemicalReaction_631070468656898_13>,
-  <http://www.theworldavatar.com/kb/ontokin/Andrae_2008.owl#ChemicalReaction_1749249908516854_88>
- ] 
- ontokin:hasEquation ?Equation .
-	 
-	}  
-
-`; 
-
-
-q3 = `
- 
-PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT DISTINCT ?Species  ?LennardJonesWellDepth ?label  ?Unit
-{
 	
-	 
-     ?TransportModel ontokin:hasLennardJonesWellDepth ?LennardJonesWellDepth .
-     ?Species ontokin:hasTransportModel ?TransportModel .
-     ?Species rdfs:label ?label .
-	 ?Species rdfs:label "O2" .
-	 
-	  OPTIONAL{
-		?TransportModel ontokin:hasLennardJonesWellDepthUnits ?Unit .
-     } 
- 
- }  LIMIT 1
-`;
-
-q4 = `
-PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT DISTINCT ?Species ?label ?LennardJonesWellDepth ?Unit
-{
-	
-	
-	 ?TransportModel ontokin:hasPolarizability ?LennardJonesWellDepth .
-     ?Species ontokin:hasTransportModel ?TransportModel .
-     ?Species rdfs:label ?label .
-	 ?Species rdfs:label "O2" .
-	 
-	  OPTIONAL{
-		?TransportModel ontokin:hasPolarizabilityUnits ?Unit .
-     } 
-	
-	 
-}  LIMIT 1
-
-`;
-const myEngine = newEngine();
-// var query = req.query.query;
-query = q4;
-console.log('query', query);
-
-(async () => {
-	var reactions = []
-	const result = await myEngine.query(query, {
-		sources: ['http://localhost:8080/ldfserver/ontokin'] , reactants: ['H', 'OH', 'M']
-	 // sources: ['http://localhost:8080/ldfserver/ontokin'], reactants: ['H', 'O2']
-	   // sources: ['http://localhost:3002'],
-	});
-
-			result.bindingsStream.on('data', (binding) => {
-				
-				//reactions.push(binding.get("?ActivationEnergy").value + '\n' + binding.get("?Equation").value )
-				  reactions.push(binding.get("?Species").value)  
-				  reactions.push(binding.get("?LennardJonesWellDepth").value)
-				  reactions.push(binding.get("?Unit").value)
-				  reactions.push(binding.get("?label").value)
-
-
-			});
-			 
-			result.bindingsStream.on('end', () => {
-				console.log('============= query finished ==============');
-				console.log(reactions);
-				console.timeEnd('test');
-				 
-	});
-
-})();
-
-			
+ 	
 function printMemory(){
 	
 	const mu = process.memoryUsage();
@@ -202,7 +94,7 @@ function printMemory(){
 	 console.log(`Allocated since start ${Math.round((heapUsed -heapTotal) * 100) / 100} GB`);				
  }
 
-/*
+
 app.use('/', router);
 app.listen(process.env.port || 3000);
-console.log('Running at Port 3000');*/
+console.log('Running at Port 3000');

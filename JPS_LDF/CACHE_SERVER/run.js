@@ -26,19 +26,84 @@ basic_query = `
 			 
 		 } 
  
-        }  LIMIT 10
+        }  
  
 `;
 
-  
+
+test_query =`
+
+
+PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:  <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?reaction ?Equation  
+WHERE  {	
+  	?reaction ontokin:hasEquation ?Equation .
+    # FILTER regex(str(?Equation), ".*=] %s .*| .*=].* %s$")
+    # FILTER regex(str(?Equation), ".*=] %s .*| .*=].* %s$")
+}  
+
+`
+
+
+test_query_reaction_rate = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?reaction ?Equation ?ActivationEnergy  
+WHERE  {	
+ 
+ 		 ?ArrheniusCoefficient 	ontokin:hasActivationEnergy ?ActivationEnergy ;
+								ontokin:hasActivationEnergyUnits  ?ActivationEnergyUnits  ;
+								ontokin:hasPreExponentialFactor ?PreExponentialFactor ;
+								ontokin:hasPreExponentialFactorUnits ?PreExponentialFactorUnits ;
+								ontokin:hasTemperatureExponent ?TemperatureExponent ;
+								ontokin:hasTemperatureExponentUnits ?TemperatureExponentUnits .
+ 
+	{
+	SELECT ?reaction ?Equation ?ArrheniusCoefficient
+	WHERE {
+			?reaction <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient> ?ArrheniusCoefficient .
+			?reaction ontokin:hasEquation ?Equation . 
+		}
+	}
+	
+
+	}   LIMIT 1
+
+
+`;
+
+
+test_is_reversible = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?Equation ?isReversible
+WHERE  {		 
+ 
+			?reaction ontokin:isReversible ?isReversible .
+			?reaction ontokin:hasEquation ?Equation .
+	 
+	}  LIMIT 1
+
+`;
+  	myEngine.invalidateHttpCache();
+
 
 console.time('Execution time');
-var query = basic_query;
-
+var query = test_query;
 
 	(async () => {
 		const result = await myEngine.query(query, {
-		  sources: ['http://localhost:8080/ldfserver/ontokin'], products:["OH"], reactants:["H"]
+		    //sources: ['http://localhost:8080/ldfserver/ontokin'], products:["OH"], reactants:["H"] ,"NC3H7"
+		 sources: ['http://localhost:8080/ldfserver/ontokin'], products:['CO','CH3CHO'].sort(), reactants:["placeholder"].sort()
 		});
 
 
