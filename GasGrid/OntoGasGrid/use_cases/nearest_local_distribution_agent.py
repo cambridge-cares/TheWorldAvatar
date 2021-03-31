@@ -205,12 +205,12 @@ PREFIX comp:	<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_com
 PREFIX abox:    <http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>
 
 INSERT DATA
-{
+{{
     """
     for row in nearest_ld:
         additional ='ons:'+row[0].split('/')[-1]+' comp:hasClosestDistributionOfftake ' + 'abox:'+row[1].split('/')[-1] + ' .  \n '
         query += additional
-    query += '}'
+    query += '}}'
     DEF_NAMESPACE = 'ontogasgrid'
     LOCAL_KG = "http://localhost:9999/bigdata"
     LOCAL_KG_SPARQL = LOCAL_KG+'/namespace/'+DEF_NAMESPACE+'/sparql'
