@@ -1,6 +1,6 @@
 {
   "query_reaction_property": "",
   "select_mechanism_by_reaction": "",
-  "select_reaction_by_species": "        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n        PREFIX ontokin:\n        <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n        PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>\n        SELECT  DISTINCT   ?Equation %s\n        WHERE  {\n        ?reaction ontokin:hasEquation ?Equation ; %s  %s  %s %s\n        \n        } ",
+  "select_reaction_by_species": "PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX ontokin:  <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\nPREFIX reaction: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>\nSELECT  DISTINCT  ?reaction ?Equation  \nWHERE  {\t\n  \t?reaction ontokin:hasEquation ?Equation .\n} LIMIT 50",
   "general_contain_species": ""
 }

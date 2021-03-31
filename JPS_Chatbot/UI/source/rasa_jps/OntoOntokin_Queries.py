@@ -29,7 +29,7 @@ SELECT DISTINCT ?label ?%s ?Unit
 	 ?Species rdfs:label "%s" .
 	 
 	  OPTIONAL{
-		?TransportModel ontokin:%s ?Unit .
+		?TransportModel ontokin:%sUnits ?Unit .
      } 
 	 
 }  LIMIT 1
