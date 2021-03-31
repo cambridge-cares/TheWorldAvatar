@@ -388,9 +388,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 		if (conn != null) {
 			conn.begin( TxnType.READ );	
 			try {
-				QueryExecution queryExec = conn.query(sparql);
-				Model results = queryExec.execConstruct();
-				return results;
+				return conn.queryConstruct(sparql);
 			} finally {
 				conn.end();
 			}
