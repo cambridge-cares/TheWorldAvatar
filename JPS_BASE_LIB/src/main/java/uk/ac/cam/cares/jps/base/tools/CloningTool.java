@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.tools;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
@@ -20,6 +21,7 @@ import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 public class CloningTool {
@@ -27,7 +29,8 @@ public class CloningTool {
 	String strTag = "_Tag";	//Tag ending
 	boolean splitUpdate;
 	int stepSize;
-	int countTotal;		//Total number of triple to clone
+	int countTotal;			//Total number of triple to clone
+	boolean quads = true;	//Is the source KBClient a quads store?
 	
 	//// SPARQL variables
 	
@@ -89,6 +92,19 @@ public class CloningTool {
 		this.splitUpdate = false;
 	}
 
+	/**
+	 * Set source KBClient is a triple store 
+	 */
+	public void setTripleStore() {
+		this.quads = false;
+	}
+	
+	/**
+	 * Set source KBClient is a quad store
+	 */
+	public void setQuadsStore() {
+		this.quads = true;
+	}
 	///////////////////////// Clone methods
 	
 	/**
@@ -189,8 +205,16 @@ public class CloningTool {
 					.addFilter(exprFilterOutBlanks())
 					.addFilter(exprNotTagged())
 					.addBind(exprFactory.iri(exprFactory.concat(exprStrS,exprTagN)), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereNotTagged, stepSize, true); 
-			sourceKB.executeUpdate(tagUpdate);
+			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereNotTagged, stepSize, quads);
+			try {
+				sourceKB.executeUpdate(tagUpdate);
+			}catch(Exception e) {
+				if (e.getCause() instanceof SQLException) {
+					throw new JPSRuntimeException("CloningTool: tagging update failed! SourceKB might not be quads. Try setTripleStore().", e);
+				}else {
+					throw e;
+				}
+			}
 			
 			// Get triples 
 			WhereBuilder whereConstructTagged = new WhereBuilder()
@@ -198,12 +222,12 @@ public class CloningTool {
 					.addFilter(exprFactory.strends(exprStrS, exprTagN));
 			Query constructQuery = buildConstruct(sourceGraph, whereConstructTagged);
 			Model triples = sourceKB.executeConstruct(constructQuery);
-			
+
 			// Remove tag from triples going to target
 			WhereBuilder whereRemoveTag = new WhereBuilder()
 					.addWhere(varS, varP, varO)
 					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest removeTagUpdate = buildTagUpdate(null, whereRemoveTag, stepSize, false); //TODO stepsize here should be 0 to update all?
+			UpdateRequest removeTagUpdate = buildTagUpdate(null, whereRemoveTag, 0, false);
 			Dataset dataset = DatasetFactory.create(triples); // put triple into the default graph of a temporary dataset
 			UpdateProcessor updateExec = UpdateExecutionFactory.create(removeTagUpdate, dataset);
 			updateExec.execute();
@@ -232,7 +256,7 @@ public class CloningTool {
 					.addWhere(varS, varP, varO)
 					.addFilter(exprFactory.strends(exprStrS, exprTagN))
 					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize, true);
+			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize, quads);
 			sourceKB.executeUpdate(tagUpdate);
 		}
 	}
