@@ -366,10 +366,16 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 			
 			//Named graph
 			}else if(dataset.containsNamedModel(name)) {
-					
+				
+				if(RDFLanguages.isTriples(langOut)) {
 					RDFDataMgr.write(out, dataset.getNamedModel(name), langOut);
-					out.flush();
-			
+				}else {
+					// put the graph into a dataset to write as quads
+					Dataset datasetOut = DatasetFactory.create();
+					datasetOut.addNamedModel(name,dataset.getNamedModel(name));
+					RDFDataMgr.write(out, datasetOut, langOut);
+				}
+				out.flush();
 			}else {
 				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + name + " does not exist.");
 			}
