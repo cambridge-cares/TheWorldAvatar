@@ -143,10 +143,6 @@ class CoordinateAgent:
             sparqls = sparqls[:5]
 
         result = self.sparql_query.start_queries(sparqls)
-        print('-------------- we have a result -------------------')
-        # pprint(result)
-        print('the result in json format', result[0])
-        print('the sparql query', result[2])
         return result[0]
 
 # ca = CoordinateAgent()
