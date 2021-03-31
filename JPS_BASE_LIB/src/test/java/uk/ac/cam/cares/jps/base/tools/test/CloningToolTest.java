@@ -100,6 +100,16 @@ public class CloningToolTest {
 			cloningTool.setCloneSize(stepSize);
 			value2 = (int) field.get(cloningTool);
 			assertEquals(stepSize,value2);
+			
+			//set triple/quad store
+			assertNotNull(cloningTool.getClass().getDeclaredField("quads"));
+			field = cloningTool.getClass().getDeclaredField("quads");
+			field.setAccessible(true);
+			assertTrue((boolean) field.get(cloningTool));
+			cloningTool.setTripleStore();
+			assertFalse((boolean) field.get(cloningTool));
+			cloningTool.setQuadsStore();
+			assertTrue((boolean) field.get(cloningTool));
 		}
 		
 		@Test
@@ -163,9 +173,10 @@ public class CloningToolTest {
 		}
 				
 		@Test
-		public void testClone() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
+		public void testCloneQuads() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
 			CloningTool cloningTool = new CloningTool(1);
+			cloningTool.setQuadsStore();
 			KnowledgeBaseClientInterface source = createTestClient();
 			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
 			
@@ -191,14 +202,58 @@ public class CloningToolTest {
 			assertTrue(cloningTool.checkNoTags(source, null));
 			assertTrue(cloningTool.checkNoTags(target, null));
 			
-			//check copied
+			//check count 
+			assertTrue(cloningTool.checkCount(target,null));
+			
+			//check clone
 			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery(null, "1")));
 			assertEquals("[{\"O\":\"O\"}]", target.execute(getQuery(null, "2")));
 			assertEquals("[{\"O\":\"O2\"}]", target.execute(getQuery(null, "3")));
 			assertEquals("[]", target.execute(getQuery(null, "4")));
-			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned
+			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned by FileBasedClient
 		}
 	
+		@Test
+		public void testCloneTriples() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
+			
+			CloningTool cloningTool = new CloningTool(1);
+			cloningTool.setTripleStore();
+			KnowledgeBaseClientInterface source = createTestClient();
+			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			
+			cloningTool.clone(source, target);
+			
+			//check countTotal set
+			Field field = null;
+			assertNotNull(cloningTool.getClass().getDeclaredField("countTotal"));
+			field = cloningTool.getClass().getDeclaredField("countTotal");
+			field.setAccessible(true);
+			int intValue = (int) field.get(cloningTool);
+			assertEquals(12,intValue);
+			
+			//check tag variable set
+			assertNotNull(cloningTool.getClass().getDeclaredField("strTag"));
+			field = cloningTool.getClass().getDeclaredField("strTag");
+			field.setAccessible(true);
+			String value = (String) field.get(cloningTool);
+			assertTrue(value.contains("_Tag"));
+			assertTrue(value.length() > 4);
+						
+			//check no tags
+			assertTrue(cloningTool.checkNoTags(source, null));
+			assertTrue(cloningTool.checkNoTags(target, null));
+			
+			//check count 
+			assertTrue(cloningTool.checkCount(target,null));
+			
+			//check clone
+			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery(null, "1")));
+			assertEquals("[{\"O\":\"O\"}]", target.execute(getQuery(null, "2")));
+			assertEquals("[{\"O\":\"O2\"}]", target.execute(getQuery(null, "3")));
+			assertEquals("[]", target.execute(getQuery(null, "4")));
+			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned by FileBasedClient
+		}
+		
 		@Test
 		public void testCloneCountLessThanStepSize() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
@@ -213,6 +268,9 @@ public class CloningToolTest {
 			//check singleStepClone is used
 			Mockito.verify(cloningTool).clone(source, null, target, null);
 			Mockito.verify(cloningTool).singleStepClone(source, null, target, null);
+			
+			//check count 
+			assertTrue(cloningTool.checkCount(target,null));
 			
 			//check cloned
 			assertEquals("[{\"O\":\"OH\"}]", target.execute(getQuery(null, "1")));
@@ -247,6 +305,9 @@ public class CloningToolTest {
 			assertTrue(value.contains("_Tag"));
 			assertTrue(value.length() > 4);
 
+			//check count 
+			assertTrue(cloningTool.checkCount(target,testContext));
+			
 			//check copied
 			assertEquals("[]", target.execute(getQuery(testContext, "1")));
 			assertEquals("[]", target.execute(getQuery(testContext, "2")));
@@ -483,7 +544,7 @@ public class CloningToolTest {
 			Var varP = sparqlArgs[1];
 			Var varO = sparqlArgs[2];
 			
-			//test arguments -- default graph
+			//test arguments -- default graph in triples mode
 			int limit = 999;
 			WhereBuilder where = new WhereBuilder().addWhere(varS, varP, varO);
 			String graph = null;
@@ -530,6 +591,28 @@ public class CloningToolTest {
 			
 			UpdateRequest value2 = (UpdateRequest) method.invoke(cloningTool, graph, where, limit, true);
 			assertEquals(expectedValue, value2.toString());
+			
+			//test arguments -- default graph in quads mode 
+			expectedValue = "DELETE {\n"+
+					"  GRAPH ?g {\n"+
+					"    ?s ?p ?o .\n"+
+					"  }\n}\n"+
+					"INSERT {\n"+
+					"  GRAPH ?g {\n"+
+					"    ?newS ?p ?o .\n"+
+					"  }\n}\n"+
+					"WHERE\n"+
+					"  { { SELECT  ?s ?p ?o ?newS ?g\n"+
+					"      WHERE\n"+
+					"        { GRAPH ?g\n"+
+					"            { ?s  ?p  ?o}}\n"+
+					"      LIMIT   "+limit+
+					"\n    }\n  }\n";
+			
+			graph = null;
+			UpdateRequest value3 = (UpdateRequest) method.invoke(cloningTool, graph, where, limit, true);
+			assertEquals(expectedValue, value3.toString());
+			
 		}
 		
 		//// Test filter expressions

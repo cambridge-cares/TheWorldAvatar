@@ -150,14 +150,8 @@ public class CloningTool {
 		    	performClone(sourceKB, sourceGraph, targetKB, targetGraph);
 		    }
 		}
-	/*	
-		if(!checkCount(targetKB, targetGraph)) {
-			throw new JPSRuntimeException("CloningTool: check failed, counts do not match!");
-		}
-		*/
 	}
 	
-	//TODO: check graph clone : is context lost?
 	/**
 	 * Clone graph from source knowledge base to target knowledge base in a single step.
 	 * @param sourceKB
@@ -175,7 +169,6 @@ public class CloningTool {
 		targetKB.executeUpdate(update);
 	}
 	
-	//TODO: check graph clone
 	//TODO: describe method
 	/**
 	 * Clone graph from source knowledge base to target knowledge base over multiple steps.
