@@ -24,6 +24,23 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
+/**
+ * Cloning Tool
+ * 
+ * Two cloning methods are implemented: a single step cloning method suitable for cloning small 
+ * stores and a method which splits a large cloning operation into multiple smaller ones. 
+ * The single step clone can be used by first calling "setSingleStepClone" followed by a "clone" 
+ * method, or alternatively by calling the method "singleStepClone" directly.
+ * The split method is used be default, unless the total number of triples (or quads) in the store
+ * is below the step size, set using "setCloneSize".  
+ * Two methods: "checkNoTags" and "checkCount" are provided and can be called to check that no tags 
+ * remain after cloning and that the total count remains unchanged.
+ * NOTE: If the sourceKB is a remote triple store (rather than quad store) then "setTripleStore()" 
+ * must be set for the tool to function.
+ * 
+ * @author Casper Lindberg
+ *
+ */
 public class CloningTool {
 
 	String strTag = "_Tag";	//Tag ending
@@ -108,8 +125,8 @@ public class CloningTool {
 	///////////////////////// Clone methods
 	
 	/**
-	 * Clone all triples from source repository to target repository.
-	 * WARNING: any context will be lost.
+	 * Clone all triples/quads from source repository to target repository.
+	 * WARNING: any context will be lost in the target.
 	 * @param sourceKB
 	 * @param targetKB
 	 */  
@@ -169,18 +186,22 @@ public class CloningTool {
 		targetKB.executeUpdate(update);
 	}
 	
-	//TODO: describe method
 	/**
-	 * Clone graph from source knowledge base to target knowledge base over multiple steps.
+	 * Cloning is split into multiple smaller copying operations consisting of a number of steps.
+	 * Triples (or quads) are tagged to keep track of which have been copied. 
+	 * After cloning is complete, the tags are removed returning the source store to its original state. 
+	 * Triples (or quads) containing blank nodes are excluded from this loop and cloned separately 
+	 * in an operation to maintain consistency between blank nodes.   
 	 * @param sourceKB
+	 * @param source graph
 	 * @param targetKB
-	 * @param graph
+	 * @param target graph
 	 */
 	private void performClone(KnowledgeBaseClientInterface sourceKB, String sourceGraph, KnowledgeBaseClientInterface targetKB, String targetGraph) {
 		
 		createTag(sourceKB);
 
-		// Count triples excluding blanks
+		// Count triples excluding blank nodes
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
 				.addFilter(exprFilterOutBlanks());
@@ -192,7 +213,7 @@ public class CloningTool {
 			// Iterate tag
 			Expr exprTagN = buildExprTagN(i);
 			
-			// Add tag to source
+			// Tag source
 			WhereBuilder whereNotTagged = new WhereBuilder()
 					.addWhere(varS, varP, varO)
 					.addFilter(exprFilterOutBlanks())
@@ -209,7 +230,7 @@ public class CloningTool {
 				}
 			}
 			
-			// Get triples 
+			// Get tagged triples 
 			WhereBuilder whereConstructTagged = new WhereBuilder()
 					.addWhere(varS, varP, varO)
 					.addFilter(exprFactory.strends(exprStrS, exprTagN));
@@ -269,7 +290,10 @@ public class CloningTool {
 	//// Checks
 	
 	/**
-	 * Check the number of triples in target matches source
+	 * Check the number of triples matches the total number of triples 
+	 * in the source store prior to cloning.
+	 * @param kbClient store to check
+	 * @param graph default/named graph to check
 	 */
 	public boolean checkCount(KnowledgeBaseClientInterface kbClient, String graph) {
 
@@ -281,7 +305,9 @@ public class CloningTool {
 	}
 	
 	/**
-	 * Check no tags remain
+	 * Check no tags remain in store
+	 * @param kbClient store to check
+	 * @param graph default/named graph to check
 	 */
 	public boolean checkNoTags(KnowledgeBaseClientInterface kbClient, String graph) {
 
@@ -299,7 +325,7 @@ public class CloningTool {
 	//// Count
 	
 	/**
-	 * Count triples in knowledge base client matching where statement.
+	 * Count triples in knowledge base client matching the where statement.
 	 * @param source knowledge base client
 	 * @param graph (can be null)
 	 * @param where statement
