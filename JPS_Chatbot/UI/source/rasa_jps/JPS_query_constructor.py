@@ -30,6 +30,55 @@ import datetime
 # except ImportError:
 #     from run import socketio
 
+def fire_query_to_ldf_ontokin(query, products, reactants):
+    print('----------- firing the query to LDF -------------')
+    if products is None:
+        products = []
+    if reactants is None:
+        reactants = []
+    print("query fired to LDF server")
+    print(query)
+    url = "http://localhost:3000/query?"
+    values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
+    full_url = url + urllib.parse.urlencode(values)
+    req = urllib.request.Request(full_url)
+    response = urllib.request.urlopen(req).read()
+    print(response)
+    return response
+
+
+def fire_query_ontochemcomp(query):
+    print('----------- firing the query to JPS ontochemcomp -------------')
+    print(query)
+    url = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
+    values = {'query': query}
+    data = urllib.parse.urlencode(values).encode('utf-8')
+    req = urllib.request.Request(url, data)
+    response = urllib.request.urlopen(req).read()
+    return response
+
+
+def process_ontocompchem_results(rst):
+
+    rst_lines = rst.split('\r\n')
+    if len(rst_lines) <= 1:
+        return None
+    else:
+        result = []
+        heads = rst_lines[0].split(',')
+        data_list = rst_lines[1:]
+        for data in data_list:
+            temp = {}
+            cols = data.split(',')
+            for c, h in zip(cols, heads):
+                temp[h] = c
+            if data == '':
+                pass
+            else:
+                result.append(temp)
+        return json.dumps(result)
+
+
 class JPS_query_constructor:
 
     def __init__(self, socketio):
@@ -77,7 +126,6 @@ class JPS_query_constructor:
         return rst
 
     def extract_info(self, intents):
-
         intent = intents['intent']['name']
         entity_pairs = JPS_query_constructor.extract_entity_pairs(intents['entities'])
         self.socketio.emit('coordinate_agent', 'Looking up entities in JPS KG<br/> -----------------' + str(
@@ -105,9 +153,6 @@ class JPS_query_constructor:
                     result['attribute'] = value
 
             return result
-
-
-
 
         if intent == 'query_reaction_property':
             result = {'intent': intent}
@@ -174,7 +219,6 @@ class JPS_query_constructor:
                     # this belongs to reactants
                     result['products'].append(value.upper())
             print('========= select_mechanism_by_reaction ===========')
-            pprint(intents)
             return result
 
     def construct_query(self, intents):
@@ -232,12 +276,12 @@ class JPS_query_constructor:
             # '').upper(), attribute_iri)
             print('================ GENERAL QUERY ===============')
             print(q)
-            rst = self.fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
+            rst = fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
             return rst
         # # 1. att name, 1.5 species  2. att iri name 3. att name 4. att iri name
         elif intent == 'rotational_relaxation_collision':
             q = RELAXATION_COLLISION % species
-            rst = self.fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
+            rst = fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
 
         else:
             return None
@@ -260,179 +304,74 @@ class JPS_query_constructor:
         attribute_iri = self.attribute_mapper.find_closest_attribute(intent, attribute)
         species = self.validator.validate(attribute, 'ontocompchem', intent, species)
         intent = self.attribute_mapper.map_to_quantum_queries(attribute_iri)
-        self.socketio.emit('coordinate_agent', 'this is from the validator' + str(species))
         if species is None:
-            self.socketio.emit('coordinate_agent', 'This species does not have this information in the World Avatar KG')
             return None
 
         if intent == 'rotational_constants':
             q = ROTATIONAL_CONSTANT_QUERY % species
-            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+            rst = fire_query_ontochemcomp(q).decode('utf-8')
         elif intent == 'symmetry_number':
             q = ROTATIONAL_SYMMETRY_NUMBER % species
-            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+            rst = fire_query_ontochemcomp(q).decode('utf-8')
         elif intent == 'vibration_frequency':
             q = VIBRATION_FREQUENCY_QUERY % species
-            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+            rst = fire_query_ontochemcomp(q).decode('utf-8')
         elif intent == 'guassian_file':
             q = GAUSSIAN_FILE % species
-            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+            rst = fire_query_ontochemcomp(q).decode('utf-8')
         elif intent == 'spin_multiplicity':
             q = SPIN_MULTIPLICITY % species
-            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+            rst = fire_query_ontochemcomp(q).decode('utf-8')
         elif intent == 'formal_charge':
             q = FORMAL_CHARGE % species
-            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+            rst = fire_query_ontochemcomp(q).decode('utf-8')
         elif intent == 'electronic_energy':
             q = ELECTRONIC_ENERGY % species
-            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
+            rst = fire_query_ontochemcomp(q).decode('utf-8')
         elif intent == 'geometry_type':
             q = GEOMETRY_TYPE % species
-            rst = self.fire_query_ontochemcomp(q).decode('utf-8')
-
+            rst = fire_query_ontochemcomp(q).decode('utf-8')
 
         else:
             return None
         if rst is None:
             return None
         else:
-            rst = self.process_ontocompchem_results(rst)
+            rst = process_ontocompchem_results(rst)
             return rst
 
-    def process_ontocompchem_results(self, rst):
-
-        rst_lines = rst.split('\r\n')
-        if len(rst_lines) <= 1:
-            return None
-        else:
-            result = []
-            heads = rst_lines[0].split(',')
-            data_list = rst_lines[1:]
-            for data in data_list:
-                temp = {}
-                cols = data.split(',')
-                for c, h in zip(cols, heads):
-                    temp[h] = c
-                if data == '':
-                    pass
-                else:
-                    result.append(temp)
-            return json.dumps(result)
-
+    # to find the reactions that meet the conditions first, then find the mechanism
     def query_mechanism_by_reaction(self, reactants, products):
         print('query_mechanism_by_reaction')
-        q = self.construct_query_reaction_by_species(reactants, products)
-        if q is None:
-            return None
-        q = q % ('?MechanismName', '''\n ?reaction ontokin:belongsToPhase ?Phase .
-                    ?Phase ontokin:containedIn ?MechanismIRI .
-                    ?MechanismIRI rdfs:label ?MechanismName .''')
-        rst = self.fire_query(q).decode('utf-8')
-        rst = self.add_comma(rst)
+        q = self.template_dict['select_mechanism_by_reaction']
+        rst = fire_query_to_ldf_ontokin(q, products, reactants).decode('utf-8')
         return rst
 
+    # to find reactions by reactants and products
     def query_by_reaction_only(self, reactants, products):
         print('query_by_reaction_only')
-        # q = self.construct_query_reaction_by_species(reactants, products) % ('', '')
-
         query = self.template_dict['select_reaction_by_species']
         print('query', query)
-        rst = self.fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
-        rst = self.add_comma(rst)
+        rst = fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
         return rst
 
         # TODO: construct the query by only reactants and products
 
+    # if to query properties of reactions including reaction rate and whether the reaction is reversible
     def query_reaction_property(self, reactants, products, attribute):
         print('query_reaction_property')
-
-        sub_properties = []
-        sub_properties_arrhenius = ['ontokin:hasActivationEnergy', 'ontokin:hasActivationEnergyUnits ',
-                                    'ontokin:hasPreExponentialFactor', 'ontokin:hasPreExponentialFactorUnits',
-                                    'ontokin:hasTemperatureExponent', 'ontokin:hasTemperatureExponentUnits']
-
         sub_properties_products = ['rdfs:label']
-
         attribute = ' <' + self.serach_interface.get_first_match(attribute).strip() + '> '
         print('============== attribute =============')
         print(attribute)
-        new_labels = ''
-
-        propertyName = ''
         if 'hasArrheniusCoefficient' in attribute:
-            sub_properties = sub_properties_arrhenius
-            propertyName = 'ArrheniusCoefficient'
+            query = self.template_dict['query_reaction_property']['ArrheniusCoefficient']
+            rst = fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
+            return rst
+
         elif 'isReversible' in attribute:
-            propertyName = 'isReversible'
-            sub_properties = []
-            new_labels = ' ?%s ' % propertyName
-        elif 'hasProduct' in attribute:
-            propertyName = 'hasProduct'
-            sub_properties = sub_properties_products
-            new_labels = ' ?%s ' % propertyName
-
-        sub_query = ''
-        for num, p in enumerate(sub_properties, start=1):
-            l = p.replace('ontokin:has', '')
-            query_line = '?%s ' % propertyName + p + ' ?' + l.replace('rdfs:label', 'label') + ' .\n '
-            sub_query = sub_query + query_line
-            new_labels = new_labels + ' ?' + l.replace('rdfs:label', 'label')
-
-        q = self.construct_query_reaction_by_species(reactants, products) % (
-            new_labels, '\n{\n ?reaction %s ?%s . \n %s  }' % (attribute, propertyName, sub_query))
-        q = q.replace('DISTINCT', '') + ' LIMIT 1'
-        print(q)
-
-        rst = self.fire_query(q).decode('utf-8')
-        rst = self.add_comma(rst)
-        return rst
-
-    def add_comma(self, result):
-        result = result.replace('\r', '').replace('\n', '')
-
-        result = result.replace('}{', '},{')
-        result = re.sub(r'''}[ ]+{''', '},{', result)
-        return result
-
-    def fire_query_to_ldf_ontokin(self, query, products, reactants):
-        print('----------- firing the query to LDF -------------')
-        if products is None:
-            products = []
-        if reactants is None:
-            reactants = []
-
-        url = "http://localhost:3000/query?"
-        values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
-        full_url = url + urllib.parse.urlencode(values)
-        req = urllib.request.Request(full_url)
-        response = urllib.request.urlopen(req).read()
-        print(response)
-        return response
+            query = self.template_dict['query_reaction_property']['isReversible']
+            rst = fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
+            return rst
 
 
-    # @lru_cache(maxsize=None)
-    def fire_query_ontochemcomp(self, query):
-        print('----------- firing the query to JPS ontochemcomp -------------')
-        print(query)
-        self.socketio.emit('coordinate_agent', 'Querying the OntoCompChem ontology in the JPS Knowledge Graph')
-
-        # x = input()
-        url = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
-        values = {'query': query}
-        data = urllib.parse.urlencode(values).encode('utf-8')
-        req = urllib.request.Request(url, data)
-        response = urllib.request.urlopen(req).read()
-        return response
-
-    # def construct_query_reaction_by_species(self, reactants, products):
-    #     print('--------- reactants -------------')
-    #     print(reactants)
-    #     print('--------- products -------------')
-    #     print(products)
-    #     if len(reactants) == 0 and len(products) == 0:
-    #         return None
-    #
-    #     if len(reactants) == 0 and len(products) == 0:
-    #         return None
-    #     self.query_by_reaction_only()
-    #     return q
