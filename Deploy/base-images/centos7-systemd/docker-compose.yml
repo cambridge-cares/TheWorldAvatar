@@ -1,0 +1,9 @@
+version: "3.8"
+
+# Services
+services:
+  
+  # CentOS 7 with systemd support
+  centos7-systemd:
+    image: docker.cmclinnovations.com/centos7-systemd:latest
+    build: "."

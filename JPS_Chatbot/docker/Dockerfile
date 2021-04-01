@@ -46,9 +46,11 @@ RUN chmod +x ./docker/start_flask.sh
 
 # Run scripts
 RUN echo -e "Downloading models..."
-RUN /usr/bin/expect docker/download_model.sh
-RUN rm -f docker/download_model.sh
-RUN echo -e "Model download completed."
+WORKDIR ./docker/credentials
+RUN /usr/bin/expect ./download-models.sh
+WORKDIR ../../
+RUN rm -rf ./docker/credentials
+RUN echo -e "Model downloads completed."
 
 # Python setup
 RUN echo -e "Installing Python..."
@@ -64,7 +66,7 @@ RUN echo -e "Python installed."
 # Geckodriver and Firefox setup
 RUN apt-get install wget -y
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-RUN tar -xvzf geckodriver*
+RUN tar -xvzf geckodriver*.gz
 RUN chmod +x geckodriver
 RUN cp geckodriver /usr/local/bin
 RUN apt-get install firefox -y
