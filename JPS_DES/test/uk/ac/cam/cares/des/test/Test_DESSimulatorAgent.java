@@ -1,30 +1,43 @@
 package uk.ac.cam.cares.des.test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
-import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
 import uk.ac.cam.cares.jps.des.n.ResidentialAgent;
 import uk.ac.cam.cares.jps.des.n.SolarAgent;
 
-public class Test_DESSimulatorAgent extends TestCase{
-	private String iriofnetworkdistrict =  "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
-	private String irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
-	private String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
-	private String iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
+public class Test_DESSimulatorAgent{
+	private String iriofnetworkdistrict = null;
+	private String irioftempF= null;
+	private String iriofirrF= null;
+	private String iriofnetwork =  null;
 	
+	
+	@Before
+	public void setUp() {
+		iriofnetworkdistrict =  "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
+		irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
+		iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
+		iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
+		
+		
+	}
 	/** tests if Residential Agent calls successfully. 
 	 * Residential Agent requires caresjpsutil library. 
 	 * 
 	 */
+	@Test
 	public void testResidentialAgent() {
 		new ResidentialAgent().extractResidentialData(iriofnetworkdistrict,"C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest");
 		try {
@@ -39,6 +52,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	/** test Residential agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
+	@Test
 	public void testResidentialAgentCaller() {
 		JSONObject jo = new JSONObject()
 				.put("district",iriofnetworkdistrict);
@@ -48,6 +62,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	/** tests of Commercial Agent runs successfully
 	 * 
 	 */
+	@Test
 	public void testCommercialAgent() {
 		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\commercial";
 	    new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
@@ -67,6 +82,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	/** test Commercial agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
+	@Test
 	public void testCommercialAgentCaller() {
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", iriofnetwork);
@@ -79,6 +95,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	 * Industrial Agent requires caresjpsutil library. 
 	 * 
 	 */
+	@Test
 	public void testIndustrialAgent() {
 	    String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\industrial";
 		 
@@ -101,6 +118,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	/** test Industrial agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
+	@Test
 	public void testIndustrialAgentCaller() {
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", iriofnetwork);
@@ -113,6 +131,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	 * Solar Radiation Agent requires caresjpsutil library. 
 	 *  
 	 */
+	@Test
 	public void testSolarAgent() {
 		SolarAgent sa = new SolarAgent();
 		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\solar";
@@ -132,6 +151,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	/** test Solar agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
+	@Test
 	public void testSolarAgentCaller() {
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", iriofnetwork);
@@ -144,6 +164,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	 * System Agent requires caresjpsutil library. 
 	 * 
 	 */
+	@Test
 	public void testSystemAgent() {
 		try {
 			String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\Overall";
@@ -171,6 +192,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	/** test System agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
+	@Test
 	public void testSystemAgentCaller() {
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", iriofnetwork);
@@ -188,6 +210,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	/** check if FrontEnd Case Scenario works
 	 * 
 	 */
+	@Test
 	public void FrontEndTalk() {
 		BlockchainWrapper bc = new BlockchainWrapper();
 		//looks for last created directory through the Metadata Query
@@ -201,13 +224,15 @@ public class Test_DESSimulatorAgent extends TestCase{
 		assertNotNull(jo);
 		
 	}
-	
+
+	@Test
 	public void testFrontEndTalk() {
 		FrontEndTalk();
 	}
 	/** test if validateInput method is working in Commercial Agent
 	 * 
 	 */
+	@Test
 	public void testInputValidatorResidential() {
 		JSONObject jo = new JSONObject()
 				.put("district",iriofnetworkdistrict);
@@ -218,6 +243,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	/** test if validateInput method is working in Commercial Agent
 	 * 
 	 */
+	@Test
 	public void testInputValidatorCommercial() {
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", iriofnetwork);
@@ -229,6 +255,7 @@ public class Test_DESSimulatorAgent extends TestCase{
 	}/** test if validateInput method is working in System Agent
 	 * 
 	 */
+	@Test
 	public void testInputValidatorSystem() {
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", iriofnetwork);
