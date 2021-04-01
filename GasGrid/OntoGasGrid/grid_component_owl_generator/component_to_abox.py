@@ -94,8 +94,8 @@ abox = pd.DataFrame(abox)
 
 if os.path.exists('components_abox') != True:
     os.makedirs('components_abox')
-csv_path = r'components_abox\components_abox.csv'
-owl_path = r'components_abox\components_abox.owl'
+csv_path = r'components_abox/components_abox.csv'
+owl_path = r'components_abox/components_abox.owl'
 
 abox.to_csv(csv_path,index=False,header=False)
 

@@ -6,6 +6,7 @@ import uuid
 from EntityRDFizer import * 
 import os 
 import uuid 
+import glob
  
 pipelines = pd.read_csv(r'pipeline_split.csv').to_numpy()[:,:]
 
@@ -200,33 +201,33 @@ for j in tqdm(range(len(unique_index)-1)):
         os.makedirs('pipeline_abox')
     abox_csv.to_csv('pipeline_abox/'+str(objectids[j])+'.csv',index=False,header=False)
 
-pipelines = pd.read_csv('pipeline_split.csv').to_numpy()[:,:]
+owd = os.getcwd()
 
-abox_header = np.array([['Source','Type','Target','Relation','Value']]) 
-abox_full = np.array([['Source','Type','Target','Relation','Value']])
-objectids_full = pipelines[:,2].astype(str)
-objectids,unique_index = np.unique(objectids_full,return_index=True)
-sort_index = np.argsort(unique_index)
-unique_index = unique_index[sort_index]
-objectids = objectids[sort_index]
+os.chdir('pipeline_abox')
+header_name = ['Source','Type','Target','Relation','Value']
+extension='csv'
+all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
+combined_csv = pd.concat([pd.read_csv(all_filenames[i],header=None,skiprows=1) for i in range(len(all_filenames)) ],axis=0)
+combined_csv.to_csv( "all_pipes.csv", index=False,header=header_name, encoding='utf-8-sig')
+
 add_1 = '<owl:Ontology>'
 add_2 = '<owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl"/>'
 add_3 = '</owl:Ontology>'
 
-for i in tqdm(objectids):
-    convert_into_rdf('pipeline_abox/'+str(i))
-    owl_file = open('pipeline_abox/'+str(i)+'.owl','r')
-    contents = owl_file.readlines() 
-    owl_file.close()
-    contents.insert(3,'xmlns:owl="http://www.w3.org/2002/07/owl#"'+'\n')
-    contents.insert(10,'\n'+add_1)
-    contents.insert(11,'\n'+add_2)
-    contents.insert(12,'\n'+add_3+'\n')
-    contents = "".join(contents)
-
-    owl_file = open('pipeline_abox/'+str(i)+'.owl','w')
-    owl_file.write(contents)
-    owl_file.close() 
+os.chdir(owd)
+print('Converting to OWL format...')
+convert_into_rdf('pipeline_abox/all_pipes')
+owl_file = open('pipeline_abox/all_pipes.owl','r')
+contents = owl_file.readlines() 
+owl_file.close()
+contents.insert(3,'xmlns:owl="http://www.w3.org/2002/07/owl#"'+'\n')
+contents.insert(10,'\n'+add_1)
+contents.insert(11,'\n'+add_2)
+contents.insert(12,'\n'+add_3+'\n')
+contents = "".join(contents)
+owl_file = open('pipeline_abox/all_pipes.owl','w')
+owl_file.write(contents)
+owl_file.close() 
 
 
 

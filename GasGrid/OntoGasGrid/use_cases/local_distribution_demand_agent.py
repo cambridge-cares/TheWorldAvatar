@@ -29,11 +29,14 @@ WHERE{
   	 comp:hasClosestDistributionOfftake ?closest.
   ?energy om:hasPhenomenon ?p;
           om:hasValue ?val.
-  ?val om:hasNumericalValue ?usage;
-       om:hasUnit ?unit.
+  ?val om:hasNumericalValue ?usage.
   ?closest comp:isConnectedToPipeline ?obj. 
-  ?obj gns:hasPipeConnectionOutput ?objpipe.
-  ?pipeseg gns:hasStartPart ?objpipe.
+  {?obj gns:hasPipeConnectionOutput ?objpipe.}
+  UNION
+  {?objpipe gns:entersPipeConnection ?obj.}
+  {?pipeseg gns:hasStartPart ?objpipe.}
+  UNION
+  {?pipeseg gns:hasEndPart ?objpipe.}
   ?overall cape:hasSubsystem ?pipeseg.
   ?overall rdfs:label ?pipename.
   }
@@ -75,7 +78,7 @@ for pipe in pipes:
   pipe_usage.append(sum)
 
 pipe_usage = np.array(pipe_usage)
-cmap = plt.get_cmap('jet')
+cmap = plt.get_cmap('inferno')
 pipe_usage = (pipe_usage - np.min(pipe_usage))/(np.max(pipe_usage)-np.min(pipe_usage))
 
 pipe_usage = np.array([pipe_usage])
@@ -111,8 +114,8 @@ WHERE
 ?end gasgrid:entersPipeConnection ?connection.
 ?connection loc:lat-lon ?location.
 ?connection gasgrid:hasOrder ?order.
-       
-}"""
+}
+"""
 DEF_NAMESPACE = 'ontogasgrid'
 LOCAL_KG = "http://localhost:9999/bigdata"
 LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'

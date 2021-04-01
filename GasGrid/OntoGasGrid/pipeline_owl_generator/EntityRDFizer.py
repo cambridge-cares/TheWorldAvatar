@@ -121,11 +121,8 @@ def convert_into_rdf(file_path):
         line_count = 0
         for row in rows:
            if line_count == 0:
-               if not is_header_valid(row):
-                   break
-               else:
-                   global g
-                   g = Graph()
+                global g
+                g = Graph()
 
            if line_count > 0:
                process_data(row)

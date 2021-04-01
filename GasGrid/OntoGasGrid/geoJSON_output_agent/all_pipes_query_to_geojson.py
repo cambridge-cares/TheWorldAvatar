@@ -74,7 +74,7 @@ for i in range(len(unique_names)):
     sort_index = np.argsort(pipe[:,2])
     sorted_pipe = pipe[sort_index,:]
     # start of geoJSON line 
-    feature_start = """{ "type": "Feature", "properties": {"name": "%s" }, "geometry": { "type": "MultiLineString", "coordinates": [ [""" % name
+    feature_start = """{ "type": "Feature", "properties": {"name": "%s" ,"stroke":"#000000"}, "geometry": { "type": "MultiLineString", "coordinates": [ [""" % name
     # appending coordinates 
     for j in range(len(sort_index)):
             feature_start += "["+sorted_pipe[j,1]+","+sorted_pipe[j,0]+"],"

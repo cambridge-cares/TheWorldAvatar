@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm 
 import numpy as np 
 
-pipelines = pd.read_csv('pipeline_split.csv').to_numpy()
-offtakes = pd.read_csv('grid_component_data.csv').to_numpy()
+pipelines = pd.read_csv('OntoGasGrid/pipeline_owl_generator/pipeline_split.csv').to_numpy()
+offtakes = pd.read_csv('OntoGasGrid/grid_component_owl_generator/grid_component_data.csv').to_numpy()
 
 
 
@@ -34,4 +34,4 @@ for i in tqdm(range(n_offt)):
                 closest_connection[i,1] = pipelines[ii,2]
                 max_dist = dist 
                 
-closest_connection = pd.DataFrame(closest_connection).to_csv('closest connection.csv',index=False,header=False)
+closest_connection = pd.DataFrame(closest_connection).to_csv('OntoGasGrid/grid_component_owl_generator/closest connection.csv',index=False,header=False)
