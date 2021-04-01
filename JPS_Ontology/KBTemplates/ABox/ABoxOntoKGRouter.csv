@@ -50,3 +50,6 @@ http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEn
 ontogasgrid,Instance,Target Resource,,,
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ontogasgrid,,http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql,string
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint,Data Property,ontogasgrid,,http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql,string
+ontosdg,Instance,Target Resource,,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ontosdg,,http://www.theworldavatar.com/blazegraph/namespace/ontosdg/sparql,string
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint,Data Property,ontosdg,,http://www.theworldavatar.com/blazegraph/namespace/ontosdg/sparql,string
