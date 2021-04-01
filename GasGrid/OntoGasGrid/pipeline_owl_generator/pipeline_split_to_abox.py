@@ -212,6 +212,7 @@ objectids = objectids[sort_index]
 add_1 = '<owl:Ontology>'
 add_2 = '<owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl"/>'
 add_3 = '</owl:Ontology>'
+
 for i in tqdm(objectids):
     convert_into_rdf('pipeline_abox/'+str(i))
     owl_file = open('pipeline_abox/'+str(i)+'.owl','r')
@@ -221,9 +222,9 @@ for i in tqdm(objectids):
     contents.insert(10,'\n'+add_1)
     contents.insert(11,'\n'+add_2)
     contents.insert(12,'\n'+add_3+'\n')
-    time.sleep(0.5)
-    owl_file = open('pipeline_abox/'+str(i)+'.owl','w')
     contents = "".join(contents)
+
+    owl_file = open('pipeline_abox/'+str(i)+'.owl','w')
     owl_file.write(contents)
     owl_file.close() 
 

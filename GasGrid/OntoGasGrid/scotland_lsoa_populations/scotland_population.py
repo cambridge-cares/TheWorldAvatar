@@ -9,7 +9,7 @@ from shapely import geometry, wkt, ops
 
 df = pd.read_csv('OntoGasGrid/scotland_lsoa_populations/scottish_LSOA.csv')
 wkt = df['WKT'].values
-code = df['code'].values
+code = df['DataZone'].values
 
 total = len(code)
 n_compile = total / 100
@@ -40,6 +40,9 @@ for g in tqdm(range(len(len_query)-1)):
     middle_num = int(len_query[g+1]-len_query[g])
 
     for j in range(middle_num):
+
+        addition = 'abox:%s_geometry rdf:type gsp:Geometry . \n '%(code[int(i+j)])
+        query += addition
         addition = 'ons:%s gsp:hasGeometry abox:%s_geometry . \n '%(code[int(i+j)],code[int(i+j)])
         query += addition
         addition = 'abox:%s_geometry gsp:asWKT "%s" . \n '%(code[int(i+j)],wkt[int(i+j)])
