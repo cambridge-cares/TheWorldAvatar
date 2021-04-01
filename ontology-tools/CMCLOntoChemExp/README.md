@@ -42,7 +42,7 @@ Under construction...
 
 ## Update history
 
-### v1.0 to v2.0 (as of 1 April 2021)
+### v1.0 to v1.1 (as of 1 April 2021)
 
 - Concepts
   - Removed class `PreferredKey`
