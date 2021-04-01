@@ -18,3 +18,10 @@ def doTask(query, kb, isQuery, isUpdate):
     response = KGClient.executeQuery((query))
     return str(response)
 
+# this function shows how to do a simple KG query
+def doUpdate(query, kb, isQuery, isUpdate):
+    # perform an example sparqle query, see the jps-base-lib docs for further details
+    KGRouter = app_module1_view.KGRouter
+    KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+kb, isQuery, isUpdate)
+    KGClient.executeUpdate((query))
+
