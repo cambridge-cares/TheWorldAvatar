@@ -75,6 +75,8 @@ public class CloningToolTest {
 		public void testConstructorAndSetter() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 			
 			int stepSize = 99;
+			
+			//default constructor
 			CloningTool cloningTool = new CloningTool();
 			
 			Field field = null;
@@ -116,11 +118,12 @@ public class CloningToolTest {
 		public void testConstructorStepSize() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 			
 			int stepSize = 99;
+			
 			CloningTool cloningTool = new CloningTool(stepSize);
 			
 			Field field = null;
 			
-			//get private variables
+			//check variables
 			assertNotNull(cloningTool.getClass().getDeclaredField("splitUpdate"));
 			field = cloningTool.getClass().getDeclaredField("splitUpdate");
 			field.setAccessible(true);
@@ -136,11 +139,6 @@ public class CloningToolTest {
 	
 		/**
 		 *  Test clone tool from a FileBasedKBClient to another FileBasedKBClient
-		 * @throws SecurityException 
-		 * @throws NoSuchMethodException 
-		 * @throws InvocationTargetException 
-		 * @throws IllegalArgumentException 
-		 * @throws IllegalAccessException 
 		 */
 		@Test
 		public void testSingleStepClone() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -171,7 +169,10 @@ public class CloningToolTest {
 			assertEquals("[]", target2.execute(getQuery(testContext, "3")));
 			assertEquals("[{\"O\":\"N2\"}]", target2.execute(getQuery(testContext, "4")));
 		}
-				
+		
+		/**
+		 * Test clone (in quads mode) 
+		 */
 		@Test
 		public void testCloneQuads() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
@@ -213,6 +214,9 @@ public class CloningToolTest {
 			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned by FileBasedClient
 		}
 	
+		/**
+		 * Test clone (in triples mode)
+		 */
 		@Test
 		public void testCloneTriples() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
@@ -254,6 +258,9 @@ public class CloningToolTest {
 			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned by FileBasedClient
 		}
 		
+		/**
+		 * Triple count less than default step size. Single step cloning method should be used. 
+		 */
 		@Test
 		public void testCloneCountLessThanStepSize() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, NoSuchFieldException {
 			
@@ -280,6 +287,9 @@ public class CloningToolTest {
 			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned
 		}
 		
+		/**
+		 * Clone a named graph
+		 */
 		@Test
 		public void testCloneWithNamedGraph() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 			
@@ -333,7 +343,7 @@ public class CloningToolTest {
 			field.setAccessible(true);
 			String value = (String) field.get(cloningTool);
 			assertTrue(value.contains("_Tag"));
-			assertTrue(value.length() > 4);
+			assertTrue(value.length() > 4);	//hash added to end of tag
 		}
 		
 		
@@ -668,12 +678,6 @@ public class CloningToolTest {
 		
 		/**
 		 * Test sparql construct builder.
-		 * 
-		 * @throws IllegalAccessException
-		 * @throws IllegalArgumentException
-		 * @throws InvocationTargetException
-		 * @throws NoSuchMethodException
-		 * @throws SecurityException
 		 */
 		@Test
 		public void testBuildSparqlConstruct() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
@@ -699,12 +703,6 @@ public class CloningToolTest {
 		
 		/**
 		 * Test sparql construct builder. Null graph argument.
-		 * 
-		 * @throws IllegalAccessException
-		 * @throws IllegalArgumentException
-		 * @throws InvocationTargetException
-		 * @throws NoSuchMethodException
-		 * @throws SecurityException
 		 */
 		@Test
 		public void testBuildSparqlConstructNoGraph() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
@@ -729,12 +727,6 @@ public class CloningToolTest {
 		
 		/**
 		 * Test sparql update builder.
-		 * 
-		 * @throws IllegalAccessException
-		 * @throws IllegalArgumentException
-		 * @throws InvocationTargetException
-		 * @throws NoSuchMethodException
-		 * @throws SecurityException
 		 */
 		@Test 
 		public void testBuildSparqlUpdate() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
@@ -762,12 +754,6 @@ public class CloningToolTest {
 		
 		/**
 		 * Test sparql update builder. No graph specified.
-		 * 
-		 * @throws IllegalAccessException
-		 * @throws IllegalArgumentException
-		 * @throws InvocationTargetException
-		 * @throws NoSuchMethodException
-		 * @throws SecurityException
 		 */
 		@Test 
 		public void testBuildSparqlUpdateNullGraph() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
@@ -792,11 +778,10 @@ public class CloningToolTest {
 			assertEquals(expected, strResult);
 		}
 		
-		/////
+		///// Helper functions
 		
 		/**
 		 * Create a test model. 
-		 * @return
 		 */
 		private Model getTestModel() {
 			
@@ -818,10 +803,6 @@ public class CloningToolTest {
 		
 		/**
 		 * Get test query.
-		 * 
-		 * @param graph
-		 * @param species
-		 * @return
 		 */
 		private String getQuery(String graph, String species) {
 				
@@ -839,6 +820,9 @@ public class CloningToolTest {
 			return builder.build().toString();
 		}
 
+		/**'
+		 * Get SPARQL ?s ?p ?o variables 
+		 */
 		private Var[] getSparqlArgs() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 			
 			CloningTool cloningTool = new CloningTool();
