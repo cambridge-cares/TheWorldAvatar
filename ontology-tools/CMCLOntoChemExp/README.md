@@ -69,8 +69,8 @@ Under construction...
     - `<Property OntoChemExp:hasSourceType ^^xsd:string>`, `<Property OntoChemExp:hasMethod ^^xsd:string>`
   - Replaced data property `<OntoChemExp:SpeciesLink OntoChemExp:hasUniqueSpeciesIRI ^^xsd:string>` with object property `<OntoChemExp:SpeciesLink OntoChemExp:hasUniqueSpecies OntoSpecies:Species>`
 
-![OntoChemExpCoreConcepts_asof20210401](C:\Users\jb2197\Downloads\OntoChemExpCoreConcepts_asof20210401.png)
+![OntoChemExp core concepts as of 1 April 2021](https://lucid.app/publicSegments/view/1c4af710-308e-4d14-ba45-cc440a3c31be/image.png)
 
 ### v1.0
 
-![Core concepts](C:\Users\jb2197\Downloads\OntoChemExpCoreConcepts.png)
+![OntoChemExp core concepts v1.0](https://lucid.app/publicSegments/view/5ac5846a-b0ae-4077-abb1-3d1bf1a3a01c/image.png)
