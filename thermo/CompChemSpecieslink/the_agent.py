@@ -151,7 +151,7 @@ def smi_to_xyz(folder_path,IRI):
 def read_xyz(filename):
    """Read filename in XYZ format and return lists of atoms and coordinates.
 
-   If number of coordinates do not agree with the statd number in
+   If number of coordinates do not agree with the stated number in
    the file it will raise a ValueError.
    """
 

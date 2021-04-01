@@ -12,6 +12,7 @@ import csv
 import cirpy 
 import pybel
 from rdkit import Chem
+from rdkit.Chem import Descriptors
 import openbabel
 
 #print(uuid.uuid4())
@@ -51,8 +52,10 @@ def chem_info(data, name):
     mol_smi = mol.write('smi')
     mol_smi = mol_smi.split('\t')[0]
     m = Chem.MolFromSmiles(mol_smi)
+    molwt = Descriptors.MolWt(m)
+    charge = Chem.GetFormalCharge(m)
     inchi = Chem.MolToInchi(m)
-    return geom_string, mol_smi, inchi, bond_string
+    return geom_string, mol_smi, inchi, bond_string, molwt, charge
     
 
 
@@ -60,9 +63,13 @@ def chem_info(data, name):
 def write_abox(data):
     out_id = uuid.uuid4()
     label = data['Empirical formula'].replace('1','') #We will take the label as the empirical formula, but without any 1s.
-    alt_label = cirpy.resolve(label,'names')[0] #Take first name as a sample alternative label for now
-    casid = cirpy.resolve(label,'cas')[0] #Take first CAS registry ID
-    geom_string, mol_smi, inchi, bond_string = chem_info(data, name)
+    try:
+        alt_label = cirpy.resolve(label,'names')[0] #Take first name as a sample alternative label for now
+        casid = cirpy.resolve(label,'cas')[0] #Take first CAS registry ID
+    except:
+        alt_label = None
+        casid = None
+    geom_string, mol_smi, inchi, bond_string, molwt, charge = chem_info(data, name)
     
     with open('ABox_' + name + '.csv', 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
@@ -71,8 +78,12 @@ def write_abox(data):
         spamwriter.writerow([out_id, 'Instance','Species','',''])
         spamwriter.writerow(['http://purl.org/dc/elements/1.1/identifier','Data Property',out_id,'',out_id])
         spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label])
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',alt_label])
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#casRegistryID','Data Property',out_id,'',casid])
+        if alt_label is not None:
+            spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',alt_label])
+        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#mass','Data Property',out_id,'',molwt])
+        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#charge','Data Property',out_id,'',charge])
+        if casid is not None:
+            spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#casRegistryID','Data Property',out_id,'',casid])
         spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#SMILES','Data Property',out_id,'',mol_smi])
         spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#inChI','Data Property',out_id,'',inchi])
         spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#hasAtomicBond','Data Property',out_id,'',bond_string])
