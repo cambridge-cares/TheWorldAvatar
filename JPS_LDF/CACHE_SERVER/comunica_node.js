@@ -4,6 +4,33 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const router = express.Router();
+const http = require('http')
+
+
+router.get('/test', function(req,res){
+
+const options = {
+  hostname: 'localhost',
+  port: 8080,
+  path: '/ldfserver/ontokin',
+  method: 'GET'
+}
+
+const request = http.request(options, response => {
+  console.log(`statusCode: ${response.statusCode}`)
+
+  response.on('data', d => {
+    res.send(d)
+  })
+})
+
+request.on('error', error => {
+    res.send("Houston, we have a problem")
+})
+
+request.end()
+
+});
 
 
 router.get('/query', function(req,res){
@@ -13,9 +40,7 @@ router.get('/query', function(req,res){
 	
 	myEngine.invalidateHttpCache();
 
-	// console.log('query', req.query);
 	let parameters  = {sources: ['http://localhost:8080/ldfserver/ontokin']};
-	
 	let data = req.query;
 	
 	
@@ -41,13 +66,12 @@ router.get('/query', function(req,res){
 		}
 	}	
 	
-	
 	let query = data.query;
 	(async () => {
 		const result = await myEngine.query(query, {
 		     sources: ['http://localhost:8080/ldfserver/ontokin'], products: products, reactants: reactants 
 		});
-
+	
 
 		const bindings = await result.bindings();
 		 
@@ -58,7 +82,7 @@ router.get('/query', function(req,res){
 		}
 		full_result = JSON.stringify(full_result);
 		console.timeEnd('Execution time');
-		res.send(full_result);
+		res.status(200).send(full_result);
 	})(); 
 })
 
@@ -93,8 +117,10 @@ function printMemory(){
 		//console.log(`Total allocated       ${Math.round(mbNow * 100) / 100} GB`);
 	 console.log(`Allocated since start ${Math.round((heapUsed -heapTotal) * 100) / 100} GB`);				
  }
+ 
+app.use('/', router, (error, req, res, next) => {
+ res.status(500).send("Something Broke!");
+});
 
-
-app.use('/', router);
 app.listen(process.env.port || 3000);
 console.log('Running at Port 3000');
