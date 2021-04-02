@@ -51,12 +51,16 @@ r2 = "H2"
 
 #q2 = q2 % (p1, p1, p2, p2)
 products = [p1, p2]
-reactants = [ r2]
+reactants = [r2]
 
 url = "http://localhost:3000/query?"
 values = {"query": q2, "products": json.dumps(products), "reactants": json.dumps(reactants)}
 full_url = url + urllib.parse.urlencode(values)
+
+print(full_url)
+
 req = urllib.request.Request(full_url)
 response = urllib.request.urlopen(req).read()
+print(response)
 
 # response = urllib.request.urlopen(req).read()

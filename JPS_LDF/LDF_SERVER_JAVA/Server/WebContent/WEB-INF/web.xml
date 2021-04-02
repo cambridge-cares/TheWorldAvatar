@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
+  <display-name>Linked Data Fragments Server</display-name>
+  <servlet>
+    <display-name>TpfServlet</display-name>
+    <servlet-name>TpfServlet</servlet-name>
+    <servlet-class>org.linkeddatafragments.servlet.LinkedDataFragmentServlet</servlet-class>
+    <init-param>
+      <param-name>configFile</param-name>
+      <param-value>config.json</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TpfServlet</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+  <filter>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <servlet>
+    <description></description>
+    <display-name>BufferServlet</display-name>
+    <servlet-name>BufferServlet</servlet-name>
+    <servlet-class>org.linkeddatafragments.servlet.BufferServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BufferServlet</servlet-name>
+    <url-pattern>/BufferServlet</url-pattern>
+  </servlet-mapping>
+</web-app>

@@ -1,0 +1,28 @@
+{
+  "title": "My Linked Data Fragments server",
+  "datasourcetypes": {
+    "HdtDatasource": "org.linkeddatafragments.datasource.hdt.HdtDataSourceType" 
+  },
+  "datasources": {
+    "ontokin": {
+      "title": "Ontokin",
+      "type": "HdtDatasource",
+      "description": "Test for ontokin with LDF Java",
+      "settings": {
+        "file": "ontokin_clean.hdt"
+      }
+    }
+  },
+  "prefixes": {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dc": "http://purl.org/dc/terms/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "dbpedia": "http://dbpedia.org/resource/",
+    "dbpedia-owl": "http://dbpedia.org/ontology/",
+    "dbpprop": "http://dbpedia.org/property/",
+    "hydra": "http://www.w3.org/ns/hydra/core#",
+    "void": "http://rdfs.org/ns/void#"
+  }
+}

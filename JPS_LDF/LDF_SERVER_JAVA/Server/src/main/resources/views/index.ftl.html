@@ -1,0 +1,21 @@
+<#-- @license ©2015 Miel Vander Sande - Multimedia Lab / iMinds / Ghent University -->
+<#include "base.ftl.html">
+<#macro contents>
+<div class="index">
+  <h2>Available datasets</h2>
+  <p>Browse the following datasets as <a href="http://linkeddatafragments.org/in-depth/#tpf">Triple Pattern Fragments</a>:</p>
+  <dl class="datasets">
+      <#if datasources??>
+    <#list datasources?keys as datasourceName>
+        <dt><a href="${datasourceName}">${datasources[datasourceName].getTitle() }</a></dt>
+        <dd>${ datasources[datasourceName].getDescription()!"" }</dd>
+    </#list>
+    </#if>
+  </dl>
+  <p>The current dataset <em class="dataset">index</em> contains metadata about these datasets.</p>
+</div>
+
+<#include "fragment.ftl.html">
+</#macro>
+
+<@display_page/>
