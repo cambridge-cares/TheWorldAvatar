@@ -1,5 +1,7 @@
 import json
+import math
 import re
+import time
 import urllib.parse
 import urllib.request
 
@@ -53,6 +55,8 @@ r2 = "H2"
 products = [p1, p2]
 reactants = [r2]
 
+start_time = time.time()
+
 url = "http://localhost:3000/query?"
 values = {"query": q2, "products": json.dumps(products), "reactants": json.dumps(reactants)}
 full_url = url + urllib.parse.urlencode(values)
@@ -62,5 +66,6 @@ print(full_url)
 req = urllib.request.Request(full_url)
 response = urllib.request.urlopen(req).read()
 print(response)
-
+end_time = time.time()
+print(round(end_time - start_time,2 ), 'seconds')
 # response = urllib.request.urlopen(req).read()
