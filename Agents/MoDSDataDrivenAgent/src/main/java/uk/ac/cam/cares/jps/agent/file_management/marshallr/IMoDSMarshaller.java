@@ -1,10 +1,10 @@
 package uk.ac.cam.cares.jps.agent.file_management.marshallr;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.agent.mechanism.DataDriven.MoDSDataDrivenAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.datadriven.MoDSDataDrivenAgentException;
+
 
 public interface IMoDSMarshaller {
 	public void initialise(String jobFolderName) throws IOException, MoDSDataDrivenAgentException;

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.mechanism.sensana;
+package uk.ac.cam.cares.jps.agent.mechanism.datadriven;
 
 /**
  * This enumerated list defines the name of important properties of</br>

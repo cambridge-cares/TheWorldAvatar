@@ -23,7 +23,7 @@ import org.eclipse.rdf4j.rio.RDFHandler;
 import org.eclipse.rdf4j.rio.Rio;
 import org.semanticweb.owlapi.model.IRI;
 
-import uk.ac.cam.cares.jps.agent.mechanism.datadriven.MoDSSensAnaAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.datadriven.MoDSDataDrivenAgentException;
 
 public class RepositoryManager {
 	static Logger logger = Logger.getLogger(RepositoryManager.class);
@@ -140,7 +140,7 @@ public class RepositoryManager {
 	 * @return Set<String>
 	 */
 	public static List<String> queryRepositoryExperimentalData(String serverURL, String repositoryID, String queryString)
-			throws OntoException, MoDSSensAnaAgentException {
+			throws OntoException, MoDSDataDrivenAgentException {
 		List<String> results = new ArrayList<>();
 		try {
 			Repository repo = new HTTPRepository(serverURL, repositoryID);
@@ -231,10 +231,10 @@ public class RepositoryManager {
 	 * @param repositoryID
 	 * @param queryString
 	 * @return
-	 * @throws MoDSSensAnaAgentException
+	 * @throws MoDSDataDrivenAgentException
 	 */
 	public static List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString)
-			throws MoDSSensAnaAgentException {
+			throws MoDSDataDrivenAgentException {
 		List<List<String>> processedResultList = new ArrayList<List<String>>();
 
 		try {
@@ -253,7 +253,7 @@ public class RepositoryManager {
 			} catch (Exception e) {
 				logger.error("Exception occurred.");
 				e.printStackTrace();
-				throw new MoDSSensAnaAgentException("Exception occurred.");
+				throw new MoDSDataDrivenAgentException("Exception occurred.");
 			} finally {
 				logger.info("Executed the command to close the connection to the repository.");
 				con.close();
@@ -261,7 +261,7 @@ public class RepositoryManager {
 		} catch (RDF4JException e) {
 			logger.error("RDF4JException occurred.");
 			e.printStackTrace();
-			throw new MoDSSensAnaAgentException("RDF4JException occurred.");
+			throw new MoDSDataDrivenAgentException("RDF4JException occurred.");
 		}
 		return processedResultList;
 	}

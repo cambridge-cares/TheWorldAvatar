@@ -27,8 +27,8 @@ public class MoDSFileMagtDataDriven extends MoDSFileManagement {
 		
 		IMoDSMarshaller iMoDSMarshaller = new MoDSMarshallerDataDriven(modsDataDrivenAgentProperty);
 		iMoDSMarshaller.initialise(jobFolderName);
-		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, jsonString);
-		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList, jsonString);
+		//iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, jsonString);
+		//.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList, jsonString);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
 		return jobFolderPath;

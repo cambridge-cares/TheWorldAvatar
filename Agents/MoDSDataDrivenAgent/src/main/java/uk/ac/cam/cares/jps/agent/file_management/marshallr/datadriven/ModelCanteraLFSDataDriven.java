@@ -60,7 +60,7 @@ public class ModelCanteraLFSDataDriven extends MoDSMarshaller implements IModel 
 		this.tranModel = tranModel;
 	}
 	
-	public ModelCanteraLFSDataDriven(ModsDataDrivenAgentProperty modsDataDrivenAgentProperty) {
+	public ModelCanteraLFSDataDriven(MoDSDataDrivenAgentProperty modsDataDrivenAgentProperty) {
 		super(modsDataDrivenAgentProperty);
 		this.modsDataDrivenAgentProperty = modsDataDrivenAgentProperty;
 	}
@@ -72,14 +72,14 @@ public class ModelCanteraLFSDataDriven extends MoDSMarshaller implements IModel 
 		checkFolderPath(folderTemporaryPath);
 		
 		// create ontology kg instance for query
-		OntoKinKG ontoKinKG = new OntoKinKG(moDSDataDrivenAgentProperty);
+		OntoKinKG ontoKinKG = new OntoKinKG(modsDataDrivenAgentProperty);
 		// query active parameters
 		LinkedHashMap<String, String> activeParameters = ontoKinKG.queryAllReactions(mechanismIRI);
 		// collect experiment information
 		List<List<String>> headers = new ArrayList<List<String>>();
 		List<List<String>> dataCollection = new ArrayList<List<String>>();
 		for (String experiment : experimentIRI) {
-			OntoChemExpKG ocekg = new OntoChemExpKG(moDSDataDrivenAgentProperty);
+			OntoChemExpKG ocekg = new OntoChemExpKG(modsDataDrivenAgentProperty);
 			DataTable dataTable = ocekg.formatFlameSpeedExpDataTable(experiment);
 			headers.add(dataTable.getTableHeader());
 			dataCollection.addAll(dataTable.getTableData());
