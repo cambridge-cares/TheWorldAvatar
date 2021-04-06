@@ -22,8 +22,13 @@ RUN mkdir /usr/src/app
 COPY ./docker/credential /usr/src/app
 RUN dos2unix /usr/src/app/download-hdt.sh
 RUN /usr/bin/expect /usr/src/app/download-hdt.sh
-# RUN mv ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
-# COPY ./ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
+RUN cp ./kg/* ./
+RUN cp ./ontokin_clean.hdt ./bin/ontokin_clean.hdt
+RUN cp ./ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
+RUN unzip node_modules
+RUN mkdir /usr/src/app/node_modules
+RUN mv ./node_modules/* /usr/src/app/node_modules
+
 
 #########################
 
@@ -81,4 +86,4 @@ RUN npm install pm2 -g
 
 # ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
 
-ENTRYPOINT ["/bin/bash","-c", "redis-server --daemonize yes && /opt/tomcat/bin/startup.sh && pm2-runtime comunica_node.js && curl localhost:3000/ldfserver/ontokin && bash"]
+ENTRYPOINT ["/bin/bash","-c", "redis-server --daemonize yes && /opt/tomcat/bin/startup.sh && pm2-runtime comunica_node.js && bash"]

@@ -27,7 +27,7 @@ puts "Read password.txt file"
 
 # Download "models_wiki" files
 puts "Downloading from 'models_wiki' directory..."
-spawn scp $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/kg/ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt  
+spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/kg .
 
 expect "*authenticity*"
 send "yes\r" 
@@ -35,7 +35,6 @@ expect "*assword*"
 send "$password\r"
 expect eof
 puts "Download complete."
-
 
 # Finish
 puts "All downloads complete, consider removing host and password files."
