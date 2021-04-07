@@ -99,6 +99,17 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#hasAnnualGenerationCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#hasAnnualGenerationCost">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#AnnualGenerationCost"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property that defines the annual generation cost of electricity for a power plant</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#hasCO2Emission -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#hasCO2Emission">
@@ -398,6 +409,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#AnnualElectricityGeneration"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#AnnualGenerationCost"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#CarbonContent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#Emission"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#Indicator"/>
@@ -420,6 +432,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#AnnualElectricityGeneration"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#AnnualGenerationCost"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#CarbonContent"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#Emission"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#Indicator"/>
@@ -507,6 +520,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#EnergyFacility"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An indutrial facility that generates electricty from primary energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -555,6 +569,15 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#AnnualElectricityGeneration">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of electricity generated in a given year (eg in the year 2018)</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#AnnualGenerationCost -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#AnnualGenerationCost">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The cost of generating electricity over one year</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl</rdfs:isDefinedBy>
     </owl:Class>
     
