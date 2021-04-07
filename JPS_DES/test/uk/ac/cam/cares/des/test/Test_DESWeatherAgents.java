@@ -1,11 +1,16 @@
 package uk.ac.cam.cares.des.test;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
 import org.json.JSONObject;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
@@ -13,30 +18,40 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.ForecastAgent;
-import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
-import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 
 /** Note that forecast agents are disabled in response to restriction
  * on number of solar calls
  * 
  * @author Laura Ong
  */
-public class Test_DESWeatherAgents extends TestCase{
+public class Test_DESWeatherAgents{
 	
-	private static String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
-	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
-	private String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\solar2";
-	private String irioftempS="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
-    private String iriofirrS="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
-    private String iriofwindS="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
-    
+	
+	private static String ENIRI=null;
+	private String DISIRI=null;
+	private String baseUrl = null;
+	private String irioftempS=null;
+	private String iriofirrS=null;
+	private String iriofwindS=null;
+	
+    @Before
+    public void setUp() {
+    	ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
+    	DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
+    	baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\solar2";
+    	irioftempS="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
+        iriofirrS="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
+        iriofwindS="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
+        
+    }
     
 
 	/** test if validateInput method is working in Forecast Agent
 	 * @throws IOException 
 	 * 
 	 */
+    @Test
 	public void testWeatherForecast() throws IOException {
 		ForecastAgent a = new ForecastAgent();
 		assertNotNull( ForecastAgent.GETReq(ENIRI));
@@ -57,6 +72,7 @@ public class Test_DESWeatherAgents extends TestCase{
 	 * This test is disabled unless the entire process wants to be called. 
 	 * 
 	 */
+    @Test
 	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
 
@@ -81,6 +97,7 @@ public class Test_DESWeatherAgents extends TestCase{
 	/** test if validateInput method is working in Weather Retriever
 	 * 
 	 */
+    @Test
 	public void testInputValidatorWeather() {
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", ENIRI);
@@ -94,6 +111,7 @@ public class Test_DESWeatherAgents extends TestCase{
 	/**
 	 * Calls and runs the hourly weather retriever, that uses OCR
 	 */
+    @Test
 	public void testWeatherIrradiationDirect() {
 		long timeLast = new Date().getTime();
 		try {
@@ -116,6 +134,7 @@ public class Test_DESWeatherAgents extends TestCase{
 	/**
 	 * Calls and runs the hourly weather retriever, that uses OCR (thru TOMCAT)
 	 */
+    @Test
 	public void testIrradiationRetreiverAgentCall() throws Exception {
 		JSONObject jo = new JSONObject();
 		jo.put("windspeedsensor", iriofwindS);
@@ -134,6 +153,7 @@ public class Test_DESWeatherAgents extends TestCase{
 	/**
 	 * Calls and runs the Blockchain transaction directly
 	 */
+    @Test
 	public void testBlockchainWrapperDirectCall() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("industrial", "2.311116263469459966e+01");
@@ -149,6 +169,7 @@ public class Test_DESWeatherAgents extends TestCase{
 	/**
 	 * Calls and runs the Blockchain transaction using Agent
 	 */
+    @Test
 	public void testBlockchainWrapperAgentCall() throws IOException{
 		JSONObject jo = new JSONObject();
 		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());

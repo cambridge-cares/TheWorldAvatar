@@ -42,7 +42,7 @@ public class ForecastAgent extends JPSAgent{
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     	if (!validateInput(requestParams)) {
-    		throw new JSONException("ForecastAgent:  Input parameters not found.\n");
+    		throw new BadRequestException("ForecastAgent:  Input parameters not found.\n");
     	}
     	try {
 			forecastNextDay();

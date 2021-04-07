@@ -79,11 +79,16 @@ def process_data(row):
                 print('Creating an instance:')
                 instance = propread.getABoxIRI()+SLASH+format_iri(row[0])
                 type = propread.getTBoxIRI()+HASH+format_iri(row[2])
+                http_flag=False
                 if row[0].strip().startswith(HTTP) or row[0].strip().startswith(HTTPS):
                     instance = row[0]
+                    http_flag=True
                 if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
                     type = row[2]
-                aboxgen.create_instance_without_name(g, URIRef(type), URIRef(instance))
+                if http_flag:
+                    aboxgen.create_instance_without_name(g, URIRef(type), URIRef(instance))
+                else:
+                    aboxgen.create_instance(g, URIRef(type), URIRef(instance), row[0])
                 instances[row[0].strip()] = row[2].strip()
 
             elif row[2].strip() in instances or row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS):

@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
@@ -35,11 +36,11 @@ public class WTEVisualization extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
 		if (!validateInput(requestParams)) {
-			throw new JSONException("WTE:WTEVisualizationAgent: Input parameters not found.\n");
+			throw new BadRequestException("WTE:WTEVisualizationAgent: Input parameters not found.\n");
 		}
 		String iriofnetwork = requestParams.getString("wastenetwork");
 
-		String path = requestParams.getString("path");
+		String path = requestParams.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork); //because this is a static method
 		String g = "";
 		 if (path.contains("/WTEVisualization/createMarkers")) {
@@ -63,7 +64,7 @@ public class WTEVisualization extends JPSAgent{
         }
         try {
         String iriofnetwork = requestParams.getString("wastenetwork");
-        String path = requestParams.getString("path");
+        String path = requestParams.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
         boolean relevant = path.contains("createMarkers") 
         		|| path.contains("readInputs") ||
         		path.contains("queryOnsite");
