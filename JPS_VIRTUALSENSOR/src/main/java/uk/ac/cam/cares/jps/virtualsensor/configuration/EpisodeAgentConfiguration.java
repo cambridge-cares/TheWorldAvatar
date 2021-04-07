@@ -7,7 +7,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
 @ComponentScan
-public class DispersionAgentConfiguration {
+public class EpisodeAgentConfiguration {
 
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {

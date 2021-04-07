@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.virtualsensor.episode;
+package uk.ac.cam.cares.jps.virtualsensor.agents;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,13 +7,12 @@ import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -21,228 +20,136 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.cts.CRSFactory;
-import org.cts.registry.EPSGRegistry;
-import org.cts.registry.RegistryManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
-import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
+import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeConfig;
-import uk.ac.cam.cares.jps.virtualsensor.general.DispersionModellingAgent;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.Ship;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentConfiguration;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentProperty;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
+import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
-public class EpisodeAgent extends DispersionModellingAgent {
-	
-	public  EpisodeAgent() {
-		  EpisodeConfig episodeconfig= new EpisodeConfig();  // Set the initial value for config
-		  System.out.println("initializing the value of config properties");
-		 System.out.println("episode confif dxrec= "+episodeconfig.getDx_rec());
-		 dx_rec=episodeconfig.getDx_rec();
-		 dy_rec=episodeconfig.getDy_rec();
-		 z_rec=episodeconfig.getZ_rec();
-		 nx=episodeconfig.getNx();
-		 ny=episodeconfig.getNy();
-		 dz=episodeconfig.getDz();
-		 nz=episodeconfig.getNz();
-		 upperheight=episodeconfig.getUpperheight();
-		 lowerheight=episodeconfig.getLowerheight();
-		 deltaT=episodeconfig.getDeltaT();
-		 
-		  }
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+@WebServlet(urlPatterns = {"/EpisodeAgent"})
+public class EpisodeAgent extends JPSAgent{
+	private static EpisodeAgentProperty episodeAgentProperty;
+	public static ApplicationContext applicationContextEpisodeAgent;
+	public static JobSubmission jobSubmission;
+	private File jobSpace;
+	public static final String FILE_NAME_3D_MAIN_CONC_DATA = "3D_instantanous_mainconc_center.dat";
+	public static final String FILE_NAME_ICM_HOUR = "icmhour.nc";
+	public static final String FILE_NAME_PLUME_SEGMENT = "plume_segments.dat";
 	private static final String separator="\t";
-	
-	//later to be moved to config
-	private double dx_rec; // decide the dx for the receptor
-	private double dy_rec;// decide the dy for the receptor
-	private double z_rec;//decide the base receptor level
-	private int nx ;//decide the dx for the scope
-	private int ny;//decide the dy for the scope	
-	private double dz;
-	private int nz;
-	private double upperheight;
-	private double lowerheight;
-	private double deltaT;
+	Logger logger = LoggerFactory.getLogger(EpisodeAgent.class);
+    
+	// episode parameters
+	private double dx_rec=100.0; //TODO hardcoded? decide the dx for the receptor
+	private double dy_rec=100.0;//TODO hardcoded? decide the dy for the receptor
+	private int nx;//decide the nx for the scope
+	private int ny;//decide the ny for the scope	
+	private double[] dz;//10 previously
+	private double z_rec=9.5;
+	private double upperheight=25.0;
+	private double lowerheight=2.0;
+	//typical gradient = 0.6K/100m
+	//therefore deltaT= 0.23*0.6= 0.138
+	private double deltaT=0.138; //the unit is on K , not K/m 
 	boolean restart=false;
 	
-	//below is based on location input (city iri)
-	private String epsgInUTM="48N";//48N
-	private String epsgActive="EPSG:32648";
-	private String gmttimedifference="-8"; //it should be dependent on the location it simulates
+	//below is based on location input
+	private String epsgInUTM;//48N
+	private String epsgActive;
+	private String gmttimedifference; //it should be dependent on the location it simulates
 	
-	public static void main(String[] args) throws ServletException{
-		EpisodeAgent episodeAgent = new EpisodeAgent();
-		episodeAgent.init();
-	}
-    
-    private double kgsTokgYear(double numberInKGramPerS) {
-    	double result=numberInKGramPerS*365*24*3600;
-    	return result;
-    }
-    
-	public void copyTemplate(String newdir, String filename) {
-		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
-		
-		String destinationUrl = newdir + "/"+filename;
-		new QueryBroker().putLocal(destinationUrl, file);
-	}
-    
-	private List<String[]> queryKBIRI(String chimneyiriInfo, OntModel jenaOwlModel) {
-		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		return resultList;
-	}
+	//keys
+	private String outputPathKey = "outputPath";
+	private String simStartKey = "simStart";
 	
-	
-	public String getPreviousHourDatapath(String agent,String cityIRI) {
-	
-		String metadataResult;
-		long millis = System.currentTimeMillis();
-		String toSimulationTime = MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
-		String fromSimulationTime = MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis-3600*1000);
-    	List<String> topics = new ArrayList<String>();
-    	topics.add(cityIRI);
-		metadataResult = MetaDataQuery.queryResources(null, null, null, agent,  fromSimulationTime, toSimulationTime, null, topics);
-        String[] keys = JenaResultSetFormatter.getKeys(metadataResult);
-        List<String[]>listmap = JenaResultSetFormatter.convertToListofStringArrays(metadataResult, keys);
-        int size=listmap.size();
-        if(size<1) {
-        	return "empty";
-        }
-        String directory=listmap.get(0)[0];
-        String datapath=directory.split("/output")[0];
-        
-		return datapath;
-	}
-	
+	/**
+	 * Main execution code
+	 */
 	@Override
-    protected void setLogger() {
-        logger = LoggerFactory.getLogger(EpisodeAgent.class);
-    }
-	 Logger logger = LoggerFactory.getLogger(EpisodeAgent.class);
-	
-	 
-	@Override
-    protected JSONObject processRequestParameters(JSONObject requestParams) {
+    public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject responseParams=new JSONObject();
 
         if (validateInput(requestParams)) {
-            JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
-            JSONArray ship_iri=requestParams.getJSONArray("ship");
-            String dataPath = QueryBroker.getLocalDataPath()+"/input";
-            String cityIRI = requestParams.getString("city"); //later to be used for annotation??
-            String agent=requestParams.getString("agent");
-            String airstn=requestParams.getString("airStationIRI");
-            String extrainfo=requestParams.toString();
-            new QueryBroker().putLocal(QueryBroker.getLocalDataPath()+"/extra_info.json", extrainfo);			
+        	String dataPath = QueryBroker.getLocalDataPath();
+        	String inputPath = Paths.get(dataPath,"input").toString();
+        	String outputPath = Paths.get(dataPath,"output").toString();
+        	String sim_iri = requestParams.getString(DispSimSparql.SimKey);
+        	String[] ship_iri = DispSimSparql.GetEmissionSources(sim_iri);
+        	String mainstn_iri = DispSimSparql.GetMainStation(sim_iri);
+        	String[] substn_iri = DispSimSparql.GetSubStations(sim_iri);
+        	nx = DispSimSparql.GetNx(sim_iri);
+        	ny = DispSimSparql.GetNy(sim_iri);
+        	dz = DispSimSparql.GetDz(sim_iri);
 
-            // create a Scope object
-            JSONObject region = requestParams.getJSONObject(Region.keyRegion);
-            Scope sc = new Scope(region);
+            // get scope for this simulation
+            Scope sc = DispSimSparql.GetScope(sim_iri);
 
             // collect region specific properties
             epsgInUTM = sc.getUTMzone();
-            epsgActive = Region.getTargetCRSName(agent, cityIRI);
+            epsgActive = DispSimSparql.GetSimCRS(sim_iri);
             // time zone required by Episode is the negative of GMT, see section 4.3 of citychem user guide
             gmttimedifference = String.valueOf(-sc.getTimeZone());
 
             // convert scope to local CRS
             sc.transform(epsgActive);
 
-            // Get filenames required for topology
-            List<String>srtm=new ArrayList<String>();
-            srtm = Region.getSRTM(cityIRI);
-            for(int x=0;x<srtm.size();x++) {
-                // copy topology files from workingdir to simulation directory
-                // source files have hgt extension
-                // note that the code is currently hard coded to take in a maximum of 2 hgt files
-                copyTemplate(dataPath, srtm.get(x)+".hgt");
-            }
-
-            List<String>stniri=new ArrayList<String>();
-            stniri.add(stnIRI.getString(0));
-            stniri.add(stnIRI.getString(1));
-
-            //check if it's the first run or not
-            String olddatapath=getPreviousHourDatapath(agent,cityIRI);
-            if(!olddatapath.contains("empty")) {
-                restart=true;
-                File file = new File( olddatapath+ "/output/icmhour.nc");
-                File file3des=new File(dataPath + "/icmhour.nc");
-                File file2 = new File( olddatapath+ "/output/plume_segments.dat");
-                File file2des=new File(dataPath + "/plume_segments.dat");
-                try {
-                    FileUtils.copyFile(file, file3des);
-                    FileUtils.copyFile(file2, file2des);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                //new QueryBroker().putLocal(dataPath + "/icmhour.nc", file);
-
-                //new QueryBroker().putLocal(dataPath + "/plume_segments.dat", file2);
-            }
+            // files required to initialise sim from previous hour, not important for now
 
             System.out.println("Creating input files for Episode simulation...");
 
-            WeatherStation[] weatherStations = new WeatherStation[stnIRI.length()];
-            // first station is the main station, second station only provides wind speed/direction
-            for (int i=0; i<stnIRI.length(); i++) {
-            	weatherStations[i] = new WeatherStation(stnIRI.getString(i));
-            }
+            WeatherStation mainStation = new WeatherStation(mainstn_iri);
+            WeatherStation subStation = new WeatherStation(substn_iri[0]); // code can only deal with 1 substation
             
-            createPointsInput(dataPath, "points.csv",ship_iri);
-            createLinesInput(dataPath, "lines.csv", sc);
+            createPointsInput(inputPath, ship_iri);
+            createLinesInput(inputPath, "lines.csv", sc);
             try { //for control file
-                createControlTopologyFile(srtm, dataPath, "aermap.inp",sc);
-                createControlWeatherORCityChemFile(dataPath, "run_file.asc",weatherStations,sc);
-                createControlWeatherORCityChemFile(dataPath, "citychem_restart.txt",weatherStations,sc);
-                createControlEmissionFile(ship_iri.length(),dataPath,"cctapm_meta_LSE.inp",sc);
-                createControlEmissionFile(ship_iri.length(),dataPath,"cctapm_meta_PSE.inp",sc);
+                createControlWeatherORCityChemFile(inputPath, "run_file.asc", mainStation,subStation,sc);
+                createControlWeatherORCityChemFile(inputPath, "citychem_restart.txt",mainStation,subStation,sc);
+                createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta_LSE.inp",sc);
+                createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta_PSE.inp",sc);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            createReceptorFile(dataPath,"receptor_input.txt",sc);
-            createWeatherInput(dataPath,"mcwind_input.txt",weatherStations);
+            createReceptorFile(inputPath,"receptor_input.txt",sc);
+            createWeatherInput(inputPath,"mcwind_input.txt",mainStation,subStation);
             
             //zip all the input file created
             File inputfile=null;
             try {
-                inputfile=getZipFile(dataPath);
-
+                inputfile=getZipFile(inputPath);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -254,89 +161,57 @@ public class EpisodeAgent extends DispersionModellingAgent {
 //              if (restart==true) {//all the time must be true??
 //                  value=false;
 //              }
-                long millis = System.currentTimeMillis();
-                String executiontime=MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
-                jsonforslurm.put("runWholeScript",value);
-                jsonforslurm.put("city",cityIRI);
-                jsonforslurm.put("agent",agent);
-                jsonforslurm.put("datapath",dataPath.split("/input")[0]+"/output");
-                jsonforslurm.put("expectedtime", executiontime);
-                jsonforslurm.put("airStationIRI", airstn);
+                jsonforslurm.put("runWholeScript",value); // read by citychem shell script
+                jsonforslurm.put(outputPathKey,outputPath); // used in output annotation
+                jsonforslurm.put(simStartKey, Instant.now().getEpochSecond()); // used in output annotation
+                jsonforslurm.put(DispSimSparql.SimKey, sim_iri); // used in output annotation
                 setUpJob(jsonforslurm.toString(),dataPath);
             } catch (IOException | SlurmJobException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
-            responseParams.put("folder",dataPath.split("/input")[0]+"/output/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
+            responseParams.put("folder",Paths.get(outputPath,FILE_NAME_3D_MAIN_CONC_DATA).toString()); //or withtBCZ?
+            System.out.println(responseParams.toString());
         }
         return responseParams;
     }
-
-    private boolean validateInput(JSONObject input) {
-        // Validate inputs for the processRequestParameters method
-        // Returns true if complete set of inputs are present and false if not
-        boolean valid = false;
-            try {
-                JSONArray stnIRI=input.getJSONArray("stationiri");
-                if(stnIRI.length() < 2) {
-                    System.out.println("Number of weather stations:" + stnIRI.length());
-                    System.out.println("Episode agent: At least 2 weather stations are required.");
-                    throw new Exception();
-                }
-                // at the moment it will always give two stations, in principle episode can use more than 2 stations
-                for(int x=0;x<stnIRI.length();x++) {
-                    // check if it's a valid URL
-                    new URL(stnIRI.getString(x)).toURI();
-                }
-                JSONObject region = input.getJSONObject("region");
-                // try creating a scope object
-                Scope sc = new Scope(region); 
-                String sourceCRSName = sc.getCRSName();
-
-                // check if CRS is valid
-                CRSFactory crsFact = new CRSFactory();
-                RegistryManager registryManager = crsFact.getRegistryManager();
-                registryManager.addRegistry(new EPSGRegistry());
-                crsFact.getCRS(sourceCRSName);
-
-                // city IRI
-                String cityIRI = input.getString("city");
-                new URL(cityIRI).toURI();
-                // Agent IRI
-                String agent=input.getString("agent");
-                new URL(agent).toURI();
-                
-                valid = true;
-            } catch (Exception e) {
-                throw new BadRequestException(e);
-        }
-        return valid;
+    
+	@Override
+    public boolean validateInput(JSONObject requestParams) {
+    	boolean valid = false;
+    	try {
+    		new URL(requestParams.getString(DispSimSparql.SimKey)).toURI();
+    		valid = true;
+    	} catch (Exception e) {
+    		throw new BadRequestException();
+    	}
+    	return valid;
     }
-
+    
     // new method using weather station objects
-    private void createWeatherInput(String dataPath, String filename,WeatherStation[] ws) {	
+    private void createWeatherInput(String inputPath, String filename,WeatherStation mainStation,WeatherStation subStation) {	
 		List<String[]> resultquery = new ArrayList<String[]>();
 
 	    String[]header= {"*","yyyy","mm","dd","hh","FF1","DD1","T25m","DT","RH%","PP_mm","Cloud","Press","FF2","DD2"};
 	    resultquery.add(0,header);
 	    String[]content=new String[15];
 	    content[0]="";
-	    LocalDateTime dateTime = LocalDateTime.ofEpochSecond(ws[0].getTimestamp(), 0, ZoneOffset.ofHours(-Integer.parseInt(gmttimedifference)));
+	    LocalDateTime dateTime = LocalDateTime.ofEpochSecond(mainStation.getTimestamp(), 0, ZoneOffset.ofHours(-Integer.parseInt(gmttimedifference)));
 	    content[1] = String.valueOf(dateTime.getYear()); 
 	    content[2] = String.valueOf(dateTime.getMonthValue());
 	    content[3] = String.valueOf(dateTime.getDayOfMonth());
 	    content[4] = String.valueOf(dateTime.getHour());
-	    content[5] = String.valueOf(ws[0].getWindspeed());
-	    content[6] = String.valueOf(ws[0].getWinddirection());
-	    content[7] = String.valueOf(ws[0].getTemperature());
+	    content[5] = String.valueOf(mainStation.getWindspeed());
+	    content[6] = String.valueOf(mainStation.getWinddirection());
+	    content[7] = String.valueOf(mainStation.getTemperature());
 	    content[8]=""+deltaT; //currently hardcoded about the delta T but can be substituted by model
-	    content[9] = String.valueOf(ws[0].getHumidity());
-	    content[10] = String.valueOf(ws[0].getPrecipitation());
-	    content[11] = String.valueOf(ws[0].getCloudcover());
-	    content[12] = String.valueOf(ws[0].getPressure());
-	    content[13] = String.valueOf(ws[1].getWindspeed());
-	    content[14] = String.valueOf(ws[1].getWinddirection());
+	    content[9] = String.valueOf(mainStation.getHumidity());
+	    content[10] = String.valueOf(mainStation.getPrecipitation());
+	    content[11] = String.valueOf(mainStation.getCloudcover());
+	    content[12] = String.valueOf(mainStation.getPressure());
+	    content[13] = String.valueOf(subStation.getWindspeed());
+	    content[14] = String.valueOf(subStation.getWinddirection());
  	    resultquery.add(content);
 	    StringBuilder sb= new StringBuilder();
         //convert to tsv
@@ -351,19 +226,18 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	        	}
 	        }
         }
-        new QueryBroker().putLocal(dataPath + "/"+filename, sb.toString());  	
+        new QueryBroker().putLocal(Paths.get(inputPath,filename).toString(), sb.toString());  	
 	}
     
-    private void createPointsInput(String dataPath, String filename,JSONArray ship_iri) {
+    private void createPointsInput(String inputPath,String[] ship_iri) {
     	System.out.println("it goes to create point emission input here");
 
-		int numship = ship_iri.length();
 		List<String[]> resultquery = new ArrayList<String[]>();
 		String[] header = { "snap", "xcor", "ycor", "Hi", "Vi", "Ti", "radi", "BH", "BW", "Pvec", "Pdir",
 				"pcir_ang", "Ptstart", "Ptend", "NOx", "NMVOC", "CO", "SO2", "NH3", "PM2.5", "PM10" };
 		resultquery.add(0, header);
-		for (int i = 0; i < numship; i++) {
-			Ship ship = new Ship(ship_iri.getString(i),true);
+		for (int i = 0; i < ship_iri.length; i++) {
+			Ship ship = new Ship(ship_iri[i],true);
 			
 			// all emission are in kg/s from the triple store
 			double emissionratepm25 = 0.0;
@@ -418,16 +292,17 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			resultquery.add(content);
 		}
 
-		new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultquery));
+		new QueryBroker().putLocal(Paths.get(inputPath, "points.csv").toString(), MatrixConverter.fromArraytoCsv(resultquery));
     }
     
-	public void createLinesInput(String dataPath, String filename,Scope sc) {
-		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
-		double x0 = sc.getScopeCentre()[0]; // value not used in simulation, but needs to be within domain
-		double y0 = sc.getScopeCentre()[1];
-		double[] locationshipconverted0 = CRSTransformer.transform(sc.getCRSName(), epsgActive,
+    public void createLinesInput(String inputPath, String filename,Scope sc) {
+    	String templateFile = Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir", filename).toString();
+		File file = new File(templateFile);
+		double x0 = sc.getScopeCentre().getX(); // value not used in simulation, but needs to be within domain
+		double y0 = sc.getScopeCentre().getY();
+		double[] locationshipconverted0 = CRSTransformer.transform(sc.getSrsName(), epsgActive,
 				new double[] { x0, y0 });
-		double[] locationshipconverted1 = CRSTransformer.transform(sc.getCRSName(), epsgActive,
+		double[] locationshipconverted1 = CRSTransformer.transform(sc.getSrsName(), epsgActive,
 				new double[] { x0+0.1, y0+0.1 });
 		try {
 			String fileContext = FileUtils.readFileToString(file);
@@ -435,53 +310,48 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			fileContext = fileContext.replaceAll("133855", "" + locationshipconverted0[1] );
 			fileContext = fileContext.replaceAll("351476", "" + locationshipconverted1[0]);
 			fileContext = fileContext.replaceAll("139903", "" +locationshipconverted1[1] );
-			new QueryBroker().putLocal(dataPath + "/"+filename, fileContext); 
+			new QueryBroker().putLocal(Paths.get(inputPath,filename).toString(), fileContext); 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
 	}
-
-	public void createControlTopologyFile(List<String>srtmlist,String dataPath, String Filename, Scope sc) throws IOException {
-		JSONObject in= new JSONObject();
-		JSONArray srtm= new JSONArray();
-		for(int x=0;x<srtmlist.size();x++) {
-			srtm.put(srtmlist.get(x));
-		}
-		in.put("srtminput",srtm);
-		String  modifiedcontent=modifyTemplate(Filename,in,sc);
-		 new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
-	}
-	
-	public void createControlWeatherORCityChemFile(String dataPath, String Filename,WeatherStation[] ws,Scope sc) throws IOException {
+    
+    public void createControlWeatherORCityChemFile(String inputPath, String Filename,WeatherStation mainStation,WeatherStation subStation,Scope sc) throws IOException {
 		JSONArray weather=new JSONArray();
-		for(int i=0; i<ws.length; i++) {
-			JSONObject stn= new JSONObject();
-			stn.put("name",ws[i].getStationiri().split("#")[1]);
-			stn.put("x", String.valueOf(ws[i].getXcoord()));
-			stn.put("y", String.valueOf(ws[i].getYcoord()));
-			stn.put("z", String.valueOf(ws[i].getZcoord()));
-			weather.put(stn);
-		}
+
+		JSONObject mainstn= new JSONObject();
+		mainstn.put("name",mainStation.getStationiri().split("#")[1]);
+		mainstn.put("x", String.valueOf(mainStation.getXcoord()));
+		mainstn.put("y", String.valueOf(mainStation.getYcoord()));
+		mainstn.put("z", String.valueOf(mainStation.getZcoord()));
+		weather.put(mainstn);
+		
+		JSONObject substn = new JSONObject();
+		substn.put("name",subStation.getStationiri().split("#")[1]);
+		substn.put("x", String.valueOf(subStation.getXcoord()));
+		substn.put("y", String.valueOf(subStation.getYcoord()));
+		substn.put("z", String.valueOf(subStation.getZcoord()));
+		weather.put(substn);
 
 		JSONObject in= new JSONObject();
 		in.put("weatherinput",weather);
 		String  modifiedcontent=modifyTemplate(Filename,in,sc);
-	    new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
+	    new QueryBroker().putLocal(Paths.get(inputPath,Filename).toString(), modifiedcontent); 
 	}
 	
-	public void createControlEmissionFile(int numpoints,String dataPath,String Filename,Scope sc) throws IOException {
+	public void createControlEmissionFile(int numpoints,String inputPath,String Filename,Scope sc) throws IOException {
 		JSONObject in= new JSONObject();
 		in.put("sourceinput",numpoints);
 		String  modifiedcontent=modifyTemplate(Filename,in,sc);
-		new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
+		new QueryBroker().putLocal(Paths.get(inputPath,Filename).toString(), modifiedcontent); 
 	}
 	
-	public void createReceptorFile(String dataPath, String Filename, Scope sc) {
+	public void createReceptorFile(String inputPath, String Filename, Scope sc) {
 		DecimalFormat df = new DecimalFormat("0.0");
 		df.setRoundingMode(RoundingMode.HALF_EVEN);
 
-		int nx_rec =(int) Math.round((sc.getUpperx()-sc.getLowerx())/dx_rec);
-		int ny_rec =(int) Math.round((sc.getUppery()-sc.getLowery())/dy_rec);
+		int nx_rec =(int) Math.round((sc.getUpperCorner().getX()-sc.getLowerCorner().getX())/dx_rec);
+		int ny_rec =(int) Math.round((sc.getUpperCorner().getY()-sc.getLowerCorner().getY())/dy_rec);
 
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + Filename);
 		String fileContext;
@@ -492,9 +362,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			fileContext=fileContext.replaceAll("ccc",""+dx_rec);
 			fileContext=fileContext.replaceAll("ddd",""+dy_rec);
 			fileContext=fileContext.replaceAll("eee",""+z_rec);
-			fileContext=fileContext.replaceAll("fff",""+Double.valueOf(df.format(sc.getLowerx())));
-			fileContext=fileContext.replaceAll("ggg",""+Double.valueOf(df.format(sc.getLowery())));
-			new QueryBroker().putLocal(dataPath + "/"+Filename, fileContext);
+			fileContext=fileContext.replaceAll("fff",""+Double.valueOf(df.format(sc.getLowerCorner().getX())));
+			fileContext=fileContext.replaceAll("ggg",""+Double.valueOf(df.format(sc.getLowerCorner().getY())));
+			new QueryBroker().putLocal(Paths.get(inputPath,Filename).toString(), fileContext);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
@@ -543,21 +413,21 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		DecimalFormat df = new DecimalFormat("0.0");
 		df.setRoundingMode(RoundingMode.HALF_EVEN);
 
-		double proclowx = sc.getLowerx();
+		double proclowx = sc.getLowerCorner().getX();
 		proclowx=Double.valueOf(df.format(proclowx));
-		double procupx = sc.getUpperx();
+		double procupx = sc.getUpperCorner().getX();
 		procupx=Double.valueOf(df.format(procupx));
-		double proclowy = sc.getLowery();
+		double proclowy = sc.getLowerCorner().getY();
 		proclowy=Double.valueOf(df.format(proclowy));
-		double procupy = sc.getUppery();
+		double procupy = sc.getUpperCorner().getY();
 		procupy=Double.valueOf(df.format(procupy));
 
-		double[] center = sc.getScopeCentre();
+		Point center = sc.getScopeCentre();
 		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
 		double[] dcell = calculateEachDistanceCellDetails(procupx, procupy, proclowx, proclowy, nx, ny);
 
 		if (filename.contentEquals("aermap.inp")) { // assume srtm=1
-			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir", filename).toString());
 			fileContext = FileUtils.readFileToString(file);
 			int sizeofsrtm=inputparameter.getJSONArray("srtminput").length();
 			String srtmin1 = inputparameter.getJSONArray("srtminput").get(0).toString();
@@ -582,9 +452,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 																						// xmax+1000
 			fileContext = fileContext.replaceAll("190000.0", "" + (procupy + 1000)); // replace with the new value
 																						// ymax+1000
-			fileContext = fileContext.replaceAll("366600.0", "" + center[0]); // replace with the new value x center
+			fileContext = fileContext.replaceAll("366600.0", "" + center.getX()); // replace with the new value x center
 																				// point
-			fileContext = fileContext.replaceAll("154000.0", "" + center[1]); // replace with the new value y center
+			fileContext = fileContext.replaceAll("154000.0", "" + center.getY()); // replace with the new value y center
 																				// point
 			fileContext = fileContext.replaceAll("-35000.0a", "" + leftcorner[0]);
 			fileContext = fileContext.replaceAll("35b", "" + nx );
@@ -597,9 +467,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 		} else if (filename.contains("cctapm_meta_LSE")||filename.contains("cctapm_meta_PSE")) {
 			int size = inputparameter.getInt("sourceinput");
-           String lseORpse=filename.split("_")[2].split(".inp")[0];     
-           File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/cctapm_meta.inp");
-   			 fileContext = FileUtils.readFileToString(file);   
+            String lseORpse=filename.split("_")[2].split(".inp")[0];     
+            File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir","cctapm_meta.inp").toString());
+   			fileContext = FileUtils.readFileToString(file);   
 			String[] line = fileContext.split("\n");
 			List<String> lineoffile = Arrays.asList(line);
 			List<String> newcontent = new ArrayList<String>();
@@ -655,7 +525,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				line502="../INPUT/other/icmhour.nc"+"\n";
 				restartindex=1;	
 			}
-			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir", filename).toString());
 			fileContext = FileUtils.readFileToString(file);
 			String timeinput=time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0];
 			fileContext=fileContext.replace("20191118_20191118", timeinput+"_"+timeinput);
@@ -696,14 +566,14 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int r = 52; r < 55; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(nx+","+ny+","+nz+","+"1,1,1\n"); //line 56
+			newcontent.add(nx+","+ny+","+dz.length+","+"1,1,1\n"); //line 56
 			for (int r = 56; r < 61; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
 			String line62=dcell[0]+","+dcell[1];
 			String line62b="";
-			for(int x=0;x<nz;x++) {
-				line62b=line62b+","+dz;
+			for(int x=0;x<dz.length;x++) {
+				line62b=line62b+","+dz[x];
 			}
 			newcontent.add(line62+line62b+"\n"); //line 62
 			for (int r = 62; r < 93; r++) {
@@ -744,7 +614,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			}
 			String segmentfraction="0.25";
 			String line650=segmentfraction;
-			for(int x=0;x<nz;x++) {
+			for(int x=0;x<dz.length;x++) {
 				line650=line650+","+segmentfraction;
 			}
 			newcontent.add(line650+"\n"); //line 650
@@ -761,7 +631,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			return contentupdate;
 
 		} else if (filename.contentEquals("run_file.asc")) {
-			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir", filename).toString());
 			fileContext = FileUtils.readFileToString(file);
 			String timeinput=time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0];
 			fileContext=fileContext.replaceAll("20191118_20191118", timeinput+"_"+timeinput);
@@ -794,7 +664,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			}
 
 			double[] pmidconvert = CRSTransformer.transform(epsgActive, "EPSG:4326",
-					new double[] { center[0], center[1] });
+					new double[] { center.getX(), center.getY() });
 			DecimalFormat df2 = new DecimalFormat("#.#");
 			String xmid = df2.format(pmidconvert[0]);
 			System.out.println("xmid=" + xmid);
@@ -811,7 +681,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			newcontent.add(lineoffile.get(25));
 			String line26b = lineoffile.get(26).split("!")[1] + "!" + lineoffile.get(26).split("!")[2] + "!"
 					+ lineoffile.get(26).split("!")[3];
-			String line26 = " "+nx + " " + ny + " " + nz + separator + "!" + line26b;
+			String line26 = " "+nx + " " + ny + " " + dz.length + separator + "!" + line26b;
 			newcontent.add(line26);
 			System.out.println("line26= " + line26);
 
@@ -819,10 +689,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			String line27 = " "+dcell[0] + " " + dcell[1] + separator + "!" + line27b;
 			newcontent.add(line27);
 			System.out.println("line27= " + line27);
-			newcontent.add(lineoffile.get(28));// base with stretch factor
-			newcontent.add(lineoffile.get(29));// base
-			for (int r = 1; r < nz; r++) {
-				newcontent.add(" "+dz + separator + "!" + "\n");
+			String stretchfactor = "-1.25";
+			newcontent.add(" "+String.valueOf(dz[0])+" "+stretchfactor+"\n");// base with stretch factor
+			for (int r = 0; r < dz.length; r++) {
+				newcontent.add(" "+dz[r] + separator + "!" + "\n");
 			}
 			for (int r = 42; r < 73; r++) {
 				newcontent.add(lineoffile.get(r));
@@ -853,32 +723,54 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 		return fileContext;
 	}
+    
+    private double kgsTokgYear(double numberInKGramPerS) {
+    	double result=numberInKGramPerS*365*24*3600;
+    	return result;
+    }
+    
+    public static File getZipFile(String folderName) throws IOException {
+		Path sourceDirectory = Paths.get(folderName);		
+		String zipFileName = folderName.concat(".zip");
 
-	private File getInputFile(String datapath, String jobFolderName) throws IOException{
-		//start to prepare all input files and put under folder input
+		try {
+			ZipOutputStream zipOutputStream = new ZipOutputStream (new FileOutputStream(zipFileName));
+			Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path arg0, BasicFileAttributes arg1) throws IOException {
+				try {
+					Path destinationFile = sourceDirectory.relativize(arg0);
+					zipOutputStream.putNextEntry(new ZipEntry(destinationFile.toString()));
+					byte[] bytes = Files.readAllBytes(arg0);
+					zipOutputStream.write(bytes, 0, bytes.length);
+					zipOutputStream.closeEntry();
+				}catch(IOException e) {
+					e.printStackTrace();
+				}
+				// TODO Auto-generated method stub
+				//return super.visitFile(arg0, arg1);
+				return FileVisitResult.CONTINUE;
+			}
+		});
 		
-		String inputFilePath="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\21afbf75-1d47-407e-9569-505c684f7385\\input.zip";
-		//above just example
+		zipOutputStream.flush();
+		zipOutputStream.close();
 		
-		inputFilePath=datapath.split("/input")[0]+"/input.zip";
-		
-		//zip all the input file expected (input.zip)
-		
-    	return new File(inputFilePath);
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+		File zipFile = new File(zipFileName);
+		return zipFile;
 	}
-	
-	public String getNewJobFolderName(String hpcAddress, long timeStamp){
-		return hpcAddress.concat("_").concat("" + timeStamp);
-	}
-	
-	public String setUpJob(String jsonString,String datapath) throws IOException,  SlurmJobException{
-    	String message = setUpJobOnAgentMachine(jsonString,datapath);
+    
+    public String setUpJob(String jsonString,String dataPath) throws IOException,  SlurmJobException{
+    	String message = setUpJobOnAgentMachine(jsonString,dataPath);
 		JSONObject obj = new JSONObject();
 		obj.put("message", message);
     	return obj.toString();
-}
-	
-	private String setUpJobOnAgentMachine(String jsonInput, String datapath) throws IOException, SlurmJobException {
+    }
+    
+    private String setUpJobOnAgentMachine(String jsonInput, String datapath) throws IOException, SlurmJobException {
 		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(jobSubmission.slurmJobProperty.getHpcAddress(), timeStamp);
@@ -890,64 +782,20 @@ public class EpisodeAgent extends DispersionModellingAgent {
 						getClass().getClassLoader().getResource(jobSubmission.slurmJobProperty.getExecutableFile()).getPath())),
 				timeStamp);
 	}
-	
-	public static File getZipFile(String folderName) throws IOException {
-		
-		
-		Path sourceDirectory = Paths.get(folderName);		
-		
-		String zipFileName = folderName.concat(".zip");
-
-		try {
-			
-		ZipOutputStream zipOutputStream = new ZipOutputStream (new FileOutputStream(zipFileName));
-		
-		Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
-
-			@Override
-			public FileVisitResult visitFile(Path arg0, BasicFileAttributes arg1) throws IOException {
-				
-				try {
-					
-				Path destinationFile = sourceDirectory.relativize(arg0);
-				
-				zipOutputStream.putNextEntry(new ZipEntry(destinationFile.toString()));
-				
-				byte[] bytes = Files.readAllBytes(arg0);
-				
-				zipOutputStream.write(bytes, 0, bytes.length);
-				
-				zipOutputStream.closeEntry();
-				
-				}catch(IOException e) {
-					
-					e.printStackTrace();
-				}
-				
-				// TODO Auto-generated method stub
-				//return super.visitFile(arg0, arg1);
-				
-				return FileVisitResult.CONTINUE;
-				
-			}
-		});
-		
-		zipOutputStream.flush();
-		
-		zipOutputStream.close();
-		
-		}catch(IOException e) {
-			
-			e.printStackTrace();
-		}
-		
-		File zipFile = new File(zipFileName);
-		
-		return zipFile;
-	
+    
+    public String getNewJobFolderName(String hpcAddress, long timeStamp){
+		return hpcAddress.concat("_").concat("" + timeStamp);
 	}
-	
-	/**
+    
+    private File getInputFile(String datapath, String jobFolderName) throws IOException{
+		//start to prepare all input files and put under folder input
+		String inputFilePath=Paths.get(datapath,"input.zip").toString();
+		
+		//zip all the input file expected (input.zip)
+    	return new File(inputFilePath);
+	}
+    
+    /**
 	 * Takes a path that may contain one or more UTF-8 characters and decodes<br>
 	 * these to regular characters. For example, the characters %23 and %2C are<br>
 	 * decoded to hash(#) and comma (,), respectively.
@@ -961,5 +809,186 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	 */
 	String decodeURL(String path) throws UnsupportedEncodingException{
 		return URLDecoder.decode(path, "utf-8");
+	}
+    
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(EpisodeAgent.class);
+    }
+    
+    /**
+     * For job monitoring
+     */
+    @Override
+	public void init(){
+        logger.info("---------- Episode Agent has started ----------");
+        System.out.println("---------- Episode Agent has started ----------");
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        EpisodeAgent episodeAgent = new EpisodeAgent();
+		// initialising classes to read properties from the dispersion-agent.properites file
+        initAgentProperty();
+		// In the following method call, the parameter getAgentInitialDelay-<br>
+		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
+		// the job scheduler starts and getAgentPeriodicActionInterval<br>
+		// refers to the interval between two consecutive executions of<br>
+		// the scheduler.
+		executorService.scheduleAtFixedRate(() -> {
+			try {
+				episodeAgent.monitorJobs();
+			} catch (SlurmJobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}, episodeAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
+				episodeAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+		logger.info("---------- Dispersion of pollutant simulation jobs are being monitored  ----------");
+        System.out.println("---------- Dispersion of pollutant simulation jobs are being monitored  ----------");
+	}
+    
+    /**
+	 * Initialises the unique instance of the DispersionAgentProperty class that<br>
+	 * reads all properties of DispersionAgent from the dispersion-agent property file.<br>
+	 * 
+	 * Initialises the unique instance of the SlurmJobProperty class and<br>
+	 * sets all properties by reading them from the dispersion-agent property file<br>
+	 * through the DispersionModellingAgent class.
+	 */
+	public void initAgentProperty() {
+		// initialising classes to read properties from the dft-agent.properites
+		// file
+		if (applicationContextEpisodeAgent == null) {
+			applicationContextEpisodeAgent = new AnnotationConfigApplicationContext(EpisodeAgentConfiguration.class);
+		}
+		if (episodeAgentProperty == null) {
+			episodeAgentProperty = applicationContextEpisodeAgent.getBean(EpisodeAgentProperty.class);
+		}
+		if (jobSubmission == null) {
+			jobSubmission = new JobSubmission(episodeAgentProperty.getAgentClass(), episodeAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(episodeAgentProperty.getHpcServerLoginUserName());
+			jobSubmission.slurmJobProperty
+					.setHpcServerLoginUserPassword(episodeAgentProperty.getHpcServerLoginUserPassword());
+			jobSubmission.slurmJobProperty.setAgentClass(episodeAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty
+					.setAgentCompletedJobsSpacePrefix(episodeAgentProperty.getAgentCompletedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty
+					.setAgentFailedJobsSpacePrefix(episodeAgentProperty.getAgentFailedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setHpcAddress(episodeAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setInputFileName(episodeAgentProperty.getInputFileName());
+			jobSubmission.slurmJobProperty.setInputFileExtension(episodeAgentProperty.getInputFileExtension());
+			jobSubmission.slurmJobProperty.setOutputFileName(episodeAgentProperty.getOutputFileName());
+			jobSubmission.slurmJobProperty.setOutputFileExtension(episodeAgentProperty.getOutputFileExtension());
+			jobSubmission.slurmJobProperty.setJsonInputFileName(episodeAgentProperty.getJsonInputFileName());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(episodeAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setSlurmScriptFileName(episodeAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setExecutableFile(episodeAgentProperty.getExecutableFile());
+			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(episodeAgentProperty.getMaxNumberOfHPCJobs());
+			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(
+					episodeAgentProperty.getAgentInitialDelayToStartJobMonitoring());
+			jobSubmission.slurmJobProperty
+					.setAgentPeriodicActionInterval(episodeAgentProperty.getAgentPeriodicActionInterval());
+		}
+	}
+	
+	/**
+     * Calls the monitorJobs method of the Slurm Job API, which is in the JPS BASE LIB project.
+     * 
+     * @throws SlurmJobException
+     */
+	private void monitorJobs() throws SlurmJobException{
+		if(jobSubmission==null){
+			jobSubmission = new JobSubmission(episodeAgentProperty.getAgentClass(), episodeAgentProperty.getHpcAddress());
+		}
+		jobSubmission.monitorJobs();
+		processOutputs();
+	}
+	
+	public void processOutputs() {
+		initAgentProperty();
+		jobSpace = jobSubmission.getWorkspaceDirectory();
+		try {
+			if (jobSpace.isDirectory()) {
+				File[] jobFolders = jobSpace.listFiles();
+				for (File jobFolder : jobFolders) {
+					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobErroneouslyCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
+						System.out.println("job "+jobFolder.getName()+" is completed");
+						File outputFolder= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
+						String zipFilePath = Paths.get(jobFolder.getAbsolutePath(), "output.zip").toString();
+						File outputFile= new File(zipFilePath);
+						if(!outputFile.isFile() || !outputFile.exists()){
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+							continue;
+						}
+						// Unzip the output zip file.
+						FileUtil.unzip(zipFilePath, outputFolder.getAbsolutePath());
+						// Opens the main concentration file.
+						File file = new File(outputFolder.getAbsolutePath().concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
+						// Checks the existence of the main concentration file.
+						if(!file.exists()){
+							// If the main concentration file does not exist,
+							// the job status is marked with error termination.   
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+							continue;							
+						}
+						if(annotateOutputs(jobFolder, zipFilePath)) {
+							logger.info("EpisodeAgent: Annotation has been completed.");
+							System.out.println("Annotation has been completed.");
+							PostProcessing.updateJobOutputStatus(jobFolder);
+						} else {
+							logger.error("EpisodeAgent: Annotation has not been completed.");
+							System.out.println("Annotation has not been completed.");
+							// Edit the status file to be error termination
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(),
+									Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+						}
+					}
+				}
+			}
+		} catch (IOException e) {
+			logger.error("EpisodeAgent: IOException.".concat(e.getMessage()));
+			e.printStackTrace();
+		} catch(SlurmJobException e){
+			logger.error("EpisodeAgent: ".concat(e.getMessage()));
+			e.printStackTrace();
+		}
+	}
+	
+	private boolean annotateOutputs(File jobFolder, String zipFilePath) throws SlurmJobException {
+		try {
+			System.out.println("Annotating output has started");
+
+			JSONObject jobInfo = new JSONObject(Files.readAllLines(Paths.get(jobFolder.getAbsolutePath(), "input.json")).get(0));
+			String outputPath = jobInfo.getString(outputPathKey); // scenario folder written during job submission
+			long simStart = jobInfo.getLong(simStartKey);
+			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
+			
+			String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
+			
+			File file = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
+			String destinationUrl = Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA).toString();
+
+			File file2 = new File(Paths.get(destDir, FILE_NAME_ICM_HOUR).toString());
+			String destinationUrl2 = Paths.get(outputPath, FILE_NAME_ICM_HOUR).toString();
+
+			File file3 = new File(Paths.get(destDir, FILE_NAME_PLUME_SEGMENT).toString());
+			String destinationUrl3 = Paths.get(outputPath, FILE_NAME_PLUME_SEGMENT).toString();
+
+			// copy to scenario folder
+			new QueryBroker().putLocal(destinationUrl, file); 
+			new QueryBroker().putLocal(destinationUrl2, file2);
+			new QueryBroker().putLocal(destinationUrl3, file3);
+			System.out.println("metadata annotation started");
+
+			// update triple-store
+			DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart);
+
+			System.out.println("metadata annotation finished");
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			logger.error("EpisodeAgent: Output Annotating Task could not finish");
+			System.out.println("EpisodeAgent: Output Annotating Task could not finish");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.virtualsensor.sparqltest;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -10,10 +11,10 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.Chimney;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.Ship;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Chimney;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 public class ShipSparqlTest extends TestCase {
@@ -25,7 +26,7 @@ public class ShipSparqlTest extends TestCase {
      * @throws InterruptedException 
      */
     public void testCreateShip () throws InterruptedException {
-        String csvPath = AgentLocator.getPathToWorkingDir(this) + "/ship_latest_consolidated_plymouth.csv";
+        String csvPath = Paths.get(AgentLocator.getPathToWorkingDir(this), "ship_latest_consolidated_plymouth.csv").toString();
         String csvFile=new QueryBroker().readFileLocal(csvPath);
         List<String[]> csv_array = MatrixConverter.fromCsvToArray(csvFile);
         int mmsi, al, aw, ts, tst; double ss, cu, lat, lon; String type;
@@ -67,15 +68,6 @@ public class ShipSparqlTest extends TestCase {
             	}
             }
         }
-    }
-
-    public void testQuery() {
-        JSONObject jo = new JSONObject();
-        Region.putRegion(jo, 4);
-        
-        Scope sc = new Scope(jo.getJSONObject(Region.keyRegion));
-        
-        ShipSparql.queryShipWithinScope(sc);
     }
     
     public void testQueryShipIRI() {
@@ -124,5 +116,9 @@ public class ShipSparqlTest extends TestCase {
     public void testQueryParticleIRI() {
     	String ship_iri = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ship1";
     	ShipSparql.QueryParticleIRI(ship_iri);
+    }
+    
+    public void testGetNumShips() {
+    	ShipSparql.GetNumShips();
     }
 }
