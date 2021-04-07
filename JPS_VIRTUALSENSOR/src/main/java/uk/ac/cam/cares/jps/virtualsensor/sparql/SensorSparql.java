@@ -565,7 +565,7 @@ public class SensorSparql {
      * @param station_iri_string
      * @return
      */
-    public static double [] queryAirStationCoordinatesWithIRI(String station_iri_string) {
+    public static Point queryAirStationCoordinatesWithIRI(String station_iri_string) {
     	SelectQuery query = Queries.SELECT();
     	Iri station_iri = iri(station_iri_string);
     	
@@ -596,11 +596,12 @@ public class SensorSparql {
         query.from(queryGraph).prefix(p_station,p_space_time_extended,p_system).select(xvalue,yvalue).where(querypattern);
         
         JSONArray queryresult = SparqlGeneral.performQuery(query);
-        
-        double [] coordinates_xy = {queryresult.getJSONObject(0).getDouble("xvalue"),
-        		queryresult.getJSONObject(0).getDouble("yvalue")};
 
-    	return coordinates_xy;
+        Point coordinates = new Point();
+        coordinates.setX(queryresult.getJSONObject(0).getDouble("xvalue"));
+        coordinates.setY(queryresult.getJSONObject(0).getDouble("yvalue"));
+        coordinates.setSrsname("EPSG:4326");
+    	return coordinates;
     }
     
     /**

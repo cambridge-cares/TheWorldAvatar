@@ -13,7 +13,8 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
@@ -33,7 +34,7 @@ public class SensorUpdaterAgent extends JPSAgent{
         if (validateInput(requestParams)) {
         	String stationiri = requestParams.getString(Region.keyAirStationIRI);
         	// obtain coordinates of this station
-        	double [] xy = SensorSparql.queryAirStationCoordinatesWithIRI(stationiri);
+        	Point p = SensorSparql.queryAirStationCoordinatesWithIRI(stationiri);
         	
         	// check whether this station is located within the Singapore or HK scope
         	// coordinates of the stations are obtained from clicking on the map - EPSG:4326
@@ -54,11 +55,11 @@ public class SensorUpdaterAgent extends JPSAgent{
         	plyScope.transform(CRSTransformer.EPSG_4326);
         	
         	JSONObject request = new JSONObject();
-        	if (sgScope.isWithinScope(xy)) {
+        	if (sgScope.isWithinScope(p)) {
         		request.put(Region.keyCity, Region.SINGAPORE_IRI);
-        	} else if (hkScope.isWithinScope(xy)) {
+        	} else if (hkScope.isWithinScope(p)) {
         		request.put(Region.keyCity, Region.HONG_KONG_IRI);
-        	} else if (plyScope.isWithinScope(xy)) {
+        	} else if (plyScope.isWithinScope(p)) {
         		request.put(Region.keyCity,  Region.PLYMOUTH_IRI);
         	} else {
         		// do nothing if it's not in any simulated scopes
@@ -68,6 +69,7 @@ public class SensorUpdaterAgent extends JPSAgent{
         	String resultlocation = AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/episode/results/latest", request.toString());
         	// convert sensor coordinates to the local simulation coordinates 
         	// should be queried from the triple-store
+        	double[] xy = {p.getX(),p.getY()};
         	double[] xy_local = CRSTransformer.transform(CRSTransformer.EPSG_4326, 
         			Region.getTargetCRSName("episode", request.getString(Region.keyCity)), xy);
         	request.remove(Region.keyCity);
