@@ -29,7 +29,7 @@ public class DataTypeCleaner {
 		// TODO Auto-generated method stub
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
-		InputStream inputstream = new FileInputStream("D:\\ontokin_files\\merged_files\\final\\final.ttl");
+		InputStream inputstream = new FileInputStream("D:\\ontocompchem\\final.ttl");
 	 	final Model rdffile = ModelFactory.createDefaultModel();
 		System.out.println("================ Start reading the file ====================");
 		rdffile.read(inputstream, null, "Turtle") ;		
@@ -43,10 +43,13 @@ public class DataTypeCleaner {
 			Resource s = the_statement.getSubject();
 			Resource p = the_statement.getPredicate();
 			RDFNode o = the_statement.getObject();
-			if (p.toString().contentEquals("http://www.w3.org/2000/01/rdf-schema#label")) {
+			if (p.toString().contentEquals("http://purl.org/gc/hasName")) {
 				
+				
+				String v = o.toString();
+				v = v.replace(" ", "");
 				// rdffile.remove(the_statement);
-				Statement x = rdffile.createStatement(s, RDFS.label, o.toString());
+				Statement x = rdffile.createStatement(s, RDFS.label, v);
 				rdffile.add(x);
 				System.out.println(the_statement);
 				System.out.println("=======================================");
@@ -55,7 +58,7 @@ public class DataTypeCleaner {
 		    
  		}
 		
-		FileOutputStream test = new FileOutputStream("D:\\ontokin_files\\merged_files\\final\\final.ttl");
+		FileOutputStream test = new FileOutputStream("D:\\ontocompchem\\clean.ttl");
 		rdffile.write(test, "Turtle");
 
 	}
