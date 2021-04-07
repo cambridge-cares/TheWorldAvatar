@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.coordination.DMSCoordinationAgent;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
 public class DMSCoordinationAgentTest extends TestCase {
 	// local parameters
@@ -15,8 +16,6 @@ public class DMSCoordinationAgentTest extends TestCase {
     String keyReactionmechanism = "reactionmechanism";
     String mech_none = "none";
     String mech_PRF = "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001";
-    String adms_url = DMSCoordinationAgent.DISPERSION_PATH + DMSCoordinationAgent.ADMS_PATH;
-    String episode_url = DMSCoordinationAgent.DISPERSION_PATH + DMSCoordinationAgent.EPISODE_PATH;
 
     /**
      * There are four main tests that will run the full ADMS/Episode simulations:
@@ -28,7 +27,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		Region.putRegionAndStation(jo,1);
 		jo.put(keyAgent,admsIRI);
 		jo.put(keyReactionmechanism, mech_none);
-		AgentCaller.executeGetWithJsonParameter(adms_url,jo.toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/DMSCoordinationAgent",jo.toString());
 	}
 
 	public void testSingaporeEpisode() {
@@ -37,7 +36,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		Region.putRegionAndStation(jo,2);
 		jo.put(keyAgent,episodeIRI);
 		jo.put(keyReactionmechanism, mech_none);
-		AgentCaller.executeGetWithJsonParameter(episode_url,jo.toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/DMSCoordinationAgent",jo.toString());
 	}
 
 	public void testHongKongADMS() {
@@ -46,7 +45,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		Region.putRegionAndStation(jo,3);
 		jo.put(keyAgent,admsIRI);
 		jo.put(keyReactionmechanism, mech_none);
-		AgentCaller.executeGetWithJsonParameter(adms_url,jo.toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/DMSCoordinationAgent",jo.toString());
 	}
 
 	public void testHongKongEpisode() {
@@ -55,14 +54,14 @@ public class DMSCoordinationAgentTest extends TestCase {
 		Region.putRegionAndStation(jo,4);
 		jo.put(keyAgent,episodeIRI);
 		jo.put(keyReactionmechanism, mech_none);
-		AgentCaller.executeGetWithJsonParameter(episode_url,jo.toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/DMSCoordinationAgent",jo.toString());
 	}
 	
 	public void testPlymouthEpisode() {
 		JSONObject jo = new JSONObject();
 		Region.putRegionAndStation(jo,5);
 		jo.put(keyAgent,episodeIRI);
-		jo.put(keyReactionmechanism, mech_none);
-		AgentCaller.executeGetWithJsonParameter(episode_url,jo.toString());
+		jo.put(DispSimSparql.SimKey, "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5");
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/DMSCoordinationAgent",jo.toString());
 	}
 }

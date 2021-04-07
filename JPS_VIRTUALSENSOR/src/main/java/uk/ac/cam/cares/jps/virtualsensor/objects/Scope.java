@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.region;
+package uk.ac.cam.cares.jps.virtualsensor.objects;
 
 import java.time.Instant;
 
@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 /** 
@@ -16,66 +17,57 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
  */
 
 public class Scope {
-    private double upperx;
-    private double uppery;
-    private double lowerx;
-    private double lowery;
-    private String sourceCRS;
+	private Point upperCorner;
+	private Point lowerCorner;
+    private String srsname;
 
-    /** 
-     * Create a scope from region JSON Object
-     */
     public Scope(JSONObject region) {
-        this.upperx = Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyUppercorner).get(Region.keyUpperx)));
-        this.uppery = Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyUppercorner).get(Region.keyUppery)));
-        this.lowerx = Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyLowercorner).get(Region.keyLowerx)));
-        this.lowery = Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyLowercorner).get(Region.keyLowery)));
-        this.sourceCRS = region.getString(Region.keySrsname);
+    	this.upperCorner = new Point();
+    	this.lowerCorner = new Point();
+    	
+    	this.upperCorner.setX(Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyUppercorner).get(Region.keyUpperx))));
+    	this.upperCorner.setY(Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyUppercorner).get(Region.keyUppery))));
+    	this.upperCorner.setSrsname(region.getString(Region.keySrsname));
+    	
+    	this.lowerCorner.setX(Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyLowercorner).get(Region.keyLowerx))));
+    	this.lowerCorner.setY(Double.parseDouble(String.valueOf(region.getJSONObject(Region.keyLowercorner).get(Region.keyLowery))));
+    	this.lowerCorner.setSrsname(region.getString(Region.keySrsname));
+    	
+    	this.srsname = region.getString(Region.keySrsname);
     }
-
+    
     public Scope() {}
     
-    // Getters
-    public double getUpperx() {
-        return this.upperx;
+    public Point getUpperCorner() {
+    	return this.upperCorner;
     }
-    public double getUppery() {
-        return this.uppery;
+    public void setUpperCorner(Point upperCorner) {
+    	this.upperCorner = upperCorner;
     }
-    public double getLowerx() {
-        return this.lowerx;
+    public Point getLowerCorner() {
+    	return this.lowerCorner;
     }
-    public double getLowery() {
-        return this.lowery;
+    public void setLowerCorner(Point lowerCorner) {
+    	this.lowerCorner = lowerCorner;
     }
-    public String getCRSName() {
-        return this.sourceCRS;
+    
+    public String getSrsName() {
+        return this.srsname;
     }
-
-    // Setters
-    public void setUpperx(double upperx) {
-    	this.upperx = upperx;
-    }
-    public void setUppery(double uppery) {
-    	this.uppery = uppery;
-    }
-    public void setLowerx(double lowerx) {
-    	this.lowerx = lowerx;
-    }
-    public void setLowery(double lowery) {
-    	this.lowery = lowery;
-    }
-    public void setCRSName(String sourceCRS) {
-    	this.sourceCRS = sourceCRS;
+    public void setSrsName(String srsname) {
+    	this.srsname = srsname;
     }
     
     /**
      * Calculate scope centre from scope object.
      * index[0] = x coordinate, index[1] = y coordinate
      */
-    public double[] getScopeCentre() {
-        double [] centreXY = new double[] {(this.lowerx + this.upperx)/2, (this.lowery + this.uppery)/2};
-        return centreXY;
+    public Point getScopeCentre() {
+    	Point centre = new Point();
+    	centre.setX((this.lowerCorner.getX() + this.upperCorner.getX())/2);
+    	centre.setY((this.lowerCorner.getY() + this.upperCorner.getY())/2);
+        centre.setSrsname(this.srsname);
+        return centre;
     }
 
     /**
@@ -85,19 +77,17 @@ public class Scope {
         int zoneNumber;
 
         // obtain x y coordinates of the centre
-        double [] centre = this.getScopeCentre();
+        Point centre = this.getScopeCentre();
 
         // convert coordinates to latitude longitude
-        if (!this.sourceCRS.equals(CRSTransformer.EPSG_4326)) {
-            centre = CRSTransformer.transform(this.sourceCRS, CRSTransformer.EPSG_4326, centre);
-        }
+        centre.transform(CRSTransformer.EPSG_4326);
 
         // Determine zone based on longitude, the size of each UTM zone is 6 degrees
-        zoneNumber = (int) Math.ceil((centre[0] + 180)/6);
+        zoneNumber = (int) Math.ceil((centre.getX() + 180)/6);
 
         // determine whether it's north or south of the equator
         String NS = null; 
-        if (centre[1]>0) {
+        if (centre.getY()>0) {
             NS = "N";
         }
         else {
@@ -114,12 +104,8 @@ public class Scope {
         int timeZone = 0;
         try {
             // obtain x y coordinates of the centre
-            double [] centre = getScopeCentre();
-
-            // convert coordinates to latitude longitude
-            if (!this.sourceCRS.equals(CRSTransformer.EPSG_4326)) {
-                centre = CRSTransformer.transform(this.sourceCRS, CRSTransformer.EPSG_4326, centre);
-            }
+            Point centre = getScopeCentre();
+            centre.transform(CRSTransformer.EPSG_4326); // ensure it's in latlng
 
             // convert from s to hour
             timeZone = getTimeZoneFromGoogle(centre)/3600; 
@@ -134,8 +120,8 @@ public class Scope {
     /** 
      * sends request to google API with centre of scope
      */
-    private int getTimeZoneFromGoogle(double[] centre) {
-        String latlon = String.valueOf(centre[1]) + "," + String.valueOf(centre[0]);
+    private int getTimeZoneFromGoogle(Point centre) {
+        String latlon = String.valueOf(centre.getY()) + "," + String.valueOf(centre.getX());
         URIBuilder builder = new URIBuilder().setScheme("https").setHost("maps.googleapis.com")
                 .setPath("/maps/api/timezone/json");
         builder.setParameter("location", latlon);
@@ -159,17 +145,10 @@ public class Scope {
      */
     public void transform(String targetCRS) {
         // convert lower corner
-        double[] lowercorner = CRSTransformer.transform(this.sourceCRS, targetCRS, new double[] {this.lowerx,this.lowery});
-        this.lowerx = lowercorner[0];
-        this.lowery = lowercorner[1];
-
+    	this.lowerCorner.transform(targetCRS);
         // convert upper corner
-        double[] uppercorner = CRSTransformer.transform(this.sourceCRS, targetCRS, new double[] {this.upperx,this.uppery});
-        this.upperx = uppercorner[0];
-        this.uppery = uppercorner[1];
-
-        // update CRS
-        this.sourceCRS = targetCRS;
+    	this.upperCorner.transform(targetCRS);
+    	this.srsname = targetCRS;
     }
     
     /**
@@ -177,9 +156,12 @@ public class Scope {
      * @param xy
      * @return
      */
-    public boolean isWithinScope(double [] xy) {
+    public boolean isWithinScope(Point p) {
     	boolean within = false;
-    	if ((this.upperx >= xy[0]) && (this.lowerx <= xy[0]) && (this.uppery >= xy[1]) && (this.lowery <= xy[1])) {
+    	Point p_copy = p;
+    	p_copy.transform(this.srsname);
+    	if ((this.upperCorner.getX() >= p.getX()) && (this.lowerCorner.getX() <= p.getX()) 
+    			&& (this.upperCorner.getY() >= p.getY()) && (this.lowerCorner.getY() <= p.getY())) {
     		within = true;
     	}
     	return within;

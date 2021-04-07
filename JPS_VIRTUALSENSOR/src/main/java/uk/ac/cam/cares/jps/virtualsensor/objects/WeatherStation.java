@@ -1,6 +1,8 @@
-package uk.ac.cam.cares.jps.virtualsensor.sparql;
+package uk.ac.cam.cares.jps.virtualsensor.objects;
 
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
 public class WeatherStation implements Comparable<WeatherStation>{
 	private String stationiri;

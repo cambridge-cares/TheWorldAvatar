@@ -1,7 +1,9 @@
-package uk.ac.cam.cares.jps.virtualsensor.sparql;
+package uk.ac.cam.cares.jps.virtualsensor.objects;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 public class Chimney {
 	private double mixtureMolWeight; // kg/mol

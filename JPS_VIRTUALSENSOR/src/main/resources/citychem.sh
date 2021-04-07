@@ -43,36 +43,36 @@ rm -r output*
 cd input
 cp plume* icmhou* ${HOME}/citychem-1.3/INPUT/other
 # finish copying restart files
-cd ${inputDir}/input
-cp *.hgt ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
+#cd ${inputDir}/input
+#cp *.hgt ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
 #Copying the srtm file conversion script
 #cp ${inputDir}/input/srtm_generate_hdr.sh ${HOME}/citychem-1.3/preproc/auxiliary
+##cd ${HOME}/citychem-1.3/preproc/auxiliary
+#chmod +x srtm_generate_hdr.sh
+##Changing directory to srtm3
+#cd ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
+#files=$( ls *.hgt )
+#for i in $files ; do
+#	echo Next: $i
+#	zip $i.zip $i
+#	cd ..
+#	./srtm_generate_hdr.sh ./srtm3/$i.zip
+#	fileName=${i%.*}
+#	mv $fileName.* ./srtm3
+#	cd srtm3
+#done
 #cd ${HOME}/citychem-1.3/preproc/auxiliary
-chmod +x srtm_generate_hdr.sh
-#Changing directory to srtm3
-cd ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
-files=$( ls *.hgt )
-for i in $files ; do
-	echo Next: $i
-	zip $i.zip $i
-	cd ..
-	./srtm_generate_hdr.sh ./srtm3/$i.zip
-	fileName=${i%.*}
-	mv $fileName.* ./srtm3
-	cd srtm3
-done
-cd ${HOME}/citychem-1.3/preproc/auxiliary
-#Copying aermap.inp from input to preproc/auxiliary
-cp ${inputDir}/input/aermap.inp ./
-./aermap.exe
-mv *.OUT *.out *.REC TiffDebug* ./output
-cp ./output/AERMAP*.REC ${HOME}/citychem-1.3/INPUT/other
-cp ./output/AERMAP*.REC ${HOME}/citychem-1.3/INPUT/emis
+##Copying aermap.inp from input to preproc/auxiliary
+#cp ${inputDir}/input/aermap.inp ./
+#./aermap.exe
+#mv *.OUT *.out *.REC TiffDebug* ./output
+#cp ./output/AERMAP*.REC ${HOME}/citychem-1.3/INPUT/other
+#cp ./output/AERMAP*.REC ${HOME}/citychem-1.3/INPUT/emis
 cp ${inputDir}/input/cctapm_meta_PSE.inp ${HOME}/citychem-1.3/preproc/cctapm_meta.inp
-cd ..
-./static4cc.exe
-cp ${HOME}/citychem-1.3/INPUT/emis/*.asc ${HOME}/citychem-1.3/INPUT/other
-cp ${HOME}/citychem-1.3/INPUT/other/*.asc ${HOME}/citychem-1.3/preproc/mcwind/input
+#cd ..
+#./static4cc.exe
+#cp ${HOME}/citychem-1.3/INPUT/emis/*.asc ${HOME}/citychem-1.3/INPUT/other
+#cp ${HOME}/citychem-1.3/INPUT/other/*.asc ${HOME}/citychem-1.3/preproc/mcwind/input
 #Copying run_file.asc from input
 cp ${inputDir}/input/run_file.asc ${HOME}/citychem-1.3/preproc/mcwind
 cp ${inputDir}/input/mcwind_input*.txt ${HOME}/citychem-1.3/preproc/mcwind/input

@@ -12,8 +12,8 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
 /**
@@ -40,7 +40,7 @@ public class GetSensorsWithinBounds extends JPSHttpServlet{
 			joScope.put(Region.keyLowercorner, joLowercorner);
 			joScope.put(Region.keySrsname, "EPSG:4326");
 
-			Scope sc = new Scope(joScope);
+			Scope sc = new Scope();
 
 			JSONArray result = SensorSparql.queryAirStationsWithinScope(sc);
 			response.setContentType("application/json");
