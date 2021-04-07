@@ -7,7 +7,7 @@ from pprint import pprint
 from .species_validator import SpeciesValidator
 from .attribute_mapping import AttributeMapper
 
-from .locations import JPS_SPARQL_TEMPLATE_PATH
+from .locations import JPS_SPARQL_TEMPLATE_PATH, CONFIG_PATH
 from .search_interface import SearchInterface
 from .OntoCompChem_Queries import ontocompchem_simple_intents, \
     ROTATIONAL_CONSTANT_QUERY, VIBRATION_FREQUENCY_QUERY, \
@@ -38,7 +38,7 @@ def fire_query_to_ldf_ontokin(query, products, reactants):
         reactants = []
     print("query fired to LDF server")
     print(query)
-    url = "http://localhost:3000/query?"
+    url = "http://%s:%s/query?"%()
     values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
     full_url = url + urllib.parse.urlencode(values)
     req = urllib.request.Request(full_url)
@@ -85,10 +85,15 @@ class JPS_query_constructor:
         print(JPS_SPARQL_TEMPLATE_PATH)
         with open(JPS_SPARQL_TEMPLATE_PATH) as f:
             self.template_dict = json.loads(f.read())
+
+        with open(CONFIG_PATH) as f:
+            self.config = json.loads(f.read())
+
         self.serach_interface = SearchInterface()
         self.socketio = socketio
         self.validator = SpeciesValidator()
         self.attribute_mapper = AttributeMapper()
+
         # self.fire_query.clear_cache()
         # self.fire_query_ontochemcomp.clear_cache()
 
