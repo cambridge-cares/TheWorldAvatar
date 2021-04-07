@@ -11,7 +11,7 @@
 
 # Set up the nodejs buffer server 
 #########################
-FROM dordoka/tomcat:tomcat8.5
+FROM lobster1234/tomcat:8.5.20
 #########################
 RUN apt-get update -y 
 RUN apt-get install expect -y
@@ -20,11 +20,17 @@ RUN apt-get install dos2unix -y
 COPY ./LDF_SERVER_JAVA/Server .
 RUN mkdir /usr/src/app 
 COPY ./docker/credential /usr/src/app
+
+RUN apt-get update -y
+RUN apt-get upgrade -y
+RUN apt-get install openssh-client -y
+
 RUN dos2unix /usr/src/app/download-hdt.sh
 RUN /usr/bin/expect /usr/src/app/download-hdt.sh
 RUN cp ./kg/* ./
-RUN cp ./ontokin_clean.hdt ./bin/ontokin_clean.hdt
+RUN cp ./ontokin_clean.hdt /usr/local/tomcat/bin/ontokin_clean.hdt
 RUN cp ./ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
+RUN apt-get install unzip -y
 RUN unzip node_modules
 RUN mkdir /usr/src/app/node_modules
 RUN mv ./node_modules/* /usr/src/app/node_modules
@@ -37,8 +43,8 @@ RUN mv ./node_modules/* /usr/src/app/node_modules
 # COPY ldfserver.war ./webapps
 RUN apt-get update -y 
 RUN apt install maven -y
-# RUN apt-get install software-properties-common -y 
-# RUN apt-get update -y 
+RUN apt-get install software-properties-common -y 
+RUN apt-get update -y 
 RUN add-apt-repository ppa:openjdk-r/ppa -y
 RUN apt-get update -y 
 RUN apt-get install openjdk-15-jdk --fix-broken -y
@@ -54,7 +60,7 @@ RUN update-alternatives --set javac /usr/lib/jvm/java-15-openjdk-amd64/bin/javac
 
 # RUN apt-get install openjdk-11-jdk -y
 RUN mvn -Dmaven.javadoc.skip=true install
-RUN mv /opt/tomcat/target/ldfserver-0.2.4.war /opt/tomcat/webapps/ldfserver.war
+RUN mv /target/ldfserver-0.2.4.war /usr/local/tomcat/webapps/ldfserver.war
 # RUN ./bin/startup.sh
 #########################
 
@@ -86,4 +92,4 @@ RUN npm install pm2 -g
 
 # ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
 
-ENTRYPOINT ["/bin/bash","-c", "redis-server --daemonize yes && /opt/tomcat/bin/startup.sh && pm2-runtime comunica_node.js && bash"]
+ENTRYPOINT ["/bin/bash","-c", "redis-server --daemonize yes && /usr/local/tomcat/bin/startup.sh && pm2-runtime comunica_node.js && bash"]
