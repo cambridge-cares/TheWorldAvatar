@@ -113,7 +113,7 @@ function initCreateNewSensor(map) {
         infoWindow = new google.maps.InfoWindow({
             position: mapsMouseEvent.latLng,
         });
-        let createSensorURL = prefix + "/JPS_DISPERSION/CreateNewSensor";
+        let createSensorURL = prefix + "/JPS_VIRTUALSENSOR/CreateNewSensor";
         let lat = mapsMouseEvent.latLng.lat;
         let lng = mapsMouseEvent.latLng.lng;
         $.get(createSensorURL, { lat, lng }).done(function (r) {
@@ -129,7 +129,7 @@ function initCreateNewSensor(map) {
 }
 
 function renderSensorsWithinBounds(bounds) {
-    var getSensors = prefix + "/JPS_DISPERSION/GetSensorsWithinBounds";
+    var getSensors = prefix + "/JPS_VIRTUALSENSOR/GetSensorsWithinBounds";
     var upperx = bounds.getNorthEast().lng;
     var uppery = bounds.getNorthEast().lat;
     var lowerx = bounds.getSouthWest().lng;
@@ -142,7 +142,7 @@ function renderSensorsWithinBounds(bounds) {
 }
 
 function createStation(lat, lng, airStationIRI) {
-    var querySensorProperties = prefix + "/JPS_DISPERSION/QuerySensorProperties";
+    var querySensorProperties = prefix + "/JPS_VIRTUALSENSOR/QuerySensorProperties";
     let marker = new google.maps.Marker({
         position: new google.maps.LatLng(lat, lng),
         map: map,
