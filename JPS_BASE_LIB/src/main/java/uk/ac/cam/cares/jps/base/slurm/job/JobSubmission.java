@@ -1077,7 +1077,7 @@ public class JobSubmission{
 	 * @return
 	 */
 	public boolean hostAvailabilityCheck(String server, int port) {
-		boolean available = true;server = "login-cpu.hpc.cam.ac.uk";
+		boolean available = true;
 		try (final Socket dummy = new Socket(server, port)){
 		} catch (IOException | NullPointerException e) {
 			available = false;
