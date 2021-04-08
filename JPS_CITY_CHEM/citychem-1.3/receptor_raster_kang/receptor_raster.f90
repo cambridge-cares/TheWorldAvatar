@@ -14,7 +14,7 @@
       
       write(*,*) "Generate receptor raster file" 
       
-      open(unit=10,file="./input/receptor_input.txt")  !! open input file to define receptor raster geometry
+      open(unit=10,file="./receptor_input.txt")  !! open input file to define receptor raster geometry
       read(10,10) name_var, simid
       write(*,10) name_var, simid
       read(10,20) name_var, nmp
@@ -37,12 +37,14 @@
       write(*,20) name_var, rcmax
  
 
-      open(unit=20,file="./output/receptor_stations_raster.txt")
+      open(unit=20,file="../INPUT/receptor_stations_raster.txt")
 
       write(20,11) simid
       write(20,12) dx,dy
       write(20,13) 
       
+      ! KFL: The following codes are not working, set nstation = 0
+      nmp = 0
       if (nmp .ge. 1) then    !!! reading the monitor station information 
       do i=1,nmp
          read (10,60) name_var, x_mp,y_mp,z_mp,name_mp
