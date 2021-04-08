@@ -1,0 +1,14 @@
+/var/log/nginx/concrete-access.log {
+        hourly
+        missingok
+        rotate 90
+        notifempty
+        create 640 nginx adm
+		olddir /var/log/nginx/store
+        sharedscripts
+        postrotate
+                if [ -f /var/run/nginx.pid ]; then
+                        kill -USR1 `cat /var/run/nginx.pid`
+                fi
+        endscript
+}
