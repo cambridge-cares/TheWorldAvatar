@@ -32,25 +32,19 @@ $ source py4jps_venv\bin\activate
 
 The above commands will create and activate the virtual environment `py4jps_venv` in the current directory.
 
-## Installation from the wheel
+## Installation via pip
 
-This type of installation is recommended for non-developers where the `py4jps` package is installed by pip from the provided wheel file:
-```bash
-(py4jps_venv) $ pip install <provided_py4jps_wheel_file_name>.whl
+To install the `py4jps` simply run the following command:
+
+```sh
+(py4jps_venv) $ pip install py4jps
 ```
 
 The above command will install the `py4jps` package including the `JpsBaseLib` library that has been packaged together with the code.
 
-## Installation from the tarball
-
-Another way of installing the `py4jps` is from its tarball. Similarly, to the wheel installation, this option is recommended for non-developers where the `py4jps` source code and default `JpsBaseLib` library are zipped together into the final tar.gz file. To install the package simply run:
-```bash
-(py4jps_venv) $ pip install <provided_py4jps_tarball>.tar.gz
-```
-
 ## Installation from the version-controlled source (for developers)
 
-This type of installation is only for the developers. To install `py4jps` directly from its repository you need to first clone the `TheWorldAvatar` project. Once that has been done, simply navigate to the *TheWorldAvatar\JPS_BASE_LIB\python_wrapper* directory and execute the following commands:
+This type of installation is only for the developers. To install `py4jps` directly from its repository you need to first clone the `TheWorldAvatar` project. Then simply navigate to the *TheWorldAvatar\JPS_BASE_LIB\python_wrapper* directory and execute the following commands:
 ```bash
 # build and install
 (py4jps_venv) $ pip install .
