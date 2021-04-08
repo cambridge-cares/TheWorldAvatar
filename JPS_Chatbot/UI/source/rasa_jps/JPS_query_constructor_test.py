@@ -46,6 +46,25 @@ WHERE  {
 } 
   
 '''
+
+
+q3 = '''
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?POLARIZABILITY ?Unit
+{
+
+         ?TransportModel ontokin:hasPolarizability ?POLARIZABILITY .
+     ?Species ontokin:hasTransportModel ?TransportModel .
+     ?Species rdfs:label ?label .
+         ?Species rdfs:label "C2H2O2" .
+
+          OPTIONAL{
+                ?TransportModel ontokin:hasPolarizabilityUnits ?Unit .
+     }
+
+}  LIMIT 1
+'''
 p1 = "OH"
 p2 = "H"
 r1 = "O"
@@ -58,7 +77,7 @@ reactants = [r2]
 start_time = time.time()
 
 url = "http://localhost:3000/query?"
-values = {"query": q2, "products": json.dumps(products), "reactants": json.dumps(reactants)}
+values = {"query": q3, "products": json.dumps(products), "reactants": json.dumps(reactants)}
 full_url = url + urllib.parse.urlencode(values)
 
 print(full_url)

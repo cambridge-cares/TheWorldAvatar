@@ -30,21 +30,6 @@ import datetime
 # except ImportError:
 #     from run import socketio
 
-def fire_query_to_ldf_ontokin(query, products, reactants):
-    print('----------- firing the query to LDF -------------')
-    if products is None:
-        products = []
-    if reactants is None:
-        reactants = []
-    print("query fired to LDF server")
-    print(query)
-    url = "http://%s:%s/query?"%()
-    values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
-    full_url = url + urllib.parse.urlencode(values)
-    req = urllib.request.Request(full_url)
-    response = urllib.request.urlopen(req).read()
-    print(response)
-    return response
 
 
 def fire_query_ontochemcomp(query):
@@ -96,6 +81,24 @@ class JPS_query_constructor:
 
         # self.fire_query.clear_cache()
         # self.fire_query_ontochemcomp.clear_cache()
+
+    def fire_query_to_ldf_ontokin(self, query, products, reactants):
+        print('----------- firing the query to LDF -------------')
+        if products is None:
+            products = []
+        if reactants is None:
+            reactants = []
+        print("query fired to LDF server")
+        print(query)
+        url = "http://%s:%s/query?" % (self.config['ldf_host'], str(self.config['ldf_port']))
+        print(url)
+        print("===================== here ==================")
+        values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
+        full_url = url + urllib.parse.urlencode(values)
+        req = urllib.request.Request(full_url)
+        response = urllib.request.urlopen(req).read()
+        print(response)
+        return response
 
     @staticmethod
     def process_species_for_ontocompchem(species):
@@ -265,12 +268,12 @@ class JPS_query_constructor:
             q = HIGH_SPEED_GENERAL_QUERY % (attribute_name, attribute_iri, attribute_name, species, attribute_iri)
             print('================ GENERAL QUERY ===============')
             print(q)
-            rst = fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
+            rst = self.fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
             return rst
         # # 1. att name, 1.5 species  2. att iri name 3. att name 4. att iri name
         elif intent == 'rotational_relaxation_collision':
             q = RELAXATION_COLLISION % species
-            rst = fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
+            rst = self.fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
 
         else:
             return None
@@ -334,7 +337,7 @@ class JPS_query_constructor:
     def query_mechanism_by_reaction(self, reactants, products):
         print('query_mechanism_by_reaction')
         q = self.template_dict['select_mechanism_by_reaction']
-        rst = fire_query_to_ldf_ontokin(q, products, reactants).decode('utf-8')
+        rst = self.fire_query_to_ldf_ontokin(q, products, reactants).decode('utf-8')
         return rst
 
     # to find reactions by reactants and products
@@ -342,7 +345,7 @@ class JPS_query_constructor:
         print('query_by_reaction_only')
         query = self.template_dict['select_reaction_by_species']
         print('query', query)
-        rst = fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
+        rst = self.fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
         return rst
 
         # TODO: construct the query by only reactants and products
@@ -356,10 +359,10 @@ class JPS_query_constructor:
         print(attribute)
         if 'hasArrheniusCoefficient' in attribute:
             query = self.template_dict['query_reaction_property']['ArrheniusCoefficient']
-            rst = fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
+            rst = self.fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
             return rst
 
         elif 'isReversible' in attribute:
             query = self.template_dict['query_reaction_property']['isReversible']
-            rst = fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
+            rst = self.fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
             return rst
