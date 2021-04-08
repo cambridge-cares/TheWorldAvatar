@@ -45,10 +45,12 @@ HOMO_MIN_2_ENERGY = 'HOMO-2 energy'
 LUMO_ENERGY = 'LUMO energy'
 LUMO_PLUS_1_ENERGY = 'LUMO+1 energy'
 LUMO_PLUS_2_ENERGY = 'LUMO+2 energy'
-# group 7 (program, run date)
+# group 7 (program, run date, scan specifics)
 PROGRAM_NAME = 'Program name'
 PROGRAM_VERSION = 'Program version'
 RUN_DATE = 'Run date'
+SCANFLAG = 'ScanFlag'
+SCANPOINTS = 'Scan Points'
 
 # misc keys, not uploaded to the kg
 # mostly used for inferring other properties
@@ -71,7 +73,7 @@ CCKEYS_DATA = [
             ELECTRONIC_ZPE_ENERGY,HOMO_ENERGY,HOMO_MIN_1_ENERGY ,
             HOMO_MIN_2_ENERGY,LUMO_ENERGY,LUMO_PLUS_1_ENERGY,LUMO_PLUS_2_ENERGY,
             PROGRAM_NAME, PROGRAM_VERSION,
-            RUN_DATE
+            RUN_DATE, SCANFLAG, SCANPOINTS
         ]
 
 # collate misc keys
@@ -290,7 +292,7 @@ class CcGaussianParser():
                     data[ATOM_TYPES].append(el)
                     cur_line = cur_line + 1
                     line = log_lines[cur_line].strip()
-            elif 'Standard orientation:' in line and data[GEOM]==None:
+            elif 'Standard orientation:' in line and data[GEOM] is None:
                 data[GEOM] = []
                 data[ATOM_TYPES] = []
 
@@ -615,8 +617,25 @@ class CcGaussianParser():
                     for at in data[ATOM_TYPES]:
                         data[ATOM_MASSES].append(eld.get_el_wt_by_symbol(at))
                     data[ATOM_MASSES_UNIT] = 'atomic'
-        #================================================
-
+        #================================================        
+        def check_scan_job(data, cur_line, log_lines):
+            # tries to extract electronic energy from a log file line
+            line = log_lines[cur_line]
+            placeholder_GEOM = None
+            placeholder_energy = None
+            if "The following ModRedundant input section has been read:".lower() in line.lower():
+                data[SCANFLAG] = True
+            if data[SCANFLAG] == True:
+                data[SCANPOINTS] = self.cclib_data.scanparm
+                placeholder_GEOM = self.cclib_data.scancoords
+                placeholder_energy = self.cclib_data.scanenergies
+            if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
+                data[SCANFLAG] = None
+            else:
+                data[GEOM] = placeholder_GEOM
+                data[ELECTRONIC_ENERGY] = placeholder_energy
+                data[GEOM] = data[GEOM].tolist()
+            return cur_line
         #================================================
         # parse_log body
         #================================================
@@ -655,6 +674,7 @@ class CcGaussianParser():
             cur_line = check_TD_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_Casscf_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_Casscf_MP2_E0(parsedmisc, cur_line,log_lines)
+            cur_line = check_scan_job(parseddata, cur_line,log_lines)
 
             # check if we have reached the log footer
             # if so, record the line number
@@ -674,7 +694,8 @@ class CcGaussianParser():
         # post-process certain results
         set_geom_type(parseddata)
         correct_Casscf_Mp2_method(parseddata, parsedmisc)
-        resolve_energy(parseddata, parsedmisc)
+        if parseddata[SCANFLAG] is None:
+            resolve_energy(parseddata, parsedmisc)
         resolve_atom_masses(parseddata)
 
         # remove data with None values

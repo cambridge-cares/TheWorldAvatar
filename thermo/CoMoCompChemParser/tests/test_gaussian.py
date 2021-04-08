@@ -25,17 +25,18 @@ CompChemObj = OntoCompChemData()
 
 Test_suite1 = {
                'g1': ['co2_g1_g09.log'],
-               'g2': ['co2_g2_g09.log', 'co2_g2mp2_g09.log'],
-               'linked': ['co2_linked_g09.log'],
-               'cas': ['co2_cas_g09.log', 'co2_casmp2.log'],
-               'cbs-4m': ['co2_cbs4m_g09.log'],
-               'cbs-apno': ['co2_cbsapno_g09.log'],
-               'dft': ['co2_freq_g09.log','co2_sp_dft_g09.log','co2_opt_freq_dft_p_g09.log','co2_opt_freq_dft_t_g09.log','h_sp_n_g09.log'],
-               'ccsd': ['co2_ccsd_g09.log','co2_qci_g09.log'],
-               'ci': ['co2_cis.log'],
-               'mpn': ['oh_sp_mp4_g03.log'],
-               'extra':['Cl.g09', 'Ti.g09','TiCl4.g09','O_3let.g09','71-41-0.g09','71-43-2.g09','A2R5H.log', '1b.log'],
-               'failed_jobs':['c2h4_opt_dft_g09_failed.log', 'c2h4_opt_dft_g09_powercut.log','co2_linked_g09.log']
+               #'g2': ['co2_g2_g09.log', 'co2_g2mp2_g09.log'],
+               #'linked': ['co2_linked_g09.log'],
+               #'cas': ['co2_cas_g09.log', 'co2_casmp2.log'],
+               #'cbs-4m': ['co2_cbs4m_g09.log'],
+               #'cbs-apno': ['co2_cbsapno_g09.log'],
+               #'dft': ['co2_freq_g09.log','co2_sp_dft_g09.log','co2_opt_freq_dft_p_g09.log','co2_opt_freq_dft_t_g09.log','h_sp_n_g09.log'],
+               #'ccsd': ['co2_ccsd_g09.log','co2_qci_g09.log'],
+               #'ci': ['co2_cis.log'],
+               #'mpn': ['oh_sp_mp4_g03.log'],
+               #'extra':['Cl.g09', 'Ti.g09','TiCl4.g09','O_3let.g09','71-41-0.g09','71-43-2.g09','A2R5H.log', '1b.log'],
+               #'failed_jobs':['c2h4_opt_dft_g09_failed.log', 'c2h4_opt_dft_g09_powercut.log','co2_linked_g09.log']
+               #'scans':['ethane_scan_short.log']
 }
 
 class TestGaussianParser(unittest.TestCase):

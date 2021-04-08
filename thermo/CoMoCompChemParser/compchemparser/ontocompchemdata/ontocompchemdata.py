@@ -533,6 +533,7 @@ class OntoCompChemData:
 
 
                  if "Geometry" in dict_data:
+                     print(atom_iterator)
                      for gkey in dict_data["Geometry"][atom_iterator]:
                          '''generate coordinate X'''
                          ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateX,URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
@@ -554,9 +555,10 @@ class OntoCompChemData:
                          ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
                          ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][2])))
                          ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
-
-                 atom_iterator = atom_iterator +1
-
+                 if atom_iterator < 2:        
+                     atom_iterator = atom_iterator +1
+                 elif atom_iterator == 2:
+                     atom_iterator = 0
 
 
     def generate_atom_count(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
