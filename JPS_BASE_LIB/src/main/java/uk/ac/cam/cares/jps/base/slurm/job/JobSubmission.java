@@ -428,13 +428,13 @@ public class JobSubmission{
 	 * 
 	 */
 	public void monitorJobs() throws SlurmJobException{
-		if(!hostAvailabilityCheck(getHpcAddress(), 22)){
-			System.out.println("The agent cannot connect to the HPC server with address " + getHpcAddress());
-			session = null;
-			return;
-		}
-		scheduledIteration++;
 		try {
+			if(!hostAvailabilityCheck(getHpcAddress(), 22)){
+				System.out.println("The agent cannot connect to the HPC server with address " + getHpcAddress());
+				session = null;
+				return;
+			}
+			scheduledIteration++;
 			if (session == null || scheduledIteration%10==0) {
 				if(session!=null && session.isConnected()){
 					session.disconnect();
@@ -1076,10 +1076,10 @@ public class JobSubmission{
 	 * @param port referes to the port number
 	 * @return
 	 */
-	public boolean hostAvailabilityCheck(String server, int port) {
+	public boolean hostAvailabilityCheck(String server, int port) throws IOException {
 		boolean available = true;
 		try (final Socket dummy = new Socket(server, port)){
-		} catch (IOException | NullPointerException e) {
+		} catch (UnknownHostException | IllegalArgumentException e) {
 			available = false;
 		}
 		return available;
