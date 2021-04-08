@@ -25,8 +25,8 @@ puts "Reading password.txt file..."
 set password [slurp /usr/src/app/password.txt]
 puts "Read password.txt file"
 
-# Download "models_wiki" files
-puts "Downloading from 'models_wiki' directory..."
+# Download "hdt and node libraries" files
+puts "Downloading from 'kg' directory..."
 spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/kg .
 
 expect "*authenticity*"
