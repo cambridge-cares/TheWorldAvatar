@@ -1,4 +1,5 @@
 #!/bin/bash
 
-echo 'Hello World!'
-echo 'Hello World!' > /test.log
+# Start cron in the background
+cron
+echo "Cron daemon has been started."
