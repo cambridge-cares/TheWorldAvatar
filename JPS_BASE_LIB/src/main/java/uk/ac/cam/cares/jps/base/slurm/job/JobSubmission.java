@@ -445,13 +445,17 @@ public class JobSubmission{
 				session.setPassword(pwd);
 
 				try {
+					// Attempt to connect to a running instance of Pageant
 					Connector con = new PageantConnector();
 					IdentityRepository irepo = new RemoteIdentityRepository(con);
 					jsch.setIdentityRepository(irepo);
+					// If successful then attempt to authenticate using a public key first,
+					// falling back to using the password if no valid key is found
 					session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
 				} catch (AgentProxyException e) {
+					// Connecting to Pageant has failed so skip trying to authenticate
+					// using a public key and just try with the password
 					session.setConfig("PreferredAuthentications", "password");
-					logger.info("Failed to load identities from Pageant", e);
 				}
 
 				session.setConfig("StrictHostKeyChecking", "no");
