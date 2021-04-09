@@ -137,8 +137,7 @@ public class EpisodeAgent extends JPSAgent{
             try { //for control file
                 createControlWeatherORCityChemFile(inputPath, "run_file.asc", mainStation,subStation,sc);
                 createControlWeatherORCityChemFile(inputPath, "citychem_restart.txt",mainStation,subStation,sc);
-                createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta_LSE.inp",sc);
-                createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta_PSE.inp",sc);
+                createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta.inp",sc);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -465,20 +464,14 @@ public class EpisodeAgent extends JPSAgent{
 
 			return fileContext;
 
-		} else if (filename.contains("cctapm_meta_LSE")||filename.contains("cctapm_meta_PSE")) {
-			int size = inputparameter.getInt("sourceinput");
-            String lseORpse=filename.split("_")[2].split(".inp")[0];     
-            File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir","cctapm_meta.inp").toString());
+		} else if (filename.contains("cctapm_meta.inp")) {
+			int size = inputparameter.getInt("sourceinput");    
+            File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir",filename).toString());
    			fileContext = FileUtils.readFileToString(file);   
 			String[] line = fileContext.split("\n");
 			List<String> lineoffile = Arrays.asList(line);
 			List<String> newcontent = new ArrayList<String>();
-			for (int r = 0; r < 9; r++) {
-				newcontent.add(lineoffile.get(r));
-			}
-			String line10b = separator + "!" + separator + lineoffile.get(9).split("!")[1];
-			newcontent.add(" '"+lseORpse+"'"+ line10b);
-			for (int r = 10; r < 12; r++) {
+			for (int r = 0; r < 12; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
 			String line13b = separator + "!" + separator + lineoffile.get(12).split("!")[1];
