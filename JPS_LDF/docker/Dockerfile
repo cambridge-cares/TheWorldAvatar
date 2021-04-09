@@ -22,16 +22,14 @@ RUN apt-get install openssh-client -y
 #########################
 COPY ./LDF_SERVER_JAVA/Server .
 RUN mkdir /usr/src/app 
-COPY ./docker/credential /usr/src/app
+COPY ./docker/credentials /usr/src/app
 RUN /usr/bin/expect /usr/src/app/download-hdt.sh
 RUN rm /usr/src/app/host.txt 
 RUN rm /usr/src/app/password.txt 
 RUN cp ./kg/* ./
 RUN cp ./ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
 RUN apt-get install unzip -y
-RUN unzip node_modules
-RUN mkdir /usr/src/app/node_modules
-RUN mv ./node_modules/* /usr/src/app/node_modules
+RUN unzip node_modules.zip -d /usr/src/app
 #########################
 
 
@@ -50,9 +48,6 @@ RUN apt-get install redis-server -y
 ######################### 
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
 RUN apt-get install nodejs -y --fix-missing
-RUN node -v
-RUN npm -v
-RUN apt install vim -y 
 WORKDIR /usr/src/app
 COPY ./CACHE_SERVER .
 RUN npm install
