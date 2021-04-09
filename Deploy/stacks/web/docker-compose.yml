@@ -37,6 +37,19 @@ services:
         target: /var/log/nginx/store
   
   
+  # GoAccess
+  go_access:
+    image: docker.cmclinnovations.com/go_access:1.0.0-SNAPSHOT
+    build: "./go_access"
+    container_name: "go_access-${MODE}"
+    restart: unless-stopped
+    labels:
+      description: "Real-time web log analyzer."
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+  
+	
   # JPS Chatbot
   # NOTE - You must set up Vienna credentials before attempting to build this server,
   #        see the JPS_Chatbot/docker/README.txt file for details.
