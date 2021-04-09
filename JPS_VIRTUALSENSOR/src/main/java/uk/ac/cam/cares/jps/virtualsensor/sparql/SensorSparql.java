@@ -21,6 +21,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
@@ -496,7 +497,7 @@ public class SensorSparql {
     	SelectQuery query = Queries.SELECT();
     	
     	// properties we want to query
-    	Variable station = SparqlBuilder.var("stationiri");
+    	Variable station = SparqlBuilder.var(Region.keyAirStationIRI);
     	Variable xvalue = SparqlBuilder.var("xvalue");
     	Variable yvalue = SparqlBuilder.var("yvalue");
     	
