@@ -13,17 +13,20 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 @WebServlet(urlPatterns = {"/scenariomod/*"})
-/** Used if new Scenario is created. ESS would have its own code name, it runs into here to create new scenario
+/** Used if new Scenario is created. it runs into here to create new scenario
  * Otherwise it should just call ScenarioAgent
  * @author LONG01
  *
  */
-public class ScenarioModifier extends JPSHttpServlet{
+public class ScenarioModifier extends JPSAgent{
 
 	/**
 	 * 
@@ -33,7 +36,7 @@ public class ScenarioModifier extends JPSHttpServlet{
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void dxxoGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		logger.debug(jo.toString());
@@ -53,4 +56,19 @@ public class ScenarioModifier extends JPSHttpServlet{
 		//F, why 
 		AgentCaller.printToResponse(result, response);
 	}
+	@Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
+    	validateInput(requestParams);
+    	String path = MiscUtil.optNullKey(requestParams, JPSConstants.PATH);
+		logger.debug("called for path=" + path);
+		String[] parts = ScenarioHelper.dividePath(path);
+		String scenarioName = parts[0]; //name of scenario: base, testNuclear
+		String newscenarioName = scenarioName + UUID.randomUUID().toString();//give random uuid to distinguish
+		path.replace(scenarioName, newscenarioName);//replace string
+		path.replaceFirst("scenariomod", "scenario");//substitute string to call on path. 
+		logger.info("new path: " + path);
+		String result = AgentCaller.executeGetWithJsonParameter("jps/scenario/"+newscenarioName+"/call", requestParams.toString()); //get a String result
+    	return new JSONObject(result);
+    }
+	
 }
