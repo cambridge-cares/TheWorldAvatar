@@ -136,7 +136,7 @@ function renderSensorsWithinBounds(bounds) {
     var lowery = bounds.getSouthWest().lat;
     $.get(getSensors, { upperx, uppery, lowerx, lowery }).done(function (stations) {
         stations.map(station => {
-            createStation(station.yvalue, station.xvalue, station.airStationIRI);
+            createStation(station.yvalue, station.xvalue, station.stationiri);
         })
     })
 }
