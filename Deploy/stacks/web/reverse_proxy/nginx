@@ -3,6 +3,9 @@
         missingok
         rotate 90
         notifempty
+		dateext
+		dateformat .%Y-%m-%d
+		extension .log
         create 640 nginx adm
 		olddir /var/log/nginx/store
         sharedscripts

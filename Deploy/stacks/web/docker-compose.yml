@@ -16,7 +16,10 @@ services:
       hash: "${HASH}"
   
   
+  
   # Reverse Proxy
+  # NOTE - A bind mount is provided so that daily access logs can be kept across all
+  #	       deployments of this container.
   reverse_proxy:
     image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT
     build:
@@ -29,6 +32,10 @@ services:
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
+    volumes:
+      - type: bind
+      - source: /var/log/reverse_proxy
+      - target: /var/log/nginx/store
   
   
   # JPS Chatbot
