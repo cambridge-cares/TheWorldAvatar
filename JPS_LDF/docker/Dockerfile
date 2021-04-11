@@ -27,7 +27,8 @@ RUN /usr/bin/expect /usr/src/app/download-hdt.sh
 RUN rm /usr/src/app/host.txt 
 RUN rm /usr/src/app/password.txt 
 RUN cp ./kg/* ./
-RUN cp ./ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
+RUN mv ./ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
+RUN mv ./ontocompchem_clean.hdt /usr/src/app/ontocompchem_clean.hdt
 RUN apt-get install unzip -y
 RUN unzip node_modules.zip -d /usr/src/app
 #########################
