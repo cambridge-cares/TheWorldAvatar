@@ -190,7 +190,7 @@ public class TestScenario extends TestCase {
 		System.out.println(datasetUrl);
 		System.out.println(expected);
 		System.out.println(path);
-		assertEquals(expected, path);
+		assertEquals(expected, path.replace("\\", "/"));
 	}
 
 	public void testGetIriPrefixBaseScenario() {
