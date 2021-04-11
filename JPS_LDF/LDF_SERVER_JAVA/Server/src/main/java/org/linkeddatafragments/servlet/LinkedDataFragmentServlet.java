@@ -37,6 +37,7 @@ import org.linkeddatafragments.fragments.ILinkedDataFragment;
 import org.linkeddatafragments.fragments.ILinkedDataFragmentRequest;
 import org.linkeddatafragments.fragments.SPARQLRegex;
 import org.linkeddatafragments.util.MIMEParse;
+import org.linkeddatafragments.util.ResponseTemplates;
 import org.linkeddatafragments.views.ILinkedDataFragmentWriter;
 import org.linkeddatafragments.views.LinkedDataFragmentWriterFactory;
 
@@ -49,139 +50,9 @@ import org.linkeddatafragments.views.LinkedDataFragmentWriterFactory;
  */
 public class LinkedDataFragmentServlet extends HttpServlet {
 	
-
+	// TODO: Separate the handshakes and templates of responses
     private final static long serialVersionUID = 1L;
-    private final static String handshake = "{\n"
-    		+ "  \"@graph\" : [ {\n"
-    		+ "    \"@id\" : \"_:b0\",\n"
-    		+ "    \"@type\" : \"http://www.w3.org/2002/07/owl#Restriction\"\n"
-    		+ "  }, {\n"
-    		+ "    \"@id\" : \"_:b1\",\n"
-    		+ "    \"property\" : \"rdf:subject\",\n"
-    		+ "    \"variable\" : \"subject\"\n"
-    		+ "  }, {\n"
-    		+ "    \"@id\" : \"_:b2\",\n"
-    		+ "    \"first\" : \"http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Product\",\n"
-    		+ "    \"rest\" : {\n"
-    		+ "      \"@list\" : [ \"http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Reactant\" ]\n"
-    		+ "    }\n"
-    		+ "  }, {\n"
-    		+ "    \"@id\" : \"_:b4\",\n"
-    		+ "    \"property\" : \"rdf:predicate\",\n"
-    		+ "    \"variable\" : \"predicate\"\n"
-    		+ "  }, \n"
-    		+ "  {\n"
-    		+ "    \"@id\" : \"_:b10\",\n"
-    		+ "    \"property\" : \"rdf:product\",\n"
-    		+ "    \"variable\" : \"product\"\n"
-    		+ "  },\n"
-    		+ "  {\n"
-    		+ "    \"@id\" : \"_:b5\",\n"
-    		+ "    \"@type\" : \"http://www.w3.org/2002/07/owl#Restriction\",\n"
-    		+ "    \"allValuesFrom\" : \"http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Element\",\n"
-    		+ "    \"onProperty\" : \"http://www.theworldavatar.com/kb/ontokin/ontokin.owl#indicatesNumberOf\"\n"
-    		+ "  }, {\n"
-    		+ "    \"@id\" : \"_:b6\",\n"
-    		+ "    \"first\" : \"http://www.theworldavatar.com/kb/ontokin/ontokin.owl#FallOffModelCoefficient\",\n"
-    		+ "    \"rest\" : \"_:b7\"\n"
-    		+ "  }, {\n"
-    		+ "    \"@id\" : \"_:b8\",\n"
-    		+ "    \"mapping\" : [ \"_:b1\", \"_:b4\", \"_:b9\"],\n"
-    		+ "    \"template\" : \"http://localhost:8080/ldfserver/ontokin{?subject,predicate,object}\"\n"
-    		+ "  }, {\n"
-    		+ "    \"@id\" : \"_:b9\",\n"
-    		+ "    \"property\" : \"rdf:object\",\n"
-    		+ "    \"variable\" : \"object\"\n"
-    		+ "  }, {\n"
-    		+ "    \"@id\" : \"http://localhost:8080/ldfserver/ontokin\",\n"
-    		+ "    \"@type\" : [ \"hydra:Collection\", \"hydra:PagedCollection\" ],\n"
-    		+ "    \"void:triples\" : 22262124,\n"
-    		+ "    \"firstPage\" : \"http://localhost:8080/ldfserver/ontokin?page=1\",\n"
-    		+ "    \"hydra:itemsPerPage\" : 10000,\n"
-    		+ "    \"nextPage\" : \"http://localhost:8080/ldfserver/ontokin?page=2\",\n"
-    		+ "    \"hydra:totalItems\" : 22262124\n"
-    		+ "  }, {\n"
-    		+ "    \"@id\" : \"http://localhost:8080/ldfserver/ontokin#dataset\",\n"
-    		+ "    \"@type\" : [ \"void:Dataset\", \"hydra:Collection\" ],\n"
-    		+ "    \"subset\" : \"http://localhost:8080/ldfserver/ontokin\",\n"
-    		+ "    \"hydra:itemsPerPage\" : {\n"
-    		+ "      \"@type\" : \"xsd:long\",\n"
-    		+ "      \"@value\" : \"10000\"\n"
-    		+ "    },\n"
-    		+ "    \"search\" : \"_:b8\"\n"
-    		+ "  } ],\n"
-    		+ "  \"@context\" : {\n"
-    		+ "    \"firstPage\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#firstPage\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"nextPage\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#nextPage\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"triples\" : {\n"
-    		+ "      \"@id\" : \"http://rdfs.org/ns/void#triples\",\n"
-    		+ "      \"@type\" : \"http://www.w3.org/2001/XMLSchema#integer\"\n"
-    		+ "    },\n"
-    		+ "    \"totalItems\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#totalItems\",\n"
-    		+ "      \"@type\" : \"http://www.w3.org/2001/XMLSchema#integer\"\n"
-    		+ "    },\n"
-    		+ "    \"itemsPerPage\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#itemsPerPage\",\n"
-    		+ "      \"@type\" : \"http://www.w3.org/2001/XMLSchema#integer\"\n"
-    		+ "    },\n"
-    		+ "    \"variable\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#variable\"\n"
-    		+ "    },\n"
-    		+ "    \"property\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#property\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"first\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/1999/02/22-rdf-syntax-ns#first\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"rest\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"allValuesFrom\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/2002/07/owl#allValuesFrom\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"onProperty\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/2002/07/owl#onProperty\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"search\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#search\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"subset\" : {\n"
-    		+ "      \"@id\" : \"http://rdfs.org/ns/void#subset\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"template\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#template\"\n"
-    		+ "    },\n"
-    		+ "    \"mapping\" : {\n"
-    		+ "      \"@id\" : \"http://www.w3.org/ns/hydra/core#mapping\",\n"
-    		+ "      \"@type\" : \"@id\"\n"
-    		+ "    },\n"
-    		+ "    \"hydra\" : \"http://www.w3.org/ns/hydra/core#\",\n"
-    		+ "    \"dbpedia-owl\" : \"http://dbpedia.org/ontology/\",\n"
-    		+ "    \"void\" : \"http://rdfs.org/ns/void#\",\n"
-    		+ "    \"rdf\" : \"http://www.w3.org/1999/02/22-rdf-syntax-ns#\",\n"
-    		+ "    \"xsd\" : \"http://www.w3.org/2001/XMLSchema#\",\n"
-    		+ "    \"rdfs\" : \"http://www.w3.org/2000/01/rdf-schema#\",\n"
-    		+ "    \"dbpedia\" : \"http://dbpedia.org/resource/\",\n"
-    		+ "    \"dbpprop\" : \"http://dbpedia.org/property/\",\n"
-    		+ "    \"foaf\" : \"http://xmlns.com/foaf/0.1/\",\n"
-    		+ "    \"dc\" : \"http://purl.org/dc/terms/\"\n"
-    		+ "  }\n"
-    		+ "}";
-    // Parameters
+     // Parameters
 
     /**
      *
@@ -195,19 +66,9 @@ public class LinkedDataFragmentServlet extends HttpServlet {
 
     private File getConfigFile(ServletConfig config) throws IOException {
         String path = config.getServletContext().getRealPath("/");
-        System.out.println("Getting config file: " + path);
-//        if (path == null) {
-//            // this can happen when running standalone
-//            path = System.getProperty("user.dir");
-//        }
         File cfg = new File(path, "config.json");
         System.out.println("Getting config file: " + cfg.getAbsolutePath());
 
-        
-//        if (config.getInitParameter(CFGFILE) != null) {
-//        	System.out.println("Got the config file");
-//            cfg = new File(config.getInitParameter(CFGFILE));
-//        }
         if (!cfg.exists()) {
             throw new IOException("Configuration file " + cfg + " not found.");
         }
@@ -304,6 +165,8 @@ public class LinkedDataFragmentServlet extends HttpServlet {
         }
         return dataSource;
     }
+    
+ 
 
     /**
      *
@@ -315,15 +178,11 @@ public class LinkedDataFragmentServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         ILinkedDataFragment fragment = null;
         CachingInterfaceJedis cacheInterface = new CachingInterfaceJedis();
-        //System.out.println("================================ A request is received ==============================");
         String queryString = request.getQueryString();
-        //System.out.println(queryString);
-
-        
-        // System.out.println("=======================================================================================");
-        
+        String ontology = request.getPathInfo().replace("/","");
+ 
+               
         try {
-            // do conneg
             String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
             String bestMatch = MIMEParse.bestMatch(acceptHeader);
 
@@ -345,11 +204,37 @@ public class LinkedDataFragmentServlet extends HttpServlet {
                 fragment = dataSource.getRequestProcessor()
                                   .createRequestedFragment( ldfRequest );
                 
+ 
+                if (ontology.contentEquals("ontocompchem")) {
+                	System.out.println("======= queryString ==========");
+
+                	System.out.println(queryString);
+                	if(queryString!= null) {
+                	
+                    if (cacheInterface.exist(queryString)) {
+                       	String modelAsString = cacheInterface.getValue(queryString); // a cached result is returned. this is the usual case 
+                    	try (Writer w = new OutputStreamWriter(response.getOutputStream(), "UTF-8")) {
+                    		w.write(modelAsString);
+                        }  
+                    }
+                    else {
+                        writer.writeFragment(null, response.getOutputStream(), dataSource, fragment, ldfRequest);                	
+                    }
+                	}
+                	else {
+                    	try (Writer w = new OutputStreamWriter(response.getOutputStream(), "UTF-8")) {
+                            	w.write(ResponseTemplates.OntoCompChemHandshake);
+                        	}
+                	}
+                }
                 
-                // if the queryString has no subject/predicate/object 
                 
+                
+                else
+                {
+ 
                 if(queryString!= null) {
-                	boolean isEquationQuery = QueryProcessor.isEquationQuery(request);
+                	boolean isEquationQuery = QueryProcessor.isOntokinEquationQuery(request);
                 	System.out.println("isEquationQuery: " + isEquationQuery);
                 	if(isEquationQuery) { // queryString is "equationQueryKey"
                     	JSONObject queryObject = QueryProcessor.separateParameters(request);
@@ -362,7 +247,6 @@ public class LinkedDataFragmentServlet extends HttpServlet {
                            	// filter the results with the given parameters. 
                            	
                            	System.out.println("key exist, going to the cache ");
-                           	 
                          	String page = "1";
                          	if(queryObject.has("page")) {
                          		page = queryObject.getString("page");
@@ -370,7 +254,7 @@ public class LinkedDataFragmentServlet extends HttpServlet {
                          	
                          	JSONArray reactants = queryObject.getJSONArray("reactants");
                          	JSONArray products = queryObject.getJSONArray("products");
-                         	String composed = SPARQLRegex.filter(page, modelAsString, reactants, products);
+                         	String composed = SPARQLRegex.filter(ontology, page, modelAsString, reactants, products);
                            	 
                         	try (Writer w = new OutputStreamWriter(response.getOutputStream(), "UTF-8")) {
                         		w.write(composed);
@@ -379,29 +263,23 @@ public class LinkedDataFragmentServlet extends HttpServlet {
                         
                         {
                            	System.out.println("key doesn't exist, ");
+                   	  
                             writer.writeFragment(QueryProcessor.separateParameters(request), response.getOutputStream(), dataSource, fragment, ldfRequest);                	
                         }
                         
                 	}else {
-                		
-                		System.out.println("This is a non equation query:\n" + queryString);
-                		System.out.println();
-                		
+                	    
                         writer.writeFragment(null, response.getOutputStream(), dataSource, fragment, ldfRequest);                	
                 	}
                 	
                 }
                 else {
-                 	queryString = "handshake";     	
                 	try (Writer w = new OutputStreamWriter(response.getOutputStream(), "UTF-8")) {
-                    w.write(handshake);
-                	
-                }
-                 
-            
+                    w.write(ResponseTemplates.OntokinHandshake);
+                	}
                 }
                 
-        
+            }
              
 
  
@@ -438,3 +316,57 @@ public class LinkedDataFragmentServlet extends HttpServlet {
     }
 
 }
+
+
+
+//
+//
+//if (queryString!=null) {
+//	boolean isEquationQuery = QueryProcessor.isOntoCompChemSpeciesQuery(request);
+//	System.out.println("actual query for ontocompchem:" +queryString);
+//	System.out.println("isEquationQuery:" + isEquationQuery);
+//	 
+//	
+//	if (isEquationQuery) {
+//    	JSONObject queryObject = QueryProcessor.separateParameters(request);
+//		String queryStringKey = queryObject.getString("hasEquationQuery");
+//		
+//        if (cacheInterface.exist(queryStringKey)) {   
+//        	
+//           	String modelAsString = cacheInterface.getValue(queryStringKey); // a cached result is returned. this is the usual case 
+//           	// filter the results with the given parameters. 
+//           	
+//           	System.out.println("key exist, going to the cache ");
+//         	String page = "1";
+//         	if(queryObject.has("page")) {
+//         		page = queryObject.getString("page");
+//         	}
+//         	
+//         	JSONArray reactants = queryObject.getJSONArray("reactants");
+//         	JSONArray products = queryObject.getJSONArray("products");
+//         	String composed = SPARQLRegex.filter(ontology, page, modelAsString, reactants, products);
+//           	 
+//        	try (Writer w = new OutputStreamWriter(response.getOutputStream(), "UTF-8")) {
+//        		w.write(composed);
+//            }  
+//        }else 
+//        
+//        {
+//           	System.out.println("key doesn't exist, ");
+//            writer.writeFragment(null, response.getOutputStream(), dataSource, fragment, ldfRequest);                	
+//        }
+//
+//
+//	}
+//	else {
+//  
+//        writer.writeFragment(null, response.getOutputStream(), dataSource, fragment, ldfRequest);   
+//	}
+//
+//}
+//else {
+//	try (Writer w = new OutputStreamWriter(response.getOutputStream(), "UTF-8")) {
+//		System.out.println("returning handshake");
+//        w.write(ResponseTemplates.OntoCompChemHandshake);
+//    }
+//}

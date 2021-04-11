@@ -11,7 +11,16 @@
       "settings": {
         "file": "ontokin_clean.hdt"
       }
+    },
+     "ontocompchem": {
+      "title": "ontocompchem",
+      "type": "HdtDatasource",
+      "description": "Test for ontocompchem with LDF Java",
+      "settings": {
+        "file": "ontocompchem_clean.hdt"
+      }
     }
+    
   },
   "prefixes": {
     "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",

@@ -24,21 +24,18 @@ public class BufferServlet extends HttpServlet {
      */
     public BufferServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
-		// TODO Auto-generated method stub
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		
 		String queryString = request.getQueryString();
 		
@@ -58,7 +55,6 @@ public class BufferServlet extends HttpServlet {
 	        
 	        
 		} catch (NoRegisteredMimeTypesException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         // set additional response headers

@@ -12,7 +12,7 @@ public class QueryProcessor {
 
  
 	// check whether the request is a equation query 
-	public static boolean isEquationQuery(HttpServletRequest request) {
+	public static boolean isOntokinEquationQuery(HttpServletRequest request) {
 		
 		String queryString = request.getQueryString();
 	    String all_names = "";
@@ -30,11 +30,31 @@ public class QueryProcessor {
 	    if(!(all_names.contains("reactants") || all_names.contains("products"))) {
 	    	return false;
 	    }
+
+		
+		return true; 
+	}
+	
+	
+	public static boolean isOntoCompChemSpeciesQuery(HttpServletRequest request) {
+		
+		String queryString = request.getQueryString();
+	    String all_names = "";
+		Iterator<String> paraNames = request.getParameterNames().asIterator();
+	    while (paraNames.hasNext()) {
+			String name = paraNames.next();
+			// the condition is: it comes with a predicate: hasEquation, it comes with either the reactants or the products 
+			all_names = all_names + name;
+		}
 	    
-//	    if(all_names.contains("subject") || all_names.contains("object")) {
-//	    	return false;
-//	    }
+	    if(!(queryString.contains("hasName") && all_names.contains("predicate"))) {
+	    	return false;
+	    }
 	    
+	    if(!(all_names.contains("reactants") || all_names.contains("products"))) {
+	    	return false;
+	    }
+
 		
 		return true; 
 	}
@@ -42,10 +62,9 @@ public class QueryProcessor {
 	public static JSONObject separateParameters(HttpServletRequest request) throws JSONException {
 		// return the predicate string and the products/reactants separately
         JSONObject result = new JSONObject();
-
+        String ontology = request.getPathInfo().replace("/","");
+        result.put("ontology", ontology);
 		String hasEquationQuery = "predicate=" + request.getParameter("predicate");
-		System.out.println("========== query string in separator =========");
-		System.out.println(request.getQueryString());
 		if(request.getParameterMap().containsKey("page")) {
 			hasEquationQuery = hasEquationQuery + "&page=" + request.getParameter("page");
 			result.put("page",  request.getParameter("page"));
