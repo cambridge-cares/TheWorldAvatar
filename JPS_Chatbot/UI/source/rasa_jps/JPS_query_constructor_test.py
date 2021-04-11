@@ -47,6 +47,7 @@ WHERE  {
   
 '''
 
+
 def test_3000():
     q3 = '''
     PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
@@ -127,5 +128,6 @@ def test_3000():
     print(round(end_time - start_time, 2), 'seconds')
 
 
-for i in range(100):
+iterations = 1
+for i in range(iterations):
     test_3000()
