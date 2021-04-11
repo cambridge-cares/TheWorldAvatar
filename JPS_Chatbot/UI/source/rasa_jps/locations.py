@@ -38,3 +38,4 @@ SEARCH_ENGINE_DIR = os.path.join(SOURCE_DIR, "search_engine")
 TOPIC_CLASSIFIERS_DIR = os.path.join(ROOT_DIR, "LDA")
 
 LOOKUP_TABS_DIR = os.path.join(RASA_JPS_DIR, "lookup_tables")
+CONFIG_PATH = os.path.join(ROOT_DIR, "config.json")

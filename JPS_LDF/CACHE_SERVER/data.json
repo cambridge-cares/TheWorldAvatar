@@ -1,0 +1,108 @@
+ActorInitSparql {
+  beforeActors: [],
+  mediatorOptimizeQueryOperation: MediatorCombinePipeline {
+    name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/config/sets/sparql-init.json#mediatorOptimizeQueryOperation',
+    bus: Bus {
+      actors: [Array],
+      observers: [],
+      dependencyLinks: Map {},
+      name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation/Bus/OptimizeQueryOperation'
+    }
+  },
+  mediatorQueryOperation: MediatorNumber {
+    field: 'httpRequests',
+    type: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/Mediator/Number/type/TypeMin',
+    ignoreErrors: true,
+    name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/config/sets/sparql-queryoperators.json#mediatorQueryOperation',
+    bus: BusIndexed {
+      actors: [Array],
+      observers: [],
+      dependencyLinks: Map {},
+      actorIdentifierFields: [Array],
+      actionIdentifierFields: [Array],
+      name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/Bus/QueryOperation',
+      actorsIndex: [Object]
+    },
+    indexPicker: [Function]
+  },
+  mediatorSparqlParse: MediatorRace {
+    name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/config/sets/sparql-init.json#mediatorSparqlParse',
+    bus: Bus {
+      actors: [Array],
+      observers: [],
+      dependencyLinks: Map {},
+      name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/Bus/SparqlParse'
+    }
+  },
+  mediatorSparqlSerialize: MediatorRace {
+    name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/config/sets/sparql-init.json#mediatorSparqlSerialize',
+    bus: Bus {
+      actors: [Array],
+      observers: [],
+      dependencyLinks: Map {},
+      name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/Bus/SparqlSerialize'
+    }
+  },
+  mediatorSparqlSerializeMediaTypeCombiner: MediatorCombineUnion {
+    field: 'mediaTypes',
+    name: 'df_637_0',
+    bus: Bus {
+      actors: [Array],
+      observers: [],
+      dependencyLinks: Map {},
+      name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/Bus/SparqlSerialize'
+    },
+    combiner: [Function]
+  },
+  mediatorSparqlSerializeMediaTypeFormatCombiner: MediatorCombineUnion {
+    field: 'mediaTypeFormats',
+    name: 'df_637_1',
+    bus: Bus {
+      actors: [Array],
+      observers: [],
+      dependencyLinks: Map {},
+      name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/Bus/SparqlSerialize'
+    },
+    combiner: [Function]
+  },
+  mediatorContextPreprocess: MediatorCombinePipeline {
+    name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/config/sets/sparql-init.json#mediatorContextPreprocess',
+    bus: Bus {
+      actors: [],
+      observers: [],
+      dependencyLinks: Map {},
+      name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/Bus/ContextPreprocess'
+    }
+  },
+  mediatorHttpInvalidate: MediatorAll {
+    name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/config/sets/sparql-init.json#mediatorHttpInvalidate',
+    bus: Bus {
+      actors: [Array],
+      observers: [],
+      dependencyLinks: Map {},
+      name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/Bus/HttpInvalidate'
+    }
+  },
+  logger: LoggerVoid {},
+  contextKeyShortcuts: {
+    source: '@comunica/bus-rdf-resolve-quad-pattern:source',
+    sources: '@comunica/bus-rdf-resolve-quad-pattern:sources',
+    initialBindings: '@comunica/actor-init-sparql:initialBindings',
+    queryFormat: '@comunica/actor-init-sparql:queryFormat',
+    baseIRI: '@comunica/actor-init-sparql:baseIRI',
+    log: '@comunica/core:log',
+    datetime: '@comunica/actor-http-memento:datetime',
+    queryTimestamp: '@comunica/actor-init-sparql:queryTimestamp',
+    httpProxyHandler: '@comunica/actor-http-proxy:httpProxyHandler',
+    lenient: '@comunica/actor-init-sparql:lenient',
+    httpIncludeCredentials: '@comunica/bus-http:include-credentials',
+    httpAuth: '@comunica/bus-http:auth'
+  },
+  name: 'urn:comunica:sparqlinit',
+  bus: Bus {
+    actors: [ [Circular] ],
+    observers: [],
+    dependencyLinks: Map {},
+    name: 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/Bus/Init'
+  }
+}
