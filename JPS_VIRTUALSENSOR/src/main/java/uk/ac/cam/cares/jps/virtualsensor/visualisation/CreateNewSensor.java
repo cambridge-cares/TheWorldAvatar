@@ -11,7 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
@@ -42,14 +41,14 @@ public class CreateNewSensor extends JPSHttpServlet{
 			// call SensorUpdaterAgent to populate this sensor with values
 			// The agent won't do anything if there are no dispersion matrices 
 			JSONObject sensor_request = new JSONObject();
-			sensor_request.put(Region.keyAirStationIRI, stationiri);
+			sensor_request.put(SensorSparql.keyAirStationIRI, stationiri);
 			AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/SensorUpdaterAgent", sensor_request.toString());
 
 			// javascript needs these in the response, couldn't figure out how to do it nicely in js
 			JSONObject output = new JSONObject();
 			output.put("lat", lat);
 			output.put("lng", lng);
-			output.put(Region.keyAirStationIRI, stationiri);
+			output.put(SensorSparql.keyAirStationIRI, stationiri);
 			response.setContentType("application/json");
 			response.getWriter().write(output.toString()); // javascript needs this for the marker
 		}

@@ -21,7 +21,6 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
@@ -88,6 +87,9 @@ public class SensorSparql {
     private static Iri weather_graph = p_station.iri("WeatherStations");
     private static Iri airquality_graph = p_station.iri("AirQualityStations");
 
+    // query keys
+    public static String keyAirStationIRI = "airStationIRI";
+    
     private static Prefix [] getPrefix() {
         Prefix [] prefixes = {p_station,p_space_time_extended,p_space_time,p_system,p_SI_unit,p_derived_SI_unit,p_ontosensor,p_time,p_coordsys,p_instrument};
         return prefixes;
@@ -497,7 +499,7 @@ public class SensorSparql {
     	SelectQuery query = Queries.SELECT();
     	
     	// properties we want to query
-    	Variable station = SparqlBuilder.var(Region.keyAirStationIRI);
+    	Variable station = SparqlBuilder.var(keyAirStationIRI);
     	Variable xvalue = SparqlBuilder.var("xvalue");
     	Variable yvalue = SparqlBuilder.var("yvalue");
     	
