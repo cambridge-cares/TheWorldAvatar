@@ -51,10 +51,12 @@ import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentConfiguration;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentProperty;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
@@ -951,7 +953,7 @@ public class EpisodeAgent extends JPSAgent{
 
 			JSONObject jobInfo = new JSONObject(Files.readAllLines(Paths.get(jobFolder.getAbsolutePath(), "input.json")).get(0));
 			String outputPath = jobInfo.getString(outputPathKey); // scenario folder written during job submission
-			long simStart = jobInfo.getLong(simStartKey);
+			long simStart = jobInfo.getLong(simStartKey); // time stamp
 			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
 			
 			String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
@@ -969,6 +971,10 @@ public class EpisodeAgent extends JPSAgent{
 			new QueryBroker().putLocal(destinationUrl, file); 
 			new QueryBroker().putLocal(destinationUrl2, file2);
 			new QueryBroker().putLocal(destinationUrl3, file3);
+			
+			// python script reads in conc file and produces a geojson file next to it
+			createGeoJSON(outputPath,DispSimSparql.GetSimCRS(sim_iri));
+			
 			System.out.println("metadata annotation started");
 
 			// update triple-store
@@ -983,5 +989,20 @@ public class EpisodeAgent extends JPSAgent{
 			return false;
 		}
 		return true;
+	}
+	
+	private void createGeoJSON(String destDir, String simCRS) {
+		Path pyWorkingDir =  Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "python");
+		ArrayList<String> args = new ArrayList<String>();
+
+		args.add(SensorVenv.pyexe.toString());
+		args.add("sensorpy.py");
+		args.add("postprocessEpisode");
+		args.add("--pathToConcFile");
+		args.add(destDir);
+		args.add("--simCRS");
+		args.add(simCRS);
+
+		CommandHelper.executeCommands(pyWorkingDir.toString(), args);
 	}
 }
