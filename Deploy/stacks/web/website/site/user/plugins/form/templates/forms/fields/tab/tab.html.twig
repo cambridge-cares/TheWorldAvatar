@@ -1,0 +1,9 @@
+{% extends "forms/field.html.twig" %}
+
+{% block field %}
+    {% if field.fields %}
+        <div class="form-tab">
+            {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
+        </div>
+    {% endif %}
+{% endblock %}

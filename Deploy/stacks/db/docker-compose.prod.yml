@@ -1,0 +1,20 @@
+version: "3.8"
+
+# Services
+services:
+
+  # Blazegraph
+  blazegraph:
+    ports:
+      - "6889:8080"
+
+  # RDF4J
+  rdf4j:
+    ports:
+      - "6888:8080"
+
+
+# Production network
+networks:
+  default:
+    name: prod-db

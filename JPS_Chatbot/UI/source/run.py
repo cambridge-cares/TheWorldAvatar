@@ -51,6 +51,8 @@ def make_query():
         if question_type == 'worldavatar':
             result = coordinate_agent.run(question)
             pprint(result)
+
+
             return json.dumps(result)
         elif question_type == 'google':
             question = request.args.get('question').strip()
@@ -58,6 +60,7 @@ def make_query():
             r = google_api.run(question)
             print(r)
             return str(r)
+            # return 'Hello'
         elif question_type == 'wolfram':
             result = wolfram_and_google.get_result_from_wolfram(question)
             pprint(result)
@@ -86,11 +89,12 @@ def make_query_google():
     # socketio.emit('coordinate_agent', 'Querying the Google engine')
     question = request.args.get('question').strip()
     # r = wolfram_and_google.get_result_from_google_directly(question)
-    r = google_api.run(question)
+    # r = google_api.run(question)
     # print('========== the result from google ========\n')
     # print(r)
     # socketio.emit('coordinate_agent', 'Obtained result from the Google engine')
-    return str(r)
+    # return str(r)
+    return 'hello'
 
 
 @app.route('/')
@@ -101,11 +105,11 @@ def hello_world():
 # print(sys.path)
 from CoordinateAgent import CoordinateAgent
 from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
-from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
+#from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
 
 coordinate_agent = CoordinateAgent(socketio)
 wolfram_and_google = WolframGoogle()
-google_api = GoogleAPI()
+#google_api = GoogleAPI()
 
 if __name__ == '__main__':
     app.run(host='https://kg.cmclinnovations.com/', port=8080, debug=True)
