@@ -43,7 +43,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 		String sparqlupdate = MiscUtil.optNullKey(requestParams,  JPSConstants.QUERY_SPARQL_UPDATE);
 		if (sparqlquery != null) isQueryOperation = true;
 		else if (sparqlupdate != null) isUpdateOperation = true;
-		String targetResourceIRIOrPath = requestParams.getString("resourceURL");
+		String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
 		KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, isQueryOperation,isUpdateOperation);
 		if (isQueryOperation) { 
 			String result = kbClient.execute(sparqlquery);
@@ -68,7 +68,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	        throw new BadRequestException();
 	    }
 	    try {
-	    	String iriOrPath = requestParams.getString("resourceURL");
+	    	String iriOrPath = requestParams.getString(JPSConstants.TARGETIRI);
 	        boolean q = InputValidator.checkIfURLpattern(iriOrPath);
 	        boolean v = InputValidator.checkIfFilePath(iriOrPath);
 	        String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
