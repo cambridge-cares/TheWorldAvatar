@@ -7,6 +7,9 @@
   :;  cp .venv ~/Sensor_venv -r #
 :; );<<'Executing on Unix-like OS'
 (
+	   del Pipfile.lock
+	   del Pipfile
+	   python -m pip install --upgrade pip
 	   python -m pip install pipenv
        python -m pipenv --rm
 	   mkdir .venv
