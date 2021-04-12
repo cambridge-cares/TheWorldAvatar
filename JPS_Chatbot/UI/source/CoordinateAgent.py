@@ -64,7 +64,7 @@ class CoordinateAgent:
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
         return intent_and_entities['entities']
 
-    @lru_cache(maxsize=None)
+    # @lru_cache(maxsize=None)
     def run(self, question):
 
         # TODO: put the LDA model here
@@ -118,7 +118,7 @@ class CoordinateAgent:
         #         # TODO: add JPS results to it
         #         pass
 
-    @lru_cache(maxsize=64)
+    # @lru_cache(maxsize=64)
     def wiki_query(self, question):
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
@@ -143,10 +143,6 @@ class CoordinateAgent:
             sparqls = sparqls[:5]
 
         result = self.sparql_query.start_queries(sparqls)
-        print('-------------- we have a result -------------------')
-        # pprint(result)
-        print('the result in json format', result[0])
-        print('the sparql query', result[2])
         return result[0]
 
 # ca = CoordinateAgent()

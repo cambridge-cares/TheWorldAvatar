@@ -17,6 +17,24 @@ SELECT DISTINCT ?label ?%s ?Unit
 
 '''
 
+HIGH_SPEED_GENERAL_QUERY = '''
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?label ?%s ?Unit
+{
+	 
+	 ?TransportModel ontokin:%s ?%s .
+     ?Species ontokin:hasTransportModel ?TransportModel .
+     ?Species rdfs:label ?label .
+	 ?Species rdfs:label "%s" .
+	 
+	  OPTIONAL{
+		?TransportModel ontokin:%sUnits ?Unit .
+     } 
+	 
+}  LIMIT 1
+'''
+
 # 1. att name, 1.5  2. att iri name 3. att name 4. att iri name
 
 LENNARD_JONES_WELL_DEPTH = '''
@@ -71,13 +89,18 @@ PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 SELECT DISTINCT ?label ?RotationalRelaxationCollisionNumber
 {
-  ?Species rdfs:label ?label .
-  FILTER regex(?label, "^%s$")
-  ?Species ontokin:hasTransportModel ?TransportModel . 
-  ?TransportModel rdf:type ontokin:TransportModel .
-  ?TransportModel ontokin:hasRotationalRelaxationCollisionNumber  ?RotationalRelaxationCollisionNumber . 
-}  
+     ?TransportModel ontokin:hasRotationalRelaxationCollisionNumber  ?RotationalRelaxationCollisionNumber . 
+     ?Species ontokin:hasTransportModel ?TransportModel .
+     ?Species rdfs:label ?label .
+	 ?Species rdfs:label "%s" . 
+}  LIMIT 1
+
+ 
+
 '''
+
+
+
 
 ontokin_simple_intents = ['polarizability',
                           'dipole_moment',

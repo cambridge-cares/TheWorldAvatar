@@ -17,8 +17,6 @@ from .search_interface import SearchInterface
 class JPSQuestionClassifier:
 
     def __init__(self):
-        with open(JPS_SPARQL_TEMPLATE_PATH) as f:
-            self.templates = json.loads(f.read())
         # TODO: make the template for the SPARQL query ...
         self.serach_interface = SearchInterface()
         warnings.filterwarnings("ignore")

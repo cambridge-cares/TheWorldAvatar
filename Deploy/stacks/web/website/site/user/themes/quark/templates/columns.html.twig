@@ -1,0 +1,11 @@
+{% extends 'partials/base.html.twig' %}
+
+{% block content %}
+    <table>
+        <tr>
+            {% for column in page.content|split('<hr />') %}
+            <td>{{ column|raw }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+{% endblock %}
