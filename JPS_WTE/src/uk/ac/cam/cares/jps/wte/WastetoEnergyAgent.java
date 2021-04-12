@@ -21,11 +21,14 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -127,6 +130,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 		}
 		String baseUrl= requestParams.getString("baseUrl");
 		String wasteIRI=requestParams.getString("wastenetwork");
+		wasteIRI = ScenarioHelper.cutHash(wasteIRI);
 		//render ontological model of waste network
 		OntModel model= readModelGreedy(wasteIRI);
 		//creates the csv of FCs, with Site_xy reading for location, waste containing the level of waste in years 1-15
@@ -196,7 +200,9 @@ public class WastetoEnergyAgent extends JPSAgent {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
 		String wasteInfo = sb.build().toString();
-
+		JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, wasteInfo)
+				.put(JPSConstants.TARGETIRI , iriofnetwork);
+		AgentCaller.executeGetWithJsonParameter("jps/kb-new", requestParams.toString()); //I pray hard that this works
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}

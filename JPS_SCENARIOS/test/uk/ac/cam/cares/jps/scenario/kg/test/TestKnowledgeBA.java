@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -84,6 +85,8 @@ public class TestKnowledgeBA   {
 		jo = ja.getJSONObject(0); 
 		assertEquals("OH",jo.get("o").toString());
 	}
+	
+
 	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
 	 * 
 	 * @throws ParseException
