@@ -12,7 +12,7 @@
 
     <!-- Configures the @Controller programming DashboardModel -->
     <mvc:annotation-driven/>
-    <context:component-scan base-package="uk.ac.cam.cares.jps.agent.mechanism.sensana"/>
+    <context:component-scan base-package="uk.ac.cam.cares.jps.agent.mechanism.datadriven"/>
     <context:property-placeholder location="classpath:/jps-*.properties"/>
 
     <!-- the mvc resources tag does the magic -->

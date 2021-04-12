@@ -11,7 +11,7 @@
   <servlet>
     <servlet-name>auto-executor</servlet-name>
     <servlet-class>
-            uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgent
+            uk.ac.cam.cares.jps.agent.mechanism.datadriven.MoDSDataDrivenAgent
         </servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>

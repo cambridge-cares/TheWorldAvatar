@@ -1,8 +1,8 @@
 ##########################################
-## MoDSSensAnaAgent deploy instructions ##
+## MoDSDataDrivenAgent deploy instructions ##
 ##########################################
 
-This file gives the basic instructions for deploying the MoDSSensAnaAgent. 
+This file gives the basic instructions for deploying the MoDSDataDrivenAgent. 
 The instructions for setting up environment on CSD3 are given first followed by deploying agents on Windows. 
 
 
@@ -87,7 +87,7 @@ Deploying agents with war file
 
 * Open JPS_BASE##1.3.0.war as archive, get into file \JPS_BASE##1.3.0.war\conf\jps.properties
    - Modify ${host} and ${port} according to the server
-* Open MoDSSensAnaAgent.war as archive, get into file \MoDSSensAnaAgent.war\WEB-INF\classes\modssensana-agent.properties
+* Open MoDSDataDrivenAgent.war as archive, get into file \MoDSDataDrivenAgent.war\WEB-INF\classes\modsdatadriven-agent.properties
    - Modify ${kinetics.folder.path} with <yourAbsolutePathToKineticsDir> absolute path to "kinetics" directory on CSD3
    - Modify ${kinetics.executable.name} if you changed name of executable when uploading it to CSD3
    - Provide ${hpc.server.login.user.name} and ${hpc.server.login.user.password}
@@ -96,19 +96,19 @@ Deploying agents with war file
 * Start Tomcat, this should only be done after "CATALINE_HOME" is correctly set:
    - Open cmd
    - $ %CATALINA_HOME%\bin\startup.bat
-   - Copy modified JPS_BASE##1.3.0.war and MoDSSensAnaAgent.war into folder %CATALINA_HOME%\webapps\
+   - Copy modified JPS_BASE##1.3.0.war and MoDSDataDrivenAgent.war into folder %CATALINA_HOME%\webapps\
 * Now you can send job request in the format of HTTP request starting with "/MoDSSeneAnaAgent/job/request?query=<yourQueryString>"
    - <yourQueryString> should be the URL format of your Json string, which can be obtained by converting using https://onlinejsontools.com/url-encode-json
    - In below example, replace the <yourEnvName> with your name of conda environment where Cantera is installed on CSD3
    - Also replace the <yourAbsolutePathToMoDSMPI> with your absolute path to MoDS_mpi on CSD3
 
-   {"json":{"cantera":{"environment":"<yourEnvName>"},"kinetics":{"numerical":{"simEnd":"500"}},"mods":{"executable":{"path":"<yourAbsolutePathToMoDSMPI>"},"calibrationAlg":{"initPoints":"1"},"sensAna":{"relPerturbation":"1e-3","maxORavg":"max","topN":"10"},"samplingAlg":{"sobolPoints":"10000","outputInterval":"1000"},"ignDelayOption": {"method": "1","species": "AR"},"flameSpeedOption":{"tranModel":"mix-average"}},"ontochemexpIRI": {"ignitionDelay": ["https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000","https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800","https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600"],"flameSpeed":["https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400"]},"ontokinIRI":{"mechanism":"http://www.theworldavatar.com/kb/ontokin/mechanism_6651393202518600.owl#ReactionMechanism_6651394316481501"}}}
+   {"json":{"cantera":{"environment":"<yourEnvName>"},"kinetics":{"numerical":{"simEnd":"500"}},"mods":{"executable":{"path":"<yourAbsolutePathToMoDSMPI>"},"calibrationAlg":{"initPoints":"1"},"dataDriven":{"relPerturbation":"1e-3","maxORavg":"max","topN":"10"},"samplingAlg":{"sobolPoints":"10000","outputInterval":"1000"},"ignDelayOption": {"method": "1","species": "AR"},"flameSpeedOption":{"tranModel":"mix-average"}},"ontochemexpIRI": {"ignitionDelay": ["https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000","https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800","https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600"],"flameSpeed":["https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400"]},"ontokinIRI":{"mechanism":"http://www.theworldavatar.com/kb/ontokin/mechanism_6651393202518600.owl#ReactionMechanism_6651394316481501"}}}
 
 Building the code from source
 =============================
 
 * Clone JPS git repo from ssh://<username>@vienna.cheng.cam.ac.uk/home/userspace/CoMoCommon/Codes/CARES/JParkSimulator-git
-* Modify \JParkSimulator-git\Agents\MoDSSensAnaAgent\src\main\resources\modssensana-agent.properties in the same way of modifying \MoDSSensAnaAgent.war\WEB-INF\classes\modssensana-agent.properties while deploying from MoDSSensAnaAgent.war
+* Modify \JParkSimulator-git\Agents\MoDSDataDrivenAgent\src\main\resources\modsdatadriven-agent.properties in the same way of modifying \MoDSDataDrivenAgent.war\WEB-INF\classes\modsdatadriven-agent.properties while deploying from MoDSDataDrivenAgent.war
 * Make sure the ${tomcatPath} profile is correctly setup in settings.xml in \user.home\.m2 folder
 * Make sure the "CATALINA_HOME" environment variable is correctly setup
 * Build JPS_BASE
@@ -117,6 +117,6 @@ Building the code from source
 * Build JPS_BASE_LIB
    - Get into \JParkSimulator-git\JPS_BASE_LIB directory from cmd
    - Run "mvn clean install -DskipTests"
-* Build MoDSSensAnaAgent
-   - Get into \JParkSimulator-git\Agents\MoDSSensAnaAgent directory from cmd
+* Build MoDSDataDrivenAgent
+   - Get into \JParkSimulator-git\Agents\MoDSDataDrivenAgent directory from cmd
    - Run "mvn clean install -DskipTests"

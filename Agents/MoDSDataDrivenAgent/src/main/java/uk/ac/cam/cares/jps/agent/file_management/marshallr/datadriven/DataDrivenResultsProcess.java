@@ -131,19 +131,19 @@ public class DataDrivenResultsProcess {
 			jobFolderPath = jobFolderPath.concat("\\");
 		}
 		String responseResults = jobFolderPath+"DataDriven\\DataDriven_"+response+".csv";
-		String sensAnaResults = jobFolderPath+"DataDriven\\DataDriven_Sensitivities.csv";
+		String dataDrivenResults = jobFolderPath+"DataDriven\\DataDriven_Sensitivities.csv";
 		String deriResults = jobFolderPath+"DataDriven\\DataDriven_Derivatives.csv";
 		String rxnOutputResults = jobFolderPath+"DataDriven_SelectedRxns_"+response+".csv";
 		
 		// take input, process, then write results to output file
 		// determine the cases that to be used for reaction selection
-		LinkedHashMap<Integer, List<Double>> successCases = identifyCases(response, new File(responseResults), new File(sensAnaResults));
+		LinkedHashMap<Integer, List<Double>> successCases = identifyCases(response, new File(responseResults), new File(dataDrivenResults));
 		// get the list of active parameters tested in the sensitivity analysis
 		LinkedHashMap<Integer, String> activeParameters = getSensParameters(new File(deriResults));
 		// load sensitivity analysis results into one map <rxnIndex, averaged sensitivity over all successfully simulated cases>
-		LinkedHashMap<String, Double> sensAnaForRxns = computeSensForRxns(successCases, activeParameters, max);		
+		LinkedHashMap<String, Double> dataDrivenForRxns = computeSensForRxns(successCases, activeParameters, max);		
 		// get the top N reactions that most sensitive
-		LinkedHashMap<String, Double> selectedRxns = getTopNRxns(sensAnaForRxns, topN);
+		LinkedHashMap<String, Double> selectedRxns = getTopNRxns(dataDrivenForRxns, topN);
 		
 		// output this result to file
 		List<String> listOfRxnIRI = writeSelectedRxns(mechanismIRI, new File(rxnOutputResults), selectedRxns);
