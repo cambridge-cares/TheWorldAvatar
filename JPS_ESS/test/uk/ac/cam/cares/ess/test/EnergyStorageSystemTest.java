@@ -212,7 +212,7 @@ public class EnergyStorageSystemTest extends TestCase {
 	 * @throws JSONException
 	 */
 	public void testCreateScenarioAndCallESSCoordinateDirect() throws JSONException {
-		String scenarioName = "testESSTRIAL01"+usecaseID;	
+		String scenarioName = "testESSTRIAL02";	
 		JSONObject jo = new JSONObject();
 		pvgeniris.add(pvGenIRI);
 		jo.put("electricalnetwork", ENIRI);

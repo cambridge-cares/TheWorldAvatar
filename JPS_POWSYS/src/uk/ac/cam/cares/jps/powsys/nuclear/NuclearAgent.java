@@ -178,9 +178,8 @@ public class NuclearAgent extends JPSAgent {
 			}
 	        return w&v;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
+        	return false;
         }
-        return false;
     }
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -194,7 +193,7 @@ public class NuclearAgent extends JPSAgent {
 
             try {
             	if (!validateInput(requestParams)) {
-            		throw new JSONException("Nuclear Agent input parameters invalid");
+            		throw new JSONException("NuclearAgent: Input parameters not found.\n");
             	};
                 String lotiri = requestParams.getString("landlot");
                 String iriofnetwork = requestParams.getString("electricalnetwork");

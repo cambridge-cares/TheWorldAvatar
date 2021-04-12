@@ -31,7 +31,9 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	@Override 
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 
-		validateInput(requestParams);
+		if (!validateInput(requestParams)) {
+			throw new BadRequestException("WeatherIrradiationAgent: Input parameters not found.\n");
+		}
 		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
 		try {

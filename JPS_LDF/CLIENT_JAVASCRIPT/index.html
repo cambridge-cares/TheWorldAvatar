@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<body>
+<script src="http://rdf.js.org/comunica-browser/versions/1/packages/actor-init-sparql/comunica-browser.js"></script>
+<script language="JavaScript">
+
+  query_1 = `
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT     ?Equation  ?ActivationEnergy ?ActivationEnergyUnits  ?PreExponentialFactor ?PreExponentialFactorUnits ?TemperatureExponent ?TemperatureExponentUnits
+		WHERE  {
+		?reaction ontokin:hasEquation ?Equation ;
+		reaction:hasReactant ?Reactant_1 ;
+		reaction:hasReactant ?Reactant_2 ;
+		reaction:hasProduct ?Product_1 ;
+		reaction:hasProduct ?Product_2 .
+		?Reactant_1 rdfs:label ?Reactant_1_label .
+		?Reactant_2 rdfs:label ?Reactant_2_label .
+		?Product_1 rdfs:label ?Product_1_label .
+		?Product_2 rdfs:label ?Product_2_label .
+		FILTER regex(?Reactant_1_label, "^H$")
+		FILTER regex(?Reactant_2_label, "^O2$")
+		FILTER regex(?Product_1_label, "^O$")
+		FILTER regex(?Product_2_label, "^OH$")
+		{
+		 ?reaction  <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient>  ?ArrheniusCoefficient .
+		 ?ArrheniusCoefficient ontokin:hasActivationEnergy ?ActivationEnergy .
+		 ?ArrheniusCoefficient ontokin:hasActivationEnergyUnits  ?ActivationEnergyUnits  .
+		 ?ArrheniusCoefficient ontokin:hasPreExponentialFactor ?PreExponentialFactor .
+		 ?ArrheniusCoefficient ontokin:hasPreExponentialFactorUnits ?PreExponentialFactorUnits .
+		 ?ArrheniusCoefficient ontokin:hasTemperatureExponent ?TemperatureExponent .
+		 ?ArrheniusCoefficient ontokin:hasTemperatureExponentUnits ?TemperatureExponentUnits . }
+        }`;
+		
+		
+		
+  query_2 = `        
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT  DISTINCT   ?Equation
+		WHERE  {
+		?reaction ontokin:hasEquation ?Equation ;
+		reaction:hasProduct ?Product_1 ;
+		reaction:hasProduct ?Product_2 .
+		?Product_1 rdfs:label ?Product_1_label .
+		?Product_2 rdfs:label ?Product_2_label .
+		FILTER regex(?Product_1_label, "^H2$")
+		FILTER regex(?Product_2_label, "^OH$")
+        }`;		
+
+  Comunica.newEngine().query(query_2
+		
+		
+		, {sources: ['http://localhost:5000/ontokin'],
+}).then(function (result) {
+  result.bindingsStream.on('data', function (data) {
+    // Each variable binding is an RDFJS term
+		console.log(data.get('?s').value + ' ' + data.get('?p').value + ' ' + data.get('?o').value);
+  });
+});
+
+ 
+</script>
+</body>
+</html>

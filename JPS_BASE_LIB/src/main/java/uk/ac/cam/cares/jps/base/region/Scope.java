@@ -33,6 +33,8 @@ public class Scope {
         this.sourceCRS = region.getString(Region.keySrsname);
     }
 
+    public Scope() {}
+    
     // Getters
     public double getUpperx() {
         return this.upperx;
@@ -50,6 +52,23 @@ public class Scope {
         return this.sourceCRS;
     }
 
+    // Setters
+    public void setUpperx(double upperx) {
+    	this.upperx = upperx;
+    }
+    public void setUppery(double uppery) {
+    	this.uppery = uppery;
+    }
+    public void setLowerx(double lowerx) {
+    	this.lowerx = lowerx;
+    }
+    public void setLowery(double lowery) {
+    	this.lowery = lowery;
+    }
+    public void setCRSName(String sourceCRS) {
+    	this.sourceCRS = sourceCRS;
+    }
+    
     /**
      * Calculate scope centre from scope object.
      * index[0] = x coordinate, index[1] = y coordinate

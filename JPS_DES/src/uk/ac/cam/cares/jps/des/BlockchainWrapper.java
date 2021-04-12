@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.net.ConnectException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,12 +76,20 @@ public class BlockchainWrapper extends JPSAgent{
      * @return last created file
      */
     public String getLastModifiedDirectory() {
-    	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
-		List<String> lst = null;
-    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
-		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
-		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
-    	return listmap.get(0)[0];
+    	try {
+	    	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
+			List<String> lst = null;
+	    	String fileLocation = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
+			String[] keys = JenaResultSetFormatter.getKeys(fileLocation);
+			List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(fileLocation, keys);
+			fileLocation = Paths.get(new URL(listmap.get(0)[0]).toURI()).toString();
+			return fileLocation;
+    	} catch(IOException ex) {
+    		logger.error(ex.getMessage());
+    	} catch (URISyntaxException e) {
+    		logger.error(e.getMessage());
+		}
+    	return "";
     }
 
 	
@@ -102,7 +113,7 @@ public class BlockchainWrapper extends JPSAgent{
 		}else if (moneyEth < Math.pow(10, -1)) {
 			moneyEth = 0;
 		}
-		Credentials credentials = WalletUtils.loadCredentials("PASSWORD",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
+		Credentials credentials = WalletUtils.loadCredentials("Caesar1!",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
 		return  transactionReceipt.getTransactionHash();
 		

@@ -1,0 +1,33 @@
+<html>
+<head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+<label for="w3review">Test bed:</label>
+<div class='result'></div>
+
+<textarea id="txt_box"  rows="20" cols="80"></textarea>
+<button id='btn_send_query'>Query</button>
+<script>
+	
+	
+$( "#btn_send_query" ).click(function() {
+
+    $( ".result" ).html("Result:");
+	queryText = $('#txt_box').val();
+	$.get( "http://localhost:3000/query", {query: queryText}, function( data ) {
+	   $( ".result" ).append( data + '<br/>' );
+
+
+	});
+
+});
+	
+ 
+</script>
+</body>
+</html>

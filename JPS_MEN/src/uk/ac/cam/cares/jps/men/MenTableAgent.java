@@ -78,13 +78,10 @@ public class MenTableAgent extends JPSAgent{
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	
 		logger.info("MEN_Table Agent start");
-		boolean validated = validateInput( requestParams);
-		if (validated== false) {
-			logger.info("MEN_Table Agent stop");
-			JSONObject error404 = new JSONObject();
-			error404.put("Error", "non-valid input reached. Please try again. ");
-			return error404;
+		if (!validateInput(requestParams)) {
+			throw new JSONException("MenAgent: Input parameters not found.\n");
 		}
+		
 		// read form fields	
 		double carbontax = 0.0;
 		double interestfactor = 1.0;

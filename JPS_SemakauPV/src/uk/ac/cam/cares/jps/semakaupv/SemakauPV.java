@@ -52,7 +52,9 @@ public class SemakauPV extends JPSAgent {
 	}
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	validateInput(requestParams);
+    	if (!validateInput(requestParams)) {
+    		throw new BadRequestException("SemakauPVAgent: Input parameters not found.\n");
+    	}
     	String ENIRI=requestParams.getString("electricalnetwork");
 		String irradSensorIRI=requestParams.getString("irradiationsensor");
 		OntModel model = readModelGreedy(ENIRI);
@@ -60,7 +62,7 @@ public class SemakauPV extends JPSAgent {
 		//TODO: This is hardcoded; but I don't know what other PVs there could be. 
 		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/",
 				"PV-002.owl","EBus-006.owl");
-		return result;
+		return new JSONObject();
     }
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
@@ -74,12 +76,8 @@ public class SemakauPV extends JPSAgent {
 	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
             return q&r;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
         	return false;
-        } catch (Exception ex) {
-        	ex.printStackTrace();
-            return false;
-        }
+        } 
     }
 
 	/** reads the topnode into an OntModel of all its subsystems. 

@@ -1,0 +1,16 @@
+<#-- @license ©2015 Miel Vander Sande - Multimedia Lab / iMinds / Ghent University -->
+<#include "base.ftl.html">
+<#macro contents>
+<h2>Resource not found</h2>
+<p>
+  No resource with URL <code>${ url!"" }</code> was found.
+</p>
+
+<h3>Available datasets</h3>
+<ul>
+<#list datasources?keys as datasourceName>
+  <li><a href="/${datasourceName}">${datasources[datasourceName].getTitle() }</a></li>
+</#list>
+</ul>
+</#macro>
+<@display_page/>
