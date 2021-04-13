@@ -148,6 +148,8 @@ public class TestWTE extends TestCase{
 	public void testCreateScenarioAndCallWTEAgent() throws JSONException {
 		
 		String scenarioName = "testwaste2-"+usecaseID;
+		iriofnetwork ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+		
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(iriofnetwork)
 				.key("n_cluster").value("40")

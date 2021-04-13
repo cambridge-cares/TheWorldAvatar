@@ -133,9 +133,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 		}
 		String baseUrl= requestParams.getString("baseUrl");
 		String wasteIRI=requestParams.getString("wastenetwork");
-		if  (InputValidator.checkIfValidIRI(wasteIRI)) {
-			wasteIRI = FCQuerySource.tempIRItoFile(wasteIRI);
-			}
+		
 		//render ontological model of waste network
 		OntModel model= readModelGreedy(wasteIRI);
 		//creates the csv of FCs, with Site_xy reading for location, waste containing the level of waste in years 1-15
@@ -203,6 +201,9 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 * @return
 	 */
 	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
+		if  (InputValidator.checkIfValidIRI(iriofnetwork)) {
+			iriofnetwork = FCQuerySource.tempIRItoFile(iriofnetwork);
+			}
 		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
 		String wasteInfo = sb.build().toString();
