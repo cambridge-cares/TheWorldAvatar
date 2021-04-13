@@ -23,6 +23,7 @@ import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
@@ -243,6 +244,18 @@ public class DESAgentNew extends JPSAgent {
 
 		String destinationUrl = baseUrl + "/" + filename;
 		new QueryBroker().putLocal(destinationUrl, file);
+	}
+	/** Temporary translation fix for switch from KBClient to KGRouter. In the end, it should be querying appropriately from the 
+	 * correct Source
+	 * 
+	 * @param iriofnetwork The file name to be changed. 
+	 * @return iriofnetwork (changed)
+	 */
+	public static String tempIRItoFile(String iriofnetwork) {
+		String translatedIRI = iriofnetwork.replace("http://www.theworldavatar.com", AgentLocator.getProperty("absdir.root"));
+		translatedIRI = ScenarioHelper.cutHash(translatedIRI);
+		iriofnetwork = translatedIRI.replace("C:/", "C:\\");
+		return iriofnetwork;
 	}
     
 }
