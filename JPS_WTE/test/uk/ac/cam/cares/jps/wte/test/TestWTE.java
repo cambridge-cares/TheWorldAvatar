@@ -18,16 +18,19 @@ import org.json.JSONStringer;
 import org.junit.Before;
 import org.junit.Test;
 
+import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WTESingleAgent;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
-public class TestWTE {
+public class TestWTE extends TestCase{
 	static String iriofnetwork=null;
 	static String baseUrl = null;
 	String usecaseID = null;
@@ -40,13 +43,13 @@ public class TestWTE {
 	@Before
 	public void setUp() {
 		iriofnetwork ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+		iriofnetwork = FCQuerySource.tempIRItoFile(iriofnetwork);
 		baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
 		usecaseID = UUID.randomUUID().toString();
 	}
 	@Test
 	public void testQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		
 		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		int noOfYears = 15;
 		a.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model, noOfYears);
