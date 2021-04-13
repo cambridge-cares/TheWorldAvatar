@@ -82,6 +82,15 @@ class JPS_query_constructor:
         # self.fire_query.clear_cache()
         # self.fire_query_ontochemcomp.clear_cache()
 
+    def fire_query_to_ldf_ontocompchem(self, query):
+        url = "http://%s:%s/ontocompchem/query?" % (self.config['ldf_host'], str(self.config['ldf_port']))
+        values = {"query": query}
+        full_url = url + urllib.parse.urlencode(values)
+        req = urllib.request.Request(full_url)
+        response = urllib.request.urlopen(req).read()
+        return response
+
+
     def fire_query_to_ldf_ontokin(self, query, products, reactants):
         print('----------- firing the query to LDF -------------')
         if products is None:
@@ -303,36 +312,71 @@ class JPS_query_constructor:
         print('=========== line 238 =============')
         print('intent', intent)
         print('species', species)
+
+        if intent == 'electronic_energy':
+            species = self.validator.validate(attribute, 'ontocompchem', intent, species).replace(' ', '')
+            q = ELECTRONIC_ENERGY % species
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
+
+
+
         attribute_iri = self.attribute_mapper.find_closest_attribute(intent, attribute)
-        species = self.validator.validate(attribute, 'ontocompchem', intent, species)
-        intent = self.attribute_mapper.map_to_quantum_queries(attribute_iri)
+        print('attribute_iri', attribute_iri)
+
+        species = self.validator.validate(attribute, 'ontocompchem', intent, species).replace(' ','')
+        print('species after species', species)
+
+        _intent = self.attribute_mapper.map_to_quantum_queries(attribute_iri)
+        print('intent attribute_mapper ', intent)
+
+
         if species is None:
             return None
 
-        if intent == 'rotational_constants':
+        if _intent == 'rotational_constants':
             q = ROTATIONAL_CONSTANT_QUERY % species
-            rst = fire_query_ontochemcomp(q).decode('utf-8')
-        elif intent == 'symmetry_number':
+            print(q)
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
+
+        elif _intent == 'symmetry_number':
             q = ROTATIONAL_SYMMETRY_NUMBER % species
-            rst = fire_query_ontochemcomp(q).decode('utf-8')
-        elif intent == 'vibration_frequency':
+            print(q)
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
+        elif _intent == 'vibration_frequency':
             q = VIBRATION_FREQUENCY_QUERY % species
-            rst = fire_query_ontochemcomp(q).decode('utf-8')
-        elif intent == 'guassian_file':
+            print(q)
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
+
+        elif _intent == 'guassian_file':
             q = GAUSSIAN_FILE % species
-            rst = fire_query_ontochemcomp(q).decode('utf-8')
-        elif intent == 'spin_multiplicity':
+            print(q)
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
+
+        elif _intent == 'spin_multiplicity':
             q = SPIN_MULTIPLICITY % species
-            rst = fire_query_ontochemcomp(q).decode('utf-8')
-        elif intent == 'formal_charge':
+            print(q)
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
+        elif _intent == 'formal_charge':
             q = FORMAL_CHARGE % species
-            rst = fire_query_ontochemcomp(q).decode('utf-8')
-        elif intent == 'electronic_energy':
+            print(q)
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
+        elif _intent == 'electronic_energy':
             q = ELECTRONIC_ENERGY % species
-            rst = fire_query_ontochemcomp(q).decode('utf-8')
-        elif intent == 'geometry_type':
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
+
+        elif _intent == 'geometry_type':
             q = GEOMETRY_TYPE % species
-            rst = fire_query_ontochemcomp(q).decode('utf-8')
+            print(q)
+            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
+            return rst
 
         else:
             return None

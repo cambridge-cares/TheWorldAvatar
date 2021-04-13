@@ -76,6 +76,11 @@ class RdfWriterImpl extends LinkedDataFragmentWriterBase implements ILinkedDataF
      	if (queryObject == null) {
             try (Writer w = new OutputStreamWriter(outputStream, "UTF-8")) {
                 w.write(modelAsString);
+                String filename =String.valueOf(modelAsString.hashCode());
+                FileWriter myWriter = new FileWriter("D://ont//" + filename);
+                myWriter.write(modelAsString);
+                myWriter.close();
+                
             }  
      	}else {
      	
@@ -88,8 +93,9 @@ class RdfWriterImpl extends LinkedDataFragmentWriterBase implements ILinkedDataF
      	
      	JSONArray reactants = queryObject.getJSONArray("reactants");
      	JSONArray products = queryObject.getJSONArray("products");
+     	String ontology = queryObject.getString("ontology");
      	
-     	String composed = SPARQLRegex.filter(page, modelAsString, reactants, products);
+     	String composed = SPARQLRegex.filter(ontology, page, modelAsString, reactants, products);
      	
  
      	String queryString = queryObject.getString("hasEquationQuery");

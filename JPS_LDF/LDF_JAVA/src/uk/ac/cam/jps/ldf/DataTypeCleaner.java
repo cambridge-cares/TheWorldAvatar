@@ -26,11 +26,12 @@ import org.apache.jena.vocabulary.XSD;
 public class DataTypeCleaner {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		// TODO Auto-generated method stub
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 
 		InputStream inputstream = new FileInputStream("D:\\ontocompchem\\final.ttl");
 	 	final Model rdffile = ModelFactory.createDefaultModel();
+	 	Model new_rdffile =  ModelFactory.createDefaultModel();
+	 	
 		System.out.println("================ Start reading the file ====================");
 		rdffile.read(inputstream, null, "Turtle") ;		
 		StmtIterator statements = rdffile.listStatements();
@@ -49,17 +50,21 @@ public class DataTypeCleaner {
 				String v = o.toString();
 				v = v.replace(" ", "");
 				// rdffile.remove(the_statement);
-				Statement x = rdffile.createStatement(s, RDFS.label, v);
-				rdffile.add(x);
+				Statement x = rdffile.createStatement(s, new_rdffile.createProperty("http://purl.org/gc/hasName"), v);
+				new_rdffile.add(x);
 				System.out.println(the_statement);
 				System.out.println("=======================================");
+			}else
+			{
+				
+				new_rdffile.add(the_statement);
 			}
 			
 		    
  		}
 		
 		FileOutputStream test = new FileOutputStream("D:\\ontocompchem\\clean.ttl");
-		rdffile.write(test, "Turtle");
+		new_rdffile.write(test, "Turtle");
 
 	}
 

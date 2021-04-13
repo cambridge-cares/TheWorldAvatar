@@ -45,7 +45,6 @@ public class SPARQLRegexUI {
 	
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		
         String reactant_template = ".* %s .*=\\].*|.*\\\"%s .*=\\].*";
         String product_template =  ".*=] %s .*|.*=].* %s\\\".*";

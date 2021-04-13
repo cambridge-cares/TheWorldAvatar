@@ -33,6 +33,38 @@ request.end()
 });
 
 
+router.get('/ontocompchem/query', function(req, res){
+	console.time('Execution time ontocompchem');
+	
+	
+	let data = req.query;
+	const myEngine = newEngine();
+ 	let query = data.query;
+
+		(async () => {
+		const result = await myEngine.query(query, {
+		     sources: ['http://localhost:8080/ldfserver/ontocompchem']
+		});
+	
+
+		const bindings = await result.bindings();
+		 
+		let full_result = [];
+		for (let binding of bindings){
+			let row = parse_bindings(binding);
+			full_result.push(row);
+		}
+		full_result = JSON.stringify(full_result);
+		console.timeEnd('Execution time ontocompchem');
+		res.status(200).send(full_result);
+	})(); 
+	
+	
+});
+
+
+
+
 router.get('/query', function(req,res){
 	 
 	console.time('Execution time');
@@ -119,6 +151,10 @@ function printMemory(){
  }
  
 app.use('/', router, (error, req, res, next) => {
+
+ 	req.setTimeout(25 * 1000, function(){
+        // call back function is called when request timed out.
+    });
  res.status(500).send("Something Broke!");
 });
 
