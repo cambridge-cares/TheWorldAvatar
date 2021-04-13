@@ -90,8 +90,17 @@ class JPS_query_constructor:
             reactants = []
         print("query fired to LDF server")
         print(query)
-        url = "http://%s:%s/query?" % (self.config['ldf_host'], str(self.config['ldf_port']))
-        print(url)
+		
+        # Build the URL for the LDF query
+        ldf_port = int(str(self.config['ldf_port']))
+        print("LDF Port", ldf_port)
+		
+        if ldf_port > 0:
+            url = "http://%s:%s/query?" % (self.config['ldf_host'], str(self.config['ldf_port']))
+        else:
+            url = "http://%s/query?" % (self.config['ldf_host'])
+			
+        print("LDF URL", url)
         print("===================== here ==================")
         values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
         full_url = url + urllib.parse.urlencode(values)

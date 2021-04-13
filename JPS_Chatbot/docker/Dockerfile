@@ -72,7 +72,7 @@ RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckod
 RUN tar -xvzf geckodriver*.gz
 RUN chmod +x geckodriver
 RUN cp geckodriver /usr/local/bin
-RUN apt-get install firefox -y
+RUN apt-get install firefox -y --fix-missing
 
 # JPS Chatbot installation
 RUN echo -e "Installing the chatbot..."
