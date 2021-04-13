@@ -1,5 +1,10 @@
 package uk.ac.cam.cares.jps.wte.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -10,30 +15,41 @@ import org.apache.jena.ontology.OntModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
+import org.junit.Before;
+import org.junit.Test;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WTESingleAgent;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
-public class TestWTE extends TestCase {
-	static String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
-	static String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
-	String usecaseID = UUID.randomUUID().toString();
+public class TestWTE extends TestCase{
+	static String iriofnetwork=null;
+	static String baseUrl = null;
+	String usecaseID = null;
 	/** test the FCQuery creation by 
 	 * a. reading the model and getting the number of FC *number of years of waste levels 
 	 * b. creating the csv file of site locations, and waste levels of those FoodCourts per year
 	 * c. test presence of file there. 
 	 * 
 	 */
+	@Before
+	public void setUp() {
+		iriofnetwork ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+		iriofnetwork = FCQuerySource.tempIRItoFile(iriofnetwork);
+		baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
+		usecaseID = UUID.randomUUID().toString();
+	}
+	@Test
 	public void testQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		
 		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		int noOfYears = 15;
 		a.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model, noOfYears);
@@ -45,6 +61,7 @@ public class TestWTE extends TestCase {
 	/** get Offsite WTF locations and save in csv file
 	 * 
 	 */
+	@Test
 	public void testQueryOffsiteWT() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		
@@ -56,6 +73,7 @@ public class TestWTE extends TestCase {
 	/** get Transport costs and save in a csv files
 	 * should display four results, all non-null
 	 */
+	@Test
 	public void testQueryTransportQuery() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		
@@ -70,6 +88,7 @@ public class TestWTE extends TestCase {
 	/** Query transport data and check only one result is returned. 
 	 * 
 	 */
+	@Test
 	public void testQuerytransport() {
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		String query=WastetoEnergyAgent.getTransportQuery();
@@ -82,6 +101,7 @@ public class TestWTE extends TestCase {
 	/** Query Output data. In base scenario, it should be only one
 	 * 
 	 */
+	@Test
 	public void testWTEKBCreatorWasteSystemOutputQuery() {
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		
@@ -95,6 +115,7 @@ public class TestWTE extends TestCase {
 	/** Query types of technology of offsite. Currently three (anerobic, incineration, co-digestion)
 	 * 
 	 */
+	@Test
 	public void testQueryTechOffsiteQuery() {
 	String query = FCQuerySource.getTechQuery() 
 			.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
@@ -107,6 +128,7 @@ public class TestWTE extends TestCase {
 	/** Query types of technology of onsite. Currently only one. 
 	 * 
 	 */
+	@Test
 	public void testQueryTechOnsiteQuery() {
 		String query = FCQuerySource.getTechQuery() 
 				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
@@ -122,9 +144,12 @@ public class TestWTE extends TestCase {
 	 * 
 	 * @throws JSONException
 	 */
+	@Test
 	public void testCreateScenarioAndCallWTEAgent() throws JSONException {
 		
 		String scenarioName = "testwaste2-"+usecaseID;
+		iriofnetwork ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+		
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(iriofnetwork)
 				.key("n_cluster").value("40")
@@ -138,6 +163,7 @@ public class TestWTE extends TestCase {
 	 * 
 	 * @throws JSONException
 	 */
+	@Test
 	public void testInputValidatorWTEAgent() throws JSONException {
 		
 		JSONObject jo = new JSONObject().put("wastenetwork", iriofnetwork)
@@ -153,6 +179,7 @@ public class TestWTE extends TestCase {
 	 * @param scenarioName
 	 * @return
 	 */
+	@Test
 	private String enableScenario(String scenarioName) {
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		JPSHttpServlet.enableScenario(scenarioUrl);	
@@ -162,6 +189,7 @@ public class TestWTE extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void testInSuccession() throws Exception {
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
 		

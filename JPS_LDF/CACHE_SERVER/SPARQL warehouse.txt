@@ -1,0 +1,554 @@
+
+
+query_2 = `        
+			PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT  DISTINCT   ?Equation
+		WHERE  {
+		?reaction ontokin:hasEquation ?Equation .
+		# FILTER regex(str(?Equation), "\[*=\](.( H\* ))|\[*=\](.* H$)")
+		# FILTER regex(str(?Equation), ".*=] OH | .=]. OH$")
+		# FILTER regex(str(?Equation), ".*=] HCO | .=]. HCO$")
+        } LIMIT 100`;		
+
+
+  query_10 = `
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT     ?Equation  ?ActivationEnergy ?ActivationEnergyUnits  ?PreExponentialFactor ?PreExponentialFactorUnits ?TemperatureExponent ?TemperatureExponentUnits
+		WHERE  {
+		?reaction ontokin:hasEquation ?Equation ;
+		reaction:hasReactant ?Reactant_1 ;
+		reaction:hasReactant ?Reactant_2 ;
+		reaction:hasProduct ?Product_1 ;
+		reaction:hasProduct ?Product_2 .
+		?Reactant_1 rdfs:label ?Reactant_1_label .
+		?Reactant_2 rdfs:label ?Reactant_2_label .
+		?Product_1 rdfs:label ?Product_1_label .
+		?Product_2 rdfs:label ?Product_2_label .
+		FILTER regex(?Reactant_1_label, "^H$")
+		FILTER regex(?Reactant_2_label, "^O2$")
+		# FILTER regex(?Product_1_label, "^O$")
+		# FILTER regex(?Product_2_label, "^OH$")
+		{
+		 ?reaction  <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient>  ?ArrheniusCoefficient .
+		 ?ArrheniusCoefficient ontokin:hasActivationEnergy ?ActivationEnergy .
+		 ?ArrheniusCoefficient ontokin:hasActivationEnergyUnits  ?ActivationEnergyUnits  .
+		 ?ArrheniusCoefficient ontokin:hasPreExponentialFactor ?PreExponentialFactor .
+		 ?ArrheniusCoefficient ontokin:hasPreExponentialFactorUnits ?PreExponentialFactorUnits .
+		 ?ArrheniusCoefficient ontokin:hasTemperatureExponent ?TemperatureExponent .
+		 ?ArrheniusCoefficient ontokin:hasTemperatureExponentUnits ?TemperatureExponentUnits . }
+        }  LIMIT 1`;
+
+  query_1 = `
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT     ?Equation  ?ActivationEnergy ?ActivationEnergyUnits  ?PreExponentialFactor ?PreExponentialFactorUnits ?TemperatureExponent ?TemperatureExponentUnits
+		WHERE  {
+		?reaction ontokin:hasEquation ?Equation ;
+		reaction:hasReactant ?Reactant_1 ;
+		reaction:hasReactant ?Reactant_2 ;
+		reaction:hasProduct ?Product_1 ;
+		reaction:hasProduct ?Product_2 .
+		?Reactant_1 rdfs:label ?Reactant_1_label .
+		?Reactant_2 rdfs:label ?Reactant_2_label .
+		?Product_1 rdfs:label ?Product_1_label .
+		?Product_2 rdfs:label ?Product_2_label .
+		FILTER regex(?Reactant_1_label, "^H$")
+		FILTER regex(?Reactant_2_label, "^O2$")
+		FILTER regex(?Product_1_label, "^O$")
+		FILTER regex(?Product_2_label, "^OH$")
+		{
+		 ?reaction  <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient>  ?ArrheniusCoefficient .
+		 ?ArrheniusCoefficient ontokin:hasActivationEnergy ?ActivationEnergy .
+		 ?ArrheniusCoefficient ontokin:hasActivationEnergyUnits  ?ActivationEnergyUnits  .
+		 ?ArrheniusCoefficient ontokin:hasPreExponentialFactor ?PreExponentialFactor .
+		 ?ArrheniusCoefficient ontokin:hasPreExponentialFactorUnits ?PreExponentialFactorUnits .
+		 ?ArrheniusCoefficient ontokin:hasTemperatureExponent ?TemperatureExponent .
+		 ?ArrheniusCoefficient ontokin:hasTemperatureExponentUnits ?TemperatureExponentUnits . }
+        }  LIMIT 1`;
+
+query_3 = `        
+			PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT  DISTINCT   ?reaction ?Equation
+		WHERE  {
+		 
+		?Product_1 rdfs:label "H2" .
+		?Product_2 rdfs:label "O2" .
+		
+		
+		?reaction reaction:hasProduct ?Product_1 ;
+				  reaction:hasProduct ?Product_2 .
+		 
+		?reaction ontokin:hasEquation ?Equation .
+		
+		
+		# FILTER regex(str(?Equation), "\[*=\](.( H\* ))|\[*=\](.* H$)")
+		# FILTER regex(str(?Equation), "(.*=] HCO )| (.*=].* HCO$)")
+		# FILTER regex(str(?Equation), "(.*=] H2 )| (.*=].* H2$)")
+		# FILTER regex(str(?Equation), "(.*=] O2 )| (.*=].* O2$)")
+
+        } LIMIT 10`;
+
+
+
+query_4 = `
+
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT DISTINCT ?Equation 
+		WHERE  {
+			 
+		 
+		?reaction ontokin:hasEquation ?Equation .
+		 
+		# FILTER regex(str(?Equation), "\[*=\](.( H\* ))|\[*=\](.* H$)")
+		# FILTER regex(str(?Equation), "(.*=] HCO )| (.*=].* HCO$)")
+		FILTER regex(str(?Equation), "(.*=] H2 )| (.*=].* H2$)")
+		FILTER regex(str(?Equation), "(.*=] O2 )| (.*=].* O2$)")
+		FILTER regex(str(?Equation), "(^H ).*\[*=]|( H )\[*=]*")
+        } LIMIT 10 `;
+
+
+query_6 = `
+
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT DISTINCT ?Equation 
+		WHERE  {
+			 
+		 
+		?reaction ontokin:hasEquation ?Equation .
+		 
+		# FILTER regex(str(?Equation), "\[*=\](.( H\* ))|\[*=\](.* H$)")
+		FILTER regex(str(?Equation), "(.*=] HCO )| (.*=].* HCO$)")
+		# FILTER regex(str(?Equation), "(.*=] H2 )| (.*=].* H2$)")
+		# FILTER regex(str(?Equation), "(.*=] O2 )| (.*=].* O2$)")
+		FILTER regex(str(?Equation), "(^H ).*\[*=]|( H )\[*=]*")
+        } LIMIT 10  `;
+
+
+query_5 = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT  DISTINCT   ?Equation
+		WHERE  {
+			
+		?reaction reaction:hasProduct ?Product_1 .
+		?Product_1 rdfs:label "H2" .
+		
+		?reaction reaction:hasProduct ?Product_2 .
+		?Product_2 rdfs:label "O2" .
+		
+			
+		?reaction ontokin:hasEquation ?Equation .
+		
+		
+		# FILTER regex(str(?Equation), "\[*=\](.( H\* ))|\[*=\](.* H$)")
+		# FILTER regex(str(?Equation), "(.*=] HCO )| (.*=].* HCO$)")
+		# FILTER regex(str(?Equation), "(.*=] H2 )| (.*=].* H2$)")
+        } LIMIT 10
+`;
+
+
+query_7 = `
+
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT DISTINCT ?Equation 
+		WHERE  {
+			 
+		 
+		?reaction ontokin:hasEquation ?Equation .
+		 
+		# FILTER regex(str(?Equation), "\[*=\](.( H\* ))|\[*=\](.* H$)")
+		 FILTER regex(str(?Equation), "(.*=] HCO )| (.*=].* HCO$)")
+		 FILTER regex(str(?Equation), "(.*=] H2 )| (.*=].* H2$)")
+		# FILTER regex(str(?Equation), "(.*=] O2 )| (.*=].* O2$)")
+		FILTER regex(str(?Equation), "(^H ).*\[*=]|( H )\[*=]*")
+        }  LIMIT 10 
+`;
+
+
+query_8 = `
+
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT DISTINCT ?reaction 
+		WHERE  {
+		
+		
+		{
+			SELECT ?reaction 
+			WHERE {
+				?Product_1 rdfs:label "O2" .
+				?reaction reaction:hasProduct ?Product_1 .				
+			}		
+		}
+		
+		
+		 
+		# FILTER regex(str(?Equation), "\[*=\](.( H\* ))|\[*=\](.* H$)")
+		# FILTER regex(str(?Equation), "(.*=] HCO )| (.*=].* HCO$)")
+		 FILTER regex(str(?Equation), "(.*=] H2 )| (.*=].* H2$)")
+		# FILTER regex(str(?Equation), "(.*=] O2 )| (.*=].* O2$)")
+		FILTER regex(str(?Equation), "(^H ).*\[*=]|( H )\[*=]*")
+        }  LIMIT 10 
+`;
+
+
+
+query_9 = `
+
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+		PREFIX ontokin:
+		<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+		PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+		SELECT DISTINCT ?Equation 
+		WHERE  {
+			 
+		
+		?Product_1 rdfs:label "H2" .
+		?reaction reaction:hasProduct ?Product_1 .
+		?reaction ontokin:hasEquation ?Equation .
+		
+		
+		 
+		# FILTER regex(str(?Equation), "\[*=\](.( H\* ))|\[*=\](.* H$)")
+		# FILTER regex(str(?Equation), "(.*=] HCO )| (.*=].* HCO$)")
+		# FILTER regex(str(?Equation), "(.*=] H2 )| (.*=].* H2$)")
+		FILTER regex(str(?Equation), "(.*=] O2 )| (.*=].* O2$)")
+		FILTER regex(str(?Equation), "(^H ).*\[*=]|( H )\[*=]*")
+        }  LIMIT 10 
+`;
+
+
+
+query_11 = `        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontokin:
+        <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+        PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+        SELECT  DISTINCT   ?Equation ?MechanismName
+        WHERE  {
+        ?reaction ontokin:hasEquation ?Equation ;
+reaction:hasReactant ?Reactant_1 ;
+reaction:hasReactant ?Reactant_2 .
+?Reactant_1 rdfs:label ?Reactant_1_label .
+?Reactant_2 rdfs:label ?Reactant_2_label .
+FILTER regex(?Reactant_1_label, "^CH4$")
+FILTER regex(?Reactant_2_label, "^OH$")
+ ?reaction ontokin:belongsToPhase ?Phase .
+?Phase ontokin:containedIn ?MechanismIRI .
+?MechanismIRI rdfs:label ?MechanismName .
+
+        } `;
+
+basic_query = `
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontokin:
+        <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+        PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+        SELECT  DISTINCT   ?Equation 
+        WHERE  {
+        ?reaction ontokin:hasEquation ?Equation .
+		# FILTER regex(str(?Equation), "((^H2) .*=\])|(( H2 )=\]*)")
+		# FILTER regex(str(?Equation), "((^OH) .*=\])|(( OH )=\]*)")
+        }  
+ 
+`;
+
+query_12 = `        
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontokin:
+        <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+        PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+        SELECT  DISTINCT   ?Equation ?MechanismName
+        WHERE  {
+			
+			 
+		?reaction ontokin:belongsToPhase ?Phase .
+		?Phase ontokin:containedIn ?MechanismIRI .
+		?MechanismIRI rdfs:label ?MechanismName .
+		{
+			SELECT DISTINCT ?reaction ?Equation
+			WHERE {
+				?reaction ontokin:hasEquation ?Equation .
+			}
+		}
+
+        } LIMIT 50`;
+		
+		
+		query_20 = `        
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontokin:
+        <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+        PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+        SELECT  DISTINCT   ?Equation ?MechanismName
+        WHERE  {
+			
+			
+    
+		?reaction ontokin:belongsToPhase ?Phase .
+		?Phase ontokin:containedIn ?MechanismIRI .
+		?MechanismIRI rdfs:label ?MechanismName .
+ 
+		{
+			SELECT DISTINCT ?reaction ?Equation
+			WHERE {
+				?reaction ontokin:hasEquation ?Equation .
+				FILTER regex(str(?Equation), "(.*=] O2 )| (.*=].* O2$)")
+				FILTER regex(str(?Equation), "(^H ).*\[*=]|( H )\[*=]*")
+		 
+				
+			}
+		}
+
+        } LIMIT 10`;
+
+
+
+		
+		query_21 = `        
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontokin:
+        <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+        PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+        SELECT  DISTINCT   ?Equation ?MechanismName
+        WHERE  {
+			
+			
+    
+		?reaction ontokin:belongsToPhase ?Phase .
+		?Phase ontokin:containedIn ?MechanismIRI .
+		?MechanismIRI rdfs:label ?MechanismName .
+ 
+		{
+			SELECT DISTINCT ?reaction ?Equation
+			WHERE {
+				?reaction ontokin:hasEquation ?Equation .
+				FILTER regex(str(?Equation), "(.*=] O2 )| (.*=].* O2$)")
+				FILTER regex(str(?Equation), "(^H2 ).*\[*=]|( H2 )\[*=]*")
+		 
+				
+			}
+		}
+
+        } LIMIT 10`;
+
+
+query_22 = `
+		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontokin:
+        <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+        PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+        SELECT  DISTINCT   ?Equation ?MechanismName
+        WHERE  {
+			
+			
+    
+		?reaction ontokin:belongsToPhase ?Phase .
+		?Phase ontokin:containedIn ?MechanismIRI .
+		?MechanismIRI rdfs:label ?MechanismName .
+ 
+		{
+			SELECT DISTINCT ?reaction ?Equation
+			WHERE {
+				?reaction reaction:hasReactant [ rdfs:label "H2"] ;
+						  reaction:hasReactant [ rdfs:label "O2"] ;
+						  ontokin:hasEquation ?Equation .
+		 
+				
+			}
+		}
+
+        } LIMIT 10
+
+
+basic_query = `
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?reaction ?Equation  
+WHERE  {	
+	 	
+  	?reaction ontokin:hasEquation ?Equation .
+} 
+
+`;
+
+
+
+query = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?reaction ?Equation ?MechanismName 
+WHERE  {	
+	?MechanismIRI rdfs:label ?MechanismName .
+	?Phase ontokin:containedIn ?MechanismIRI .
+ 
+	{SELECT DISTINCT ?reaction ?Phase ?Equation
+	WHERE{		
+	?reaction ontokin:belongsToPhase ?Phase .
+ 	?reaction ontokin:hasEquation ?Equation .
+	}}
+ 
+	} GROUP BY ?reaction ?Equation ?MechanismName 
+`;
+
+
+
+q1 = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?reaction ?Equation ?ActivationEnergy  
+WHERE  {	
+ 
+ 		 ?ArrheniusCoefficient 	ontokin:hasActivationEnergy ?ActivationEnergy ;
+								ontokin:hasActivationEnergyUnits  ?ActivationEnergyUnits  ;
+								ontokin:hasPreExponentialFactor ?PreExponentialFactor ;
+								ontokin:hasPreExponentialFactorUnits ?PreExponentialFactorUnits ;
+								ontokin:hasTemperatureExponent ?TemperatureExponent ;
+								ontokin:hasTemperatureExponentUnits ?TemperatureExponentUnits .
+ 
+	{
+	SELECT ?reaction ?ArrheniusCoefficient
+	WHERE {
+			?reaction <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasArrheniusCoefficient> ?ArrheniusCoefficient .
+			?reaction ontokin:hasEquation ?Equation . 
+		}
+	}
+	
+
+	}   LIMIT 1
+`;
+
+
+q2 = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?Equation  
+WHERE  {		 
+ 
+ [
+  <http://www.theworldavatar.com/kb/ontokin/56_53.owl#ChemicalReaction_631070468656898_13>,
+  <http://www.theworldavatar.com/kb/ontokin/Andrae_2008.owl#ChemicalReaction_1749249908516854_88>
+ ] 
+ ontokin:hasEquation ?Equation .
+	 
+	}  
+
+`; 
+
+
+q3 = `
+ 
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?Species  ?LennardJonesWellDepth ?label  ?Unit
+{
+	
+	 
+     ?TransportModel ontokin:hasLennardJonesWellDepth ?LennardJonesWellDepth .
+     ?Species ontokin:hasTransportModel ?TransportModel .
+     ?Species rdfs:label ?label .
+	 ?Species rdfs:label "O2" .
+	 
+	  OPTIONAL{
+		?TransportModel ontokin:hasLennardJonesWellDepthUnits ?Unit .
+     } 
+ 
+ }  LIMIT 1
+`;
+
+q4 = `
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT ?Species ?label ?LennardJonesWellDepth ?Unit
+{
+	
+	
+	 ?TransportModel ontokin:hasPolarizability ?LennardJonesWellDepth .
+     ?Species ontokin:hasTransportModel ?TransportModel .
+     ?Species rdfs:label ?label .
+	 ?Species rdfs:label "O2" .
+	 
+	  OPTIONAL{
+		?TransportModel ontokin:hasPolarizabilityUnits ?Unit .
+     } 
+	
+	 
+}  LIMIT 1
+
+`;
+
+q_reversible = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin:
+<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+SELECT  DISTINCT  ?Equation ?isReversible
+WHERE  {		 
+ 
+			?reaction ontokin:isReversible ?isReversible .
+			?reaction ontokin:hasEquation ?Equation .
+	 
+	}  
+
+`;
+ 
+`
+
+ 
+
+			

@@ -1,0 +1,4 @@
+{% set logo = theme_var(mobile ? 'custom_logo_mobile' : 'custom_logo') %}
+<a href="{{ home_url }}" class="navbar-brand mr-10">
+	<img src="{{ url('image://site-logo-text.png')  }}" alt="{{ site.title }}"/>
+</a>

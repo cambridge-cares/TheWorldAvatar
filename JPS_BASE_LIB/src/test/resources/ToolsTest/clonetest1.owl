@@ -15,6 +15,10 @@
     <dc:identifier>species_2</dc:identifier>
     <skos:altLabel>O</skos:altLabel>
   </owl:Thing>
+  <owl:Thing rdf:about="http://www.theworldavatar.com/kb/species/species.owl#species_3">
+    <dc:identifier>species_3</dc:identifier>
+    <skos:altLabel>O2</skos:altLabel>
+  </owl:Thing>
   <owl:AnnotationProperty rdf:about="http://www.w3.org/2008/05/skos#altLabel">
     <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#label"/>
   </owl:AnnotationProperty>

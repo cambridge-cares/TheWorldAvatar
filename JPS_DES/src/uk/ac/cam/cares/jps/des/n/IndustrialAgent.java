@@ -31,7 +31,7 @@ public class IndustrialAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 		if (!validateInput(requestParams)) {
-    		throw new JSONException("IndustrialAgent:  Input parameters not found.\n");
+    		throw new BadRequestException("IndustrialAgent:  Input parameters not found.\n");
     	}
     	String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");

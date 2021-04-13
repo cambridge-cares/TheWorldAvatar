@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -99,7 +98,7 @@ public class BatteryEntityCreator extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 
 		if (!validateInput(requestParams)) {
-			throw new JSONException("ESSOptimizationAgent: Input parameters not found.\n");
+			throw new BadRequestException("ESSOptimizationAgent: Input parameters not found.\n");
 		}
 		String ENIRI=requestParams.getString("electricalnetwork");
 		String storagetype=requestParams.getString("storage");

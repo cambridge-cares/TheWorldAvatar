@@ -31,7 +31,7 @@ public class BatteryLocator extends JPSAgent {
     @Override
    	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     	if (!validateInput(requestParams)) {
-			throw new JSONException ("BatteryLocatorAgent: Input parameters not found.\n");
+			throw new BadRequestException("BatteryLocatorAgent: Input parameters not found.\n");
 		}
     	
 		//run the opf

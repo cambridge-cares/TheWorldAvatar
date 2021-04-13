@@ -11,6 +11,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -139,5 +140,17 @@ public class InputValidatorTest{
 		assertTrue(InputValidator.checkIfFileGotUpdated(filePath,timeLast)); 
 	}
 	//TODO: Vishvak test if JSON, test if Integer
+	@Test
+	public void testIfInteger() {
+		assertTrue(InputValidator.checkIfInteger("9")); 
+		assertFalse(InputValidator.checkIfInteger("0.09")); 
+	}
 	
+	@Test
+	public void testIfJSON() {
+		JSONObject jo = new JSONObject().put("key", "value");
+		assertTrue(InputValidator.checkIfValidJSONObject(jo.toString())); 
+		assertTrue(InputValidator.checkIfValidJSONObject("{jo:jijiji}")); 
+		assertFalse(InputValidator.checkIfValidJSONObject("{jo:;:jijiji}"));
+	}
 }
