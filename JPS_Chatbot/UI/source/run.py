@@ -105,7 +105,7 @@ def hello_world():
 # print(sys.path)
 from CoordinateAgent import CoordinateAgent
 from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
-#from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
+from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
 
 coordinate_agent = CoordinateAgent(socketio)
 wolfram_and_google = WolframGoogle()
