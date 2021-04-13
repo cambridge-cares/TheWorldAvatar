@@ -21,8 +21,6 @@ Mass,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ont
 SpecificSurfaceArea,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Material,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Fraction,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-COtoH2MolarRatio,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-UnburnedGasMakeup,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 InductionTime,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Voltage,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Temperature,Class,DimensionalQuanty,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
