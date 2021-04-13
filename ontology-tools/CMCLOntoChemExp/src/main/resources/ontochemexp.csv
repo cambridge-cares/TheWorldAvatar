@@ -115,13 +115,10 @@ hasID,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/
 hasLabel,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDataPointForm,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasType,Data Property,,,PreferredKey,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasName,Data Property,,,DimensionalQuanty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasID,Data Property,,,DimensionalQuanty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasLabel,Data Property,,,DimensionalQuanty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasUnits,Data Property,,,DimensionalQuanty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDescription,Data Property,,,DimensionalQuanty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasSourceType,Data Property,,,DimensionalQuanty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasMethod,Data Property,,,DimensionalQuanty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDerivedPropertyExists,Data Property,,,DimensionalQuanty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDatPreferredKey,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasCAS,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
