@@ -27,7 +27,7 @@ puts "Read password.txt file"
 
 # Download "models_wiki" files
 puts "Downloading from 'models_wiki' directory..."
-spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/models/models_wiki/models ../../UI/source
+spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/models/models_wiki/models /tmp/models_wiki
 
 expect "*authenticity*"
 send "yes\r" 
@@ -38,7 +38,7 @@ puts "Download complete."
 
 # Download "models_jps" files
 puts "Downloading from 'models_jps' directory..."
-spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/models/models_jps/models ../../UI/source/rasa_jps
+spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/models/models_jps/models /tmp/models_jps
  
 expect "*assword*" 
 send "$password\r"
