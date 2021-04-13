@@ -28,7 +28,6 @@ X9,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemE
 X10,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 X11,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Component,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Value,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Uncertainty,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 SpeciesLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 DerivedProperty,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
@@ -53,7 +52,6 @@ hasTimeShift,Object Property,,,ExpSpecs,TimeShift,max 1,,http://www.theworldavat
 hasKind,Object Property,,,Apparatus,Kind,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasMode,Object Property,,,Apparatus,Mode,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasProperty,Object Property,,,Apparatus,Property,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Object Property,,,Property,Value,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasUncertainty,Object Property,,,Property,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasComponent,Object Property,,,Property,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasSpeciesLink,Object Property,,,Property,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
@@ -156,7 +154,7 @@ hasDatType,Data Property,,,TimeShift,String,,,http://www.theworldavatar.com/onto
 hasDatAmount,Data Property,,,TimeShift,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasVal,Data Property,,,Kind,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasVal,Data Property,,,Mode,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasVal,Data Property,,,Value,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasVal,Data Property,,,Property,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasVal,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasVal,Data Property,,,Amount,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasVal,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
