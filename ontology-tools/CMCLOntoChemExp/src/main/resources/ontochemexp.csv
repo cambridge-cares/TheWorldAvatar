@@ -84,6 +84,7 @@ hasDataPointX,Object Property,,,DataPoint,X8,some,,http://www.theworldavatar.com
 hasDataPointX,Object Property,,,DataPoint,X9,some,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDataPointX,Object Property,,,DataPoint,X10,some,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDataPointX,Object Property,,,DataPoint,X11,some,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+refersTo,Object Property,,,X,DimensionalQuanty,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasSpeciesLink,Object Property,,,Component,SpeciesLink,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasAmount,Object Property,,,Component,Amount,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasUncertainty,Object Property,,,Component,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
