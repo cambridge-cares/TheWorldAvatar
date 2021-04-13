@@ -8,8 +8,10 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.sparql.expr.ExprVar;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class FCQuerySource {
 
@@ -105,6 +107,18 @@ public class FCQuerySource {
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultListfromquery;
-}
+	}
+	/** Temporary translation fix for switch from KBClient to KGRouter. In the end, it should be querying appropriately from the 
+	 * correct Source
+	 * 
+	 * @param iriofnetwork The file name to be changed. 
+	 * @return iriofnetwork (changed)
+	 */
+	public static String tempIRItoFile(String iriofnetwork) {
+		String translatedIRI = iriofnetwork.replace("http://www.theworldavatar.com", AgentLocator.getProperty("absdir.root"));
+		translatedIRI = ScenarioHelper.cutHash(translatedIRI);
+		iriofnetwork = translatedIRI.replace("C:/", "C:\\");
+		return iriofnetwork;
+	}
 	
 }

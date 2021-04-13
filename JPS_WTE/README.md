@@ -9,6 +9,7 @@
  - mvn clean install JPS WTE
  - node app web/CO2WEB/app.js
  - have nodeJS server running
+ - Comment Line 4, Uncomment Line 5 in \web\CO2Web\public\javascripts\wte.js when deploying in Claudius
  - Expected Result: Upon deployment, by loading the page localhost:82/wteMap. 
  	1. A google map appears
  	2. A side bar, containing variables for changing the transport and waste processing costs. 
@@ -43,3 +44,6 @@
 7. Matlab simulation is called, should finish in five minutes time. 
 8. The loading is due to new Onsite Facility instances being created slowly, and added to the knowledge graph. Followed by onsite waste treatment facilities, and lastly, the new costs are calculated
 9. Each is saved to the output file and sent to the visualization. 
+
+### TODO: 
+ - [ ] Unify all js visualizations: I'm trying to avoid having to change multiple files when away.
