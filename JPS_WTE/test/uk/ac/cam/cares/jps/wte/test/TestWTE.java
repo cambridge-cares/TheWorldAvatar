@@ -43,16 +43,14 @@ public class TestWTE extends TestCase{
 	@Before
 	public void setUp() {
 		iriofnetwork ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+		iriofnetwork = FCQuerySource.tempIRItoFile(iriofnetwork);
 		baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
 		usecaseID = UUID.randomUUID().toString();
 	}
 	@Test
 	public void testQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		String translatedIRI = iriofnetwork.replace("http://www.theworldavatar.com", AgentLocator.getProperty("absdir.root"));
-		translatedIRI = ScenarioHelper.cutHash(translatedIRI);
-		translatedIRI = translatedIRI.replace("C:/", "C:\\");
-		OntModel model= WastetoEnergyAgent.readModelGreedy(translatedIRI);
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		int noOfYears = 15;
 		a.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model, noOfYears);
 		File file = new File( baseUrl + "\\Site_xy.csv");

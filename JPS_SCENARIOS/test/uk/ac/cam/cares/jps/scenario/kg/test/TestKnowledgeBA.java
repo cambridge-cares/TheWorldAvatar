@@ -146,7 +146,7 @@ public class TestKnowledgeBA   {
 		 JSONObject jo = new JSONObject()
 		.put(JPSConstants.TARGETIRI,  filePath)
 		.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
-		AgentCaller.executeGetWithJsonParameter("jps/kb-new", jo.toString());
+		AgentCaller.executeGetWithJsonParameter("jps/kb", jo.toString());
 		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
         jo = new JSONObject()
         		.put(JPSConstants.TARGETIRI,  filePath)

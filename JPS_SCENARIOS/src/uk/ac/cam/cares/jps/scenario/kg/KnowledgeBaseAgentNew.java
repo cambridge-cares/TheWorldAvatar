@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.base.query.KGRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
-@WebServlet(urlPatterns = {"/kb-new/*"})
+@WebServlet(urlPatterns = {"/kb/*"})
 public class KnowledgeBaseAgentNew extends JPSAgent{
 	/**
 	 * 
