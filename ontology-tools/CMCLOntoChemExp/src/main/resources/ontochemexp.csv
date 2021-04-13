@@ -1,7 +1,7 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
 Experiment,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Copyright,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-BibliographyLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+BibliographyLink,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference,EQUIVALENT-TO,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Apparatus,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 CommonProperties,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 DataGroup,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
@@ -38,6 +38,17 @@ Observable,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoCh
 PropertyLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 DataAttributeLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 DataGroupLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+http://xmlns.com/foaf/0.1/Agent,Class,,,,,,,http://xmlns.com/foaf/0.1
+http://xmlns.com/foaf/0.1/Person,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1
+http://xmlns.com/foaf/0.1/Organization,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1
+http://purl.org/ontology/bibo/Journal,Class,,,,,,Describes the title and ISSN of a journal.,http://purl.org/ontology/bibo
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Class,,,,,,"Specification of a publication for describing its author(s), title, year of publication, journal or conference, publisher, etc.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a journal describing the page number and volume.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ProceedingsSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a conference.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PreprintSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a preprint.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#specifies,Object Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,http://purl.org/ontology/bibo/Journal,only,"A relation between a journal specification that describes the page number and volume, and the journal that describes its title and ISSN.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasPublicationSpecification,Object Property,,,BibliographyLink,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,only,"A relation between a reference and a publication specification that can be a journal specification, a proceedings specification or a preprint specification.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://purl.org/dc/terms/contributor,Object Property,,,BibliographyLink,http://xmlns.com/foaf/0.1/Agent,only,,http://purl.org/dc/terms/contributor
 hasApparatus,Object Property,,,Experiment,Apparatus,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasAdditionalDataItem,Object Property,,,Experiment,AdditionalDataItem,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasCommonProperties,Object Property,,,Experiment,CommonProperties,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
