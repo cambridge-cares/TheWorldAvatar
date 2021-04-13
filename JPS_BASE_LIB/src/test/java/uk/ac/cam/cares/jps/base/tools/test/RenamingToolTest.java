@@ -576,13 +576,32 @@ public class RenamingToolTest {
 			  "WHERE\n"+
 			  "  { { SELECT  ?s ?p ?o ?newS ?newP ?newO\n"+
 			  "      WHERE\n"+
-			  "        { GRAPH \"http://example.com/test/graph\"\n"+
+			  "        { GRAPH <http://example.com/test/graph>\n"+
 			  "            { ?s  ?p  ?o}}\n"+
 			  "      LIMIT   99\n"+
 			  "    }\n"+
 			  "  }\n";
 		
-		String expected = "DELETE {\n"+
+		String expectedQuads = "DELETE {\n"+
+				  "  GRAPH ?g {\n"+
+				  "    ?s ?p ?o .\n"+
+				  "  }\n"+
+				  "}\n"+
+				  "INSERT {\n"+
+				  "  GRAPH ?g {\n"+
+				  "    ?newS ?newP ?newO .\n"+
+				  "  }\n"+
+				  "}\n"+
+				  "WHERE\n"+
+				  "  { { SELECT  ?s ?p ?o ?newS ?newP ?newO ?g\n"+
+				  "      WHERE\n"+
+				  "        { GRAPH ?g\n"+
+				  "            { ?s  ?p  ?o}}\n"+
+				  "      LIMIT   99\n"+
+				  "    }\n"+
+				  "  }\n";
+		
+		String expectedTriples = "DELETE {\n"+
 				  "  ?s ?p ?o .\n"+
 				  "}\n"+
 				  "INSERT {\n"+
@@ -611,11 +630,18 @@ public class RenamingToolTest {
 		String strUpdate = update.toString();
 		assertEquals(expectedGraph,strUpdate);
 		
-		//call method with no graph
+		//call method with no graph for quad store
 		graph = null; 
 		update = (UpdateRequest) method1.invoke(renamingTool, graph, where, limit);
 		strUpdate = update.toString();
-		assertEquals(expected,strUpdate);
+		assertEquals(expectedQuads,strUpdate);
+		
+		//call method with no graph for triple store
+		graph = null; 
+		renamingTool.setTripleStore();
+		update = (UpdateRequest) method1.invoke(renamingTool, graph, where, limit);
+		strUpdate = update.toString();
+		assertEquals(expectedTriples,strUpdate);
 	}
 
 }

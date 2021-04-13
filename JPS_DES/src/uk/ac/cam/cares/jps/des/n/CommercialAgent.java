@@ -41,7 +41,7 @@ public class CommercialAgent extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	JSONObject responseParams = requestParams;	
     	if (!validateInput(requestParams)) {
-    		throw new JSONException("CommercialAgent:  Input parameters not found.\n");
+    		throw new BadRequestException("CommercialAgent:  Input parameters not found.\n");
     	}
         String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");

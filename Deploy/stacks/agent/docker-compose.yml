@@ -53,19 +53,11 @@ services:
        authors: "support@cmclinnovations.com"
        builder: "${BUILDER}"
        hash: "${HASH}"
-    secrets:
-      - source: mysql_root_pass
-        target: /usr/local/secrets/mysql_root_pass
     volumes:
       - driver:/usr/local/srm-driver
       - mpi:/usr/local/intel-mpi
-
-  
-# Secrets
-secrets:
-  mysql_root_pass:
-    file: Slurm/mysql_root_pass
-
+    env_file:
+      - Slurm/slurm-variables.env
 
 # Volumes
 volumes:

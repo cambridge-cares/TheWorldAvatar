@@ -113,7 +113,7 @@ public class BlockchainWrapper extends JPSAgent{
 		}else if (moneyEth < Math.pow(10, -1)) {
 			moneyEth = 0;
 		}
-		Credentials credentials = WalletUtils.loadCredentials("PASSWORD",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
+		Credentials credentials = WalletUtils.loadCredentials("Caesar1!",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
 		return  transactionReceipt.getTransactionHash();
 		

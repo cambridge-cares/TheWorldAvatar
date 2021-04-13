@@ -30,10 +30,10 @@ airqualitystation,Instance,Target Resource,,,
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,airqualitystation,,http://www.theworldavatar.com/blazegraph/namespace/airqualitystation/sparql,string
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint,Data Property,airqualitystation,,http://www.theworldavatar.com/blazegraph/namespace/airqualitystation/sparql,string
 ukpowerplant,Instance,Target Resource,,,
-http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ukpowerplant,,https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant/query,string
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ukpowerplant,,https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant,string
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint,Data Property,ukpowerplant,,https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant/statements,string
 ukpowergrid,Instance,Target Resource,,,
-http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ukpowergrid,,https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGrid/query,string
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ukpowergrid,,https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGrid,string
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint,Data Property,ukpowergrid,,https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGrid/statements,string
 ontocropmapgml,Instance,Target Resource,,,
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ontocropmapgml,,http://www.theworldavatar.com/blazegraph/namespace/ontocropmapgml/sparql,string
@@ -50,3 +50,6 @@ http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEn
 ontogasgrid,Instance,Target Resource,,,
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ontogasgrid,,http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql,string
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint,Data Property,ontogasgrid,,http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql,string
+ontosdg,Instance,Target Resource,,,
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ontosdg,,http://www.theworldavatar.com/blazegraph/namespace/ontosdg/sparql,string
+http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint,Data Property,ontosdg,,http://www.theworldavatar.com/blazegraph/namespace/ontosdg/sparql,string

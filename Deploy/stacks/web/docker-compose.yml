@@ -49,6 +49,24 @@ services:
       authors: "xz378@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
+    
+    
+  # JPS LDF Server
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  jps-ldf:
+    image: docker.cmclinnovations.com/jps-ldf:${HASH}
+    build:
+      context: "../../../JPS_LDF"
+      dockerfile: "./docker/Dockerfile"
+    container_name: "jps-ldf-${MODE}"
+    restart: unless-stopped
+    ports:
+      - 3000:3000 
+    labels:
+      description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
+      authors: "xz378@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
   
   
   # UK Power System
