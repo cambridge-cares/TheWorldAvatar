@@ -58,6 +58,8 @@ hasDataGroup,Object Property,,,Experiment,DataGroup,only,,http://www.theworldava
 hasExpSpecs,Object Property,,,Experiment,ExpSpecs,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasProvenance,Object Property,,,Experiment,Provenance,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasModification,Object Property,,,Provenance,Modification,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+createdBy,Object Property,,,Provenance,http://xmlns.com/foaf/0.1/Agent,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+modifiedBy,Object Property,,,Modification,http://xmlns.com/foaf/0.1/Agent,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasIgnitionType,Object Property,,,ExpSpecs,IgnitionType,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasTimeShift,Object Property,,,ExpSpecs,TimeShift,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasKind,Object Property,,,Apparatus,Kind,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
@@ -152,9 +154,7 @@ hasExpType,Data Property,,,ExpSpecs,String,,,http://www.theworldavatar.com/ontol
 hasDataSource,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasPatent,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 createdAt,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-createdBy,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 modifiedAt,Data Property,,,Modification,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-modifiedBy,Data Property,,,Modification,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasModificationDetails,Data Property,,,Modification,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDatTarget,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDatType,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
