@@ -88,13 +88,13 @@ def make_query_wolfram():
 def make_query_google():
     # socketio.emit('coordinate_agent', 'Querying the Google engine')
     question = request.args.get('question').strip()
-    # r = wolfram_and_google.get_result_from_google_directly(question)
-    # r = google_api.run(question)
+    r = wolfram_and_google.get_result_from_google_directly(question)
+    r = google_api.run(question)
     # print('========== the result from google ========\n')
     # print(r)
     # socketio.emit('coordinate_agent', 'Obtained result from the Google engine')
-    # return str(r)
-    return 'hello'
+    return str(r)
+    # return 'hello'
 
 
 @app.route('/')
