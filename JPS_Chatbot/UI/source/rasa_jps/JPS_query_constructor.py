@@ -94,26 +94,20 @@ class JPS_query_constructor:
         port = int(str(self.config['ldf_port']))
         print("LDF Port: ", port)
         
-        if ldf_port > 0:
+        if port > 0:
             print("Valid LDF port listed in config, adding to URL.")
-            url = "http://%s:%s/" % (host, port)
+            url = "%s:%s/" % (host, port)
         else:
             print("No valid LDF port listed in config, omitting from URL.")
-            url = "http://%s/" % (host)
+            url = "%s/" % (host)
             
-        # Fix any double slashes (if present)
-        url = url.replace("//", "/")
-        
-        if not(url.endsWith("/")):
-            url = url + "/"
-        
         print("Base URL:", url)
         return url
         
     
     def fire_query_to_ldf_ontocompchem(self, query):
         # Get the base URL
-        url = build_base_url()
+        url = self.build_base_url()
         url += "ontocompchem/query?"
         
         values = {"query": query}
@@ -135,7 +129,7 @@ class JPS_query_constructor:
         print(query)
         
         # Get the base URL
-        url = build_base_url()
+        url = self.build_base_url()
         url += "query?"
         
         values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
