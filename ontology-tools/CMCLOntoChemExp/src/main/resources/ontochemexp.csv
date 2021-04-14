@@ -21,7 +21,6 @@ Mass,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/o
 SpecificSurfaceArea,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Material,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Fraction,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-InductionTime,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Voltage,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Temperature,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Length,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
