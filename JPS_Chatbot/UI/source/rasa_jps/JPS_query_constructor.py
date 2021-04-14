@@ -81,8 +81,8 @@ class JPS_query_constructor:
 
         # self.fire_query.clear_cache()
         # self.fire_query_ontochemcomp.clear_cache()
-		
-		
+        
+        
     # Builds the base URL for all LDF queries
     def build_base_url(self):
     
@@ -103,23 +103,23 @@ class JPS_query_constructor:
             
         # Fix any double slashes (if present)
         url = url.replace("//", "/")
-		
+        
         if not(url.endsWith("/")):
             url = url + "/"
-		
+        
         print("Base URL:", url)
         return url
-		
-	
+        
+    
     def fire_query_to_ldf_ontocompchem(self, query):
-	    # Get the base URL
+        # Get the base URL
         url = build_base_url()
-		url += "ontocompchem/"
-		
+        url += "ontocompchem/"
+        
         values = {"query": query}
         full_url = url + urllib.parse.urlencode(values)
-	    print("Full Query URL: ", full_url)
-		
+        print("Full Query URL: ", full_url)
+        
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
         return response
@@ -133,14 +133,14 @@ class JPS_query_constructor:
             reactants = []
         print("query fired to LDF server")
         print(query)
-		
+        
         # Get the base URL
         url = build_base_url()
-				
+                
         values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
         full_url = url + urllib.parse.urlencode(values)
-	    print("Full Query URL: ", full_url)
-		
+        print("Full Query URL: ", full_url)
+        
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
         print(response)
