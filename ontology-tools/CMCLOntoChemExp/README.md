@@ -42,6 +42,57 @@ Under construction...
 
 ## Update history
 
+### v1.1 to v1.2 (as of 14 April 2021)
+
+- Concepts
+
+  - Removed class `Value`
+  - Renamed class `Property` to `DimensionalQuantity`
+  - Made class `BibliographyLink` `EQUIVALENT-TO` class `OntoKin:Reference`
+  - Added class `Velocity`, `SootYield`, `MassBurningRate`, `Mass`, `SpecificSurfaceArea`, `Material`, `Fraction`, `Voltage`, `FlowRate`, `Time`, `VolumetricFlowRate`, `ResidenceTime`, `LaminarBurningVelocity`, `Distance`, `InitialComposition`, `IgnitionDelay`, `Composition`, `Concentration`, `EquivalenceRatio`, `TemperatureInReferenceState`, `PressureInReferenceState`, `VolumetricFlowRateInReferenceState`, `ReactorLength`, `Diameter` as subclass of `DimensionalQuantity`
+  - Added class `http://xmlns.com/foaf/0.1/Agent`, `http://xmlns.com/foaf/0.1/Person`, `http://xmlns.com/foaf/0.1/Organization`, `http://purl.org/ontology/bibo/Journal`
+  - Inherited class `OntoKin:PublicationSpecification`, `OntoKin:JournalSpecification`, `OntoKin:ProceedingsSpecification`, `OntoKin:PreprintSpecification` from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
+
+- Relationships
+
+  - Removed below object properties
+    - `<Property hasSpeciesLink SpeciesLink>`
+    - `<Component hasUncertainty Uncertainty>` class `Component` should not allowed to connect to `Uncertainty` directly
+  - Added below object properties
+    - `<Composition hasSpeciesLink SpeciesLink>`
+    - `<Concentration hasSpeciesLink SpeciesLink>`
+    - `<X refersTo DimensionalQuantity>` to make the direct connection between measured data point `X` with the physical `DimensionalQuantity` it represents
+    - `<Amount hasUncertainty Uncertainty>` class `Amount` should be used to make the connection with `Uncertainty` when user wants to indicate the uncertainty in `InitialComposition`
+  - Inherited publication-related object property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
+    - `<OntoKin:JournalSpecification OntoKin:specifies http://purl.org/ontology/bibo/Journal>`
+    - `<BibliographyLink OntoKin:hasPublicationSpecification OntoKin:PublicationSpecification>`
+    - `<BibliographyLink http://purl.org/dc/terms/contributor http://xmlns.com/foaf/0.1/Agent>`
+  - Updated below object properties
+    - `<Apparatus hasProperty Property>` to `<Apparatus hasDimensionalQuantity DimensionalQuantity>`
+    - `<Commonproperties hasProperty Property>` to `<CommonProperties hasDimensionalQuantity DimensionalQuantity>`
+    - `<DataGroup hasProperty Property>` to `<DataGroup hasDimensionalQuantity DimensionalQuantity>`
+    - `<Property hasUncertainty Uncertainty>` to `<DimensionalQuantity hasUncertainty Uncertainty>`
+    - `<Property hasComponent Component>` to `<InitialComposition hasComponent Component>`
+    - `<Property hasDerivedProperty DerivedProperty>` to `<DimensionalQuantity hasDerivedProperty DerivedProperty>`
+  - Modified below object properties to data properties
+    - `<Property OntoChemExp:hasValue Value>` to `<DimensionalQuantity OntoChemExp:hasValue ^^xsd:string>`
+  - Removed below data properties
+    - `<Property hasName ^^xsd:string>`
+    - `<Property hasID ^^xsd:string>`
+    - `<Property hasMethod ^^xsd:string>`
+    - `<Value hasVal ^^xsd:string>`
+
+  - Updated below data properties
+    - `<Property hasLabel ^^xsd:string>` to `<DimensionalQuantity hasLabel ^^xsd:string>`
+    - `<Property hasUnits ^^xsd:string>` to `<DimensionalQuantity hasUnits ^^xsd:string>`
+    - `<Property hasDescription ^^xsd:string>` to `<DimensionalQuantity hasDescription ^^xsd:string>`
+    - `<Property hasSourceType ^^xsd:string>` to `<DimensionalQuantity hasSourceType ^^xsd:string>`
+    - `<Property hasDerivedPropertyExists ^^xsd:string>` to `<DimensionalQuantity hasDerivedPropertyExists ^^xsd:string>`
+    - `<owl:Thing hasVal ^^xsd:string>` to `<owl:Thing hasValue ^^xsd:string>`
+  - Modified below data properties to object properties
+    - `<Provenance createdBy ^^xsd:string>` to `<Provenance createdBy http://xmlns.com/foaf/0.1/Agent>`
+    - `<Modification modifiedBy ^^xsd:string>` to `<Modified modifiedBy http://xmlns.com/foaf/0.1/Agent>`
+
 ### v1.0 to v1.1 (as of 1 April 2021)
 
 - Concepts
