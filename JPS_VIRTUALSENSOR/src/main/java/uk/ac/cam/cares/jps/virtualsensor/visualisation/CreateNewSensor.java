@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.virtualsensor.visualisation;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
 /**
@@ -23,7 +27,8 @@ import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
  */
 @WebServlet("/CreateNewSensor")
 public class CreateNewSensor extends JPSHttpServlet{
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		if (validateInput(request)) {
 			JSONObject r = AgentCaller.readJsonParameter(request);
 			double lat = Double.parseDouble(String.valueOf(r.get("lat")));
@@ -38,6 +43,22 @@ public class CreateNewSensor extends JPSHttpServlet{
 			String station_name = "virtualsensor" + station_number;
 			String stationiri = SensorSparql.createAirQualityStation(station_name, xyz);
 			
+			// check if any simulations exist at this point
+			Point p = new Point();
+			p.setX(lng);
+			p.setY(lat);
+			p.setSrsname("EPSG:4326");
+			List<String> sims = DispSimSparql.GetSimIRIForCoordinates(p);
+			
+			if (sims.size()>0) {
+				// there might be more than one sim at this point, but just link 1 to avoid bugs
+				DispSimSparql.AddAirQualityStation(sims.get(0), stationiri);
+			} else {
+				double[] scope_dimensions = {20e3,20e3};
+				String sim_iri = DispSimSparql.CreateDispSim(p, scope_dimensions);
+				DispSimSparql.AddAirQualityStation(sim_iri, stationiri);
+			}
+			
 			// call SensorUpdaterAgent to populate this sensor with values
 			// The agent won't do anything if there are no dispersion matrices 
 			JSONObject sensor_request = new JSONObject();
@@ -50,7 +71,11 @@ public class CreateNewSensor extends JPSHttpServlet{
 			output.put("lng", lng);
 			output.put(SensorSparql.keyAirStationIRI, stationiri);
 			response.setContentType("application/json");
-			response.getWriter().write(output.toString()); // javascript needs this for the marker
+			try {
+				response.getWriter().write(output.toString()); // javascript needs this for the marker
+			} catch (IOException e) {
+				throw new JPSRuntimeException(e);
+			} 
 		}
 	}
 
