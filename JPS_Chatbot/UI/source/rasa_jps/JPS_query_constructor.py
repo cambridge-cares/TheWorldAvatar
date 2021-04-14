@@ -81,11 +81,40 @@ class JPS_query_constructor:
 
         # self.fire_query.clear_cache()
         # self.fire_query_ontochemcomp.clear_cache()
-
+		
+		
+    # Builds the base URL for all LDF queries
+    def build_base_url(self):
+    
+        # Get the URL listed in the config
+        host = str(self.config['ldf_host'])
+        print("LDF Host: ", host)
+        
+        # Get the port listed in the config
+        port = int(str(self.config['ldf_port']))
+        print("LDF Port: ", port)
+        
+        if ldf_port > 0:
+            print("Valid LDF port listed in config, adding to URL.")
+            url = "http://%s:%s/query?" % (host, port)
+        else:
+            print("No valid LDF port listed in config, omitting from URL.")
+            url = "http://%s/query?" % (host)
+            
+        # Fix any double slashes (if present)
+        url = url.replace("//", "/")
+        print("Base URL:", url)
+        return url
+		
+	
     def fire_query_to_ldf_ontocompchem(self, query):
-        url = "http://%s:%s/ontocompchem/query?" % (self.config['ldf_host'], str(self.config['ldf_port']))
+	    # Get the base URL
+        url = build_base_url()
+		
         values = {"query": query}
         full_url = url + urllib.parse.urlencode(values)
+	    print("Full Query URL: ", full_url)
+		
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
         return response
@@ -100,19 +129,13 @@ class JPS_query_constructor:
         print("query fired to LDF server")
         print(query)
 		
-        # Build the URL for the LDF query
-        ldf_port = int(str(self.config['ldf_port']))
-        print("LDF Port", ldf_port)
+        # Get the base URL
+        url = build_base_url()
 		
-        if ldf_port > 0:
-            url = "http://%s:%s/query?" % (self.config['ldf_host'], str(self.config['ldf_port']))
-        else:
-            url = "http://%s/query?" % (self.config['ldf_host'])
-			
-        print("LDF URL", url)
-        print("===================== here ==================")
         values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
         full_url = url + urllib.parse.urlencode(values)
+	    print("Full Query URL: ", full_url)
+		
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
         print(response)
