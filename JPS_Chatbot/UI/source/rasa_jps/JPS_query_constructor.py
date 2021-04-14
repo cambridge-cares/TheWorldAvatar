@@ -105,14 +105,21 @@ class JPS_query_constructor:
         print("LDF Port", ldf_port)
 		
         if ldf_port > 0:
+            print("Valid LDF port listed in config, adding to URL.")
             url = "http://%s:%s/query?" % (self.config['ldf_host'], str(self.config['ldf_port']))
         else:
+            print("No valid LDF port listed in config, omitting from URL.")
             url = "http://%s/query?" % (self.config['ldf_host'])
 			
-        print("LDF URL", url)
+        print("LDF Root URL:", url)
         print("===================== here ==================")
+		
         values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
         full_url = url + urllib.parse.urlencode(values)
+		
+        print("Full Query URL:")
+        print(full_url)
+		
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
         print(response)
