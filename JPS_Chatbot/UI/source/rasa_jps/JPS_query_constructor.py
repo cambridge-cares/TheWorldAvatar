@@ -103,6 +103,10 @@ class JPS_query_constructor:
             
         # Fix any double slashes (if present)
         url = url.replace("//", "/")
+		
+        if not(url.endsWith("/")):
+            url = url + "/"
+		
         print("Base URL:", url)
         return url
 		
@@ -110,6 +114,7 @@ class JPS_query_constructor:
     def fire_query_to_ldf_ontocompchem(self, query):
 	    # Get the base URL
         url = build_base_url()
+		url += "ontocompchem/"
 		
         values = {"query": query}
         full_url = url + urllib.parse.urlencode(values)
@@ -131,7 +136,7 @@ class JPS_query_constructor:
 		
         # Get the base URL
         url = build_base_url()
-		
+				
         values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
         full_url = url + urllib.parse.urlencode(values)
 	    print("Full Query URL: ", full_url)
