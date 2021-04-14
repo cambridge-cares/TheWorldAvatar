@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.json.JSONArray;
@@ -16,9 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
-import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
+import uk.ac.cam.cares.jps.wte.WTESingleAgent;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
 public class WTEVisualization extends JPSAgent{
@@ -41,7 +43,7 @@ public class WTEVisualization extends JPSAgent{
 		String iriofnetwork = requestParams.getString("wastenetwork");
 
 		String path = requestParams.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork); //because this is a static method
+		OntModel model = readModelGreedy(iriofnetwork); //Visualization needs to read from scenario folder
 		String g = "";
 		 if (path.contains("/WTEVisualization/createMarkers")) {
 			logger.info("path called here= " + path);
@@ -174,5 +176,16 @@ public class WTEVisualization extends JPSAgent{
 			res.add(jo.toString());
 		}
 		return res;
+	}
+	/** reads the topnode into an OntModel of all its subsystems. 
+	 * @param iriofnetwork
+	 * @return
+	 */
+	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
+		String wasteInfo = sb.build().toString();
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}
 }

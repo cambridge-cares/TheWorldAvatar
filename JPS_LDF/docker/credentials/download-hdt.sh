@@ -1,8 +1,8 @@
 #!/usr/bin/expect -f
 
 #
-# Downloads trained model files required by Chatbot before building into an Image.
-# Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
+# Downloads HDT and Node libraries.
+# Author: Xiaochi Zhou (xz378<@>cam.ac.uk)
 #
 
 set timeout -1
