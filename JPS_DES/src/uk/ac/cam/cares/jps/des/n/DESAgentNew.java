@@ -16,11 +16,14 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
@@ -146,7 +149,10 @@ public class DESAgentNew extends JPSAgent {
    	    	
 			
  			//grab forecast results
-			String result = new QueryBroker().queryFile(irioftempF, sensorInfo);
+   	    	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo)
+   					.put(JPSConstants.TARGETIRI , irioftempF);
+   			String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
+   			String jo  = new JSONObject(result).getString("result");
 			String[] keys = JenaResultSetFormatter.getKeys(result);
 			List<String[]>  resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
  			String result2 = new QueryBroker().queryFile(iriofirrF, sensorInfo2);
