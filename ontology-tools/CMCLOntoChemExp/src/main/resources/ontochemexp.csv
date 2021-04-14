@@ -96,7 +96,8 @@ hasMode,Object Property,,,Apparatus,Mode,only,,http://www.theworldavatar.com/ont
 hasDimensionalQuantity,Object Property,,,Apparatus,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasUncertainty,Object Property,,,DimensionalQuantity,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasComponent,Object Property,,,InitialComposition,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasSpeciesLink,Object Property,,,DimensionalQuantity,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasSpeciesLink,Object Property,,,Composition,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasSpeciesLink,Object Property,,,Concentration,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDerivedProperty,Object Property,,,DimensionalQuantity,DerivedProperty,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDimensionalQuantity,Object Property,,,CommonProperties,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDimensionalQuantity,Object Property,,,DataGroup,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
