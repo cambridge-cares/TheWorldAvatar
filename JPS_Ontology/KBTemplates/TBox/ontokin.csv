@@ -92,7 +92,6 @@ indicates Number Of,Object Property,,,Element Number,Element,only,A relation tha
 participates In,Object Property,,,Reactant,Forward Reaction,only,A relation that defines that a species participates as a reactant in a reaction. The relationship can also exist between a species that is a product (of the forward reaction) that participates in the reverse reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 participates In,Object Property,,,Product,Reverse Reaction,,A relation that defines that a species participates as a reactant in a reaction. The relationship can also exist between a species that is a product (of the forward reaction) that participates in the reverse reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 http://www.w3.org/2002/07/owl#sameAs,Object Property,,,Reactant UNION Product,Species,,,http://www.w3.org/2002/07/owl
-hasUniqueSpecies,Object Property,,,Species,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,maximum 1,A relation between a species and the corresponding unique entry of the species in the OntoSpecies knowledge base.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 http://www.w3.org/2002/07/owl#versionInfo,Data Property,,,Mechanism Representation Language,String,,,http://www.w3.org/2002/07/owl
 efficiency,Data Property,,,,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,,,,String,,,http://www.w3.org/2000/01/rdf-schema
