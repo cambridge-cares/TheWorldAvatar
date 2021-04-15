@@ -217,3 +217,12 @@ hasValue,Data Property,,,X8,String,,,http://www.theworldavatar.com/ontology/onto
 hasValue,Data Property,,,X9,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasValue,Data Property,,,X10,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasValue,Data Property,,,X11,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+http://purl.org/ontology/bibo/volume,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,Integer,,,http://purl.org/ontology/bibo
+http://purl.org/ontology/bibo/pageStart,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Integer,,,http://purl.org/ontology/bibo
+http://purl.org/ontology/bibo/pageEnd,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Integer,,,http://purl.org/ontology/bibo
+http://purl.org/dc/terms/publisher,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,String,,,http://purl.org/dc/terms
+http://purl.org/dc/terms/title,Data Property,,,BibliographyLink UNION http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/dc/terms
+http://purl.org/ontology/bibo/issn,Data Property,,,http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/ontology/bibo
+http://xmlns.com/foaf/0.1/familyName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
+http://xmlns.com/foaf/0.1/givenName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
+http://xmlns.com/foaf/0.1/name,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
