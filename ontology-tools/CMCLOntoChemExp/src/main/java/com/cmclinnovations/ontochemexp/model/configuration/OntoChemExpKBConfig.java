@@ -60,6 +60,15 @@ public class OntoChemExpKBConfig {
 	@Value("${ontospecies.uniquespeciesiri.kb.abox.iri}")
 	private String ontoSpeciesUniqueSpeciesIRIKBAboxIRI;
 	
+	@Value("${files.generation}")
+	private String filesGeneration;
+	
+	@Value("${upload.triple.store.server.url}")
+	private String uploadTripleStoreServerURL;
+	
+	@Value("${upload.triple.store.repository.ontochemexp}")
+	private String uploadTripleStoreRepositoryOntoChemExp;
+	
 	public String getOntoChemNamespace() {
 		return ontoChemNamespace;
 	}
@@ -174,5 +183,29 @@ public class OntoChemExpKBConfig {
 
 	public void setOntoSpeciesUniqueSpeciesIRIKBAboxIRI(String ontoSpeciesUniqueSpeciesIRIKBAboxIRI) {
 		this.ontoSpeciesUniqueSpeciesIRIKBAboxIRI = ontoSpeciesUniqueSpeciesIRIKBAboxIRI;
+	}
+
+	public String getFilesGeneration() {
+		return filesGeneration;
+	}
+
+	public void setFilesGeneration(String filesGeneration) {
+		this.filesGeneration = filesGeneration;
+	}
+
+	public String getUploadTripleStoreServerURL() {
+		return uploadTripleStoreServerURL;
+	}
+
+	public void setUploadTripleStoreServerURL(String uploadTripleStoreServerURL) {
+		this.uploadTripleStoreServerURL = uploadTripleStoreServerURL;
+	}
+
+	public String getUploadTripleStoreRepositoryOntoChemExp() {
+		return uploadTripleStoreRepositoryOntoChemExp;
+	}
+
+	public void setUploadTripleStoreRepositoryOntoChemExp(String uploadTripleStoreRepositoryOntoChemExp) {
+		this.uploadTripleStoreRepositoryOntoChemExp = uploadTripleStoreRepositoryOntoChemExp;
 	}
 }

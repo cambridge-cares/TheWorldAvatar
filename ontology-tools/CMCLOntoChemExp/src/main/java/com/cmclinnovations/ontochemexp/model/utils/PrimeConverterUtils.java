@@ -1,13 +1,17 @@
 package com.cmclinnovations.ontochemexp.model.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.rdf4j.RDF4JException;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -15,6 +19,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
@@ -382,5 +387,140 @@ public class PrimeConverterUtils extends PrimeConverter{
 			value = value.replace("\"", "");
 		}
 		return value;
+	}
+	
+	/**
+	 * 
+	 * @param aboxFileName
+	 * @param aboxFilePath
+	 * @return
+	 * @throws OntoChemExpException
+	 */
+	public static String uploadExperiment(String aboxFileName, String aboxFilePath) throws OntoChemExpException {
+		loadOntology(ontoChemExpKB.getUploadTripleStoreServerURL(), aboxFileName, aboxFilePath, ontoChemExpKB.getOntoChemExpKbURL(), ontoChemExpKB.getUploadTripleStoreRepositoryOntoChemExp());
+		return ontoChemExpKB.getOntoChemExpKbURL().concat(aboxFileName);
+	}
+	
+	/**
+	 * Loads an abox to the ontology KB repository. It also creates</br>
+	 * a context, which is a necessary feature to delete the abox</br>
+	 * if user wants.
+	 * 
+	 * @param serverURL
+	 * @param aboxFileName
+	 * @param aboxFilePath
+	 * @param baseURI
+	 * @param repositoryID
+	 * @throws OntoChemExpException
+	 */
+	public static void loadOntology(String serverURL, String aboxFileName, String aboxFilePath, String baseURI, 
+			String repositoryID) throws OntoChemExpException {
+		checkUploadParameterValidity(serverURL, aboxFileName, aboxFilePath, baseURI, repositoryID);
+		try {
+			Repository repo = new HTTPRepository(serverURL, repositoryID);
+			repo.initialize();
+			RepositoryConnection con = repo.getConnection();
+			ValueFactory f = repo.getValueFactory();
+			org.eclipse.rdf4j.model.IRI context = f.createIRI(baseURI.concat(aboxFileName));
+			try {
+				URL url = new URL("file:/".concat(aboxFilePath).concat(aboxFileName));
+				con.add(url, url.toString(), RDFFormat.RDFXML, context);
+			} finally {
+				con.close();
+			}
+		} catch (RDF4JException e) {
+			logger.error("RDF4JException occurred.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			logger.error("IOException occurred.");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Checks the validity of the following parameters:</br>
+	 * 1. The Server URL.</br>
+	 * 2. The abox file name.</br>
+	 * 3. The abox file path.</br>
+	 * 4. The base URL.</br>
+	 * 5. The Knowledge Base repository ID.
+	 * 
+	 * @param serverURL
+	 * @param aboxFileName
+	 * @param aboxFilePath
+	 * @param baseURI
+	 * @param repositoryID
+	 * @throws OntoChemExpException
+	 */
+	private static void checkUploadParameterValidity(String serverURL, String aboxFileName, String aboxFilePath,
+			String baseURI, String repositoryID) throws OntoChemExpException {
+		checkURLValidity(serverURL, "The server URL");
+		checkStringValidity(aboxFileName, "The abox file name");
+		checkFilePathValidity(aboxFilePath, "The abox file path");
+		checkURLValidity(baseURI, "The base IRI");
+		checkStringValidity(repositoryID, "The repository ID");
+	}
+	
+	/**
+	 * Checks the validity of a URL.
+	 * 
+	 * @param url
+	 * @param message
+	 * @throws OntoException
+	 */
+	private static void checkURLValidity(String url, String message) throws OntoChemExpException {
+		if (url == null) {
+			if (message != null) {
+				throw new OntoChemExpException(message.concat("is null."));
+			}
+		}
+		if (url.isEmpty()) {
+			throw new OntoChemExpException(message.concat(" is empty."));
+		}
+		if (!IRI.create(url).isIRI()) {
+			throw new OntoChemExpException(message.concat(" is not valid."));
+		}
+	}
+
+	/**
+	 * Checks the validity of a string value.</br>
+	 * It checks whether the string value is null or empty.
+	 * 
+	 * @param string
+	 * @param message
+	 * @throws OntoException
+	 */
+	private static void checkStringValidity(String string, String message) throws OntoChemExpException {
+		if (string == null) {
+			if (message != null) {
+				throw new OntoChemExpException(message.concat(" is null."));
+			}
+		}
+		if (string.isEmpty()) {
+			throw new OntoChemExpException(message.concat(" is empty."));
+		}
+	}
+
+	/**
+	 * Checks the validity of a file system file path.</br>
+	 * It checks whether the path is valid file path, null or empty.
+	 * 
+	 * @param path
+	 * @param message
+	 * @throws OntoException
+	 */
+	private static void checkFilePathValidity(String path, String message) throws OntoChemExpException {
+		File file = new File(path);
+		if (path == null) {
+			if (message != null) {
+				throw new OntoChemExpException(message.concat(" is null."));
+			}
+		}
+		if (path.isEmpty()) {
+			throw new OntoChemExpException(message.concat(" is empty."));
+		}
+		if (!file.exists()) {
+//			throw new OntoException("The following file does not exist:"+path);
+		}
 	}
 }

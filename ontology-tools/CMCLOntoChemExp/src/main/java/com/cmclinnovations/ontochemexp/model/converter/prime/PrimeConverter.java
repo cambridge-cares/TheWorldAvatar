@@ -599,7 +599,7 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 				// is.setEncoding("UTF-8");
 				parser.parse(is);
 				iABoxManagement.saveOntology(basePathTBox);
-				String ontologyFileName = owlFilesPath.concat("\\").concat("kb").concat("\\")
+				String ontologyFileName = owlFilesPath.concat("\\").concat(ontoChemExpKB.getOntoChemExpKbRootDirectory())
 						.concat(generateOwlFileName(primeFile));
 				removeCommentedOut(ontologyFileName);
 			} catch (SAXParseException e) {
@@ -618,6 +618,9 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 			// Saves the generated ABox OWL file and the conversion report.
 			saveOntoKinABox(primeFile, owlFilesPath,
 					PrimeConverterUtils.extractExperimentName(primeFile).concat(opCtrl.getOwlFileExtension()));
+			if (ontoChemExpKB.getFilesGeneration().equalsIgnoreCase("server")) {
+				PrimeConverterUtils.uploadExperiment(generateOwlFileName(primeFile), owlFilesPath.concat("\\").concat(ontoChemExpKB.getOntoChemExpKbRootDirectory()));
+			}
 		}
 	}
 
