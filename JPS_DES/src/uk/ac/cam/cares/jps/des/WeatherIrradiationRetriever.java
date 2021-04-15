@@ -140,10 +140,15 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		
 		//Construct UpdateBuilder for Temperature
 		
-		UpdateBuilder builder = new UpdateBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-				.addPrefix("j6", "http://www.w3.org/2006/time#")
-				.addDelete("<"+resultListfromquerytemp.get(0)[0]+">" , "j2:numericalValue",resultListfromquerytemp.get(0)[1] )
-				.addDelete("<"+resultListfromquerytemp.get(0)[2]+">","j6:inXSDDateTime",resultListfromquerytemp.get(0)[3] );
+//		UpdateBuilder builder = new UpdateBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+//				.addPrefix("j6", "http://www.w3.org/2006/time#")
+//				.addDelete("<"+resultListfromquerytemp.get(0)[0]+">" , "j2:numericalValue",resultListfromquerytemp.get(0)[1] )
+//				.addDelete("<"+resultListfromquerytemp.get(0)[2]+">","j6:inXSDDateTime",resultListfromquerytemp.get(0)[3] );
+		WhereBuilder where = new WhereBuilder()
+				.addWhere("?s", "?p", "?o")
+				.addFilter("?s = <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#V_MeasuredTemperatureOfSGTemperatureSensor-001_1> &&  ?p = <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>");
+				
+		UpdateBuilder builder = new UpdateBuilder()
 		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
 				.put(JPSConstants.TARGETIRI ,DESAgentNew.tempIRItoFile(iritempsensor));
 		resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());

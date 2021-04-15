@@ -92,6 +92,8 @@ public class TestKnowledgeBA   {
 	public void testBaseQueryDirectORDERBY() throws ParseException {
 		WhereBuilder where = new WhereBuilder()
 				.addWhere("?s", "?p", "?o")
+				.addWhere("?v", "?d", "?a")
+				.addFilter("?v = <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#V_MeasuredTemperatureOfSGTemperatureSensor-001_1> &&  ?d = <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>")			
 				.addFilter("?s = <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#TimeOfMeasuredTemperatureOfSGTemperatureSensor-001_1> && ?p = <http://www.w3.org/2006/time#inXSDDateTime>");
 				
 		// Build update
@@ -99,6 +101,7 @@ public class TestKnowledgeBA   {
 				
 		// Add where 
 		builder.addDelete("?s", "?p", "?o")
+		.addDelete("?v", "?d", "?a")
 			.addWhere(where);
 		JSONObject jo = new JSONObject()
 				.put(JPSConstants.TARGETIRI, "C:\\Users/LONG01/TOMCAT/webapps/ROOT/kb/sgp/singapore/SGTemperatureSensor-001.owl")
@@ -107,9 +110,6 @@ public class TestKnowledgeBA   {
 
        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
        JSONObject result = jpsa.main(jo);		
-		JSONArray ja = new JSONArray(result.getString("results")); 
-		jo = ja.getJSONObject(0); 
-		assertEquals("OH",jo.get("o").toString());
 	}
 	
 
