@@ -1,5 +1,6 @@
 import json
 import sys, os
+import sys
 
 # source_path = os.path.join(file_path, 'UI/source')
 # sys.path.insert(1, source_path)
@@ -52,15 +53,17 @@ def make_query():
             result = coordinate_agent.run(question)
             pprint(result)
 
-
             return json.dumps(result)
         elif question_type == 'google':
             question = request.args.get('question').strip()
             print('here is the ip aa')
-            r = google_api.run(question)
+            if is_windows: # if the scripts are running on a windows, it is a local test. Marie won't request google
+                r = 'You are running a local test, this is a dummy result'
+            else: # on a linux machine
+                r = google_api.run(question)
             print(r)
             return str(r)
-            # return 'Hello'
+
         elif question_type == 'wolfram':
             result = wolfram_and_google.get_result_from_wolfram(question)
             pprint(result)
@@ -105,11 +108,15 @@ def hello_world():
 # print(sys.path)
 from CoordinateAgent import CoordinateAgent
 from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
-from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
+
+# its win32, maybe there is win64 too?
+is_windows = sys.platform.startswith('win')
+if not is_windows:
+    from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
+    google_api = GoogleAPI()
 
 coordinate_agent = CoordinateAgent(socketio)
 wolfram_and_google = WolframGoogle()
-google_api = GoogleAPI()
 
 if __name__ == '__main__':
     app.run(host='https://kg.cmclinnovations.com/', port=8080, debug=True)
