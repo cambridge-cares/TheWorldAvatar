@@ -239,7 +239,7 @@ myEngine.invalidateHttpCache();
 
 
 console.time('Execution time');
-var query = test_formal_charge;
+var query = test_electronic_energy;
 
 	(async () => {
 		const result = await myEngine.query(query, {
