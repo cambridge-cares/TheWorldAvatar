@@ -9,8 +9,8 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">14 April 2021</dc:date>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">faa8bef212d9dd31f604b3283ced557c596e9c8a</gitCommitHash>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">15 April 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">379d46226a0438cbd3bb9fde466b11161e28999a</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoChemExp is an ontology developed for representing chemical experiments.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
     </owl:Ontology>
@@ -302,6 +302,79 @@
      -->
 
 
+    
+
+
+    <!-- http://purl.org/dc/terms/publisher -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/dc/terms/publisher">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/dc/terms</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://purl.org/dc/terms/title -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/dc/terms/title">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://purl.org/ontology/bibo/Journal"/>
+                    <rdf:Description rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#BibliographyLink"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/dc/terms</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://purl.org/ontology/bibo/issn -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/ontology/bibo/issn">
+        <rdfs:domain rdf:resource="http://purl.org/ontology/bibo/Journal"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://purl.org/ontology/bibo/pageEnd -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/ontology/bibo/pageEnd">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://purl.org/ontology/bibo/pageStart -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/ontology/bibo/pageStart">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://purl.org/ontology/bibo/volume -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/ontology/bibo/volume">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
     
 
 
@@ -711,6 +784,39 @@
         <rdfs:domain rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Modification"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/familyName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://xmlns.com/foaf/0.1/familyName">
+        <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://xmlns.com/foaf/0.1</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/givenName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://xmlns.com/foaf/0.1/givenName">
+        <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://xmlns.com/foaf/0.1</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://xmlns.com/foaf/0.1/name -->
+
+
+    <owl:DatatypeProperty rdf:about="http://xmlns.com/foaf/0.1/name">
+        <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://xmlns.com/foaf/0.1</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
