@@ -6,24 +6,12 @@ const path = require('path');
 const app = express();
 const router = express.Router();
 const http = require('http')
- 
- 
- test_query = `
- PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs:     <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontokin:  <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-PREFIX reaction: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-SELECT  DISTINCT  ?reaction ?Equation  
-WHERE  {	
-  	?reaction ontokin:hasEquation ?Equation .
+const cors = require('cors')
 
-} 
- 
- `;
 
-    result_dictionary = {};
-	status_dictionary = {};
-	query = test_query;
+// TODO: replace this with the redis server to be more robust 
+result_dictionary = {};
+status_dictionary = {};
 	
 	
 const newEngine = require('@comunica/actor-init-sparql').newEngine;
@@ -44,8 +32,6 @@ router.get('/stream/loadmore', function(req, res){
 			rst = {'hash': parameter_hash, 'status': 'ongoing', 'result': result_dictionary[parameter_hash]}
 			res.send(JSON.stringify(rst));
 		}
-		
-	
 	}
 	else{
 		rst = {'status': 'invalid', 'result': []};
@@ -56,10 +42,15 @@ router.get('/stream/loadmore', function(req, res){
 });
 
 
-router.get('/stream/query', function(req, res){
+router.get('/query', function(req, res){
 	myEngine.invalidateHttpCache();
 	let data = req.query;
 	console.log('from query', data);
+	let ontology = '';
+	if (data.ontology){
+		ontology = data.ontology; 
+	}
+	
 	parameter_hash = data.hash;
 	query = data.query; 	
 
@@ -84,9 +75,24 @@ router.get('/stream/query', function(req, res){
 			reactants =  Array.from(new Set(reactants.sort()));
 		}
 	}	
+	
+	// query different sub-endpoints for different ontology 
+	let parameters = {};
+	if (ontology === 'ontokin'){
+		console.log('querying ontokin');
+		parameters.sources = ['http://localhost:8080/ldfserver/ontokin'];
+		parameters.products =  products;
+		parameters.reactants = reactants;
+	}else{
+		console.log('querying ontocompchem');
+		parameters.sources = ['http://localhost:8080/ldfserver/ontocompchem'];
+	}
+	
+	console.log('parameters', parameters);
 
 	if (parameter_hash in result_dictionary){
-		
+    // if (false){
+
 				if (status_dictionary[parameter_hash]){
 					query_status = 'complete';
 				}else{
@@ -101,10 +107,7 @@ router.get('/stream/query', function(req, res){
 		result_dictionary[parameter_hash] = [];
 		status_dictionary[parameter_hash] = false;
     	(async () => {
-
-		const result = await myEngine.query(query , {
-		  sources: ['http://localhost:8080/ldfserver/ontokin'], products: products, reactants: reactants 
-		});
+		const result = await myEngine.query(query,parameters);
 		
 		result.bindingsStream.on('data', (binding) => {
 			r = parse_bindings(binding);
@@ -148,7 +151,7 @@ router.get('/stream/query', function(req, res){
 
 
 	
-app.use('/', router, (error, req, res, next) => {
+app.use('/', cors(), router, (error, req, res, next) => {
 
  	req.setTimeout(25 * 1000, function(){
         // call back function is called when request timed out.
