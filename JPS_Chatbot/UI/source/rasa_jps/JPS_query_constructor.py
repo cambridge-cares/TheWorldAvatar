@@ -17,6 +17,7 @@ from .OntoCompChem_Queries import ontocompchem_simple_intents, \
 from .OntoOntokin_Queries import GENERAL_QUERY, LENNARD_JONES_WELL_DEPTH, \
     POLARIZABILITY, DIPOLE_MOMENT, RELAXATION_COLLISION, \
     ontokin_simple_intents, HIGH_SPEED_GENERAL_QUERY
+import hashlib
 
 from functools import lru_cache
 # from cachier import cachier
@@ -105,9 +106,12 @@ class JPS_query_constructor:
     def fire_query_to_ldf_ontocompchem(self, query):
         # Get the base URL
         url = self.build_base_url()
-        url += "ontocompchem/query?"
+        url += "query?"
+        # url += "ontocompchem/query?"
 
-        values = {"query": query}
+        values = {"query": query, "ontology": "ontocompchem"}
+        parameter_hash = hashlib.md5(json.dumps(values).encode('utf-8')).hexdigest()
+        values['hash'] = parameter_hash
         full_url = url + urllib.parse.urlencode(values)
         print("Full Query URL: ", full_url)
 
@@ -128,7 +132,9 @@ class JPS_query_constructor:
         url = self.build_base_url()
         url += "query?"
 
-        values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
+        values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants), "ontology": "ontokin"}
+        parameter_hash = hashlib.md5(json.dumps(values).encode('utf-8')).hexdigest()
+        values['hash'] = parameter_hash
         full_url = url + urllib.parse.urlencode(values)
         print("Full Query URL: ", full_url)
 

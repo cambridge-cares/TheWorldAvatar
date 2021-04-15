@@ -33,12 +33,10 @@ def make_query(_url, _values):
     _values['hash'] = parameter_hash
     print(parameter_hash)
     full_url = _url + urllib.parse.urlencode(_values)
-    print("Full Query URL: ", full_url)
     req = urllib.request.Request(full_url)
     response = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
 
     print(time.time() - start_time, 'seconds')
-    print(response)
     print(len(response['result']))
 
 

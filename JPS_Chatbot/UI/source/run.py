@@ -113,7 +113,7 @@ from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
 is_windows = sys.platform.startswith('win')
 if not is_windows:
     from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
-    google_api = GoogleAPI()
+    google_api = GoogleAPI(socketio)
 
 coordinate_agent = CoordinateAgent(socketio)
 wolfram_and_google = WolframGoogle()
