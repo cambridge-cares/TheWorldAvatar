@@ -50,7 +50,10 @@ PROGRAM_NAME = 'Program name'
 PROGRAM_VERSION = 'Program version'
 RUN_DATE = 'Run date'
 SCANFLAG = 'ScanFlag'
+SCANTYPE = 'ScanType'
+SCANATOMS = 'ScanAtoms'
 SCANPOINTS = 'Scan Points'
+
 
 # misc keys, not uploaded to the kg
 # mostly used for inferring other properties
@@ -73,7 +76,7 @@ CCKEYS_DATA = [
             ELECTRONIC_ZPE_ENERGY,HOMO_ENERGY,HOMO_MIN_1_ENERGY ,
             HOMO_MIN_2_ENERGY,LUMO_ENERGY,LUMO_PLUS_1_ENERGY,LUMO_PLUS_2_ENERGY,
             PROGRAM_NAME, PROGRAM_VERSION,
-            RUN_DATE, SCANFLAG, SCANPOINTS
+            RUN_DATE, SCANFLAG, SCANTYPE, SCANATOMS, SCANPOINTS
         ]
 
 # collate misc keys
@@ -623,8 +626,12 @@ class CcGaussianParser():
             line = log_lines[cur_line]
             placeholder_GEOM = None
             placeholder_energy = None
+            scan_atoms = None
+            scan_type = None
             if "The following ModRedundant input section has been read:".lower() in line.lower():
                 data[SCANFLAG] = True
+                scan_line = log_lines[cur_line + 1]
+                scan_type = scan_line.split()[0]                   
             if data[SCANFLAG] == True:
                 data[SCANPOINTS] = self.cclib_data.scanparm
                 placeholder_GEOM = self.cclib_data.scancoords
@@ -635,6 +642,14 @@ class CcGaussianParser():
                 data[GEOM] = placeholder_GEOM
                 data[ELECTRONIC_ENERGY] = placeholder_energy
                 data[GEOM] = data[GEOM].tolist()
+                if scan_type == 'B': 
+                    data[SCANTYPE] = 'Bond'
+                    scan_atoms = [scan_line.split()[1],scan_line.split()[2]]
+                    data[SCANATOMS] = scan_atoms
+                elif scan_type == 'D':
+                    data[SCANTYPE] == 'Dihedral'
+                    scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3],scan_line.split()[4]]
+                    data[SCANATOMS] = scan_atoms
             return cur_line
         #================================================
         # parse_log body

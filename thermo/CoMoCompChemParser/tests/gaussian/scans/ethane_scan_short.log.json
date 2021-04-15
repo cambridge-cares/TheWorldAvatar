@@ -182,6 +182,11 @@
     "Program version": "2009+D.01",
     "Run date": "Mon Mar 22 15:54:10 2021",
     "ScanFlag": true,
+    "ScanType": "Bond",
+    "ScanAtoms": [
+        "1",
+        "2"
+    ],
     "Scan Points": [
         [
             1.53074,

@@ -24,7 +24,7 @@ parser = CcGaussianParser()
 CompChemObj = OntoCompChemData()
 
 Test_suite1 = {
-               'g1': ['co2_g1_g09.log'],
+               #'g1': ['co2_g1_g09.log'],
                #'g2': ['co2_g2_g09.log', 'co2_g2mp2_g09.log'],
                #'linked': ['co2_linked_g09.log'],
                #'cas': ['co2_cas_g09.log', 'co2_casmp2.log'],
@@ -36,7 +36,7 @@ Test_suite1 = {
                #'mpn': ['oh_sp_mp4_g03.log'],
                #'extra':['Cl.g09', 'Ti.g09','TiCl4.g09','O_3let.g09','71-41-0.g09','71-43-2.g09','A2R5H.log', '1b.log'],
                #'failed_jobs':['c2h4_opt_dft_g09_failed.log', 'c2h4_opt_dft_g09_powercut.log','co2_linked_g09.log']
-               #'scans':['ethane_scan_short.log']
+               'scans':['ethane_scan_short.log']
 }
 
 class TestGaussianParser(unittest.TestCase):
@@ -75,8 +75,8 @@ class TestGaussianParser(unittest.TestCase):
 
                     # uncomment to generate ref json file
                     #---------------------------------------------------
-                    #with open(ref_path, 'w') as outfile:
-                    #     json.dump(test_data, outfile, indent = 4)
+                    with open(ref_path, 'w') as outfile:
+                         json.dump(test_data, outfile, indent = 4)
                     #---------------------------------------------------
 
                     print("ref_path: ", ref_path)
