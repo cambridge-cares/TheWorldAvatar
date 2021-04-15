@@ -85,6 +85,32 @@ public class TestKnowledgeBA   {
 		jo = ja.getJSONObject(0); 
 		assertEquals("OH",jo.get("o").toString());
 	}
+	 /** Test Sparql query with String. Should return result as String.
+	 * @throws ParseException 
+	  */
+	@Test
+	public void testBaseQueryDirectORDERBY() throws ParseException {
+		WhereBuilder where = new WhereBuilder()
+				.addWhere("?s", "?p", "?o")
+				.addFilter("?s = <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#TimeOfMeasuredTemperatureOfSGTemperatureSensor-001_1> && ?p = <http://www.w3.org/2006/time#inXSDDateTime>");
+				
+		// Build update
+		UpdateBuilder builder = new UpdateBuilder();
+				
+		// Add where 
+		builder.addDelete("?s", "?p", "?o")
+			.addWhere(where);
+		JSONObject jo = new JSONObject()
+				.put(JPSConstants.TARGETIRI, "C:\\Users/LONG01/TOMCAT/webapps/ROOT/kb/sgp/singapore/SGTemperatureSensor-001.owl")
+				.put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString());
+//		AgentCaller.executeGetWithJsonParameter("jps/kb/scenarioFolder", jo.toString());
+
+       KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+       JSONObject result = jpsa.main(jo);		
+		JSONArray ja = new JSONArray(result.getString("results")); 
+		jo = ja.getJSONObject(0); 
+		assertEquals("OH",jo.get("o").toString());
+	}
 	
 
 	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
