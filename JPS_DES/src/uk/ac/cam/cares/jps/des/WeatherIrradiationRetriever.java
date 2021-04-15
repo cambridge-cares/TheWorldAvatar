@@ -10,11 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
@@ -108,32 +111,53 @@ public class WeatherIrradiationRetriever extends JPSAgent{
     	
     	SelectBuilder sensorTemp = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-    			.addVar("?entity").addVar("?propval")
-    			.addVar("?proptimeval").addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+    			.addVar("?vprop").addVar("?propval").addVar("?proptime").addVar("?proptimeval")
+    			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
     	Query q= sensorTemp.build(); 
     	String sensorInfo = q.toString();
     	SelectBuilder sensorIrrad = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-    			.addVar("?entity").addVar("?propval")
-    			.addVar("?proptimeval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+    			.addVar("?vprop").addVar("?propval").addVar("?proptime").addVar("?proptimeval")
+    			.addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
     	
     	q= sensorIrrad.build(); 
     	String sensorInfo2 = q.toString();
     	SelectBuilder sensorWind = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-    			.addVar("?entity").addVar("?propval")
-    			.addVar("?proptimeval").addWhere("?entity","a", "j5:F-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+    			.addVar("?propval").addVar("?proptimeval")
+    			.addWhere("?entity","a", "j5:F-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
     	
     	q= sensorWind.build(); 
     	String sensorInfo3 = q.toString();
+    	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo)
+					.put(JPSConstants.TARGETIRI , DESAgentNew.tempIRItoFile(iritempsensor));
+		String resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		String[] keysf = {"vprop","propval","proptime","proptimeval"};
+		List<String[]>  resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
+		requestParams.put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo2)
+		.put(JPSConstants.TARGETIRI , DESAgentNew.tempIRItoFile(iriirradiationsensor));
+		List<String[]>  resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
 		
-		String result = new QueryBroker().queryFile(iritempsensor, sensorInfo);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-
-		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorInfo2);
-		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+		//Construct UpdateBuilder for Temperature
+		
+		UpdateBuilder builder = new UpdateBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+				.addPrefix("j6", "http://www.w3.org/2006/time#")
+				.addDelete("<"+resultListfromquerytemp.get(0)[0]+">" , "j2:numericalValue",resultListfromquerytemp.get(0)[1] )
+				.addDelete("<"+resultListfromquerytemp.get(0)[2]+">","j6:inXSDDateTime",resultListfromquerytemp.get(0)[3] );
+		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
+				.put(JPSConstants.TARGETIRI ,DESAgentNew.tempIRItoFile(iritempsensor));
+		resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		//for loop to create update
+//		for (int i = 0;  i< resultListfromquerytemp.size();i++) {
+//			builder.addInsert
+//		}
+//		String result = new QueryBroker().queryFile(iritempsensor, sensorInfo);
+//		String[] keys = JenaResultSetFormatter.getKeys(result);
+//		List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+//
+//		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorInfo2);
+//		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+//		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
 		
 		String result3 = new QueryBroker().queryFile(irispeedsensor, sensorInfo3);
 		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
