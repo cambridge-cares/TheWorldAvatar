@@ -29,6 +29,7 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
@@ -38,7 +39,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
-import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
+import uk.ac.cam.cares.jps.scenario.kb.NewKnowledgeBaseManager;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
 public class ScenarioAgent extends KnowledgeBaseAgent {
@@ -192,7 +193,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			
 			
 			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
+			KnowledgeBaseClientInterface kb = NewKnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
 			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
 			
 			String result = "";	
@@ -343,8 +344,8 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
         String sparql = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
 
 		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
-		String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
-		KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
+		String datasetUrl = NewKnowledgeBaseManager.getDatasetUrl(requestUrl);
+		KnowledgeBaseClientInterface kb = NewKnowledgeBaseManager.getKnowledgeBase(datasetUrl);
 		String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
         String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
 		switch (method) {
@@ -352,7 +353,12 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 				if (sparql == null) {
 					throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
 				}
-				kb.update(resourceUrl, sparql);
+				if(resourceUrl == null) {
+					kb.executeUpdate(sparql);	
+				}else {
+					//TODO filebased and rdf4jserver were previously supported
+					throw new UnsupportedOperationException();
+				}
 				break;
 			case HttpPut.METHOD_NAME:
 				String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
@@ -649,7 +655,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		}
 	}
 	
-	protected void updateKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql) {
+	protected void updateKnowledgeBase(KnowledgeBaseClientInterface kb, String resourceUrl, String sparql) {
 		
 		logger.info("updateKnowledgeBase");
 		
@@ -669,10 +675,15 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
 			kb.put(resourceUrl, content, null);
 		}
-		kb.update(resourceUrl, sparql);
+		if(resourceUrl==null) {
+			kb.executeUpdate(sparql);
+		}else {
+			//TODO filebased and rdf4jserver were previously supported
+			throw new UnsupportedOperationException();
+		}
 	}
 	
-	protected String getFromKnowledgeBase(KnowledgeBaseAbstract kb, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
+	protected String getFromKnowledgeBase(KnowledgeBaseClientInterface kb, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
 		if (kb.exists(resourceUrl)) {
 			return kb.get(resourceUrl, accept);
 		} 
@@ -689,7 +700,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		return content;
 	}
 	
-	protected String queryKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql, boolean copyOnRead) {
+	protected String queryKnowledgeBase(KnowledgeBaseClientInterface kb, String resourceUrl, String sparql, boolean copyOnRead) {
 
 		logger.info("queryKnowledgeBase");
 		
@@ -710,10 +721,10 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			kb.put(resourceUrl, content, null);
 			return kb.query(resourceUrl, sparql);
 		} else {
-			logger.info("query from KnowledgeBaseAbstract");
+			logger.info("query from KnowledgeBaseClient");
 			InputStream inputStream = FileUtil.stringToInputStream(content);
-			RDFFormat format =  KnowledgeBaseAbstract.getRDFFormatFromFileType(resourceUrl);
-			return KnowledgeBaseAbstract.query(inputStream, format, sparql);
+			RDFFormat format =  KnowledgeBaseClientInterface.getRDFFormatFromFileType(resourceUrl);
+			return KnowledgeBaseClientInterface.query(inputStream, format, sparql);
 		}
 	}
 	
@@ -733,7 +744,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			
 			
 			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
+			KnowledgeBaseClientInterface kb = NewKnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
 			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
 			
 			String result = "";	
