@@ -212,7 +212,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 	
 	public static OntModel readModelGreedyCon(String greedyResult) {
 		
-		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("result"));
+		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("results"));
 		
 		List<String> nodesToVisit = new ArrayList<String>();
 		for (int i=0; i<ja.length(); i++) {

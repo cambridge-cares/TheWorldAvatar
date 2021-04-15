@@ -24,8 +24,10 @@ import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -135,14 +137,12 @@ public class DESAgentNew extends JPSAgent {
    	    	
    	    	SelectBuilder sensorTemp = new SelectBuilder()
    	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-   	    			.addVar("?entity").addVar("?propval")
-   	    			.addVar("?proptimeval").addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+   	    			.addVar("?propval").addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
    	    	Query q= sensorTemp.build(); 
    	    	String sensorInfo = q.toString();
    	    	SelectBuilder sensorIrrad = new SelectBuilder()
    	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-   	    			.addVar("?entity").addVar("?propval")
-   	    			.addVar("?proptimeval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+   	    			.addVar("?propval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
    	    	
    	    	q= sensorIrrad.build(); 
    	    	String sensorInfo2 = q.toString();
@@ -150,17 +150,17 @@ public class DESAgentNew extends JPSAgent {
 			
  			//grab forecast results
    	    	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo)
-   					.put(JPSConstants.TARGETIRI , irioftempF);
-   			String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
-   			String jo  = new JSONObject(result).getString("result");
-			String[] keys = JenaResultSetFormatter.getKeys(result);
-			List<String[]>  resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
- 			String result2 = new QueryBroker().queryFile(iriofirrF, sensorInfo2);
- 			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
- 			List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+   					.put(JPSConstants.TARGETIRI , tempIRItoFile(irioftempF));
+   			String resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+			String[] keysf = {"propval"};
+			List<String[]>  resultListfromquerytemp = JenaResultSetFormatter. convertToListofStringArraysWithKeys(resultf, keysf);
+   			requestParams.put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo2)
+   			.put(JPSConstants.TARGETIRI , tempIRItoFile(iriofirrF));
+   			String result2 = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+ 			List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArraysWithKeys(result2, keysf);
  			List<String[]> readingFromCSV = new ArrayList<String[]>();
  			for (int d=0;d<resultListfromqueryirr.size();d++) {
- 				String[] ed= {resultListfromquerytemp.get(d)[1],resultListfromqueryirr.get(d)[1]};
+ 				String[] ed= {resultListfromquerytemp.get(d)[0],resultListfromqueryirr.get(d)[0]};
  				readingFromCSV.add(ed);
  			}
  			broker.putLocal(baseUrl + "/WeatherForecast.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
@@ -178,10 +178,44 @@ public class DESAgentNew extends JPSAgent {
 	    .addWhere("?entity","j2:hasSubsystem", "?component");
 	    Query q= modelQ.build();
 	    String nodeInfo = q.toString();
+	    JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, nodeInfo)
+				.put(JPSConstants.TARGETIRI , tempIRItoFile(iriofnetwork));
+		String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
+		
+	    return readModelGreedyCon(result);
+	}
 	
-	    QueryBroker broker = new QueryBroker();
-	    return broker.readModelGreedy(iriofnetwork, nodeInfo);
-    }
+	public static OntModel readModelGreedyCon(String greedyResult) {
+		
+		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("results"));
+		
+		List<String> nodesToVisit = new ArrayList<String>();
+		for (int i=0; i<ja.length(); i++) {
+			JSONObject row = ja.getJSONObject(i);
+			for (String current : row.keySet()) {
+				String potentialIri =  row.getString(current);
+				if (potentialIri.startsWith("http")) {
+					int index = potentialIri.lastIndexOf("#");
+					if (index > 0) {
+						potentialIri = potentialIri.substring(0, index);
+					}
+					if (!nodesToVisit.contains(potentialIri)) {
+						nodesToVisit.add(potentialIri);
+					} 
+				}
+			}
+		}
+		
+		
+		//OntModel model = ModelFactory.createOntologyModel();
+		OntModel model = JenaHelper.createModel();
+		for (String current : nodesToVisit) {
+			current = ResourcePathConverter.convert(current);
+			model.read(current, null); 
+		}
+		
+		return model;
+	}
 
     /** find individual components (for residential) of appliances
     *

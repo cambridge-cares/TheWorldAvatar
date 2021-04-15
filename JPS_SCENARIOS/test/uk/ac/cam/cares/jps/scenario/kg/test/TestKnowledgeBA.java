@@ -81,7 +81,7 @@ public class TestKnowledgeBA   {
 
         KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
         JSONObject result = jpsa.main(jo);		
-		JSONArray ja = new JSONArray(result.getString("result")); 
+		JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("OH",jo.get("o").toString());
 	}
@@ -106,7 +106,7 @@ public class TestKnowledgeBA   {
         		.put(JPSConstants.TARGETIRI,  filePath)
         		.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
         JSONObject result = jpsa.main(jo);
-        JSONArray ja = new JSONArray(result.getString("result")); 
+        JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("TEST",jo.get("o").toString());
 	}
@@ -152,7 +152,7 @@ public class TestKnowledgeBA   {
         		.put(JPSConstants.TARGETIRI,  filePath)
         		.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
         JSONObject result = jpsa.main(jo);
-        JSONArray ja = new JSONArray(result.getString("result")); 
+        JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("TEST",jo.get("o").toString());
 	}

@@ -47,7 +47,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 		KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, isQueryOperation,isUpdateOperation);
 		if (isQueryOperation) { 
 			String result = kbClient.execute(sparqlquery);
-			JSONresult.put("result",result);
+			JSONresult.put("results",result);
 			}
 		else if (isUpdateOperation) {
 			//perform update
