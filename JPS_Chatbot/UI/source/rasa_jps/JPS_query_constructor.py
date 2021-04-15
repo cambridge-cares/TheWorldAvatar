@@ -31,7 +31,6 @@ import datetime
 #     from run import socketio
 
 
-
 def fire_query_ontochemcomp(query):
     print('----------- firing the query to JPS ontochemcomp -------------')
     print(query)
@@ -81,43 +80,40 @@ class JPS_query_constructor:
 
         # self.fire_query.clear_cache()
         # self.fire_query_ontochemcomp.clear_cache()
-        
-        
+
     # Builds the base URL for all LDF queries
     def build_base_url(self):
-    
+
         # Get the URL listed in the config
         host = str(self.config['ldf_host'])
         print("LDF Host: ", host)
-        
+
         # Get the port listed in the config
         port = int(str(self.config['ldf_port']))
         print("LDF Port: ", port)
-        
+
         if port > 0:
             print("Valid LDF port listed in config, adding to URL.")
             url = "%s:%s/" % (host, port)
         else:
             print("No valid LDF port listed in config, omitting from URL.")
-            url = "%s/" % (host)
-            
+            url = "%s/" % host
+
         print("Base URL:", url)
         return url
-        
-    
+
     def fire_query_to_ldf_ontocompchem(self, query):
         # Get the base URL
         url = self.build_base_url()
         url += "ontocompchem/query?"
-        
+
         values = {"query": query}
         full_url = url + urllib.parse.urlencode(values)
         print("Full Query URL: ", full_url)
-        
+
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
         return response
-
 
     def fire_query_to_ldf_ontokin(self, query, products, reactants):
         print('----------- firing the query to LDF -------------')
@@ -127,15 +123,15 @@ class JPS_query_constructor:
             reactants = []
         print("query fired to LDF server")
         print(query)
-        
+
         # Get the base URL
         url = self.build_base_url()
         url += "query?"
-        
+
         values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants)}
         full_url = url + urllib.parse.urlencode(values)
         print("Full Query URL: ", full_url)
-        
+
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
         print(response)
@@ -342,17 +338,14 @@ class JPS_query_constructor:
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
 
-
-
         attribute_iri = self.attribute_mapper.find_closest_attribute(intent, attribute)
         print('attribute_iri', attribute_iri)
 
-        species = self.validator.validate(attribute, 'ontocompchem', intent, species).replace(' ','')
+        species = self.validator.validate(attribute, 'ontocompchem', intent, species).replace(' ', '')
         print('species after species', species)
 
         _intent = self.attribute_mapper.map_to_quantum_queries(attribute_iri)
         print('intent attribute_mapper ', intent)
-
 
         if species is None:
             return None
