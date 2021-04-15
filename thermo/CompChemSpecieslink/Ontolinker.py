@@ -13,6 +13,7 @@ from SPARQLWrapper import JSON as json
 from rdkit import Chem
 import sys
 import argparse
+import re
 
 obabel_path = '"C:\Program Files (x86)\OpenBabel-2.3.1\obabel.exe"' 
 
@@ -39,7 +40,7 @@ def species_query(): #Defines a query to get the speciesIRI as defined in the sp
         """
     return query
 
-def inchi_query(): #Defines a query to get the InchI and corresponding speciesIRI as defined in the specified ontology and syntax.
+def inchi_query(): #Defines a query to get all InchIs and corresponding speciesIRIs as defined in the specified ontology and syntax.
     query = """
         PREFIX species: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
         PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -53,15 +54,64 @@ def inchi_query(): #Defines a query to get the InchI and corresponding speciesIR
         """
     return query
 
-results = query_endpoint(endpoint, inchi_query()) #Perform the query and store them in results.
+def inchi_from_iri_query(IRI):
+    query = """
+        PREFIX species: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT ?speciesIRI ?Inchi
+        WHERE
+        {
+        ?speciesIRI rdf:type species:Species .
+        ?speciesIRI OntoSpecies:inChI ?Inchi . 
+        FILTER REGEX(str(?speciesIRI), """ + '"' + IRI + '"' + """, "i")
+        } 
+        """
+    return query
 
-speciesIRI = []
-Inchi = []
+def smiles_from_iri_query(IRI):
+    query = """
+        PREFIX species: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT ?speciesIRI ?SMILES
+        WHERE
+        {
+        ?speciesIRI rdf:type species:Species .
+        ?speciesIRI OntoSpecies:SMILES ?SMILES .  
+        FILTER REGEX(str(?speciesIRI), """ + '"' + IRI + '"' + """, "i")
+        } 
+        """
+    return query
 
-#This loop puts the queried speciesIRI and Inchis in the corresponding lists.
-for k in range(len(results['results']['bindings'])):
-    speciesIRI.append(results['results']['bindings'][k]['speciesIRI']['value'])
-    Inchi.append(results['results']['bindings'][k]['Inchi']['value'])
+#This query should return a specific IRI when querying a particular InChI - courtesy of Jiaru with a mandatory escape
+#contributed by me - python does strange things sometimes. Also, escaping of special characters requires substantial pain...
+def spec_inchi_query(inchi_string): 
+    query = """
+    PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    SELECT ?speciesIRI ?Inchi
+    WHERE
+    {
+    ?speciesIRI rdf:type OntoSpecies:Species .
+    ?speciesIRI OntoSpecies:inChI ?Inchi .
+    FILTER REGEX(str(?Inchi), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(""" + '"' + inchi_string + '"' + """, "InChI=1S", "InChI=1"), "/t.+", ""), "/b.+", ""), "\\\\(", "\\\\\\\\("), "\\\\)", "\\\\\\\\)"), "i")
+    }
+    """
+    #print(query)
+    return query
+
+# This is the old method which would take everything in OntoSpecies to do the linking. 
+#results = query_endpoint(endpoint, inchi_query()) #Perform the query and store them in results.
+
+
+# speciesIRI = []
+# Inchi = []
+
+# #This loop puts the queried speciesIRI and Inchis in the corresponding lists.
+# for k in range(len(results['results']['bindings'])):
+#     speciesIRI.append(results['results']['bindings'][k]['speciesIRI']['value'])
+#     Inchi.append(results['results']['bindings'][k]['Inchi']['value'])
 
 
 def inchipref_strip(inchi):
@@ -121,8 +171,14 @@ first_flag = True
 
 def mapping(logfile,mapname,dir_name):
     path = dir_name + '\\' +  logfile
-    log_inchi = inchi_from_log(path)[0]
-    target = comparator(log_inchi,Inchi,speciesIRI)[1]
+    #log_inchi = inchi_from_log(path)[0] - deprecated method
+    #target = comparator(log_inchi,Inchi,speciesIRI)[1]
+    log_inchi = inchi_from_log(path)[1]
+    results  = query_endpoint(endpoint, spec_inchi_query(log_inchi))   
+    if results['results']['bindings']:
+        target = results['results']['bindings'][0]['speciesIRI']['value']
+    else:
+        target = 'No Match found'
     filename = os.path.basename(logfile).replace('.log','') #Get the filename without the .log
     logfilename = filename + '.log'
     global first_flag

@@ -66,42 +66,76 @@ def smiles_query(): #Defines a query to get the SMILES and corresponding species
         """
     return query
 
-results = query_endpoint(endpoint, inchi_query()) #Perform the query and store them in results.
-results_2 = query_endpoint(endpoint, smiles_query()) #Perform the query and store them in results.
+def inchi_from_iri_query(IRI):
+    query = """
+        PREFIX species: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT ?speciesIRI ?Inchi
+        WHERE
+        {
+        ?speciesIRI rdf:type species:Species .
+        ?speciesIRI OntoSpecies:inChI ?Inchi . 
+        FILTER REGEX(str(?speciesIRI), """ + '"' + IRI + '"' + """, "i")
+        } 
+        """
+    return query
+
+def smiles_from_iri_query(IRI):
+    query = """
+        PREFIX species: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT ?speciesIRI ?SMILES
+        WHERE
+        {
+        ?speciesIRI rdf:type species:Species .
+        ?speciesIRI OntoSpecies:SMILES ?SMILES .  
+        FILTER REGEX(str(?speciesIRI), """ + '"' + IRI + '"' + """, "i")
+        } 
+        """
+    return query
+
+# The following commented code is the old approach that takes everything from OntoSpecies and then manipulates the necessary strings in python.
+# It has been replaced by direct and specific sparql queries that achieve the same task but with substantial speedup. 
+# The old method is preserved below as a backup/for legacy purposes, but should not be necessary. 
 
 
-speciesIRI = []
-Inchi = []
+#results = query_endpoint(endpoint, inchi_query()) #Perform the query and store them in results.
+#results_2 = query_endpoint(endpoint, smiles_query()) #Perform the query and store them in results.
 
-speciesIRI2 = []
-read_smiles = []
+# speciesIRI = []
+# Inchi = []
 
-#This loop puts the queried speciesIRI and Inchis in the corresponding lists.
-for k in range(len(results['results']['bindings'])):
-    speciesIRI.append(results['results']['bindings'][k]['speciesIRI']['value'])
-    Inchi.append(results['results']['bindings'][k]['Inchi']['value'])
+# speciesIRI2 = []
+# read_smiles = []
 
-#This loop does the same thing, but for the SMILES query.
-for k in range(len(results_2['results']['bindings'])):
-    speciesIRI2.append(results_2['results']['bindings'][k]['speciesIRI']['value'])
-    read_smiles.append(results_2['results']['bindings'][k]['SMILES']['value'])
+# #This loop puts the queried speciesIRI and Inchis in the corresponding lists.
+# for k in range(len(results['results']['bindings'])):
+#     speciesIRI.append(results['results']['bindings'][k]['speciesIRI']['value'])
+#     Inchi.append(results['results']['bindings'][k]['Inchi']['value'])
+
+# #This loop does the same thing, but for the SMILES query.
+# for k in range(len(results_2['results']['bindings'])):
+#     speciesIRI2.append(results_2['results']['bindings'][k]['speciesIRI']['value'])
+#     read_smiles.append(results_2['results']['bindings'][k]['SMILES']['value'])
 
 
 
-stand_inchis = [] #We are going to edit the inchi prefixes to the standard one. 
+# stand_inchis = [] #We are going to edit the inchi prefixes to the standard one. 
 
-for x in Inchi:
-    if 'InChI=1' in x and 'InChI=1S' not in x:
-        y = x.replace('InChI=1', 'InChI=1S')
-        stand_inchis.append(y)
-    else:
-        stand_inchis.append(x)
+# for x in Inchi:
+#     if 'InChI=1' in x and 'InChI=1S' not in x:
+#         y = x.replace('InChI=1', 'InChI=1S')
+#         stand_inchis.append(y)
+#     else:
+#         stand_inchis.append(x)
 
-names = [os.path.splitext(x)[0] for x in speciesIRI]
-names2 = [os.path.splitext(x)[0] for x in speciesIRI2]
+# names = [os.path.splitext(x)[0] for x in speciesIRI]
+# names2 = [os.path.splitext(x)[0] for x in speciesIRI2]
     
-names = [x.split('/')[-2] for x in names] #Store the names from the speciesIRI
-names2 = [x.split('/')[-2] for x in names2] #Store the names from the speciesIRI2
+# names = [x.split('/')[-2] for x in names] #Store the names from the speciesIRI
+# names2 = [x.split('/')[-2] for x in names2] #Store the names from the speciesIRI2
 
 def file_cleaner(file):
     with open(file,'r') as f:
@@ -118,10 +152,20 @@ def file_cleaner(file):
                 f.write(line)
 
 def inchi_to_xyz(folder_path,IRI):
-    for k in range(len(speciesIRI)):
-        if speciesIRI[k] == IRI:
-            name = names[k].split('.')[0]
-            inchi = stand_inchis[k]
+    #Deprecated old approach.
+    # for k in range(len(speciesIRI)):
+    #     if speciesIRI[k] == IRI:
+    #         name = names[k].split('.')[0]
+    #         inchi = stand_inchis[k]
+    
+    results  = query_endpoint(endpoint, inchi_from_iri_query(IRI))
+    name = (results['results']['bindings'][0]['speciesIRI']['value'].split('/')[-2]).split('.')[0]
+    inchi = results['results']['bindings'][0]['Inchi']['value']
+    if 'InChI=1' in inchi and 'InChI=1S' not in inchi:
+         inchi = inchi.replace('InChI=1', 'InChI=1S')
+    else:
+         inchi = inchi
+    
     fp = open(folder_path + '\\' + name + '.inchi', 'w')
     fp.write(inchi)
     inchi_file = fp.name
@@ -137,10 +181,15 @@ def inchi_to_xyz(folder_path,IRI):
     return name
 
 def smi_to_xyz(folder_path,IRI):
-    for k in range(len(speciesIRI2)):
-            if speciesIRI2[k] == IRI:
-                name = names2[k].split('.')[0]
-                smiles = read_smiles[k]
+    #Deprecated old approach 
+    # for k in range(len(speciesIRI2)):
+    #         if speciesIRI2[k] == IRI:
+    #             name = names2[k].split('.')[0]
+    #             smiles = read_smiles[k]
+    
+    results  = query_endpoint(endpoint, smiles_from_iri_query(IRI))
+    name = (results['results']['bindings'][0]['speciesIRI']['value'].split('/')[-2]).split('.')[0]
+    smiles = results['results']['bindings'][0]['SMILES']['value']
     mol = pybel.readstring('smi', smiles)
     mol.make3D()
     output = pybel.Outputfile("xyz", folder_path + '\\' + name + '.xyz',overwrite=True)
