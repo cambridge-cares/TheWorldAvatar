@@ -27,6 +27,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
@@ -445,49 +446,51 @@ public class DispSimSparql {
 		SparqlGeneral.performUpdate(insertQuery);
 	}
 	
-	public static String GetLatestOutputPath(String sim_iri_string) {
+	/**
+	 * sometimes the slurm api submits the same job twice, this ensures the same sim does not get annotated twice
+	 * @param outputPath_string
+	 * @return
+	 */
+	public static boolean CheckOutputPathExist(String sim_iri_string,String outputPath_string) {
+		// ensure data path is a valid uri
+		String outputPath = new File(outputPath_string).toURI().toString();
+		
+        String query = String.format("ask {<%s> "
+        		+ "<http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#hasOutputPath>"
+        		+ "<%s>}",sim_iri_string,outputPath);
+		
+		boolean outputExist = SparqlGeneral.performQuery(query).getJSONObject(0).getBoolean("ASK");
+		return outputExist;
+	}
+	
+	/**
+	 * returns a list of output path and time stamp, filter with lower bound given
+	 * @param sim_iri_string
+	 * @param time_lb
+	 * @return
+	 */
+	
+	public static JSONArray GetOutputPathAndTime(String sim_iri_string, long time_lb) {
 		SelectQuery query = Queries.SELECT();
 		
 		Iri sim_iri = iri(sim_iri_string);
 		
-		String queryKey = "outputPath";
-		Variable outputPath = SparqlBuilder.var(queryKey);
-		Variable timeStamp = query.var();
+		Variable outputPath = SparqlBuilder.var("outputPath");
+		Variable timeStamp = SparqlBuilder.var("timestamp");
 		
 		TriplePattern output_gp = sim_iri.has(hasOutputPath,outputPath);
 		
 		Iri[] path2time_predicates = {hasTime,numericPosition};
 		GraphPattern path2time_gp = SparqlGeneral.GetQueryGraphPattern(query, path2time_predicates, null, outputPath,timeStamp);
 		
-		GraphPattern queryPattern = GraphPatterns.and(output_gp,path2time_gp);
+		GraphPatternNotTriples queryPattern = GraphPatterns.and(output_gp,path2time_gp)
+				.filter(Expressions.gt(timeStamp, time_lb));
 		
-		// sort according to timestamp
-		OrderCondition timeDesc = SparqlBuilder.desc(timeStamp);
-		
-		query.from(FromGraph).select(outputPath).where(queryPattern).prefix(p_dispsim,p_time).orderBy(timeDesc).limit(1);
+		query.from(FromGraph).select(outputPath,timeStamp).where(queryPattern).prefix(p_dispsim,p_time);
 
-		String result = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
-		return result;
-	}
-	
-	/**
-	 * time stamp for a given output location
-	 * @param outputPath
-	 * @return
-	 */
-	public static long GetTimeStamp(String outputPath) {
-		SelectQuery query = Queries.SELECT();
+		JSONArray queryResult = SparqlGeneral.performQuery(query);
 		
-		String queryKey = "time";
-		Iri path = iri(outputPath);
-		Variable timeStamp = SparqlBuilder.var(queryKey);
-		
-		Iri[] path2time_predicates = {hasTime,numericPosition};
-		GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, path2time_predicates, null, path,timeStamp);
-		
-		query.from(FromGraph).select(timeStamp).where(queryPattern).prefix(p_dispsim,p_time);
-		long result = SparqlGeneral.performQuery(query).getJSONObject(0).getLong(queryKey);
-		return result;
+		return queryResult;
 	}
 	
 	/**
@@ -788,6 +791,7 @@ public class DispSimSparql {
 
 		return result;
 	}
+
 	/**
 	 * Returns simulation IRI linked to the given station
 	 * @param station_iri
@@ -805,5 +809,30 @@ public class DispSimSparql {
 		String sim_iri = SparqlGeneral.performQuery(query).getJSONObject(0).getString(queryKey);
 		
 		return sim_iri;
+	}
+	
+	/**
+	 * returns all air quality stations linked to given sim
+	 */
+	public static String[] GetAirQualityStations(String sim_iri_string) {
+		SelectQuery query = Queries.SELECT();
+		String queryKey = "station";
+		Iri sim_iri = iri(sim_iri_string);
+		Variable station = SparqlBuilder.var(queryKey);
+		
+		GraphPatternNotTriples queryPattern = GraphPatterns.and(sim_iri.has(hasAirQualityStation,station));
+		
+		query.from(FromGraph).select(station).where(queryPattern).prefix(p_dispsim);
+		
+		JSONArray queryResult = SparqlGeneral.performQuery(query);
+		
+		String[] stations = null;
+		if (queryResult.length()>0) {
+		    stations = new String[queryResult.length()];
+		    for (int i=0; i<queryResult.length(); i++) {
+		    	stations[i] = queryResult.getJSONObject(i).getString(queryKey);
+		    }
+		}
+		return stations;
 	}
 }
