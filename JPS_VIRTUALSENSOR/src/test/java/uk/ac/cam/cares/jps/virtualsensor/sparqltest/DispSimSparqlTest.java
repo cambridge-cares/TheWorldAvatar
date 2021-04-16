@@ -6,7 +6,6 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
@@ -106,9 +105,9 @@ public class DispSimSparqlTest extends TestCase{
     	DispSimSparql.AddOutputPath(sim_iri, dataPath,1);
     }
     
-    public void testGetLatestOutputPath() {
-    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
-    	DispSimSparql.GetLatestOutputPath(sim_iri);
+    public void testGetOutputPathAndTime() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	DispSimSparql.GetOutputPathAndTime(sim_iri,0);
     }
     
     public void testGetNumOutput() {
@@ -165,5 +164,16 @@ public class DispSimSparqlTest extends TestCase{
     public void testGetSimForSensor() {
     	String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor8";
     	DispSimSparql.GetSimForSensor(station_iri);
+    }
+    
+    public void testCheckOutputPathExist() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	String outputPath = "C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/db2c8e8c-a1ce-41af-83f6-1f5dd8746d5d/output/";
+    	DispSimSparql.CheckOutputPathExist(sim_iri,outputPath);
+    }
+    
+    public void testGetAirQualityStations() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.GetAirQualityStations(sim_iri);
     }
 }
