@@ -2,17 +2,17 @@ package uk.ac.cam.cares.jps.des;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 
 @WebServlet(urlPatterns = {"/GetIrradiationandWeatherData" })
@@ -76,11 +77,19 @@ public class WeatherIrradiationRetriever extends JPSAgent{
         }
 
     }
+	/** as the name exemplifies, read and write data to format. 
+	 * 
+	 * @param folder
+	 * @param iritempsensor
+	 * @param iriirradiationsensor
+	 * @param irispeedsensor
+	 * @throws Exception
+	 */
 	public static void readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
 		//TODO: I can't figure out how to get this to run without having to copy over a file to create
 		//the location within this folder. If I leave the line below commented
 		// the folder isn't created, and I get an error. 
-		new DESAgentNew().copyFromPython(folder, "ocrv1.py");
+		new DESAgentNew().copyFromPython(folder, "ocrv1.py"); //TODO: In the future, this should be scripted to any collection
 		String res =  new DESAgentNew().runPythonScript("ocrv1.py",folder);
 
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -130,11 +139,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
     			.addWhere("?entity","a", "j5:F-Sensor").addWhere(whereB).addOrderBy("?proptimeval");    	
     	q= sensorWind.build(); 
     	
-    	String sensorInfo3 = q.toString();
-    	String result = new QueryBroker().queryFile(iritempsensor, sensorInfo);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-
+    	String sensorInfo3 = q.toString();    	
     	updateOWLFile(iritempsensor, sensorInfo,timeInXSD,temperature);
     	updateOWLFile(iriirradiationsensor, sensorInfo2,timeInXSD,temperature);
     	updateOWLFile(irispeedsensor, sensorInfo3,timeInXSD,temperature);
@@ -143,7 +148,6 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		
 	}
 	/** SubMethod for readWriteToOWL for each type of sensor
-	 * 
 	 * @param sensorIRI
 	 * @param sparqlQuery
 	 */
@@ -161,14 +165,15 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		String p = "<http://www.w3.org/2006/time#inXSDDateTime>";
 		String d = "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>";
 		for (int i = 0; i < sizeOfUpdate-2; i ++ ) {//We stopped at element 46
-			builder.addDelete("<"+resultListfromquery.get(i)[0]+">" ,d, "?o")
+			Var v = Var.alloc(RandomStringUtils.random(5, true, false));
+			Var m = Var.alloc(RandomStringUtils.random(4, true, false)); //random string generate to prevent collusion
+			builder.addDelete("<"+resultListfromquery.get(i)[0]+">" ,d, v)
 					.addInsert("<"+resultListfromquery.get(i)[0]+">" ,d, resultListfromquery.get(i+1)[1])
-					.addWhere("<"+resultListfromquery.get(i)[0]+">" ,d,"?o")
-					
-					.addDelete("<"+resultListfromquery.get(i)[2]+">" ,p, "?a")
-					.addInsert("<"+resultListfromquery.get(i)[2]+">" ,p, resultListfromquery.get(i+1)[3])
-					.addWhere("<"+resultListfromquery.get(i)[2]+">" ,p,"?a");
-			if (i %3 == 0) {
+					.addWhere("<"+resultListfromquery.get(i)[0]+">" ,d,v)					
+					.addDelete("<"+resultListfromquery.get(i)[2]+">" ,p, m)
+					.addInsert("<"+resultListfromquery.get(i)[2]+">" ,p, MiscUtil.convertToTimeZoneXSD(resultListfromquery.get(i+1)[3]))
+					.addWhere("<"+resultListfromquery.get(i)[2]+">" ,p,m);
+			if (i %6 == 0) {
 				requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
 						.put(JPSConstants.TARGETIRI ,convertedIRI);
 				AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
@@ -177,8 +182,10 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 			}
 		}
 		//final round
-		builder.addInsert("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, reading)
-		.addWhere("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d,"?o")		
+		builder.addDelete("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, "?o")		
+		.addInsert("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, reading)
+		.addWhere("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d,"?o")	
+		.addDelete("<"+resultListfromquery.get(sizeOfUpdate-1)[2]+">" ,p, "?a")			
 		.addInsert("<"+resultListfromquery.get(sizeOfUpdate-1)[2]+">" ,p, timeInXSD)
 		.addWhere("<"+resultListfromquery.get(sizeOfUpdate-1)[2]+">" ,p,"?a");
 	
@@ -188,6 +195,6 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
 	}
 	
-
+	
 
 }

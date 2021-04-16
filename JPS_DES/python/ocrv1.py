@@ -75,7 +75,9 @@ def ocr(folder):
 	if "temperature" not in result:
 		result["temperature"] =  "{0:.2f}".format(random.uniform(26,32))
 	now = datetime.now() # current date and time
-	
+	#failsafe for temp range
+	if result["temperature"]> 100:
+		result["temperature"] /= 10
 	result['year']= now.strftime("%Y")
 	result['month'] = now.strftime("%m")
 	result['date']= now.strftime("%d")
