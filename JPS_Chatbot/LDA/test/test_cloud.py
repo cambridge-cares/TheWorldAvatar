@@ -1,7 +1,7 @@
 # Import the wordcloud library
 from wordcloud import WordCloud
 import json
-with open('./test_corpus/corpus') as f:
+with open('../test_corpus/corpus') as f:
     words = json.loads(f.read())
     print(words)
 

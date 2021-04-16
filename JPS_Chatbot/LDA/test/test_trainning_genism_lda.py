@@ -32,7 +32,7 @@ from nltk.corpus import stopwords
 stop_words = stopwords.words('english')
 stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
 
-with open('test_corpus/corpus') as f:
+with open('../test_corpus/corpus') as f:
     data = json.loads(f.read())
 data_words = data
 print(data_words)

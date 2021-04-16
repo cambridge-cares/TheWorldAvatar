@@ -12,7 +12,7 @@ def extract_species(filename, the_dict):
         f.write(json.dumps(temp))
 
 ontokin_list = []
-for filename in os.listdir('./'):
+for filename in os.listdir('../python_tests/'):
     if filename.startswith('ontokin_dict'):
         with open(filename) as f:
             content = f.read()
@@ -24,7 +24,7 @@ ontokin_list = sorted(list(set(ontokin_list)))
 
 ontocompchem_list = []
 ontocompchem_dict = {}
-for filename in os.listdir('./'):
+for filename in os.listdir('../python_tests/'):
     if filename.startswith('ontocompchem_dict_'):
         with open(filename) as f:
             content = f.read()
@@ -51,7 +51,7 @@ super_list = sorted(list(set(ontokin_list + ontocompchem_list)))
 
 ontokin_list = []
 ontokin_dict = {}
-for filename in os.listdir('./'):
+for filename in os.listdir('../python_tests/'):
     if filename.startswith('ontokin_dict_'):
         with open(filename) as f:
             content = f.read()
@@ -62,7 +62,7 @@ for filename in os.listdir('./'):
             print('ontokin\n')
             print(original_tmp)
 
-with open('ontokin_dict', 'w') as f:
+with open('predicate-species-mapping/ontokin_dict', 'w') as f:
     f.write(json.dumps(ontokin_dict))
 
 ontokin_simple_intents = ['polarizability',

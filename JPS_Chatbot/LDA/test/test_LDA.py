@@ -10,7 +10,7 @@ import seaborn as sns
 sns.set_style('whitegrid')
 
 
-with open('test_corpus/corpus') as f:
+with open('../test_corpus/corpus') as f:
     contents = json.loads(f.read())
 
 print(contents)
