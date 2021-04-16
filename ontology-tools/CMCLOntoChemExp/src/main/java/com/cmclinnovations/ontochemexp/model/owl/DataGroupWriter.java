@@ -170,6 +170,9 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 		if (dataGroupPropertyComponentParseStatus.isComponent() && inDataGroup) {
 			createPropertyComponent();
 			linkPropertyComponentToProperty();
+			dataGroupPropertyComponentParseStatus.setComponent(false);
+			dataGroupProperty.setPropertyComponent(dataGroupPropertyComponent);
+			dataGroupPropertyComponent = new DataGroupPropertyComponent();
 		}
 	}
 	
