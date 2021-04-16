@@ -173,8 +173,8 @@ public class ForecastAgent extends JPSAgent{
 	public void forecastNextDay() throws Exception{
 		ArrayList<ArrayList<String>> accuArray, solArray ; 
 		try {
-			accuArray = AccuRequest();
-			solArray = SolCastRequest(); 
+			accuArray = AccuRequest(); //{temp, windspeed}
+			solArray = SolCastRequest(); //{temp, irrad}
 		
 			ArrayList<String[]> readingFromCSV = new ArrayList<String[]>(); 
 			//mash the two together
