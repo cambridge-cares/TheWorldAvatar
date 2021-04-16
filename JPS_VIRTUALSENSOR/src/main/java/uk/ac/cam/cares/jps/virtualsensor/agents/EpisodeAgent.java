@@ -42,6 +42,7 @@ import java.nio.file.Files;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
@@ -60,6 +61,7 @@ import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
 @WebServlet(urlPatterns = {"/EpisodeAgent"})
 public class EpisodeAgent extends JPSAgent{
@@ -953,34 +955,51 @@ public class EpisodeAgent extends JPSAgent{
 
 			JSONObject jobInfo = new JSONObject(Files.readAllLines(Paths.get(jobFolder.getAbsolutePath(), "input.json")).get(0));
 			String outputPath = jobInfo.getString(outputPathKey); // scenario folder written during job submission
-			long simStart = jobInfo.getLong(simStartKey); // time stamp
 			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
 			
-			String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
-			
-			File file = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
-			String destinationUrl = Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA).toString();
-
-			File file2 = new File(Paths.get(destDir, FILE_NAME_ICM_HOUR).toString());
-			String destinationUrl2 = Paths.get(outputPath, FILE_NAME_ICM_HOUR).toString();
-
-			File file3 = new File(Paths.get(destDir, FILE_NAME_PLUME_SEGMENT).toString());
-			String destinationUrl3 = Paths.get(outputPath, FILE_NAME_PLUME_SEGMENT).toString();
-
-			// copy to scenario folder
-			new QueryBroker().putLocal(destinationUrl, file); 
-			new QueryBroker().putLocal(destinationUrl2, file2);
-			new QueryBroker().putLocal(destinationUrl3, file3);
-			
-			// python script reads in conc file and produces a geojson file next to it
-			createGeoJSON(outputPath,DispSimSparql.GetSimCRS(sim_iri));
-			
-			System.out.println("metadata annotation started");
-
-			// update triple-store
-			DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart);
-
-			System.out.println("metadata annotation finished");
+			if (!DispSimSparql.CheckOutputPathExist(sim_iri, outputPath)) { 
+				// avoid duplicate annotation, sometimes the slurm api submits the same job twice
+				long simStart = jobInfo.getLong(simStartKey); // time stamp
+				
+				String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
+				
+				File file = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
+				String destinationUrl = Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA).toString();
+	
+				File file2 = new File(Paths.get(destDir, FILE_NAME_ICM_HOUR).toString());
+				String destinationUrl2 = Paths.get(outputPath, FILE_NAME_ICM_HOUR).toString();
+	
+				File file3 = new File(Paths.get(destDir, FILE_NAME_PLUME_SEGMENT).toString());
+				String destinationUrl3 = Paths.get(outputPath, FILE_NAME_PLUME_SEGMENT).toString();
+	
+				// copy to scenario folder
+				new QueryBroker().putLocal(destinationUrl, file); 
+				new QueryBroker().putLocal(destinationUrl2, file2);
+				new QueryBroker().putLocal(destinationUrl3, file3);
+				
+				// python script reads in conc file and produces a geojson file next to it
+				createGeoJSON(outputPath,DispSimSparql.GetSimCRS(sim_iri));
+				
+				System.out.println("metadata annotation started");
+	
+				// update triple-store
+				DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart);
+	
+				// update all air quality stations associated with this sim
+				String[] station_iri = DispSimSparql.GetAirQualityStations(sim_iri);
+				
+				if (station_iri != null) {
+					for (int i=0; i < station_iri.length; i++) {
+						JSONObject request = new JSONObject();
+						request.put(SensorSparql.keyAirStationIRI, station_iri);
+						AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/SensorUpdaterAgent", request.toString());
+					}
+				}
+				
+				System.out.println("metadata annotation finished");
+			} else {
+				System.out.println("Duplicate detected, skipping annotation");
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.error("EpisodeAgent: Output Annotating Task could not finish");
