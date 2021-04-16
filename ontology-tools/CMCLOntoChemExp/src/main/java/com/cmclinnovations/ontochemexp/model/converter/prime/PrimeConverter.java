@@ -61,6 +61,9 @@ import com.cmclinnovations.ontochemexp.model.utils.PrimeConverterUtils;
 import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
 import com.cmclinnovations.ontology.model.utils.ABoxManagementUtils;
 
+import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
+import uk.ac.cam.cares.jps.blazegraph.KnowledgeRepository;
+
 import org.apache.commons.lang3.text.WordUtils;
 
 /**
@@ -619,7 +622,23 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 			saveOntoKinABox(primeFile, owlFilesPath,
 					PrimeConverterUtils.extractExperimentName(primeFile).concat(opCtrl.getOwlFileExtension()));
 			if (ontoChemExpKB.getFilesGeneration().equalsIgnoreCase("server")) {
-				PrimeConverterUtils.uploadExperiment(generateOwlFileName(primeFile), owlFilesPath.concat("\\").concat(ontoChemExpKB.getOntoChemExpKbRootDirectory()));
+				if (ontoChemExpKB.getUploadTripleStoreServerURL().toLowerCase().contains("blazegraph")) {
+					KnowledgeRepository kr = new KnowledgeRepository();
+					try {
+						kr.uploadOntology(ontoChemExpKB.getUploadTripleStoreServerURL(), 
+								ontoChemExpKB.getUploadTripleStoreRepositoryOntoChemExp(), 
+								owlFilesPath.concat("\\").concat(ontoChemExpKB.getOntoChemExpKbRootDirectory()).concat(generateOwlFileName(primeFile)));
+						logger.info("OWL file uploaded to blazegraph server: " + ontoChemExpKB.getUploadTripleStoreServerURL() + ", under namespece: " + ontoChemExpKB.getUploadTripleStoreRepositoryOntoChemExp());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else if (ontoChemExpKB.getUploadTripleStoreServerURL().toLowerCase().contains("rdf4j-server")) {
+					PrimeConverterUtils.uploadExperiment(generateOwlFileName(primeFile), 
+							owlFilesPath.concat("\\").concat(ontoChemExpKB.getOntoChemExpKbRootDirectory()));
+					logger.info("OWL file uploaded to rdf4j-server: " + ontoChemExpKB.getUploadTripleStoreServerURL() + ", under namespece: " + ontoChemExpKB.getUploadTripleStoreRepositoryOntoChemExp());
+				} else {
+					System.out.println("Please provide an endpoint URL for either rdf4j-server or blazegraph server.");
+				}
 			}
 		}
 	}
