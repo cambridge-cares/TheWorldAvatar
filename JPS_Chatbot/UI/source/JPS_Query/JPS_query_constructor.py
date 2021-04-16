@@ -113,14 +113,11 @@ class JPS_query_constructor:
         parameter_hash = hashlib.md5(json.dumps(values).encode('utf-8')).hexdigest()
         values['hash'] = parameter_hash
         full_url = url + urllib.parse.urlencode(values)
-        print("Full Query URL: ", full_url)
-
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
         return response
 
     def fire_query_to_ldf_ontokin(self, query, products, reactants):
-        print('----------- firing the query to LDF -------------')
         if products is None:
             products = []
         if reactants is None:
@@ -136,11 +133,9 @@ class JPS_query_constructor:
         parameter_hash = hashlib.md5(json.dumps(values).encode('utf-8')).hexdigest()
         values['hash'] = parameter_hash
         full_url = url + urllib.parse.urlencode(values)
-        print("Full Query URL: ", full_url)
 
         req = urllib.request.Request(full_url)
         response = urllib.request.urlopen(req).read()
-        print(response)
         return response
 
     @staticmethod
@@ -151,8 +146,6 @@ class JPS_query_constructor:
         temp = ''
         number_regex = r'[0-9]+'
         alphabet_regex = r'[a-zA-Z]'
-        print('-----------------------')
-        print('species', species)
         if type(species) == str:
 
             numbers = re.findall(number_regex, species)
@@ -246,7 +239,6 @@ class JPS_query_constructor:
                     temp.append(value.upper())
             if (not result['reactants']) and (not result['products']):
                 result['products'] = temp
-            print('-------------- result processed -------------', result)
             return result
         elif intent == 'select_mechanism_by_reaction':
             result = {'intent': intent, 'reactants': [], 'products': []}
@@ -264,14 +256,11 @@ class JPS_query_constructor:
                 if entity_type == 'species' and flag:
                     # this belongs to reactants
                     result['products'].append(value.upper())
-            print('========= select_mechanism_by_reaction ===========')
             return result
 
     # This is the main interface for the query constructor
     # It handles ontokin and ontocompchem queries.
     def construct_query(self, intents):
-        print('=================== intents ================')
-        pprint(intents['intent']['name'])
         result = self.extract_info(intents)
         intent = result['intent']
 
@@ -281,8 +270,6 @@ class JPS_query_constructor:
             except:
                 rst = self.query_reaction_property(result['reactants'], result['products'], result['indicator'])
         elif intent == 'select_reaction_by_species':
-            # TODO: seperate reactants and products
-            print('select_reaction_by_species')
             rst = self.query_by_reaction_only(result['reactants'], result['products'])
         elif intent == 'select_mechanism_by_reaction':
             rst = self.query_mechanism_by_reaction(result['reactants'], result['products'])
@@ -309,8 +296,6 @@ class JPS_query_constructor:
         if intent == 'query_thermodynamic':
             attribute_name = attribute.replace(' ', '').upper()
             q = HIGH_SPEED_GENERAL_QUERY % (attribute_name, attribute_iri, attribute_name, species, attribute_iri)
-            print('================ GENERAL QUERY ===============')
-            print(q)
             rst = self.fire_query_to_ldf_ontokin(q, None, None).decode('utf-8')
             return rst
         # # 1. att name, 1.5 species  2. att iri name 3. att name 4. att iri name
@@ -334,10 +319,6 @@ class JPS_query_constructor:
     # TODO: resolve the inconsistency in ontocompchem and use more general queries.
     def query_quantum_of_moleculars(self, intent, species, attribute):
         original_species = species
-        print('=========== line 238 =============')
-        print('intent', intent)
-        print('species', species)
-
         if intent == 'electronic_energy':
             species = self.validator.validate(attribute, 'ontocompchem', intent, species).replace(' ', '')
             q = ELECTRONIC_ENERGY % species
@@ -345,48 +326,37 @@ class JPS_query_constructor:
             return rst
 
         attribute_iri = self.attribute_mapper.find_closest_attribute(intent, attribute)
-        print('attribute_iri', attribute_iri)
-
         species = self.validator.validate(attribute, 'ontocompchem', intent, species).replace(' ', '')
-        print('species after species', species)
-
         _intent = self.attribute_mapper.map_to_quantum_queries(attribute_iri)
-        print('intent attribute_mapper ', intent)
 
         if species is None:
             return None
 
         if _intent == 'rotational_constants':
             q = ROTATIONAL_CONSTANT_QUERY % species
-            print(q)
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
 
         elif _intent == 'symmetry_number':
             q = ROTATIONAL_SYMMETRY_NUMBER % species
-            print(q)
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
         elif _intent == 'vibration_frequency':
             q = VIBRATION_FREQUENCY_QUERY % species
-            print(q)
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
 
         elif _intent == 'guassian_file':
             q = GAUSSIAN_FILE % species
-            print(q)
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
 
         elif _intent == 'spin_multiplicity':
             q = SPIN_MULTIPLICITY % species
-            print(q)
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
         elif _intent == 'formal_charge':
             q = FORMAL_CHARGE % species
-            print(q)
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
         elif _intent == 'electronic_energy':
@@ -396,18 +366,11 @@ class JPS_query_constructor:
 
         elif _intent == 'geometry_type':
             q = GEOMETRY_TYPE % species
-            print(q)
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
 
         else:
             return None
-        if rst is None:
-            return None
-        else:
-            rst = process_ontocompchem_results(rst)
-            return rst
-
     # to find the reactions that meet the conditions first, then find the mechanism
     def query_mechanism_by_reaction(self, reactants, products):
         print('query_mechanism_by_reaction')
@@ -417,21 +380,15 @@ class JPS_query_constructor:
 
     # to find reactions by reactants and products
     def query_by_reaction_only(self, reactants, products):
-        print('query_by_reaction_only')
         query = self.template_dict['select_reaction_by_species']
-        print('query', query)
         rst = self.fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
         return rst
 
-        # TODO: construct the query by only reactants and products
 
     # if to query properties of reactions including reaction rate and whether the reaction is reversible
     def query_reaction_property(self, reactants, products, attribute):
-        print('query_reaction_property')
         sub_properties_products = ['rdfs:label']
         attribute = ' <' + self.serach_interface.get_first_match(attribute).strip() + '> '
-        print('============== attribute =============')
-        print(attribute)
         if 'hasArrheniusCoefficient' in attribute:
             query = self.template_dict['query_reaction_property']['ArrheniusCoefficient']
             rst = self.fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')

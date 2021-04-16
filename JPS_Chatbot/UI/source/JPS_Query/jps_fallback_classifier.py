@@ -11,8 +11,9 @@ import sys
 import warnings
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-from rasa_jps.locations import JPS_SPARQL_TEMPLATE_PATH, RASA_JPS_MODELS_DIR
-from .search_interface import SearchInterface
+from UI.source.JPS_Query.locations import JPS_SPARQL_TEMPLATE_PATH, RASA_JPS_MODELS_DIR
+from UI.source.JPS_Query.search_interface import SearchInterface
+
 
 class JPSQuestionClassifier:
 
@@ -33,7 +34,7 @@ class JPSQuestionClassifier:
 
         print('model loaded')
 
-    def extract_nlu_model(self,extract_dir):
+    def extract_nlu_model(self, extract_dir):
         # Identify the newest trained nlu model
         path = self.nlu_model_directory
         files = os.listdir(path)

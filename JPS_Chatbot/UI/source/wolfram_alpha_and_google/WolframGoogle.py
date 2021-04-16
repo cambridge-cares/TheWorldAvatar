@@ -130,13 +130,10 @@ class WolframGoogle:
         res = self.wolframalpha_client.query(question)
         bindings = ''
         counter = 0
-        print('------------ wolfram alpha result -----------')
         try:
             for pod in res.pods:
                 counter = counter + 1
                 for sub in pod.subpods:
-                    print('------------ sub ------------')
-                    print(sub)
                     try:
                         text = sub.plaintext
                         if text is None:

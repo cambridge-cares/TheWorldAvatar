@@ -69,18 +69,18 @@ with open('../debug.html', 'w', encoding='UTF-8') as f:
     f.write(html_template % (q, html))
     f.close()
 
-# counter = 0
-# for q in question_set:
-#     counter = counter + 1
-#     html = google_api.run(q)
-#     with open('1-%s.html' % str(counter), 'w', encoding='UTF-8') as f:
-#         f.write(html_template % (q, html))
-#         f.close()
+counter = 0
+for q in question_set:
+    counter = counter + 1
+    html = google_api.run(q)
+    with open('1-%s.html' % str(counter), 'w', encoding='UTF-8') as f:
+        f.write(html_template % (q, html))
+        f.close()
 #
-# counter_2 = 0
-# for q2 in question_set_2:
-#     counter_2 = counter_2 + 1
-#     html = google_api.run(q2)
-#     with open('2-%s.html' % str(counter_2), 'w', encoding='UTF-8') as f:
-#         f.write(html_template % (q2, html))
-#         f.close()
+counter_2 = 0
+for q2 in question_set_2:
+    counter_2 = counter_2 + 1
+    html = google_api.run(q2)
+    with open('2-%s.html' % str(counter_2), 'w', encoding='UTF-8') as f:
+        f.write(html_template % (q2, html))
+        f.close()

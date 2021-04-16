@@ -9,12 +9,13 @@ from bs4 import BeautifulSoup
 
 # what is the heat capacity of h2so4
 
-
+# create new div to hold result from google
 def create_new_node(content, class_):
     new_div = BeautifulSoup('<div class="%s">%s</div>' % (class_, content), 'html.parser').div
     return new_div
 
 
+# put the created div in one div
 def create_visualization_table(key_components):
     if 'main_result' in key_components:
         result = key_components['main_result']
@@ -24,11 +25,11 @@ def create_visualization_table(key_components):
         google_result.append(main_result)
         if 'extra' in key_components:
             extra = key_components['extra']
-            print('==================\n', extra)
             google_result.append(extra)
         return google_result
 
 
+# in the case that google gives the standard info box
 def create_visualization_standard(key_components):
     # the 'google_result' contains all the components
     # the 'head' comes first
@@ -59,11 +60,10 @@ def create_visualization_standard(key_components):
         extra = key_components['extra']
         google_result.append(extra)
 
-    # print(main_result)
-
     return google_result
 
 
+# remove all redundant information returned by google
 def super_filter(html):
     if type(html) is not str:
         stop_words = ['Featured snippet from the web', 'Click on the error', 'Claim this knowledge panel',
@@ -80,11 +80,10 @@ def super_filter(html):
     svgs = html.find_all('svg')
     for svg in svgs:
         svg.decompose()
-
     return html
-    #  extra = div_result.find_all(text=re.compile('People also search for'))
 
 
+# extract components from
 def extract_key_components(html):
     result = {}
     div_ifM = html.find_all('div', class_='ifM9O')
@@ -109,18 +108,12 @@ def extract_key_components(html):
     else:
         print('There is no heading')
 
-    # ================ get the key value of the result ============
     kp_header = html.find_all('div', class_='kp-header')
-    # print('kp_header \n ======================= \n', kp_header)
-
     if len(kp_header) > 0:
         result['type'] = 'standard'
         kp_header = kp_header[0]
-        #            value = kp_header.findChild().findChild()
         value = kp_header.text
-        # print('the value extracted', value)
         result['value'] = value
-        # =============== get the key image if there is any ============
 
         image = kp_header.find_all('g-img')
         if len(image) > 0:
@@ -131,13 +124,10 @@ def extract_key_components(html):
             # print('the image extracted is', image)
             result['img'] = image
 
-        # ================ get the siblings of the kp-head =========
         description = div_result.find_all('div', class_='i4J0ge')
         if len(description) > 0:
-            # this means the result page comes with a description
             description = description[0]
             description['class'] = 'description border rounded'
-            # print('the description is \n =================== \n', description)
             result['description'] = description
 
         extra = div_result.find_all(text=re.compile('People also search for'))
@@ -151,11 +141,9 @@ def extract_key_components(html):
                 sideways_container['class'] = 'sideways-container'
             extra['class'] = 'extra border rounded'
             result['extra'] = extra
-            # print('here is the people also search for \n ================ \n', extra)
     else:
         # there are two cases: wp-container or table
         # try to find 'kp-wholepage'
-
         # kp_wholepage = div_result.find_all('div', class_='kp-wholepage')
         kp_wholepage = html.find_all('div', attrs={'class': re.compile('^kp-wholepage.*')})
 
@@ -173,7 +161,6 @@ def extract_key_components(html):
 
         else:
             print('There is no kp-header but with ifM9O')
-
             # if the first child of ifM9O is h2 with People also ask
             children = div_ifM[0].findChildren()
             if len(children) > 0:
@@ -191,19 +178,10 @@ def extract_key_components(html):
 class GoogleAPI:
 
     def __init__(self):
+        self.url_template = 'https://www.google.com/search?q=%s'
         self.options = Options()
         self.options.add_argument('--headless')
         self.options.add_argument('--disable-logging')
-        address = '185.141.58.109:19596'
-        webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
-            "httpProxy": address,
-            "sslProxy": address,
-            "proxyType": "MANUAL"
-        }
-
-        self.driver = webdriver.Firefox(options=self.options)
-
-        self.url_template = 'https://www.google.com/search?q=%s'
 
     # due to possible restriction from google, we implement a proxy to enable robust request to google.
     def test_proxy_ip(self):
@@ -217,13 +195,9 @@ class GoogleAPI:
         return html_source
 
     # to separate the key components in the html
-
     # make the http request and parse the source code with beautiful soup
     def make_request(self, question):
         url = self.make_url(question)
-        self.options = Options()
-        self.options.add_argument('--headless')
-        self.options.add_argument('--disable-logging')
         address = '185.141.58.109:19596'
         webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
             "httpProxy": address,
@@ -231,12 +205,12 @@ class GoogleAPI:
             "proxyType": "MANUAL"
         }
 
-        # self.driver = webdriver.Firefox(options=self.options)
+        driver = webdriver.Firefox(options=self.options)
 
         try:
-            self.driver.get(url)
-            html_source = self.driver.find_element_by_tag_name('html').get_attribute('innerHTML')
-            self.driver.quit()
+            driver.get(url)
+            html_source = driver.find_element_by_tag_name('html').get_attribute('innerHTML')
+            driver.close()
             html = BeautifulSoup(html_source, 'html.parser')
             return html
 
@@ -244,7 +218,6 @@ class GoogleAPI:
             return 'Time out'
 
     # this function will remove all the hidden and non-essential text returned by google
-
     # encode the question and format the url for google request
     def make_url(self, question):
         tmp = question.split(' ')

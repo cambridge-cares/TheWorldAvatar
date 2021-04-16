@@ -5,6 +5,7 @@ from fuzzywuzzy import fuzz
 from nltk.tokenize import word_tokenize
 from .location import WIKI_DICT_DIR
 
+
 def remove_duplicated(uris):
     temp = []
     result = []
@@ -19,7 +20,7 @@ def filter_components(term_type, term):
     stopwords = ['the', 'all', 'a', 'an', 'that', 'of']
     smaller_than = ['smaller than', 'less', 'less than', 'under', 'smaller', 'beneath', 'lower', 'lower than', 'fewer']
     larger_than = ['bigger', 'bigger than', 'larger than', 'larger', 'over', 'above', 'beyond', 'broader', 'broader ',
-                   'than', 'more than','more']
+                   'than', 'more than', 'more']
 
     try:
         term_tokens = word_tokenize(term)
@@ -45,6 +46,8 @@ def filter_components(term_type, term):
 class SearchEngine:
     def __init__(self):
         self.file_path = os.path.join(WIKI_DICT_DIR, 'wiki_dictionary_new')
+        print('============= wiki dictionary path ===============')
+        print(self.file_path)
         with open(self.file_path) as f:
             self.wiki_dictionary = json.loads(f.read())
         self.top_k = 3
@@ -137,7 +140,7 @@ class SearchEngine:
                     value = filter_components(term_type=key, term=value)
                     if value is None:
                         return None
-                    uris = self.find_matches_from_wiki(term=value, mode=key,intent=question_type)
+                    uris = self.find_matches_from_wiki(term=value, mode=key, intent=question_type)
                     if uris == 'Error001':
                         return 'Error001'
                     obj_temp = {key: remove_duplicated(uris)}

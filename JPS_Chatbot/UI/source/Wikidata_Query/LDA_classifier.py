@@ -7,7 +7,7 @@ from gensim.models import CoherenceModel
 from nltk.stem import PorterStemmer
 import spacy
 import logging
-from .location import LDA_DIR
+from UI.source.Wikidata_Query.location import LDA_DIR
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.ERROR)
 
@@ -71,8 +71,7 @@ class LDAClassifier:
             return sorted_topic_names
 
 
-# lda_classifier = LDAClassifier()
-# topics = lda_classifier.classify('what is the molecular weight of benzene')
-#
-# pprint(topics)
-# pprint(lda_classifier.lookup_topic(topics))
+if __name__ == "__main__":
+    lda_classifier = LDAClassifier()
+    topics = lda_classifier.classify('what is the molecular weight of benzene')
+    pprint(topics)

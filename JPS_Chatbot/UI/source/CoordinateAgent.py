@@ -1,20 +1,17 @@
 import json
-import sys, os
-
-from Chatbot.Interpretation_parser import InterpretationParser
-from Chatbot.SearchEngine import SearchEngine
-from Chatbot.SPARQLConstructor import SPARQLConstructor
-from Chatbot.SPARQLQuery import SPARQLQuery
-from Chatbot.LDA_classifier import LDAClassifier
-from rasa_jps.chatbot_interface import Chatbot
-from functools import lru_cache
+from UI.source.Wikidata_Query.Interpretation_parser import InterpretationParser
+from UI.source.Wikidata_Query.SearchEngine import SearchEngine
+from UI.source.Wikidata_Query.SPARQLConstructor import SPARQLConstructor
+from UI.source.Wikidata_Query.SPARQLQuery import SPARQLQuery
+from UI.source.Wikidata_Query.LDA_classifier import LDAClassifier
+from UI.source.JPS_Query.chatbot_interface import Chatbot
 
 from pprint import pprint
 from rasa.nlu.model import Interpreter
 import os
 import tarfile
 
-from location import WIKI_MODELS_DIR
+from UI.source.location import WIKI_MODELS_DIR
 
 
 # 0. get the topic model result, choose which direction it goes
@@ -37,6 +34,7 @@ class CoordinateAgent:
     def __init__(self, socketio):
         # initialize interpreter
         # extract_nlu_model()
+        self.search_engine = SearchEngine()
         self.stopwords = ['all', 'the']
         # self.stopwords.append('all')
 
@@ -72,10 +70,8 @@ class CoordinateAgent:
         self.interpreter_parser = InterpretationParser(self.socket)
         self.interpreter_parser.interpreter = self.interpreter
         print('Loading interpreter')
-        self.search_engine = SearchEngine()
         self.sparql_constructor = SPARQLConstructor()
         self.sparql_query = SPARQLQuery(self.socket)
-
         self.lda_classifier = LDAClassifier()
         topics = self.lda_classifier.classify(question)
         print('============== topics ==============')
@@ -120,6 +116,7 @@ class CoordinateAgent:
 
     # @lru_cache(maxsize=64)
     def wiki_query(self, question):
+        print('======================= executing wiki query ================= ')
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
         if intent_and_entities_with_uris is None:

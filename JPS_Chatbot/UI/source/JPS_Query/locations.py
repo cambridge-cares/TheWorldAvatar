@@ -24,7 +24,7 @@ print('LDA_DIR', LDA_DIR)
 SOURCE_DIR = os.path.join(UI_DIR, 'source')
 print('SOURCE_DIR', SOURCE_DIR)
 
-RASA_JPS_DIR = os.path.join(SOURCE_DIR, 'rasa_jps')
+RASA_JPS_DIR = os.path.join(SOURCE_DIR, 'JPS_Query')
 print('RASA_JPS_DIR', RASA_JPS_DIR)
 
 # Record some locations for use elsewhere
