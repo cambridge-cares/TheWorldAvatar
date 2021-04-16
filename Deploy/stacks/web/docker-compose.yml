@@ -32,6 +32,9 @@ services:
       builder: "${BUILDER}"
       hash: "${HASH}"
     volumes:
+      - type: volume
+        source: goaccess
+        target: /var/log/goaccess
       - type: bind
         source: /var/log/reverse_proxy
         target: /var/log/nginx/store
@@ -48,8 +51,15 @@ services:
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
-  
-	
+    volumes:
+      - type: volume
+        source: goaccess
+        target: /var/log/goaccess
+      - type: bind
+        source: /var/log/reverse_proxy
+        target: /var/log/reverse_proxy
+
+    
   # JPS Chatbot
   # NOTE - You must set up Vienna credentials before attempting to build this server,
   #        see the JPS_Chatbot/docker/README.txt file for details.
@@ -98,3 +108,8 @@ services:
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
+
+    
+# Volumes
+volumes:
+  goaccess:

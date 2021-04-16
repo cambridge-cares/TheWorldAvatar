@@ -1,14 +1,21 @@
-# From the GoAccess base image
-FROM allinurl/goaccess:1.4.6
+# From the Ubuntu base image
+FROM ubuntu:20.04
 
-# Install Apache webserver
-#RUN apt-get update && apt-get install -y apache2
-#EXPOSE 80
+# Requirements
+RUN apt-get update && apt-get install -y lsb-release cron wget gnupg
 
-# Handle web documents folder
-#RUN mkdir -p /var/www/html
-#RUN chown -R www-data:www-data /var/www/
-#RUN chmod -R 775 /var/www/
+# Add GoAccess repository and install
+RUN echo "deb https://deb.goaccess.io/ $(lsb_release -cs) main" | tee -a /etc/apt/sources.list.d/goaccess.list
+RUN wget -O - https://deb.goaccess.io/gnugpg.key | apt-key --keyring /etc/apt/trusted.gpg.d/goaccess.gpg add -
+RUN apt-get update && apt-get install -y goaccess
 
-# Entrypoint to keep the container running
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+# Add the script to generate the report
+COPY generate-report.sh /etc/cron.daily/goaccess
+RUN chmod 755 /etc/cron.daily/goaccess
+
+# Place for generated HTML report
+RUN mkdir /var/log/goaccess
+
+# Add script to start cron
+COPY start-cron.sh /docker-entrypoint.d/30-start-cron.sh
+RUN chmod 777 /docker-entrypoint.d/30-start-cron.sh
