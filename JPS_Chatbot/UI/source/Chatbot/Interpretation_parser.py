@@ -60,7 +60,6 @@ class InterpretationParser:
         print('============ the interpretation results ==========')
         pprint(obj)
         self.socketio.emit('coordinate_agent', 'The interpretation result from WIKI' + json.dumps(obj).replace('{','').replace('}', ''))
-        print('============ got here =============')
         return {'type': intent, 'entities': obj}
 
 # interpretation_parse = InterpretationParser()

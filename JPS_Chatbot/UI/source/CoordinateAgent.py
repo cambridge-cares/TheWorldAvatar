@@ -131,10 +131,13 @@ class CoordinateAgent:
             intent_and_entities['type'] = 'item_attribute_query'
             intent_and_entities['entities']['entity'] = intent_and_entities['entities']['class']
 
-        print('before it breaks 001', intent_and_entities)
+        print("============= intent and entities =================")
+        print(intent_and_entities)
+        print("===================================================")
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
         print('================= result with uris ================')
         pprint(intent_and_entities_with_uris)
+        print('===================================================')
         sparqls = self.sparql_constructor.fill_sparql_query(intent_and_entities_with_uris)
         if sparqls is None:
             print('No valid SPARQL is returned')

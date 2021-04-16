@@ -2,22 +2,10 @@ import json
 from pprint import pprint
 import itertools
 
-# try:
-#     from __main__ import socketio
-#
-#     print('Importing socketIO from main in interpretation')
-# except ImportError:
-#     from run import socketio
-#
-#     print('Importing socketIO from run_socket in interpretation')
 
 def generate_combinations(results):
     # TODO: to generate a list of combinations with a score ...
     temp = []
-    print('generate_combinations results')
-    print(results)
-    print('-------------------------------')
-
     for uris in results:
         if type(uris) is str:
             uris = [uris]
@@ -45,19 +33,12 @@ def generate_combinations(results):
         # else:
         list_of_combination_with_score.append({'uris': combination, 'score': combination_score})
 
-    # print('-------------  list_of_combination_with_score --------------')
-    # pprint(list_of_combination_with_score)
     sorted_list = [t for t in sorted(list_of_combination_with_score, key=lambda item: item['score'], reverse=True)]
-    # pprint(sorted_list[:5])
     return sorted_list
 
 
 def retrieve_uris_from_entities(entities, order):
     # get the object by label, the remove the object
-    print('---------- entities -----------')
-    pprint(entities)
-
-    print('\n')
     temp_list = entities
     results = []
     for o_label in order:
@@ -68,15 +49,13 @@ def retrieve_uris_from_entities(entities, order):
                 key = k
                 uris = u
             if key == o_label:
-                print('the key is', key)
-                print('the olabel is', o_label)
                 # return the result, remove it from the list
                 results.append(uris)
-            print('key', key, 'uris', uris)
-            print('------------------------------')
-    pprint(results)
+
     return results
     # TODO: put the comparison and the number in, apply filter over them
+
+
 def rename_keys(es):
     counter = 0
     for e in es:
@@ -85,8 +64,8 @@ def rename_keys(es):
         if k == 'attribute':
             new_k = 'attribute_' + str(counter)
             e[new_k] = e.pop(k)
-        print(e)
     return es
+
 
 def fill_sparql_query_for_one_intent(intent, template, order, entities, index_order):
     list_of_sparqls = []
@@ -95,25 +74,13 @@ def fill_sparql_query_for_one_intent(intent, template, order, entities, index_or
         entities = rename_keys(entities)
     r = retrieve_uris_from_entities(entities, order=order)
     combinations = generate_combinations(r)
-    print('=============== check =============')
-    print('entities', entities)
-    print('order', order)
-    print('index order', index_order)
-    for index in index_order:
-        print(entities[index])
     # x = input()
     # formula of fatty acid with density more than 40
     # aromatic hydrocarbon with molecular weight more than 200
-    print('combinantion', combinations)
     for comb in combinations:
-        print('each comb')
-        print(comb)
-        print('---------')
         elements = []
         uris = comb['uris']
         for u in uris:
-            print('--- the u is ----')
-            print(u)
             if type(u) is tuple:
                 elements.append(u[0])
             else:
@@ -123,19 +90,13 @@ def fill_sparql_query_for_one_intent(intent, template, order, entities, index_or
             candidates = []
             for i in index_order:
                 candidates.append(elements[i])
-            print('--------- the candidates are ---------')
-            print(candidates)
             elements = tuple(candidates)
-            print('elements', elements)
-            # sparql_query = template % (elements[2], elements[1], elements[0], elements[0], elements[3], elements[4])
             sparql_query = template % elements
-            print('-------------- sparql query --------------')
-            print(sparql_query)
-            # x = input()
             list_of_sparqls.append(sparql_query)
         except:
             return None
     return list_of_sparqls
+
 
 # This class constructs SPARQL query for wikidata
 class SPARQLConstructor:
@@ -224,7 +185,7 @@ class SPARQLConstructor:
             index_order = [1, 0, 1, 0, 0, 1]
         elif intent == 'batch_restriction_query_numerical_and_attribute':
             order = ['attribute_1', 'attribute_2', 'class', 'comparison', 'numerical_value']  # first attribute is the
-            index_order = [2, 1, 0, 3, 4] #         ['class', 'a2', 'a1', 'comparison', 'number']
+            index_order = [2, 1, 0, 3, 4]  # ['class', 'a2', 'a1', 'comparison', 'number']
 
             # attribute_1
 
@@ -235,7 +196,7 @@ class SPARQLConstructor:
         elif intent == 'batch_restriction_query':
             # class, attribute, attribute, attribute
             order = ['class', 'attribute']
-            index_order = [0,1,1,1]
+            index_order = [0, 1, 1, 1]
         if len(order) == 0:
             return None
         else:

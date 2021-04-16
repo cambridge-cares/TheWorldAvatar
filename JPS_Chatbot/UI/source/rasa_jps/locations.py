@@ -4,7 +4,6 @@ import sys
 
 
 def get_parent_path(path):
-    print('------------ hello from here -----------')
     parent, child = os.path.split(path)
     if child:
         return parent

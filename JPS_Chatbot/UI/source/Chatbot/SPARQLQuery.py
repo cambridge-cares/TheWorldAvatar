@@ -13,6 +13,7 @@ import time
 
 from functools import lru_cache
 
+
 @lru_cache(maxsize=None)
 def make_request(_url, index, query):
     headers = {'Accept': 'application/sparql-results+json'}
@@ -28,9 +29,6 @@ def make_request(_url, index, query):
 def identity_valid_result(result):
     try:
         r = result[0]['results']['bindings']
-        print('---------- valid result ------------')
-        print(r)
-
     except:
         return None
     if len(r) > 0:
@@ -81,7 +79,8 @@ class SPARQLQuery:
                 counter = counter + 1
                 try:
                     rurl = self.endpoint + requests.utils.quote(q)
-                    print('the url requested', rurl)
+                    if '&query=' in rurl:
+                        print('the url requested', rurl.split('&query=')[0])
                     processes.append(executor.submit(make_request, rurl, counter, q))
                     time.sleep(1)
                 except:
@@ -89,23 +88,14 @@ class SPARQLQuery:
                     pass
         for task in as_completed(processes):
             r = identity_valid_result(task.result())
-            print('----------- task result ----------')
-            print(task.result())
-            print(type(task.result()))
             if r is not None:
                 valid_results.append(r)
                 # TODO: find the result with the highest ranking ...
                 # TODO: put the attribute names in m
         # pprint(valid_results)
-        print('we have got line 83', len(valid_results))
 
         if len(valid_results) == 0:
             return None
         else:
-            print('we have got line 86')
             sorted_results = sorted(valid_results, key=lambda x: x[1])
-            print('=============== sorted result =================')
-            print(sorted_results)
-
-
             return sorted_results[0]

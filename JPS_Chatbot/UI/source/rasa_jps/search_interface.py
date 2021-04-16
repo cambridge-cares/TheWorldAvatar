@@ -22,8 +22,6 @@ class SearchInterface:
             with open(dict_path) as f:
                 self.dictionary[topic] = json.loads(f.read())
             with open(table_path) as f0:
-                print("------------------------------")
-                print(topic)
                 self.lookup_table[topic] = json.loads(f0.read())
 
     def search_matches(self, _word):

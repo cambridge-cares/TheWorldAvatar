@@ -21,7 +21,6 @@ def filter_components(term_type, term):
     larger_than = ['bigger', 'bigger than', 'larger than', 'larger', 'over', 'above', 'beyond', 'broader', 'broader ',
                    'than', 'more than','more']
 
-    print('term_type', term_type, 'term', term)
     try:
         term_tokens = word_tokenize(term)
     except:
@@ -29,7 +28,6 @@ def filter_components(term_type, term):
     term_processed = ' '.join(
         [token.lower().strip() for token in term_tokens if token.lower().strip() not in stopwords])
 
-    print('\n term_process', term_processed)
     if term_type == 'comparison':
         smaller_score = max([fuzz.ratio(term_processed, word) for word in smaller_than])
         larger_score = max([fuzz.ratio(term_processed, word) for word in larger_than])
@@ -47,16 +45,11 @@ def filter_components(term_type, term):
 class SearchEngine:
     def __init__(self):
         self.file_path = os.path.join(WIKI_DICT_DIR, 'wiki_dictionary_new')
-        print('file path', self.file_path)
         with open(self.file_path) as f:
             self.wiki_dictionary = json.loads(f.read())
         self.top_k = 3
 
     def compare_other_dictionaries(self, term, intent, mode):
-        print('executing the compare other dictionaries')
-        print('intent', intent)
-        print('mode', mode)
-        print('term', term)
         if intent == 'batch_restriction_query':
             dict_names = ['attribute', 'class', 'entity']
             dict_names.remove(mode)
@@ -67,7 +60,6 @@ class SearchEngine:
                 for word in table:
                     scores.append(fuzz.ratio(term.lower(), word.lower()))
                 highest_scores.append(max(scores))
-                print('highest_scores', highest_scores)
             return max(highest_scores)
         else:
             return 0
@@ -84,7 +76,6 @@ class SearchEngine:
             term = term[0]
             try:
                 uri = self.wiki_dictionary[mode]['dict'][term]
-                print(uri)
                 for u in uri:
                     uris.append((u.replace('http://www.wikidata.org/entity/', ''), score))
             except:
@@ -114,10 +105,6 @@ class SearchEngine:
             # we have a problem of wrong intent recognition
             return 'Error001'
 
-        print('============= todo =============')
-        pprint(selected_terms)
-        print('--------------------------------')
-
         return selected_terms
 
         # fuzz.ratio(term.lower(), Str2.lower())
@@ -125,11 +112,8 @@ class SearchEngine:
     def parse_entities(self, entities):
         # {'entities': {'attribute': 'molecular weight', 'entity': 'benzene'},
         #  'type': 'item_attribute_query'}
-        print('========== entities ============')
-        print(entities)
         question_type = entities['type']
         list_of_entities = entities['entities']
-        print(list_of_entities)
         results = []
         for key, value in list_of_entities.items():
             if key == 'comparison' or key == 'numerical_value':
