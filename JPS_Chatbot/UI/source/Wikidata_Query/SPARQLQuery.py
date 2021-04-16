@@ -1,20 +1,9 @@
-# pip install sparqlwrapper
-# https://rdflib.github.io/sparqlwrapper/
-import _thread
-import sys
-from pprint import pprint
-from time import sleep
-
-from SPARQLWrapper import SPARQLWrapper, JSON
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import time
 
-from functools import lru_cache
 
-
-@lru_cache(maxsize=None)
 def make_request(_url, index, query):
     headers = {'Accept': 'application/sparql-results+json'}
     html = requests.get(_url, stream=True, headers=headers)
@@ -22,7 +11,7 @@ def make_request(_url, index, query):
         json.loads(html.content.decode('utf-8'))
         return json.loads(html.content.decode('utf-8')), index, query
     except:
-        print(html.content.decode('utf-8'))
+        print('[ERROR SPARQL Query 14]: failed to get result from Wikidata')
         return html.content.decode('utf-8'), index, query
 
 
@@ -30,30 +19,23 @@ def identity_valid_result(result):
     try:
         r = result[0]['results']['bindings']
     except:
+        print('[ERROR SPARQL Query 22]: failed to find valid result')
         return None
     if len(r) > 0:
         return result
     else:
+        print('[ERROR SPARQL Query 27]: failed to find valid result')
         return None
 
 
 class SPARQLQuery:
     def __init__(self, socketio):
         self.endpoint = 'https://query.wikidata.org/sparql?format=json&query='
-        self.iteration_round = 1
+        self.iteration_round = 0
         self.query_step = 2
         self.socketio = socketio
 
     def start_queries(self, queries):
-        # try:
-        #     from __main__ import socketio
-        #     print('Importing socketIO from main in interpretation')
-        # except ImportError:
-        #     from run import socketio
-        #     print('Importing socketIO from run_socket in interpretation')
-        self.socketio.emit('coordinate_agent', 'Querying the Wikidata Knowledge Graph')
-
-        self.iteration_round = 1
         valid_results = []
         r = None
         while r is None:
@@ -90,10 +72,6 @@ class SPARQLQuery:
             r = identity_valid_result(task.result())
             if r is not None:
                 valid_results.append(r)
-                # TODO: find the result with the highest ranking ...
-                # TODO: put the attribute names in m
-        # pprint(valid_results)
-
         if len(valid_results) == 0:
             return None
         else:

@@ -19,7 +19,7 @@ entity_intent_map = {'item_attribute_query': {'attribute': None, 'entity': None}
 
 def extract_nlu_model(extract_dir='../models'):
     # Identify the newest trained nlu model
-    path = '../../models/'
+    path = '../models/'
     files = os.listdir(path)
     paths = [os.path.join(path, basename) for basename in files if ('.tar' in basename)]
     file_name = max(paths, key=os.path.getctime)
@@ -64,7 +64,7 @@ def fill_in_components(intent, entities):
 # extract_nlu_model()
 stopwords = nltk.corpus.stopwords.words('english')
 stopwords.append('all')
-interpreter = Interpreter.load('../../models/nlu')
+interpreter = Interpreter.load('../models/nlu')
 
  
 gold_question = 'what is the pka of all the acids with a molecular weight over 200'

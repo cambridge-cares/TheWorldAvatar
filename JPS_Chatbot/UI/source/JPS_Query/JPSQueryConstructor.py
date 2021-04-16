@@ -73,12 +73,11 @@ class JPSQueryConstructor:
         # Get the base URL
         url = self.build_base_url()
         url += "query?"
-        # url += "ontocompchem/query?"
-
         values = {"query": query, "ontology": "ontocompchem"}
         parameter_hash = hashlib.md5(json.dumps(values).encode('utf-8')).hexdigest()
         values['hash'] = parameter_hash
         full_url = url + urllib.parse.urlencode(values)
+        print('full url', full_url)
         req = urllib.request.Request(full_url)
         return urllib.request.urlopen(req).read()
 

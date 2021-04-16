@@ -26,8 +26,9 @@ set password [slurp password.txt]
 puts "Read password.txt file"
 
 # Download "models_wiki" files
+# /home/userspace/CoMoCommon/Archive/Projects/Preprints/c4e/c4e-266-xz378-Chatbot/Data/models
 puts "Downloading from 'models_wiki' directory..."
-spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Wikidata_Query/models/models_wiki_0413/models /tmp/models_wiki
+spawn scp -r $host:/home/userspace/CoMoCommon/Archive/Projects/Preprints/c4e/c4e-266-xz378-Chatbot/Data/models/models_wiki_0413/models /tmp/models_wiki
 
 expect "*authenticity*"
 send "yes\r" 
@@ -38,7 +39,7 @@ puts "Download complete."
 
 # Download "models_jps" files
 puts "Downloading from 'models_jps' directory..."
-spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Wikidata_Query/models/models_jps_0413/models /tmp/models_jps
+spawn scp -r $host:/home/userspace/CoMoCommon/Archive/Projects/Preprints/c4e/c4e-266-xz378-Chatbot/Data/models/models_jps_0413/models /tmp/models_jps
  
 expect "*assword*" 
 send "$password\r"

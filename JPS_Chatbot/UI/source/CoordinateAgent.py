@@ -19,7 +19,7 @@ from UI.source.location import WIKI_MODELS_DIR
 def extract_nlu_model(extract_dir='../models/'):
     # Identify the newest trained nlu model
     # Disable the function when deployed to production server ... 
-    path = 'models/'
+    path = 'Wikidata_Query/models/'
     files = os.listdir(path)
     paths = [os.path.join(path, basename) for basename in files if ('.tar' in basename)]
     file_name = max(paths, key=os.path.getctime)
@@ -57,7 +57,9 @@ class CoordinateAgent:
         print('Loading interpreter')
         self.sparql_constructor = SPARQLConstructor()
         self.sparql_query = SPARQLQuery(self.socket)
+        print('SPARQL Query init')
         self.lda_classifier = LDAClassifier()
+        print('LDA init')
         topics = self.lda_classifier.classify(question)
         print('============== topics ==============')
         print(topics)

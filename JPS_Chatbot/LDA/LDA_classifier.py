@@ -7,7 +7,7 @@ from gensim.models import CoherenceModel
 from nltk.stem import PorterStemmer
 import spacy
 import logging
-from UI.source.Wikidata_Query.location import LDA_DIR
+from LDA.location import LDA_DIR
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.ERROR)
 
@@ -33,7 +33,6 @@ class LDAClassifier:
         print('LDA',os.path.join(LDA_DIR, 'LDA_MODEL'))
         self.nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
         self.stemmer = PorterStemmer()
-
         self.topic_dictionary = {0: 'ontocompchem', 1: 'wiki', 2: 'ontospecies', 3: 'ontokin'}
 
         # pprint(self.lda_model.print_topics(num_words=10))

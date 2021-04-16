@@ -51,8 +51,8 @@ COPY . .
 RUN chmod +x ./docker/start_flask.sh
 
 # Copy in the model files downloaded in last stage
-COPY --from=credentials /tmp/models_wiki /usr/local/jps-chatbot/UI/source
-COPY --from=credentials /tmp/models_jps /usr/local/jps-chatbot/UI/source/rasa_jps
+COPY --from=credentials /tmp/models_wiki /usr/local/jps-chatbot/UI/source/Wikidata_Query
+COPY --from=credentials /tmp/models_jps /usr/local/jps-chatbot/UI/source/JPS_Query
 
 
 # Python setup
