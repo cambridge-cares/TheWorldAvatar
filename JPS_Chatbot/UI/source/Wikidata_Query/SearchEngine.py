@@ -25,6 +25,7 @@ def filter_components(term_type, term):
     try:
         term_tokens = word_tokenize(term)
     except:
+        print('[Error Search Engine: 28]: failed to tokenize the term')
         return None
     term_processed = ' '.join(
         [token.lower().strip() for token in term_tokens if token.lower().strip() not in stopwords])
@@ -46,8 +47,6 @@ def filter_components(term_type, term):
 class SearchEngine:
     def __init__(self):
         self.file_path = os.path.join(WIKI_DICT_DIR, 'wiki_dictionary_new')
-        print('============= wiki dictionary path ===============')
-        print(self.file_path)
         with open(self.file_path) as f:
             self.wiki_dictionary = json.loads(f.read())
         self.top_k = 3
@@ -82,6 +81,7 @@ class SearchEngine:
                 for u in uri:
                     uris.append((u.replace('http://www.wikidata.org/entity/', ''), score))
             except:
+                print('[Error Search Engine 84]: failed to find matches from wiki')
                 pass
         return uris
 

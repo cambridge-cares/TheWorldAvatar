@@ -4,7 +4,7 @@ import re
 import tarfile
 from pprint import pprint
 
-from .JPS_query_constructor import JPS_query_constructor
+from .JPSQueryConstructor import JPSQueryConstructor
 from .jps_fallback_classifier import JPSQuestionClassifier
 from .topic_classifier import TopicClassifier
 # from rasa_nlu.model import Interpreter
@@ -21,7 +21,7 @@ class Chatbot:
         warnings.filterwarnings("ignore")
         # self.tc = TopicClassifier()
         self.jps_classifier = JPSQuestionClassifier()
-        self.jps_query_constructor = JPS_query_constructor(socketio)
+        self.jps_query_constructor = JPSQueryConstructor(socketio)
 
         # self.wiki_classifier = WikiQuestionTypeClassifier()
 

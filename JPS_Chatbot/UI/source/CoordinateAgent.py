@@ -34,23 +34,10 @@ class CoordinateAgent:
         # extract_nlu_model()
         self.search_engine = SearchEngine()
         self.stopwords = ['all', 'the']
-        # self.stopwords.append('all')
-
         self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
         self.interpreter = Interpreter.load(self.nlu_model_directory)  # load the wiki nlu models
         self.jps_interface = Chatbot(socketio)
-        # try:
-        #     from __main__ import socketio
-        #     print('Importing socketIO from main')
-        # except ImportError:
-        #     from run import socketio
-        #     print('Importing socketIO from run_socket')
         self.socket = socketio
-
-    # TODO: separate the function of topic identifying
-    # TODO: separate the SPARQL query
-    # TODO: show progress
-    # def identify_topics(self, question):
 
     def question_classification(self, question):
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
@@ -74,11 +61,6 @@ class CoordinateAgent:
         topics = self.lda_classifier.classify(question)
         print('============== topics ==============')
         print(topics)
-        if topics == 'ERROR002':
-            self.socket.emit('coordinate_agent', 'This question seems to be outside the chemistry domain')
-        else:
-            self.socket.emit('coordinate_agent', 'The topics identified are: ' + json.dumps(topics))
-
         for topic in topics:
             if topic == 'wiki':
                 try:
@@ -88,6 +70,7 @@ class CoordinateAgent:
                     else:
                         return result
                 except:
+                    print('[Error Coordinate Agent: 73]: Wiki Interface failed to process the question')
                     pass
 
             else:
@@ -98,18 +81,9 @@ class CoordinateAgent:
                     else:
                         return result
                 except:
+                    print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
                     pass
         return 'Nothing'
-        # result = self.wiki_query(question)
-        # return result
-        # # for topic in topics:
-        # if topic == 'wiki':
-        #     try:
-        #         result = self.wiki_query(question)
-        #         return result
-        #     except:
-        #         # TODO: add JPS results to it
-        #         pass
 
     # @lru_cache(maxsize=64)
     def wiki_query(self, question):
@@ -133,11 +107,13 @@ class CoordinateAgent:
         result = self.sparql_query.start_queries(sparqls)
         return result[0]
 
-# ca = CoordinateAgent()
-# ca.run('what reactions produce NO2 + O2')
-# ca.run('find all the fatty acids with molecular weight more than 100')
-# ca.run('the kindling point of C2HBrClF3')
-# # # r = ca.run(question='what is the molecular weight of benzene')
-# # ca.run(question='show me the heat capacity of glucose')
-# # ca.run(question='what is the chemical structure of glucose')
-# ca.run('show me the boliing point of ch4')
+
+if __name__ == '__main__':
+    ca = CoordinateAgent(None)
+    ca.run('what reactions produce NO2 + O2')
+    ca.run('find all the fatty acids with molecular weight more than 100')
+    ca.run('the kindling point of C2HBrClF3')
+    # # r = ca.run(question='what is the molecular weight of benzene')
+    # ca.run(question='show me the heat capacity of glucose')
+    # ca.run(question='what is the chemical structure of glucose')
+    ca.run('show me the boliing point of ch4')

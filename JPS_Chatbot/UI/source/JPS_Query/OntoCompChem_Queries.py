@@ -186,8 +186,6 @@ BIND(REPLACE(STR(?unit),"http://data.nasa.gov/qudt/owl/unit#","") AS ?unit_short
 
 '''
 
-
-
 ontocompchem_simple_intents = ['symmetry_number',
                                'rotational_constants',
                                'vibration_frequency',
@@ -196,3 +194,9 @@ ontocompchem_simple_intents = ['symmetry_number',
                                'formal_charge',
                                'electronic_energy',
                                'geometry_type']
+
+intent_to_template_mapping = {'rotational_constants': ROTATIONAL_CONSTANT_QUERY,
+                              'symmetry_number': ROTATIONAL_SYMMETRY_NUMBER,
+                              'vibration_frequency': VIBRATION_FREQUENCY_QUERY, 'guassian_file': GAUSSIAN_FILE,
+                              'formal_charge': FORMAL_CHARGE, 'electronic_energy': ELECTRONIC_ENERGY,
+                              'geometry_type': GEOMETRY_TYPE, 'spin_multiplicity': SPIN_MULTIPLICITY}

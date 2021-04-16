@@ -9,38 +9,11 @@ from .attribute_mapping import AttributeMapper
 
 from .locations import JPS_SPARQL_TEMPLATE_PATH, CONFIG_PATH
 from .search_interface import SearchInterface
-from .OntoCompChem_Queries import ontocompchem_simple_intents, \
-    ROTATIONAL_CONSTANT_QUERY, VIBRATION_FREQUENCY_QUERY, \
-    ROTATIONAL_SYMMETRY_NUMBER, GAUSSIAN_FILE, SPIN_MULTIPLICITY, \
-    FORMAL_CHARGE, ELECTRONIC_ENERGY, GEOMETRY_TYPE
+from .OntoCompChem_Queries import ontocompchem_simple_intents, intent_to_template_mapping, ELECTRONIC_ENERGY
 
-from .OntoOntokin_Queries import GENERAL_QUERY, LENNARD_JONES_WELL_DEPTH, \
-    POLARIZABILITY, DIPOLE_MOMENT, RELAXATION_COLLISION, \
+from .OntoOntokin_Queries import RELAXATION_COLLISION, \
     ontokin_simple_intents, HIGH_SPEED_GENERAL_QUERY
 import hashlib
-
-from functools import lru_cache
-# from cachier import cachier
-import datetime
-
-
-# try:
-#     from __main__ import socketio
-#
-#     print('Importing socketIO from main in interpretation')
-# except ImportError:
-#     from run import socketio
-
-
-def fire_query_ontochemcomp(query):
-    print('----------- firing the query to JPS ontochemcomp -------------')
-    print(query)
-    url = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
-    values = {'query': query}
-    data = urllib.parse.urlencode(values).encode('utf-8')
-    req = urllib.request.Request(url, data)
-    response = urllib.request.urlopen(req).read()
-    return response
 
 
 def process_ontocompchem_results(rst):
@@ -63,7 +36,7 @@ def process_ontocompchem_results(rst):
         return json.dumps(result)
 
 
-class JPS_query_constructor:
+class JPSQueryConstructor:
 
     def __init__(self, socketio):
         print("================= JPS_SPARQL_TEMPLATE_PATH =============")
@@ -78,9 +51,6 @@ class JPS_query_constructor:
         self.socketio = socketio
         self.validator = SpeciesValidator()
         self.attribute_mapper = AttributeMapper()
-
-        # self.fire_query.clear_cache()
-        # self.fire_query_ontochemcomp.clear_cache()
 
     # Builds the base URL for all LDF queries
     def build_base_url(self):
@@ -129,7 +99,8 @@ class JPS_query_constructor:
         url = self.build_base_url()
         url += "query?"
 
-        values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants), "ontology": "ontokin"}
+        values = {"query": query, "products": json.dumps(products), "reactants": json.dumps(reactants),
+                  "ontology": "ontokin"}
         parameter_hash = hashlib.md5(json.dumps(values).encode('utf-8')).hexdigest()
         values['hash'] = parameter_hash
         full_url = url + urllib.parse.urlencode(values)
@@ -170,7 +141,7 @@ class JPS_query_constructor:
 
     def extract_info(self, intents):
         intent = intents['intent']['name']
-        entity_pairs = JPS_query_constructor.extract_entity_pairs(intents['entities'])
+        entity_pairs = JPSQueryConstructor.extract_entity_pairs(intents['entities'])
         self.socketio.emit('coordinate_agent', 'Looking up entities in JPS KG<br/> -----------------' + str(
             entity_pairs) + '-----------------')
 
@@ -330,47 +301,18 @@ class JPS_query_constructor:
         _intent = self.attribute_mapper.map_to_quantum_queries(attribute_iri)
 
         if species is None:
+            print('[ERROR JPSQueryConstructor 304]: No species is received for ontocompchem')
             return None
 
-        if _intent == 'rotational_constants':
-            q = ROTATIONAL_CONSTANT_QUERY % species
-            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
-            return rst
-
-        elif _intent == 'symmetry_number':
-            q = ROTATIONAL_SYMMETRY_NUMBER % species
-            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
-            return rst
-        elif _intent == 'vibration_frequency':
-            q = VIBRATION_FREQUENCY_QUERY % species
-            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
-            return rst
-
-        elif _intent == 'guassian_file':
-            q = GAUSSIAN_FILE % species
-            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
-            return rst
-
-        elif _intent == 'spin_multiplicity':
-            q = SPIN_MULTIPLICITY % species
-            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
-            return rst
-        elif _intent == 'formal_charge':
-            q = FORMAL_CHARGE % species
-            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
-            return rst
-        elif _intent == 'electronic_energy':
-            q = ELECTRONIC_ENERGY % species
-            rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
-            return rst
-
-        elif _intent == 'geometry_type':
-            q = GEOMETRY_TYPE % species
+        if _intent in intent_to_template_mapping:
+            q = intent_to_template_mapping[_intent] % species
             rst = self.fire_query_to_ldf_ontocompchem(q).decode('utf-8')
             return rst
 
         else:
+            print('[ERROR JPSQueryConstructor 311]: Unknown intent for ontocompchem')
             return None
+
     # to find the reactions that meet the conditions first, then find the mechanism
     def query_mechanism_by_reaction(self, reactants, products):
         print('query_mechanism_by_reaction')
@@ -383,7 +325,6 @@ class JPS_query_constructor:
         query = self.template_dict['select_reaction_by_species']
         rst = self.fire_query_to_ldf_ontokin(query, products, reactants).decode('utf-8')
         return rst
-
 
     # if to query properties of reactions including reaction rate and whether the reaction is reversible
     def query_reaction_property(self, reactants, products, attribute):

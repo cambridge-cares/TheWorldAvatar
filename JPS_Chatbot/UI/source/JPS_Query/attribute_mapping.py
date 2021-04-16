@@ -29,8 +29,6 @@ class AttributeMapper:
             print('ranking attributes for query_quantum_chemistry')
             print('intent',intent)
             print('attribute',attribute)
-            print('line 32 ===============')
-
 
             score_map = sorted([(word, fuzz.ratio(attribute, word)) for word in self.QUANTUM_ATTRIBUTES],
                                key=lambda x: x[1], reverse=True)
