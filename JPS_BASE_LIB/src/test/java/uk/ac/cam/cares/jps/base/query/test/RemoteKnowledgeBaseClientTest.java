@@ -244,7 +244,7 @@ public class RemoteKnowledgeBaseClientTest {
 		assertEquals(jsonArray.toString(), result);
 		verify(kbClient).execute(formMechanismCountQuery());
 	}
-
+	
 	/**
 	 * A SPARQL query to count the total number of mechanisms in a repository.
 	 * 

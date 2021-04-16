@@ -14,6 +14,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -21,11 +22,13 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -122,14 +125,17 @@ public class WastetoEnergyAgent extends JPSAgent {
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		validateInput(requestParams);
+		if (!validateInput(requestParams)) {
+			throw new JSONException("WTE:processSimulationAgent: Input parameters not found.\n");
+		}
 		String baseUrl= requestParams.getString("baseUrl");
 		String wasteIRI=requestParams.getString("wastenetwork");
+		
 		//render ontological model of waste network
 		OntModel model= readModelGreedy(wasteIRI);
 		//creates the csv of FCs, with Site_xy reading for location, waste containing the level of waste in years 1-15
 		//in baseUrl folder
-		List<String[]> fcMarkers = prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
+		prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
 		// searches for number of clusters to agglomerate (i.e. number of onsite WTF max)
 		String n_cluster= requestParams.getString("n_cluster");
 		//TODO: Can put this as input to matlab, but I don't know Matlab well enough for this, so having a txt to read from 
@@ -180,14 +186,11 @@ public class WastetoEnergyAgent extends JPSAgent {
         try {
         String iriofnetwork = requestParams.getString("wastenetwork");
         String nCluster = requestParams.getString("n_cluster");
-        return InputValidator.checkIfValidIRI(iriofnetwork) & InputValidator.checkIfInteger(nCluster);
+        return ((InputValidator.checkIfValidIRI(iriofnetwork)  || InputValidator.checkIfFilePath(iriofnetwork))
+        		& InputValidator.checkIfInteger(nCluster));
         } catch (JSONException ex) {
-        	ex.printStackTrace();
-            throw new JSONException("");
-        }catch (Exception ex) {
-        	ex.printStackTrace();
+        	return false;
         }
-        return false;
     }
 	
 	/** reads the topnode into an OntModel of all its subsystems. 
@@ -195,13 +198,50 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 * @return
 	 */
 	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
+		if  (InputValidator.checkIfValidIRI(iriofnetwork)) {
+			iriofnetwork = FCQuerySource.tempIRItoFile(iriofnetwork);
+			}
 		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
 		String wasteInfo = sb.build().toString();
-
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, wasteInfo);
+		JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, wasteInfo)
+				.put(JPSConstants.TARGETIRI , iriofnetwork);
+		String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
+		return readModelGreedyCon(result);
 	}
+	
+	public static OntModel readModelGreedyCon(String greedyResult) {
+		
+		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("result"));
+		
+		List<String> nodesToVisit = new ArrayList<String>();
+		for (int i=0; i<ja.length(); i++) {
+			JSONObject row = ja.getJSONObject(i);
+			for (String current : row.keySet()) {
+				String potentialIri =  row.getString(current);
+				if (potentialIri.startsWith("http")) {
+					int index = potentialIri.lastIndexOf("#");
+					if (index > 0) {
+						potentialIri = potentialIri.substring(0, index);
+					}
+					if (!nodesToVisit.contains(potentialIri)) {
+						nodesToVisit.add(potentialIri);
+					} 
+				}
+			}
+		}
+		
+		
+		//OntModel model = ModelFactory.createOntologyModel();
+		OntModel model = JenaHelper.createModel();
+		for (String current : nodesToVisit) {
+			current = ResourcePathConverter.convert(current);
+			model.read(current, null); 
+		}
+		
+		return model;
+	}
+	
 	/** Creates the CSV of the foodcourt for the Matlab code to read. 
 	 * a. reading the model and getting the number of FC *number of years of waste levels 
 	 * b. creating the csv file of site locations, and waste levels of those FoodCourts per year

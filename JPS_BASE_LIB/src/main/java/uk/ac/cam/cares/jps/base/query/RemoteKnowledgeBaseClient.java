@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
  * This class allows to establish connection with remote knowledge repositories<p>
@@ -41,7 +42,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
+public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 
 	private static final String HTTP_PROTOCOL= "http:";
 	private static final String HTTPS_PROTOCOL = "https:";
@@ -293,7 +294,7 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 			System.out.println(query);
 			return stmt.executeUpdate(query);
 		} catch (SQLException e) {
-			throw new JPSRuntimeException(e.getMessage());
+			throw new JPSRuntimeException(e.getMessage(),e);
 		}
 	}
 	
@@ -361,9 +362,55 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 			java.sql.ResultSet rs = stmt.executeQuery(query);
 			results = convert(rs);
 		} catch (SQLException e) {
-			throw new JPSRuntimeException(e.getMessage());
+			throw new JPSRuntimeException(e.getMessage(),e);
 		}
 		return results;
+	}
+		
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
+	@Override
+	public Model executeConstruct(Query sparql) {
+		return executeConstruct(sparql.toString());
+	}
+	
+	/**
+	 * Perform a sparql construct query
+	 * @return RDF model
+	 */
+	@Override
+	public Model executeConstruct(String sparql) {
+		
+		RDFConnection conn = connectQuery();
+		
+		if (conn != null) {
+			conn.begin( TxnType.READ );	
+			try {
+				return conn.queryConstruct(sparql);
+			} finally {
+				conn.end();
+			}
+		} else {
+			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
+		}
+	}
+	
+	/**
+	 * Return RDFConnection to sparql query endpoint
+	 * @return
+	 */
+	private RDFConnection connectQuery() {
+		
+		RDFConnectionRemoteBuilder builder = null;
+		if(queryEndpoint != null) {
+			builder = RDFConnectionRemote.create().destination(queryEndpoint);
+		}else {
+			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
+		}
+		
+		return builder.build();
 	}
 	
 	/**
@@ -575,44 +622,5 @@ public class RemoteKnowledgeBaseClient extends KnowledgeBaseClient {
 	private String getUpdateEndpointConnectionParameter(){
 		return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
 				.concat("=");
-	}
-	
-	/**
-	 * Return RDFConnection to sparql query endpoint
-	 * @return
-	 */
-	private RDFConnection connectQuery() {
-		
-		RDFConnectionRemoteBuilder builder = null;
-		if(queryEndpoint != null) {
-			builder = RDFConnectionRemote.create().destination(queryEndpoint);
-		}else {
-			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
-		}
-		
-		return builder.build();
-	}
-	
-	/**
-	 * Perform a sparql construct query
-	 * @return RDF model
-	 */
-	@Override
-	public Model queryConstruct(Query sparql) {
-		
-		RDFConnection conn = connectQuery();
-		
-		if (conn != null) {
-			conn.begin( TxnType.READ );	
-			try {
-				QueryExecution queryExec = conn.query(sparql);
-				Model results = queryExec.execConstruct();
-				return results;
-			} finally {
-				conn.end();
-			}
-		} else {
-			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
-		}
 	}
 }

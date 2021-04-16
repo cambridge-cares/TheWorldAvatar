@@ -1,0 +1,1338 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:OntoChemExp="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">01 April 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">811a63f61e93b42f0b9f14064e13de7dab532c65</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoChemExp is an ontology developed for representing chemical experiments.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasAdditionalDataItem -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasAdditionalDataItem">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasAmount -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasAmount">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasApparatus -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasApparatus">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasBibliographyLink -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasBibliographyLink">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasCommonProperties -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasCommonProperties">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasComponent -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasComponent">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataAttributeLink -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataAttributeLink">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Indicator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataAttributeLink"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataGroup -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataGroup">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataGroupLink -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataGroupLink">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroup"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroupLink"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataPoint -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataPoint">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasExpSpecs -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasExpSpecs">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasFeature -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasFeature">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasIndicator -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasIndicator">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasKind -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasKind">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasMode -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasMode">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasModification -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasModification">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasObservable -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasObservable">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasProperty -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasProperty">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasPropertyLink -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasPropertyLink">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Indicator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PropertyLink"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasProvenance -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasProvenance">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasSpeciesLink -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasSpeciesLink">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#createdAt -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#createdAt">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#createdBy -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#createdBy">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasBound -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasBound">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasCAS -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasCAS">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDOI -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDOI">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#BibliographyLink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatAmount -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatAmount">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#IgnitionType"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#TimeShift"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatKind -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatKind">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatPreferredKey -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatPreferredKey">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#BibliographyLink"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatTarget -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatTarget">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#IgnitionType"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#TimeShift"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatType -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDatType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#IgnitionType"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#TimeShift"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataGroupID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataGroupID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroupLink"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PropertyLink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataPointForm -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataPointForm">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroup"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataPointID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataPointID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroupLink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataSource -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataSource">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDerivedPropertyExists -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDerivedPropertyExists">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDescription -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDescription">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#AdditionalDataItem"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DerivedProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasExpType -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasExpType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#ExpSpecs"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataAttributeLink"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroup"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataPoint"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DerivedProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Feature"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Indicator"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Observable"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasInChI -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasInChI">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasItemType -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasItemType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#AdditionalDataItem"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasLabel -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasLabel">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroup"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DerivedProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasMIME -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasMIME">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#AdditionalDataItem"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasMethod -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasMethod">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasModificationDetails -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasModificationDetails">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Modification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasName -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DerivedProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasPatent -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasPatent">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Provenance"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasPropertyID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasPropertyID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PropertyLink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasSMILES -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasSMILES">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasSourceType -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasSourceType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasTransformation -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasTransformation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Indicator"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasType -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasType">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Feature"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PreferredKey"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUnits -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUnits">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Amount"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DerivedProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#IgnitionType"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasVal -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasVal">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#AdditionalDataItem"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Amount"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#BibliographyLink"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Component"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Copyright"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataAttributeLink"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Kind"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Mode"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Observable"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PreferredKey"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PropertyLink"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Value"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X1"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X10"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X11"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X2"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X3"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X4"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X5"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X6"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X7"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X8"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X9"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasVariableID -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasVariableID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Indicator"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Observable"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#modifiedAt -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#modifiedAt">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Modification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#modifiedBy -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#modifiedBy">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Modification"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#AdditionalDataItem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#AdditionalDataItem">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Amount -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Amount">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Apparatus -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Apparatus">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasMode"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Mode"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasProperty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasKind"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Kind"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#BibliographyLink -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#BibliographyLink">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#CommonProperties -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#CommonProperties">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasProperty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Component -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Component">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasAmount"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Amount"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasSpeciesLink"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Copyright -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Copyright">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataAttributeLink -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataAttributeLink">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroup -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroup">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataPoint"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataPoint"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasProperty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroupLink -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroupLink">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataPoint -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataPoint">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DerivedProperty -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DerivedProperty">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasFeature"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Feature"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#ExpSpecs -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#ExpSpecs">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Experiment -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Experiment">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasAdditionalDataItem"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#AdditionalDataItem"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasBibliographyLink"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#BibliographyLink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataGroup"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DataGroup"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasApparatus"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Apparatus"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasCommonProperties"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#CommonProperties"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasExpSpecs"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#ExpSpecs"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasProvenance"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Provenance"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Feature -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Feature">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasIndicator"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Indicator"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasObservable"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Observable"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#IgnitionType -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#IgnitionType">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Indicator -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Indicator">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Kind -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Kind">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Mode -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Mode">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Modification -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Modification">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Observable -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Observable">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PreferredKey -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PreferredKey"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Property">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Component"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasSpeciesLink"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PropertyLink -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PropertyLink">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Provenance -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Provenance">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasModification"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Modification"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#SpeciesLink">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#TimeShift -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#TimeShift">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Value -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Value">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X1 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X1">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X10 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X10">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X11 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X11">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X2 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X2">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X3 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X3">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X4 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X4">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X5 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X5">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X6 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X6">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X7 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X7">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X8 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X8">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X9 -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X9">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#X"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUncertainty"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasCopyright">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDataPointX">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasDerivedProperty">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasIgnitionType">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasTimeShift">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasUniqueSpecies">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#hasValue">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

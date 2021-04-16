@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
+import org.junit.Test;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -13,12 +14,12 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.ess.BatteryEntityCreator;
 import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
 
-public class EnergyStorageLocatorTest extends TestCase {
+public class EnergyStorageLocatorTest {
 	
 	
 	public static String ENIRI = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 	OntModel model = EnergyStorageSystem.readModelGreedy(ENIRI);
-	
+	@Test
 	public void testprepareSelectedBranch() {
 		
 		List<String[]> SelectedBranch=new BatteryEntityCreator().prepareSelectedBranch(model,0.3);
@@ -29,13 +30,14 @@ public class EnergyStorageLocatorTest extends TestCase {
 	 * 
 	 * @throws IOException
 	 */
+	@Test
 	public void testcreateOwl() throws IOException {
 		
 		String resultofbattery="http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";
 		new BatteryEntityCreator().createBatteryOwlFile(model,resultofbattery,0.3);
 		
 	}
-	
+	@Test
 	public void testQueryparentclass() {
 		String branchoutputInfo  = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )

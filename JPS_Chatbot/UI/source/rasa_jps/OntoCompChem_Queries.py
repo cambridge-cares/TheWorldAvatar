@@ -12,8 +12,9 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s$")
-# ============ to match molecule =========================
+?molecule_property gc:hasName "%s" .
+
+ # ============ to match molecule =========================
 ?g_calculation gc:isCalculationOn ?rotational_constants .
 ?rotational_constants ontocompchem:hasRotationalConstants ?rotational_constants_value . 
 OPTIONAL {
@@ -35,7 +36,7 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s$")
+?molecule_property gc:hasName "%s" .
 
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn  ?VibrationalAnalysis .
@@ -61,7 +62,8 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s$")
+?molecule_property gc:hasName "%s" .
+
 # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn  ?RotationalSymmetry .
 ?RotationalSymmetry rdf:type ontocompchem:RotationalSymmetry .
@@ -81,7 +83,8 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s$")
+?molecule_property gc:hasName "%s" .
+
 # ============ to match molecule =========================
 ?g_calculation  ontocompchem:hasEnvironment   ?Environment .
 ?Environment    gc:hasOutputFile  ?File . 
@@ -94,44 +97,43 @@ PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
-SELECT DISTINCT  ?name    ?SpinMultiplicity
+SELECT DISTINCT ?name ?SpinMultiplicity    
 WHERE  {
-?g_calculation rdf:type ontocompchem:G09 .
-?g_calculation ontocompchem:hasInitialization ?initialization .
-?initialization gc:hasMoleculeProperty ?molecule_property .
-?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s$")
-# ============ to match molecule =========================
-?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
-?GeometryOptimization    gc:hasMolecule    ?Molecule .
-?Molecule  ontocompchem:hasSpinMultiplicity ?SpinMultiplicity .
+   ?Molecule  ontocompchem:hasSpinMultiplicity ?SpinMultiplicity .
+   ?GeometryOptimization    gc:hasMolecule    ?Molecule .
+   ?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
+   ?g_calculation  ontocompchem:hasInitialization ?initialization .
+   ?initialization gc:hasMoleculeProperty ?molecule_property .	
+   ?molecule_property gc:hasName ?name .
+   ?molecule_property gc:hasName "%s" .
 } LIMIT 1
 '''
 
 FORMAL_CHARGE = '''
+
 PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>
 PREFIX gc: <http://purl.org/gc/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
-SELECT DISTINCT  ?name    ?FormalCharge_value ?unit_short
+SELECT DISTINCT ?name ?FormalCharge_value    
 WHERE  {
-?g_calculation rdf:type ontocompchem:G09 .
-?g_calculation ontocompchem:hasInitialization ?initialization .
-?initialization gc:hasMoleculeProperty ?molecule_property .
-?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s$")
-# ============ to match molecule =========================
-?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
-?GeometryOptimization    gc:hasMolecule    ?Molecule .
-?Molecule gc:hasFormalCharge  ?FormalCharge .
-?FormalCharge gc:hasValue ?FormalCharge_value . 
-
-OPTIONAL {
-?FormalCharge gc:hasUnit ?unit .
-BIND(REPLACE(STR(?unit),"http://purl.org/gc/","") AS ?unit_short) .
+   ?Molecule gc:hasFormalCharge  ?FormalCharge .
+   ?FormalCharge gc:hasValue ?FormalCharge_value . 
+   ?GeometryOptimization    gc:hasMolecule    ?Molecule .
+   ?g_calculation  gc:isCalculationOn    ?GeometryOptimization .
+   ?g_calculation ontocompchem:hasInitialization ?initialization .
+   ?initialization gc:hasMoleculeProperty ?molecule_property .	
+   ?molecule_property gc:hasName ?name .
+   ?molecule_property gc:hasName "%s" .
+   
+ OPTIONAL {
+    ?FormalCharge gc:hasUnit ?unit .
+    BIND(REPLACE(STR(?unit),"http://purl.org/gc/","") AS ?unit_short) .
 }
+ 
 } LIMIT 1
+ 
 '''
 
 ELECTRONIC_ENERGY = '''
@@ -145,9 +147,9 @@ WHERE  {
 ?g_calculation rdf:type ontocompchem:G09 .
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
-?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s$")
-# ============ to match molecule =========================
+?molecule_property gc:hasName  ?name .
+?molecule_property gc:hasName "%s" .
+ # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn    ?ScfEnergy .
 ?ScfEnergy    gc:hasElectronicEnergy  ?x .
 ?x            gc:hasValue             ?Electronic_energy .
@@ -171,8 +173,9 @@ WHERE  {
 ?g_calculation ontocompchem:hasInitialization ?initialization .
 ?initialization gc:hasMoleculeProperty ?molecule_property .
 ?molecule_property gc:hasName ?name .
-FILTER regex(?name, "^%s$")
-# ============ to match molecule =========================
+?molecule_property gc:hasName "%s" .
+
+ # ============ to match molecule =========================
 ?g_calculation  gc:isCalculationOn    ?GeometryType .
 ?GeometryType   ontocompchem:hasGeometryType ?GeometryTypeValue .  
 OPTIONAL {

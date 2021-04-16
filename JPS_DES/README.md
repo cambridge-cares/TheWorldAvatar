@@ -97,5 +97,3 @@ Instead, follow this [guide](https://guides.library.illinois.edu/c.php?g=347520&
  - [x] Finish backup of visualization
  - [ ] \(Optional) virtual environment for python
 
-### What if the visualization isn't working?
-

@@ -8,10 +8,10 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
 
 public class SensorSparqlTest extends TestCase{
 	public void testCreateWeatherStation() {
@@ -23,9 +23,8 @@ public class SensorSparqlTest extends TestCase{
 			double x = Double.parseDouble(csv_array.get(i)[0]);
 			double y = Double.parseDouble(csv_array.get(i)[1]);
 			double z = Double.parseDouble(csv_array.get(i)[2]);
-			String station_name = "weatherstation" + String.valueOf(i);
 			double [] xyz = {x,y,z};
-			SensorSparql.createWeatherStation(station_name, xyz);
+			SensorSparql.createWeatherStation(i, xyz);
 		}
 	}
 	
@@ -57,8 +56,7 @@ public class SensorSparqlTest extends TestCase{
 		String station_name = "virtualsensor1";
 		double [] xyz_coord = {104,2,9};
 		
-		SensorSparql ws = new SensorSparql();
-		ws.createAirQualityStation(station_name, xyz_coord);
+		SensorSparql.createAirQualityStation(station_name, xyz_coord);
 	}
 
 	public void testQueryAirStationsWithinScope() {
@@ -86,5 +84,9 @@ public class SensorSparqlTest extends TestCase{
 	
 	public void testQueryAllStations() {
 		SensorSparql.queryAllAirStations();
+	}
+	
+	public void testGetNumWeatherStation() {
+		SensorSparql.GetNumWeatherStation();
 	}
 }

@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:OntoLandUse="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24 November 2020</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6258c44570dd8dc819f9f60ff250492d5c8ca1d1</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoLandUse is an ontology developed for representing different types of land use code used for rural payment services.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#gitCommitHash -->
+
+    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relates the Land Use Code to the Land Use Code Type, which is used to categorise the Land Use Code</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relates the Land Use Code to the physical material present on the surface of that land area</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Associates the Land Use Code and its Land Use Code Type to the particular region in which it is used</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AdministrativeDivision -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AdministrativeDivision">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An administrative division is a portion of a country or other region delineated for the purpose of administration. Administrative divisions are granted a certain degree of autonomy and are usually required to manage themselves through their own local governments</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AgriculturalLand -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AgriculturalLand">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Agricultural land is typically land devoted to agriculture, the systematic and controlled use of other forms of life - particularly the rearing of livestock and production of crops - to produce food for humans.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The physical material at the surface of the Earth</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AdministrativeDivision"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Code used by land owners to declare what their land is used for, when applying for a rural payment scheme (like the Basic Payment Scheme (BPS) and Countryside Stewardship (CS))</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AdministrativeDivision"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifies the category to which the code applies to, out of the following: agriculatural land; non-agricultural land; codes for the Countryside Stewardship (CS); or if the code is ineligible for the Rural Payments Service (RPS)</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#Non-AgriculturalLand -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#Non-AgriculturalLand">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land upon which no agricultural activities are conducted and from which no agricultural products are derived</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl</rdfs:isDefinedBy>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

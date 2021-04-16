@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+
 /**
  * This class is developed to work as an instance factory for KnowledgeBaseClient.<br>
  * It reduces the burden of users to modify the SPARQL Endpoints for different<br>
@@ -21,7 +23,10 @@ import org.slf4j.LoggerFactory;
 public class KGRouter{
 	private static Logger logger = LoggerFactory.getLogger(KGRouter.class);
 	public static final String HTTP="http://";
-	public static final String HTTP_KB_PREFIX = HTTP + "kb/";
+	public static final String HTTPS="https://";
+	public static final String KB="kb";
+	public static final String BACKSLASH="/";
+	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(BACKSLASH);
 	public static final String EMPTY = "";
 	private static final String KGROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
 	public static final String RDFS_PREFIX = "rdfs";
@@ -40,6 +45,8 @@ public class KGRouter{
 	public static final String COLON = ":";
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
+	public static final String OWL_FILE_EXTENSION = ".owl";
+	public static final String RDF_FILE_EXTENSION = ".rdf";
 	
 	static KGRouter kgRouter = null;
 	
@@ -63,10 +70,10 @@ public class KGRouter{
 	 *  can be true at the same time.
 	 * @return
 	 */
-	public static KnowledgeBaseClient getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
+	public static KnowledgeBaseClientInterface getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
 		String queryIRI = null;
 		String updateIRI = null;
-		KnowledgeBaseClient kbClient = null;
+		KnowledgeBaseClientInterface kbClient = null;
 		if (targetResourceIRIOrPath != null && !targetResourceIRIOrPath.isEmpty()) {
 			if (targetResourceIRIOrPath.trim().startsWith(HTTP_KB_PREFIX)) {
 				if (kgRouter == null) {

@@ -40,6 +40,9 @@ public class CommercialAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	JSONObject responseParams = requestParams;	
+    	if (!validateInput(requestParams)) {
+    		throw new BadRequestException("CommercialAgent:  Input parameters not found.\n");
+    	}
         String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
         String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
@@ -78,8 +81,7 @@ public class CommercialAgent extends JPSAgent {
         
         return q&e&r;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
-        	throw new JSONException("Sensor not present in getString");
+        	return false;
         }
     }
 	/** queries dynamically the Electrical network for Commercial Constants to be used by the Python

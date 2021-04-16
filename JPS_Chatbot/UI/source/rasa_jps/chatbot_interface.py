@@ -75,19 +75,14 @@ class Chatbot:
         # RASA_JPS_MODELS_DIR
         result = self.jps_classifier.interpret(question)
         answer = self.jps_query_constructor.construct_query(result)
-        print('===================== processed classification ===================')
         pprint(answer)
 
         if type(answer) == tuple:
             answer = answer[0]
 
-        print('=========== the answer by jps ===========')
-        print(json.loads(answer))
-        print(len(json.loads(answer)))
 
         if len(json.loads(answer)) == 0:
             return None
-        print('==================================================================')
 
             # TODO: update the UI to show results returned from JPS endpoints
             # TODO: based on the result returned by the jps classifier, construct the query ...

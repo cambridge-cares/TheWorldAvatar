@@ -70,7 +70,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		String body = putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.APPLICATION_RDF_XML.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
-		assertEquals(body, result);
+		assertEquals(body,  result);
 	}
 	
     private String complete(String path) {
@@ -82,7 +82,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.TEXT_TURTLE.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
-		assertEquals("@prefix", result.substring(0,7));
+		assertEquals("@prefix",  result.substring(0,7));
 	}
 	
 	public void testPutAndGetRdfFileWithAcceptAndConversionToJSONLD() {
@@ -90,8 +90,8 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.APPLICATION_LD_JSON.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
-		assertTrue(result.contains("@id"));
-		assertTrue(result.contains("@type"));
+		assertTrue( result.contains("@id"));
+		assertTrue( result.contains("@type"));
 	}
 	
 	public void internClientSparqlQueryDirect(String dataset, String target) {
@@ -150,7 +150,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 
 		String accept = null;
 		String result = KnowledgeBaseClient.get(datasetUrl, target, accept);
-		assertEquals(body, result);
+		assertEquals(body,result);
 	}
 	
 	private void assertKnowledgeBaseAbstracQuery(InputStream inputStream) {

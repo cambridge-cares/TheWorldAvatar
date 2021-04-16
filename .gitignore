@@ -75,3 +75,6 @@ Thumbs.db
 JPS_DISPERSION/JPS_DISPERSION.iml
 *.data-00000-of-00001
 geckodriver.log
+*.hdt
+/JPS_LDF/docker/credential/host.txt
+/JPS_LDF/docker/credential/password.txt

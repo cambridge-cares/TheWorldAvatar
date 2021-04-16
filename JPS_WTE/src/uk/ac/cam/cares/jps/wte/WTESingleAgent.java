@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.wte;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.atlas.json.JsonException;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -26,7 +24,6 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
@@ -134,6 +131,9 @@ public class WTESingleAgent extends JPSAgent{
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		if (!validateInput(requestParams)) {
+			throw new JSONException("WTE:createOWLFileAgent: Input parameters not found.\n");
+		}
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
@@ -155,7 +155,8 @@ public class WTESingleAgent extends JPSAgent{
 			updateKBForSystem(wasteIRI, baseUrl, getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		 }catch (Exception e) {
-			e.printStackTrace();
+			 //LIKELY IO EXCEPTION
+			logger.info(e.getMessage());
 		}			 
 		 
 		return requestParams;
@@ -178,9 +179,8 @@ public class WTESingleAgent extends JPSAgent{
 			boolean fileExist = InputValidator.checkIfValidFile(filePath);
 			return new WastetoEnergyAgent().validateInput(requestParams)& fileExist;
 		}catch (JSONException ex) {
-			ex.printStackTrace();
+			return false;
 		}
-		return false;
 		
 		
 		
@@ -513,5 +513,8 @@ public class WTESingleAgent extends JPSAgent{
 			}
 		}
 	}
+	
+	
+	
 	
 }
