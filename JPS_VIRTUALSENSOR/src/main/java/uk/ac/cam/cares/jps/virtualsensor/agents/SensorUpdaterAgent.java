@@ -12,6 +12,7 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -37,63 +38,81 @@ public class SensorUpdaterAgent extends JPSAgent{
         JSONObject responseParams = new JSONObject();
         if (validateInput(requestParams)) {
         	String stationiri = requestParams.getString(SensorSparql.keyAirStationIRI);
-        	// obtain coordinates of this station
-        	Point p = SensorSparql.queryAirStationCoordinatesWithIRI(stationiri);
+        	
         	String sim_iri = DispSimSparql.GetSimForSensor(stationiri);
-        	String simCRS = DispSimSparql.GetSimCRS(sim_iri);
-        	p.transform(simCRS);
         	
-        	URI path_uri = null;
-        	String resultlocation = DispSimSparql.GetLatestOutputPath(sim_iri);
-        	long timestamp = DispSimSparql.GetTimeStamp(resultlocation);
+        	long latestTimeStamp;
+        	
         	try {
-				path_uri = new URI(resultlocation);
-			} catch (URISyntaxException e) {
-				throw new JPSRuntimeException(e);
-			}
-
-        	File f = new File(path_uri);
-        	String concFilePath = Paths.get(f.getAbsolutePath(),EpisodeAgent.FILE_NAME_3D_MAIN_CONC_DATA).toString();
-        	// convert sensor coordinates to the local simulation coordinates 
-        	// should be queried from the triple-store
+        		latestTimeStamp = SensorSparql.GetLatestTimeStamp(stationiri);
+        	} catch (Exception e) { // no data recorded yet
+        		latestTimeStamp = 0;
+        	}
         	
-        	JSONObject request = new JSONObject();
-        	// now prepare to call interpolation agent
-        	request.put("filepath", concFilePath);
-        	request.put("x", p.getX());
-        	request.put("y", p.getY());
-
-        	String interp_result = AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/InterpolationPyAgent", request.toString());
-        	JSONObject interp_result_jo = new JSONObject(interp_result);
-
-        	double concHC=0;
-        	double concNOx=0;
-        	// Sum individual HCs, we define HCs as molecules with at least 1 H and 1 C atoms
-        	List<String> HCs = Arrays.asList("C2H6","C2H4","nC4H10","HCHO","CH3CHO","CH3COC2H5","C3H6","oXylene","isoprene");
-        	// NOx is the sum of NO and NO2
-        	List<String> NOx = Arrays.asList("NO","NO2");
-        	// others
-        	List<String> other_pol = Arrays.asList("PM2.5","PM10","O3","SO2","CO2","CO");
-        	Iterator<String> it = interp_result_jo.keys();
-        	while (it.hasNext()) {
-        		String component = it.next();
-        		double conc = interp_result_jo.getJSONArray(component).getDouble(0); 
+        	// this will give a list of outputs that have not been added to this sensor (after latestTimeStamp)
+        	JSONArray queryResult = DispSimSparql.GetOutputPathAndTime(sim_iri, latestTimeStamp);
+        	
+        	if (queryResult.length() > 0) {
+        		// obtain coordinates of this station
+            	Point p = SensorSparql.queryAirStationCoordinatesWithIRI(stationiri);
+            	String simCRS = DispSimSparql.GetSimCRS(sim_iri);
+            	p.transform(simCRS);
         		
-        		String dataname;
-        		if (HCs.contains(component)) {
-        			concHC += conc; 
-        		} else if (NOx.contains(component)) {
-        			dataname = "Outside" + component + "Concentration";
-        			SensorSparql.addSensorValue(stationiri, dataname, conc, true);
-        			concNOx += conc;
-        		} else if (other_pol.contains(component)) {
-        			// values other than HCs and NOx can be added directly
-        		    dataname = "Outside" + component + "Concentration";
-        			SensorSparql.addSensorValue(stationiri, dataname, conc, true);
+            	// go through each output and update sensor
+        		for (int i=0; i<queryResult.length(); i++) {
+		        	String outputPath = queryResult.getJSONObject(i).getString("outputPath");
+		        	long timestamp = queryResult.getJSONObject(i).getLong("timestamp");
+		        	URI path_uri = null;
+		        	try {
+						path_uri = new URI(outputPath);
+					} catch (URISyntaxException e) {
+						throw new JPSRuntimeException(e);
+					}
+
+		        	File f = new File(path_uri);
+		        	String concFilePath = Paths.get(f.getAbsolutePath(),EpisodeAgent.FILE_NAME_3D_MAIN_CONC_DATA).toString();
+		        	// convert sensor coordinates to the local simulation coordinates 
+		        	// should be queried from the triple-store
+		        	
+		        	JSONObject request = new JSONObject();
+		        	// now prepare to call interpolation agent
+		        	request.put("filepath", concFilePath);
+		        	request.put("x", p.getX());
+		        	request.put("y", p.getY());
+		
+		        	String interp_result = AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/InterpolationPyAgent", request.toString());
+		        	JSONObject interp_result_jo = new JSONObject(interp_result);
+		
+		        	double concHC=0;
+		        	double concNOx=0;
+		        	// Sum individual HCs, we define HCs as molecules with at least 1 H and 1 C atoms
+		        	List<String> HCs = Arrays.asList("C2H6","C2H4","nC4H10","HCHO","CH3CHO","CH3COC2H5","C3H6","oXylene","isoprene");
+		        	// NOx is the sum of NO and NO2
+		        	List<String> NOx = Arrays.asList("NO","NO2");
+		        	// others
+		        	List<String> other_pol = Arrays.asList("PM2.5","PM10","O3","SO2","CO2","CO");
+		        	Iterator<String> it = interp_result_jo.keys();
+		        	while (it.hasNext()) {
+		        		String component = it.next();
+		        		double conc = interp_result_jo.getJSONArray(component).getDouble(0); 
+		        		
+		        		String dataname;
+		        		if (HCs.contains(component)) {
+		        			concHC += conc; 
+		        		} else if (NOx.contains(component)) {
+		        			dataname = "Outside" + component + "Concentration";
+		        			SensorSparql.addSensorValue(stationiri, dataname, conc, timestamp);
+		        			concNOx += conc;
+		        		} else if (other_pol.contains(component)) {
+		        			// values other than HCs and NOx can be added directly
+		        		    dataname = "Outside" + component + "Concentration";
+		        			SensorSparql.addSensorValue(stationiri, dataname, conc, timestamp);
+		        		}
+		        	}
+		        	SensorSparql.addSensorValue(stationiri, SensorSparql.HC, concHC, timestamp);
+		        	SensorSparql.addSensorValue(stationiri, SensorSparql.NOx, concNOx, timestamp);
         		}
         	}
-        	SensorSparql.addSensorValue(stationiri, SensorSparql.HC, concHC, true);
-        	SensorSparql.addSensorValue(stationiri, SensorSparql.NOx, concNOx, true);
         }
         return responseParams;
     }
