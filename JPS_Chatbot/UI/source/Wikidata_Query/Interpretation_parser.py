@@ -1,21 +1,3 @@
-import json
-from pprint import pprint
-from rasa.nlu.model import Interpreter
-import os, sys
-import tempfile
-import tarfile
-import nltk
-
-
-# try:
-#     from __main__ import socketio
-#
-#     print('Importing socketIO from main in interpretation')
-# except ImportError:
-#     from run import socketio
-#
-#     print('Importing socketIO from run_socket in interpretation')
-
 class InterpretationParser:
 
     def __init__(self, socketio):
@@ -32,7 +14,6 @@ class InterpretationParser:
 
     def parse_question_interpretation(self, question):
         result = self.interpreter.parse(question)
-        pprint(result)
         # get the key components and their types out
         # get the intent of the question
         intent = result['intent']['name']
@@ -52,8 +33,4 @@ class InterpretationParser:
                 # more than one term should present ...
             else:
                 obj[entity_type] = term
-        print('============ the interpretation results ==========')
-        pprint(obj)
-        self.socketio.emit('coordinate_agent',
-                           'The interpretation result from WIKI' + json.dumps(obj).replace('{', '').replace('}', ''))
         return {'type': intent, 'entities': obj}

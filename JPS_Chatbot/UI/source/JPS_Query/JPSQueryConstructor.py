@@ -2,15 +2,11 @@ import json
 import re
 import urllib.parse
 import urllib.request
-from pprint import pprint
-
 from .species_validator import SpeciesValidator
 from .attribute_mapping import AttributeMapper
-
 from .locations import JPS_SPARQL_TEMPLATE_PATH, CONFIG_PATH
 from .search_interface import SearchInterface
 from .OntoCompChem_Queries import ontocompchem_simple_intents, intent_to_template_mapping, ELECTRONIC_ENERGY
-
 from .OntoOntokin_Queries import RELAXATION_COLLISION, \
     ontokin_simple_intents, HIGH_SPEED_GENERAL_QUERY
 import hashlib
@@ -84,8 +80,7 @@ class JPSQueryConstructor:
         values['hash'] = parameter_hash
         full_url = url + urllib.parse.urlencode(values)
         req = urllib.request.Request(full_url)
-        response = urllib.request.urlopen(req).read()
-        return response
+        return urllib.request.urlopen(req).read()
 
     def fire_query_to_ldf_ontokin(self, query, products, reactants):
         if products is None:
@@ -113,10 +108,7 @@ class JPSQueryConstructor:
     def process_species_for_ontocompchem(species):
         # to convert H2O2 or h2o2 to H 2 O 2
         # to convert H2O2 or h2o2 to H 2 O 2
-
-        temp = ''
         number_regex = r'[0-9]+'
-        alphabet_regex = r'[a-zA-Z]'
         if type(species) == str:
 
             numbers = re.findall(number_regex, species)
@@ -188,17 +180,13 @@ class JPSQueryConstructor:
                     result['products'].append(value.upper())
             return result
         elif intent == 'select_reaction_by_species':
-            result = {'intent': intent}
-            result['reactants'] = []
-            result['products'] = []
+            result = {'intent': intent, 'reactants': [], 'products': []}
             temp = []
-            flag = False
             for e in intents['entities']:
                 entity_type = e['entity']
                 value = e['value']
                 if entity_type == 'indicator':
                     if 'produc' in value:
-                        flag = True
                         result['products'] = temp
                         temp = []
                     else:
@@ -234,7 +222,7 @@ class JPSQueryConstructor:
     def construct_query(self, intents):
         result = self.extract_info(intents)
         intent = result['intent']
-
+        rst = None
         if intent == 'query_reaction_property':
             try:
                 rst = self.query_reaction_property(result['reactants'], result['products'], result['attribute'])
@@ -287,9 +275,7 @@ class JPSQueryConstructor:
     # Query ontocompchem ontology, the intent should be "query_quantum_chemistry"
     # However, due to the inconsistency in ontocompchem, we need to further classify the questions
     # currently, we use the attribute to find the according sub-intent and map question to templates.
-    # TODO: resolve the inconsistency in ontocompchem and use more general queries.
     def query_quantum_of_moleculars(self, intent, species, attribute):
-        original_species = species
         if intent == 'electronic_energy':
             species = self.validator.validate(attribute, 'ontocompchem', intent, species).replace(' ', '')
             q = ELECTRONIC_ENERGY % species
@@ -328,7 +314,6 @@ class JPSQueryConstructor:
 
     # if to query properties of reactions including reaction rate and whether the reaction is reversible
     def query_reaction_property(self, reactants, products, attribute):
-        sub_properties_products = ['rdfs:label']
         attribute = ' <' + self.serach_interface.get_first_match(attribute).strip() + '> '
         if 'hasArrheniusCoefficient' in attribute:
             query = self.template_dict['query_reaction_property']['ArrheniusCoefficient']
