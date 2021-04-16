@@ -1,4 +1,0 @@
-fourier transform
-newton's method
-newtons method
-navier stokes equation

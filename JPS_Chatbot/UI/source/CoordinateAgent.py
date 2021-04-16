@@ -3,10 +3,9 @@ from UI.source.Wikidata_Query.Interpretation_parser import InterpretationParser
 from UI.source.Wikidata_Query.SearchEngine import SearchEngine
 from UI.source.Wikidata_Query.SPARQLConstructor import SPARQLConstructor
 from UI.source.Wikidata_Query.SPARQLQuery import SPARQLQuery
-from UI.source.Wikidata_Query.LDA_classifier import LDAClassifier
+from LDA.LDA_classifier import LDAClassifier
 from UI.source.JPS_Query.chatbot_interface import Chatbot
 
-from pprint import pprint
 from rasa.nlu.model import Interpreter
 import os
 import tarfile
@@ -22,7 +21,6 @@ def extract_nlu_model(extract_dir='../models/'):
     # Disable the function when deployed to production server ... 
     path = 'models/'
     files = os.listdir(path)
-    print('the directory of files', files)
     paths = [os.path.join(path, basename) for basename in files if ('.tar' in basename)]
     file_name = max(paths, key=os.path.getctime)
     # Extract the model to a temporary directory
@@ -95,7 +93,6 @@ class CoordinateAgent:
             else:
                 try:
                     result = self.jps_interface.analyse_questions(question)
-                    print('----- the result by jps ----')
                     if result is None:
                         pass
                     else:
@@ -116,25 +113,16 @@ class CoordinateAgent:
 
     # @lru_cache(maxsize=64)
     def wiki_query(self, question):
-        print('======================= executing wiki query ================= ')
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
         if intent_and_entities_with_uris is None:
             return None
         elif intent_and_entities_with_uris == 'Error001':
             # now switch intent to item_attribute_query, and the entity to entity...
-            print(intent_and_entities)
-            print('we have a Error001')
             intent_and_entities['type'] = 'item_attribute_query'
             intent_and_entities['entities']['entity'] = intent_and_entities['entities']['class']
 
-        print("============= intent and entities =================")
-        print(intent_and_entities)
-        print("===================================================")
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
-        print('================= result with uris ================')
-        pprint(intent_and_entities_with_uris)
-        print('===================================================')
         sparqls = self.sparql_constructor.fill_sparql_query(intent_and_entities_with_uris)
         if sparqls is None:
             print('No valid SPARQL is returned')

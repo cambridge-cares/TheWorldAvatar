@@ -7,7 +7,7 @@ from pprint import pprint
 from .JPS_query_constructor import JPS_query_constructor
 from .jps_fallback_classifier import JPSQuestionClassifier
 from .topic_classifier import TopicClassifier
-#from rasa_nlu.model import Interpreter
+# from rasa_nlu.model import Interpreter
 # from .wiki_fallback_classifier import WikiQuestionTypeClassifier
 import json
 import sys
@@ -52,34 +52,10 @@ class Chatbot:
 
     def analyse_questions(self, question):
         question = self.simple_replace(question)
-        # topics = self.tc.classify_topic(question)
-        answer = 'failed'
-        # mode = 'jps'
-        # mode = 'wiki'
-         # print('topics:', topics)
-        # try:
-        #     result = self.wiki_classifier.interpreter.parse(question)
-        #     sparql_query = self.wiki_classifier.fill_Sparql(result)
-        #     print('------------- intent result ----------------')
-        #     pprint(result)
-        #     print('------------- query constructed ------------')
-        #     print(sparql_query)
-        #     print('--------------query result -----------------')
-        #     answer = self.wiki_classifier.fire_query(sparql_query)
-        #     print(answer)
-        #     print('result ---> ', json.loads(answer)['results']['bindings'])
-        #     print('--------------------------------------------')
-        #     if len(json.loads(answer)['results']['bindings']) == 0:
-        #         raise Exception()
-        # except:
-        # RASA_JPS_MODELS_DIR
         result = self.jps_classifier.interpret(question)
         answer = self.jps_query_constructor.construct_query(result)
-        pprint(answer)
-
         if type(answer) == tuple:
             answer = answer[0]
-
 
         if len(json.loads(answer)) == 0:
             return None
