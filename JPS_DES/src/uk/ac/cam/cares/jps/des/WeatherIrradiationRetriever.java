@@ -91,13 +91,13 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		String jsonres=new QueryBroker().readFileLocal(folder+"/data.json");
 		JSONObject current= new JSONObject(jsonres);
 		String year=current.optString("year",com.split("/")[0]);
-		String datemonth=current.optString("date",date)+"-"+current.optString("month",com.split("/")[1]);
+		String month=current.optString("month",com.split("/")[1]);
+
+		String day=current.optString("date",date);
 		String time=current.optString("time",com.split("/")[2].split(" ")[1]);
-		String speed=current.optString("windspeed","0");
-		String temperature=current.optString("temperature","26");
-		String irradiance=current.optString("irradiance","0");
-		
-		WeatherTimeStampKB converter = new WeatherTimeStampKB();		
+		String temperature=current.optString("temperature","26");	
+
+		String timeInXSD =year + "-" +  month +"-"+ day+"T"+ time +"+08:00";
 		//query the data from the existing owl file
 		
 		 
@@ -115,6 +115,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
     			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
     	Query q= sensorTemp.build(); 
     	String sensorInfo = q.toString();
+    	
     	SelectBuilder sensorIrrad = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
     			.addVar("?vprop").addVar("?propval").addVar("?proptime").addVar("?proptimeval")
@@ -122,82 +123,69 @@ public class WeatherIrradiationRetriever extends JPSAgent{
     	
     	q= sensorIrrad.build(); 
     	String sensorInfo2 = q.toString();
+    	
     	SelectBuilder sensorWind = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
     			.addVar("?propval").addVar("?proptimeval")
-    			.addWhere("?entity","a", "j5:F-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
-    	
+    			.addWhere("?entity","a", "j5:F-Sensor").addWhere(whereB).addOrderBy("?proptimeval");    	
     	q= sensorWind.build(); 
+    	
     	String sensorInfo3 = q.toString();
-    	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo)
-					.put(JPSConstants.TARGETIRI , DESAgentNew.tempIRItoFile(iritempsensor));
+    	String result = new QueryBroker().queryFile(iritempsensor, sensorInfo);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+
+    	updateOWLFile(iritempsensor, sensorInfo,timeInXSD,temperature);
+    	updateOWLFile(iriirradiationsensor, sensorInfo2,timeInXSD,temperature);
+    	updateOWLFile(irispeedsensor, sensorInfo3,timeInXSD,temperature);
+    	
+	
+		
+	}
+	/** SubMethod for readWriteToOWL for each type of sensor
+	 * 
+	 * @param sensorIRI
+	 * @param sparqlQuery
+	 */
+	private static void updateOWLFile(String sensorIRI, String sparqlQuery, String timeInXSD, String reading) {
+		//To be removed afterwards. 
+		String convertedIRI = DESAgentNew.tempIRItoFile(sensorIRI);
+    	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery)
+					.put(JPSConstants.TARGETIRI, convertedIRI );
 		String resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
 		String[] keysf = {"vprop","propval","proptime","proptimeval"};
-		List<String[]>  resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
-		requestParams.put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo2)
-		.put(JPSConstants.TARGETIRI , DESAgentNew.tempIRItoFile(iriirradiationsensor));
-		List<String[]>  resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
+		List<String[]>  resultListfromquery = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
+		UpdateBuilder builder = new UpdateBuilder();
 		
-		//Construct UpdateBuilder for Temperature
-		
-//		UpdateBuilder builder = new UpdateBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-//				.addPrefix("j6", "http://www.w3.org/2006/time#")
-//				.addDelete("<"+resultListfromquerytemp.get(0)[0]+">" , "j2:numericalValue",resultListfromquerytemp.get(0)[1] )
-//				.addDelete("<"+resultListfromquerytemp.get(0)[2]+">","j6:inXSDDateTime",resultListfromquerytemp.get(0)[3] );
-		WhereBuilder where = new WhereBuilder()
-				.addWhere("?s", "?p", "?o")
-				.addFilter("?s = <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#V_MeasuredTemperatureOfSGTemperatureSensor-001_1> &&  ?p = <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>");
+		int sizeOfUpdate = resultListfromquery.size();
+		String p = "<http://www.w3.org/2006/time#inXSDDateTime>";
+		String d = "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>";
+		for (int i = 0; i < sizeOfUpdate-2; i ++ ) {//We stopped at element 46
+			builder.addDelete("<"+resultListfromquery.get(i)[0]+">" ,d, "?o")
+					.addInsert("<"+resultListfromquery.get(i)[0]+">" ,d, resultListfromquery.get(i+1)[1])
+					.addWhere("<"+resultListfromquery.get(i)[0]+">" ,d,"?o")
+					
+					.addDelete("<"+resultListfromquery.get(i)[2]+">" ,p, "?a")
+					.addInsert("<"+resultListfromquery.get(i)[2]+">" ,p, resultListfromquery.get(i+1)[3])
+					.addWhere("<"+resultListfromquery.get(i)[2]+">" ,p,"?a");
+			if (i %3 == 0) {
+				requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
+						.put(JPSConstants.TARGETIRI ,convertedIRI);
+				AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+				builder = new UpdateBuilder();
 				
-		UpdateBuilder builder = new UpdateBuilder()
-		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
-				.put(JPSConstants.TARGETIRI ,DESAgentNew.tempIRItoFile(iritempsensor));
-		resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
-		//for loop to create update
-//		for (int i = 0;  i< resultListfromquerytemp.size();i++) {
-//			builder.addInsert
-//		}
-//		String result = new QueryBroker().queryFile(iritempsensor, sensorInfo);
-//		String[] keys = JenaResultSetFormatter.getKeys(result);
-//		List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-//
-//		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorInfo2);
-//		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-//		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
-		
-		String result3 = new QueryBroker().queryFile(irispeedsensor, sensorInfo3);
-		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
-		List<String[]> resultListfromqueryspeed = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
-		
-		
-		
-		List<String[]> readingFromCSV = new ArrayList<String[]>();
-		for (int d=0;d<resultListfromqueryirr.size();d++) {
-			String timewholecsv=resultListfromquerytemp.get(d)[2];
-			String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
-			String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
-			String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
-			readingFromCSV.add(e);
+			}
 		}
+		//final round
+		builder.addInsert("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, reading)
+		.addWhere("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d,"?o")		
+		.addInsert("<"+resultListfromquery.get(sizeOfUpdate-1)[2]+">" ,p, timeInXSD)
+		.addWhere("<"+resultListfromquery.get(sizeOfUpdate-1)[2]+">" ,p,"?a");
+	
 		
-		
-		
-		//update the array value list
-		readingFromCSV.remove(0); //if with header,later need to be changed TODO KEVIN
-		String[]newline= {year,datemonth,time,"100",temperature,"74.9",speed,"115.7",irradiance,"0"};
-		System.out.println("datemonth="+datemonth);
-		readingFromCSV.add(newline);
-		List<String[]> actualWeather = new ArrayList<String[]>();
-		actualWeather.add(newline);
-		
-		//update the owl file
-		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		String irifortemp=converter.startConversion(readingFromCSV,"temperature","001","SG");
-		System.out.println(irifortemp+" is updated");
-		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation","001","SG");
-		System.out.println(iriforirradiation+" is updated");
-		String iriforwind=converter.startConversion(readingFromCSV,"windspeed","001","SG");
-		System.out.println(iriforwind+" is updated");
-		
+		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
+				.put(JPSConstants.TARGETIRI ,convertedIRI);
+		AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
 	}
 	
 

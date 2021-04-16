@@ -60,6 +60,16 @@ def ocr(folder):
 				else:
 					irrad="{0:.2f}".format(random.uniform(0,100))
 			result['irradiance'] =irrad
+		elif 'Speed' in i:
+			speed = i.split(' ')[2]
+			if (speed == '|'):
+				speed = i.split(' ')[3]
+			if (not is_number(speed)):
+				speed = "{0:.2f}".format(random.uniform(0,5))
+			
+			result["windspeed"] = speed
+	if "windspeed" not in result:
+		result["windspeed"] = "0.0"
 	if "irradiance" not in result:
 		result["irradiance"] ="{0:.2f}".format(random.uniform(0,100))
 	if "temperature" not in result:
