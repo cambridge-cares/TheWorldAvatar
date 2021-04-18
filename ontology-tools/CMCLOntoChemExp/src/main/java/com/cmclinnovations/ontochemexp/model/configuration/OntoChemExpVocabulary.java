@@ -142,6 +142,39 @@ public class OntoChemExpVocabulary {
 		this.classProperty = classProperty;
 	}
 
+	@Value("${ontochemexp.class.initialComposition}")
+	private String classInitialComposition;
+	
+	public String getClassInitialComposition() {
+		return classInitialComposition;
+	}
+
+	public void setClassInitialComposition(String classInitialComposition) {
+		this.classInitialComposition = classInitialComposition;
+	}
+	
+	@Value("${ontochemexp.class.composition}")
+	private String classComposition;
+	
+	public String getClassComposition() {
+		return classComposition;
+	}
+
+	public void setClassComposition(String classComposition) {
+		this.classComposition = classComposition;
+	}
+	
+	@Value("${ontochemexp.class.concentration}")
+	private String classConcentration;
+	
+	public String getClassConcentration() {
+		return classConcentration;
+	}
+
+	public void setClassConcentration(String classConcentration) {
+		this.classConcentration = classConcentration;
+	}
+	
 	@Value("${ontochemexp.class.dataGroupLink}")
 	private String classDataGroupLink;
 

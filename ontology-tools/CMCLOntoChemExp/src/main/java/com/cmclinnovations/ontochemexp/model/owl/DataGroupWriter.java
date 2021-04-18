@@ -62,7 +62,7 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 		readDataGroupProperty(ch, start, length);
 ////		readDataGroupPropertyValue(ch, start, length);
 //		readDataGroupPropertyUncertainty(ch, start, length);
-//		readDataGroupPropertyComponent(ch, start, length);
+		readDataGroupPropertyComponent(ch, start, length);
 //		readDataGroupPropertyComponentSpeciesLink(ch, start, length);
 //		readDataGroupPropertySpeciesLink(ch, start, length);
 //		readDataGroupPropertyDerivedProperty(ch, start, length);
@@ -177,8 +177,11 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 
 	private void readDataGroupPropertyComponent(char ch[], int start, int length) throws SAXException {
 		if (dataGroupPropertyComponentParseStatus.isComponent() && inDataGroup) {
-			createPropertyComponent();
-			linkPropertyComponentToProperty();
+			// Component is only allowed to be linked with InitialComposition
+			if (currentDQInstance.startsWith(ontoChemExpVocabulary.getClassInitialComposition())) {
+				createPropertyComponent();
+				linkPropertyComponentToProperty();
+			}
 			dataGroupPropertyComponentParseStatus.setComponent(false);
 			dataGroupProperty.setPropertyComponent(dataGroupPropertyComponent);
 			dataGroupPropertyComponent = new DataGroupPropertyComponent();
@@ -671,7 +674,7 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 	private void linkPropertyComponentToProperty() {
 		try {
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasComponent(),
-					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+					currentDQInstance,
 					"Component" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
 		} catch (ABoxManagementException e) {
 			logger.error("A link could not be established between the dataGroup property and its component.");

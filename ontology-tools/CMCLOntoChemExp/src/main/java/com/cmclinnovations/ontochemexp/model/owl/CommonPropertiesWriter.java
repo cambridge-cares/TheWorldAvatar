@@ -40,7 +40,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 		readCommonPropertiesProperty(ch, start, length);
 		readCommonPropertiesPropertyValue(ch, start, length);
 //		readCommonPropertiesPropertyUncertainty(ch, start, length);
-//		readCommonPropertiesPropertyComponent(ch, start, length);
+		readCommonPropertiesPropertyComponent(ch, start, length);
 //		readCommonPropertiesPropertyComponentSpeciesLink(ch, start, length);
 //		readCommonPropertiesPropertyComponentAmount(ch, start, length);
 //		readCommonPropertiesPropertyComponentUncertainty(ch, start, length);
@@ -120,9 +120,12 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	}
 	
 	private void readCommonPropertiesPropertyComponent(char ch[], int start, int length) throws SAXException {
-		if (commonPropertiesPropertyComponentParseStatus.isComponent()) {
-			createPropertyComponent();
-			linkPropertyComponentToProperty();
+		if (commonPropertiesPropertyComponentParseStatus.isComponent() && inCommonProperties) {
+			// Component is only allowed to be linked with InitialComposition
+			if (currentDQInstance.startsWith(ontoChemExpVocabulary.getClassInitialComposition())) {
+				createPropertyComponent();
+				linkPropertyComponentToProperty();
+			}
 			commonPropertiesPropertyComponentParseStatus.setComponent(false);
 			commonPropertiesPropertyComponentList.add(commonPropertiesPropertyComponent);
 			commonPropertiesPropertyComponent = new Component();
@@ -341,7 +344,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	private void linkPropertyComponentToProperty() {
 		try {
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasComponent(), 
-					"Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
+					currentDQInstance, 
 					"Component"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount);
 		} catch (ABoxManagementException e) {
 			logger.error(
