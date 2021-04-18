@@ -1,5 +1,6 @@
 package com.cmclinnovations.ontochemexp.model.owl;
 
+import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 import org.slf4j.Logger;
 import org.xml.sax.SAXException;
 
@@ -49,6 +50,7 @@ public class DimensionalQuantityWriter extends PrimeConverter {
 		try {
 			if (property.getPropertyName() != null && !property.getPropertyName().trim().isEmpty()) {
 				iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(), object);
+				iABoxManagement.addProperty(object, OWLRDFVocabulary.RDFS_LABEL.getIRI(), property.getPropertyName(), STRING);
 			}
 			
 			if (property.getPropertyLabel() != null && !property.getPropertyLabel().trim().isEmpty()) {
