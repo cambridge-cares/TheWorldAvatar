@@ -65,12 +65,12 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 		readDataGroupPropertyComponent(ch, start, length);
 //		readDataGroupPropertyComponentSpeciesLink(ch, start, length);
 //		readDataGroupPropertySpeciesLink(ch, start, length);
-//		readDataGroupPropertyDerivedProperty(ch, start, length);
-//		readDataGroupPropertyDerivedPropertyFeature(ch, start, length);
-//		readDataGroupPropertyDerivedPropertyFeatureIndicator(ch, start, length);
-//		readDataGroupPropertyDerivedPropertyFeatureIndicatorPropertyLink(ch, start, length);
-//		readDataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink(ch, start, length);
-//		readDataGroupPropertyDerivedPropertyFeatureObservable(ch, start, length);
+		readDataGroupPropertyDerivedProperty(ch, start, length);
+		readDataGroupPropertyDerivedPropertyFeature(ch, start, length);
+		readDataGroupPropertyDerivedPropertyFeatureIndicator(ch, start, length);
+		readDataGroupPropertyDerivedPropertyFeatureIndicatorPropertyLink(ch, start, length);
+		readDataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink(ch, start, length);
+		readDataGroupPropertyDerivedPropertyFeatureObservable(ch, start, length);
 
 		readDataGroupDataPoint(ch, start, length);
 		readDataGroupDataPointX(ch, start, length);
@@ -861,7 +861,7 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 	private void linkPropertyDerivedPropertyToProperty() {
 		try {
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDerivedProperty(),
-					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+					currentDQInstance,
 					"DerivedProperty" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
 							+ dataGroupPropertyCount);
 		} catch (ABoxManagementException e) {
