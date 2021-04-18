@@ -60,17 +60,17 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 		readDataGroupDataGroupLink(ch, start, length);
 
 		readDataGroupProperty(ch, start, length);
-		readDataGroupPropertyValue(ch, start, length);
-		readDataGroupPropertyUncertainty(ch, start, length);
-		readDataGroupPropertyComponent(ch, start, length);
-		readDataGroupPropertyComponentSpeciesLink(ch, start, length);
-		readDataGroupPropertySpeciesLink(ch, start, length);
-		readDataGroupPropertyDerivedProperty(ch, start, length);
-		readDataGroupPropertyDerivedPropertyFeature(ch, start, length);
-		readDataGroupPropertyDerivedPropertyFeatureIndicator(ch, start, length);
-		readDataGroupPropertyDerivedPropertyFeatureIndicatorPropertyLink(ch, start, length);
-		readDataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink(ch, start, length);
-		readDataGroupPropertyDerivedPropertyFeatureObservable(ch, start, length);
+//		readDataGroupPropertyValue(ch, start, length);
+//		readDataGroupPropertyUncertainty(ch, start, length);
+//		readDataGroupPropertyComponent(ch, start, length);
+//		readDataGroupPropertyComponentSpeciesLink(ch, start, length);
+//		readDataGroupPropertySpeciesLink(ch, start, length);
+//		readDataGroupPropertyDerivedProperty(ch, start, length);
+//		readDataGroupPropertyDerivedPropertyFeature(ch, start, length);
+//		readDataGroupPropertyDerivedPropertyFeatureIndicator(ch, start, length);
+//		readDataGroupPropertyDerivedPropertyFeatureIndicatorPropertyLink(ch, start, length);
+//		readDataGroupPropertyDerivedPropertyFeatureIndicatorDataAttributeLink(ch, start, length);
+//		readDataGroupPropertyDerivedPropertyFeatureObservable(ch, start, length);
 
 		readDataGroupDataPoint(ch, start, length);
 		readDataGroupDataPointX(ch, start, length);
@@ -111,8 +111,17 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 
 	private void readDataGroupProperty(char ch[], int start, int length) throws SAXException {
 		if (dataGroupPropertyParseStatus.isProperty()) {
-			createDataGroupProperty();
-			linkDataGroupPropertyToDataGroup();
+//			createDataGroupProperty();
+//			linkDataGroupPropertyToDataGroup();
+			DimensionalQuantityWriter dQ = new DimensionalQuantityWriter(dataGroupID + dataGroupCount, 
+					dataGroupPropertyCount, 
+					"DataGroup" + UNDERSCORE + (dataGroupID + dataGroupCount), 
+					dataGroupProperty);
+			try {
+				dQ.createDimensionalQuantityInOWL();
+			} catch (OntoChemExpException e) {
+				e.printStackTrace();
+			}
 			dataGroupPropertyParseStatus.setProperty(false);
 			dataGroupPropertyList.add(dataGroupProperty);
 			dataGroupProperty = new DataGroupProperty();

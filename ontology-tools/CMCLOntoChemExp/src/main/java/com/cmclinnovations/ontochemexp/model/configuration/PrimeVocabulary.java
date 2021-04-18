@@ -540,4 +540,37 @@ public class PrimeVocabulary {
 	public void setAttribPropertyID(String attribPropertyID) {
 		this.attribPropertyID = attribPropertyID;
 	}
+	
+	@Value("${prime.attribute.hasSourceType}")
+	private String attribSourceType;
+	
+	@Value("${prime.attribute.hasReference}")
+	private String attribReference;
+	
+	@Value("${prime.attribute.hasMethod}")
+	private String attribMethod;
+
+	public String getAttribSourceType() {
+		return attribSourceType;
+	}
+
+	public void setAttribSourceType(String attribSourceType) {
+		this.attribSourceType = attribSourceType;
+	}
+
+	public String getAttribReference() {
+		return attribReference;
+	}
+
+	public void setAttribReference(String attribReference) {
+		this.attribReference = attribReference;
+	}
+
+	public String getAttribMethod() {
+		return attribMethod;
+	}
+
+	public void setAttribMethod(String attribMethod) {
+		this.attribMethod = attribMethod;
+	}
 }

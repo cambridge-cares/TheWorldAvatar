@@ -14,6 +14,7 @@ import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Kind
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Mode;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.property.Uncertainty;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.property.Value;
+import com.cmclinnovations.ontochemexp.model.exception.OntoChemExpException;
 import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
 
 /**
@@ -31,8 +32,8 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 		readApparatusKind(ch, start, length);
 		readApparatusMode(ch, start, length);
 		readApparatusProperty(ch, start, length);
-		readApparatusPropertyValue(ch, start, length);
-		readApparatusPropertyUncertainty(ch, start, length);
+//		readApparatusPropertyValue(ch, start, length);
+//		readApparatusPropertyUncertainty(ch, start, length);
 	}
 	
 	/**
@@ -96,8 +97,17 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 	
 	private void readApparatusProperty(char ch[], int start, int length) throws SAXException {
 		if (apparatusPropertyParseStatus.isProperty()) {
-			createProperty();
-			linkPropertyToEquipment();
+//			createProperty();
+//			linkPropertyToEquipment();
+			DimensionalQuantityWriter dQ = new DimensionalQuantityWriter(apparatusID, 
+					apparatusPropertyCount, 
+					"Apparatus"+UNDERSCORE+apparatusID, 
+					apparatusProperty);
+			try {
+				dQ.createDimensionalQuantityInOWL();
+			} catch (OntoChemExpException e) {
+				e.printStackTrace();
+			}
 			apparatusPropertyParseStatus.setProperty(false);
 			apparatusPropertyList.add(apparatusProperty);
 			apparatusProperty = new ApparatusProperty();

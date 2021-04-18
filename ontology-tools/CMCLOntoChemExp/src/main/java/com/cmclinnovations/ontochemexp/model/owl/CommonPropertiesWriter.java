@@ -38,12 +38,12 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	public void writer(char ch[], int start, int length) throws SAXException {
 		readCommonProperties(ch, start, length);
 		readCommonPropertiesProperty(ch, start, length);
-		readCommonPropertiesPropertyValue(ch, start, length);
-		readCommonPropertiesPropertyUncertainty(ch, start, length);
-		readCommonPropertiesPropertyComponent(ch, start, length);
-		readCommonPropertiesPropertyComponentSpeciesLink(ch, start, length);
-		readCommonPropertiesPropertyComponentAmount(ch, start, length);
-		readCommonPropertiesPropertyComponentUncertainty(ch, start, length);
+//		readCommonPropertiesPropertyValue(ch, start, length);
+//		readCommonPropertiesPropertyUncertainty(ch, start, length);
+//		readCommonPropertiesPropertyComponent(ch, start, length);
+//		readCommonPropertiesPropertyComponentSpeciesLink(ch, start, length);
+//		readCommonPropertiesPropertyComponentAmount(ch, start, length);
+//		readCommonPropertiesPropertyComponentUncertainty(ch, start, length);
 	}
 	
 	
@@ -77,8 +77,15 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	 */
 	private void readCommonPropertiesProperty(char ch[], int start, int length) throws SAXException {
 		if (commonPropertiesPropertyParseStatus.isProperty()) {
-			createProperty();
-			linkPropertyToEquipment();
+//			createProperty();
+//			linkPropertyToEquipment();
+			DimensionalQuantityWriter dQ = new DimensionalQuantityWriter(commonPropertiesID, commonPropertiesPropertyCount, "CommonProperties"+UNDERSCORE+commonPropertiesID, 
+					commonPropertiesProperty);
+			try {
+				dQ.createDimensionalQuantityInOWL();
+			} catch (OntoChemExpException e) {
+				e.printStackTrace();
+			}
 			commonPropertiesPropertyParseStatus.setProperty(false);
 			commonPropertiesPropertyList.add(commonPropertiesProperty);
 			commonPropertiesProperty = new CommonPropertiesProperty();

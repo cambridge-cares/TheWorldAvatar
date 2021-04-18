@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.springframework.context.ApplicationContext;
 import com.cmclinnovations.ontochemexp.model.configuration.OperationControlConfig;
 import com.cmclinnovations.conversion.ICompleteness;
-
+import com.cmclinnovations.ontochemexp.model.configuration.DimensionalQuantityMapping;
 import com.cmclinnovations.ontochemexp.model.configuration.OntoChemExpKBConfig;
 import com.cmclinnovations.ontochemexp.model.configuration.OntoChemExpVocabulary;
 import com.cmclinnovations.ontochemexp.model.configuration.PrimeVocabulary;
@@ -166,6 +166,7 @@ public class PrimeConverterState extends ABoxManagement{
 	public static OperationControlConfig opCtrl;
 	public static OntoChemExpVocabulary ontoChemExpVocabulary;
 	public static OntoChemExpKBConfig ontoChemExpKB;
+	public static DimensionalQuantityMapping dimensionalQuantityMapping;
 	public static ICompleteness iCompleteness;
 	
 	public static String experimentName;

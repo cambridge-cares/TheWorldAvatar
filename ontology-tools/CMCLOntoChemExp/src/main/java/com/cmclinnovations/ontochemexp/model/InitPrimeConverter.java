@@ -9,6 +9,7 @@ import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import com.cmclinnovations.ontochemexp.model.configuration.OperationControlConfig;
 import com.cmclinnovations.conversion.Completeness;
+import com.cmclinnovations.ontochemexp.model.configuration.DimensionalQuantityMapping;
 import com.cmclinnovations.ontochemexp.model.configuration.OntoChemExpKBConfig;
 import com.cmclinnovations.ontochemexp.model.configuration.OntoChemExpVocabulary;
 import com.cmclinnovations.ontochemexp.model.configuration.PrimeVocabulary;
@@ -187,6 +188,9 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		}
 		if (ontoChemExpKB == null) {
 			ontoChemExpKB = applicationContext.getBean(OntoChemExpKBConfig.class);
+		}
+		if (dimensionalQuantityMapping == null) {
+			dimensionalQuantityMapping = applicationContext.getBean(DimensionalQuantityMapping.class);
 		}
 
 		if (iABoxManagement == null) {
