@@ -673,6 +673,17 @@ public class OntoChemExpVocabulary {
 	public void setObjPropertyhasDataPointX(String objPropertyhasDataPointX) {
 		this.objPropertyhasDataPointX = objPropertyhasDataPointX;
 	}
+	
+	@Value("${ontochemexp.object.property.refersTo}")
+	private String objPropertyrefersTo;
+
+	public String getObjPropertyrefersTo() {
+		return objPropertyrefersTo;
+	}
+
+	public void setObjPropertyrefersTo(String objPropertyrefersTo) {
+		this.objPropertyrefersTo = objPropertyrefersTo;
+	}
 
 	////////////////////////////////////////////////////////////////
 	/////////////////// OntoChemExp data property////////////////////

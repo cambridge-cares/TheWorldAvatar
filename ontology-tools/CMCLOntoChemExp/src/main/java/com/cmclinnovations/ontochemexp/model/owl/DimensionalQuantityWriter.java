@@ -31,13 +31,13 @@ public class DimensionalQuantityWriter extends PrimeConverter {
 		this.property = property;
 	}
 	
-//	public DimensionalQuantityWriter(long id, int count, boolean inDataGroup, String subject, Property property) {
-//		this.id = id;
-//		this.count = count;
-//		this.inDataGroup = inDataGroup;
-//		this.subject = subject;
-//		this.property = property;
-//	}
+	public DimensionalQuantityWriter(long id, int count, boolean inDataGroup, String subject, Property property) {
+		this.id = id;
+		this.count = count;
+		this.inDataGroup = inDataGroup;
+		this.subject = subject;
+		this.property = property;
+	}
 	
 	
 	public void createDimensionalQuantityInOWL() throws OntoChemExpException {
@@ -73,9 +73,12 @@ public class DimensionalQuantityWriter extends PrimeConverter {
 				iABoxManagement.addProperty(object, ontoChemExpVocabulary.getDataPropertyhasSourceType(), property.getSourceType(), STRING);
 			}
 			
-//			if (property.getPropertyId() != null && !property.getPropertyId().trim().isEmpty()) {
-//				
-//			}
+			// Property (DimensionalQuantity) ID is non-handled in Apparatus and CommonProperties
+			if (inDataGroup) {
+				if (property.getPropertyId() != null && !property.getPropertyId().trim().isEmpty()) {
+					xDQMap.put(property.getPropertyId().toLowerCase(), object);
+				}
+			}
 			
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(),
 					subject, object);

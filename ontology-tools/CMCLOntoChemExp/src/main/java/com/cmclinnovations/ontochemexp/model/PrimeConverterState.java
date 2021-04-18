@@ -3,6 +3,7 @@ package com.cmclinnovations.ontochemexp.model;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.springframework.context.ApplicationContext;
 import com.cmclinnovations.ontochemexp.model.configuration.OperationControlConfig;
@@ -357,6 +358,8 @@ public class PrimeConverterState extends ABoxManagement{
 	public static ArrayList<DataGroupDataPointX> xList;
 	public static DataPointXParseStatus dataGroupDataPointXParseStatus;
 	public static IDataGroupDataPointXParser iDataGroupDataPointXParser;
+	
+	public static Map<String, String> xDQMap;
 	
 	public static X1 x1;
 	public static X2 x2;

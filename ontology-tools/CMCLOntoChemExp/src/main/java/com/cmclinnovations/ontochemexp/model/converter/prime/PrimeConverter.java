@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -461,6 +462,10 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 
 		if (qName.equalsIgnoreCase(primeVocabulary.getElemDataGroup())) {
 			inDataGroup = false;
+			if (dataGroupParseStatus.isDataGroup()) {
+				dataGroupParseStatus.setDataGroup(false);
+				xDQMap = new HashMap<String, String>();
+			}
 		}
 
 		if (qName.toLowerCase().equalsIgnoreCase("x1")) {

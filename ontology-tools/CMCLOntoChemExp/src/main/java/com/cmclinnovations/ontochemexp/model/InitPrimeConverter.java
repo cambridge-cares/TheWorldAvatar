@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -377,6 +379,8 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		xList = new ArrayList<DataGroupDataPointX>();
 		dataGroupDataPointXParseStatus = new DataPointXParseStatus();
 		iDataGroupDataPointXParser = new DataGroupDataPointXParser();
+		
+		xDQMap = new HashMap<String, String>();
 		
 		x1 = new X1();
 		x2 = new X2();
