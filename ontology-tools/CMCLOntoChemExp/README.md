@@ -42,14 +42,14 @@ Under construction...
 
 ## Update history
 
-### v1.1 to v1.2 (as of 15 April 2021)
+### v1.1 to v1.2 (as of 18 April 2021)
 
 - Concepts
 
   - Removed class `Value`
   - Renamed class `Property` to `DimensionalQuantity`
   - Made class `BibliographyLink` `EQUIVALENT-TO` class `OntoKin:Reference`
-  - Added class `Velocity`, `SootYield`, `MassBurningRate`, `Mass`, `SpecificSurfaceArea`, `Material`, `Fraction`, `Voltage`, `FlowRate`, `Time`, `VolumetricFlowRate`, `ResidenceTime`, `LaminarBurningVelocity`, `Distance`, `InitialComposition`, `IgnitionDelay`, `Composition`, `Concentration`, `EquivalenceRatio`, `TemperatureInReferenceState`, `PressureInReferenceState`, `VolumetricFlowRateInReferenceState`, `ReactorLength`, `Diameter` as subclass of `DimensionalQuantity`
+  - Added class `Velocity`, `SootYield`, `MassBurningRate`, `Mass`, `SpecificSurfaceArea`, `Material`, `Fraction`, `Voltage`, `Temperature`, `Length`, `Pressure`, `Density`, `Volume`, `FlowRate`, `Time`, `VolumetricFlowRate`, `ResidenceTime`, `LaminarBurningVelocity`, `Distance`, `InitialComposition`, `IgnitionDelay`, `Composition`, `Concentration`, `EquivalenceRatio`, `TemperatureInReferenceState`, `PressureInReferenceState`, `VolumetricFlowRateInReferenceState`, `ReactorLength`, `Diameter` as subclass of `DimensionalQuantity`
   - Added class `http://xmlns.com/foaf/0.1/Agent`, `http://xmlns.com/foaf/0.1/Person`, `http://xmlns.com/foaf/0.1/Organization`, `http://purl.org/ontology/bibo/Journal`
   - Inherited class `OntoKin:PublicationSpecification`, `OntoKin:JournalSpecification`, `OntoKin:ProceedingsSpecification`, `OntoKin:PreprintSpecification` from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
 
@@ -81,17 +81,17 @@ Under construction...
     - `<Property hasID ^^xsd:string>`
     - `<Property hasMethod ^^xsd:string>`
     - `<Value hasVal ^^xsd:string>`
-- Inherited publication-related data property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
-    - `<OntoKin:JournalSpecification http://purl.org/ontology/bibo/volume ^^xsd:integer>`
-    - `<OntoKin:PublicationSpecification http://purl.org/ontology/bibo/pageStart ^^xsd:integer>`
-    - `<OntoKin:PublicationSpecification http://purl.org/ontology/bibo/pageEnd ^^xsd:integer>`
-    - `<OntoKin:PublicationSpecification http://purl.org/dc/terms/publisher ^^xsd:string>`
-    - `<BibliographyLink http://purl.org/dc/terms/title ^^xsd:string>`
-    - `<http://purl.org/ontology/bibo/Journal http://purl.org/dc/terms/title ^^xsd:string>`
-    - `<http://purl.org/ontology/bibo/Journal http://purl.org/ontology/bibo/issn ^^xsd:string>`
-    - `<http://xmlns.com/foaf/0.1/Person http://xmlns.com/foaf/0.1/familyName ^^xsd:string>`
-    - `<http://xmlns.com/foaf/0.1/Person http://xmlns.com/foaf/0.1/givenName ^^xsd:string>`
-    - `<http://xmlns.com/foaf/0.1/Person http://xmlns.com/foaf/0.1/name ^^xsd:string>`
+  - Inherited publication-related data property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
+      - `<OntoKin:JournalSpecification http://purl.org/ontology/bibo/volume ^^xsd:integer>`
+      - `<OntoKin:PublicationSpecification http://purl.org/ontology/bibo/pageStart ^^xsd:integer>`
+      - `<OntoKin:PublicationSpecification http://purl.org/ontology/bibo/pageEnd ^^xsd:integer>`
+      - `<OntoKin:PublicationSpecification http://purl.org/dc/terms/publisher ^^xsd:string>`
+      - `<BibliographyLink http://purl.org/dc/terms/title ^^xsd:string>`
+      - `<http://purl.org/ontology/bibo/Journal http://purl.org/dc/terms/title ^^xsd:string>`
+      - `<http://purl.org/ontology/bibo/Journal http://purl.org/ontology/bibo/issn ^^xsd:string>`
+      - `<http://xmlns.com/foaf/0.1/Person http://xmlns.com/foaf/0.1/familyName ^^xsd:string>`
+      - `<http://xmlns.com/foaf/0.1/Person http://xmlns.com/foaf/0.1/givenName ^^xsd:string>`
+      - `<http://xmlns.com/foaf/0.1/Person http://xmlns.com/foaf/0.1/name ^^xsd:string>`
   - Updated below data properties
     - `<Property hasLabel ^^xsd:string>` to `<DimensionalQuantity hasLabel ^^xsd:string>`
     - `<Property hasUnits ^^xsd:string>` to `<DimensionalQuantity hasUnits ^^xsd:string>`
@@ -130,7 +130,7 @@ Under construction...
     - `<Property OntoChemExp:hasSourceType ^^xsd:string>`, `<Property OntoChemExp:hasMethod ^^xsd:string>`
   - Replaced data property `<OntoChemExp:SpeciesLink OntoChemExp:hasUniqueSpeciesIRI ^^xsd:string>` with object property `<OntoChemExp:SpeciesLink OntoChemExp:hasUniqueSpecies OntoSpecies:Species>`
 
-![OntoChemExp core concepts v1.2 as of 15 April 2021](https://lucid.app/publicSegments/view/23814531-dc4e-47f1-81ba-787ff40709bd/image.png)
+![OntoChemExp core concepts v1.2 as of 18 April 2021](https://lucid.app/publicSegments/view/23814531-dc4e-47f1-81ba-787ff40709bd/image.png)
 
 ### v1.0
 
