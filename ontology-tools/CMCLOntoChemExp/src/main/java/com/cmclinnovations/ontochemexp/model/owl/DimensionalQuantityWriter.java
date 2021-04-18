@@ -45,50 +45,52 @@ public class DimensionalQuantityWriter extends PrimeConverter {
 		count += 1;
 		
 		String name = mapName(property.getPropertyName());
-		String object = name + UNDERSCORE + id + UNDERSCORE + count;
+		currentDQInstance = name + UNDERSCORE + id + UNDERSCORE + count;
 		
 		try {
 			if (property.getPropertyName() != null && !property.getPropertyName().trim().isEmpty()) {
-				iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(), object);
-				iABoxManagement.addProperty(object, OWLRDFVocabulary.RDFS_LABEL.getIRI(), property.getPropertyName(), STRING);
+				iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(), currentDQInstance);
+				iABoxManagement.addProperty(currentDQInstance, OWLRDFVocabulary.RDFS_LABEL.getIRI(), property.getPropertyName(), STRING);
 			}
 			
 			if (property.getPropertyLabel() != null && !property.getPropertyLabel().trim().isEmpty()) {
-				iABoxManagement.addProperty(object, ontoChemExpVocabulary.getDataPropertyhasLabel(), property.getPropertyLabel(), STRING);
+				iABoxManagement.addProperty(currentDQInstance, ontoChemExpVocabulary.getDataPropertyhasLabel(), property.getPropertyLabel(), STRING);
 			}
 
 			if (property.getPropertyUnits() != null && !property.getPropertyUnits().trim().isEmpty()) {
-				iABoxManagement.addProperty(object, ontoChemExpVocabulary.getDataPropertyhasUnits(), property.getPropertyUnits(), STRING);
+				iABoxManagement.addProperty(currentDQInstance, ontoChemExpVocabulary.getDataPropertyhasUnits(), property.getPropertyUnits(), STRING);
 			}
 
 			if (property.getPropertyDescription() != null && !property.getPropertyDescription().trim().isEmpty()) {
-				iABoxManagement.addProperty(object, ontoChemExpVocabulary.getDataPropertyhasDescription(),
+				iABoxManagement.addProperty(currentDQInstance, ontoChemExpVocabulary.getDataPropertyhasDescription(),
 						property.getPropertyDescription().replace("\r", " ").replace("\n", ""), STRING);
 			}
 			
 			if (property.getPropertyDerivedPropertyExists() != null && !property.getPropertyDerivedPropertyExists().trim().isEmpty()) {
-				iABoxManagement.addProperty(object, ontoChemExpVocabulary.getDataPropertyhasDerivedPropertyExists(),
+				iABoxManagement.addProperty(currentDQInstance, ontoChemExpVocabulary.getDataPropertyhasDerivedPropertyExists(),
 						property.getPropertyDerivedPropertyExists(), STRING);
 			}
 			
 			if (property.getSourceType() != null && !property.getSourceType().trim().isEmpty()) {
-				iABoxManagement.addProperty(object, ontoChemExpVocabulary.getDataPropertyhasSourceType(), property.getSourceType(), STRING);
+				iABoxManagement.addProperty(currentDQInstance, ontoChemExpVocabulary.getDataPropertyhasSourceType(), property.getSourceType(), STRING);
 			}
 			
 			// Property (DimensionalQuantity) ID is non-handled in Apparatus and CommonProperties
 			if (inDataGroup) {
 				if (property.getPropertyId() != null && !property.getPropertyId().trim().isEmpty()) {
-					xDQMap.put(property.getPropertyId().toLowerCase(), object);
+					xDQMap.put(property.getPropertyId().toLowerCase(), currentDQInstance);
 				}
 			}
 			
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(),
-					subject, object);
+					subject, currentDQInstance);
 			
 //			add rdfs:label
 			
 //			deal with id
 //			deal with reference
+//			deal with uncertainty
+//			deal with estimated standard deviation
 			
 //			report if the name is not found
 			

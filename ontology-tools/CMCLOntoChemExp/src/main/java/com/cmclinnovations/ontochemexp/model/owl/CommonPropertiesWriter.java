@@ -38,7 +38,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	public void writer(char ch[], int start, int length) throws SAXException {
 		readCommonProperties(ch, start, length);
 		readCommonPropertiesProperty(ch, start, length);
-//		readCommonPropertiesPropertyValue(ch, start, length);
+		readCommonPropertiesPropertyValue(ch, start, length);
 //		readCommonPropertiesPropertyUncertainty(ch, start, length);
 //		readCommonPropertiesPropertyComponent(ch, start, length);
 //		readCommonPropertiesPropertyComponentSpeciesLink(ch, start, length);
@@ -99,7 +99,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 			String value = new String(ch, start, length);
 			commonPropertiesPropertyValue.setValueValue(value);
 			createPropertyValue();
-			linkPropertyValueToProperty();
+//			linkPropertyValueToProperty();
 			commonPropertiesPropertyValueParseStatus.setValue(false);
 			commonPropertiesProperty.setPropertyValue(commonPropertiesPropertyValue);
 			commonPropertiesPropertyValue = new Value();
@@ -245,11 +245,11 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	
 	private void createPropertyValue() {
 		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassValue(), 
-					"Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
-			
+//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassValue(), 
+//					"Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
+//			
 			if (commonPropertiesPropertyValue.getValueValue() != null && !commonPropertiesPropertyValue.getValueValue().trim().isEmpty()) {
-				iABoxManagement.addProperty("Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
+				iABoxManagement.addProperty(currentDQInstance, 
 						ontoChemExpVocabulary.getDataPropertyhasValue(), 
 						commonPropertiesPropertyValue.getValueValue(), STRING);
 //				IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_LABEL));
@@ -262,16 +262,16 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 		}
 	}
 	
-	private void linkPropertyValueToProperty() {
-		try {
-			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasValue(), 
-					"Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
-					"Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
-		} catch (ABoxManagementException e) {
-			logger.error(
-					"A link could not be established between the apparatus property and its value.");
-		}
-	}
+//	private void linkPropertyValueToProperty() {
+//		try {
+//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasValue(), 
+//					"Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
+//					"Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
+//		} catch (ABoxManagementException e) {
+//			logger.error(
+//					"A link could not be established between the apparatus property and its value.");
+//		}
+//	}
 	
 	private void createPropertyUncertainty() {
 		try {

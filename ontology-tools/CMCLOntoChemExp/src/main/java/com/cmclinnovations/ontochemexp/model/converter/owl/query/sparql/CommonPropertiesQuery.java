@@ -82,17 +82,11 @@ public class CommonPropertiesQuery extends OwlConverter implements ICommonProper
 	}
 	
 	private void queryPropertyValue(String propertyInstance) throws OntoChemExpException {		
-		ArrayList<String> valueInstance = readObjPropertyValue(propertyInstance);
-		
-		if (valueInstance.size() > 0 && valueInstance.size() < 2) {
-			String propertyValue = readDataPropertyValue(valueInstance.get(0));
-			if (propertyValue != null && !propertyValue.isEmpty()) {
-				commonPropertiesPropertyValue.setValueValue(propertyValue);
-				commonPropertiesProperty.setPropertyValue(commonPropertiesPropertyValue);
-				commonPropertiesPropertyValue = new Value();
-			}
-		} else if (valueInstance.size() > 1) {
-			logger.error("There should not be more than one instance of property value of commonPropertiesProperty.");
+		String propertyValue = readDataPropertyValue(propertyInstance);
+		if (propertyValue != null && !propertyValue.isEmpty()) {
+			commonPropertiesPropertyValue.setValueValue(propertyValue);
+			commonPropertiesProperty.setPropertyValue(commonPropertiesPropertyValue);
+			commonPropertiesPropertyValue = new Value();
 		}
 	}
 	

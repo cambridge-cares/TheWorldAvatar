@@ -360,6 +360,7 @@ public class PrimeConverterState extends ABoxManagement{
 	public static IDataGroupDataPointXParser iDataGroupDataPointXParser;
 	
 	public static Map<String, String> xDQMap;
+	public static String currentDQInstance;
 	
 	public static X1 x1;
 	public static X2 x2;

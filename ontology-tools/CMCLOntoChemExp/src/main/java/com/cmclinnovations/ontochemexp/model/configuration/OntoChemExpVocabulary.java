@@ -520,16 +520,16 @@ public class OntoChemExpVocabulary {
 		this.objPropertyhasProperty = objPropertyhasProperty;
 	}
 
-	@Value("${ontochemexp.object.property.hasValue}")
-	private String objPropertyhasValue;
-
-	public String getObjPropertyhasValue() {
-		return objPropertyhasValue;
-	}
-
-	public void setObjPropertyhasValue(String objPropertyhasValue) {
-		this.objPropertyhasValue = objPropertyhasValue;
-	}
+//	@Value("${ontochemexp.object.property.hasValue}")
+//	private String objPropertyhasValue;
+//
+//	public String getObjPropertyhasValue() {
+//		return objPropertyhasValue;
+//	}
+//
+//	public void setObjPropertyhasValue(String objPropertyhasValue) {
+//		this.objPropertyhasValue = objPropertyhasValue;
+//	}
 
 	@Value("${ontochemexp.object.property.hasUncertainty}")
 	private String objPropertyhasUncertainty;

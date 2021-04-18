@@ -381,6 +381,7 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		iDataGroupDataPointXParser = new DataGroupDataPointXParser();
 		
 		xDQMap = new HashMap<String, String>();
+		currentDQInstance = new String();
 		
 		x1 = new X1();
 		x2 = new X2();

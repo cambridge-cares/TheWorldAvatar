@@ -32,7 +32,7 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 		readApparatusKind(ch, start, length);
 		readApparatusMode(ch, start, length);
 		readApparatusProperty(ch, start, length);
-//		readApparatusPropertyValue(ch, start, length);
+		readApparatusPropertyValue(ch, start, length);
 //		readApparatusPropertyUncertainty(ch, start, length);
 	}
 	
@@ -121,7 +121,7 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 			String value = new String(ch, start, length);
 			apparatusPropertyValue.setValueValue(value);
 			createPropertyValue();
-			linkPropertyValueToProperty();
+//			linkPropertyValueToProperty();
 			apparatusPropertyValueParseStatus.setValue(false);
 			apparatusProperty.setPropertyValue(apparatusPropertyValue);
 			apparatusPropertyValue = new Value();
@@ -290,11 +290,11 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 	
 	private void createPropertyValue() {
 		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassValue(), 
-					"Value"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
+//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassValue(), 
+//					"Value"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
 			
 			if (apparatusPropertyValue.getValueValue() != null && !apparatusPropertyValue.getValueValue().trim().isEmpty()) {
-				iABoxManagement.addProperty("Value"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
+				iABoxManagement.addProperty(currentDQInstance, 
 	         			ontoChemExpVocabulary.getDataPropertyhasValue(), 
 	         			apparatusPropertyValue.getValueValue(), STRING);
 //				IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_LABEL));
@@ -307,15 +307,15 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 		}
 	}
 	
-	private void linkPropertyValueToProperty() {
-		try {
-			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasValue(), 
-					"Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, "Value"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
-		} catch (ABoxManagementException e) {
-			logger.error(
-					"A link could not be established between the apparatus property and its value.");
-		}
-	}
+//	private void linkPropertyValueToProperty() {
+//		try {
+//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasValue(), 
+//					"Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, "Value"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
+//		} catch (ABoxManagementException e) {
+//			logger.error(
+//					"A link could not be established between the apparatus property and its value.");
+//		}
+//	}
 	
 	private void createPropertyUncertainty() {
 		try {
