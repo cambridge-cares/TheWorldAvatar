@@ -375,9 +375,9 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
 							.concat(commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID()));
 					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
-						iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
-							ontoChemExpVocabulary.getDataPropertyhasUniqueSpeciesIRI(), 
-							uniqueSpeciesIRI, STRING);
+						iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(), 
+								"SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+							uniqueSpeciesIRI);
 					}
 				} catch (OntoChemExpException e) {
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");

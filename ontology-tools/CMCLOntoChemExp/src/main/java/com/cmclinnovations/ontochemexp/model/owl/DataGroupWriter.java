@@ -719,10 +719,9 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
 							.concat(dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID()));
 					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
-						iABoxManagement.addProperty(
-								"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
-								ontoChemExpVocabulary.getDataPropertyhasUniqueSpeciesIRI(), 
-								uniqueSpeciesIRI, STRING);
+						iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(), 
+								"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount, 
+								uniqueSpeciesIRI);
 					}
 				} catch (OntoChemExpException e) {
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");
@@ -796,11 +795,10 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
 							.concat(dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID()));
 					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
-						iABoxManagement.addProperty(
+						iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(), 
 								"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
-								+ dataGroupPropertyCount,
-								ontoChemExpVocabulary.getDataPropertyhasUniqueSpeciesIRI(), 
-								uniqueSpeciesIRI, STRING);
+								+ dataGroupPropertyCount, 
+								uniqueSpeciesIRI);
 					}
 				} catch (OntoChemExpException e) {
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");

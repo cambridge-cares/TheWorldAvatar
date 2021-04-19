@@ -718,6 +718,17 @@ public class OntoChemExpVocabulary {
 		this.objPropertyrefersTo = objPropertyrefersTo;
 	}
 
+	@Value("${ontochemexp.object.property.hasUniqueSpecies}")
+	private String objPropertyhasUniqueSpecies;
+
+	public String getObjPropertyhasUniqueSpecies() {
+		return objPropertyhasUniqueSpecies;
+	}
+
+	public void setObjPropertyhasUniqueSpecies(String objPropertyhasUniqueSpecies) {
+		this.objPropertyhasUniqueSpecies = objPropertyhasUniqueSpecies;
+	}
+
 	////////////////////////////////////////////////////////////////
 	/////////////////// OntoChemExp data property////////////////////
 	////////////////////////////////////////////////////////////////
@@ -972,17 +983,6 @@ public class OntoChemExpVocabulary {
 
 	public void setDataPropertyhasPropertyID(String dataPropertyhasPropertyID) {
 		this.dataPropertyhasPropertyID = dataPropertyhasPropertyID;
-	}
-	
-	@Value("${ontochemexp.data.property.hasUniqueSpeciesIRI}")
-	private String dataPropertyhasUniqueSpeciesIRI;
-
-	public String getDataPropertyhasUniqueSpeciesIRI() {
-		return dataPropertyhasUniqueSpeciesIRI;
-	}
-
-	public void setDataPropertyhasUniqueSpeciesIRI(String dataPropertyhasUniqueSpeciesIRI) {
-		this.dataPropertyhasUniqueSpeciesIRI = dataPropertyhasUniqueSpeciesIRI;
 	}
 	
 	@Value("${ontochemexp.data.property.hasSourceType}")

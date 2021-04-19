@@ -109,10 +109,9 @@ public class DataGroupPropertyComponentParser extends PrimeConverter implements 
 					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
 							.concat(dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID()));
 					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
-						iABoxManagement.addProperty(
+						iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(),
 								"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
-								ontoChemExpVocabulary.getDataPropertyhasUniqueSpeciesIRI(),
-								uniqueSpeciesIRI, STRING);
+								uniqueSpeciesIRI);
 					}
 				} catch (OntoChemExpException e) {
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");
