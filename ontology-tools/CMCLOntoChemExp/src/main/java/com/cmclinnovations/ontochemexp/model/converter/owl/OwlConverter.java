@@ -530,26 +530,26 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 		return performQuery(q, 1);
 	}
 
-	public String readDataPropertyXmlns(String experimentInstance) {
-		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
-				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
-				ontoChemExpVocabulary.getDataPropertyhasXmlns());
-		return performQuery(q, 1);
-	}
-
-	public String readDataPropertyXmlnsXsi(String experimentInstance) {
-		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
-				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
-				ontoChemExpVocabulary.getDataPropertyhasXmlnsXsi());
-		return performQuery(q, 1);
-	}
-
-	public String readDataPropertyXsiSchemaLocation(String experimentInstance) {
-		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
-				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
-				ontoChemExpVocabulary.getDataPropertyhasXsiSchemaLocation());
-		return performQuery(q, 1);
-	}
+//	public String readDataPropertyXmlns(String experimentInstance) {
+//		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+//				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
+//				ontoChemExpVocabulary.getDataPropertyhasXmlns());
+//		return performQuery(q, 1);
+//	}
+//
+//	public String readDataPropertyXmlnsXsi(String experimentInstance) {
+//		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+//				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
+//				ontoChemExpVocabulary.getDataPropertyhasXmlnsXsi());
+//		return performQuery(q, 1);
+//	}
+//
+//	public String readDataPropertyXsiSchemaLocation(String experimentInstance) {
+//		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+//				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
+//				ontoChemExpVocabulary.getDataPropertyhasXsiSchemaLocation());
+//		return performQuery(q, 1);
+//	}
 
 	public String readDataPropertyDataGroupID(String propertyInstance) {
 		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),

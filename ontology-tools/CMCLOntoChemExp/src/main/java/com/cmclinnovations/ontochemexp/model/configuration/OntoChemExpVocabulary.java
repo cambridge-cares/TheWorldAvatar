@@ -930,38 +930,38 @@ public class OntoChemExpVocabulary {
 		this.dataPropertyhasDataPointID = dataPropertyhasDataPointID;
 	}
 
-	@Value("${ontochemexp.data.property.hasXmlns}")
-	private String dataPropertyhasXmlns;
-
-	public String getDataPropertyhasXmlns() {
-		return dataPropertyhasXmlns;
-	}
-
-	public void setDataPropertyhasXmlns(String dataPropertyhasXmlns) {
-		this.dataPropertyhasXmlns = dataPropertyhasXmlns;
-	}
-
-	@Value("${ontochemexp.data.property.hasXmlnsXsi}")
-	private String dataPropertyhasXmlnsXsi;
-
-	public String getDataPropertyhasXmlnsXsi() {
-		return dataPropertyhasXmlnsXsi;
-	}
-
-	public void setDataPropertyhasXmlnsXsi(String dataPropertyhasXmlnsXsi) {
-		this.dataPropertyhasXmlnsXsi = dataPropertyhasXmlnsXsi;
-	}
-
-	@Value("${ontochemexp.data.property.hasXsiSchemaLocation}")
-	private String dataPropertyhasXsiSchemaLocation;
-
-	public String getDataPropertyhasXsiSchemaLocation() {
-		return dataPropertyhasXsiSchemaLocation;
-	}
-
-	public void setDataPropertyhasXsiSchemaLocation(String dataPropertyhasXsiSchemaLocation) {
-		this.dataPropertyhasXsiSchemaLocation = dataPropertyhasXsiSchemaLocation;
-	}
+//	@Value("${ontochemexp.data.property.hasXmlns}")
+//	private String dataPropertyhasXmlns;
+//
+//	public String getDataPropertyhasXmlns() {
+//		return dataPropertyhasXmlns;
+//	}
+//
+//	public void setDataPropertyhasXmlns(String dataPropertyhasXmlns) {
+//		this.dataPropertyhasXmlns = dataPropertyhasXmlns;
+//	}
+//
+//	@Value("${ontochemexp.data.property.hasXmlnsXsi}")
+//	private String dataPropertyhasXmlnsXsi;
+//
+//	public String getDataPropertyhasXmlnsXsi() {
+//		return dataPropertyhasXmlnsXsi;
+//	}
+//
+//	public void setDataPropertyhasXmlnsXsi(String dataPropertyhasXmlnsXsi) {
+//		this.dataPropertyhasXmlnsXsi = dataPropertyhasXmlnsXsi;
+//	}
+//
+//	@Value("${ontochemexp.data.property.hasXsiSchemaLocation}")
+//	private String dataPropertyhasXsiSchemaLocation;
+//
+//	public String getDataPropertyhasXsiSchemaLocation() {
+//		return dataPropertyhasXsiSchemaLocation;
+//	}
+//
+//	public void setDataPropertyhasXsiSchemaLocation(String dataPropertyhasXsiSchemaLocation) {
+//		this.dataPropertyhasXsiSchemaLocation = dataPropertyhasXsiSchemaLocation;
+//	}
 
 	@Value("${ontochemexp.data.property.hasValue}")
 	private String dataPropertyhasValue;
