@@ -41,6 +41,11 @@ import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Appa
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Kind;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Mode;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.BibliographyLink;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.Contributor;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.Doi;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.IDoi;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.Journal;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.JournalSpecification;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonProperties;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonPropertiesProperty;
 //import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonPropertiesProperty;
@@ -204,6 +209,8 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 
 		experimentName = EMPTY;
 		needsToCreateExperiment = true;
+		
+		currentExperimentInstance = EMPTY;
 		
 		inApparatus = false;
 		inCommonProperties = false;
@@ -424,6 +431,11 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		preferredKeyID = instanceSerialID+5;
 		commonPropertiesID = instanceSerialID+6;
 		dataGroupID = instanceSerialID+7;
+		experimentPerformerInstanceID = System.nanoTime();
+		journalSpecInstanceId = System.nanoTime();
+		journalInstanceId = System.nanoTime();
+		
+		currentBibliographyLinkInstance = new String();
 		
 		additionalDataItemCount = 0;
 		apparatusPropertyCount = 0;
@@ -453,7 +465,11 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		iCommonPropertiesQuery = new CommonPropertiesQuery();
 		iDataGroupQuery = new DataGroupQuery();
 		
-		
-		
+		//================BibliographyLink Doi Started=================//
+		iDoi = new Doi();
+		contributor = new Contributor();
+		contributorList = new ArrayList<Contributor>();
+		journal = new Journal();
+		journalSpec = new JournalSpecification();
 	}
 }

@@ -617,4 +617,15 @@ public class PrimeVocabulary {
 	public void setAttribChemName(String attribChemName) {
 		this.attribChemName = attribChemName;
 	}
+	
+	@Value("${prime.attribute.hasDOI}")
+	private String attribDOI;
+
+	public String getAttribDOI() {
+		return attribDOI;
+	}
+
+	public void setAttribDOI(String attribDOI) {
+		this.attribDOI = attribDOI;
+	}
 }

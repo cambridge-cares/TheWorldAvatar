@@ -529,6 +529,13 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 				ontoChemExpVocabulary.getDataPropertyhasPrimeID());
 		return performQuery(q, 1);
 	}
+	
+	public String readDataPropertyDOI(String bibliographyLinkInstance) {
+		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+				ontoChemExpKB.getOntoChemExpKbTBoxIri(), bibliographyLinkInstance,
+				ontoChemExpVocabulary.getDataPropertyhasDOI());
+		return performQuery(q, 1);
+	}
 
 //	public String readDataPropertyXmlns(String experimentInstance) {
 //		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),

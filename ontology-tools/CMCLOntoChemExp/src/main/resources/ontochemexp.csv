@@ -84,6 +84,7 @@ hasCommonProperties,Object Property,,,Experiment,CommonProperties,exactly 1,,htt
 hasCopyright,Object Property,,,Experiment,Copyright,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasBibliographyLink,Object Property,,,Experiment,BibliographyLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDataGroup,Object Property,,,Experiment,DataGroup,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasPerformer,Object Property,,,Experiment,http://xmlns.com/foaf/0.1/Agent,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasExpSpecs,Object Property,,,Experiment,ExpSpecs,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasProvenance,Object Property,,,Experiment,Provenance,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasModification,Object Property,,,Provenance,Modification,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl

@@ -36,6 +36,10 @@ import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Appa
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Kind;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Mode;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.BibliographyLink;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.Contributor;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.IDoi;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.Journal;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.JournalSpecification;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonProperties;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonPropertiesProperty;
 //import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonPropertiesProperty;
@@ -171,6 +175,7 @@ public class PrimeConverterState extends ABoxManagement{
 	public static ICompleteness iCompleteness;
 	
 	public static String experimentName;
+	public static String currentExperimentInstance;
 	
 	
 	public static boolean inApparatus = false;
@@ -402,6 +407,13 @@ public class PrimeConverterState extends ABoxManagement{
 	public static long commonPropertiesID;
 	public static long dataGroupID;
 	
+	public static long journalSpecInstanceId;
+	public static long journalInstanceId;
+	
+	public static String currentBibliographyLinkInstance;
+	
+	public static long experimentPerformerInstanceID;
+	
 	public static int additionalDataItemCount;
 	public static int apparatusPropertyCount;
 	public static int modeCount;
@@ -429,7 +441,7 @@ public class PrimeConverterState extends ABoxManagement{
 	public static final String STRING = "string";
 	
 	
-	public static IABoxManagement iABoxManagement;	
+	public static IABoxManagement iABoxManagement;
 	
 	public static IInitPrimeConverter initPrimeConverter;
 	
@@ -465,4 +477,10 @@ public class PrimeConverterState extends ABoxManagement{
 	public static ICommonPropertiesQuery iCommonPropertiesQuery;
 	public static IDataGroupQuery iDataGroupQuery;
 	
+	//================BibliographyLink Doi Started=================//
+	public static IDoi iDoi;
+	public static Contributor contributor;
+	public static ArrayList<Contributor> contributorList;
+	public static Journal journal;
+	public static JournalSpecification journalSpec;
 }

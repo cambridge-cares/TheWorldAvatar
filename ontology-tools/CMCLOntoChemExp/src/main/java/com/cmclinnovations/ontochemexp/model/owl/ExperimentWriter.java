@@ -53,7 +53,9 @@ public class ExperimentWriter extends PrimeConverter implements IExperimentWrite
 	 */
 	private void createExperiment() {
 		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassExperiment(), "Experiment"+UNDERSCORE+experimentInstanceId);
+			currentExperimentInstance = "Experiment"+UNDERSCORE+experimentInstanceId;
+			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassExperiment(), currentExperimentInstance);
+			
 		} catch (ABoxManagementException e) {
 			logger.error(
 					"An individual of experiment could not be created.");

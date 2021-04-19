@@ -60,6 +60,7 @@ Under construction...
   - Added below object properties
     - `<Composition hasSpeciesLink SpeciesLink>`
     - `<Concentration hasSpeciesLink SpeciesLink>`
+    - `<Experiment hasPerformer http://xmlns.com/foaf/0.1/Agent>`
     - `<X refersTo DimensionalQuantity>` to make the direct connection between measured data point `X` with the physical `DimensionalQuantity` it represents
   - Inherited publication-related object property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
     - `<OntoKin:JournalSpecification OntoKin:specifies http://purl.org/ontology/bibo/Journal>`
@@ -112,7 +113,7 @@ Under construction...
   - Removed below object properties
     - `<Experiment OntoChemExp:hasPreferredKey PreferredKey>`
   - Added below object properties
-    - `<Experiment OntoChemExp:hasExpSpec ExpSpecs>`
+    - `<Experiment OntoChemExp:hasExpSpecs ExpSpecs>`
     - `<Experiment OntoChemExp:hasProvenance Provenance>`
     - `<Provenance OntoChemExp:hasModification Modification>`
     - `<ExpSpecs OntoChemExp:hasIgnitionType IgnitionType>`

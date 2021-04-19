@@ -40,6 +40,11 @@ public class BibliographyLinkQuery extends OwlConverter implements IBibliography
 		if (primeID != null && !primeID.isEmpty()) {
 			bibliographyLink.setPrimeID(primeID);
 		}
+		
+		String doi = readDataPropertyDOI(bibliographyLinkInstance);
+		if (doi != null && !doi.isEmpty()) {
+			bibliographyLink.setDoi(doi);
+		}
 	}
 	
 	private void queryValue(String bibliographyLinkInstance) throws OntoChemExpException{
