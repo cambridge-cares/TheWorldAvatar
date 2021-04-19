@@ -7,7 +7,7 @@ const app = express();
 const router = express.Router();
 const http = require('http')
 const cors = require('cors')
-
+const redis = require('./redis-interface');
 
 // TODO: replace this with the redis server to be more robust 
 result_dictionary = {};
@@ -90,8 +90,9 @@ router.get('/query', function(req, res){
 	
 	console.log('parameters', parameters);
 
+
+	// the key already exists in the result dictionary, so directly return the results and the status 
 	if (parameter_hash in result_dictionary){
-    // if (false){
 
 				if (status_dictionary[parameter_hash]){
 					query_status = 'complete';
@@ -106,12 +107,18 @@ router.get('/query', function(req, res){
 	else{ // the result is not there,do the query
 		result_dictionary[parameter_hash] = [];
 		status_dictionary[parameter_hash] = false;
+		
+		// ================ redis initiation =========================
+		redis.set_value(parameter_hash, JSON.stringify([]))
+		 
     	(async () => {
 		const result = await myEngine.query(query,parameters);
 		
 		result.bindingsStream.on('data', (binding) => {
 			r = parse_bindings(binding);
 			result_dictionary[parameter_hash].push(r);
+			redis.set_value(parameter_hash, JSON.stringify([])) // set the value in redis
+			
 			
 			if (result_dictionary[parameter_hash].length == 10){
 				
@@ -127,11 +134,10 @@ router.get('/query', function(req, res){
 		});	
 		
 		
-				
+		// on end is triggered when all the results are returned 		
 		result.bindingsStream.on('end', () => {
+			
 			status_dictionary[parameter_hash] = true;
-			
-			
 			console.log('========== the end ============');  
 			if (result_dictionary[parameter_hash].length < 10){
 				console.log('less than 10 results in KG');

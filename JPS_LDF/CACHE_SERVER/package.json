@@ -2,7 +2,7 @@
   "name": "SPARQL",
   "version": "1.0.0",
   "description": "Node.js on Docker",
-  "author": "First Last <xz378@cam.ac.uk>",
+  "author": "Xiaochi Zhou <xz378@cam.ac.uk>",
   "main": "comunica_node.js",
   "scripts": {
     "start": "node comunica_node.js"
@@ -11,6 +11,7 @@
     "@comunica/actor-init-sparql": "^1.19.2",
     "cors": "^2.8.5",
     "express": "^4.16.1",
-    "pm2": "^4.5.5"
+    "pm2": "^4.5.5",
+    "redis": "^3.1.1"
   }
 }

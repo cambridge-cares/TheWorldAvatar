@@ -1,13 +1,8 @@
-const express = require('express')
-const app = express()
-const port = 3001
+const redis = require('./redis-interface');
 
-app.get('/', (req, res) => {
-	
-	console.log('query is', req.query);
-    res.send(req.query);
-})
+rst = redis.set_value('foo', JSON.stringify(['x','y']))
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
+
+redis.get_value('foo', function(value){
+	console.log('value', value)
+});
