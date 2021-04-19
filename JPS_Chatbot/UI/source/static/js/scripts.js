@@ -310,6 +310,7 @@ function create_load_more_button(hash){
     var load_more_button = document.createElement('button');
         load_more_button.id = 'btn_load_more';
         load_more_button.type = 'button';
+        load_more_button.className  = 'btn btn-secondary btn-lg btn-block';
         load_more_button.innerHTML = 'Load more results';
 
     // append it to the bottom of the result table
