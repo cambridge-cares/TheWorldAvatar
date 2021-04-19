@@ -64,7 +64,10 @@ public class ForecastAgent extends JPSAgent{
     		throw new BadRequestException("DESAgent:  Input parameters not found.\n");
     	}
     	try {
-			forecastNextDay();
+            String irioftempF=requestParams.getString("temperatureforecast");
+            String iriofirrF=requestParams.getString("irradiationforecast");
+    		nextForecastDayTemperature(irioftempF);
+    		nextForecastDaySolcast(irioftempF,iriofirrF);
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -72,145 +75,7 @@ public class ForecastAgent extends JPSAgent{
 		}
     	return requestParams;
     }
-	
-	
-	/** Using Java to read API call from AccuWeather. Taken from 
-	 * https://dzone.com/articles/how-to-implement-get-and-post-request-through-simp
-	 * change this api if we ever manage to get a free 24 hourly prediction of temperature and windspeed
-	 * @param args
-	 * @throws Exception
-	 */
-	public static ArrayList<ArrayList<String>> AccuRequest() throws IOException {
-		JSONArray arr = new JSONArray(AgentCaller.getRequestBody(AccuWeatherURL));
-	    DecimalFormat doubSF = new DecimalFormat("##.#");
-	    ArrayList<ArrayList<String>> arraarray = new ArrayList<ArrayList<String>>();
-        for (int i = 0; i< arr.length(); i++) {
-        	JSONObject object = arr.getJSONObject(i);
-        	JSONObject temp= (JSONObject) object.get("Temperature");
-        	double temper = temp.getFloat("Value");
-        	String tempera = doubSF.format(temper);
-        	
-        	JSONObject wind = (JSONObject) object.get("Wind");
-        	JSONObject winds = (JSONObject) wind.get("Speed");
-        	double windsp = winds.getFloat("Value");
-        	String windspe = doubSF.format(windsp/3.6);//because windspeed is in km/h and not m/s
-        	ArrayList<String> lstInit = new ArrayList<>();
-        	lstInit.add(tempera);
-        	lstInit.add(windspe);
-        	arraarray.add(lstInit);
-        }        
-        return arraarray;
-	}
-	/** feed in solcast api, and since it's in 30 minute invervals, the step iteration
-	 * for the for loop is two
-	 * @return
-	 * @throws IOException
-	 */
-	public static ArrayList<ArrayList<String>> SolCastRequest() throws IOException{
-		JSONObject jo =  new JSONObject(AgentCaller.getRequestBody(SolCastURL));
-		JSONArray arr = jo.getJSONArray("forecasts");
-	    DecimalFormat doubSF = new DecimalFormat("##.#");
-		ArrayList<ArrayList<String>> arraarray =  new ArrayList<ArrayList<String>>();
-        for (int i = 0; i< 48; i+= 2) {
-        	JSONObject object = arr.getJSONObject(i);
-        	int temp= object.getInt("air_temp");
-        	String tempera = doubSF.format(temp);
-        	int ghi = object.getInt("ghi");
-        	String irrad = doubSF.format(ghi);//because windspeed is in km/h and not m/s
-        	ArrayList<String> lstInit = new ArrayList<>();
-        	lstInit.add(tempera);
-        	lstInit.add(irrad);
-        	arraarray.add(lstInit);
-        }   
-        return arraarray;     
-	}
-	/** Increments the date. 
-	 * 
-	 * @param date
-	 * @return
-	 */
-	 public static String addOneDay(LocalDate date) {
-		    return date.plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		  }
-	 /** creates a list of times to be saved to OWL file in OWL format
-	  * 
-	  * @return
-	  * @throws Exception
-	  */
-	public static ArrayList<String[]> createTimer() {
-		Date date = new Date();
-		Calendar calendar = GregorianCalendar.getInstance();
-		calendar.setTime(date);
-		ArrayList<String[]> sj1 = new ArrayList<String[]>();
-		LocalDate today = LocalDate.now();
-		int n = LocalTime.now().getHour();
-		String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		for (int i = 0; i < 24; i++){
-			if (n == 24){
-		        n = 0;
-		        formattedDate = addOneDay(today);
-		      }
-		      String[] a = {String.format("%02d", Integer.valueOf(n)) + ":00:00", formattedDate};
-		      sj1.add(a);
-		      n++; 
-		      
-
-		    }
-		return sj1;
-	}
-	/** Calls API and writes to OWL file the temperature, irradiation and windspeed. 
-	 * 
-	 * @throws Exception
-	 */
-	public void forecastNextDay()throws Exception{
-		ArrayList<ArrayList<String>> accuArray, solArray ; 
-		try {
-			accuArray = AccuRequest(); //{temp, windspeed}
-			solArray = SolCastRequest(); //{temp, irrad}
 		
-			ArrayList<String[]> readingFromCSV = new ArrayList<String[]>(); 
-			//mash the two together
-			ArrayList<String[]> datetime = createTimer();
-			for (int i = 0; i<accuArray.size(); i++) {
-				ArrayList<String> ji =  solArray.get(i);
-				ji.set(0, accuArray.get(i).get(0));//set temperature
-				ji.add(accuArray.get(i).get(1));//set windspeed
-				ji.add(datetime.get(i)[0]);
-				ji.add(datetime.get(i)[1]);
-				String[] stringArray = ji.toArray(new String[0]);
-				readingFromCSV.add(stringArray);
-			}
-			for (int i = 12; i < solArray.size(); i++) { //no windspeed, place in zero.
-				ArrayList<String> ji =  solArray.get(i); 
-				ji.add("0.0");
-				ji.add(datetime.get(i)[0]);
-				ji.add(datetime.get(i)[1]);
-				String[] stringArray = ji.toArray(new String[0]);
-				readingFromCSV.add(stringArray);
-			}
-			WeatherTimeStampKB converter = new WeatherTimeStampKB();
-			converter.startConversionForecast(readingFromCSV,"temperature", 0);
-			converter.startConversionForecast(readingFromCSV,"irradiation", 1);
-			converter.startConversionForecast(readingFromCSV,"windspeed", 2);
-		}catch (IOException e) {
-			//if either accuArray and solArray doesn't work, copy sample file
-			String path= AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\WeatherForecast";
-
-			List<String[]> readingFromCSV = readResult(path);
-			Date date = new Date();   // given date
-			Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
-			calendar.setTime(date);   // assigns calendar to given date 
-			int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
-			Collections.rotate(readingFromCSV,(24-h)); //rotate by number of hours
-			WeatherTimeStampKB converter = new WeatherTimeStampKB();
-			converter.startConversionForecast(readingFromCSV,"temperature", 0);
-			converter.startConversionForecast(readingFromCSV,"irradiation", 1);
-				        
-			e.printStackTrace();
-		}
-	
-	}
-	
 	/** reads data from Solcast.com.au (need API key) and stores in ArrayList<String[]>
 	 * Length of 24 hours, as we don't want a thirty minute update. 
 	 * @return ArrayList[temperature, irradiation, timeInXSD]
@@ -227,8 +92,7 @@ public class ForecastAgent extends JPSAgent{
         	String tempera = doubSF.format(temp);
         	int ghi = object.getInt("ghi");
         	String irrad = doubSF.format(ghi);//because windspeed is in km/h and not m/s
-        	String[] check = object.getString("period_end").split(".");
-        	String periodEnd = (object.getString("period_end").split("."))[0]+"Z";
+        	String periodEnd = (object.getString("period_end").split("\\."))[0]+"Z";
         	String timeInXSD = MiscUtil.convertToTimeZoneXSD(periodEnd);
         	String[] lstInit = {tempera, irrad, timeInXSD};
         	ans.add(lstInit);
@@ -258,9 +122,11 @@ public class ForecastAgent extends JPSAgent{
 		}        
 		return accuArray;
 	}
-	public void nextForecastDayTemperature(String iriTemperature) {
-		//First download AccuAPI and push data from temperature for first 12 hours
-		ArrayList<String[]> accuArray = callAccuAPI();
+	/** Utilize a static method when there is only one right answer and it isn't changing. 
+	 * 
+	 * @return WhereBuilder for nextForecastDay temperatures. 
+	 */
+	private static WhereBuilder whereQueryBuilderForSensor() {
 		WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
     			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
@@ -268,7 +134,17 @@ public class ForecastAgent extends JPSAgent{
     			.addWhere("?prop", "j2:hasValue", "?vprop")
     			.addWhere("?vprop", "j6:hasTime", "?proptime")
     			.addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
-   
+		return whereB;
+	}
+	
+	/** calls AccuAPI and updates forecast temperature IRI 
+	 * In the future, callAccuAPI should be replaced with an agent to call appropriate weather data
+	 * @param iriTemperature
+	 */
+	public void nextForecastDayTemperature(String iriTemperature) {
+		//First download AccuAPI and push data from temperature for first 12 hours
+		ArrayList<String[]> accuArray = callAccuAPI();
+		WhereBuilder whereB = whereQueryBuilderForSensor();   
 		SelectBuilder sensorTemp = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
     			.addVar("?vprop").addVar("?proptime")
@@ -286,14 +162,14 @@ public class ForecastAgent extends JPSAgent{
 		updateOWLFileWithResultList(resultListfromquery,accuArray, convertedIRI, indices); 
 		
 	}
+	/** calls solcast API and updates forecast irradiation API
+	 * 
+	 * @param iriTemperature
+	 * @param iriIrradiation
+	 */
 	public void nextForecastDaySolcast(String iriTemperature, String iriIrradiation) {
 		ArrayList<String[]> solArray = callSolarAPI();
-		WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-    			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
-    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-    			.addPrefix("j6", "http://www.w3.org/2006/time#").addWhere("?entity", "j4:observes", "?prop")
-    			.addWhere("?prop", "j2:hasValue", "?vprop").addWhere("?vprop", "j2:numericalValue", "?propval")
-    			.addWhere("?vprop", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
+		WhereBuilder whereB = whereQueryBuilderForSensor();
 		SelectBuilder sensorIrrad = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
     			.addVar("?vprop").addVar("?propval").addVar("?proptime").addVar("?proptimeval")
@@ -360,20 +236,7 @@ public class ForecastAgent extends JPSAgent{
 		AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
 	}
 	
-	/** reads the result from the csv file produced and returns as List<String[]>
-	 * 
-	 * @param baseUrl String
-	 * @param filename name of the file. 
-	 * @return
-	 * @throws IOException
-	 */
-	public List<String[]> readResult(String fil) throws IOException {
 
-        String csv = new QueryBroker().readFileLocal(fil);
-        List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
-		
-		return simulationResult;
-	}
 	
 	
 }

@@ -403,19 +403,6 @@ public class AgentCaller {
         }
     }
 
-    // TODO-AE this method seems not to be required.
-    public static String getRequestBody(final HttpServletRequest req) {
-        final StringBuilder builder = new StringBuilder();
-        try (final BufferedReader reader = req.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
-            return builder.toString();
-        } catch (final Exception e) {
-            return null;
-        }
-    }
     /** queries URL for data in requestBody
      * checks if HTTPUrlConnection is ok
      * @param url
