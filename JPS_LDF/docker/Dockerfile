@@ -37,6 +37,7 @@ RUN unzip node_modules.zip -d /usr/src/app
 #########################
 # set up the LDF server and the redis cache server  
 #########################
+COPY ./config.json /usr/local/tomcat/WebContent/config.json
 RUN apt install maven -y 
 RUN mvn -Dmaven.javadoc.skip=true install
 RUN mv ./target/ldfserver-0.2.4.war /usr/local/tomcat/webapps/ldfserver.war

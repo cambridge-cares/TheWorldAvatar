@@ -12,6 +12,7 @@ def get_parent_path(path):
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
-WIKIDATA_QUERY_DIR = os.path.join(this_dir, 'Wikidata_Query')
-WIKI_MODELS_DIR = os.path.join(WIKIDATA_QUERY_DIR, 'models')
-print('WIKI_MODELS_DIR', WIKI_MODELS_DIR)
+root_dir = get_parent_path(this_dir)
+top_dir = get_parent_path(get_parent_path(root_dir))
+LDA_DIR = os.path.join(root_dir, 'LDA')
+print('LDA_DIR', LDA_DIR)

@@ -10,6 +10,7 @@
 *.7z
 *.rar
 *.tgz
+*.hdt
 
 # Integrated Development Environment (IDE)-specific files/folders:
 .vscode/
@@ -75,6 +76,8 @@ Thumbs.db
 JPS_DISPERSION/JPS_DISPERSION.iml
 *.data-00000-of-00001
 geckodriver.log
-*.hdt
 /JPS_LDF/docker/credential/host.txt
 /JPS_LDF/docker/credential/password.txt
+/JPS_Chatbot/UI/source/wolfram_alpha_and_google/test/*.html
+geckodriver.log
+/JPS_LDF/LDF_SERVER_JAVA/Server/WebContent/config.json

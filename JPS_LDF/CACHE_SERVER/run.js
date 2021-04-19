@@ -239,12 +239,12 @@ myEngine.invalidateHttpCache();
 
 
 console.time('Execution time');
-var query = test_formal_charge;
+var query = test_query;
 
 	(async () => {
 		const result = await myEngine.query(query, {
-		    //sources: ['http://localhost:8080/ldfserver/ontokin'], products:["OH"], reactants:["H"] ,"NC3H7"
-		 sources: ['http://localhost:8080/ldfserver/ontocompchem'], products:['placeholder'].sort(), reactants:["placeholder"].sort()
+		 sources: ['http://localhost:8080/ldfserver/ontokin'], products:["OH"], reactants:["H"]  
+		 // sources: ['http://localhost:8080/ldfserver/ontocompchem'], products:['placeholder'].sort(), reactants:["placeholder"].sort()
 		});
 
 
