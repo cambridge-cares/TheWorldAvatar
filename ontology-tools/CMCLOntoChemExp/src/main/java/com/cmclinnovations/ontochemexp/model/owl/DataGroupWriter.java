@@ -60,8 +60,8 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 		readDataGroupDataGroupLink(ch, start, length);
 
 		readDataGroupProperty(ch, start, length);
-////		readDataGroupPropertyValue(ch, start, length);
-//		readDataGroupPropertyUncertainty(ch, start, length);
+////		readDataGroupPropertyValue(ch, start, length); //PropertyValue should not be allowed in DataGroup
+		readDataGroupPropertyUncertainty(ch, start, length);
 		readDataGroupPropertyComponent(ch, start, length);
 		readDataGroupPropertyComponentSpeciesLink(ch, start, length);
 		readDataGroupPropertySpeciesLink(ch, start, length);
@@ -661,7 +661,7 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 	private void linkPropertyUncertaintyToProperty() {
 		try {
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUncertainty(),
-					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+					currentDQInstance,
 					"Uncertainty" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
 		} catch (ABoxManagementException e) {
 			logger.error("A link could not be established between the dataGroup property and its uncertainty.");

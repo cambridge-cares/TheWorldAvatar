@@ -33,7 +33,7 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 		readApparatusMode(ch, start, length);
 		readApparatusProperty(ch, start, length);
 		readApparatusPropertyValue(ch, start, length);
-//		readApparatusPropertyUncertainty(ch, start, length);
+		readApparatusPropertyUncertainty(ch, start, length);
 	}
 	
 	/**
@@ -235,57 +235,57 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 		}
 	}
 	
-	private void createProperty() {
-		apparatusPropertyCount += 1;
-		
-		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(), 
-					"Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
-			
-			if (apparatusProperty.getPropertyName() != null && !apparatusProperty.getPropertyName().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasName(), 
-						apparatusProperty.getPropertyName(), STRING);
-			}
-			
-			if (apparatusProperty.getPropertyId() != null && !apparatusProperty.getPropertyId().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasID(), 
-						apparatusProperty.getPropertyId(), STRING);
-			}
-			
-			if (apparatusProperty.getPropertyLabel() != null && !apparatusProperty.getPropertyLabel().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasLabel(), 
-						apparatusProperty.getPropertyLabel(), STRING);
-			}
-			
-			if (apparatusProperty.getPropertyUnits() != null && !apparatusProperty.getPropertyUnits().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasUnits(), 
-						apparatusProperty.getPropertyUnits(), STRING);
-			}
-			
-			if (apparatusProperty.getPropertyDescription() != null && !apparatusProperty.getPropertyDescription().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasDescription(), 
-						apparatusProperty.getPropertyDescription(), STRING);
-			}
-		} catch (ABoxManagementException e) {
-			logger.error(
-					"An individual of Property could not be created.");
-		}
-	}
-	
-	private void linkPropertyToEquipment() {
-		try {
-			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(), 
-					"Apparatus"+UNDERSCORE+apparatusID, "Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
-		} catch (ABoxManagementException e) {
-			logger.error(
-					"A link could not be established between an equipment and its apparatus property.");
-		}
-	}
+//	private void createProperty() {
+//		apparatusPropertyCount += 1;
+//		
+//		try {
+//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(), 
+//					"Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
+//			
+//			if (apparatusProperty.getPropertyName() != null && !apparatusProperty.getPropertyName().trim().isEmpty()) {
+//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
+//						ontoChemExpVocabulary.getDataPropertyhasName(), 
+//						apparatusProperty.getPropertyName(), STRING);
+//			}
+//			
+//			if (apparatusProperty.getPropertyId() != null && !apparatusProperty.getPropertyId().trim().isEmpty()) {
+//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
+//						ontoChemExpVocabulary.getDataPropertyhasID(), 
+//						apparatusProperty.getPropertyId(), STRING);
+//			}
+//			
+//			if (apparatusProperty.getPropertyLabel() != null && !apparatusProperty.getPropertyLabel().trim().isEmpty()) {
+//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
+//						ontoChemExpVocabulary.getDataPropertyhasLabel(), 
+//						apparatusProperty.getPropertyLabel(), STRING);
+//			}
+//			
+//			if (apparatusProperty.getPropertyUnits() != null && !apparatusProperty.getPropertyUnits().trim().isEmpty()) {
+//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
+//						ontoChemExpVocabulary.getDataPropertyhasUnits(), 
+//						apparatusProperty.getPropertyUnits(), STRING);
+//			}
+//			
+//			if (apparatusProperty.getPropertyDescription() != null && !apparatusProperty.getPropertyDescription().trim().isEmpty()) {
+//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
+//						ontoChemExpVocabulary.getDataPropertyhasDescription(), 
+//						apparatusProperty.getPropertyDescription(), STRING);
+//			}
+//		} catch (ABoxManagementException e) {
+//			logger.error(
+//					"An individual of Property could not be created.");
+//		}
+//	}
+//	
+//	private void linkPropertyToEquipment() {
+//		try {
+//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(), 
+//					"Apparatus"+UNDERSCORE+apparatusID, "Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
+//		} catch (ABoxManagementException e) {
+//			logger.error(
+//					"A link could not be established between an equipment and its apparatus property.");
+//		}
+//	}
 	
 	
 	private void createPropertyValue() {
@@ -363,7 +363,7 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 	private void linkPropertyUncertaintyToProperty() {
 		try {
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUncertainty(), 
-					"Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, "Uncertainty"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
+					currentDQInstance, "Uncertainty"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
 		} catch (ABoxManagementException e) {
 			logger.error(
 					"A link could not be established between the apparatus property and its uncertainty.");
