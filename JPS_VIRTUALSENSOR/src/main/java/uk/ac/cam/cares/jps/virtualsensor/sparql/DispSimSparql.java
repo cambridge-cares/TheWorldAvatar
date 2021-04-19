@@ -835,4 +835,23 @@ public class DispSimSparql {
 		}
 		return stations;
 	}
+	
+	/** 
+	 * reset endpoint
+	 */
+	public static void ResetEndpoint() {
+		String simgraph = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#Simulations";
+		String weathergraph = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WeatherStations";
+		String airqualitygraph = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#AirQualityStations";
+		
+		String queryTemplate = "clear graph <%s>";
+		
+		String query1 = String.format(queryTemplate,simgraph);
+		String query2 = String.format(queryTemplate, weathergraph);
+		String query3 = String.format(queryTemplate, airqualitygraph);
+		
+		SparqlGeneral.performUpdate(query1);
+		SparqlGeneral.performUpdate(query2);
+		SparqlGeneral.performUpdate(query3);
+	}
 }
