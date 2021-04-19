@@ -277,6 +277,9 @@ public class PrimeConverterUtils extends PrimeConverter{
 	}
 	
 	public static String retrieveSpeciesIRIFromInChI(String inchi) throws OntoChemExpException {
+		if (inchi.trim().toLowerCase().startsWith("1s/") || inchi.trim().toLowerCase().startsWith("1/")) {
+			inchi = "InChI=".concat(inchi);
+		}
 		String uniqueSpeciesIRI = new String();
 		String queryString = formSpeciesIRIQueryFromInChI(inchi);
 		List<List<String>> testResults = queryRepository(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), queryString);
