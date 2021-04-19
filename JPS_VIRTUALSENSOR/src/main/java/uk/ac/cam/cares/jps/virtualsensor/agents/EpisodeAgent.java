@@ -991,7 +991,7 @@ public class EpisodeAgent extends JPSAgent{
 				if (station_iri != null) {
 					for (int i=0; i < station_iri.length; i++) {
 						JSONObject request = new JSONObject();
-						request.put(SensorSparql.keyAirStationIRI, station_iri);
+						request.put(SensorSparql.keyAirStationIRI, station_iri[i]);
 						AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/SensorUpdaterAgent", request.toString());
 					}
 				}
