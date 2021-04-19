@@ -707,6 +707,7 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPreferredKey(), STRING);
 			}
 			
+			String uniqueSpeciesIRI = new String();
 			if (dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
 					&& !dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
 //				iABoxManagement.addProperty(
@@ -714,15 +715,9 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 //						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
 //						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
 				
-				String uniqueSpeciesIRI;
 				try {
-					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
+					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRIFromPrimeID(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
 							.concat(dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID()));
-					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
-						iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(), 
-								"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount, 
-								uniqueSpeciesIRI);
-					}
 				} catch (OntoChemExpException e) {
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");
 					e.printStackTrace();
@@ -743,6 +738,14 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
 						ontoChemExpVocabulary.getDataPropertyhasInChI(),
 						dataGroupPropertyComponentSpeciesLink.getInchi(), STRING);
+				if (uniqueSpeciesIRI == null || uniqueSpeciesIRI.isEmpty()) {
+					try {
+						uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRIFromInChI(dataGroupPropertyComponentSpeciesLink.getInchi());
+					} catch (OntoChemExpException e) {
+						logger.error("The uniqueSpeciesIRI could not be retrieved.");
+						e.printStackTrace();
+					}
+				}
 			}
 			
 			if (dataGroupPropertyComponentSpeciesLink.getSmiles() != null 
@@ -751,6 +754,12 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
 						ontoChemExpVocabulary.getDataPropertyhasSMILES(),
 						dataGroupPropertyComponentSpeciesLink.getSmiles(), STRING);
+			}
+			
+			if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
+				iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(), 
+						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount, 
+						uniqueSpeciesIRI);
 			}
 			
 		} catch (ABoxManagementException e) {
@@ -781,7 +790,8 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 						ontoChemExpVocabulary.getDataPropertyhasPreferredKey(),
 						dataGroupPropertySpeciesLink.getSpeciesLinkPreferredKey(), STRING);
 			}
-
+			
+			String uniqueSpeciesIRI = new String();
 			if (dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID() != null
 					&& !dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
 //				iABoxManagement.addProperty(
@@ -790,16 +800,9 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 //						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
 //						dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID(), STRING);
 				
-				String uniqueSpeciesIRI;
 				try {
-					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
+					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRIFromPrimeID(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
 							.concat(dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID()));
-					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
-						iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(), 
-								"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
-								+ dataGroupPropertyCount, 
-								uniqueSpeciesIRI);
-					}
 				} catch (OntoChemExpException e) {
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");
 					e.printStackTrace();
@@ -822,6 +825,14 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 								+ dataGroupPropertyCount,
 						ontoChemExpVocabulary.getDataPropertyhasInChI(),
 						dataGroupPropertySpeciesLink.getInchi(), STRING);
+				if (uniqueSpeciesIRI == null || uniqueSpeciesIRI.isEmpty()) {
+					try {
+						uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRIFromInChI(dataGroupPropertySpeciesLink.getInchi());
+					} catch (OntoChemExpException e) {
+						logger.error("The uniqueSpeciesIRI could not be retrieved.");
+						e.printStackTrace();
+					}
+				}
 			}
 			
 			if (dataGroupPropertySpeciesLink.getSmiles() != null
@@ -831,6 +842,12 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 								+ dataGroupPropertyCount,
 						ontoChemExpVocabulary.getDataPropertyhasSMILES(),
 						dataGroupPropertySpeciesLink.getSmiles(), STRING);
+			}
+			
+			if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
+				iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(), 
+						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount, 
+						uniqueSpeciesIRI);
 			}
 
 			if (dataGroupPropertySpeciesLink.getSpeciesLinkValue() != null

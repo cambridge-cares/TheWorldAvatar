@@ -263,12 +263,12 @@ public class PrimeConverterUtils extends PrimeConverter{
 	}
 	
 	
-	public static String retrieveSpeciesIRI(String speciesFileIRI) throws OntoChemExpException {
+	public static String retrieveSpeciesIRIFromPrimeID(String speciesFileIRI) throws OntoChemExpException {
 		if (speciesFileIRI.trim().startsWith("<") || speciesFileIRI.trim().endsWith(">")) {
 			speciesFileIRI = speciesFileIRI.replace("<", "").replace(">", "");
 		}
 		String uniqueSpeciesIRI = new String();
-		String queryString = formSpeciesIRIQuery(speciesFileIRI);
+		String queryString = formSpeciesIRIQueryFromPrimeID(speciesFileIRI);
 		List<List<String>> testResults = queryRepository(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), queryString);
 		if (testResults.size() == 2) {
 			uniqueSpeciesIRI = testResults.get(1).get(0);
@@ -276,13 +276,36 @@ public class PrimeConverterUtils extends PrimeConverter{
 		return uniqueSpeciesIRI;
 	}
 	
-	private static String formSpeciesIRIQuery(String partialSpeciesIRI) {
+	public static String retrieveSpeciesIRIFromInChI(String inchi) throws OntoChemExpException {
+		String uniqueSpeciesIRI = new String();
+		String queryString = formSpeciesIRIQueryFromInChI(inchi);
+		List<List<String>> testResults = queryRepository(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), queryString);
+		if (testResults.size() == 2) {
+			uniqueSpeciesIRI = testResults.get(1).get(0);
+		}
+		return uniqueSpeciesIRI;
+	}
+	
+	private static String formSpeciesIRIQueryFromPrimeID(String partialSpeciesIRI) {
 		String queryString = "PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n";
 		queryString = queryString.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
 		queryString = queryString.concat("SELECT ?species \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ?species rdf:type OntoSpecies:Species . \n");
 		queryString = queryString.concat("    FILTER regex(str(?species), \"").concat(partialSpeciesIRI).concat("\", \"i\") \n");
+		queryString = queryString.concat("}");
+		return queryString;
+	}
+	
+	private static String formSpeciesIRIQueryFromInChI(String inchi) {
+		String queryString = "PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n";
+		queryString = queryString.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		queryString = queryString.concat("SELECT ?speciesIRI \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ?speciesIRI rdf:type OntoSpecies:Species . \n");
+		queryString = queryString.concat("    ?speciesIRI OntoSpecies:inChI ?Inchi . \n");
+		queryString = queryString.concat("    FILTER REGEX(REPLACE(str(?Inchi), \"InChI=1S\", \"InChI=1\"), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(\"")
+				.concat(inchi).concat("\", \"InChI=1S\",\"InChI=1\"), \"/t.+\", \"\"), \"/b.+\", \"\"), \"\\\\(\", \"\\\\\\\\(\"), \"\\\\)\", \"\\\\\\\\)\"), \"i\") \n");
 		queryString = queryString.concat("}");
 		return queryString;
 	}
