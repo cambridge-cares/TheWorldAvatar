@@ -22,6 +22,7 @@ RUN apk update
 RUN apk add expect
 RUN apk add openssh-client
 
+
 # Copy in the credentials folder
 COPY ./docker/credentials /tmp/credentials
 WORKDIR /tmp/credentials
@@ -41,6 +42,15 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Updates and software installation
 RUN echo -e "Installing required software..."
 RUN apt-get update && apt-get install -y git dos2unix software-properties-common
+
+# Set the locale to UK 
+RUN apt-get -y install locales
+RUN sed -i '/en_GB.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_GB.UTF-8  
+ENV LANGUAGE en_GB:en  
+ENV LC_ALL en_GB.UTF-8  
+
 
 # Set installation directory
 RUN mkdir -p /usr/local/jps-chatbot
@@ -90,9 +100,12 @@ RUN chmod +x /etc/init.d/flask
 RUN update-rc.d flask defaults
 RUN echo -e "Flask started."
 
+
+
+
 # Reset arguments and finish
 ARG DEBIAN_FRONTEND=newt
 RUN echo -e "Image installation completed."
 
 # Set the entrypoint (start flask on container creation)
-ENTRYPOINT ["/bin/bash", "-c", "cd /usr/local/jps-chatbot/UI/source && python -m flask run --host=0.0.0.0"]
+# ENTRYPOINT ["/bin/bash", "-c", "cd /usr/local/jps-chatbot/UI/source && python -m flask run --host=0.0.0.0"]
