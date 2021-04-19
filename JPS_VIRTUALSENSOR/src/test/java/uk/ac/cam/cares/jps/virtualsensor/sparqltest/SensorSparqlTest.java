@@ -73,7 +73,7 @@ public class SensorSparqlTest extends TestCase{
 	
 	public void testAddSensorValue() {
 		String station_iri_string = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
-		SensorSparql.addSensorValue(station_iri_string,SensorSparql.CO2,30,0);
+		SensorSparql.addSensorValue(station_iri_string,"CO2",30,1);
 	}
 	
 	public void testQueryAirStationProperties() {

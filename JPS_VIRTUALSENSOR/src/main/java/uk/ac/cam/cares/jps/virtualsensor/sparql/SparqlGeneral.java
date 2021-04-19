@@ -41,6 +41,13 @@ public class SparqlGeneral {
         kbClient.executeUpdate();
     }
 	
+	public static void performUpdate(String query) {
+        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        kbClient.setUpdateEndpoint(endpoint);
+        kbClient.setQuery(query);
+        kbClient.executeUpdate();
+    }
+	
 	public static JSONArray performQuery(SelectQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setUser(SparqlAuthentication.getUser());

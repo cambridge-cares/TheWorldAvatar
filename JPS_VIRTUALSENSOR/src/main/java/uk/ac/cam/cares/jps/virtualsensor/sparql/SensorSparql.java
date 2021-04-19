@@ -2,6 +2,9 @@ package uk.ac.cam.cares.jps.virtualsensor.sparql;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
@@ -43,20 +46,7 @@ public class SensorSparql {
     public static final String humidity = "OutsideAirRelativeHumidity";
     public static final String windspeed = "OutsideWindSpeed";
     public static final String winddirection = "OutsideWindDirection";
-
-    // air quality properties
-    public static final String CO2 = "OutsideCO2Concentration";
-    public static final String CO = "OutsideCOConcentration";
-    public static final String HC = "OutsideHCConcentration";
-    public static final String NO2 = "OutsideNO2Concentration";
-    public static final String NO = "OutsideNOConcentration";
-    public static final String NOx =  "OutsideNOxConcentration";
-    public static final String O3 = "OutsideO3Concentration";
-    public static final String PM1 = "OutsidePM1Concentration";
-    public static final String PM25 = "OutsidePM2.5Concentration";
-    public static final String PM10 = "OutsidePM10Concentration";
-    public static final String SO2 = "OutsideSO2Concentration";
-
+    
     // prefixes for SPARQL queries
     private static String ontostation = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#";
     private static Prefix p_station = SparqlBuilder.prefix("station",iri(ontostation));
@@ -73,6 +63,33 @@ public class SensorSparql {
     // type
     private static Iri WeatherStation = p_station.iri("WeatherStation");
     private static Iri AirQualityStation = p_station.iri("AirQualityStation");
+    // air quality properties
+    private static final Iri CO2 = p_ontosensor.iri("OutsideCO2Concentration");
+    private static final Iri CO = p_ontosensor.iri("OutsideCOConcentration");
+    private static final Iri HC = p_ontosensor.iri("OutsideHCConcentration");
+    private static final Iri NO2 = p_ontosensor.iri("OutsideNO2Concentration");
+    private static final Iri NO = p_ontosensor.iri("OutsideNOConcentration");
+    private static final Iri NOx =  p_ontosensor.iri("OutsideNOxConcentration");
+    private static final Iri O3 = p_ontosensor.iri("OutsideO3Concentration");
+    private static final Iri PM1 = p_ontosensor.iri("OutsidePM1Concentration");
+    private static final Iri PM25 = p_ontosensor.iri("OutsidePM2.5Concentration");
+    private static final Iri PM10 = p_ontosensor.iri("OutsidePM10Concentration");
+    private static final Iri SO2 = p_ontosensor.iri("OutsideSO2Concentration");
+
+    @SuppressWarnings("serial")
+	static Map<String, Iri> concIriMap = new HashMap<String , Iri>() {{
+    	put("CO",CO);
+    	put("CO2",CO2);
+    	put("NO",NO);
+    	put("NO2",NO2);
+    	put("HC",HC);
+    	put("NOx", NOx);
+    	put("SO2",SO2);
+    	put("O3",O3);
+    	put("PM1",PM1);
+    	put("PM2.5",PM25);
+    	put("PM10",PM10);
+    }};
     
     // relations
     private static Iri numericPosition = p_time.iri("numericPosition");
@@ -372,17 +389,17 @@ public class SensorSparql {
 
         InsertCoordinatesTP(modify,stationcoordinates_iri,station_name,xyz_coord);
 
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,CO2);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,CO);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,HC);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,NO2);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,NO);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,NOx);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,O3);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,PM1);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,PM25);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,PM10);
-        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,SO2);
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"CO2");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"CO");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"HC");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"NO2");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"NO");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"NOx");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"O3");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"PM1");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"PM2.5");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"PM10");
+        InsertAirQualitySensorTP(modify,airqualitystation_iri,p_station,station_name,"SO2");
         
         Prefix [] prefix_list = getPrefix();
         
@@ -398,7 +415,7 @@ public class SensorSparql {
         
         TriplePattern station_tp = station_iri.has(hasSubsystem,sensor_iri);
         TriplePattern sensor_tp = sensor_iri.isA(p_instrument.iri("Q-Sensor")).andHas(observes,data_iri);
-        TriplePattern data_tp = data_iri.isA(p_ontosensor.iri(data));
+        TriplePattern data_tp = data_iri.isA(concIriMap.get(data));
         		
 		modify.insert(station_tp,sensor_tp,data_tp);
     }
@@ -420,7 +437,7 @@ public class SensorSparql {
     	Variable data_iri = SparqlBuilder.var(queryKey);
     	
     	Iri[] predicates = {hasSubsystem,observes};
-    	Iri[] types = {null,null,p_ontosensor.iri(data)};
+    	Iri[] types = {null,null,concIriMap.get(data)};
     	GraphPattern queryPattern = SparqlGeneral.GetQueryGraphPattern(query, predicates, types, station_iri,data_iri);
     	
     	From queryGraph = SparqlBuilder.from(airquality_graph);
@@ -465,8 +482,8 @@ public class SensorSparql {
     	Iri datavalue_iri;
     	Iri time_iri;
 
-    	datavalue_iri = iri(stationiri+"_v"+data+Integer.toString(1+numberDataPoints));
-    	time_iri = iri(stationiri+"_time"+data+Integer.toString(1+numberDataPoints));
+    	datavalue_iri = iri(stationiri+"_v"+data+"_"+Integer.toString(1+numberDataPoints));
+    	time_iri = iri(stationiri+"_time"+data+"_"+Integer.toString(1+numberDataPoints));
 
     	TriplePattern data_tp = data_iri.has(hasValue,datavalue_iri);
     	TriplePattern datavalue_tp = datavalue_iri.has(prescaledNumValue, Rdf.literalOf(value))

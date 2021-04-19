@@ -100,17 +100,17 @@ public class SensorUpdaterAgent extends JPSAgent{
 		        		if (HCs.contains(component)) {
 		        			concHC += conc; 
 		        		} else if (NOx.contains(component)) {
-		        			dataname = "Outside" + component + "Concentration";
+		        			dataname = component;
 		        			SensorSparql.addSensorValue(stationiri, dataname, conc, timestamp);
 		        			concNOx += conc;
 		        		} else if (other_pol.contains(component)) {
 		        			// values other than HCs and NOx can be added directly
-		        		    dataname = "Outside" + component + "Concentration";
+		        		    dataname = component;
 		        			SensorSparql.addSensorValue(stationiri, dataname, conc, timestamp);
 		        		}
 		        	}
-		        	SensorSparql.addSensorValue(stationiri, SensorSparql.HC, concHC, timestamp);
-		        	SensorSparql.addSensorValue(stationiri, SensorSparql.NOx, concNOx, timestamp);
+		        	SensorSparql.addSensorValue(stationiri, "HC", concHC, timestamp);
+		        	SensorSparql.addSensorValue(stationiri, "NOx", concNOx, timestamp);
         		}
         	}
         }
