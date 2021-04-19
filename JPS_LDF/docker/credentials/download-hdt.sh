@@ -27,7 +27,7 @@ puts "Read password.txt file"
 
 # Download "hdt and node libraries" files
 puts "Downloading from 'kg' directory..."
-spawn scp -r $host:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/kg .
+spawn scp -r $host:/home/userspace/CoMoCommon/Archive/Projects/Preprints/c4e/c4e-266-xz378-Chatbot/Data/kg .
 
 expect "*authenticity*"
 send "yes\r" 
