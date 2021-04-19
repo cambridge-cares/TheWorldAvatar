@@ -178,7 +178,7 @@ def extract_key_components(html):
 class GoogleAPI:
 
     def __init__(self):
-        self.url_template = 'https://www.google.com/search?q=%s'
+        self.url_template = 'https://www.google.com/search?hl=en&q=%s'
         self.options = Options()
         self.options.add_argument('--headless')
         self.options.add_argument('--disable-logging')
