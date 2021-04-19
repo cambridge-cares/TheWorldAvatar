@@ -191,8 +191,10 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 	private void readDataGroupPropertyComponentSpeciesLink(char ch[], int start, int length) throws SAXException {
 		if (dataGroupPropertyComponentParseStatus.isComponentSpeciesLink() ) {
 			checkComponentValue();
+			// SpeciesLink is only allowed to be linked with Component, if not Composition and Concentration
 			createPropertyComponentSpeciesLink();
 			linkPropertyComponentSpeciesLinkToComponent();
+			
 		}
 	}
 	
@@ -200,8 +202,12 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 		if (dataGroupPropertySpeciesLinkParseStatus.isSpeciesLink()) {
 			String value = new String(ch, start, length);
 			dataGroupPropertySpeciesLink.setSpeciesLinkValue(value);
-			createPropertySpeciesLink();
-			linkPropertySpeciesLinkToProperty();
+			// SpeciesLink is only allowed to be linked with Composition and Concentration, if not Component
+			if (currentDQInstance.startsWith(ontoChemExpVocabulary.getClassComposition()) || 
+					currentDQInstance.startsWith(ontoChemExpVocabulary.getClassConcentration())) {
+				createPropertySpeciesLink();
+				linkPropertySpeciesLinkToProperty();
+			}
 			dataGroupPropertySpeciesLinkParseStatus.setSpeciesLink(false);
 			dataGroupProperty.setPropertySpeciesLink(dataGroupPropertySpeciesLink);
 			dataGroupPropertySpeciesLink = new SpeciesLink();
@@ -514,68 +520,68 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 		}
 	}
 
-	private void createDataGroupProperty() {
-		dataGroupPropertyCount += 1;
-
-		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(),
-					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
-
-			if (dataGroupProperty.getPropertyName() != null && !dataGroupProperty.getPropertyName().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasName(), dataGroupProperty.getPropertyName(), STRING);
-			}
-
-			if (dataGroupProperty.getPropertyId() != null && !dataGroupProperty.getPropertyId().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasID(), dataGroupProperty.getPropertyId(), STRING);
-			}
-
-			if (dataGroupProperty.getPropertyLabel() != null
-					&& !dataGroupProperty.getPropertyLabel().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasLabel(), dataGroupProperty.getPropertyLabel(), STRING);
-			}
-
-			if (dataGroupProperty.getPropertyUnits() != null
-					&& !dataGroupProperty.getPropertyUnits().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasUnits(), dataGroupProperty.getPropertyUnits(), STRING);
-			}
-
-			if (dataGroupProperty.getPropertyDescription() != null
-					&& !dataGroupProperty.getPropertyDescription().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasDescription(),
-						dataGroupProperty.getPropertyDescription().replace("\r", " ").replace("\n", ""), STRING);
-			}
-
-			if (dataGroupProperty.getPropertyDerivedPropertyExists() != null
-					&& !dataGroupProperty.getPropertyDerivedPropertyExists().trim().isEmpty()) {
-				iABoxManagement.addProperty(
-						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-						ontoChemExpVocabulary.getDataPropertyhasDerivedPropertyExists(),
-						dataGroupProperty.getPropertyDerivedPropertyExists(), STRING);
-			}
-		} catch (ABoxManagementException e) {
-			logger.error("An individual of Property could not be created.");
-		}
-	}
-
-	private void linkDataGroupPropertyToDataGroup() {
-		try {
-			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(),
-					"DataGroup" + UNDERSCORE + (dataGroupID + dataGroupCount),
-					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
-		} catch (ABoxManagementException e) {
-			logger.error("A link could not be established between an equipment and its dataGroup property.");
-		}
-	}
+//	private void createDataGroupProperty() {
+//		dataGroupPropertyCount += 1;
+//
+//		try {
+//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(),
+//					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
+//
+//			if (dataGroupProperty.getPropertyName() != null && !dataGroupProperty.getPropertyName().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasName(), dataGroupProperty.getPropertyName(), STRING);
+//			}
+//
+//			if (dataGroupProperty.getPropertyId() != null && !dataGroupProperty.getPropertyId().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasID(), dataGroupProperty.getPropertyId(), STRING);
+//			}
+//
+//			if (dataGroupProperty.getPropertyLabel() != null
+//					&& !dataGroupProperty.getPropertyLabel().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasLabel(), dataGroupProperty.getPropertyLabel(), STRING);
+//			}
+//
+//			if (dataGroupProperty.getPropertyUnits() != null
+//					&& !dataGroupProperty.getPropertyUnits().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasUnits(), dataGroupProperty.getPropertyUnits(), STRING);
+//			}
+//
+//			if (dataGroupProperty.getPropertyDescription() != null
+//					&& !dataGroupProperty.getPropertyDescription().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasDescription(),
+//						dataGroupProperty.getPropertyDescription().replace("\r", " ").replace("\n", ""), STRING);
+//			}
+//
+//			if (dataGroupProperty.getPropertyDerivedPropertyExists() != null
+//					&& !dataGroupProperty.getPropertyDerivedPropertyExists().trim().isEmpty()) {
+//				iABoxManagement.addProperty(
+//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+//						ontoChemExpVocabulary.getDataPropertyhasDerivedPropertyExists(),
+//						dataGroupProperty.getPropertyDerivedPropertyExists(), STRING);
+//			}
+//		} catch (ABoxManagementException e) {
+//			logger.error("An individual of Property could not be created.");
+//		}
+//	}
+//
+//	private void linkDataGroupPropertyToDataGroup() {
+//		try {
+//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(),
+//					"DataGroup" + UNDERSCORE + (dataGroupID + dataGroupCount),
+//					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
+//		} catch (ABoxManagementException e) {
+//			logger.error("A link could not be established between an equipment and its dataGroup property.");
+//		}
+//	}
 
 //	private void createPropertyValue() {
 //		try {
@@ -848,7 +854,7 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 	private void linkPropertySpeciesLinkToProperty() {
 		try {
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasSpeciesLink(),
-					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
+					currentDQInstance,
 					"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
 		} catch (ABoxManagementException e) {
 			logger.error("A link could not be established between the dataGroup property and its speciesLink.");
