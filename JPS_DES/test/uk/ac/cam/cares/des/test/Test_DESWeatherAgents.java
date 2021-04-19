@@ -64,8 +64,13 @@ public class Test_DESWeatherAgents{
 	public void testWeatherForecast() throws IOException {
 
 		long timeLast = new Date().getTime();
-    	new ForecastAgent().nextForecastDay(irioftempF);
+//    	new ForecastAgent().nextForecastDayTemperature(irioftempF);
     	String fileStr = DESAgentNew.tempIRItoFile(irioftempF);
+//    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+//    	timeLast = new Date().getTime();
+    	new ForecastAgent().nextForecastDaySolcast(irioftempF,iriofirrF);
+    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+    	fileStr = DESAgentNew.tempIRItoFile(iriofirrF);
     	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
 		//Only enable this if the current test runs but Forecast Agent creates an error
 		//Because we have a limited number of API calls
