@@ -43,7 +43,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 		readCommonPropertiesPropertyComponent(ch, start, length);
 		readCommonPropertiesPropertyComponentSpeciesLink(ch, start, length);
 		readCommonPropertiesPropertyComponentAmount(ch, start, length);
-//		readCommonPropertiesPropertyComponentUncertainty(ch, start, length);
+		readCommonPropertiesPropertyComponentUncertainty(ch, start, length);
 	}
 	
 	

@@ -117,7 +117,7 @@ hasDataPointX,Object Property,,,DataPoint,X11,some,,http://www.theworldavatar.co
 refersTo,Object Property,,,X,DimensionalQuantity,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasSpeciesLink,Object Property,,,Component,SpeciesLink,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasAmount,Object Property,,,Component,Amount,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUncertainty,Object Property,,,Amount,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasUncertainty,Object Property,,,Component,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasUniqueSpecies,Object Property,,,SpeciesLink,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasFeature,Object Property,,,DerivedProperty,Feature,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasIndicator,Object Property,,,Feature,Indicator,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl

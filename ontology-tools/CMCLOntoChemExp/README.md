@@ -42,7 +42,7 @@ Under construction...
 
 ## Update history
 
-### v1.1 to v1.2 (as of 18 April 2021)
+### v1.1 to v1.2 (as of 19 April 2021)
 
 - Concepts
 
@@ -57,12 +57,10 @@ Under construction...
 
   - Removed below object properties
     - `<Property hasSpeciesLink SpeciesLink>`
-    - `<Component hasUncertainty Uncertainty>` class `Component` should not allowed to connect to `Uncertainty` directly
   - Added below object properties
     - `<Composition hasSpeciesLink SpeciesLink>`
     - `<Concentration hasSpeciesLink SpeciesLink>`
     - `<X refersTo DimensionalQuantity>` to make the direct connection between measured data point `X` with the physical `DimensionalQuantity` it represents
-    - `<Amount hasUncertainty Uncertainty>` class `Amount` should be used to make the connection with `Uncertainty` when user wants to indicate the uncertainty in `InitialComposition`
   - Inherited publication-related object property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
     - `<OntoKin:JournalSpecification OntoKin:specifies http://purl.org/ontology/bibo/Journal>`
     - `<BibliographyLink OntoKin:hasPublicationSpecification OntoKin:PublicationSpecification>`
@@ -103,6 +101,8 @@ Under construction...
     - `<Provenance createdBy ^^xsd:string>` to `<Provenance createdBy http://xmlns.com/foaf/0.1/Agent>`
     - `<Modification modifiedBy ^^xsd:string>` to `<Modified modifiedBy http://xmlns.com/foaf/0.1/Agent>`
 
+![OntoChemExp core concepts v1.2 as of 19 April 2021](https://lucid.app/publicSegments/view/23814531-dc4e-47f1-81ba-787ff40709bd/image.png)
+
 ### v1.0 to v1.1 (as of 1 April 2021)
 
 - Concepts
@@ -129,8 +129,6 @@ Under construction...
     - `<SpeciesLink OntoChemExp:hasCAS ^^xsd:string>`, `<SpeciesLink OntoChemExp:hasInChI ^^xsd:string>`, `<SpeciesLink OntoChemExp:hasSMILES ^^xsd:string>`
     - `<Property OntoChemExp:hasSourceType ^^xsd:string>`, `<Property OntoChemExp:hasMethod ^^xsd:string>`
   - Replaced data property `<OntoChemExp:SpeciesLink OntoChemExp:hasUniqueSpeciesIRI ^^xsd:string>` with object property `<OntoChemExp:SpeciesLink OntoChemExp:hasUniqueSpecies OntoSpecies:Species>`
-
-![OntoChemExp core concepts v1.2 as of 18 April 2021](https://lucid.app/publicSegments/view/23814531-dc4e-47f1-81ba-787ff40709bd/image.png)
 
 ### v1.0
 
