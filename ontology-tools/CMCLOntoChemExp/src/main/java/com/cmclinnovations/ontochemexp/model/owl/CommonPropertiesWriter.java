@@ -41,7 +41,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 		readCommonPropertiesPropertyValue(ch, start, length);
 //		readCommonPropertiesPropertyUncertainty(ch, start, length);
 		readCommonPropertiesPropertyComponent(ch, start, length);
-//		readCommonPropertiesPropertyComponentSpeciesLink(ch, start, length);
+		readCommonPropertiesPropertyComponentSpeciesLink(ch, start, length);
 //		readCommonPropertiesPropertyComponentAmount(ch, start, length);
 //		readCommonPropertiesPropertyComponentUncertainty(ch, start, length);
 	}
@@ -362,7 +362,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
 						ontoChemExpVocabulary.getDataPropertyhasPreferredKey(), 
 						commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPreferredKey(), STRING);
-			}		
+			}
 			
 			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
 					&& !commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
@@ -383,6 +383,27 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");
 					e.printStackTrace();
 				}
+			}
+			
+			if (commonPropertiesPropertyComponentSpeciesLink.getCas() != null 
+					&& !commonPropertiesPropertyComponentSpeciesLink.getCas().trim().isEmpty()) {
+				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+						ontoChemExpVocabulary.getDataPropertyhasCAS(), 
+						commonPropertiesPropertyComponentSpeciesLink.getCas(), STRING);
+			}
+			
+			if (commonPropertiesPropertyComponentSpeciesLink.getInchi() != null 
+					&& !commonPropertiesPropertyComponentSpeciesLink.getInchi().trim().isEmpty()) {
+				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+						ontoChemExpVocabulary.getDataPropertyhasInChI(), 
+						commonPropertiesPropertyComponentSpeciesLink.getInchi(), STRING);
+			}
+			
+			if (commonPropertiesPropertyComponentSpeciesLink.getSmiles() != null 
+					&& !commonPropertiesPropertyComponentSpeciesLink.getSmiles().trim().isEmpty()) {
+				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+						ontoChemExpVocabulary.getDataPropertyhasSMILES(), 
+						commonPropertiesPropertyComponentSpeciesLink.getSmiles(), STRING);
 			}
 			
 			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkValue() != null 

@@ -995,4 +995,37 @@ public class OntoChemExpVocabulary {
 	public void setDataPropertyhasSourceType(String dataPropertyhasSourceType) {
 		this.dataPropertyhasSourceType = dataPropertyhasSourceType;
 	}
+	
+	@Value("${ontochemexp.data.property.hasCAS}")
+	private String dataPropertyhasCAS;
+	
+	public String getDataPropertyhasCAS() {
+		return dataPropertyhasCAS;
+	}
+
+	public void setDataPropertyhasCAS(String dataPropertyhasCAS) {
+		this.dataPropertyhasCAS = dataPropertyhasCAS;
+	}
+	
+	@Value("${ontochemexp.data.property.hasInChI}")
+	private String dataPropertyhasInChI;
+	
+	public String getDataPropertyhasInChI() {
+		return dataPropertyhasInChI;
+	}
+
+	public void setDataPropertyhasInChI(String dataPropertyhasInChI) {
+		this.dataPropertyhasInChI = dataPropertyhasInChI;
+	}
+	
+	@Value("${ontochemexp.data.property.hasSMILES}")
+	private String dataPropertyhasSMILES;
+	
+	public String getDataPropertyhasSMILES() {
+		return dataPropertyhasSMILES;
+	}
+
+	public void setDataPropertyhasSMILES(String dataPropertyhasSMILES) {
+		this.dataPropertyhasSMILES = dataPropertyhasSMILES;
+	}
 }

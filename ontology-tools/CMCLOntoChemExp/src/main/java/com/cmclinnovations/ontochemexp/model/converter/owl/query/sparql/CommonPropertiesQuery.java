@@ -179,6 +179,21 @@ public class CommonPropertiesQuery extends OwlConverter implements ICommonProper
 				commonPropertiesPropertyComponentSpeciesLink.setSpeciesLinkPrimeID(primeID);
 			}
 			
+			String cas = readDataPropertyCAS(speciesLinkInstance.get(0));
+			if (cas != null && !cas.isEmpty()) {
+				commonPropertiesPropertyComponentSpeciesLink.setCas(cas);
+			}
+			
+			String inchi = readDataPropertyInChI(speciesLinkInstance.get(0));
+			if (inchi != null && !inchi.isEmpty()) {
+				commonPropertiesPropertyComponentSpeciesLink.setInchi(inchi);
+			}
+			
+			String smiles = readDataPropertySMILES(speciesLinkInstance.get(0));
+			if (smiles != null && !smiles.isEmpty()) {
+				commonPropertiesPropertyComponentSpeciesLink.setSmiles(smiles);
+			}
+			
 			String value = readDataPropertyValue(speciesLinkInstance.get(0));
 			if (value != null && !value.isEmpty()) {
 				commonPropertiesPropertyComponentSpeciesLink.setSpeciesLinkValue(value);

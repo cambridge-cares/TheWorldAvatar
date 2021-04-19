@@ -573,4 +573,48 @@ public class PrimeVocabulary {
 	public void setAttribMethod(String attribMethod) {
 		this.attribMethod = attribMethod;
 	}
+	
+	@Value("${prime.attribute.hasCAS}")
+	private String attribCAS;
+	
+	@Value("${prime.attribute.hasInChI}")
+	private String attribInChI;
+	
+	@Value("${prime.attribute.hasSMILES}")
+	private String attribSMILES;
+
+	public String getAttribCAS() {
+		return attribCAS;
+	}
+
+	public void setAttribCAS(String attribCAS) {
+		this.attribCAS = attribCAS;
+	}
+
+	public String getAttribInChI() {
+		return attribInChI;
+	}
+
+	public void setAttribInChI(String attribInChI) {
+		this.attribInChI = attribInChI;
+	}
+
+	public String getAttribSMILES() {
+		return attribSMILES;
+	}
+
+	public void setAttribSMILES(String attribSMILES) {
+		this.attribSMILES = attribSMILES;
+	}
+	
+	@Value("${prime.attribute.hasChemName}")
+	private String attribChemName;
+
+	public String getAttribChemName() {
+		return attribChemName;
+	}
+
+	public void setAttribChemName(String attribChemName) {
+		this.attribChemName = attribChemName;
+	}
 }

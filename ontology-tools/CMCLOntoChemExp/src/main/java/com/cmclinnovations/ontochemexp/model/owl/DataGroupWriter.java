@@ -63,8 +63,8 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 ////		readDataGroupPropertyValue(ch, start, length);
 //		readDataGroupPropertyUncertainty(ch, start, length);
 		readDataGroupPropertyComponent(ch, start, length);
-//		readDataGroupPropertyComponentSpeciesLink(ch, start, length);
-//		readDataGroupPropertySpeciesLink(ch, start, length);
+		readDataGroupPropertyComponentSpeciesLink(ch, start, length);
+		readDataGroupPropertySpeciesLink(ch, start, length);
 		readDataGroupPropertyDerivedProperty(ch, start, length);
 		readDataGroupPropertyDerivedPropertyFeature(ch, start, length);
 		readDataGroupPropertyDerivedPropertyFeatureIndicator(ch, start, length);
@@ -724,6 +724,30 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 				}
 			}
 			
+			if (dataGroupPropertyComponentSpeciesLink.getCas() != null 
+					&& !dataGroupPropertyComponentSpeciesLink.getCas().trim().isEmpty()) {
+				iABoxManagement.addProperty(
+						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
+						ontoChemExpVocabulary.getDataPropertyhasCAS(),
+						dataGroupPropertyComponentSpeciesLink.getCas(), STRING);
+			}
+			
+			if (dataGroupPropertyComponentSpeciesLink.getInchi() != null 
+					&& !dataGroupPropertyComponentSpeciesLink.getInchi().trim().isEmpty()) {
+				iABoxManagement.addProperty(
+						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
+						ontoChemExpVocabulary.getDataPropertyhasInChI(),
+						dataGroupPropertyComponentSpeciesLink.getInchi(), STRING);
+			}
+			
+			if (dataGroupPropertyComponentSpeciesLink.getSmiles() != null 
+					&& !dataGroupPropertyComponentSpeciesLink.getSmiles().trim().isEmpty()) {
+				iABoxManagement.addProperty(
+						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
+						ontoChemExpVocabulary.getDataPropertyhasSMILES(),
+						dataGroupPropertyComponentSpeciesLink.getSmiles(), STRING);
+			}
+			
 		} catch (ABoxManagementException e) {
 			logger.error("An individual of PropertyComponentSpeciesLink could not be created.");
 		}
@@ -776,6 +800,33 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");
 					e.printStackTrace();
 				}
+			}
+			
+			if (dataGroupPropertySpeciesLink.getCas() != null
+					&& !dataGroupPropertySpeciesLink.getCas().trim().isEmpty()) {
+				iABoxManagement.addProperty(
+						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
+								+ dataGroupPropertyCount,
+						ontoChemExpVocabulary.getDataPropertyhasCAS(),
+						dataGroupPropertySpeciesLink.getCas(), STRING);
+			}
+			
+			if (dataGroupPropertySpeciesLink.getInchi() != null
+					&& !dataGroupPropertySpeciesLink.getInchi().trim().isEmpty()) {
+				iABoxManagement.addProperty(
+						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
+								+ dataGroupPropertyCount,
+						ontoChemExpVocabulary.getDataPropertyhasInChI(),
+						dataGroupPropertySpeciesLink.getInchi(), STRING);
+			}
+			
+			if (dataGroupPropertySpeciesLink.getSmiles() != null
+					&& !dataGroupPropertySpeciesLink.getSmiles().trim().isEmpty()) {
+				iABoxManagement.addProperty(
+						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
+								+ dataGroupPropertyCount,
+						ontoChemExpVocabulary.getDataPropertyhasSMILES(),
+						dataGroupPropertySpeciesLink.getSmiles(), STRING);
 			}
 
 			if (dataGroupPropertySpeciesLink.getSpeciesLinkValue() != null
