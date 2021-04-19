@@ -25,7 +25,7 @@ class GoogleAPI:
 
         self.driver = webdriver.Firefox(options=self.options)
 
-        self.url_template = 'https://www.google.com/search?lr=lang_en&q=%s'
+        self.url_template = 'https://www.google.com/search?hl=en&q=%s'
 
     # due to possible restriction from google, we implement a proxy to enable robust request to google.
     def test_proxy_ip(self):
