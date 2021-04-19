@@ -19,6 +19,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.ForecastAgent;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
+import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 
 /** Note that forecast agents are disabled in response to restriction
  * on number of solar calls
@@ -33,6 +34,8 @@ public class Test_DESWeatherAgents{
 	private String baseUrl = null;
 	private String irioftempS=null;
 	private String iriofirrS=null;
+	private String irioftempF=null;
+	private String iriofirrF=null;
 	private String iriofwindS=null;
 	
     @Before
@@ -43,21 +46,27 @@ public class Test_DESWeatherAgents{
     	irioftempS="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
         iriofirrS="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
         iriofwindS="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
-        
+        irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
+		iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
+		
+    }
+    @Test
+    public void testWeatherForecastUpdate() throws IOException{
+//    	new ForecastAgent().runUpdateOnForecast();
     }
     
 
-	/** test if validateInput method is working in Forecast Agent
+	/** test if GETREQ is in use. 
 	 * @throws IOException 
 	 * 
 	 */
     @Test
 	public void testWeatherForecast() throws IOException {
-		ForecastAgent a = new ForecastAgent();
-		assertNotNull( ForecastAgent.GETReq(ENIRI));
-		ArrayList<ArrayList<String>>  result = ForecastAgent.AccuRequest();
-		assertNotNull(result.get(0).get(0));
-		System.out.println(result.get(0).get(0));
+
+		long timeLast = new Date().getTime();
+    	new ForecastAgent().nextForecastDay(irioftempF);
+    	String fileStr = DESAgentNew.tempIRItoFile(irioftempF);
+    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
 		//Only enable this if the current test runs but Forecast Agent creates an error
 		//Because we have a limited number of API calls
 //		ArrayList<ArrayList<String>>  resultSun = ForecastAgent.SolCastRequest();

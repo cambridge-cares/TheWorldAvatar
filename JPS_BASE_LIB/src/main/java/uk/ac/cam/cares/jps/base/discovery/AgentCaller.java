@@ -2,9 +2,15 @@ package uk.ac.cam.cares.jps.base.discovery;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -410,7 +416,41 @@ public class AgentCaller {
             return null;
         }
     }
+    /** queries URL for data in requestBody
+     * checks if HTTPUrlConnection is ok
+     * @param url
+     * @return requestBody as String
+     * @throws IOException
+     */
+    public static String getRequestBody(String url) {
+    	try {
+    	URL urlForGetRequest = new URL(url);
+	    HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
+	    conection.setRequestMethod("GET");
+	    String readLine = null;
+	    int responseCode = conection.getResponseCode();
+	    if (responseCode == HttpURLConnection.HTTP_OK) {
+	    	 BufferedReader in = new BufferedReader(new InputStreamReader(conection.getInputStream()));
+	    	 StringBuffer response = new StringBuffer();
+	    	 while ((readLine = in.readLine()) != null) {
+	    		 response.append(readLine);
+	    	 	}
+	    	 in.close();
 
+		 return response.toString();
+	    }else {
+	    	throw new JPSRuntimeException("Failure to connect");
+	    	
+	    }
+	    }catch (MalformedURLException e) {
+	    	throw new JPSRuntimeException("Malformed URL "+ url + "; try again.");
+	    	
+	    }catch (ProtocolException e) {
+	    	throw new JPSRuntimeException("Protocol Exception "+ url + "; try again.");
+	    }catch (IOException e){
+	    	throw new JPSRuntimeException("IO Exception "+ url + "; try again.");
+	    }
+    }
     public static void printToResponse(Object object, HttpServletResponse resp) {
 
         if (object == null) {
