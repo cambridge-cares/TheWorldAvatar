@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -25,11 +24,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kg.KnowledgeBaseAgentNew;
 
 public class TestKnowledgeBA   {
@@ -84,37 +81,7 @@ public class TestKnowledgeBA   {
 		JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("OH",jo.get("o").toString());
-	}
-	 /** Test Sparql query with String. Should return result as String.
-	 * @throws ParseException 
-	  */
-	@Test
-	public void testBaseQueryDirectORDERBY() throws ParseException {
-//		String v = "<http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#V_MeasuredTemperatureOfSGTemperatureSensor-001_1>";
-//		String d = "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>";
-//		WhereBuilder where = new WhereBuilder()
-//				.addWhere("?s", "?p", "?o")
-//				.addWhere(v,d,"?a")
-////				.addFilter("?v = <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#V_MeasuredTemperatureOfSGTemperatureSensor-001_1> &&  ?d = <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>")			
-//				.addFilter("?s = <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#TimeOfMeasuredTemperatureOfSGTemperatureSensor-001_1> && ?p = <http://www.w3.org/2006/time#inXSDDateTime>");
-//				
-//		// Build update
-//		UpdateBuilder builder = new UpdateBuilder();
-//				
-//		// Add where 
-//		builder.addDelete("?s", "?p", "?o")
-//		.addDelete(v,d, "?a")
-//			.addWhere(where);
-		String sparqlUpdate = "DELETE {\n  <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#V_MeasuredTemperatureOfSGTemperatureSensor-001_1> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> ?o .\n  <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#TimeOfMeasuredTemperatureOfSGTemperatureSensor-001_1> <http://www.w3.org/2006/time#inXSDDateTime> ?a .\n}\nINSERT {\n  <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#V_MeasuredTemperatureOfSGTemperatureSensor-001_1> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> 14.8 .\n  <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#TimeOfMeasuredTemperatureOfSGTemperatureSensor-001_1> <http://www.w3.org/2006/time#inXSDDateTime> \"2021-04-15T13:59:08+08:00\" .\n}\nWHERE\n  { <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#V_MeasuredTemperatureOfSGTemperatureSensor-001_1>\n              <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>  ?o .\n    <http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#TimeOfMeasuredTemperatureOfSGTemperatureSensor-001_1>\n              <http://www.w3.org/2006/time#inXSDDateTime>  ?a\n  }\n";
-		JSONObject jo = new JSONObject()
-				.put(JPSConstants.TARGETIRI, "C:\\Users/ongajong/TOMCAT/webapps/ROOT/kb/sgp/singapore/SGTemperatureSensor-001.owl")
-				.put(JPSConstants.QUERY_SPARQL_UPDATE, sparqlUpdate);
-//		AgentCaller.executeGetWithJsonParameter("jps/kb/scenarioFolder", jo.toString());
-
-       KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
-       JSONObject result = jpsa.main(jo);		
-	}
-	
+	}	
 
 	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
 	 * 
