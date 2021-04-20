@@ -1,0 +1,53 @@
+###############################################################################
+# This file describes the process of the training of the models used in Marie #
+###############################################################################
+
+
+In folder Wiki_basic_info
+
+
+1. To retreive all the chemical species and their SMILES string from Wikdiata
+	
+	###################################################################################
+	# with nodejs and @comunica/actor-init-sparql installed 
+	a) node wiki_retrieve_species.js
+	
+	the script produces 837 files, each containing 100 species and their SMILES
+
+	###################################################################################
+	b) python length_filter.py	
+
+	the script filters out species with too long a SMILES string, produces WIKI_URI_LIST
+
+	WIKI_URI_LIST contains a sorted list of URIs of around 120,000 selected species
+
+	the script also produces URI_SMILES_DICT
+
+	URI_SMILES_DICT contains a mapping between SMILES and URI, which will be later used as the SMILES lookup dict
+
+	###################################################################################
+
+	c) python dict_test.py 
+	
+	to test the SMILES lookup dictionary is properly created 
+
+	###################################################################################
+
+2. Based on WIKI_URI_LIST, retrieve chemistry-related properties, classes and the label and alternative labels of species
+	
+	###################################################################################
+
+	a) python query_properties.py 
+		
+	take WIKI_URI_LIST, make query to Wikidata and get all properties related to those species. 
+
+	the script produces distinct_properties, containing the properties and their labels and alt labels, 135 labels are expected  
+
+	###################################################################################
+	
+	b) python query_species_classes_and_labels.py (long running time)
+	
+
+	
+
+        

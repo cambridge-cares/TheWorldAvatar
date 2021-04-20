@@ -1,7 +1,7 @@
 import json, re
 
 
-ontologies =  ['ontocompchem', 'ontokin', 'ontospecies', 'wiki']
+ontologies =  ['ontocompchem', 'ontokin', 'wiki']
 def process_puncutation(string):
     # Load the regular expression library
 
