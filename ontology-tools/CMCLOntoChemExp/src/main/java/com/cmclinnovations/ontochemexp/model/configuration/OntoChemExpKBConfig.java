@@ -219,4 +219,125 @@ public class OntoChemExpKBConfig {
 	public void setOntoKinKBTboxIRI(String ontoKinKBTboxIRI) {
 		this.ontoKinKBTboxIRI = ontoKinKBTboxIRI;
 	}
+	
+	@Value("${files.experiment.performer}")
+	private String filesExperimentPerformer;
+	
+	@Value("${files.generation.createdBy}")
+	private String filesProvenanceCreatedBy;
+	
+	@Value("${person.firstName}")
+	private String filesPersonFirstName;
+	
+	@Value("${person.familyName}")
+	private String filesPersonFamilyName;
+	
+	@Value("${person.fullName}")
+	private String filesPersonFullName;
+	
+	@Value("${files.generation.createdAt}")
+	private String filesProvenanceCreatedAt;
+	
+	@Value("${files.modification.modifiedBy}")
+	private String filesModificationModifiedBy;
+	
+	@Value("${files.modification.modifiedAt}")
+	private String filesModificationModifiedAt;
+	
+	@Value("${files.modification.hasModificationDetails}")
+	private String filesModificationhasModificationDetails;
+	
+	@Value("${files.hasDataSource}")
+	private String filesDataSource;
+	
+	@Value("${files.hasPatent}")
+	private String filesPatent;
+
+	public String getFilesExperimentPerformer() {
+		return filesExperimentPerformer;
+	}
+
+	public void setFilesExperimentPerformer(String filesExperimentPerformer) {
+		this.filesExperimentPerformer = filesExperimentPerformer;
+	}
+
+	public String getFilesProvenanceCreatedBy() {
+		return filesProvenanceCreatedBy;
+	}
+
+	public void setFilesProvenanceCreatedBy(String filesProvenanceCreatedBy) {
+		this.filesProvenanceCreatedBy = filesProvenanceCreatedBy;
+	}
+
+	public String getFilesPersonFirstName() {
+		return filesPersonFirstName;
+	}
+
+	public void setFilesPersonFirstName(String filesPersonFirstName) {
+		this.filesPersonFirstName = filesPersonFirstName;
+	}
+
+	public String getFilesPersonFamilyName() {
+		return filesPersonFamilyName;
+	}
+
+	public void setFilesPersonFamilyName(String filesPersonFamilyName) {
+		this.filesPersonFamilyName = filesPersonFamilyName;
+	}
+
+	public String getFilesPersonFullName() {
+		return filesPersonFullName;
+	}
+
+	public void setFilesPersonFullName(String filesPersonFullName) {
+		this.filesPersonFullName = filesPersonFullName;
+	}
+
+	public String getFilesProvenanceCreatedAt() {
+		return filesProvenanceCreatedAt;
+	}
+
+	public void setFilesProvenanceCreatedAt(String filesProvenanceCreatedAt) {
+		this.filesProvenanceCreatedAt = filesProvenanceCreatedAt;
+	}
+
+	public String getFilesModificationModifiedBy() {
+		return filesModificationModifiedBy;
+	}
+
+	public void setFilesModificationModifiedBy(String filesModificationModifiedBy) {
+		this.filesModificationModifiedBy = filesModificationModifiedBy;
+	}
+
+	public String getFilesModificationModifiedAt() {
+		return filesModificationModifiedAt;
+	}
+
+	public void setFilesModificationModifiedAt(String filesModificationModifiedAt) {
+		this.filesModificationModifiedAt = filesModificationModifiedAt;
+	}
+
+	public String getFilesModificationhasModificationDetails() {
+		return filesModificationhasModificationDetails;
+	}
+
+	public void setFilesModificationhasModificationDetails(String filesModificationhasModificationDetails) {
+		this.filesModificationhasModificationDetails = filesModificationhasModificationDetails;
+	}
+
+	public String getFilesDataSource() {
+		return filesDataSource;
+	}
+
+	public void setFilesDataSource(String filesDataSource) {
+		this.filesDataSource = filesDataSource;
+	}
+
+	public String getFilesPatent() {
+		return filesPatent;
+	}
+
+	public void setFilesPatent(String filesPatent) {
+		this.filesPatent = filesPatent;
+	}
 }

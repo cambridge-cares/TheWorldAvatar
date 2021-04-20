@@ -434,6 +434,8 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		experimentPerformerInstanceID = System.nanoTime();
 		journalSpecInstanceId = System.nanoTime();
 		journalInstanceId = System.nanoTime();
+		filesProvenanceInstanceID = System.nanoTime();
+		filesModificationInstanceID = System.nanoTime();
 		
 		currentBibliographyLinkInstance = new String();
 		

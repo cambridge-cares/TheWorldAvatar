@@ -399,6 +399,7 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 		markEndCopyright(qName);
 		markEndDataGroup(qName);
 		markEndPreferredKey(qName);
+		markEndExperiment(qName);
 	}
 
 	private void markEndAdditionalDataItem(String qName) {
@@ -531,6 +532,97 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 			if (preferredKeyParseStatus.isPreferredKey()) {
 				preferredKeyParseStatus.setPreferredKey(false);
 			}
+		}
+	}
+	
+	private void markEndExperiment(String qName) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemExperiment())) {
+			if (ontoChemExpKB.getFilesExperimentPerformer() != null && !ontoChemExpKB.getFilesExperimentPerformer().isEmpty()) {
+				try {
+					iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoKinReferenceAgent(), ontoChemExpKB.getFilesExperimentPerformer());
+					iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpExperimenthasPerformer(), 
+							currentExperimentInstance, ontoChemExpKB.getFilesExperimentPerformer());
+				} catch (ABoxManagementException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (ontoChemExpKB.getFilesProvenanceCreatedBy() != null && !ontoChemExpKB.getFilesProvenanceCreatedBy().isEmpty()) {
+				try {
+					iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoChemExpProvenance(), ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID);
+					iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpProvenancehasProvenance(), currentExperimentInstance, ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID);
+					
+					// Adds the current time of the file generation
+					iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+							ontoChemExpVocabulary.getOntoChemExpProvenancecreatedAt(), Long.toString(System.currentTimeMillis()), STRING);
+					
+					if (ontoChemExpKB.getFilesDataSource() != null && !ontoChemExpKB.getFilesDataSource().isEmpty()) {
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoChemExpProvenancehasDataSource(), ontoChemExpKB.getFilesDataSource(), STRING);
+					}
+					
+					if (ontoChemExpKB.getFilesPatent() != null && !ontoChemExpKB.getFilesPatent().isEmpty()) {
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoChemExpProvenancehasPatent(), ontoChemExpKB.getFilesPatent(), STRING);						
+					}
+					
+					if (ontoChemExpKB.getFilesProvenanceCreatedBy().equalsIgnoreCase(ontoChemExpVocabulary.getOntoKinReferencePerson())) {
+						iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoKinReferencePerson(), ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID);
+						
+						// Adds the family name of one of the persons generated the current file
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoKinReferenceFamilyName(), ontoChemExpKB.getFilesPersonFamilyName(), STRING);
+						
+						// Adds the given name of one of the persons generated the current file
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoKinReferenceGivenName(), ontoChemExpKB.getFilesPersonFirstName(), STRING);
+						
+						// Adds the name of one of the persons generated the current file
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoKinReferenceName(), ontoChemExpKB.getFilesPersonFullName(), STRING);
+						
+						iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpProvenancecreatedBy(), 
+								ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID);
+					}
+				} catch (ABoxManagementException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (ontoChemExpKB.getFilesModificationModifiedBy() != null && !ontoChemExpKB.getFilesModificationModifiedBy().isEmpty()) {
+				try {
+					// Create and link the Modification to Provenance
+					iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoChemExpProvenanceModification(), ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID);
+					iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpProvenancehasModification(), 
+							ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+							ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID);
+					
+					// Create the individual of the agent that did the modification
+					iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoKinReferenceAgent(), ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesModificationInstanceID);
+					
+					// Link the agent to the modification
+					iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpProvenanceModificationmodifiedBy(), 
+							ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID, ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesModificationInstanceID);
+					
+					// Adds the time of the modification
+					iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID, 
+							ontoChemExpVocabulary.getOntoChemExpProvenanceModificationmodifiedAt(), Long.toString(System.currentTimeMillis()), STRING);
+					
+					if (ontoChemExpVocabulary.getOntoChemExpProvenanceModificationhasModificationDetails() != null && 
+							!ontoChemExpVocabulary.getOntoChemExpProvenanceModificationhasModificationDetails().isEmpty()) {
+						// Adds the modification details
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID, 
+								ontoChemExpVocabulary.getOntoChemExpProvenanceModificationhasModificationDetails(), ontoChemExpKB.getFilesModificationhasModificationDetails(), STRING);
+					}
+					
+					filesModificationInstanceID++;
+				} catch (ABoxManagementException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			
 		}
 	}
 

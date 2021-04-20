@@ -409,6 +409,8 @@ public class PrimeConverterState extends ABoxManagement{
 	
 	public static long journalSpecInstanceId;
 	public static long journalInstanceId;
+	public static long filesProvenanceInstanceID;
+	public static long filesModificationInstanceID;
 	
 	public static String currentBibliographyLinkInstance;
 	
