@@ -208,4 +208,15 @@ public class OntoChemExpKBConfig {
 	public void setUploadTripleStoreRepositoryOntoChemExp(String uploadTripleStoreRepositoryOntoChemExp) {
 		this.uploadTripleStoreRepositoryOntoChemExp = uploadTripleStoreRepositoryOntoChemExp;
 	}
+	
+	@Value("${ontokin.kb.tbox.iri}")
+	private String ontoKinKBTboxIRI;
+
+	public String getOntoKinKBTboxIRI() {
+		return ontoKinKBTboxIRI;
+	}
+
+	public void setOntoKinKBTboxIRI(String ontoKinKBTboxIRI) {
+		this.ontoKinKBTboxIRI = ontoKinKBTboxIRI;
+	}
 }

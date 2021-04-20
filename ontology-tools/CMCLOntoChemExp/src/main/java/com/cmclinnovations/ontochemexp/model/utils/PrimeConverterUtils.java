@@ -20,7 +20,14 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 
@@ -548,5 +555,108 @@ public class PrimeConverterUtils extends PrimeConverter{
 		if (!file.exists()) {
 //			throw new OntoException("The following file does not exist:"+path);
 		}
+	}
+	
+	public static OWLIndividual createIndividualFromOtherOntology(String tboxPath, String clasName, String instance) throws OntoChemExpException {
+		OWLClass claz = createOWLClass(dataFactory, tboxPath, clasName);
+		OWLIndividual individual = createOWLIndividual(dataFactory, basePathABox, instance);
+		// Adds to the ontology the instance of the class
+		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLClassAssertionAxiom(claz, individual)));
+		return individual;
+	}
+	
+	public static void addObjectPropertyFromOtherOntology(String objectPropertyPath, String domainInstanceName, String rangeInstanceName) throws OntoChemExpException {
+		OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(objectPropertyPath);
+		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox, domainInstanceName);
+		OWLIndividual rangeIndividual = createOWLIndividual(dataFactory, basePathABox, rangeInstanceName);
+		manager.applyChange(new AddAxiom(ontology, 
+				dataFactory.getOWLObjectPropertyAssertionAxiom(objectProperty, domainIndividual, rangeIndividual)));
+	}
+	
+	public static void addObjectPropertyFromOtherOntology(String basePath, String objectPropertyName, String domainInstanceName, String rangeInstanceName) throws OntoChemExpException {
+		OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(basePath.concat(HASH).concat(objectPropertyName));
+		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox, domainInstanceName);
+		OWLIndividual rangeIndividual = createOWLIndividual(dataFactory, basePathABox, rangeInstanceName);
+		manager.applyChange(new AddAxiom(ontology, 
+				dataFactory.getOWLObjectPropertyAssertionAxiom(objectProperty, domainIndividual, rangeIndividual)));
+	}
+	
+	public static void addDataPropertyFromOtherOntology(String basePath, String instance, String dataPropertyName, String dataPropertyValue, String propertyType) throws OntoChemExpException {
+		OWLIndividual individual = createOWLIndividual(dataFactory, basePathABox, instance);
+		OWLLiteral literal = createOWLLiteral(dataFactory, dataPropertyValue, propertyType);
+		OWLDataProperty dataPropertyCreated = createOWLDataProperty(dataFactory, basePath, dataPropertyName, HASH);
+		manager.applyChange(new AddAxiom(ontology, 
+				dataFactory.getOWLDataPropertyAssertionAxiom(dataPropertyCreated, individual, literal)));
+	}
+	
+	/**
+	 * Create ontology class. 
+	 * 
+	 * @param ontoFactory
+	 * @param owlFilePath baseTBoxPath
+	 * @param className
+	 * @return
+	 */
+	private static OWLClass createOWLClass(OWLDataFactory ontoFactory, String owlFilePath, String className) {
+		if (className != null && (className.trim().startsWith("http://") || className.trim().startsWith("https://"))) {
+			return ontoFactory.getOWLClass(className.trim());
+		}
+		return ontoFactory.getOWLClass(owlFilePath.concat("#").concat(className));
+	}
+	
+	/**
+	 * 
+	 * @param ontoFactory
+	 * @param owlFilePath
+	 * @param individualName
+	 * @return
+	 */
+	private static OWLIndividual createOWLIndividual(OWLDataFactory ontoFactory, String owlFilePath, String individualName) {
+		if (individualName != null && (individualName.trim().startsWith("http://") || individualName.trim().startsWith("https://"))) {
+			return ontoFactory.getOWLNamedIndividual(individualName.trim());
+		}
+		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat(BACKSLASH).concat(individualName));
+	}
+	
+	/**
+	 * 
+	 * @param dataFactory
+	 * @param iri
+	 * @param propertyName
+	 * @param separator
+	 * @return
+	 */
+	private static OWLDataProperty createOWLDataProperty(OWLDataFactory dataFactory, String iri, String propertyName, String separator) {
+		if (propertyName != null && (propertyName.trim().startsWith("http://") || propertyName.trim().startsWith("https://"))) {
+			return dataFactory.getOWLDataProperty(propertyName.trim());
+		}
+		return dataFactory.getOWLDataProperty(iri.concat(separator).concat(propertyName));
+	}
+	
+	/**
+	 * 
+	 * @param ontoFactory
+	 * @param literal
+	 * @param propertyType
+	 * @return
+	 * @throws OntoChemExpException
+	 */
+	private static OWLLiteral createOWLLiteral(OWLDataFactory ontoFactory, String literal, String propertyType) throws OntoChemExpException {
+		if (propertyType.equalsIgnoreCase("string")) {
+			return ontoFactory.getOWLLiteral(literal);
+		} else if (propertyType.equalsIgnoreCase("integer")) {
+			try {
+				return ontoFactory.getOWLLiteral(Integer.parseInt(literal));
+			} catch (NumberFormatException e) {
+				throw new OntoChemExpException("The following value is not an integer:"+literal);
+			}
+		} else if (propertyType.equalsIgnoreCase("float")) {
+			try {
+				return ontoFactory.getOWLLiteral(Float.parseFloat(literal));
+			} catch (NumberFormatException e) {
+				throw new OntoChemExpException("The following value is not a float:"+literal);
+			}
+		}
+		return ontoFactory.getOWLLiteral(literal);
 	}
 }

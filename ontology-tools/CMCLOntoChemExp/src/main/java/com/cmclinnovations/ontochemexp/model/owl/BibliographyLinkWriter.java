@@ -16,6 +16,7 @@ import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.J
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.PublicationSpecification;
 import com.cmclinnovations.ontochemexp.model.exception.OntoChemExpException;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.BibliographyLinkParseStatus;
+import com.cmclinnovations.ontochemexp.model.utils.PrimeConverterUtils;
 import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
 
 public class BibliographyLinkWriter extends PrimeConverter implements IBibliographyLinkWriter {
@@ -236,13 +237,8 @@ public class BibliographyLinkWriter extends PrimeConverter implements IBibliogra
 	 * @throws OntoChemExpException
 	 */
 	private void addContributorToBibliographyLink(Contributor contributor, String contributorInstance, String type) throws OntoChemExpException{
-		try {
-			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoKinReferencehasContributor(), 
-					currentBibliographyLinkInstance, contributorInstance);
-		} catch (ABoxManagementException e) {
-			logger.error("Contributor could not be linked to BibliographyLlink.");
-			e.printStackTrace();
-		}
+		PrimeConverterUtils.addObjectPropertyFromOtherOntology(ontoChemExpVocabulary.getOntoKinReferencehasContributor(), 
+				currentBibliographyLinkInstance, contributorInstance);
 	}
 
 	/**
@@ -256,13 +252,13 @@ public class BibliographyLinkWriter extends PrimeConverter implements IBibliogra
 		if (type.equalsIgnoreCase(ontoChemExpVocabulary.getOntoKinReferenceJournalSpecification())) {
 			try {
 				iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoKinReferenceJournalSpecification(), pubInstance);
-				iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoKinReferencehasPublicationSpecification(), 
-						currentBibliographyLinkInstance, pubInstance);
 			} catch (ABoxManagementException e) {
 				logger.error("PublicationSpecification could not be created.");
 				e.printStackTrace();
 			}
-			
+			PrimeConverterUtils.addObjectPropertyFromOtherOntology(ontoChemExpKB.getOntoKinKBTboxIRI(), 
+					ontoChemExpVocabulary.getOntoKinReferencehasPublicationSpecification(), 
+					currentBibliographyLinkInstance, pubInstance);
 		}
 		
 		addPublicationInfo(publicationSpecification, pubInstance, type);
@@ -309,6 +305,8 @@ public class BibliographyLinkWriter extends PrimeConverter implements IBibliogra
 		} catch (ABoxManagementException e) {
 			logger.error("Journal instance could not be created.");
 		}
+		PrimeConverterUtils.addObjectPropertyFromOtherOntology(ontoChemExpKB.getOntoKinKBTboxIRI(), 
+				ontoChemExpVocabulary.getOntoKinReferenceSpecifies(), journalSpecInstance, jourInstance);
 		
 		try {
 			// Adds the title of the journal  
