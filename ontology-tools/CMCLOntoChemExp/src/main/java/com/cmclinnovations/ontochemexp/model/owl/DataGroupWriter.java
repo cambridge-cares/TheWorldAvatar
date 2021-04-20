@@ -111,8 +111,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 
 	private void readDataGroupProperty(char ch[], int start, int length) throws SAXException {
 		if (dataGroupPropertyParseStatus.isProperty()) {
-//			createDataGroupProperty();
-//			linkDataGroupPropertyToDataGroup();
 			DimensionalQuantityWriter dQ = new DimensionalQuantityWriter(dataGroupID + dataGroupCount, 
 					dataGroupPropertyCount, inDataGroup,
 					"DataGroup" + UNDERSCORE + (dataGroupID + dataGroupCount), 
@@ -129,18 +127,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			dataGroupPropertyList = new ArrayList<DataGroupProperty>();
 		}
 	}
-
-//	private void readDataGroupPropertyValue(char ch[], int start, int length) throws SAXException {
-//		if (dataGroupPropertyValueParseStatus.isValue()) {
-//			String value = new String(ch, start, length);
-//			dataGroupPropertyValue.setValueValue(value);
-//			createPropertyValue();
-////			linkPropertyValueToProperty();
-//			dataGroupPropertyValueParseStatus.setValue(false);
-//			dataGroupProperty.setPropertyValue(dataGroupPropertyValue);
-//			dataGroupPropertyValue = new Value();
-//		}
-//	}
 
 	private void readDataGroupPropertyUncertainty(char ch[], int start, int length) throws SAXException {
 		if (dataGroupPropertyUncertaintyParseStatus.isUncertainty()) {
@@ -311,8 +297,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x1.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX1(), "X001", "x1");
-//				createDataGroupDataPointX1();
-//				linkDataPointX1ToDataPoint();
 			}
 		}
 		if (x2ParseStatus.isX()) {
@@ -323,8 +307,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x2.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX2(), "X002", "x2");
-//				createDataGroupDataPointX2();
-//				linkDataPointX2ToDataPoint();
 			}
 		}
 		if (x3ParseStatus.isX()) {
@@ -335,8 +317,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x3.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX3(), "X003", "x3");
-//				createDataGroupDataPointX3();
-//				linkDataPointX3ToDataPoint();
 			}
 		}
 		if (x4ParseStatus.isX()) {
@@ -347,8 +327,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x4.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX4(), "X004", "x4");
-//				createDataGroupDataPointX4();
-//				linkDataPointX4ToDataPoint();
 			}
 		}
 		if (x5ParseStatus.isX()) {
@@ -359,8 +337,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x5.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX5(), "X005", "x5");
-//				createDataGroupDataPointX5();
-//				linkDataPointX5ToDataPoint();
 			}
 		}
 		if (x6ParseStatus.isX()) {
@@ -371,8 +347,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x6.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX6(), "X006", "x6");
-//				createDataGroupDataPointX6();
-//				linkDataPointX6ToDataPoint();
 			}
 		}
 		if (x7ParseStatus.isX()) {
@@ -383,8 +357,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x7.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX7(), "X007", "x7");
-//				createDataGroupDataPointX7();
-//				linkDataPointX7ToDataPoint();
 			}
 		}
 		if (x8ParseStatus.isX()) {
@@ -395,8 +367,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x8.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX8(), "X008", "x8");
-//				createDataGroupDataPointX8();
-//				linkDataPointX8ToDataPoint();
 			}
 		}
 		if (x9ParseStatus.isX()) {
@@ -407,8 +377,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x9.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX9(), "X009", "x9");
-//				createDataGroupDataPointX9();
-//				linkDataPointX9ToDataPoint();
 			}
 		}
 		if (x10ParseStatus.isX()) {
@@ -419,8 +387,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x10.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX10(), "X010", "x10");
-//				createDataGroupDataPointX10();
-//				linkDataPointX10ToDataPoint();
 			}
 		}
 		if (x11ParseStatus.isX()) {
@@ -431,8 +397,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			x11.setItems(items);
 			if (value != null && !value.trim().isEmpty()) {
 				createAndLink(ontoChemExpVocabulary.getClassDataPointX11(), "X011", "x11");
-//				createDataGroupDataPointX11();
-//				linkDataPointX11ToDataPoint();
 			}
 		}
 	}
@@ -519,99 +483,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			logger.error("A link could not be established between a dataGroupLink and a dataGroup.");
 		}
 	}
-
-//	private void createDataGroupProperty() {
-//		dataGroupPropertyCount += 1;
-//
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(),
-//					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
-//
-//			if (dataGroupProperty.getPropertyName() != null && !dataGroupProperty.getPropertyName().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-//						ontoChemExpVocabulary.getDataPropertyhasName(), dataGroupProperty.getPropertyName(), STRING);
-//			}
-//
-//			if (dataGroupProperty.getPropertyId() != null && !dataGroupProperty.getPropertyId().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-//						ontoChemExpVocabulary.getDataPropertyhasID(), dataGroupProperty.getPropertyId(), STRING);
-//			}
-//
-//			if (dataGroupProperty.getPropertyLabel() != null
-//					&& !dataGroupProperty.getPropertyLabel().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-//						ontoChemExpVocabulary.getDataPropertyhasLabel(), dataGroupProperty.getPropertyLabel(), STRING);
-//			}
-//
-//			if (dataGroupProperty.getPropertyUnits() != null
-//					&& !dataGroupProperty.getPropertyUnits().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-//						ontoChemExpVocabulary.getDataPropertyhasUnits(), dataGroupProperty.getPropertyUnits(), STRING);
-//			}
-//
-//			if (dataGroupProperty.getPropertyDescription() != null
-//					&& !dataGroupProperty.getPropertyDescription().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-//						ontoChemExpVocabulary.getDataPropertyhasDescription(),
-//						dataGroupProperty.getPropertyDescription().replace("\r", " ").replace("\n", ""), STRING);
-//			}
-//
-//			if (dataGroupProperty.getPropertyDerivedPropertyExists() != null
-//					&& !dataGroupProperty.getPropertyDerivedPropertyExists().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-//						ontoChemExpVocabulary.getDataPropertyhasDerivedPropertyExists(),
-//						dataGroupProperty.getPropertyDerivedPropertyExists(), STRING);
-//			}
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of Property could not be created.");
-//		}
-//	}
-//
-//	private void linkDataGroupPropertyToDataGroup() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(),
-//					"DataGroup" + UNDERSCORE + (dataGroupID + dataGroupCount),
-//					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between an equipment and its dataGroup property.");
-//		}
-//	}
-
-//	private void createPropertyValue() {
-//		try {
-////			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassValue(),
-////					"Value" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
-//
-//			if (dataGroupPropertyValue.getValueValue() != null
-//					&& !dataGroupPropertyValue.getValueValue().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						currentDQInstance,
-//						ontoChemExpVocabulary.getDataPropertyhasValue(), dataGroupPropertyValue.getValueValue(),
-//						STRING);
-////				IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_LABEL));
-////				iABoxManagement.addProperty("Value"+UNDERSCORE+(dataGroupID+dataGroupCount)+UNDERSCORE+dataGroupPropertyCount, 
-////						dataPropertyIRI, dataGroupPropertyValue.getValueValue(), STRING);
-//			}
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of PropertyValue could not be created.");
-//		}
-//	}
-
-//	private void linkPropertyValueToProperty() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasValue(),
-//					"Property" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount,
-//					"Value" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between the apparatus property and its value.");
-//		}
-//	}
 
 	private void createPropertyUncertainty() {
 		try {
@@ -710,10 +581,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			String uniqueSpeciesIRI = new String();
 			if (dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
 					&& !dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupPropertyCount + UNDERSCORE + dataGroupPropertyCount,
-//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
-//						dataGroupPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
 				
 				try {
 					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRIFromPrimeID(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
@@ -794,12 +661,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			String uniqueSpeciesIRI = new String();
 			if (dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID() != null
 					&& !dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
-//				iABoxManagement.addProperty(
-//						"SpeciesLink" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE
-//								+ dataGroupPropertyCount,
-//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(),
-//						dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID(), STRING);
-				
 				try {
 					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRIFromPrimeID(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
 							.concat(dataGroupPropertySpeciesLink.getSpeciesLinkPrimeID()));
@@ -1224,25 +1085,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			logger.error("A link could not be established between a dataGroupDataPoint and a dataGroup.");
 		}
 	}
-
-//	private void createDataGroupDataPointX1() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX1(),
-//					"X001" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX1ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X001" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
 	
 	private void createAndLink(String type, String x, String id) {
 		String name = x + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount;
@@ -1268,196 +1110,6 @@ public class DataGroupWriter extends PrimeConverter implements IDataGroupWriter 
 			e.printStackTrace();
 		}
 	}
-
-//	private void createDataGroupDataPointX2() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX2(),
-//					"X002" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX2ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X002" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX3() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX3(),
-//					"X003" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX3ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X003" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX4() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX4(),
-//					"X004" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX4ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X004" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX5() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX5(),
-//					"X005" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX5ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X005" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX6() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX6(),
-//					"X006" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX6ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X006" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX7() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX7(),
-//					"X007" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX7ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X007" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX8() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX8(),
-//					"X008" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX8ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X008" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX9() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX9(),
-//					"X009" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX9ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X009" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX10() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX10(),
-//					"X010" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX10ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X010" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
-//
-//	private void createDataGroupDataPointX11() {
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassDataPointX11(),
-//					"X011" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("An individual of dataGroupDataPointX could not be created.");
-//		}
-//	}
-//
-//	private void linkDataPointX11ToDataPoint() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasDataPointX(),
-//					"DataPoint" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount,
-//					"X011" + UNDERSCORE + (dataGroupID + dataGroupCount) + UNDERSCORE + dataGroupDataPointCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error("A link could not be established between a dataGroupDataPointX and a dataGroupDataPoint.");
-//		}
-//	}
 
 	private void writeX1() {
 		if (x1.getItems().get(0).toString() != null && !x1.getItems().get(0).toString().trim().isEmpty()) {

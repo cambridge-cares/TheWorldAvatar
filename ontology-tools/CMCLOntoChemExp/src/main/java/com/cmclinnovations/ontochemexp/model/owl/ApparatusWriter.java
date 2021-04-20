@@ -97,8 +97,6 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 	
 	private void readApparatusProperty(char ch[], int start, int length) throws SAXException {
 		if (apparatusPropertyParseStatus.isProperty()) {
-//			createProperty();
-//			linkPropertyToEquipment();
 			DimensionalQuantityWriter dQ = new DimensionalQuantityWriter(apparatusID, 
 					apparatusPropertyCount, 
 					"Apparatus"+UNDERSCORE+apparatusID, 
@@ -121,7 +119,6 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 			String value = new String(ch, start, length);
 			apparatusPropertyValue.setValueValue(value);
 			createPropertyValue();
-//			linkPropertyValueToProperty();
 			apparatusPropertyValueParseStatus.setValue(false);
 			apparatusProperty.setPropertyValue(apparatusPropertyValue);
 			apparatusPropertyValue = new Value();
@@ -235,59 +232,6 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 		}
 	}
 	
-//	private void createProperty() {
-//		apparatusPropertyCount += 1;
-//		
-//		try {
-//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(), 
-//					"Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
-//			
-//			if (apparatusProperty.getPropertyName() != null && !apparatusProperty.getPropertyName().trim().isEmpty()) {
-//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-//						ontoChemExpVocabulary.getDataPropertyhasName(), 
-//						apparatusProperty.getPropertyName(), STRING);
-//			}
-//			
-//			if (apparatusProperty.getPropertyId() != null && !apparatusProperty.getPropertyId().trim().isEmpty()) {
-//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-//						ontoChemExpVocabulary.getDataPropertyhasID(), 
-//						apparatusProperty.getPropertyId(), STRING);
-//			}
-//			
-//			if (apparatusProperty.getPropertyLabel() != null && !apparatusProperty.getPropertyLabel().trim().isEmpty()) {
-//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-//						ontoChemExpVocabulary.getDataPropertyhasLabel(), 
-//						apparatusProperty.getPropertyLabel(), STRING);
-//			}
-//			
-//			if (apparatusProperty.getPropertyUnits() != null && !apparatusProperty.getPropertyUnits().trim().isEmpty()) {
-//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-//						ontoChemExpVocabulary.getDataPropertyhasUnits(), 
-//						apparatusProperty.getPropertyUnits(), STRING);
-//			}
-//			
-//			if (apparatusProperty.getPropertyDescription() != null && !apparatusProperty.getPropertyDescription().trim().isEmpty()) {
-//				iABoxManagement.addProperty("Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, 
-//						ontoChemExpVocabulary.getDataPropertyhasDescription(), 
-//						apparatusProperty.getPropertyDescription(), STRING);
-//			}
-//		} catch (ABoxManagementException e) {
-//			logger.error(
-//					"An individual of Property could not be created.");
-//		}
-//	}
-//	
-//	private void linkPropertyToEquipment() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(), 
-//					"Apparatus"+UNDERSCORE+apparatusID, "Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error(
-//					"A link could not be established between an equipment and its apparatus property.");
-//		}
-//	}
-	
-	
 	private void createPropertyValue() {
 		try {
 //			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassValue(), 
@@ -306,16 +250,6 @@ public class ApparatusWriter extends PrimeConverter implements IApparatusWriter 
 					"An individual of PropertyValue could not be created.");
 		}
 	}
-	
-//	private void linkPropertyValueToProperty() {
-//		try {
-//			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasValue(), 
-//					"Property"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount, "Value"+UNDERSCORE+apparatusID+UNDERSCORE+apparatusPropertyCount);
-//		} catch (ABoxManagementException e) {
-//			logger.error(
-//					"A link could not be established between the apparatus property and its value.");
-//		}
-//	}
 	
 	private void createPropertyUncertainty() {
 		try {

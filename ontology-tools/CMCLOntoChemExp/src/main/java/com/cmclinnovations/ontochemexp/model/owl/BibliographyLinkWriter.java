@@ -69,17 +69,6 @@ public class BibliographyLinkWriter extends PrimeConverter implements IBibliogra
 				e.printStackTrace();
 			}
 		}
-
-//		if (bibliographyLink.getPrimeID() != null && !bibliographyLink.getPrimeID().trim().isEmpty()) {
-//			try {
-//				iABoxManagement.addProperty(
-//						"BibliographyLink" + UNDERSCORE + (bibliographyLinkID + bibliographyLinkCount),
-//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), bibliographyLink.getPrimeID(), STRING);
-//			} catch (ABoxManagementException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
 		
 		if (bibliographyLink.getDoi() != null && !bibliographyLink.getDoi().trim().isEmpty()) {
 			try {
@@ -141,22 +130,6 @@ public class BibliographyLinkWriter extends PrimeConverter implements IBibliogra
 			logger.error("A link could not be established between a copyrigh and an experiment conducted using it.");
 		}
 	}
-
-//	public void writeValue() {
-//		if (bibliographyLink.getValue() != null && !bibliographyLink.getValue().trim().isEmpty()) {
-//			try {
-//				iABoxManagement.addProperty(
-//						"BibliographyLink" + UNDERSCORE + (bibliographyLinkID + bibliographyLinkCount),
-//						ontoChemExpVocabulary.getDataPropertyhasValue(), bibliographyLink.getValue(), STRING);
-//			} catch (ABoxManagementException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-////     		IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_LABEL));
-////     		iABoxManagement.addProperty("BibliographyLink"+UNDERSCORE+(bibliographyLinkID+bibliographyLinkCount), 
-////     				dataPropertyIRI, bibliographyLink.getValue(), STRING);
-//		}
-//	}
 
 	public void setUP() {
 		bibliographyLinkList.add(bibliographyLink);

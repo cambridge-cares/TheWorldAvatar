@@ -98,17 +98,6 @@ public class OntoChemExpVocabulary {
 		this.classAdditionalDataItem = classAdditionalDataItem;
 	}
 
-//	@Value("${ontochemexp.class.preferredKey}")
-//	private String classPreferredKey;
-//
-//	public String getClassPreferredKey() {
-//		return classPreferredKey;
-//	}
-//
-//	public void setClassPreferredKey(String classPreferredKey) {
-//		this.classPreferredKey = classPreferredKey;
-//	}
-
 	@Value("${ontochemexp.class.kind}")
 	private String classKind;
 
@@ -531,17 +520,6 @@ public class OntoChemExpVocabulary {
 		this.objPropertyhasDataGroup = objPropertyhasDataGroup;
 	}
 
-//	@Value("${ontochemexp.object.property.hasPreferredKey}")
-//	private String objPropertyhasPreferredKey;
-//
-//	public String getObjPropertyhasPreferredKey() {
-//		return objPropertyhasPreferredKey;
-//	}
-//
-//	public void setObjPropertyhasPreferredKey(String objPropertyhasPreferredKey) {
-//		this.objPropertyhasPreferredKey = objPropertyhasPreferredKey;
-//	}
-
 	@Value("${ontochemexp.object.property.hasKind}")
 	private String objPropertyhasKind;
 
@@ -574,17 +552,6 @@ public class OntoChemExpVocabulary {
 	public void setObjPropertyhasProperty(String objPropertyhasProperty) {
 		this.objPropertyhasProperty = objPropertyhasProperty;
 	}
-
-//	@Value("${ontochemexp.object.property.hasValue}")
-//	private String objPropertyhasValue;
-//
-//	public String getObjPropertyhasValue() {
-//		return objPropertyhasValue;
-//	}
-//
-//	public void setObjPropertyhasValue(String objPropertyhasValue) {
-//		this.objPropertyhasValue = objPropertyhasValue;
-//	}
 
 	@Value("${ontochemexp.object.property.hasUncertainty}")
 	private String objPropertyhasUncertainty;
@@ -951,39 +918,6 @@ public class OntoChemExpVocabulary {
 	public void setDataPropertyhasDataPointID(String dataPropertyhasDataPointID) {
 		this.dataPropertyhasDataPointID = dataPropertyhasDataPointID;
 	}
-
-//	@Value("${ontochemexp.data.property.hasXmlns}")
-//	private String dataPropertyhasXmlns;
-//
-//	public String getDataPropertyhasXmlns() {
-//		return dataPropertyhasXmlns;
-//	}
-//
-//	public void setDataPropertyhasXmlns(String dataPropertyhasXmlns) {
-//		this.dataPropertyhasXmlns = dataPropertyhasXmlns;
-//	}
-//
-//	@Value("${ontochemexp.data.property.hasXmlnsXsi}")
-//	private String dataPropertyhasXmlnsXsi;
-//
-//	public String getDataPropertyhasXmlnsXsi() {
-//		return dataPropertyhasXmlnsXsi;
-//	}
-//
-//	public void setDataPropertyhasXmlnsXsi(String dataPropertyhasXmlnsXsi) {
-//		this.dataPropertyhasXmlnsXsi = dataPropertyhasXmlnsXsi;
-//	}
-//
-//	@Value("${ontochemexp.data.property.hasXsiSchemaLocation}")
-//	private String dataPropertyhasXsiSchemaLocation;
-//
-//	public String getDataPropertyhasXsiSchemaLocation() {
-//		return dataPropertyhasXsiSchemaLocation;
-//	}
-//
-//	public void setDataPropertyhasXsiSchemaLocation(String dataPropertyhasXsiSchemaLocation) {
-//		this.dataPropertyhasXsiSchemaLocation = dataPropertyhasXsiSchemaLocation;
-//	}
 
 	@Value("${ontochemexp.data.property.hasValue}")
 	private String dataPropertyhasValue;

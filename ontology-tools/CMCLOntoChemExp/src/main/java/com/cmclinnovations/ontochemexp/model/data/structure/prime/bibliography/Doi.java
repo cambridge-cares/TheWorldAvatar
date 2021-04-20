@@ -55,7 +55,7 @@ public class Doi extends PrimeConverter implements IDoi {
 			String previous = "";
 			// Processes standard output that does not include errors.
 			while ((s = stdInput.readLine()) != null) {
-				System.out.println(s);
+//				System.out.println(s);
 				if(!s.isEmpty()){
 					populateContent(s, previous);
 				}
@@ -122,7 +122,7 @@ public class Doi extends PrimeConverter implements IDoi {
 		if(original.contains(" ") && original.lastIndexOf(".")+1==original.length()){
 			original = original.substring(0, original.length()-1);
 		}
-		System.out.println("normalised string:"+original.trim());
+//		System.out.println("normalised string:"+original.trim());
 		return original.trim();
 	}
 }

@@ -41,17 +41,6 @@ public class BibliographyLink{
 	public void setDoi(String doi) {
 		this.doi = doi;
 	}
-
-//	@XmlValue
-//	private String value;
-//	
-//	public String getValue() {
-//		return value;
-//	}
-//	
-//	public void setValue(String value) {
-//		this.value = value;
-//	}
 	
 	private String title;
 	

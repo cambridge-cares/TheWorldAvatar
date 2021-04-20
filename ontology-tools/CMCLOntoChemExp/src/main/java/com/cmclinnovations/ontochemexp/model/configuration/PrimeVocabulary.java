@@ -497,39 +497,6 @@ public class PrimeVocabulary {
 		this.attribDataPointID = attribDataPointID;
 	}
 	
-//	@Value("${prime.attribute.hasXmlns}")
-//	private String attribXmlns;
-//	
-//	public String getAttribXmlns() {
-//		return attribXmlns;
-//	}
-//	
-//	public void setAttribXmlns(String attribXmlns) {
-//		this.attribXmlns = attribXmlns;
-//	}
-//	
-//	@Value("${prime.attribute.hasXmlnsXsi}")
-//	private String attribXmlnsXsi;
-//	
-//	public String getAttribXmlnsXsi() {
-//		return attribXmlnsXsi;
-//	}
-//	
-//	public void setAttribXmlnsXsi(String attribXmlnsXsi) {
-//		this.attribXmlnsXsi = attribXmlnsXsi;
-//	}
-//	
-//	@Value("${prime.attribute.hasXsiSchemaLocation}")
-//	private String attribXsiSchemaLocation;
-//	
-//	public String getAttribXsiSchemaLocation() {
-//		return attribXsiSchemaLocation;
-//	}
-//	
-//	public void setAttribXsiSchemaLocation(String attribXsiSchemaLocation) {
-//		this.attribXsiSchemaLocation = attribXsiSchemaLocation;
-//	}
-	
 	@Value("${prime.attribute.hasPropertyID}")
 	private String attribPropertyID;
 	
