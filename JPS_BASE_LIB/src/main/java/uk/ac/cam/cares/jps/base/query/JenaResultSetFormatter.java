@@ -125,6 +125,24 @@ public class JenaResultSetFormatter {
 		return result;
 	}
 	
+	
+	public static List<String[]> convertToListofStringArraysWithKeys(String resultJSONW3CStandard, String[] keys) {
+		
+		List<String[]> result = new ArrayList<String[]>();		
+		JSONArray ja = new JSONArray(new JSONObject(resultJSONW3CStandard).getString("results"));
+	
+		for (int i=0; i<ja.length(); i++) {
+			String[] array = new String[keys.length];
+			JSONObject row = ja.getJSONObject(i);
+			for (int j=0; j<keys.length; j++) {
+				String value = row.optString(keys[j], null);
+				array[j] = value;
+			}
+			result.add(array);
+		}
+		
+		return result;
+	}
 	public static String[] getKeys(String resultJSONW3CStandard) {
 		
 		// "head": { "vars": [ "generation" , "emission" , "emissionvalue" , "emissionvaluenum" ] }
