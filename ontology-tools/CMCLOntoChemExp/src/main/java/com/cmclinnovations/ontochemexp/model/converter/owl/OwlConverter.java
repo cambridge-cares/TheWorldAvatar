@@ -227,7 +227,7 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 	public ArrayList<String> readObjPropertyPreferredKey(String interestedInstance) throws OntoChemExpException {
 		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
 				ontoChemExpKB.getOntoChemExpKbTBoxIri(), interestedInstance,
-				ontoChemExpVocabulary.getObjPropertyhasPreferredKey());
+				ontoChemExpVocabulary.getOntoChemExpExpSpecs());
 		performMultilineAnswerQuery(q, 1);
 		Collections.sort(queryResult);
 		ArrayList<String> ObjPropertyInstances = queryResult;
@@ -432,6 +432,13 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 	 * @return
 	 */
 
+	public String readDataPropertyExpType(String interestedInstance) {
+		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+				ontoChemExpKB.getOntoChemExpKbTBoxIri(), interestedInstance,
+				ontoChemExpVocabulary.getOntoChemExpExpSpecshasExpType());
+		return performQuery(q, 1);
+	}
+	
 	public String readDataPropertyValue(String interestedInstance) {
 		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
 				ontoChemExpKB.getOntoChemExpKbTBoxIri(), interestedInstance,

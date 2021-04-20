@@ -954,6 +954,7 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 		iCopyrightConverter.parse(qName, attributes);
 		iBibliographyLinkConverter.parse(qName, attributes); // All elements' names are checked
 		iCommonPropertiesConverter.parse(qName, attributes);
+		iPreferredKeyConverter.parse(qName, attributes);
 	}
 
 	/**

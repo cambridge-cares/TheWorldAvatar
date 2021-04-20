@@ -98,16 +98,16 @@ public class OntoChemExpVocabulary {
 		this.classAdditionalDataItem = classAdditionalDataItem;
 	}
 
-	@Value("${ontochemexp.class.preferredKey}")
-	private String classPreferredKey;
-
-	public String getClassPreferredKey() {
-		return classPreferredKey;
-	}
-
-	public void setClassPreferredKey(String classPreferredKey) {
-		this.classPreferredKey = classPreferredKey;
-	}
+//	@Value("${ontochemexp.class.preferredKey}")
+//	private String classPreferredKey;
+//
+//	public String getClassPreferredKey() {
+//		return classPreferredKey;
+//	}
+//
+//	public void setClassPreferredKey(String classPreferredKey) {
+//		this.classPreferredKey = classPreferredKey;
+//	}
 
 	@Value("${ontochemexp.class.kind}")
 	private String classKind;
@@ -531,16 +531,16 @@ public class OntoChemExpVocabulary {
 		this.objPropertyhasDataGroup = objPropertyhasDataGroup;
 	}
 
-	@Value("${ontochemexp.object.property.hasPreferredKey}")
-	private String objPropertyhasPreferredKey;
-
-	public String getObjPropertyhasPreferredKey() {
-		return objPropertyhasPreferredKey;
-	}
-
-	public void setObjPropertyhasPreferredKey(String objPropertyhasPreferredKey) {
-		this.objPropertyhasPreferredKey = objPropertyhasPreferredKey;
-	}
+//	@Value("${ontochemexp.object.property.hasPreferredKey}")
+//	private String objPropertyhasPreferredKey;
+//
+//	public String getObjPropertyhasPreferredKey() {
+//		return objPropertyhasPreferredKey;
+//	}
+//
+//	public void setObjPropertyhasPreferredKey(String objPropertyhasPreferredKey) {
+//		this.objPropertyhasPreferredKey = objPropertyhasPreferredKey;
+//	}
 
 	@Value("${ontochemexp.object.property.hasKind}")
 	private String objPropertyhasKind;
@@ -1419,5 +1419,115 @@ public class OntoChemExpVocabulary {
 	public void setOntoChemExpProvenanceModificationhasModificationDetails(
 			String ontoChemExpProvenanceModificationhasModificationDetails) {
 		this.ontoChemExpProvenanceModificationhasModificationDetails = ontoChemExpProvenanceModificationhasModificationDetails;
+	}
+	
+	@Value("${ontochemexp.expSpecs}")
+	private String ontoChemExpExpSpecs;
+	
+	@Value("${ontochemexp.expSpecs.ignitionType}")
+	private String ontoChemExpExpSpecsIgnitionType;
+	
+	@Value("${ontochemexp.expSpecs.timeShift}")
+	private String ontoChemExpExpSpecsTimeShift;
+	
+	@Value("${ontochemexp.expSpecs.hasExpSpecs}")
+	private String ontoChemExphasExpSpecs;
+	
+	@Value("${ontochemexp.expSpecs.hasIgnitionType}")
+	private String ontoChemExpExpSpecshasIgnitionType;
+	
+	@Value("${ontochemexp.expSpecs.hasTimeShift}")
+	private String ontoChemExpExpSpecshasTimeShift;
+	
+	@Value("${ontochemexp.expSpecs.hasExpType}")
+	private String ontoChemExpExpSpecshasExpType;
+	
+	@Value("${ontochemexp.expSpecs.hasDatTarget}")
+	private String ontoChemExpExpSpecshasDatTarget;
+	
+	@Value("${ontochemexp.expSpecs.hasDatType}")
+	private String ontoChemExpExpSpecshasDatType;
+	
+	@Value("${ontochemexp.expSpecs.hasDatAmount}")
+	private String ontoChemExpExpSpecshasDatAmount;
+
+	public String getOntoChemExpExpSpecs() {
+		return ontoChemExpExpSpecs;
+	}
+
+	public void setOntoChemExpExpSpecs(String ontoChemExpExpSpecs) {
+		this.ontoChemExpExpSpecs = ontoChemExpExpSpecs;
+	}
+
+	public String getOntoChemExpExpSpecsIgnitionType() {
+		return ontoChemExpExpSpecsIgnitionType;
+	}
+
+	public void setOntoChemExpExpSpecsIgnitionType(String ontoChemExpExpSpecsIgnitionType) {
+		this.ontoChemExpExpSpecsIgnitionType = ontoChemExpExpSpecsIgnitionType;
+	}
+
+	public String getOntoChemExpExpSpecsTimeShift() {
+		return ontoChemExpExpSpecsTimeShift;
+	}
+
+	public void setOntoChemExpExpSpecsTimeShift(String ontoChemExpExpSpecsTimeShift) {
+		this.ontoChemExpExpSpecsTimeShift = ontoChemExpExpSpecsTimeShift;
+	}
+
+	public String getOntoChemExphasExpSpecs() {
+		return ontoChemExphasExpSpecs;
+	}
+
+	public void setOntoChemExphasExpSpecs(String ontoChemExphasExpSpecs) {
+		this.ontoChemExphasExpSpecs = ontoChemExphasExpSpecs;
+	}
+
+	public String getOntoChemExpExpSpecshasIgnitionType() {
+		return ontoChemExpExpSpecshasIgnitionType;
+	}
+
+	public void setOntoChemExpExpSpecshasIgnitionType(String ontoChemExpExpSpecshasIgnitionType) {
+		this.ontoChemExpExpSpecshasIgnitionType = ontoChemExpExpSpecshasIgnitionType;
+	}
+
+	public String getOntoChemExpExpSpecshasTimeShift() {
+		return ontoChemExpExpSpecshasTimeShift;
+	}
+
+	public void setOntoChemExpExpSpecshasTimeShift(String ontoChemExpExpSpecshasTimeShift) {
+		this.ontoChemExpExpSpecshasTimeShift = ontoChemExpExpSpecshasTimeShift;
+	}
+
+	public String getOntoChemExpExpSpecshasExpType() {
+		return ontoChemExpExpSpecshasExpType;
+	}
+
+	public void setOntoChemExpExpSpecshasExpType(String ontoChemExpExpSpecshasExpType) {
+		this.ontoChemExpExpSpecshasExpType = ontoChemExpExpSpecshasExpType;
+	}
+
+	public String getOntoChemExpExpSpecshasDatTarget() {
+		return ontoChemExpExpSpecshasDatTarget;
+	}
+
+	public void setOntoChemExpExpSpecshasDatTarget(String ontoChemExpExpSpecshasDatTarget) {
+		this.ontoChemExpExpSpecshasDatTarget = ontoChemExpExpSpecshasDatTarget;
+	}
+
+	public String getOntoChemExpExpSpecshasDatType() {
+		return ontoChemExpExpSpecshasDatType;
+	}
+
+	public void setOntoChemExpExpSpecshasDatType(String ontoChemExpExpSpecshasDatType) {
+		this.ontoChemExpExpSpecshasDatType = ontoChemExpExpSpecshasDatType;
+	}
+
+	public String getOntoChemExpExpSpecshasDatAmount() {
+		return ontoChemExpExpSpecshasDatAmount;
+	}
+
+	public void setOntoChemExpExpSpecshasDatAmount(String ontoChemExpExpSpecshasDatAmount) {
+		this.ontoChemExpExpSpecshasDatAmount = ontoChemExpExpSpecshasDatAmount;
 	}
 }
