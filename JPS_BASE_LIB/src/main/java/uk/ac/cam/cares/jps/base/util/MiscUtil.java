@@ -67,7 +67,12 @@ public class MiscUtil {
 		};
 		return result;
 	}
-	
+	/** returns null if key: value does not exist in JSONObject jo
+	 * 
+	 * @param jo
+	 * @param key
+	 * @return
+	 */
 	public static String optNullKey(JSONObject jo, String key) {
 		if (jo.isNull(key)) {
 			return null;
@@ -76,8 +81,8 @@ public class MiscUtil {
 	}
 	/** Converts UTC time to TimeZone of Server, with offset
 	 * e.g. 2021-04-15T06:59:08Z to 2021-04-15T13:59:08+08:00
-	 * @param currDate
-	 * @return
+	 * @param currDate in UTC
+	 * @return local time with offset
 	 */
 	public static String convertToTimeZoneXSD(String currDate) {
 		String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
