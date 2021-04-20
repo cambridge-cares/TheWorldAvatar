@@ -1,26 +1,10 @@
 package uk.ac.cam.cares.jps.des;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -33,15 +17,11 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 @WebServlet(urlPatterns = {"/GetForecastData" })
@@ -221,7 +201,7 @@ public class ForecastAgent extends JPSAgent{
 					.addDelete("<"+resultListfromquery.get(i)[1]+">" ,p, m)
 					.addInsert("<"+resultListfromquery.get(i)[1]+">" ,p, accuArray.get(i)[indices[1]])
 					.addWhere("<"+resultListfromquery.get(i)[1]+">" ,p,m);
-			if (i %6 == 0) {
+			if (i %3 == 0) {
 				requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
 						.put(JPSConstants.TARGETIRI ,sensorIRI);
 				AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
