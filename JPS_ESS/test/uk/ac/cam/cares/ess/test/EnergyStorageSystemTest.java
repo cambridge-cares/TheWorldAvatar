@@ -144,6 +144,19 @@ public class EnergyStorageSystemTest extends TestCase {
 		assertTrue(new OptimizationAgent().validateInput(jo));
 		
 	}
+	/** test OptimizationAgent as itself
+	 * 
+	 */
+	public void testOptimizationAgent() {
+		JSONObject jo = new JSONObject();
+		jo.put("storage", storageIRI);
+		JSONObject jo2 = new OptimizationAgent().processRequestParameters(jo);
+		System.out.println(jo2.toString());
+		String result2 = AgentCaller.executeGetWithJsonParameter( "JPS_ESS/OptimizationAgent", jo.toString());
+		JSONObject res2=new JSONObject(result2);
+		System.out.println(result2);	
+		assertEquals(result2, jo2.toString());
+	}
 	/** test createBatteryOwlFile() of BatteryEntityCreator
 	 * 
 	 */
