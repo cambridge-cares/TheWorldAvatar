@@ -141,21 +141,21 @@ public class BibliographyLinkWriter extends PrimeConverter implements IBibliogra
 		}
 	}
 
-	public void writeValue() {
-		if (bibliographyLink.getValue() != null && !bibliographyLink.getValue().trim().isEmpty()) {
-			try {
-				iABoxManagement.addProperty(
-						"BibliographyLink" + UNDERSCORE + (bibliographyLinkID + bibliographyLinkCount),
-						ontoChemExpVocabulary.getDataPropertyhasValue(), bibliographyLink.getValue(), STRING);
-			} catch (ABoxManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-//     		IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_LABEL));
-//     		iABoxManagement.addProperty("BibliographyLink"+UNDERSCORE+(bibliographyLinkID+bibliographyLinkCount), 
-//     				dataPropertyIRI, bibliographyLink.getValue(), STRING);
-		}
-	}
+//	public void writeValue() {
+//		if (bibliographyLink.getValue() != null && !bibliographyLink.getValue().trim().isEmpty()) {
+//			try {
+//				iABoxManagement.addProperty(
+//						"BibliographyLink" + UNDERSCORE + (bibliographyLinkID + bibliographyLinkCount),
+//						ontoChemExpVocabulary.getDataPropertyhasValue(), bibliographyLink.getValue(), STRING);
+//			} catch (ABoxManagementException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+////     		IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_LABEL));
+////     		iABoxManagement.addProperty("BibliographyLink"+UNDERSCORE+(bibliographyLinkID+bibliographyLinkCount), 
+////     				dataPropertyIRI, bibliographyLink.getValue(), STRING);
+//		}
+//	}
 
 	public void setUP() {
 		bibliographyLinkList.add(bibliographyLink);

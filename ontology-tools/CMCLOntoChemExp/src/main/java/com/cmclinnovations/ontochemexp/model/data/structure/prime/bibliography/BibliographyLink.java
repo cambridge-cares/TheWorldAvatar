@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlType(propOrder = { "preferredKey", "primeID", "doi" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class BibliographyLink{
 	@XmlAttribute
@@ -43,16 +42,16 @@ public class BibliographyLink{
 		this.doi = doi;
 	}
 
-	@XmlValue
-	private String value;
-	
-	public String getValue() {
-		return value;
-	}
-	
-	public void setValue(String value) {
-		this.value = value;
-	}
+//	@XmlValue
+//	private String value;
+//	
+//	public String getValue() {
+//		return value;
+//	}
+//	
+//	public void setValue(String value) {
+//		this.value = value;
+//	}
 	
 	private String title;
 	

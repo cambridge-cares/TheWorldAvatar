@@ -206,9 +206,9 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 		if (qName.equalsIgnoreCase(primeVocabulary.getElemBibliographyLink())) {
 			if (bibliographyLinkParseStatus.isBibliographyLink()) {
 				String value = multiLineValue.toString();
-				bibliographyLink.setValue(value);
+//				bibliographyLink.setValue(value);
 
-				iBibliographyLinkWriter.writeValue();
+//				iBibliographyLinkWriter.writeValue();
 				iBibliographyLinkWriter.setUP();
 				bibliographyLinkParseStatus.setBibliographyLink(false);
 			}

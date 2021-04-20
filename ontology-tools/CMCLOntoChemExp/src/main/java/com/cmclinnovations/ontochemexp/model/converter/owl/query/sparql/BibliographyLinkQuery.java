@@ -22,7 +22,7 @@ public class BibliographyLinkQuery extends OwlConverter implements IBibliography
 		queryResult = new ArrayList<>();
 		for (String bibliographyLinkInstance : bibliographyLinkInstances) {
 			queryAllAttributes(bibliographyLinkInstance);
-			queryValue(bibliographyLinkInstance);
+//			queryValue(bibliographyLinkInstance);
 			bibliographyLinkList.add(bibliographyLink);
 			bibliographyLink = new BibliographyLink();
 		}
@@ -47,10 +47,10 @@ public class BibliographyLinkQuery extends OwlConverter implements IBibliography
 		}
 	}
 	
-	private void queryValue(String bibliographyLinkInstance) throws OntoChemExpException{
-		String value = readDataPropertyValue(bibliographyLinkInstance);
-		if (value != null && !value.isEmpty()) {
-			bibliographyLink.setValue(value);
-		}
-	}
+//	private void queryValue(String bibliographyLinkInstance) throws OntoChemExpException{
+//		String value = readDataPropertyValue(bibliographyLinkInstance);
+//		if (value != null && !value.isEmpty()) {
+//			bibliographyLink.setValue(value);
+//		}
+//	}
 }
