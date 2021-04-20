@@ -152,7 +152,7 @@ public class TestKnowledgeBA   {
 		jo = ja.getJSONObject(0); 
 		assertEquals("TEST",jo.get("o").toString());
 	}
-	/**
+	/** Sub Method for testBaseUpdateAgent()
 	 * Returns the test Sparql update.
 	 * 
 	 * @return UpdateRequest
