@@ -97,19 +97,19 @@ services:
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
-	  
-	  
+    
+    
   # UN Sustainable Goals
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
-  uk-gas-grid:
-    image: docker.cmclinnovations.com/un-goals:00000
+  un-goals:
+    image: docker.cmclinnovations.com/un-goals:${HASH}
     build:
       context: "./sustainable_goals"
       dockerfile: "./docker/Dockerfile"
     container_name: "un-goals-${MODE}"
     restart: unless-stopped
     ports:
-      - 4001:80
+      - 4002:80
     labels:
       description: "HTTPD hosted mapbox visualisation of UN Sustainable Goals based on static geoJSON files."
       authors: "support@cmclinnovations"
