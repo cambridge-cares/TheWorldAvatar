@@ -159,7 +159,7 @@ public class TimeSeriesConverter {
 
 		for(int propnum=0;propnum<keys.length;propnum++) {
 			Individual outsideirradiation = jenaOwlModel.getIndividual(resultListiri.get(0)[propnum]);
-			System.out.println(resultListiri.get(0)[propnum]);
+//			System.out.println(resultListiri.get(0)[propnum]);
 			//outsideirradiation.removeAll(hasvalue);
 			for(int x=1;x<readingFromCSV.size();x++) {
 				String irradiationvalue=readingFromCSV.get(x)[indexcsv[propnum]]; //need to be changed
@@ -206,7 +206,7 @@ public class TimeSeriesConverter {
 		unit2.add(degree);
 		//String Prefix="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/";
 		if (flag.contains("gen")) {
-			System.out.println(filename.split(".owl")[0]);
+//			System.out.println(filename.split(".owl")[0]);
 			doConversionForTimeSeries(jenaOwlModel,filename.split(".owl")[0],Prefix , readingFromCSV, unit1,flag);
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			new QueryBroker().putOld(Prefix+filename, content);
@@ -222,13 +222,13 @@ public class TimeSeriesConverter {
 	 * @throws Exception
 	 */
 	public void executeConversion() throws Exception {
-		System.out.println("Starting Process");
+//		System.out.println("Starting Process");
 		TimeSeriesConverter converter = new TimeSeriesConverter();
 		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/timeseriespropvalues.csv");
 		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
 		converter.startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/","PV-002.owl");
-		System.out.println("PV finished");
+//		System.out.println("PV finished");
 		converter.startConversion(readingFromCSV,"bus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/","EBus-006.owl");
 
 			

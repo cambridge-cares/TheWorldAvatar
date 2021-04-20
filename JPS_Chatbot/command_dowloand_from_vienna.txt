@@ -1,4 +1,0 @@
-
-scp -r zhou0201@vienna.cheng.cam.ac.uk:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/models/models_wiki/models ./UI/source
- 
-scp -r zhou0201@vienna.cheng.cam.ac.uk:/home/userspace/CoMoCommon/Ongoing/Projects/c4e-xz378-Chatbot/models/models_jps/models ./UI/source/rasa_jps

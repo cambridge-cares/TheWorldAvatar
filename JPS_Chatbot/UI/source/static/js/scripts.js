@@ -117,17 +117,6 @@ function autocomplete(inp, arr) {
 autocomplete(document.getElementById("input-field"), species);
 
 
-
-//$('#test-button').click(function() {
-//    for (let idx in question_set){
-//        q = question_set[idx]
-//        console.log('q', q)
-//
-//    }
-//});
-
-
-
 function get_random_question(){
 
 const index = Math.floor(Math.random() * random_questions.length);
@@ -298,76 +287,105 @@ let address = cmcl_address
 
     query_wolfram_alpha(address, msg);
     query_google(address, msg);
-
+    var d = new Date();
+    var start_time  = d.getMilliseconds();
     $.get(address + "chemistry_chatbot/query?type=worldavatar&question=" + msg, function( data ) {
-      displayResults(msg, data, 'jps')
+
+      displayResults(data, 'jps')
+      var d = new Date();
+      var end_time  = d.getMilliseconds();
+      console.log('Time taken', end_time - start_time ,typeof(end_time - start_time))
+
     });
+
+}
+
+// create the load more button, with the data field filled by the hash
+function create_load_more_button(hash){
+
+    console.log('hash', hash);
+    // remove the existing button if there is one
+    $('#btn_load_more').remove();
+
+    var load_more_button = document.createElement('button');
+        load_more_button.id = 'btn_load_more';
+        load_more_button.type = 'button';
+        load_more_button.innerHTML = 'Load more results';
+
+    // append it to the bottom of the result table
+    $('#search-results').append(load_more_button);
+    $('#btn_load_more').data('hash',hash);
+
+
+$("#btn_load_more").click(function() {
+
+    let hash = $('#btn_load_more').data('hash');
+    load_more(hash);
+});
 
 }
 
 
 
-function process_json_result(question, result){
+
+// the button requests the /stream/loadmore path in the cache server
+// a more complete result array is expected
+function load_more(hash){
+// get the hash from the button element
+// in test case: http://localhost:3002/stream/loadmore?hash=hash
+
+     $.get("http://localhost:3002/stream/loadmore?hash=" + hash, function( data ) {
+        displayResults(JSON.stringify(data), 'jps');
+    });
+}
+
+
+
+function process_json_result(result){
 
   // result = result.replace(/=\]/g, '=>').replace(/[}][\n ]+[{]/g, '},{')
-  console.log('The request has returned a response ', result)
-  console.log('the question is', question)
   result = JSON.parse(result)
-  console.log('the result parsed', result, typeof(result) )
-
 
   if (result === 'Nothing'){
     console.log('Received nothing')
     update_log('The World Avatar failed to provide an answer')
     $('#query_progress_bar').html('')
-
-
-    query_wolfram_alpha(address, msg);
-    query_google(address, msg);
     return null
   }
 
 
-
-
-  console.log('If it is nothing, you should not see this line')
-
-
   if (result){
-      console.log('the result parsed', result, typeof(result) )
     if (typeof(result)!== 'object' && (result!== 'Nothing')){
       obj = '{"results": ' + result + '}'
-      console.log(obj)
       r = JSON.parse(obj)
       console.log('the array',  r["results"])
+      let results = r["results"];
+      let query_result = results['result'];
+
         keys = []
         table = []
-         console.log('this is a result from JPS', r)
          // get the variable names
-         first_row = r["results"][0]
+         first_row = query_result[0];
          head_object = {'result_id': 'index'}
          for (let head in first_row){
             head_object[head] = head
          }
-         table.push(head_object)
 
-        r["results"].forEach(function (item, index) {
-         let row_object = {}
+        table.push(head_object)
 
+        query_result.forEach(function (item, index) {
+        let row_object = {}
 
-           for (let key in item) {
-                 console.log(key, item[key]);
+        for (let key in item) {
            counter = index + 1
-           console.log(item, index);
            row_object['result_id'] = counter.toString()
            row_object[key] = item[key]
            }
             table.push(row_object)
-
         });
           console.log('------------- jps table ---------------')
           console.log(table)
-    return table
+    return {'table': table, 'results': results}
   }
 
 
@@ -417,8 +435,7 @@ function process_json_result(question, result){
             table.push(row_object)
         })
 
-		console.log('table', table)
-        return table
+        return {'table':table}
     }
   }else{
   // get a list of variables, which is the keys
@@ -507,16 +524,8 @@ function drawTable(result_array) {
   first_col = rows[0];
   col_size = first_col.length;
 
-  console.log('col size', col_size)
-  var data = new google.visualization.DataTable();
+   var data = new google.visualization.DataTable();
 
-/*
-  if ((rows.length == 1) && (col_size == 1))
-  {
-      $('#single_div').val(rows[0][0])
-
-  } */
-  //else{
   for (col = 0; col < col_size; col++)
   {
     data.addColumn('string', variables[col]);
@@ -548,15 +557,24 @@ function drawTable(result_array) {
 
 }
 
-function displayResults(question,myData, source) {
+function displayResults(myData, source) {
+    // two parameters are needed, the source and the result...
+    rst = process_json_result(myData)
+    update_result_divisions(source, rst);
+};
 
-    console.log("======================= my data ==================")
-    console.log(myData)
-     myData = process_json_result(question, myData)
+function update_result_divisions(source, rst){
+
+    if ('results' in rst){
+        results = rst['results'];
+    }
+    else{
+        results = {};
+    }
+    myData = rst['table'];
 
   $('#query_progress_bar').html('')
   $('#query_progress_bar').hide()
-  update_log('Obtained result from the World Avatar KG')
 
   // EXTRACT VALUE FOR HTML HEADER.
   // ('Book ID', 'Book Name', 'Category' and 'Price')
@@ -586,39 +604,23 @@ function displayResults(question,myData, source) {
 
   // ADD JSON DATA TO THE TABLE AS ROWS.
   for (var i = 0; i < myData.length; i++) {
-
       var div_row = document.createElement("div");
       div_row.classList.add('div-row');
 
       for (var j = 0; j < col.length; j++) {
         // Create the list item:
         var div_inner = document.createElement('div');
-
-
         var data = myData[i][col[j]];
-
-
-
-
-
         if (data.includes('.svg') || data.includes('.png')){
-//            var myImage = $('<img/>');
-//            myImage.attr('src', data);
-
             div_inner.innerHTML = '<img src="' + data + '" style="width:250px">'
-
-
         }
         else{
-
-                    if (data.includes('.g09') || data.includes('.xml')){
-                    div_inner.innerHTML = '<a href="'+ data +'">'+ data +'</a>'
-                // <a href="url">link text</a>
-        }else{
-
-
+            if (data.includes('.g09') || data.includes('.xml')){
+            div_inner.innerHTML = '<a href="'+ data +'">'+ data +'</a>'
+        }else
+           {
                 div_inner.appendChild(document.createTextNode(data));
-}
+           }
         }
 
         // Set its contents:
@@ -636,7 +638,22 @@ function displayResults(question,myData, source) {
   document.getElementById("search-results").style.display = "block";
   document.getElementById('search-icon').style.display = '';
 
-// TODO: install javascript plugin in Pycharm ...
-// No, this feature is for Pro ...
+         // ============== get extra parameters =================
+        // 1. hash: use the hash to search the cache server to load more data
+        // 2. status: indicates whether that all the results returned by the query
 
-};
+        if ('hash' in results){
+            // this is a query with "load more feature"
+            // create a new button at the end of all results
+            console.log('hash exist in the result object');
+            if ('status' in results){ // check the status of the query
+                let status = results['status'];
+                if (status === 'complete'){ // all the results are returned by this query
+                    // don't show the load more button
+                }else{
+                    create_load_more_button(results['hash']); // create the load more button
+                }
+            }
+        }
+
+}
