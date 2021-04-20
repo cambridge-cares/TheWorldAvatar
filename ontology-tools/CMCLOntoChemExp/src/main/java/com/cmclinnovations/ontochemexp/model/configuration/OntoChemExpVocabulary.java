@@ -152,7 +152,29 @@ public class OntoChemExpVocabulary {
 	public void setClassInitialComposition(String classInitialComposition) {
 		this.classInitialComposition = classInitialComposition;
 	}
+		
+	@Value("${ontochemexp.class.donor}")
+	private String classDonor;
 	
+	public String getClassDonor() {
+		return classDonor;
+	}
+
+	public void setClassDonor(String classDonor) {
+		this.classDonor = classDonor;
+	}
+	
+	@Value("${ontochemexp.class.acceptor}")
+	private String classAcceptor;
+	
+	public String getClassAcceptor() {
+		return classAcceptor;
+	}
+
+	public void setClassAcceptor(String classAcceptor) {
+		this.classAcceptor = classAcceptor;
+	}
+
 	@Value("${ontochemexp.class.composition}")
 	private String classComposition;
 	
