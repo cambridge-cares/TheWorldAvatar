@@ -241,7 +241,7 @@ public class EnergyStorageSystemTest extends TestCase {
 		String optimizationresult=res2.getString("optimization");
 		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/"+optimizationresult, jo.toString());
 		jo.put("batterylist",new JSONObject(result2).getJSONArray("batterylist"));
-		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
+		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStorageRetrofit", jo.toString());
 		
 	}
 	
