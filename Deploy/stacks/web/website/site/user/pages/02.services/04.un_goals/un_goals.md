@@ -4,8 +4,8 @@ title: UN Sustainable Goals
 
 <table>
 	<tr>
-		<td width="25%" style="text-align: center;" markdown="1">[![UK](image://gas-grid.jpg?forceResize=150,200&classes=header-image)](https://commons.wikimedia.org/wiki/File:National_Grid_LNG_Tank.jpg)</td>
-		<td width="75%"><h2>UN Sustainable Goals</h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi elementum condimentum erat, vitae tincidunt purus euismod vitae. Suspendisse a placerat arcu. Nunc quis porta mauris, id tincidunt mauris. Vivamus ut massa libero. Nunc elit lacus, malesuada nec pulvinar quis, lacinia et odio.</td>
+		<td width="25%" style="text-align: center;" markdown="1">[![UK](image://un-goals.jpg?forceResize=150,200&classes=header-image)](https://commons.wikimedia.org/wiki/File:The_United_Nations_Secretariat_Building.jpg)</td>
+		<td width="75%"><h2>UN Sustainable Goals</h2>This module of the UK Digital Twin provides a map visualisation of Indicator 9.4.1 (CO<sub>2</sub> emission per unit value). Mouse over a node on the map to view the Capacity, Fuel, and Indicator metrics.</td>
 	</tr>
 </table>
 <br><br>
