@@ -75,7 +75,8 @@ public class SensorSparql {
     private static final Iri PM25 = p_ontosensor.iri("OutsidePM2.5Concentration");
     private static final Iri PM10 = p_ontosensor.iri("OutsidePM10Concentration");
     private static final Iri SO2 = p_ontosensor.iri("OutsideSO2Concentration");
-
+    private static String[] measuredConcentrations = {"CO","CO2","NO","NO2","HC","NOx","SO2","O3","PM1","PM2.5","PM10"};
+    
     @SuppressWarnings("serial")
 	static Map<String, Iri> concIriMap = new HashMap<String , Iri>() {{
     	put("CO",CO);
@@ -683,6 +684,62 @@ public class SensorSparql {
         query.from(queryGraph).prefix(p_station,p_system,p_ontosensor,p_time).select(data_type,numvalue,timestamp).where(querypattern);
     	JSONArray queryResult = SparqlGeneral.performQuery(query);
     	return queryResult;
+    }
+    
+    /**
+     * returns time series for each pollutant
+     * @return
+     */
+    public static JSONObject GetTimeSeriesConc(String station_iri_string) {
+    	JSONObject result = new JSONObject();
+    	Iri station_iri = iri(station_iri_string);
+    	for (int i=0; i<measuredConcentrations.length; i++) {
+    		SelectQuery query = Queries.SELECT();
+    		
+    		Variable value = query.var();
+    		Variable numvalue = SparqlBuilder.var("numvalue");
+    		Variable time = SparqlBuilder.var("time");
+    		
+    		Iri[] station2value_predicates = {hasSubsystem,observes,hasValue};
+    		Iri[] station2value_types = {null,null,concIriMap.get(measuredConcentrations[i]),null};
+    		GraphPattern station2value_gp = SparqlGeneral.GetQueryGraphPattern(query, station2value_predicates, station2value_types, station_iri, value);
+    		
+    		Iri[] value2num_predicates = {prescaledNumValue};
+    	    GraphPattern value2num_gp = SparqlGeneral.GetQueryGraphPattern(query, value2num_predicates, null, value,numvalue);
+    	    
+    	    Iri[] value2time_predicates = {hasTime,numericPosition};
+    	    GraphPattern time_gp = SparqlGeneral.GetQueryGraphPattern(query, value2time_predicates, null, value, time);
+    		
+    		GraphPattern queryPattern = GraphPatterns.and(station2value_gp,value2num_gp,time_gp);
+    		
+    		// make sure result is in ascending time
+    		OrderCondition timeAsc = SparqlBuilder.asc(time);
+    		
+    		From queryGraph = SparqlBuilder.from(airquality_graph);
+    		query.prefix(getPrefix()).from(queryGraph).select(numvalue,time).where(queryPattern).orderBy(timeAsc);
+    		
+    		JSONArray queryResult = SparqlGeneral.performQuery(query);
+    		double[] t = new double[queryResult.length()];
+    		double[] conc = new double[queryResult.length()];
+    		
+    		// store time series data in arrays
+    		for (int j=0; j<queryResult.length(); j++) {
+    			t[j] = queryResult.getJSONObject(j).getDouble("time");
+    			conc[j] = queryResult.getJSONObject(j).getDouble("numvalue");
+    		}
+    		
+    		JSONObject timeSeries = new JSONObject();
+    		timeSeries.put("t", t);
+    		JSONObject concSeries = new JSONObject();
+    		concSeries.put("conc", conc);
+    		
+    		JSONArray concdata = new JSONArray();
+    		concdata.put(timeSeries);
+    		concdata.put(concSeries);
+    		
+    		result.put(measuredConcentrations[i],concdata);
+    	}
+    	return result;
     }
     
     public static int GetNumWeatherStation() {

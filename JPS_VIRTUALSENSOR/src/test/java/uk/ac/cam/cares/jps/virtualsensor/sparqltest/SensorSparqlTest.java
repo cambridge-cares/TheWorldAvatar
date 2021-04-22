@@ -105,4 +105,9 @@ public class SensorSparqlTest extends TestCase{
 		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
 		SensorSparql.GetLatestTimeStamp(station_iri);
 	}
+	
+	public void testGetTimeSeriesConc() {
+		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
+		SensorSparql.GetTimeSeriesConc(station_iri);
+	}
 }
