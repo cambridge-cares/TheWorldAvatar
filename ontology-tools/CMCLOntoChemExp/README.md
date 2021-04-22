@@ -14,6 +14,8 @@ Ignition delay measurement
 
 Laminar flame speed measurement
 
+[Power conversion efficient measurement](ExperimentTemplate/HOPV15_Template.xml)
+
 Under construction...
 
 
@@ -24,11 +26,34 @@ Ignition delay measurement
 
 Laminar flame speed measurement
 
+[Power conversion efficient measurement](SPARQLTemplate/HOPV15_SPARQL.txt)
+
 Under construction...
 
 
 
 ## How to use the code
+
+1. Build codes from source (Java 8)
+2. Modify below configuration accordingly in [kb.ontochemxp.management.properties](src/main/resources/kb.ontochemexp.management.properties)
+   - Basic setup
+     - ontochemexp.kb.url - the base URL of the ABox files
+     - ontochemexp.kb.root.directory - the name of the folder where the ABox OWL files will be generated, this should be a relative path to the folder where the experiment XML files located
+     - ontochemexp.ontology.file.path - the ontology TBox file folder path on your local machine
+     - ontochemexp.ontology.file.name - the name of the TBox file on your local machine
+     - ontochemexp.kb.file.head.comment - the head comment will appear in the generated ABox files
+   - For the purpose of linking to OntoSpecies
+     - ontospecies.uniquespeciesiri.kb.server.url - the server address where triple-store for OntoSpecies ABox files located
+     - ontospecies.uniquespeciesiri.kb.repository.id - the namespace of the triple-store that contains OntoSpecies ABox files
+     - ontospecies.uniquespeciesiri.kb.abox.iri - the base URL of the OntoSpecies ABox files, should be http://www.theworldavatar.com/kb/ontospecies/ by default
+   - For provenance information of the experiment data
+     - Under construction... will be updated in v1.3...
+   - For controlling if generated ABox files are to be uploaded to triple-store automatically
+     - files.generation - "local" for only keeping the generated ABox files locally; "server" for uploading to triple-store
+     - upload.triple.store.server.url - the server URL to be uploaded to, example of options are provided in the file
+     - upload.triple.store.repository.ontochemexp - the namespace to be uploaded to
+3. Run com/cmclinnovations.ontochemexp/view/PrimeConversion.java as Java application
+4. Point to the folder where the experiment XML files located when a dialog appears
 
 Under construction...
 
@@ -36,7 +61,7 @@ Under construction...
 
 ## Useful links
 
-[Preprint 262](https://como.ceb.cam.ac.uk/preprints/262/)
+Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism Using the Knowledge Graph Technology [[paper](https://doi.org/10.1021/acs.jcim.0c01322)] [[preprint](https://como.ceb.cam.ac.uk/preprints/262/)]
 
 
 
