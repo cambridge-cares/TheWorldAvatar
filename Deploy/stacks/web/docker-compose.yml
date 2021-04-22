@@ -36,10 +36,10 @@ services:
   #        see the JPS_Chatbot/docker/README.txt file for details.
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   jps-chatbot:
-    image: docker.cmclinnovations.com/jps-chatbot:0e837d
-    #build:
-      #context: "../../../JPS_Chatbot"
-      #dockerfile: "./docker/Dockerfile"
+    image: docker.cmclinnovations.com/jps-chatbot:${HASH}
+    build:
+      context: "../../../JPS_Chatbot"
+      dockerfile: "./docker/Dockerfile"
     container_name: "jps-chatbot-${MODE}"
     restart: unless-stopped
     ports:
@@ -54,10 +54,10 @@ services:
   # JPS LDF Server
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   jps-ldf:
-    image: docker.cmclinnovations.com/jps-ldf:0e837d
-    #build:
-      #context: "../../../JPS_LDF"
-      #dockerfile: "./docker/Dockerfile"
+    image: docker.cmclinnovations.com/jps-ldf:${HASH}
+    build:
+      context: "../../../JPS_LDF"
+      dockerfile: "./docker/Dockerfile"
     container_name: "jps-ldf-${MODE}"
     restart: unless-stopped
     ports:
