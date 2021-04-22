@@ -78,12 +78,12 @@ console.time('Execution time');
 	rst = await make_query(query, 'ontokin');
 	ontokin_obj['equations'] = rst; 
 	
-	fs.writeFile('ontokin_species_and_equations', JSON.stringify(ontocompchem_obj), function (err) {
+	fs.writeFile('ontocompchem_species', JSON.stringify(ontocompchem_obj), function (err) {
 		if (err) return console.log(err);
 			console.log('Wrote to ontokin_species_and_equations');
 		});
 		
-	fs.writeFile('ontocompchem_species', JSON.stringify(ontokin_obj), function (err) {
+	fs.writeFile('ontokin_species_and_equations', JSON.stringify(ontokin_obj), function (err) {
 		if (err) return console.log(err);
 			console.log('Wrote to ontocompchem_species');
 		});	
