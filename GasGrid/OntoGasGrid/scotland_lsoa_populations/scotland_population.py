@@ -23,8 +23,6 @@ for i in range(1,len(len_query)-1):
 
 for g in tqdm(range(len(len_query)-1)):
     i = len_query[g]
-
-
     query='''
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>

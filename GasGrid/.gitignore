@@ -16,3 +16,8 @@ OtherTools/Mapping and Location Tools/real_time_integration_example/geckodriver.
 /env
 OntoGasGrid/scotland_lsoa_populations/scottish_LSOA.csv
 OntoGasGrid/use_cases/pipe_network_output.geojson
+HadUKandHeatPumps/rainfall_hadukgrid_uk_1km_mon_201901-201912.nc
+HadUKandHeatPumps/sun_hadukgrid_uk_1km_mon_201901-201912.nc
+HadUKandHeatPumps/tas_hadukgrid_uk_1km_mon_201901-201912.nc
+
+
