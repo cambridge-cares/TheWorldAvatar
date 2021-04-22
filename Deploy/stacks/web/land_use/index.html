@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lan="eng">
+	<head>
+		<!--<h1 style="font-family: Open Sans, sans-serif">
+			Zachary Harper & David Soutar - CoMo 2021
+		</h1>-->
+		<script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
+		<script src='land-use-dict.js'></script>
+		<link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+		
+		<style>
+			html, body {
+				margin: 0;
+				height: 100%;
+				background-color: #CBD2D3;
+			}
+			
+			#legend {
+				text-align: center; 
+				box-sizing: border-box; 
+				border-left: 2px solid grey;
+				background-color: #f2f2f2;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="map" style="height:100%; width:75%; float:left;"></div>
+		
+		<div id="legend" style="height:100%; width:25%; float:right;">
+			<img src="land-use-legend.svg" style="object-fit:contain; "/>
+			<div id="attribution" style="height:50px; right:0; bottom:0; margin-right:6px; position:absolute;">
+				<p>Zachary Harper & David Soutar - 2021</p>
+			</div>
+		</div>
+		
+		<script>
+			// MapBox API token
+			mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
+			
+			// Load the map object
+			var map = new mapboxgl.Map({
+				container: 'map',
+				style: 'mapbox://styles/cmclinnovations/cknrlimnp0vo617qrk5e7uy4q', 	// stylesheet location
+				center: [0.02, 52.35], 													// starting position [lng, lat]
+				zoom: 8, 																// starting zoom
+				pitch: 0,
+				bearing: 0,
+			});
+			
+			// Create a popup, but don't add it to the map yet.
+			var popup = new mapboxgl.Popup({
+				closeButton: false,
+				closeOnClick: false
+			});
+			
+			// Show popup on mouse over
+			map.on('mouseenter', 'cambridge', function (e) {
+				// Change the cursor style as a UI indicator.
+				map.getCanvas().style.cursor = 'pointer';
+										
+				// Ensure that if the map is zoomed out such that multiple
+				// copies of the feature are visible, the popup appears
+				// over the copy being pointed to.
+				var coordinates = e.features[0].geometry.coordinates.slice();
+				while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+					coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+				}
+				
+				// Get the human readable name of the crop
+				var name = e.features[0].properties.name;			
+				var crop = crops[name];
+				 
+				// Make the text look a little nicer
+				var toDisplay = "<html>&nbsp;<span style='text-transform:capitalize;'>" + crop + "</span>&nbsp;</html>"
+				
+				// Populate the popup and set its coordinates based on the feature found.
+				popup.setLngLat(coordinates).setHTML(toDisplay).addTo(map);
+			});
+			
+			// Clear the popup on mouse leave
+			map.on('mouseleave', 'places', function () {
+				map.getCanvas().style.cursor = '';
+				popup.remove();
+			});
+			
+
+		</script>
+	</body>
+</html>
