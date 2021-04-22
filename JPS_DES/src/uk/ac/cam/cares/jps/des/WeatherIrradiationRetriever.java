@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -135,6 +136,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		
 	}
 	/** SubMethod for readWriteToOWL for each type of sensor
+	 * TODO: There's a bug where the returned data comes in UTC format rather than GMT format, but I haven't gotten down to what could have caused this. 
 	 * @param sensorIRI
 	 * @param sparqlQuery
 	 */
@@ -151,9 +153,9 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		int sizeOfUpdate = resultListfromquery.size();
 		String p = "<http://www.w3.org/2006/time#inXSDDateTime>";
 		String d = "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>";
-		for (int i = 0; i < sizeOfUpdate-2; i ++ ) {//We stopped at element 46
+		for (int i = 0; i < sizeOfUpdate-1; i ++ ) {//We stopped at element 48
 			Var v = Var.alloc(RandomStringUtils.random(5, true, false));
-			Var m = Var.alloc(RandomStringUtils.random(4, true, false)); //random string generate to prevent collusion
+			Var m = Var.alloc(RandomStringUtils.random(5, true, false)); //random string generate to prevent collision
 			builder.addDelete("<"+resultListfromquery.get(i)[0]+">" ,d, v)
 					.addInsert("<"+resultListfromquery.get(i)[0]+">" ,d, resultListfromquery.get(i+1)[1])
 					.addWhere("<"+resultListfromquery.get(i)[0]+">" ,d,v)					
@@ -166,7 +168,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 				AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
 				builder = new UpdateBuilder();
 				
-			}
+			}			
 		}
 		//final round
 		builder.addDelete("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, "?o")		

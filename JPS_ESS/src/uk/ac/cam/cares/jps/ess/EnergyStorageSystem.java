@@ -435,7 +435,14 @@ public class EnergyStorageSystem extends JPSAgent {
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultListfromquery;
 	}
-	
+	/** calls on CSVPahigh and CSVRemaining to prepare parameters
+	 * then calls on runGAMS to execute wrapper
+	 * @param baseUrl
+	 * @param pvGenIRI
+	 * @param batIRI
+	 * @return
+	 * @throws IOException
+	 */
 	public JSONObject optimizedBatteryMatching(String baseUrl, List<String> pvGenIRI, String batIRI) throws IOException {
 		prepareCSVPahigh(pvGenIRI,baseUrl);
 		prepareCSVRemaining(batIRI,baseUrl);		

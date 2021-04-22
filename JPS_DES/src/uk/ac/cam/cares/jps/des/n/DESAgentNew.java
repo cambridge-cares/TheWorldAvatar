@@ -82,7 +82,6 @@ public class DESAgentNew extends JPSAgent {
 			String result = runPythonScript("system.py", baseUrl);
 			String agent = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
 			createTimer(baseUrl);
-			//TODO: This uses RDF4J metadata Annotator
 			baseUrl = new File(baseUrl).toURI().toString();
 			MetaDataAnnotator.annotate(baseUrl, null, agent, true, null);
 
@@ -184,7 +183,11 @@ public class DESAgentNew extends JPSAgent {
 		
 	    return readModelGreedyCon(result);
 	}
-	
+	/** Submethod of readModelGreedy
+	 * 
+	 * @param greedyResult
+	 * @return
+	 */
 	public static OntModel readModelGreedyCon(String greedyResult) {
 		
 		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("results"));

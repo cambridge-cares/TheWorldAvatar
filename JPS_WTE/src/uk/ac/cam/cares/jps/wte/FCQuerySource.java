@@ -6,13 +6,15 @@ import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.sparql.expr.ExprVar;
-
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
-
+/** Util Class to prepare necessary queries
+ * 
+ * @author LONG01
+ *
+ */
 public class FCQuerySource {
 
 	/** gets the food court name, xy coordinates
