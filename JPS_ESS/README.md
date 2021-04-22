@@ -26,7 +26,7 @@
    iv. Clicking on the batteries shows batteries. 
    
 ## How does it run? 
-1. The flow of ESS can be seen in this figure ![Activity Diagram](WebContent/images/ActivityDiagram.png)
+1. The flow of ESS can be seen in this figure ![Activity Diagram](images/ActivityDiagram.png)
 2. The scenario agent is first called by the end-user deciding to enable the ESS framework. It creates a 'parallel world' which the base world is duplicated before forwarding the request to the Coordination Agent along with the unique scenario ID of the 'parallel world' 
 3. The Coordinate Agent C,receives the forwarded request and starts the following chain of events. 
 4. The renewable generator retrofit agent which retrieves and retrofits a renewable energy source based on the renewable generator IRI present in the request from C. In our use case, we utilize the photo-voltaic generator present on Semakau Island. 
@@ -45,10 +45,10 @@
 18. The end user could proceed to change the power load and run OPF again to determine the change in carbon emissions produced by this new system. 
 19. As this replica is modified, the base world remains untouched. 
 
-![Sequence Diagram](WebContent/images/SequenceDiagramV1.png) 
+![Sequence Diagram](images/SequenceDiagramV1.png) 
 
 ## Class Diagram 
- ![Class Diagram](WebContent/images/ClassDiagram.png) 
+ ![Class Diagram](images/ClassDiagram.png) 
 
 ## There's something wrong? I can't deploy this!
 - First, check if the test  `testCreateScenarioAndCallESSCoordinateDirect` is working. It calls the agent in use one by one. 
