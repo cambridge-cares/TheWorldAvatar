@@ -5,6 +5,17 @@
 
 In folder Wiki_basic_info
 
+# TARGET: 
+
+a list of URIs of all species 
+a list of SMILES of all species 
+a map between SMILES and URIs 
+a list of labels and alt labels of valuable species
+a list of formula of valuable species 
+a list of chemistry-related properties
+a list of chemistry-related classes and subclasses 
+
+
 
 1. To retreive all the chemical species and their SMILES string from Wikdiata
 	
@@ -14,6 +25,8 @@ In folder Wiki_basic_info
 	
 	the script produces 837 files, each containing 100 species and their SMILES
 
+	this provides a FULL list of URIs of all wikidata instances with their SMILES
+
 	###################################################################################
 	b) python length_filter.py	
 
@@ -21,9 +34,12 @@ In folder Wiki_basic_info
 
 	WIKI_URI_LIST contains a sorted list of URIs of around 120,000 selected species
 
-	the script also produces URI_SMILES_DICT
+	the script also produces SMILES_URI_DICT
 
-	URI_SMILES_DICT contains a mapping between SMILES and URI, which will be later used as the SMILES lookup dict
+	SMILES_URI_DICT contains a mapping between SMILES and URI of all instances,
+	which will be later used as the SMILES lookup dict
+
+	A URI_SMILES_DICT is also produced for the training process (Make Universal Translator)
 
 	###################################################################################
 
@@ -33,7 +49,16 @@ In folder Wiki_basic_info
 
 	###################################################################################
 
+    d) python ./test/WIKI_URI_LIST_test.py
+
+    to test whether the WIKI_URI_LIST is properly created, where the URIs are sorted
+    by their length from short to long
+	###################################################################################
+
+
 2. Based on WIKI_URI_LIST, retrieve chemistry-related properties, classes and the label and alternative labels of species
+
+	Make a dictionary that maps instances and the properties and classes connected to it, which will be used to generate questions of better quality 
 	
 	###################################################################################
 
@@ -43,11 +68,31 @@ In folder Wiki_basic_info
 
 	the script produces distinct_properties, containing the properties and their labels and alt labels, 135 labels are expected  
 
+					    instance_property_mapping_first_2000
+						instance_property_mapping_random_3000, containing the mapping between instances and related properties and the according labels and alt_labels 
+
 	###################################################################################
 	
 	b) python query_species_classes_and_labels.py (long running time)
-	
 
 	
+
+##############################################################################################
+##############################################################################################
+
+In folder JPS_basic_info
+
+# TARGET:
+
+1. a list of properties in ontokin and ontocompchem
+2. a list of species and reactions in ontokin and species in ontocompchem 
+3. for each type of reactions 
+
+	- query_reaction_property (ontokin, reaction) 
+	- select_mechanism_by_reaction (ontokin, reaction)
+	- select_reaction_by_species (ontokin, reaction)
+	
+	- query_thermodynamic (ontokin, properties, species)
+	- query_quantum_chemistry (ontocompchem, properties, species)
 
         
