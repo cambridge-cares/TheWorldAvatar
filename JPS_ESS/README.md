@@ -54,4 +54,4 @@
 - First, check if the test  `testCreateScenarioAndCallESSCoordinateDirect` is working. It calls the agent in use one by one. 
 - Second, check if the test `testCreateScenarioAndCallESSCoordinate` is working. This calls C as a whole, thus errors can come from there. 
 - Third, if both of the above conditions run without errors, then it's most likely due to the visualization being broken. It could be that you are reading from the wrong location (at which case, look at \web\CO2Web\public\javascripts\pwBaseFile.js, Line 2. Enable it to Line 3, and it should be reading from Claudius rather than local deployment. 
-- Fourth, it could be POWSYS screwing up. Read POWSYS README.md for more clues.  
+- Fourth, it could be POWSYS screwing up.

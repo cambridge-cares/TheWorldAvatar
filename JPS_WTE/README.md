@@ -17,7 +17,7 @@
  	treatment facilities. 
 
 ## Why are there no results from WasteToEnergySystemAgent? 
-1. Check if you have a Gurobi License
+1. Check if you have a Gurobi License (The current version deployed expires every two months)
 	1. go to this website: https://www.gurobi.com/login/
 	2. Once you've created an account (sign in with your Cambridge email!) go to licenses page. Check if your licenses are available and whether they've expired: https://www.gurobi.com/downloads/licenses/
 	3. get yourself a license if your pre-existing license has expired: 
