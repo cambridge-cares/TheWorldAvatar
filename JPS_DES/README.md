@@ -17,13 +17,15 @@
 4. org.web3j (for ethereum exchange)
 5. com.google.code.gson
 
-## Where's Pytesseract? 
-Because of the tesseract dependency which relies on your OS system, pip installing isn't enough. 
+## What's Tesseract? 
+It's an OCR software that scans images to return data. It isn't reliable, but it's what we have for interpreting real-time solar data
+Because of the tesseract dependency which relies on your OS system, pip installing pytesseract isn't enough. 
 Instead, follow this [guide](https://guides.library.illinois.edu/c.php?g=347520&p=4121425) to figure out how to get pytesseract going.
 
 ## What to do for deployment? 
  - Have python installed. Have java installed. Both should be added to your system environment. 
  - Have pytesseract installed
+ - Have tesseract installed 
  - mvn clean install JPS DES
  - have nodeJS server running
  - Expected Result: Upon deployment, by loading the page localhost:82/desplot. Three graphs would appear: 
@@ -62,23 +64,23 @@ Instead, follow this [guide](https://guides.library.illinois.edu/c.php?g=347520&
 2. The DES Coordination Agent has two subcomponents and can be found in DESCoordination.java. This is called periodically due to the 10 call per limit that forecasting solar data imposes on us.
 - Input: Contains the electrical network, and the district IRI
 - Output: A folder that has the predictions for the next twenty four hours of the a) residential, commercial, industrial, solar and electric grid profile and b) the profiles of three types of residential households. 
-![ForecastAgent UML Activity Diagram] (images/ActivityForecast.png)
+![ForecastAgent UML Activity Diagram](images/ActivityForecast.png)
 3. DES Coordination calls on the Forecast Agent to check and print the next twenty four hours. It calls "/getForecastData"
 	Forecast Agent takes in 
 - Input: baseURL that dictates where the weather forecast files are written. 
 - Output: WeatherForecast.csv is written into the baseURL folder
-![DESAgentNew UML Activity Diagram] (images/ActivityDESAgent.png)
+![DESAgentNew UML Activity Diagram](images/ActivityDESAgent.png)
 4. DESCoordination then calls upon DESAgent, the wrapper for the python code that uses Game Theory to model a simulation via "/DESAgentNew"
 - Input: Electrical network IRI, District IRI, baseURL
 - Output: 
-	1. Five Graph profile that has
+	1. Five Graph profiles that have
 		i) Solar (24)
 		ii) gridsupply (24)
 		iii) Commercial (24)
 		iv) industrial (24)
 		v) residential (24)
 	2. Three sets of residential type profiles (24)
- ![DESAgentNew UML Sequence Diagram] (images/SequenceDESCoord.png)
+ ![DESAgentNew UML Sequence Diagram](images/SequenceDESCoord.png)
 
 5. Front-End Coordination uses rdf4j to get the last complete run of DESCoordination. This is done by annotating the folder and keeping a record in runOptimization in DESAgentNew before querying it in FrontEndCoordination
 	1. Due to the large size of the JSON packet, the  agent reduces it to a JSON size of five, with each key having just 1 value. 
@@ -94,9 +96,9 @@ Instead, follow this [guide](https://guides.library.illinois.edu/c.php?g=347520&
 	
 ### Class Diagrams: 
 #### Forecast Agent:
-![ForecastAgent UML ClassDiagram] (images/ClassForecast.png)
+![ForecastAgent UML ClassDiagram](images/ClassForecast.png)
 #### DES Agent:
-![DESAgent UML ClassDiagram] (images/ClassDESAgent.png)
+![DESAgent UML ClassDiagram](images/ClassDESAgent.png)
 ### Websites referenced: 
 1. [Solar Repository Institute](https://www.solar-repository.sg/ftp_up/weather/500_Weather.png) for the solar weather near NUS (within NUS)
 2. [Solcast Forecast](https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN) for the solar forecast reading as well as weather data reading
