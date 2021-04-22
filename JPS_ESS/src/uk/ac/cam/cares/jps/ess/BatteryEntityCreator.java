@@ -28,8 +28,6 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 @WebServlet(urlPatterns = { "/CreateBattery" })
 /** creates appropriate battery OWL based on LocateBattery
  * 
- * @author Laura Ong
- *
  */
 public class BatteryEntityCreator extends JPSAgent {
 	

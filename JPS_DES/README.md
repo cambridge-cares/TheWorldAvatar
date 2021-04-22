@@ -98,13 +98,13 @@ Then, it calls upon the BlockchainWrapper agent that communicates with the block
 6. Forecast Agent can be tested, but it's not recommended to do so. To test Forecast Agent, run the coordination agent by itself. 
 7. BlockchainWrapper can be tested via testBlockchainWrapperDirectCall and testBlockchainWrapperAgentCall. 
 	
-### Class Diagrams: 
-#### Forecast Agent:
+## Class Diagrams: 
+### Forecast Agent:
 ![ForecastAgent UML ClassDiagram](images/ClassForecast.png)
 
-#### DES Agent:
+### DES Agent:
 ![DESAgent UML ClassDiagram](images/ClassDESAgent.png)
-### There's something wrong? I can't deploy this!
+## There's something wrong? I can't deploy this!
 - The Weather Irradiation data isn't running?
   1. First, check `testWeatherIrradiationDirect()` to see if data is being written to the respective File-based IRI
   2. Second, check if there's an error log in the folder where the results of TesseractOCR is being read to
@@ -120,13 +120,13 @@ Then, it calls upon the BlockchainWrapper agent that communicates with the block
 - Why is the webpage blank? Node is running. 
   1. Check if you're reading from the right location. Localhost? Or jparksimulator? The same goes if you have a ConnectException: it's linked to the wrong location and thus change your 'test' value in jps.properties
   
-### Websites referenced: 
+## Websites referenced: 
 1. [Solar Repository Institute](https://www.solar-repository.sg/ftp_up/weather/500_Weather.png) for the solar weather near NUS (within NUS)
 2. [Solcast Forecast](https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN) for the solar forecast reading as well as weather data reading
 3. [Accuweather Singapore](http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true) for the first 12 hours accurate 
 
 
-### TODO: 
+## TODO: 
  - [x] Finish backup of visualization
  - [ ] virtual environment for python
 
