@@ -115,3 +115,21 @@ services:
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
+
+	  
+  # Land Use Crop Map
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  un-goals:
+    image: docker.cmclinnovations.com/land-use:${HASH}
+    build:
+      context: "./land_use"
+      dockerfile: "./docker/Dockerfile"
+    container_name: "land-use-${MODE}"
+    restart: unless-stopped
+    ports:
+      - 4003:80
+    labels:
+      description: "HTTPD hosted mapbox visualisation of Crop Use map using remote data uploaded to MapBox studio."
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
