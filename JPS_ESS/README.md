@@ -19,7 +19,7 @@
 5. node app web/CO2WEB/app.js
    - Comment Line 2, Uncomment Line 3 in \web\CO2Web\public\javascripts\pwBaseFile.js when deploying in Claudius
 6. have nodeJS server running
-7. Transfer the relevant folder: kb\sgp\jurongisland\jurongislandpowernetwork into your TOMCAT\webapps\ROOT directory. 
+7. Transfer the relevant folder: kb\sgp\jurongisland\jurongislandpowernetwork, kb\batterycatalog into your TOMCAT\webapps\ROOT directory. 
 8. Expected Result: Upon deployment, by loading the page localhost:82/essMap
    i. A google map appears with Jurong Island Power Grid outlined in red and with markers denoting the plants
    ii. A button to tell you to 'Run Simulation'
@@ -62,6 +62,7 @@
   3. GAMS not being installed and hidden under GAMS DIR. If you don't want to change your directory name, then Line 105 of EnergyStorageSystem should be changed to where your GAMS is installed. 
   4. Python not being installed
   5. Battery catalog or relevant OWL files not being present. To solve this, please download the relevant folder: kb\sgp\jurongisland\jurongislandpowernetwork into your TOMCAT\webapps\ROOT directory. 
+  6. You might need to download your Jurong Island Power Network files under /kb/sgp/jurongisland/jurongislandpowernetwork if you were playing with them in POWSYS. This can be called if it stalls at EN Agent under a `NullPointerException`. 
 
 ## TODO: 
  - [x] Finish backup of visualization

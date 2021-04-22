@@ -9,6 +9,7 @@
  - mvn clean install JPS WTE
  - node app web/CO2WEB/app.js
  - have nodeJS server running
+ - Have JPS-AWS (Asynchronous Watcher Service) running. Pull from Vienna to get this watcher service. 
  - Comment Line 4, Uncomment Line 5 in \web\CO2Web\public\javascripts\wte.js when deploying in Claudius
  - Copy over the relevant files: ontology\ontowaste\OntoWaste, ontotransport, and kb\sgp\singapore\wastenetwork
  - Expected Result: Upon deployment, by loading the page localhost:82/wteMap. 
