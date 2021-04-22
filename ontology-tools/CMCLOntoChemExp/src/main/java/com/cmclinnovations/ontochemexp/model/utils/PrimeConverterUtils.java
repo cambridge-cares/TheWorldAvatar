@@ -20,6 +20,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.json.JSONObject;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClass;
@@ -33,6 +34,9 @@ import org.slf4j.Logger;
 
 import com.cmclinnovations.ontochemexp.model.converter.prime.PrimeConverter;
 import com.cmclinnovations.ontochemexp.model.exception.OntoChemExpException;
+
+import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
+import uk.ac.cam.cares.jps.blazegraph.KnowledgeRepository;
 
 /**
  * A utility class that supports the following functionalities:<p>
@@ -274,24 +278,37 @@ public class PrimeConverterUtils extends PrimeConverter{
 		if (speciesFileIRI.trim().startsWith("<") || speciesFileIRI.trim().endsWith(">")) {
 			speciesFileIRI = speciesFileIRI.replace("<", "").replace(">", "");
 		}
-		String uniqueSpeciesIRI = new String();
 		String queryString = formSpeciesIRIQueryFromPrimeID(speciesFileIRI);
-		List<List<String>> testResults = queryRepository(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), queryString);
-		if (testResults.size() == 2) {
-			uniqueSpeciesIRI = testResults.get(1).get(0);
-		}
-		return uniqueSpeciesIRI;
+
+		return retrieveSpeciesIRI(queryString);
 	}
 	
 	public static String retrieveSpeciesIRIFromInChI(String inchi) throws OntoChemExpException {
 		if (inchi.trim().toLowerCase().startsWith("1s/") || inchi.trim().toLowerCase().startsWith("1/")) {
 			inchi = "InChI=".concat(inchi);
 		}
-		String uniqueSpeciesIRI = new String();
 		String queryString = formSpeciesIRIQueryFromInChI(inchi);
-		List<List<String>> testResults = queryRepository(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), queryString);
-		if (testResults.size() == 2) {
-			uniqueSpeciesIRI = testResults.get(1).get(0);
+		return retrieveSpeciesIRI(queryString);
+	}
+	
+	public static String retrieveSpeciesIRI(String queryString) throws OntoChemExpException {
+		KnowledgeRepository kr = new KnowledgeRepository();
+		String results = new String();
+		try {
+			if (ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL().toLowerCase().contains("rdf4j")) {
+				results = kr.query(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), 
+						RDFStoreType.RDF4J, queryString);
+			} else if (ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL().toLowerCase().contains("blazegraph")) {
+				results = kr.query(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), 
+						RDFStoreType.BLAZEGRAPH, queryString);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JSONObject json = new JSONObject(results);
+		String uniqueSpeciesIRI = new String("");
+		if (json.has("results")) {
+			uniqueSpeciesIRI = json.getJSONObject("results").getJSONArray("bindings").getJSONObject(0).getJSONObject("speciesIRI").get("value").toString();
 		}
 		return uniqueSpeciesIRI;
 	}
@@ -318,108 +335,6 @@ public class PrimeConverterUtils extends PrimeConverter{
 				.concat(inchi).concat("\", \"InChI=1S\",\"InChI=1\"), \"/t.+\", \"\"), \"/b.+\", \"\"), \"\\\\(\", \"\\\\\\\\(\"), \"\\\\)\", \"\\\\\\\\)\"), \"i\") \n");
 		queryString = queryString.concat("}");
 		return queryString;
-	}
-	
-	/**
-	 * Query a given repository using a given SPARQL query string. 
-	 * 
-	 * @param serverURL
-	 * @param repositoryID
-	 * @param queryString
-	 * @return
-	 * @throws OntoChemExpException
-	 */
-	public static List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString) throws OntoChemExpException {
-		List<List<String>> processedResultList = new ArrayList<List<String>>();
-		
-		try {
-			Repository repo = new HTTPRepository(serverURL, repositoryID);
-			repo.initialize();
-			RepositoryConnection con = repo.getConnection();
-			
-			try {
-				TupleQuery queryResult = con.prepareTupleQuery(queryString);
-				try (TupleQueryResult result = queryResult.evaluate()) {
-					processResult(result, processedResultList);
-				} finally {
-					repo.shutDown();
-				}
-			} catch (Exception e) {
-				logger.error("Exception occurred.");
-				e.printStackTrace();
-				throw new OntoChemExpException("Exception occurred");
-			} finally {
-				logger.info("Executed the command to close the connection to the repository.");
-				con.close();
-			}
-		} catch (RDF4JException e) {
-			logger.error("RDF4JException occurred.");
-			e.printStackTrace();
-			throw new OntoChemExpException("RDF4JException occurred.");
-		}
-		return processedResultList;
-	}
-	
-	private static void processResult(TupleQueryResult result, List<List<String>> processedResultList) {
-		List<String> columnTitles = new ArrayList<>();
-		for (String bindingName : result.getBindingNames()) {
-			columnTitles.add(bindingName);
-		}
-		processedResultList.add(columnTitles);
-		while (result.hasNext()) {
-			BindingSet solution = result.next();
-			
-			List<String> processedResult = new ArrayList<>();
-			for (String bindingName : solution.getBindingNames()) {
-				processedResult.add(removeDataType(solution.getValue(bindingName).toString()));
-			}
-			processedResultList.add(processedResult);
-		}
-	}
-	
-	/**
-	 * Removes the following XML Schema data types from a string:</br>
-	 * 1. string</br>
-	 * 2. integer</br>
-	 * 3. float</br>
-	 * 4. double.
-	 * 
-	 * @param value
-	 * @return
-	 */
-	private static String removeDataType(String value) {
-		String stringType = "^^<http://www.w3.org/2001/XMLSchema#string>";
-		String integerType = "^^<http://www.w3.org/2001/XMLSchema#integer>";
-		String floatType = "^^<http://www.w3.org/2001/XMLSchema#float>";
-		String doubleType = "^^<http://www.w3.org/2001/XMLSchema#double>";
-		if (value.contains(stringType)) {
-			value = value.replace(stringType, "");
-		} else if (value.contains(integerType)) {
-			value = value.replace(integerType, "");
-			value = replaceInvertedComma(value);
-		} else if (value.contains(floatType)) {
-			value = value.replace(floatType, "");
-			value = replaceInvertedComma(value);
-		} else if (value.contains(doubleType)) {
-			value = value.replace(doubleType, "");
-			value = replaceInvertedComma(value);
-		} else if (value.startsWith("\"") || value.endsWith("\"")) {
-			value = value.replace("\"", "");
-		}
-		return value;
-	}
-
-	/**
-	 * Removes inverted commas from a string.
-	 * 
-	 * @param value
-	 * @return
-	 */
-	private static String replaceInvertedComma(String value) {
-		if (value.contains("\"")) {
-			value = value.replace("\"", "");
-		}
-		return value;
 	}
 	
 	/**
