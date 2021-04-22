@@ -843,15 +843,18 @@ public class DispSimSparql {
 		String simgraph = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#Simulations";
 		String weathergraph = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#WeatherStations";
 		String airqualitygraph = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#AirQualityStations";
+		String shipgraph = "http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ships";
 		
 		String queryTemplate = "clear graph <%s>";
 		
 		String query1 = String.format(queryTemplate,simgraph);
 		String query2 = String.format(queryTemplate, weathergraph);
 		String query3 = String.format(queryTemplate, airqualitygraph);
+		String query4 = String.format(queryTemplate, shipgraph);
 		
 		SparqlGeneral.performUpdate(query1);
 		SparqlGeneral.performUpdate(query2);
 		SparqlGeneral.performUpdate(query3);
+		SparqlGeneral.performUpdate(query4);
 	}
 }
