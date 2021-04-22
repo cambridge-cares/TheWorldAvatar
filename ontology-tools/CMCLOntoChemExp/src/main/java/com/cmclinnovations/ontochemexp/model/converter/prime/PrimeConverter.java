@@ -426,7 +426,8 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 
 	private void markEndCommonProperties(String qName) {
 		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inCommonProperties) {
-			componentCount = 0;
+			// below line is commented out to fix the bug of over-written entry of component within CommonProperties
+//			componentCount = 0;
 		}
 
 		if (qName.equalsIgnoreCase(primeVocabulary.getElemCommonProperties())) {

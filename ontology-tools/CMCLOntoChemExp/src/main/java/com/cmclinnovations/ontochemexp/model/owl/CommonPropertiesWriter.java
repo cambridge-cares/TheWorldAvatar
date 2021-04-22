@@ -121,7 +121,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	
 	private void readCommonPropertiesPropertyComponent(char ch[], int start, int length) throws SAXException {
 		if (commonPropertiesPropertyComponentParseStatus.isComponent() && inCommonProperties) {
-			// Component is only allowed to be linked with InitialComposition
+			// Component is only allowed to be linked with InitialComposition, Donor, and Acceptor
 			if (currentDQInstance.startsWith(ontoChemExpVocabulary.getClassInitialComposition()) || 
 					currentDQInstance.startsWith(ontoChemExpVocabulary.getClassDonor()) || 
 					currentDQInstance.startsWith(ontoChemExpVocabulary.getClassAcceptor())) {
