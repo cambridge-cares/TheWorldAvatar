@@ -2,154 +2,198 @@
 <html>
 
 <head>
-  <meta charset='utf-8' />
-  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-    .plantInfo {
-      position: absolute;
-      font-family: sans-serif;
-      margin-top: 5px;
-      margin-left: 5px;
-      padding: 5px;
-      width: 40%;
-      border: 2px solid black;
-      font-size: 25px;
-      color: #222;
-      background-color: #fff;
-      border-radius: 3px;
-    }
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 100%;
-    }
-  </style>
-</head>
-<body>
-
-  <div id='map'></div>
-
-  <div class='plantInfo'>
-  <div><strong>Name:</strong> <span id='nam'></span></div>
-  <div><strong>Capacity:</strong> <span id='cap'></span></div>
-  <div><strong>Fuel:</strong> <span id='fue'></span></div>
-  <div><strong>Indicator 9.4.1:</strong> <span id='nin'></span></div>
-  </div>
-
-  <script>
+	<meta charset='utf-8' />
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
   
-	// MapBox API token
-    mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		
+		.plantInfo {
+			position: absolute;
+			margin-top: 10px;
+			margin-left: 10px;
+			padding-left: 10px;
+			width: 300px;
+			font-size: 14px;
+			line-height: 66%;
+			background-color: #ffffff;
+			border: 2px solid black;
+		}
+		
+		img {
+			position: absolute;
+			bottom: 30px;
+			left: 10px;
+		}
+		
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+		
+		tr {
+			height: 20px;
+		}
+		
+	</style>
+</head>
+
+<body>
+	<div id='map'></div>
+
+	<div class='plantInfo'>
+		<table width="100%">
+			<colgroup>
+			   <col span="1" style="width: 30%;">
+			   <col span="1" style="width: 60%;">
+			</colgroup>
 	
-    var map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/light-v9', // stylesheet location
-      center: [-3, 54.25], // starting position [lng, lat]
-      zoom: 5, // starting zoom
-      pitch: 0,
-      bearing: 0,
-    });
+			<tr>
+				<td style="font-weight: bold; text-align:left;">Name:</td>
+				<td style="text-align:right;"><span id='nam'/></td>
+			</tr>
+			<tr>
+				<td style="font-weight: bold; text-align:left;">Capacity:</td>
+				<td style="text-align:right;"><span id='cap'/></td>
+			</tr>
+			<tr>
+				<td style="font-weight: bold; text-align:left;">Fuel:</td>
+				<td style="text-align:right;"><span id='fue'/></td>
+			</tr>
+			<tr>
+				<td style="font-weight: bold; text-align:left;">Indicator 9.4.1:</td>
+				<td style="text-align:right;"><span id='nin'/></td>
+			</tr>
+		</table>
+		<!--
+		<p><span style="font-weight:bold;">Name: </span><span id='nam'></span></p>
+		<p><span style="font-weight:bold;">Capacity: </span><span id='cap'></span></p>
+		<p><span style="font-weight:bold;">Fuel: </span><span id='fue'></span></p>
+		<p><span style="font-weight:bold;">Indicator 9.4.1: </span><span id='nin'></span></p>
+		-->
+	</div>
+	 
+	<img src="scale_1.png" width="300px"/>
 
-    map.on('load', function () {
+	<script>
+	  
+
+		
+		// MapBox API token
+		mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
+		
+		var map = new mapboxgl.Map({
+			container: 'map',
+			style: 'mapbox://styles/mapbox/light-v10', 	// stylesheet location
+			center: [-3, 54.25], 						// starting position [lng, lat]
+			zoom: 5, 									// starting zoom
+			pitch: 0,
+			bearing: 0,
+		});
+
+		map.on('load', function () {
+			
+			// Elements to update
+			var namDisplay = document.getElementById('nam');
+			var capDisplay = document.getElementById('cap');
+			var fueDisplay = document.getElementById('fue');
+			var ninDisplay = document.getElementById('nin');
+			var plantID = null;
+			
+			// Add GeoJSON data
+			map.addSource('powerplants', {
+				type: 'geojson',
+				data: 'data.geojson'
+			});
+
+			// This section determines the size and colour of the points according to data in the geojson file
+			map.addLayer({
+				'id': 'plant_locations',
+				'type': 'circle',
+				'source': 'powerplants',
+				'layout': {},
+				'paint': {
+					'circle-radius':["*", 2.3, ["ln", ["to-number", ["get", "capacity"]]]],
+					'circle-color':["rgb", ["to-number", ["get", "red"]], ["to-number", ["get", "green"]], 0]
+				}
+			});
 
 
-        // This section is concerned with plotting the geojson file
-        map.addSource('powerplants', {
-            type: 'geojson',
-            data: 'data.geojson'
-        });
+			// This section is concerned with displaying data when hovering over a plant
+			map.on('mousemove', 'plant_locations', (e) => {
 
-        // This section determines the size and colour of the points according to data in the geojson file
-        map.addLayer({
-            'id': 'plant_locations',
-            'type': 'circle',
-            'source': 'powerplants',
-            'layout': {},
-            'paint': {
-                'circle-radius':["*", 2.3, ["ln", ["to-number", ["get", "capacity"]]]],
-                'circle-color':["rgb", ["to-number", ["get", "red"]], ["to-number", ["get", "green"]], 0]
-            }
-            });
+			  map.getCanvas().style.cursor = 'crosshair';
+			  
+			  // Set variables equal to the current feature's magnitude, location, and time
+			  var plantName = e.features[0].properties.name;
+			  var plantCapacity = e.features[0].properties.capacity;
+			  var plantFuel = e.features[0].properties.fuel;
+			  var plantIndicator = e.features[0].properties.ind;
 
-        var plantID = null;
-
-        // This section is concerned with displaying data when hovering over a plant
-        map.on('mousemove', 'plant_locations', (e) => {
-
-          map.getCanvas().style.cursor = 'crosshair';
-          // Set variables equal to the current feature's magnitude, location, and time
-          var plantName = e.features[0].properties.name;
-          var plantCapacity = e.features[0].properties.capacity;
-          var plantFuel = e.features[0].properties.fuel;
-          var plantIndicator = e.features[0].properties.ind;
-
-          // Check whether features exist
-          if (e.features.length > 0) {
-            // Display the magnitude, location, and time in the sidebar
-            namDisplay.textContent = plantName;
-            capDisplay.textContent = plantCapacity + ' MW';
-            fueDisplay.textContent = plantFuel;
-            ninDisplay.textContent = plantIndicator + ' kg/£';
+			  // Check whether features exist
+			  if (e.features.length > 0) {
+				// Display the magnitude, location, and time in the sidebar
+				namDisplay.textContent = plantName;
+				capDisplay.textContent = plantCapacity + ' MW';
+				fueDisplay.textContent = plantFuel;
+				ninDisplay.textContent = plantIndicator + ' kg/£';
 
 
-            // If plantID for the hovered feature is not null,
-            // use removeFeatureState to reset to the default behavior
-            if (plantID) {
-              map.removeFeatureState({
-                source: "powerplants",
-                id: plantID
-              });
-            }
+				// If plantID for the hovered feature is not null,
+				// use removeFeatureState to reset to the default behavior
+				if (plantID) {
+					map.removeFeatureState({
+						source: "powerplants",
+						id: plantID
+					});
+				}
 
-            plantID = e.features[0].id;
+				plantID = e.features[0].id;
 
-            // When the mouse moves over the power plants layer, update the
-            // feature state for the feature under the mouse
-            map.setFeatureState({
-              source: 'powerplants',
-              id: plantID,
-            }, {
-              hover: true
-            });
-          }
-        });
+				// When the mouse moves over the power plants layer, update the
+				// feature state for the feature under the mouse
+				map.setFeatureState({
+					source: 'powerplants',
+					id: plantID,
+					}, {
+					hover: true
+				});
+			  }
+			});
 
-        // This section is concerned with removing data when mouse moves away from a plant
-        map.on("mouseleave", "plant_locations", function() {
-          map.getCanvas().style.cursor = 'crosshair';
-          if (plantID) {
-            map.setFeatureState({
-              source: 'powerplants',
-              id: plantID
-            }, {
-              hover: false
-            });
-          }
+			// This section is concerned with removing data when mouse moves away from a plant
+			map.on("mouseleave", "plant_locations", function() {
+				map.getCanvas().style.cursor = 'crosshair';
+			
+				if (plantID) {
+					map.setFeatureState({
+						source: 'powerplants',
+						id: plantID
+					}, {
+					hover: false
+					});
+				}
 
-          plantID = null;
-          // Remove the information from the previously hovered feature from the sidebar
-          namDisplay.textContent = '';
-          capDisplay.textContent = '';
-          fueDisplay.textContent = '';
-          ninDisplay.textContent = '';
-          // Reset the cursor style
-          map.getCanvas().style.cursor = '';
-        });
-    });
-
-    var namDisplay = document.getElementById('nam');
-    var capDisplay = document.getElementById('cap');
-    var fueDisplay = document.getElementById('fue');
-    var ninDisplay = document.getElementById('nin');
-
-  </script>
-
+				plantID = null;
+			  
+				// Remove the information from the previously hovered feature from the sidebar
+				namDisplay.textContent = '';
+				capDisplay.textContent = '';
+				fueDisplay.textContent = '';
+				ninDisplay.textContent = '';
+			  
+				// Reset the cursor style
+				map.getCanvas().style.cursor = '';
+			});
+		});
+	</script>
 </body>
+
 </html>
