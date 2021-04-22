@@ -84,9 +84,9 @@ public class CommercialAgent extends JPSAgent {
         	return false;
         }
     }
-	/** queries dynamically the Electrical network for Commercial Constants to be used by the Python
+	/** queries dynamically the Electrical network for Commercial Constants to be used by model
 	 * 
-	 * @param iriofnetwork IRI of Electrical Network
+	 * @param model OntModel of Electrical Network
 	 * @param baseUrl Folder in which constant.csv is dumped in
 	 */
 	public void queryForBuildingConstants(OntModel model, String baseUrl) {
