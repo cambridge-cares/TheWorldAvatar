@@ -3,12 +3,15 @@ import json, re, time, random
     
 SPARQL_template = '''
 #All properties with descriptions and aliases and types
-SELECT ?item ?itemLabel  ?itemAltLabel WHERE {
+SELECT ?item ?type ?itemLabel ?itemAltLabel WHERE {
   wd:%s ?property ?x .
-  ?item wikibase:directClaim ?property .
+  ?item wikibase:directClaim ?property ;
+        wikibase:propertyType ?type .
+
+  
   SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
 }
-GROUP BY  ?item ?itemLabel ?itemAltLabel
+GROUP BY  ?item ?type ?itemLabel ?itemAltLabel
 '''
 query_wiki = SPARQL_Query_for_Wiki()
 
@@ -49,19 +52,24 @@ def get_property(instance):
                 print('item', item) # item is the URI of the property, itemLabel to be its label, and 
                 property_record.append(item) # it is new, add it to the list 
                 list_of_properties.append(b)
-                tmp = {}
-                if 'item' in b:
-                    tmp['uri']= b['item']['value']
-            
-                if 'itemLabel' in b:
-                    tmp['label']= b['itemLabel']['value']
-                
-                if 'itemAltLabel' in b:
-                    altlabel = b['itemAltLabel']['value']
-                    tmp['alt_label'] = altlabel.split(',')
-                
-                single_list_property.append(tmp)
                 print('collected', len(list_of_properties))
+            tmp = {}
+            if 'item' in b:
+                tmp['uri']= b['item']['value']
+        
+            if 'itemLabel' in b:
+                tmp['label']= b['itemLabel']['value']
+            
+            if 'itemAltLabel' in b:
+                altlabel = b['itemAltLabel']['value']
+                tmp['alt_label'] = altlabel.split(',')
+                
+            if 'type' in b:
+                type = b['type']['value']
+                tmp['type'] = b['type']['value']
+            
+            single_list_property.append(tmp)
+            
                 
         if id not in instance_property_mapping:
             instance_property_mapping[id] = {'properties': single_list_property}
@@ -81,34 +89,40 @@ with open('WIKI_URI_LIST') as f:
     
 random_instance = random.sample(instances[2000:], 3000)
  
-# get the properties of the first 
-for instance in instances:
+# get the properties of the first 2000 instances (ranked by their length, from short to long )
+
+
+for instance in instances[:2000]:
+
     counter = counter + 1
     print('iterated', counter, 'out of 2000')
     get_property(instance)
+    
+    if counter == 10:
+        with open('ipm_test', 'w') as f:
+            f.write(json.dumps(instance_property_mapping))
+            f.close()
              
-
-
 with open('instance_property_mapping_first_2000', 'w') as f:
     f.write(json.dumps(instance_property_mapping))
     f.close()
 
-with open('distinct_properties', 'w') as f:
-    f.write(json.dumps(list_of_properties))
-    f.close()        
+# with open('distinct_properties', 'w') as f:
+#     f.write(json.dumps(list_of_properties))
+#     f.close()
              
              
-instance_property_mapping = {}
-for instance in random_instance:
-    random_counter = random_counter + 1
-    print('iterated', random_counter, 'out of 3000')
-
-    get_property(instance)
-            
-with open('instance_property_mapping_random_3000', 'w') as f:
-    f.write(json.dumps(instance_property_mapping))
-    f.close()
-            
+# instance_property_mapping = {}
+# for instance in random_instance:
+#     random_counter = random_counter + 1
+#     print('iterated', random_counter, 'out of 3000')
+#
+#     get_property(instance)
+#
+# with open('instance_property_mapping_random_3000', 'w') as f:
+#     f.write(json.dumps(instance_property_mapping))
+#     f.close()
+#
         
 
 ##################################################
