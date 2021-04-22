@@ -5,7 +5,7 @@ title: UK Crop Map
 <table>
 	<tr>
 		<td width="25%" style="text-align: center;" markdown="1">[![UK](image://land-use.jpg?forceResize=150,200&classes=header-image)](https://commons.wikimedia.org/wiki/File:Felsoetold_Wheat_field,_Hungary.jpg)</td>
-		<td width="75%"><h2>UN Sustainable Goals</h2>This module of the UK Digital Twin provides a map visualisation of data from the Crop Map of England for the Cambridgeshire region. Mouse over a location to view the crop details.</td>
+		<td width="75%"><h2>Uk Crop Map</h2>This module of the UK Digital Twin provides a map visualisation of data from the Crop Map of England for the Cambridgeshire region. Mouse over a location to view the crop details.</td>
 	</tr>
 </table>
 <br><br>
