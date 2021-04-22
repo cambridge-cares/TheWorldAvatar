@@ -1,0 +1,117 @@
+version: "3.8"
+
+# Services
+services:
+
+  # Knowledge Graph Website
+  website:
+    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT
+    build: "./website"
+    container_name: "website-${MODE}"
+    restart: unless-stopped
+    labels:
+      description: "HTTPD hosted static Grav website containing Knowledge Graph content."
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+  
+  
+  # Reverse Proxy
+  reverse_proxy:
+    image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT
+    build:
+      context: "./reverse_proxy"
+      target: no_ssl
+    container_name: "reverse_proxy-${MODE}"
+    restart: always
+    labels:
+      description: "Nginx configured as a reverse proxy for SSL handling and redirects."
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+  
+  
+  # JPS Chatbot
+  # NOTE - You must set up Vienna credentials before attempting to build this server,
+  #        see the JPS_Chatbot/docker/README.txt file for details.
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  jps-chatbot:
+    image: docker.cmclinnovations.com/jps-chatbot:${HASH}
+    build:
+      context: "../../../JPS_Chatbot"
+      dockerfile: "./docker/Dockerfile"
+    container_name: "jps-chatbot-${MODE}"
+    restart: unless-stopped
+    ports:
+      - 5000:5000 
+    labels:
+      description: "Chemistry chatbot, uses NL processing and KGs to answer chemical queries."
+      authors: "xz378@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+    
+    
+  # JPS LDF Server
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  jps-ldf:
+    image: docker.cmclinnovations.com/jps-ldf:${HASH}
+    build:
+      context: "../../../JPS_LDF"
+      dockerfile: "./docker/Dockerfile"
+    container_name: "jps-ldf-${MODE}"
+    restart: unless-stopped
+    ports:
+      - 3000:3000 
+    labels:
+      description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
+      authors: "xz378@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+  
+  
+  # UK Power System
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  uk-power-system:
+    image: docker.cmclinnovations.com/uk-power-system:e1ce3d6
+    container_name: "uk-power-system-${MODE}"
+    restart: unless-stopped
+    ports:
+      - 3001:3001 
+    labels:
+      description: "NodeJS hosted google maps visualisation of UK power plant data pulled from KG."
+      authors: "wx243@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+    
+    
+  # UK Gas Grid
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  uk-gas-grid:
+    image: docker.cmclinnovations.com/uk-gas-grid:3b27c1d
+    container_name: "uk-gas-grid-${MODE}"
+    restart: unless-stopped
+    ports:
+      - 4001:80
+    labels:
+      description: "HTTPD hosted mapbox visualisation of UK gas network based on static geoJSON files."
+      authors: "trs53@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+    
+    
+  # UN Sustainable Goals
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  un-goals:
+    image: docker.cmclinnovations.com/un-goals:${HASH}
+    build:
+      context: "./sustainable_goals"
+      dockerfile: "./docker/Dockerfile"
+    container_name: "un-goals-${MODE}"
+    restart: unless-stopped
+    ports:
+      - 4002:80
+    labels:
+      description: "HTTPD hosted mapbox visualisation of UN Sustainable Goals based on static geoJSON files."
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"

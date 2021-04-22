@@ -203,7 +203,8 @@ public class BlockchainWrapper extends JPSAgent{
 		try {
 		if (totalsolar == 0) {
 			//if no electricity is generated from the solar powered electricity:
-			//give nominal sum -> Not precisely true because the amount of ether that they need to pay is 220 eth per kwh which no one has so downgrade
+			//give nominal sum -> Not precisely true because the amount of ether that they need to pay is 220 eth per kwh which no one has
+			//Rather than eth, szabo is the currency used. 
 			double ethIndus = totalindus*220;
 			String transactionhash1 = dotransact(addrOfI, ElectricPublicKey,ethIndus);
 			double ethComme = totalcommer*220;

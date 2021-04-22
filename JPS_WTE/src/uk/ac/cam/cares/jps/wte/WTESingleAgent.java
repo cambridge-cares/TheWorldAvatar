@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.wte;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.atlas.json.JsonException;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -23,25 +21,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns= {"/processresult"})
 public class WTESingleAgent extends JPSAgent{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 
-	/** Extracts the onsite facility's tech capacity, installation cost, operation cost, transferrate electric value, energy consumption
-	  * 
-	  */
+	/** Extracts the onsite facility's tech capacity, installation cost, operation cost, 
+	 * transferrate electric value, energy consumption
+	 * 
+	 */
 	public static String getOffsiteOutputQuery() {
 		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
 				.addVar("?entity").addVar("?Tech1").addWhere("?entity" ,"j1:useTechnology", "?Tech1");
@@ -425,9 +421,11 @@ public class WTESingleAgent extends JPSAgent{
 			}
 
 			String sparql = sparqlStart + b.toString() + "} \r\n";
-			
-			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
-
+			if (InputValidator.checkIfValidUpdate(sparql) == true) {
+				new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
+			}else {
+				throw new JPSRuntimeException("Update of waste delivery site of FoodCourt " +d+" invalid!");
+			}
 		}
 		
 		return selectedOnsite;
@@ -512,9 +510,16 @@ public class WTESingleAgent extends JPSAgent{
 				b.append("<" + currentunit + "> OW:usedInYear " + indexByYear + " . \r\n");
 				b.append("<" + currentunit + "> OW:amountOfUnit " + numunit + " . \r\n");
 				String sparql = sparqlStart + b.toString() + "} \r\n";
-				new QueryBroker().updateFile(filtered.get(w)[1], sparql);
+				if (InputValidator.checkIfValidUpdate(sparql) == true) {
+					new QueryBroker().updateFile(filtered.get(w)[1], sparql);
+				}else {
+					throw new JPSRuntimeException("Update of offsite waste treatment facility invalid!");
+				}
 			}
 		}
 	}
+	
+	
+	
 	
 }

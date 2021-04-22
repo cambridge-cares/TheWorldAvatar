@@ -92,15 +92,28 @@ def process_data(row):
                 instances[row[0].strip()] = row[2].strip()
 
             elif row[2].strip() in instances or row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS):
+                # If no relation is provided in the relation column, then instance linking will be skipped.
                 if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
                     print('link instance 1', instances.get(row[0]))
                     print('link instance 2', instances.get(row[2]))
-                    if row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS):
+                    # If both instance 1 and instance 2 have http or https IRIs, then this block of code will be executed.
+                    if (row[0].strip().startswith(HTTP) or row[0].startswith(HTTPS)) and (row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS)):
+                        aboxgen.link_instance(g, URIRef(row[3]),
+                                              URIRef(row[0].strip()),
+                                              URIRef(row[2].strip()))
+                    # If only instance 1 has an http or https IRI, then this block of code will be executed.
+                    elif (row[0].strip().startswith(HTTP) or row[0].startswith(HTTPS)) and (not (row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS))):
+                        aboxgen.link_instance(g, URIRef(row[3]),
+                                              URIRef(row[0].strip()),
+                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
+                    # If only instance 2 has an http or https IRI, then this block of code will be executed.
+                    elif (not (row[0].strip().startswith(HTTP) or row[0].startswith(HTTPS))) and (row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS)):
                         aboxgen.link_instance(g, URIRef(row[3]),
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
                                               URIRef(row[2].strip()))
+                    # If both instance 1 and instance 2 don't have http or https IRIs, then this block of code will be executed.
                     else:
                         aboxgen.link_instance(g, URIRef(row[3]),
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
@@ -110,7 +123,7 @@ def process_data(row):
             if (row[2].startswith(HTTP) or row[2].startswith(HTTPS)) and not row[4].strip() == '':
                 if not row[5].strip() == '':
                     aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
-                                      URIRef(format_iri(row[2].strip())),
+                                      URIRef(row[2].strip()),
                                       row[4].strip(), get_data_type(row[5].strip()))
                 else:
                     aboxgen.link_data(g, URIRef(row[0].strip()),
@@ -123,8 +136,8 @@ def process_data(row):
                                       row[4].strip(), get_data_type(row[5].strip()))
                 else:
                     instance = propread.getABoxIRI() + SLASH + format_iri(row[2].strip())
-                    if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
-                        instance = row[2].strip()
+                    # if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
+                    #     instance = row[2].strip()
                     if not row[5].strip() == '':
                         aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
                                                     URIRef(instance),

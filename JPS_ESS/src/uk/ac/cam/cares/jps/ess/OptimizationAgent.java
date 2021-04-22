@@ -53,7 +53,7 @@ public class OptimizationAgent extends JPSAgent {
 		String localUrl = ScenarioHelper.cutHash(batIRI);
 		localUrl = ResourcePathConverter.convert(localUrl);
 		ResultSet resultSet = JenaHelper.queryUrl(localUrl, gencoordinate);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);System.out.println(result);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);

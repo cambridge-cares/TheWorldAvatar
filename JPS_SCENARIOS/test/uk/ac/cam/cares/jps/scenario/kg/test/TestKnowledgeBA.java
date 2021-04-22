@@ -24,11 +24,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kg.KnowledgeBaseAgentNew;
 
 public class TestKnowledgeBA   {
@@ -74,16 +72,17 @@ public class TestKnowledgeBA   {
 	@Test
 	public void testBaseQueryDirect() {
 		JSONObject jo = new JSONObject()
-				.put("resourceURL", filePath)
+				.put(JPSConstants.TARGETIRI, filePath)
 				.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
 //		AgentCaller.executeGetWithJsonParameter("jps/kb/scenarioFolder", jo.toString());
 
         KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
         JSONObject result = jpsa.main(jo);		
-		JSONArray ja = new JSONArray(result.getString("result")); 
+		JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("OH",jo.get("o").toString());
-	}
+	}	
+
 	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
 	 * 
 	 * @throws ParseException
@@ -95,15 +94,15 @@ public class TestKnowledgeBA   {
 		String testUpdate = getUpdateRequest().toString();
 		KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
 		JSONObject jo = new JSONObject()
-		.put("resourceURL",  filePath)
+		.put(JPSConstants.TARGETIRI,  filePath)
 		.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
         jpsa.main(jo);
         String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
         jo = new JSONObject()
-        		.put("resourceURL",  filePath)
+        		.put(JPSConstants.TARGETIRI,  filePath)
         		.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
         JSONObject result = jpsa.main(jo);
-        JSONArray ja = new JSONArray(result.getString("result")); 
+        JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("TEST",jo.get("o").toString());
 	}
@@ -115,7 +114,7 @@ public class TestKnowledgeBA   {
 	@Test
 	public void testValidateInput() throws JSONException, ParseException {
 		JSONObject jo = new JSONObject()
-				.put("resourceURL",  filePath);
+				.put(JPSConstants.TARGETIRI,  filePath);
 
 		KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
 		assertFalse(jpsa.validateInput(jo)); // No query/update
@@ -141,19 +140,19 @@ public class TestKnowledgeBA   {
 		String testUpdate = getUpdateRequest().toString();
 		KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
 		 JSONObject jo = new JSONObject()
-		.put("resourceURL",  filePath)
+		.put(JPSConstants.TARGETIRI,  filePath)
 		.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
-		AgentCaller.executeGetWithJsonParameter("jps/kb-new", jo.toString());
+		AgentCaller.executeGetWithJsonParameter("jps/kb", jo.toString());
 		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
         jo = new JSONObject()
-        		.put("resourceURL",  filePath)
+        		.put(JPSConstants.TARGETIRI,  filePath)
         		.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
         JSONObject result = jpsa.main(jo);
-        JSONArray ja = new JSONArray(result.getString("result")); 
+        JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("TEST",jo.get("o").toString());
 	}
-	/**
+	/** Sub Method for testBaseUpdateAgent()
 	 * Returns the test Sparql update.
 	 * 
 	 * @return UpdateRequest

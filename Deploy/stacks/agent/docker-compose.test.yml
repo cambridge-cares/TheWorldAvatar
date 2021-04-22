@@ -1,0 +1,5 @@
+version: "3.8"
+
+networks:
+  default:
+    name: test-agent

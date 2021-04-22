@@ -54,10 +54,10 @@ hasPopulation,Object Property,,,Location,Population,only,A relation that connect
 hasIndicator,Object Property,,,Target UNION Facility,Indicator,only,A relation that defines which Indicator belongs to the Target,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
 isIndicatorOf,Object Property,hasIndicator,INVERSE,,,,A relation that defines which Target an indicator belongs to,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
 coupledWith,Object Property,,,Indicator,Indicator,only,A relation that indicates that two indicators are calculated using the same data,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
-postivelyInfluences,Object Property,,,Target,Target,only,A relation that indicates that progress towards a target aids progress towards another,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
+positivelyInfluences,Object Property,,,Target,Target,only,A relation that indicates that progress towards a target aids progress towards another,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
 negativelyInfluences,Object Property,,,Target,Target,only,A relation that indicates that progress towards a target hinders progress towards another,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
-synergyWith,Object Property,,,Target,Target,only,A relation that indicates that progress towards a target aids progress towards another,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
-tradeoffWith,Object Property,,,Target,Target,only,A relation that indicates that progress towards a target hinders progress towards another,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
+hasSynergyWith,Object Property,,,Target,Target,only,A relation that indicates that progress towards a target aids progress towards another,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
+hasTradeoffWith,Object Property,,,Target,Target,only,A relation that indicates that progress towards a target hinders progress towards another,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
 hasLocation,Object Property,,,Indicator,Location,,A relation that relates a value of an indicator to a location,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
 hasScenario,Object Property,,,Indicator,Scenario,,A relation that defines which scenario an indicator value was calculated based on,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
 hasGenderDistribution,Object Property,,,Population,Gender Distribution,,A relation that describes the gender distribution in a population,http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl

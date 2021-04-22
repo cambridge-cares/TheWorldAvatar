@@ -62,7 +62,7 @@ public class IndustrialAgent extends JPSAgent {
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         return new CommercialAgent().validateInput(requestParams);
     }
-	/** submethod to call on Chemical and Fuel Cell constants
+	/** sub method to call on Chemical and Fuel Cell constants
 	 * 
 	 * @param model
 	 * @param baseUrl
@@ -73,7 +73,7 @@ public class IndustrialAgent extends JPSAgent {
         
 	}
 	/** Creates ElectrolyzerConstant.csv for IndustrialAgent to run 
-	 * 
+	 * Queries OntModel for electrolyzer parameters, switch to KBAgent if applicable
 	 * @param model
 	 * @param baseUrl
 	 */
@@ -105,7 +105,7 @@ public class IndustrialAgent extends JPSAgent {
 				
 	}
 	/** Creates FuelCell.csv for IndustrialAgent to run 
-	 * 
+	 * Queries OntModel for fuel cell parameters, switch to KBAgent if applicable
 	 * @param model
 	 * @param baseUrl
 	 */

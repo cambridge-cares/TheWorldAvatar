@@ -96,7 +96,7 @@ public class CoordinationESSAgent extends JPSAgent {
 						
 		jo.put("batterylist",new JSONObject(resultStart).getJSONArray("batterylist"));
 		
-		String finresult=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
+		String finresult=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/EnergyStorageRetrofit", jo.toString());
 	
 		logger.info("started creating battery");
 		JSONObject finres= new JSONObject(finresult); 
