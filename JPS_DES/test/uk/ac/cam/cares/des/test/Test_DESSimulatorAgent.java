@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
@@ -33,6 +34,7 @@ public class Test_DESSimulatorAgent{
 		
 		
 	}
+	
 	/** tests if Residential Agent calls successfully. 
 	 * Residential Agent requires caresjpsutil library. 
 	 * 
@@ -46,9 +48,10 @@ public class Test_DESSimulatorAgent{
 			assertNotNull(result);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("ResidentialAgent: Incomplete simulation.\n");
 		}
 	}
+	
 	/** test Residential agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -59,6 +62,7 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/ResidentialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	
 	/** tests of Commercial Agent runs successfully
 	 * 
 	 */
@@ -76,9 +80,10 @@ public class Test_DESSimulatorAgent{
 			assertNotNull(result);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("CommercialAgent: Incomplete simulation.\n");
 		}
 	}
+	
 	/** test Commercial agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -91,6 +96,7 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/CommercialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	
 	/** tests if Industrial Agent calls successfully. 
 	 * Industrial Agent requires caresjpsutil library. 
 	 * 
@@ -112,9 +118,10 @@ public class Test_DESSimulatorAgent{
 			assertNotNull(result);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("IndustrialAgent: Incomplete simulation.\n");
 		}
 	}
+	
 	/** test Industrial agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -127,6 +134,7 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/IndustrialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	
 	/** tests if Solar Radiation Agent calls successfully. 
 	 * Solar Radiation Agent requires caresjpsutil library. 
 	 *  
@@ -145,9 +153,10 @@ public class Test_DESSimulatorAgent{
 				assertNotNull(result);
 				}
 			catch (Exception ex) {
-				ex.printStackTrace();
+				throw new JPSRuntimeException("SolarAgent: Incomplete simulation.\n");
 			}
 	}
+	
 	/** test Solar agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -160,13 +169,13 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/SolarAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	
 	/** tests if System Agent calls successfully. 
 	 * System Agent requires caresjpsutil library. 
 	 * 
 	 */
 	@Test
 	public void testSystemAgent() {
-		try {
 			String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\Overall";
 			
 			new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
@@ -175,20 +184,13 @@ public class Test_DESSimulatorAgent{
 			new ResidentialAgent().extractResidentialData(iriofnetworkdistrict, baseUrl); //csv for residential
 			new CommercialAgent().queryForBuildingConstants(model, baseUrl);;//csv for commercial
 			new IndustrialAgent().queryForConstantsIndustrial(model, baseUrl);;//csv for commercial
-			try {
+		
 				String result = new DESAgentNew().runPythonScript("system.py", baseUrl);
 				assertNotNull(result);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-//			String result = new DESAgentNew().runPythonScript("system.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\Overall");
-//			System.out.println(result);
-			}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+			
+			
 	}
+	
 	/** test System agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -207,10 +209,10 @@ public class Test_DESSimulatorAgent{
 		assertNotNull(resultStart);
 		FrontEndTalk();
 	}
+	
 	/** check if FrontEnd Case Scenario works
 	 * 
 	 */
-	@Test
 	public void FrontEndTalk() {
 		BlockchainWrapper bc = new BlockchainWrapper();
 		//looks for last created directory through the Metadata Query
@@ -229,6 +231,7 @@ public class Test_DESSimulatorAgent{
 	public void testFrontEndTalk() {
 		FrontEndTalk();
 	}
+	
 	/** test if validateInput method is working in Commercial Agent
 	 * 
 	 */
@@ -240,6 +243,7 @@ public class Test_DESSimulatorAgent{
 		
 		
 	}
+	
 	/** test if validateInput method is working in Commercial Agent
 	 * 
 	 */
@@ -252,7 +256,9 @@ public class Test_DESSimulatorAgent{
 		assertTrue(new CommercialAgent().validateInput(jo));
 		
 		
-	}/** test if validateInput method is working in System Agent
+	}
+	
+	/** test if validateInput method is working in System Agent
 	 * 
 	 */
 	@Test

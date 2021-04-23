@@ -32,6 +32,7 @@ import org.web3j.utils.Convert;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -47,12 +48,9 @@ public class BlockchainWrapper extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-    }
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-
+		if (!validateInput(requestParams)) {
+			throw new BadRequestException("BlockchainWrapper: Input parameters are non-empty.\n");
+		}
 		JSONObject result=new JSONObject();
 		JSONObject graData =new JSONObject();
 		graData = provideJSONResult(getLastModifiedDirectory());
@@ -66,11 +64,19 @@ public class BlockchainWrapper extends JPSAgent{
 			return graData;
 		
 		} catch (Exception e) {
-			e.printStackTrace();
-			return graData;
+			return graData; //Return graph results otherwise. 
 		}
  
 	}
+	
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (!requestParams.isEmpty()) {
+            return false;
+        }
+        return true;
+	}
+	
 	 /**
      * Gets the latest file created using rdf4j
      * @return last created file
@@ -153,11 +159,12 @@ public class BlockchainWrapper extends JPSAgent{
 		}
     	
     	}catch (Exception ex) {
-    		ex.printStackTrace();
+    		throw new JPSRuntimeException("BlockchainWrapper: derivation of values failed\n");
     	}
 
 		return jo;
     }
+    
 	/** helper function to determineValue()s
 	 * 
 	 * @param index
@@ -184,6 +191,7 @@ public class BlockchainWrapper extends JPSAgent{
         }
         return jo;
     }
+    
 	/** parse values of solar, grid supply for that hour, and 
 	 * sends value to doTransact to create Transaction as well as 
 	 * determineValue() to check the value in terms of Ether
@@ -302,11 +310,12 @@ public class BlockchainWrapper extends JPSAgent{
 			jS.put("sandr",whoTowho.toArray());
 		}
 	}catch (Exception e) {
-			e.printStackTrace();
-	}
+			throw new JPSRuntimeException("BlockchainWrapper: Transaction on blockchain failed.\n");
+		}
 
 		return jS;
 	}
+    
 	/** provides result in the response of a JSON form
 	 * 
 	 * @param baseUrl

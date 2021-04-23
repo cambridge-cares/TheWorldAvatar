@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -26,11 +27,6 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/CommercialAgent"})
 public class CommercialAgent extends JPSAgent {
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
 	/** Main Function for processing Commercial Agent. 
 	 * Employs queryForWeather Forecast as well as building constants. 
 	 * @param requestParams
@@ -38,8 +34,8 @@ public class CommercialAgent extends JPSAgent {
 	 * @return
 	 */
 	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	JSONObject responseParams = requestParams;	
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		JSONObject responseParams = requestParams;	
     	if (!validateInput(requestParams)) {
     		throw new BadRequestException("CommercialAgent:  Input parameters not found.\n");
     	}
@@ -59,10 +55,11 @@ public class CommercialAgent extends JPSAgent {
 			responseParams.put("results", res);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("CommercialAgent: Results not returned. ");
 		}
 		return responseParams;
     }
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
@@ -84,6 +81,7 @@ public class CommercialAgent extends JPSAgent {
         	return false;
         }
     }
+	
 	/** queries dynamically the Electrical network for Commercial Constants to be used by model
 	 * 
 	 * @param model OntModel of Electrical Network
@@ -116,9 +114,6 @@ public class CommercialAgent extends JPSAgent {
 		List<String[]> csvConstant = new ArrayList<String[]>();
 		String[] csvNew =  (String[]) ArrayUtils.addAll(Arrays.copyOfRange(csv, 1, csv.length), Arrays.copyOfRange(csv2, 1, csv2.length));
 		csvConstant.add(csvNew);
-		new QueryBroker().putLocal(baseUrl + "/constant.csv", MatrixConverter.fromArraytoCsv(csvConstant));
-		
-		return;
-		 
+		new QueryBroker().putLocal(baseUrl + "/constant.csv", MatrixConverter.fromArraytoCsv(csvConstant)); 
 	}
 }
