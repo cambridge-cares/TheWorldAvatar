@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.des.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -12,6 +13,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
+import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
@@ -209,6 +211,18 @@ public class Test_DESSimulatorAgent{
 		assertNotNull(resultStart);
 		FrontEndTalk();
 	}
+	/** checks for empty input
+	 * 
+	 */
+	@Test
+	public void testInputValidatorFrontEndCoordination(){
+		JSONObject jo = new JSONObject();
+	    assertTrue(new FrontEndCoordination().validateInput(jo));
+	    jo.put("key", "value");
+	    assertFalse(new FrontEndCoordination().validateInput(jo));
+	    
+		
+	}
 	
 	/** check if FrontEnd Case Scenario works
 	 * 
@@ -222,7 +236,6 @@ public class Test_DESSimulatorAgent{
 		JSONObject graData  = bc.provideJSONResult(directorychosen);
 		JSONObject jo = bc.determineValue (graData);
 		System.out.println(jo.toString());
-		//TODO: later on, check value of data 
 		assertNotNull(jo);
 		
 	}

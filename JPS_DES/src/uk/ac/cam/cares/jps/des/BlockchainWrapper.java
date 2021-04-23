@@ -71,10 +71,10 @@ public class BlockchainWrapper extends JPSAgent{
 	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (!requestParams.isEmpty()) {
-            return false;
+		if (requestParams.isEmpty()) {
+            return true;
         }
-        return true;
+        return false;
 	}
 	
 	 /**
