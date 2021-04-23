@@ -20,6 +20,39 @@
 				box-sizing: border-box; 
 				border-left: 2px solid grey;
 				background-color: #f2f2f2;
+				z-index: 1;
+				position: fixed;
+				top: 0;
+				right: 0;
+				overflow-x: hidden;
+				transition: 0.5s;
+			}
+						
+			#closebtn {
+				position: fixed;
+				top: 0;
+				right: 0;
+				font-size: 14px;
+				padding-top: 10px;
+				padding-right: 10px;
+				color: grey;
+				text-decoration: none;
+			}
+			
+			#openbtn {
+				position: fixed;
+				top: 0;
+				right: 0;
+				font-size: 14px;
+				padding-top: 10px;
+				padding-right: 10px;
+				color: grey;
+				text-decoration: none;
+			}
+			
+			#closebtn:hover, #openbtn:hover  {
+				color: black;
+				text-decoration: underline;
 			}
 		</style>
 	</head>
@@ -27,14 +60,35 @@
 	<body>
 		<div id="map" style="height:100%; width:75%; float:left;"></div>
 		
+		<a href="javascript:void(0)" id="openbtn" onclick="openNav()">Show Legend</a> 
+		
 		<div id="legend" style="height:100%; width:25%; float:right;">
-			<img src="land-use-legend.svg" style="object-fit:contain; "/>
-			<div id="attribution" style="height:50px; right:0; bottom:0; margin-right:6px; position:absolute;">
+			<a href="javascript:void(0)" id="closebtn" onclick="closeNav()">Hide Legend</a> 
+			<img src="land-use-legend.svg" style="object-fit:contain; padding-top:25px;"/>
+			<div id="attribution" style="height:40px; right:0; bottom:0; margin-right:10px; position:fixed; font-size:14px;">
 				<p>Zachary Harper & David Soutar - 2021</p>
 			</div>
 		</div>
 		
 		<script>
+			/* */
+			function openNav() {
+				document.getElementById("legend").style.width = "25%";
+				document.getElementById("legend").style.minWidth = "300px";
+				
+				document.getElementById("openbtn").style.display = "none";
+				document.getElementById("closebtn").style.display = "block";
+			}
+
+			/* */
+			function closeNav() {
+				document.getElementById("legend").style.width = "0";
+				document.getElementById("legend").style.minWidth = "0px";
+				
+				document.getElementById("openbtn").style.display = "block";
+				document.getElementById("closebtn").style.display = "none";
+			}
+
 			// MapBox API token
 			mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
 			
