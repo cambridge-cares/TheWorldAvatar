@@ -56,18 +56,19 @@ public class Test_DESWeatherAgents{
 	 * @throws IOException 
 	 * 
 	 */
-//    @Test
+    @Test
 	public void testWeatherForecast() throws IOException {
 
 		long timeLast = new Date().getTime();
-    	new ForecastAgent().nextForecastDayTemperature(irioftempF);
-    	String fileStr = DESAgentNew.tempIRItoFile(irioftempF);
+    	new ForecastAgent().nextForecastDaySolcast(irioftempF,iriofirrF);
+    	String fileStr = DESAgentNew.tempIRItoFile(iriofirrF);
+    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+    	fileStr = DESAgentNew.tempIRItoFile(irioftempF);
     	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
     	timeLast = new Date().getTime();
-    	new ForecastAgent().nextForecastDaySolcast(irioftempF,iriofirrF);
+    	new ForecastAgent().nextForecastDayTemperature(irioftempF);
     	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
-    	fileStr = DESAgentNew.tempIRItoFile(iriofirrF);
-    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+    	
 		
 		
 		

@@ -233,8 +233,10 @@ public class DESAgentNew extends JPSAgent {
 	    .addWhere("?entity","j2:isConnectedTo", "?component");
 	    Query q= modelQ.build();
 	    String electricalnodeInfo = q.toString();
-	    QueryBroker broker = new QueryBroker();
-	    return broker.readModelGreedy(useriri, electricalnodeInfo);
+	    JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, electricalnodeInfo)
+				.put(JPSConstants.TARGETIRI , tempIRItoFile(useriri));
+		String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
+		return readModelGreedyCon(result);
     }
     
     /** run Python Script in folder
