@@ -46,11 +46,10 @@ public class ForecastAgent extends JPSAgent{
     	try {
             String irioftempF=requestParams.getString("temperatureforecast");
             String iriofirrF=requestParams.getString("irradiationforecast");
-    		nextForecastDayTemperature(irioftempF);
     		nextForecastDaySolcast(irioftempF,iriofirrF);
+    		nextForecastDayTemperature(irioftempF);
 		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	return requestParams;
@@ -157,7 +156,7 @@ public class ForecastAgent extends JPSAgent{
 		SelectBuilder sensorTemp = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
     			.addVar("?vprop").addVar("?proptime")
-    			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval", Order.DESCENDING).setLimit(12);
+    			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval",Order.DESCENDING).setLimit(12);
     	Query q= sensorTemp.build(); 
     	String sensorInfo = q.toString();
     	String convertedIRITemp = DESAgentNew.tempIRItoFile(iriTemperature);
@@ -171,7 +170,8 @@ public class ForecastAgent extends JPSAgent{
 		List<String[]>  resultListfromquery = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
     	Collections.reverse(resultListfromquery);
     	int[] indices = {0,2};
-		updateOWLFileWithResultList(resultListfromquery,solArray, convertedIRITemp, indices); 
+    	ArrayList<String []> tempArray = new ArrayList<String []>(solArray.subList(12, 24));
+		updateOWLFileWithResultList(resultListfromquery,tempArray, convertedIRITemp, indices); 
 		int[] indices2 = {1,2};
 		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo2)
 				.put(JPSConstants.TARGETIRI, convertedIRIIrrad);
