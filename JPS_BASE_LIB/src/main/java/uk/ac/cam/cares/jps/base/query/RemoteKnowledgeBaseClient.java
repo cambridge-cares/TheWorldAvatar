@@ -1,10 +1,13 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.jdbc.JenaDriver;
 import org.apache.jena.jdbc.remote.RemoteEndpointDriver;
 import org.apache.jena.query.Query;
@@ -14,6 +17,9 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import org.apache.jena.rdfconnection.RDFConnectionRemoteBuilder;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -622,5 +628,74 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	private String getUpdateEndpointConnectionParameter(){
 		return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
 				.concat("=");
+	}
+	
+	//TODO new get/put methods
+	
+	/**
+	 * Performs a construct query on the store and returns the model as a string.
+	 */
+	@Override
+	public
+	String get(String resourceUrl, String accept) {
+		
+		Var varS = Var.alloc("s");
+		Var varP = Var.alloc("p");
+		Var varO = Var.alloc("o");
+		
+		ConstructBuilder builder = new ConstructBuilder()
+				.addConstruct( varS, varP, varO);
+				
+		if (resourceUrl == null) {
+			//Default graph
+			builder.addWhere(varS, varP, varO);
+		}else {	
+			//Named graph
+			String graphURI = "<" + resourceUrl + ">";
+			builder.addGraph(graphURI, varS, varP, varO);	
+		}
+		
+		Model model = executeConstruct(builder.build());
+	
+		Lang syntax = RDFLanguages.contentTypeToLang(accept);		
+		
+		StringWriter out = new StringWriter();
+		model.write(out, syntax.getName());
+		return out.toString();
+	}
+	
+	@Override
+	public
+	void put(String resourceUrl, String content, String contentType) {
+		
+		//TODO convert content to model, insert model to store
+		
+		/*
+		UpdateBuilder builder = new UpdateBuilder();
+		
+		// Add select subquery and optional graph
+		
+			if (resourceUrl == null) {
+				select.addVar(varG);
+				select.addGraph(varG, where);
+				builder.addInsert(varG, newS, varP, varO)
+					.addDelete(varG, varS, varP, varO)
+					.addSubQuery(select);
+			}else {	
+				String graphURI = "<" + graph + ">";
+				select.addGraph(graphURI, where);
+				// Graph
+				builder.addInsert(graphURI, newS, varP, varO)
+					.addDelete(graphURI, varS, varP, varO)
+					.addSubQuery(select);	
+			}
+		}else {
+			select.addWhere(where);
+			builder.addInsert(newS, varP, varO)
+				.addDelete(varS, varP, varO)
+				.addSubQuery(select);
+		}
+		return builder.buildRequest();
+		*/
 	}
 }

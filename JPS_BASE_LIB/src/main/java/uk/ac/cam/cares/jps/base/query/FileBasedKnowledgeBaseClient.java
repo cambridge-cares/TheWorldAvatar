@@ -811,4 +811,18 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
 		}
 	}
+	
+	//TODO new get/put methods
+	
+	@Override
+	public
+	String get(String resourceUrl, String accept) {
+		return null;
+	}
+	
+	@Override
+	public
+	void put(String resourceUrl, String content, String contentType) {
+		
+	}
 }

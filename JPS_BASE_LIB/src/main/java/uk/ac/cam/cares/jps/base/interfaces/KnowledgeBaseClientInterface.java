@@ -15,7 +15,12 @@ import org.json.JSONArray;
  */
 public interface KnowledgeBaseClientInterface {
 
-
+	// Get/Put methods
+	
+	String get(String resourceUrl, String accept);
+	
+	void put(String resourceUrl, String content, String contentType);
+	
 	// SPARQL Query methods
 	
 	/**
