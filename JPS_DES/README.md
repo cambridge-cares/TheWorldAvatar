@@ -27,6 +27,7 @@ Instead, follow this [guide](https://guides.library.illinois.edu/c.php?g=347520&
  - Have pytesseract installed
  - Have tesseract installed 
  - mvn clean install JPS DES
+ - Have the files under /kb/sgp/singapore/ copied to the TOMCAT/webapps/ROOT folder. So IRI/Temperature sensor -001, forecast -001, and industrial, district, District-001.owl, and singaporeelectricalnetwork/ folders on your respective ROOT/kb folder.
  - have nodeJS server running
  - Comment Line 6, Uncomment Line 5 in \web\CO2Web\public\javascripts\DESplot.js when deploying in Claudius
  - Expected Result: Upon deployment, by loading the page localhost:82/desplot. Three graphs would appear: 
