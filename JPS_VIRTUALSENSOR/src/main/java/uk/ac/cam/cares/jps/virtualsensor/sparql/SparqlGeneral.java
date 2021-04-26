@@ -41,6 +41,13 @@ public class SparqlGeneral {
         kbClient.executeUpdate();
     }
 	
+	public static void performUpdate(String query) {
+        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        kbClient.setUpdateEndpoint(endpoint);
+        kbClient.setQuery(query);
+        kbClient.executeUpdate();
+    }
+	
 	public static JSONArray performQuery(SelectQuery query) {
         RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setUser(SparqlAuthentication.getUser());
@@ -51,6 +58,17 @@ public class SparqlGeneral {
         result = kbClient.executeQuery(); 
         return result;
     }
+	
+	public static JSONArray performQuery(String query) {
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        kbClient.setUser(SparqlAuthentication.getUser());
+        kbClient.setPassword(SparqlAuthentication.getPassword());
+        kbClient.setQueryEndpoint(endpoint);
+        kbClient.setQuery(query);
+        JSONArray result = null;
+        result = kbClient.executeQuery(); 
+        return result;
+	}
 	
 	/** 
 	 * inserts triples into the query

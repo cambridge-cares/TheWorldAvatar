@@ -38,6 +38,12 @@ public class Scope {
     
     public Scope() {}
     
+    public Scope(Scope sc) { // copy constructor
+    	this.upperCorner = sc.getUpperCorner();
+    	this.lowerCorner = sc.getLowerCorner();
+    	this.srsname = sc.getSrsName();
+    }
+    
     public Point getUpperCorner() {
     	return this.upperCorner;
     }
@@ -158,10 +164,15 @@ public class Scope {
      */
     public boolean isWithinScope(Point p) {
     	boolean within = false;
-    	Point p_copy = p;
-    	p_copy.transform(this.srsname);
-    	if ((this.upperCorner.getX() >= p.getX()) && (this.lowerCorner.getX() <= p.getX()) 
-    			&& (this.upperCorner.getY() >= p.getY()) && (this.lowerCorner.getY() <= p.getY())) {
+    	
+    	Point p_copy = new Point(p);
+    	Scope sc_copy = new Scope(this);
+    	
+    	p_copy.transform(CRSTransformer.EPSG_4326);
+    	sc_copy.transform(CRSTransformer.EPSG_4326);
+
+    	if ((sc_copy.upperCorner.getX() >= p_copy.getX()) && (sc_copy.lowerCorner.getX() <= p_copy.getX()) 
+    			&& (sc_copy.upperCorner.getY() >= p_copy.getY()) && (sc_copy.lowerCorner.getY() <= p_copy.getY())) {
     		within = true;
     	}
     	return within;

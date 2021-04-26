@@ -1,4 +1,8 @@
 pandas==1.1.2
+docopt==0.6.2
+matplotlib==3.3.4
+geojsoncontour==0.4.0
+pyproj==3.0.1
 altgraph==0.15
 future==0.16.0
 macholib==1.9
