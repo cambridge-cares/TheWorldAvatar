@@ -39,7 +39,7 @@ public class DESCoordination extends JPSAgent{
 	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (!requestParams.isEmpty()) {
+        if (requestParams.isEmpty()) {
             return false;
         }
         return true;
