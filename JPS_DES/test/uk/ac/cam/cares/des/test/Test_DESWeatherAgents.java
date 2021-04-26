@@ -78,7 +78,7 @@ public class Test_DESWeatherAgents{
 	 * This test is should not be run due to the limited number of calls alloted to a free account. 
 	 * 
 	 */
-//    @Test
+    @Test
 	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
 

@@ -311,13 +311,13 @@ public class BlockchainWrapper extends JPSAgent{
 				totalList.add(transactionhash3);
 				
 			}
-			jS.put("txHash",totalList.toArray());
-			jS.put("sandr",whoTowho.toArray());
+			
 		}
 	}catch (Exception e) {
 			throw new JPSRuntimeException("BlockchainWrapper: Transaction on blockchain failed.\n");
 		}
-
+		jS.put("txHash",totalList.toArray());
+		jS.put("sandr",whoTowho.toArray());
 		return jS;
 	}
     

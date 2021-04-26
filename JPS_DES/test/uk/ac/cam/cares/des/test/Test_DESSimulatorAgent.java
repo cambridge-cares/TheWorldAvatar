@@ -223,6 +223,9 @@ public class Test_DESSimulatorAgent{
 		JSONObject jo = bc.determineValue (graData);
 		System.out.println(jo.toString());
 		assertNotNull(jo);
+		JSONObject result = bc.calculateTrade(jo);
+		assertNotNull(result.get("txHash"));
+		assertNotNull(result.get("sandr"));
 		
 	}
 	
