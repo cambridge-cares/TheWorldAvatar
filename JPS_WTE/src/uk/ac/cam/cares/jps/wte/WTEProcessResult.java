@@ -29,7 +29,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns= {"/processresult"})
-public class WTESingleAgent extends JPSAgent{
+public class WTEProcessResult extends JPSAgent{
 	
 	private static final long serialVersionUID = 1L;
 
@@ -130,7 +130,7 @@ public class WTESingleAgent extends JPSAgent{
 		}
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
-		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
+		OntModel model= readModelGreedy(wasteIRI);
 		try {
 			//read for FC details
 			List<String[]> resu =  FCQuerySource.queryResult(model,WastetoEnergyAgent.getFCQuery());
@@ -176,7 +176,18 @@ public class WTESingleAgent extends JPSAgent{
 			return false;
 		}
 	}
-	
+	/** reads the topnode into an OntModel of all its subsystems. 
+	 * @param iriofnetwork
+	 * @return
+	 */
+	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
+		String wasteInfo = sb.build().toString();
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, wasteInfo);
+	}
 	/** reads the result from the csv file produced and returns as List<String[]>
 	 * 
 	 * @param baseUrl String

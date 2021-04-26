@@ -20,13 +20,10 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
-import uk.ac.cam.cares.jps.wte.WTESingleAgent;
+import uk.ac.cam.cares.jps.wte.WTEProcessResult;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
 public class WTEVisualization extends JPSAgent{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);

@@ -120,9 +120,9 @@ Then, it calls upon the BlockchainWrapper agent that communicates with the block
   2. Check if you have ether in your wallet. See [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/master/JPS_DES#Metamask) for greater detail. 
 - Why is the webpage blank? Node is running. 
   1. Check if you're reading from the right location. Localhost? Or jparksimulator? The same goes if you have a ConnectException: it's linked to the wrong location and thus change your 'test' value in jps.properties
-- Where's commercial.json, electricgrid.json and all these other files that are meant to be in config.properties? 
+- Where's all these other files that are meant to be in config.properties? 
   1. First, check server. These files are added to gitignore because the passcodes are private.
-  2. The values on `config.properties` under resources/ were changed. 
+  2. The variable names on `config.properties` under resources/ were changed. 
   
 ## Websites referenced: 
 1. [Solar Repository Institute](https://www.solar-repository.sg/ftp_up/weather/500_Weather.png) for the solar weather near NUS (within NUS)
