@@ -17,15 +17,18 @@
 4. org.web3j (for ethereum exchange)
 5. com.google.code.gson
 
-## Where's Pytesseract? 
-Because of the tesseract dependency which relies on your OS system, pip installing isn't enough. 
+## What's Tesseract? 
+It's an OCR software that scans images to return data. It isn't reliable, but it's what we have for interpreting real-time solar data
+Because of the tesseract dependency which relies on your OS system, pip installing pytesseract isn't enough. 
 Instead, follow this [guide](https://guides.library.illinois.edu/c.php?g=347520&p=4121425) to figure out how to get pytesseract going.
 
 ## What to do for deployment? 
  - Have python installed. Have java installed. Both should be added to your system environment. 
  - Have pytesseract installed
+ - Have tesseract installed 
  - mvn clean install JPS DES
  - have nodeJS server running
+ - Comment Line 6, Uncomment Line 5 in \web\CO2Web\public\javascripts\DESplot.js when deploying in Claudius
  - Expected Result: Upon deployment, by loading the page localhost:82/desplot. Three graphs would appear: 
  	1. A temperature forecast graph
  	2. A solar irradiation forecast graph
@@ -62,38 +65,68 @@ Instead, follow this [guide](https://guides.library.illinois.edu/c.php?g=347520&
 2. The DES Coordination Agent has two subcomponents and can be found in DESCoordination.java. This is called periodically due to the 10 call per limit that forecasting solar data imposes on us.
 - Input: Contains the electrical network, and the district IRI
 - Output: A folder that has the predictions for the next twenty four hours of the a) residential, commercial, industrial, solar and electric grid profile and b) the profiles of three types of residential households. 
+![ForecastAgent UML Activity Diagram](images/ActivityForecast.png)
 3. DES Coordination calls on the Forecast Agent to check and print the next twenty four hours. It calls "/getForecastData"
 	Forecast Agent takes in 
 - Input: baseURL that dictates where the weather forecast files are written. 
 - Output: WeatherForecast.csv is written into the baseURL folder
+![DESAgentNew UML Activity Diagram](images/ActivityDESAgent.png)
 4. DESCoordination then calls upon DESAgent, the wrapper for the python code that uses Game Theory to model a simulation via "/DESAgentNew"
 - Input: Electrical network IRI, District IRI, baseURL
 - Output: 
-	1. Five Graph profile that has
+	1. Five Graph profiles that have
 		i) Solar (24)
 		ii) gridsupply (24)
 		iii) Commercial (24)
 		iv) industrial (24)
 		v) residential (24)
 	2. Three sets of residential type profiles (24)
-5. Front-End Coordination uses rdf4j to get the last complete run of DESCoordination. This is done by annotating the folder and keeping a record in runOptimization in DESAgentNew before querying it in FrontEndCoordination
-	1. Due to the large size of the JSON packet, the  agent reduces it to a JSON size of five, with each key having just 1 value. 
-	Then, it calls upon the BlockchainWrapper agent that communicates with the blockchain. 
-	2. Input: A JSON of five elements. 
-	3. Output: JSON of two keys
-		1. txHash, the list of transaction hashes. A transaction hash can be treated as a receipt. 
-		2. sandr, the list of senders and receivers. 
-	4. Coordination Agent can be tested by using "testStartCoordinationDESScenariobase()"
-	5. Weather Agent (RealTime) can be collected via testIrradiationRetrieverDirectCall() and testIrradiationRetrieverAgentCall()
-	6. Forecast Agent can be tested, but it's not recommended to do so. To test Forecast Agent, run the coordination agent by itself. 
-	7. BlockchainWrapper can be tested via testBlockchainWrapperDirectCall and testBlockchainWrapperAgentCall. 
+ ![DESAgentNew UML Sequence Diagram](images/SequenceDESCoord.png)
 
-### Websites referenced: 
+5. Front-End Coordination uses rdf4j to get the last complete run of DESCoordination. This is done by annotating the folder and keeping a record in runOptimization in DESAgentNew before querying it in FrontEndCoordination
+
+![Blockchain Coordination UML Activity Diagram](images/ActivityBlockchainWrapper.png)
+
+1. Due to the large size of the JSON packet, the  agent reduces it to a JSON size of five, with each key having just 1 value. 
+Then, it calls upon the BlockchainWrapper agent that communicates with the blockchain. 
+2. Input: A JSON of five elements. 
+3. Output: JSON of two keys
+	1. txHash, the list of transaction hashes. A transaction hash can be treated as a receipt. 
+	2. sandr, the list of senders and receivers. 
+4. Coordination Agent can be tested by using "testStartCoordinationDESScenariobase()"
+5. Weather Agent (RealTime) can be collected via testIrradiationRetrieverDirectCall() and testIrradiationRetrieverAgentCall()
+6. Forecast Agent can be tested, but it's not recommended to do so. To test Forecast Agent, run the coordination agent by itself. 
+7. BlockchainWrapper can be tested via testBlockchainWrapperDirectCall and testBlockchainWrapperAgentCall. 
+	
+## Class Diagrams: 
+### Forecast Agent:
+![ForecastAgent UML ClassDiagram](images/ClassForecast.png)
+
+### DES Agent:
+![DESAgent UML ClassDiagram](images/ClassDESAgent.png)
+## There's something wrong? I can't deploy this!
+- The Weather Irradiation data isn't running?
+  1. First, check `testWeatherIrradiationDirect()` to see if data is being written to the respective File-based IRI
+  2. Second, check if there's an error log in the folder where the results of TesseractOCR is being read to
+  3. BUG: Occasionally, KBAgent reads the value as UTC rather than GMT + 8:00. I can't repeat it, but if Ctrl F brings about a result which contains "Z", that bug causes multiple values of the same reading. 
+- The data's being read multiple times? 
+  1. Check RunSemakau batch file. It's being run multiple times. 
+- Forecast Agent isn't running? 
+  1. First, check `testWeatherForecast()` to see if data is being written to the respective File-based IRI
+  2. Second, check if you're able to get data from the respective urls. At the time of this README being written, Solcast and Accuweather are available and can be accessed by reading the APIs from the respective file freely. However, Solcast and Accuweather can change their API. 
+- The URLs linking the transactions to the webpage are missing!
+  1. Check if `testFrontEndTalk()` is working. This just checks the transaction of ether given a set of values. 
+  2. Check if you have ether in your wallet. See [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/master/JPS_DES#Metamask) for greater detail. 
+- Why is the webpage blank? Node is running. 
+  1. Check if you're reading from the right location. Localhost? Or jparksimulator? The same goes if you have a ConnectException: it's linked to the wrong location and thus change your 'test' value in jps.properties
+  
+## Websites referenced: 
 1. [Solar Repository Institute](https://www.solar-repository.sg/ftp_up/weather/500_Weather.png) for the solar weather near NUS (within NUS)
 2. [Solcast Forecast](https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN) for the solar forecast reading as well as weather data reading
 3. [Accuweather Singapore](http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true) for the first 12 hours accurate 
 
-### TODO: 
+
+## TODO: 
  - [x] Finish backup of visualization
- - [ ] \(Optional) virtual environment for python
+ - [ ] virtual environment for python
 

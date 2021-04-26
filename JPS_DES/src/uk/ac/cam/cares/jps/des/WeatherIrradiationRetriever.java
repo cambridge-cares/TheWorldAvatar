@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
@@ -30,12 +32,6 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override 
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-
 		if (!validateInput(requestParams)) {
 			throw new BadRequestException("WeatherIrradiationAgent: Input parameters not found.\n");
 		}
@@ -48,16 +44,15 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 
 			return requestParams;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException("WeatherIrradiationRetriever: weather retrieval invalid");
 		}
-		return requestParams;
  		
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            throw new BadRequestException("WeatherIrradiationRetriever: Input parameters empty.\n");
         }
         try {	      
 	        
@@ -69,11 +64,11 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	        
 	        return e&r;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
-        	throw new JSONException("Sensor not present in getString");
+        	throw new JSONException("WeatherIrradiationRetriever: Sensor not present in getString");
         }
 
     }
+	
 	/** as the name exemplifies, read and write data to format. 
 	 * In the future, rather than running a python script, another agent should be run to read and receive data from any source. 
 	 * 
@@ -129,12 +124,11 @@ public class WeatherIrradiationRetriever extends JPSAgent{
     	q= sensorIrrad.build(); 
     	String sensorInfo2 = q.toString();	
     	updateOWLFile(iritempsensor, sensorInfo,timeInXSD,temperature);
-    	updateOWLFile(iriirradiationsensor, sensorInfo2,timeInXSD,irradiance);
-    	
-	
-		
+    	updateOWLFile(iriirradiationsensor, sensorInfo2,timeInXSD,irradiance);		
 	}
+	
 	/** SubMethod for readWriteToOWL for each type of sensor
+	 * TODO: There's a bug where the returned data comes in UTC format rather than GMT format, but I haven't gotten down to what could have caused this. 
 	 * @param sensorIRI
 	 * @param sparqlQuery
 	 */
@@ -151,9 +145,9 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		int sizeOfUpdate = resultListfromquery.size();
 		String p = "<http://www.w3.org/2006/time#inXSDDateTime>";
 		String d = "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>";
-		for (int i = 0; i < sizeOfUpdate-2; i ++ ) {//We stopped at element 46
+		for (int i = 0; i < sizeOfUpdate-1; i ++ ) {//We stopped at element 48
 			Var v = Var.alloc(RandomStringUtils.random(5, true, false));
-			Var m = Var.alloc(RandomStringUtils.random(4, true, false)); //random string generate to prevent collusion
+			Var m = Var.alloc(RandomStringUtils.random(5, true, false)); //random string generate to prevent collision
 			builder.addDelete("<"+resultListfromquery.get(i)[0]+">" ,d, v)
 					.addInsert("<"+resultListfromquery.get(i)[0]+">" ,d, resultListfromquery.get(i+1)[1])
 					.addWhere("<"+resultListfromquery.get(i)[0]+">" ,d,v)					
@@ -166,7 +160,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 				AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
 				builder = new UpdateBuilder();
 				
-			}
+			}			
 		}
 		//final round
 		builder.addDelete("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, "?o")		

@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
@@ -32,6 +33,7 @@ import org.web3j.utils.Convert;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -45,14 +47,13 @@ public class BlockchainWrapper extends JPSAgent{
 	private static String addrOfC = "commercial.json";
 	private static String addrOfR = "residential.json";
 	private static final long serialVersionUID = 1L;
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-    }
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-
+		if (!validateInput(requestParams)) {
+			System.out.println(requestParams.toString());
+			throw new BadRequestException("BlockchainWrapper: Input parameters are non-empty.\n");
+		}
 		JSONObject result=new JSONObject();
 		JSONObject graData =new JSONObject();
 		graData = provideJSONResult(getLastModifiedDirectory());
@@ -66,11 +67,20 @@ public class BlockchainWrapper extends JPSAgent{
 			return graData;
 		
 		} catch (Exception e) {
-			e.printStackTrace();
-			return graData;
+			return graData; //Return graph results otherwise. 
 		}
  
 	}
+	
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (!requestParams.isEmpty()) {
+            return true;
+        }//Even if there are no resources available here, key values are sent
+		//via AgentCaller/put in requestURL, path and so on. 
+        return false;
+	}
+	
 	 /**
      * Gets the latest file created using rdf4j
      * @return last created file
@@ -153,11 +163,12 @@ public class BlockchainWrapper extends JPSAgent{
 		}
     	
     	}catch (Exception ex) {
-    		ex.printStackTrace();
+    		throw new JPSRuntimeException("BlockchainWrapper: derivation of values failed\n");
     	}
 
 		return jo;
     }
+    
 	/** helper function to determineValue()s
 	 * 
 	 * @param index
@@ -184,6 +195,7 @@ public class BlockchainWrapper extends JPSAgent{
         }
         return jo;
     }
+    
 	/** parse values of solar, grid supply for that hour, and 
 	 * sends value to doTransact to create Transaction as well as 
 	 * determineValue() to check the value in terms of Ether
@@ -203,7 +215,8 @@ public class BlockchainWrapper extends JPSAgent{
 		try {
 		if (totalsolar == 0) {
 			//if no electricity is generated from the solar powered electricity:
-			//give nominal sum -> Not precisely true because the amount of ether that they need to pay is 220 eth per kwh which no one has so downgrade
+			//give nominal sum -> Not precisely true because the amount of ether that they need to pay is 220 eth per kwh which no one has
+			//Rather than eth, szabo is the currency used. 
 			double ethIndus = totalindus*220;
 			String transactionhash1 = dotransact(addrOfI, ElectricPublicKey,ethIndus);
 			double ethComme = totalcommer*220;
@@ -301,11 +314,12 @@ public class BlockchainWrapper extends JPSAgent{
 			jS.put("sandr",whoTowho.toArray());
 		}
 	}catch (Exception e) {
-			e.printStackTrace();
-	}
+			throw new JPSRuntimeException("BlockchainWrapper: Transaction on blockchain failed.\n");
+		}
 
 		return jS;
 	}
+    
 	/** provides result in the response of a JSON form
 	 * 
 	 * @param baseUrl

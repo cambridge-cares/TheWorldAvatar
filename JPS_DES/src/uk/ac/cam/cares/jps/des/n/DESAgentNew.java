@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.StringJoiner;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -24,6 +23,7 @@ import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -31,12 +31,14 @@ import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 
 @WebServlet(urlPatterns = { "/DESAgentNew"})
-
+/** Calls on Solar, Industrial, Residential and Commercial Agents and run Game-theory 
+ * simulation that produces energy profiles of producers and consumers
+ *
+ */
 public class DESAgentNew extends JPSAgent {
 	/**
 	 * 
@@ -53,15 +55,7 @@ public class DESAgentNew extends JPSAgent {
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	/** main Execution method for DESAgent
-	 * 
-	 */
-	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	JSONObject responseParams = new JSONObject();	
+		JSONObject responseParams = new JSONObject();	
     	if (!validateInput(requestParams)) {
     		throw new BadRequestException("DESAgent:  Input parameters not found.\n");
     	}
@@ -82,13 +76,12 @@ public class DESAgentNew extends JPSAgent {
 			String result = runPythonScript("system.py", baseUrl);
 			String agent = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
 			createTimer(baseUrl);
-			//TODO: This uses RDF4J metadata Annotator
 			baseUrl = new File(baseUrl).toURI().toString();
 			MetaDataAnnotator.annotate(baseUrl, null, agent, true, null);
 
 			responseParams.put("result", result);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new JPSRuntimeException("DESAgent New: Simulation incomplete\n");
 		} 
 		return responseParams;
     }
@@ -114,11 +107,11 @@ public class DESAgentNew extends JPSAgent {
         
         return q&w&e&r;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
         	throw new JSONException("Forecast not present in getString");
         }
 
     }
+	
     /** Query OWL for Temperature and Radiation readings and place in csv file, return as List<String[]> of Temp followed by Irrad
      * 
      * @param irioftempF
@@ -166,6 +159,7 @@ public class DESAgentNew extends JPSAgent {
  			broker.putLocal(baseUrl + "/WeatherForecast.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
  			return readingFromCSV;
     }
+    
     /** find all subsystems that are linked to top node
     *
     * @param iriofnetwork
@@ -184,7 +178,12 @@ public class DESAgentNew extends JPSAgent {
 		
 	    return readModelGreedyCon(result);
 	}
-	
+    
+	/** Submethod of readModelGreedy
+	 * 
+	 * @param greedyResult
+	 * @return
+	 */
 	public static OntModel readModelGreedyCon(String greedyResult) {
 		
 		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("results"));
@@ -230,8 +229,10 @@ public class DESAgentNew extends JPSAgent {
 	    .addWhere("?entity","j2:isConnectedTo", "?component");
 	    Query q= modelQ.build();
 	    String electricalnodeInfo = q.toString();
-	    QueryBroker broker = new QueryBroker();
-	    return broker.readModelGreedy(useriri, electricalnodeInfo);
+	    JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, electricalnodeInfo)
+				.put(JPSConstants.TARGETIRI , tempIRItoFile(useriri));
+		String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
+		return readModelGreedyCon(result);
     }
     
     /** run Python Script in folder
@@ -241,15 +242,13 @@ public class DESAgentNew extends JPSAgent {
 	 * @return
 	 * @throws Exception
 	 */
-	public String runPythonScript(String script, String folder) throws Exception {
+	public String runPythonScript(String script, String folder){
 		String result = "";
-			String path = AgentLocator.getCurrentJpsAppDirectory(this);
-			String command = "python " + path+ "/python/" +script + " " + folder;
-			System.out.println(command);
-			result = CommandHelper.executeSingleCommand( path, command);
-		
-		
-			return result;
+		String path = AgentLocator.getCurrentJpsAppDirectory(this);
+		String command = "python " + path+ "/python/" +script + " " + folder;
+		System.out.println(command);
+		result = CommandHelper.executeSingleCommand( path, command);	
+		return result;
 	}
 	/** states time at which next reading is done. 
 	 * 
@@ -272,6 +271,7 @@ public class DESAgentNew extends JPSAgent {
 		    }
 		new QueryBroker().putLocal(baseUrl +"/timer.csv", sj1.toString());
 	}
+	
 	/** copy the file from workingdir and place it in folder
 	 * used because when I tried to run it without copying
 	 * 
@@ -285,6 +285,7 @@ public class DESAgentNew extends JPSAgent {
 		String destinationUrl = baseUrl + "/" + filename;
 		new QueryBroker().putLocal(destinationUrl, file);
 	}
+	
 	/** Temporary translation fix for switch from KBClient to KGRouter. In the end, it should be querying appropriately from the 
 	 * correct Source
 	 * 

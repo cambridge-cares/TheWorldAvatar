@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.des.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,8 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
+import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
@@ -33,6 +36,7 @@ public class Test_DESSimulatorAgent{
 		
 		
 	}
+	
 	/** tests if Residential Agent calls successfully. 
 	 * Residential Agent requires caresjpsutil library. 
 	 * 
@@ -46,9 +50,10 @@ public class Test_DESSimulatorAgent{
 			assertNotNull(result);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("ResidentialAgent: Incomplete simulation.\n");
 		}
 	}
+	
 	/** test Residential agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -59,6 +64,7 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/ResidentialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	
 	/** tests of Commercial Agent runs successfully
 	 * 
 	 */
@@ -76,9 +82,10 @@ public class Test_DESSimulatorAgent{
 			assertNotNull(result);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("CommercialAgent: Incomplete simulation.\n");
 		}
 	}
+	
 	/** test Commercial agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -91,6 +98,7 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/CommercialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	
 	/** tests if Industrial Agent calls successfully. 
 	 * Industrial Agent requires caresjpsutil library. 
 	 * 
@@ -112,9 +120,10 @@ public class Test_DESSimulatorAgent{
 			assertNotNull(result);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("IndustrialAgent: Incomplete simulation.\n");
 		}
 	}
+	
 	/** test Industrial agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -127,6 +136,7 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/IndustrialAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	
 	/** tests if Solar Radiation Agent calls successfully. 
 	 * Solar Radiation Agent requires caresjpsutil library. 
 	 *  
@@ -145,9 +155,10 @@ public class Test_DESSimulatorAgent{
 				assertNotNull(result);
 				}
 			catch (Exception ex) {
-				ex.printStackTrace();
+				throw new JPSRuntimeException("SolarAgent: Incomplete simulation.\n");
 			}
 	}
+	
 	/** test Solar agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
 	 */
@@ -160,13 +171,13 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/SolarAgent", jo.toString());
 		assertNotNull(resultStart);
 	}
+	
 	/** tests if System Agent calls successfully. 
 	 * System Agent requires caresjpsutil library. 
 	 * 
 	 */
 	@Test
 	public void testSystemAgent() {
-		try {
 			String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\Overall";
 			
 			new DESAgentNew().queryForIrradTemp(irioftempF,iriofirrF, baseUrl);
@@ -175,22 +186,13 @@ public class Test_DESSimulatorAgent{
 			new ResidentialAgent().extractResidentialData(iriofnetworkdistrict, baseUrl); //csv for residential
 			new CommercialAgent().queryForBuildingConstants(model, baseUrl);;//csv for commercial
 			new IndustrialAgent().queryForConstantsIndustrial(model, baseUrl);;//csv for commercial
-			try {
-				String result = new DESAgentNew().runPythonScript("system.py", baseUrl);
-				assertNotNull(result);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-//			String result = new DESAgentNew().runPythonScript("system.py", "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\Overall");
-//			System.out.println(result);
-			}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+			String result = new DESAgentNew().runPythonScript("system.py", baseUrl);
+			assertNotNull(result);			
 	}
+	
 	/** test System agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
+	 * Calls FrontEndTalk to check results of BlockchainWrapper
 	 */
 	@Test
 	public void testSystemAgentCaller() {
@@ -207,10 +209,10 @@ public class Test_DESSimulatorAgent{
 		assertNotNull(resultStart);
 		FrontEndTalk();
 	}
+	
 	/** check if FrontEnd Case Scenario works
 	 * 
 	 */
-	@Test
 	public void FrontEndTalk() {
 		BlockchainWrapper bc = new BlockchainWrapper();
 		//looks for last created directory through the Metadata Query
@@ -220,16 +222,63 @@ public class Test_DESSimulatorAgent{
 		JSONObject graData  = bc.provideJSONResult(directorychosen);
 		JSONObject jo = bc.determineValue (graData);
 		System.out.println(jo.toString());
-		//TODO: later on, check value of data 
 		assertNotNull(jo);
 		
 	}
-
+	
+	/** test if Blockchain Wrapper works if called directly
+	 * Assuming that a run was completed beforehand
+	 */
 	@Test
 	public void testFrontEndTalk() {
 		FrontEndTalk();
 	}
-	/** test if validateInput method is working in Commercial Agent
+	
+	/** test if Blockchain Wrapper works if called through agent
+	 * Assuming that a run was completed beforehand
+	 */
+	@Test
+	public void testBlockchainWrapperAgentCall() {
+		JSONObject jo = new JSONObject();
+		JSONObject joRes = new FrontEndCoordination().processRequestParameters(jo);
+		assertNotNull(joRes.get("txHash"));
+	}
+	
+	/** test if FrontEndCoordination works if called through agent
+	 * Assuming that a run was completed beforehand
+	 */
+	@Test
+	public void testFrontEndCoordinationAgentCall() {
+		JSONObject jo = new JSONObject();
+		JSONObject joRes = new JSONObject(AgentCaller
+				.executeGetWithJsonParameter("JPS_DES/showDESResult",
+						jo.toString()));
+		assertNotNull(joRes.get("txHash"));
+	}
+
+	/** checks for empty input using validateInput() for FrontEnd Coordination Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorFrontEndCoordination(){
+		JSONObject jo = new JSONObject();
+	    assertTrue(new FrontEndCoordination().validateInput(jo));
+	    jo.put("key", "value");
+	    assertFalse(new FrontEndCoordination().validateInput(jo));		
+	}
+	
+	/** checks for empty input using validateInput() for BlockchainWrapper Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorBlockchainWrapper(){
+		JSONObject jo = new JSONObject();
+	    assertTrue(new BlockchainWrapper().validateInput(jo));
+	    jo.put("key", "value");
+	    assertFalse(new BlockchainWrapper().validateInput(jo));		
+	}
+	
+	/** test if validateInput method is working in Residential Agent
 	 * 
 	 */
 	@Test
@@ -240,6 +289,7 @@ public class Test_DESSimulatorAgent{
 		
 		
 	}
+	
 	/** test if validateInput method is working in Commercial Agent
 	 * 
 	 */
@@ -252,7 +302,37 @@ public class Test_DESSimulatorAgent{
 		assertTrue(new CommercialAgent().validateInput(jo));
 		
 		
-	}/** test if validateInput method is working in System Agent
+	}
+	
+	/** test if validateInput method is working in Industrial Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorIndustrial() {
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
+		assertTrue(new IndustrialAgent().validateInput(jo));
+		
+		
+	}
+	
+	/** test if validateInput method is working in Solar Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorSolar() {
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
+		assertTrue(new SolarAgent().validateInput(jo));
+		
+		
+	}
+	
+	/** test if validateInput method is working in System Agent
 	 * 
 	 */
 	@Test

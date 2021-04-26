@@ -109,12 +109,6 @@ public class WastetoEnergyAgent extends JPSAgent {
 				.addWhere("?entity" ,"j1:hasOffsiteAnerobicDigestionUpperBound", "?tech3upp");
 		return sb.buildString();
 	}
-//	@Override
-//	public JSONObject processRequestParameters(JSONObject requestParams) {
-//	    requestParams = processRequestParameters(requestParams, null);
-//	    return requestParams;
-//	}
-	
 	/** main function. Reads the values in and copies the templates back. 
 	 * 
 	 */
@@ -209,7 +203,11 @@ public class WastetoEnergyAgent extends JPSAgent {
 		String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
 		return readModelGreedyCon(result);
 	}
-	
+	/** Submethod for readModelGreedy
+	 * 
+	 * @param greedyResult
+	 * @return
+	 */
 	public static OntModel readModelGreedyCon(String greedyResult) {
 		
 		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("results"));

@@ -18,12 +18,9 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
-@WebServlet("/EnergyStrorageRetrofit")
+@WebServlet("/EnergyStorageRetrofit")
 public class BatteryRetrofit extends JPSAgent {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private GeneralRetrofitAgent gRA;
 	
