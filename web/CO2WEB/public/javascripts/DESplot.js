@@ -139,7 +139,6 @@ document.addEventListener("click", function (evt){
     var request = $.ajax({
       url: prefix + "/JPS_DES/showDESResult",
       type: 'GET',
-      data: weatherjson,
       timeout:1.08e+7,
       contentType: 'application/json; charset=utf-8'
   });

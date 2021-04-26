@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
@@ -31,12 +32,6 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override 
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-
 		if (!validateInput(requestParams)) {
 			throw new BadRequestException("WeatherIrradiationAgent: Input parameters not found.\n");
 		}
@@ -49,16 +44,15 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 
 			return requestParams;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException("WeatherIrradiationRetriever: weather retrieval invalid");
 		}
-		return requestParams;
  		
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            throw new BadRequestException("WeatherIrradiationRetriever: Input parameters empty.\n");
         }
         try {	      
 	        
@@ -70,11 +64,11 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	        
 	        return e&r;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
-        	throw new JSONException("Sensor not present in getString");
+        	throw new JSONException("WeatherIrradiationRetriever: Sensor not present in getString");
         }
 
     }
+	
 	/** as the name exemplifies, read and write data to format. 
 	 * In the future, rather than running a python script, another agent should be run to read and receive data from any source. 
 	 * 
@@ -130,11 +124,9 @@ public class WeatherIrradiationRetriever extends JPSAgent{
     	q= sensorIrrad.build(); 
     	String sensorInfo2 = q.toString();	
     	updateOWLFile(iritempsensor, sensorInfo,timeInXSD,temperature);
-    	updateOWLFile(iriirradiationsensor, sensorInfo2,timeInXSD,irradiance);
-    	
-	
-		
+    	updateOWLFile(iriirradiationsensor, sensorInfo2,timeInXSD,irradiance);		
 	}
+	
 	/** SubMethod for readWriteToOWL for each type of sensor
 	 * TODO: There's a bug where the returned data comes in UTC format rather than GMT format, but I haven't gotten down to what could have caused this. 
 	 * @param sensorIRI

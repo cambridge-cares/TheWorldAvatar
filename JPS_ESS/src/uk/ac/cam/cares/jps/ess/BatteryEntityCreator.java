@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
@@ -31,10 +32,6 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
  */
 public class BatteryEntityCreator extends JPSAgent {
 	
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private OntClass coordinateclass = null;
 	private OntClass coordinatesystemclass = null;
@@ -86,17 +83,10 @@ public class BatteryEntityCreator extends JPSAgent {
 		MW=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW");
 	}
 	
-	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-
-		if (!validateInput(requestParams)) {
-			throw new BadRequestException("ESSOptimizationAgent: Input parameters not found.\n");
+	    if (!validateInput(requestParams)) {
+			throw new BadRequestException("Battery Entity Creator: Input parameters not found.\n");
 		}
 		String ENIRI=requestParams.getString("electricalnetwork");
 		String storagetype=requestParams.getString("storage");
@@ -107,21 +97,18 @@ public class BatteryEntityCreator extends JPSAgent {
 		JSONArray listbat;
 		try {
 			listbat = createBatteryOwlFile(model, storagetype,valueboundary);
-
-			
 			requestParams.put("batterylist", listbat);
 		} catch (IOException e) {
-			e.printStackTrace();
-		}catch (Exception e) {
-			e.printStackTrace();
+			throw new JPSRuntimeException("Battery Entity Creator: IOException.\n");
 		}
 		return requestParams;
 		
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+        	return false;
         }
         try {
 	        String storageFormat = requestParams.getString("storage");
@@ -134,6 +121,7 @@ public class BatteryEntityCreator extends JPSAgent {
         	return false;
         }
 	}	
+	
 	/** queries for Electric cable, and returns electric line, loss, and connected buses
 	 * 
 	 * @param model OntModel of electrical network
@@ -171,6 +159,7 @@ public class BatteryEntityCreator extends JPSAgent {
 		return newresult;
 		
 	}
+	
 	/** Selects the respective buses, and return their midpoint locations
 	 * 
 	 * @param model
@@ -215,11 +204,7 @@ public class BatteryEntityCreator extends JPSAgent {
 		
 		coordinateresult[0]=xbat;
 		coordinateresult[1]=ybat;
-		
-		
 		return coordinateresult;
-		
-		
 	}
 	
 	/** generates the OWL files for the batteries
@@ -288,11 +273,6 @@ public class BatteryEntityCreator extends JPSAgent {
 					
 					broker.putOld(newiri,finalcontent);
 					listofbat.put(newiri+"#"+typebat+"-"+indexline);
-//					indbat.put(x);
-//					indbat.put(y);
-					//listofbat.put(indbat);
-				
-				
 				d++;
 			}
 			return listofbat;

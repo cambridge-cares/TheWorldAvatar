@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -46,12 +47,7 @@ public class ResidentialAgent extends JPSAgent {
 	 */
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request)  {
-		if (!validateInput(requestParams)) {
+	    if (!validateInput(requestParams)) {
     		throw new BadRequestException("ResidentialAgent:  Input parameters not found.\n");
     	}
 		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
@@ -66,11 +62,12 @@ public class ResidentialAgent extends JPSAgent {
 			responseParams.put("results", res);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("ResidentialAgent: Incomplete simulation.\n ");
 		}
     	
 		return responseParams;
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
@@ -83,6 +80,7 @@ public class ResidentialAgent extends JPSAgent {
         	return false;
         }
     }
+	
 	/** general function for extracting Residential Data
 	 * 
 	 * @param iriofnetworkdistrict
@@ -104,7 +102,7 @@ public class ResidentialAgent extends JPSAgent {
 				groupInfo = q.toString();
 		} catch (ParseException e1) {
 			// parseExpression due to REGEX used in Filter
-			e1.printStackTrace();
+			throw new JPSRuntimeException("ResidentialAgent: ParseException: results invalid. ");
 		}
 		ResultSet resultSet = JenaHelper.query(model, groupInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -159,6 +157,7 @@ public class ResidentialAgent extends JPSAgent {
 		broker.putLocal(baseUrl + "/" + schedule, schedulecsv);
 		
 	}
+	
 	/** read each User for PminPmax and Unwill schedule for each appliance
 	 * 
 	 * @param iriOfTypeUser
@@ -201,6 +200,7 @@ public class ResidentialAgent extends JPSAgent {
 //		System.out.println("LOW 1");
 		return Arrays.asList(high1, low1, unwill1);
 	}
+	
 	/** read each User's appliance schedule and return as String[]
 	 * 
 	 * @param iriOfTypeUser

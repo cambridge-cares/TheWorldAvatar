@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -17,11 +16,14 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 @WebServlet(urlPatterns = {"/GetForecastData" })
@@ -31,31 +33,48 @@ public class ForecastAgent extends JPSAgent{
 	private static String AccuWeatherURL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true";
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    if (!new DESAgentNew().validateInput(requestParams)) {
-    		throw new BadRequestException("DESAgent:  Input parameters not found.\n");
-    	}
-	    return requestParams;
-	}
-
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-    	if (!new DESAgentNew().validateInput(requestParams)) {
+		if (!validateInput(requestParams)) {
     		throw new BadRequestException("DESAgent:  Input parameters not found.\n");
     	}
     	try {
             String irioftempF=requestParams.getString("temperatureforecast");
             String iriofirrF=requestParams.getString("irradiationforecast");
-    		nextForecastDayTemperature(irioftempF);
     		nextForecastDaySolcast(irioftempF,iriofirrF);
+    		nextForecastDayTemperature(irioftempF);
 		
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException("Forecast Agent: incomplete forecast simulation");
 		}
     	return requestParams;
     }
-		
+	
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("electricalnetwork");
+        boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
+
+        String iriofdistrict = requestParams.getString("district");
+        boolean w = InputValidator.checkIfValidIRI(iriofdistrict);
+        
+        String irioftempF=requestParams.getString("temperatureforecast");
+
+        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+        String iriofirrF=requestParams.getString("irradiationforecast");
+        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+        // Till now, there is no system independent to check if a file path is valid or not. 
+        
+        return q&w&e&r;
+        } catch (JSONException ex) {
+        	ex.printStackTrace();
+        	throw new JSONException("Forecast not present in getString");
+        }
+
+    }
+    
 	/** reads data from Solcast.com.au (need API key) and stores in ArrayList<String[]>
 	 * Length of 24 hours, as we don't want a thirty minute update. 
 	 * @return ArrayList[temperature, irradiation, timeInXSD]
@@ -157,7 +176,7 @@ public class ForecastAgent extends JPSAgent{
 		SelectBuilder sensorTemp = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
     			.addVar("?vprop").addVar("?proptime")
-    			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval", Order.DESCENDING).setLimit(12);
+    			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval",Order.DESCENDING).setLimit(12);
     	Query q= sensorTemp.build(); 
     	String sensorInfo = q.toString();
     	String convertedIRITemp = DESAgentNew.tempIRItoFile(iriTemperature);
@@ -171,7 +190,8 @@ public class ForecastAgent extends JPSAgent{
 		List<String[]>  resultListfromquery = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
     	Collections.reverse(resultListfromquery);
     	int[] indices = {0,2};
-		updateOWLFileWithResultList(resultListfromquery,solArray, convertedIRITemp, indices); 
+    	ArrayList<String []> tempArray = new ArrayList<String []>(solArray.subList(12, 24));
+		updateOWLFileWithResultList(resultListfromquery,tempArray, convertedIRITemp, indices); 
 		int[] indices2 = {1,2};
 		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo2)
 				.put(JPSConstants.TARGETIRI, convertedIRIIrrad);

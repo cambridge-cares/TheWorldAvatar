@@ -15,9 +15,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
@@ -25,12 +27,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 public class IndustrialAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-		if (!validateInput(requestParams)) {
+	    if (!validateInput(requestParams)) {
     		throw new BadRequestException("IndustrialAgent:  Input parameters not found.\n");
     	}
     	String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
@@ -49,19 +46,36 @@ public class IndustrialAgent extends JPSAgent {
 			String res =  new DESAgentNew().runPythonScript("industrial.py", baseUrl);
 			
 			responseParams.put("results", res);
+			return responseParams;
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("Industrial Agent: Incomplete simulation.\n ");
 		}
-		return responseParams;
     }
+	
 	/** uses Commercial Agent's validate Input method since they're 
 	 * using the same variables
 	 */
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        return new CommercialAgent().validateInput(requestParams);
+		if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("electricalnetwork");
+        boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
+
+        String irioftempF=requestParams.getString("temperatureforecast");
+
+        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+        String iriofirrF=requestParams.getString("irradiationforecast");
+        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+        return q&e&r;
+        } catch (JSONException ex) {
+        	return false;
+        }
     }
+	
 	/** sub method to call on Chemical and Fuel Cell constants
 	 * 
 	 * @param model
@@ -72,6 +86,7 @@ public class IndustrialAgent extends JPSAgent {
         queryForFuelCellConstants(model, baseUrl);
         
 	}
+	
 	/** Creates ElectrolyzerConstant.csv for IndustrialAgent to run 
 	 * Queries OntModel for electrolyzer parameters, switch to KBAgent if applicable
 	 * @param model
@@ -104,6 +119,7 @@ public class IndustrialAgent extends JPSAgent {
 		
 				
 	}
+	
 	/** Creates FuelCell.csv for IndustrialAgent to run 
 	 * Queries OntModel for fuel cell parameters, switch to KBAgent if applicable
 	 * @param model

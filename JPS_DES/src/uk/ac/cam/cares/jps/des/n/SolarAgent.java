@@ -15,26 +15,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/SolarAgent"})
 public class SolarAgent extends JPSAgent {
-	
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
+
 	/** main method. Runs solar radiation data after creating solar constant csv
 	 *
 	 */
 	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject responseParams = requestParams;	
 		if (!validateInput(requestParams)) {
 			throw new BadRequestException("SolarAgent: Input parameters not found.\n");
@@ -54,17 +51,36 @@ public class SolarAgent extends JPSAgent {
 			responseParams.put("results", result);
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("Solar Agent: Incomplete simulation.\n");
 		}
     	return requestParams;
     }
+	
 	/** uses Commercial Agent's validate Input method since they're 
 	 * using the same variables
 	 */
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        return new CommercialAgent().validateInput(requestParams);
+		if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+        try {
+        String iriofnetwork = requestParams.getString("electricalnetwork");
+        boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
+
+        String irioftempF=requestParams.getString("temperatureforecast");
+
+        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+        String iriofirrF=requestParams.getString("irradiationforecast");
+        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+        // Till now, there is no system independent to check if a file path is valid or not. 
+        
+        return q&e&r;
+        } catch (JSONException ex) {
+        	return false;
+        }
     }
+	
 	/** Creates PVGenerator.csv which are constants for solar agent
 	 * 
 	 * @param model
