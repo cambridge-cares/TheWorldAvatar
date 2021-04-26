@@ -47,6 +47,7 @@ public class BlockchainWrapper extends JPSAgent{
 	private static String addrOfC = "commercial.json";
 	private static String addrOfR = "residential.json";
 	private static final long serialVersionUID = 1L;
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
