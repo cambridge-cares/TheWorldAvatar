@@ -239,7 +239,7 @@ public class Test_DESSimulatorAgent{
 	 */
 	@Test
 	public void testBlockchainWrapperAgentCall() {
-		JSONObject jo = new JSONObject();
+		JSONObject jo = new JSONObject().put("key", "value");
 		JSONObject joRes = new FrontEndCoordination().processRequestParameters(jo);
 		assertNotNull(joRes.get("txHash"));
 	}
@@ -249,7 +249,7 @@ public class Test_DESSimulatorAgent{
 	 */
 	@Test
 	public void testFrontEndCoordinationAgentCall() {
-		JSONObject jo = new JSONObject();
+		JSONObject jo = new JSONObject().put("key", "value");
 		JSONObject joRes = new JSONObject(AgentCaller
 				.executeGetWithJsonParameter("JPS_DES/showDESResult",
 						jo.toString()));
@@ -346,5 +346,6 @@ public class Test_DESSimulatorAgent{
 		
 		
 	}
+	
 	
 }
