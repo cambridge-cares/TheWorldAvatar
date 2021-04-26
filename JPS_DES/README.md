@@ -120,11 +120,14 @@ Then, it calls upon the BlockchainWrapper agent that communicates with the block
   2. Check if you have ether in your wallet. See [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/master/JPS_DES#Metamask) for greater detail. 
 - Why is the webpage blank? Node is running. 
   1. Check if you're reading from the right location. Localhost? Or jparksimulator? The same goes if you have a ConnectException: it's linked to the wrong location and thus change your 'test' value in jps.properties
+- Where's commercial.json, electricgrid.json and all these other files that are meant to be in config.properties? 
+  1. First, check server. These files are added to gitignore because the passcodes are private.
+  2. The values on `config.properties` under resources/ were changed. 
   
 ## Websites referenced: 
 1. [Solar Repository Institute](https://www.solar-repository.sg/ftp_up/weather/500_Weather.png) for the solar weather near NUS (within NUS)
-2. [Solcast Forecast](https://api.solcast.com.au/weather_sites/0ff4-0cb4-c270-5389/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN) for the solar forecast reading as well as weather data reading
-3. [Accuweather Singapore](http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true) for the first 12 hours accurate 
+2. [Solcast Forecast](https://toolkit.solcast.com.au/#/account) for the solar forecast reading as well as weather data reading
+3. [Accuweather Singapore](https://www.accuweather.com/en/sg/singapore/300597/weather-forecast/300597) for the first 12 hours accurate 
 
 
 ## TODO: 

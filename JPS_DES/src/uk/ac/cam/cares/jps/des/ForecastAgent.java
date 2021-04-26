@@ -1,10 +1,14 @@
 package uk.ac.cam.cares.jps.des;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
+
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
@@ -19,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -29,8 +34,24 @@ import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 @WebServlet(urlPatterns = {"/GetForecastData" })
 public class ForecastAgent extends JPSAgent{
 	private static final long serialVersionUID = 1L;
-	private static String SolCastURL= "https://api.solcast.com.au/weather_sites/dabb-c584-a053-39f4/forecasts?format=json&api_key=IxJaiBo4-jICEIZSFPuRYVvJ2OqiFBqN";
-	private static String AccuWeatherURL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/300565?apikey=%20%09NP6DUl1mQkBlOAn7CE5j3MGPAAR9xbpg&details=true&metric=true";
+	private static String SolCastURL = null;
+	private static String AccuWeatherURL = null;
+	
+	public ForecastAgent() {
+		String fileName = AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\config.properties";
+		try (InputStream input = new FileInputStream(fileName)) {
+
+            Properties prop = new Properties();
+            //load a properties file from class path, inside static method
+            prop.load(input);
+
+            SolCastURL = prop.getProperty("SolCastURL");
+            AccuWeatherURL = prop.getProperty("AccuWeatherURL");
+
+        } catch (IOException ex) {
+            throw new JPSRuntimeException("ForecastAgent: getProperties: IOException.\n");
+        }
+	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {

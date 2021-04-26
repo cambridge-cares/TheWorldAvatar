@@ -374,8 +374,6 @@ public class BlockchainWrapper extends JPSAgent{
 	 * 
 	 */
 	public void loadProperties() {
-		InputStream fin = null;
-		Properties props = new Properties();
 		String fileName = AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\config.properties";
 		try (InputStream input = new FileInputStream(fileName)) {
 
