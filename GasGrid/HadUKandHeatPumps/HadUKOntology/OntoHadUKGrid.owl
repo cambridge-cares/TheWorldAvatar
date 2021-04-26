@@ -6,7 +6,7 @@
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://www.semanticweb.org/tomsavage/ontologies/2021/3/untitled-ontology-9"/>
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl"/>
     
 
 
@@ -44,38 +44,38 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasGridPoint -->
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#hasGridPoint -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasGridPoint">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGrid"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#hasGridPoint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGrid"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridPoint"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasObservation -->
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#hasObservation -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasObservation">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGridObservation"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#hasObservation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridPoint"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridObservation"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasPointBoundary -->
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#hasPointBoundary -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasPointBoundary">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point_Boundary"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#hasPointBoundary">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridPoint"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#Climate_Grid_Point_Boundary"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasVariable -->
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#hasVariable -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasVariable">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGridObservation"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateVariable"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#hasVariable">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridObservation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateVariable"/>
     </owl:ObjectProperty>
     
 
@@ -94,7 +94,7 @@
     <!-- http://www.opengis.net/ont/geosparql#asWKT -->
 
     <owl:DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point_Boundary"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#Climate_Grid_Point_Boundary"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     </owl:DatatypeProperty>
     
@@ -103,7 +103,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasLatitude -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasLatitude">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridPoint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2003/01/geo/wgs84_pos#lat"/>
     </owl:DatatypeProperty>
     
@@ -112,7 +112,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasLongitude -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasLongitude">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridPoint"/>
         <rdfs:range rdf:resource="http://www.w3.org/2003/01/geo/wgs84_pos#long"/>
     </owl:DatatypeProperty>
     
@@ -121,7 +121,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasPeriodEnd -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasPeriodEnd">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGridObservation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridObservation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
     
@@ -130,7 +130,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasPeriodStart -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#hasPeriodStart">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGridObservation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridObservation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
     </owl:DatatypeProperty>
     
@@ -153,45 +153,45 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGrid -->
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGrid -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGrid">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGrid">
         <rdfs:comment>The grid on which obervsations are presented within the HadUK-Grid dataset</rdfs:comment>
         <rdfs:label>Climate Grid</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGridObservation -->
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridObservation -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateGridObservation">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridObservation">
         <rdfs:comment>An observation, or measurement, that makes up the gridded dataset</rdfs:comment>
         <rdfs:label>Climate Grid Observation</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateVariable -->
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridPoint -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#ClimateVariable">
-        <rdfs:comment>The variable that a measurement is recorded or calculated in</rdfs:comment>
-        <rdfs:label>Climate Variable</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateGridPoint">
         <rdfs:comment>A measurement or observation location within a Climate grid</rdfs:comment>
         <rdfs:label>Climate Grid Point</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point_Boundary -->
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateVariable -->
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohasukgrid/ontohadukgrid.owl#Climate_Grid_Point_Boundary">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#ClimateVariable">
+        <rdfs:comment>The variable that a measurement is recorded or calculated in</rdfs:comment>
+        <rdfs:label>Climate Variable</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#Climate_Grid_Point_Boundary -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontohadukgrid/ontohadukgrid.owl#Climate_Grid_Point_Boundary">
         <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
         <rdfs:comment>The boundary around a grid point over which that observation is valid.</rdfs:comment>
         <rdfs:label>Climate Grid Point Boundary</rdfs:label>
