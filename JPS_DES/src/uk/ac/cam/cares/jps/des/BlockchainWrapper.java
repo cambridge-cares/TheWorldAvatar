@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
@@ -49,6 +50,7 @@ public class BlockchainWrapper extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
+			System.out.println(requestParams.toString());
 			throw new BadRequestException("BlockchainWrapper: Input parameters are non-empty.\n");
 		}
 		JSONObject result=new JSONObject();
@@ -71,9 +73,10 @@ public class BlockchainWrapper extends JPSAgent{
 	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-		if (requestParams.isEmpty()) {
+		if (!requestParams.isEmpty()) {
             return true;
-        }
+        }//Even if there are no resources available here, key values are sent
+		//via AgentCaller/put in requestURL, path and so on. 
         return false;
 	}
 	

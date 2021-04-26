@@ -186,15 +186,13 @@ public class Test_DESSimulatorAgent{
 			new ResidentialAgent().extractResidentialData(iriofnetworkdistrict, baseUrl); //csv for residential
 			new CommercialAgent().queryForBuildingConstants(model, baseUrl);;//csv for commercial
 			new IndustrialAgent().queryForConstantsIndustrial(model, baseUrl);;//csv for commercial
-		
-				String result = new DESAgentNew().runPythonScript("system.py", baseUrl);
-				assertNotNull(result);
-			
-			
+			String result = new DESAgentNew().runPythonScript("system.py", baseUrl);
+			assertNotNull(result);			
 	}
 	
 	/** test System agent calls through Agent successfully
 	 * dumps result in JPS Scenarios folder
+	 * Calls FrontEndTalk to check results of BlockchainWrapper
 	 */
 	@Test
 	public void testSystemAgentCaller() {
@@ -210,18 +208,6 @@ public class Test_DESSimulatorAgent{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", jo.toString());
 		assertNotNull(resultStart);
 		FrontEndTalk();
-	}
-	/** checks for empty input
-	 * 
-	 */
-	@Test
-	public void testInputValidatorFrontEndCoordination(){
-		JSONObject jo = new JSONObject();
-	    assertTrue(new FrontEndCoordination().validateInput(jo));
-	    jo.put("key", "value");
-	    assertFalse(new FrontEndCoordination().validateInput(jo));
-	    
-		
 	}
 	
 	/** check if FrontEnd Case Scenario works
@@ -239,13 +225,60 @@ public class Test_DESSimulatorAgent{
 		assertNotNull(jo);
 		
 	}
-
+	
+	/** test if Blockchain Wrapper works if called directly
+	 * Assuming that a run was completed beforehand
+	 */
 	@Test
 	public void testFrontEndTalk() {
 		FrontEndTalk();
 	}
 	
-	/** test if validateInput method is working in Commercial Agent
+	/** test if Blockchain Wrapper works if called through agent
+	 * Assuming that a run was completed beforehand
+	 */
+	@Test
+	public void testBlockchainWrapperAgentCall() {
+		JSONObject jo = new JSONObject();
+		JSONObject joRes = new FrontEndCoordination().processRequestParameters(jo);
+		assertNotNull(joRes.get("txHash"));
+	}
+	
+	/** test if FrontEndCoordination works if called through agent
+	 * Assuming that a run was completed beforehand
+	 */
+	@Test
+	public void testFrontEndCoordinationAgentCall() {
+		JSONObject jo = new JSONObject();
+		JSONObject joRes = new JSONObject(AgentCaller
+				.executeGetWithJsonParameter("JPS_DES/showDESResult",
+						jo.toString()));
+		assertNotNull(joRes.get("txHash"));
+	}
+
+	/** checks for empty input using validateInput() for FrontEnd Coordination Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorFrontEndCoordination(){
+		JSONObject jo = new JSONObject();
+	    assertTrue(new FrontEndCoordination().validateInput(jo));
+	    jo.put("key", "value");
+	    assertFalse(new FrontEndCoordination().validateInput(jo));		
+	}
+	
+	/** checks for empty input using validateInput() for BlockchainWrapper Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorBlockchainWrapper(){
+		JSONObject jo = new JSONObject();
+	    assertTrue(new BlockchainWrapper().validateInput(jo));
+	    jo.put("key", "value");
+	    assertFalse(new BlockchainWrapper().validateInput(jo));		
+	}
+	
+	/** test if validateInput method is working in Residential Agent
 	 * 
 	 */
 	@Test
@@ -267,6 +300,34 @@ public class Test_DESSimulatorAgent{
 		jo.put("temperatureforecast", irioftempF);
 		jo.put("irradiationforecast", iriofirrF);
 		assertTrue(new CommercialAgent().validateInput(jo));
+		
+		
+	}
+	
+	/** test if validateInput method is working in Industrial Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorIndustrial() {
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
+		assertTrue(new IndustrialAgent().validateInput(jo));
+		
+		
+	}
+	
+	/** test if validateInput method is working in Solar Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorSolar() {
+		JSONObject jo = new JSONObject()
+				.put("electricalnetwork", iriofnetwork);
+		jo.put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
+		assertTrue(new SolarAgent().validateInput(jo));
 		
 		
 	}
