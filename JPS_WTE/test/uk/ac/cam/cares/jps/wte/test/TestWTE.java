@@ -178,7 +178,6 @@ public class TestWTE extends TestCase{
 	 * @param scenarioName
 	 * @return
 	 */
-	@Test
 	private String enableScenario(String scenarioName) {
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		JPSHttpServlet.enableScenario(scenarioUrl);	
