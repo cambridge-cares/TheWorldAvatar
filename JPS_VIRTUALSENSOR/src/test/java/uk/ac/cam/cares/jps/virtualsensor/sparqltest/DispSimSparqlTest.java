@@ -6,14 +6,11 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.virtualsensor.objects.DispSim;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.ShipSparql;
 
 public class DispSimSparqlTest extends TestCase{
-	String episode_iri = "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service";
     public void testInitSim() {
     	String[] SimCRS = new String[5];
     	SimCRS[0] = "EPSG:3414";
@@ -32,15 +29,22 @@ public class DispSimSparqlTest extends TestCase{
 	    	sim.setNx(10);
 	    	sim.setNy(10);
 	    	sim.setNumSubStations(1);
-	    	sim.setServiceAgent(episode_iri);
+	    	sim.setServiceAgent(DispSimSparql.episode_iri);
 	    	sim.setSimCRS(SimCRS[i-1]);
 	    	sim.setDz(dz);
-	    	DispSimSparql.InitSim(i, sim);
+	    	DispSimSparql.InitSim(sim);
     	}
     }
     
     public void testInitService() {
-    	String service_iri = episode_iri;
+    	String service_iri = DispSimSparql.episode_iri;
+    	String httpURL = "http://localhost:8080/JPS_VIRTUALSENSOR/EpisodeAgent";
+    	DispSimSparql.InitService(service_iri, httpURL);
+    }
+    
+    public void testReset() {
+    	DispSimSparql.ResetEndpoint();
+    	String service_iri = DispSimSparql.episode_iri;
     	String httpURL = "http://localhost:8080/JPS_VIRTUALSENSOR/EpisodeAgent";
     	DispSimSparql.InitService(service_iri, httpURL);
     }
@@ -108,9 +112,9 @@ public class DispSimSparqlTest extends TestCase{
     	DispSimSparql.AddOutputPath(sim_iri, dataPath,1);
     }
     
-    public void testGetLatestOutputPath() {
-    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
-    	DispSimSparql.GetLatestOutputPath(sim_iri);
+    public void testGetOutputPathAndTime() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	DispSimSparql.GetOutputPathAndTime(sim_iri,0);
     }
     
     public void testGetNumOutput() {
@@ -137,49 +141,46 @@ public class DispSimSparqlTest extends TestCase{
     	DispSimSparql.GetNumSim();
     }
     
-    public void testCreateDispSim() { 
-    	double[] centre= {-1.913913,52.803439}; 
+    public void testCreateDispSim() {
+    	Point centre = new Point();
+    	centre.setSrsname("EPSG:4326");
+    	centre.setX(103.81);
+    	centre.setY(1.30);
     	double[] dimension = {20*1e3,20*1e3}; // [x,y]
-    	Scope sc = DispSimSparql.createScopeEpisode(centre, dimension);
     	
-    	//create 1 dummy ship at the centre
-        int mmsi, al, aw, ts; double ss, cu, lat, lon; String type;
-        for (int i = 1; i < 2; i++) {
-            mmsi = 1;
-            type = "unknown type";
-            al = 37;
-            aw = 8;
-            ss = 0.1;
-            cu = 220.2;
-            lat = centre[1];
-            lon = centre[0];
-            ts = 1;
-            int shipindex = ShipSparql.GetNumShips() + 1;
-            ShipSparql.createShip(shipindex,mmsi,type,al,aw,ss,cu,lat,lon,ts);
-        }
-        
-        // create dummy weather stations
-        // create main station at the centre
-        int numstn = SensorSparql.GetNumWeatherStation();
-        double stnhgt = 10; // fixed height for now
-        double[] xyz_main = {centre[0],centre[1],stnhgt};
-        SensorSparql.createWeatherStation(numstn+1, xyz_main);
-        
-        // create sub station 100m away from bottom corner
-        double[] xy_sub = {sc.getLowerCorner().getX()+100 ,sc.getLowerCorner().getY()+100};
-        xy_sub = CRSTransformer.transform(sc.getSrsName(), CRSTransformer.EPSG_4326, xy_sub);
-        double[] xyz_sub = {xy_sub[0],xy_sub[1],stnhgt};
-        SensorSparql.createWeatherStation(numstn+2, xyz_sub);
-        
-        double[] dz = {10,10,15,25,40,100,300,500,500,500,500,500,500};
-        DispSim sim = new DispSim();
-    	sim.setScope(sc);
-    	sim.setNx(10);
-    	sim.setNy(10);
-    	sim.setNumSubStations(1);
-    	sim.setServiceAgent(episode_iri);
-    	sim.setSimCRS(sc.getSrsName());
-    	sim.setDz(dz);
-    	DispSimSparql.InitSim(DispSimSparql.GetNumSim()+1, sim);
+    	DispSimSparql.CreateDispSim(centre, dimension);
+    }
+    
+    public void testCheckSimExist() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.CheckSimExist(sim_iri);
+    }
+    
+    public void testGetAllSimIri() {
+    	DispSimSparql.GetAllSimIri();
+    }
+    
+    public void testGetSimIRIForCoordinates() {
+    	Point p = new Point();
+    	p.setSrsname("EPSG:4326");
+    	p.setX(103.81);
+    	p.setY(100);
+    	DispSimSparql.GetSimIRIForCoordinates(p);
+    }
+    
+    public void testGetSimForSensor() {
+    	String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor8";
+    	DispSimSparql.GetSimForSensor(station_iri);
+    }
+    
+    public void testCheckOutputPathExist() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim1";
+    	String outputPath = "C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/db2c8e8c-a1ce-41af-83f6-1f5dd8746d5d/output/";
+    	DispSimSparql.CheckOutputPathExist(sim_iri,outputPath);
+    }
+    
+    public void testGetAirQualityStations() {
+    	String sim_iri = "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5";
+    	DispSimSparql.GetAirQualityStations(sim_iri);
     }
 }
