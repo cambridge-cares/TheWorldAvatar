@@ -50,7 +50,7 @@ public class BatteryEntityCreator extends JPSAgent {
 	static Individual xaxis;
 	static Individual yaxis;
 	static Individual length;
-	private final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
 	private final String TWA_spacetime= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"; 
 	private final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
 	private final String TWA_coordinate_system = TWA_Ontology+"/ontocape/upper_level/coordinate_system.owl#" ;
@@ -134,11 +134,11 @@ public class BatteryEntityCreator extends JPSAgent {
 	 * @return List<String[]>
 	 */
 	public List<String[]> prepareSelectedBranch(OntModel model, double valueboundary){
-		String branchoutputInfo  = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
+		String branchoutputInfo  = new SelectBuilder().addPrefix("j1",TWA_Ontology+"/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2",TWA_upperlevel_system)
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-				.addPrefix("j4", "http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
+				.addPrefix("j3", TWA_Ontology+"/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j4", TWA_Ontology+"/meta_model/topology/topology.owl#")
+				.addPrefix("j5", TWA_Ontology+"/ontocape/model/mathematical_model.owl#")				
 				.addVar("?entity").addVar("?vplossvalue").addVar("?bus1").addVar("?bus2")
 				.addWhere("?entity" ,"a", "j1:UndergroundCable")
 				.addWhere("?entity" ,"j2:isModeledBy", "?model")
