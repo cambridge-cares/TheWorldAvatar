@@ -32,6 +32,11 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns= {"/startSimulationAgent"})
 
 public class WastetoEnergyAgent extends JPSAgent {
+	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_OntoWaste = TWA_Ontology + "/ontowaste/OntoWaste.owl#";
+	private static final String TWA_OntoTransport= TWA_Ontology + "/ontowaste/OntoTransport.owl#";
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#"; 
+	private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
 	
     @Override
     protected void setLogger() {
@@ -68,11 +73,10 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 * emission rate of travelling on that route. 
 	 */
 	public static String getTransportQuery() {
-		SelectBuilder sb = new SelectBuilder()
-				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste )
+				.addPrefix("j2",TWA_upperlevel_system )
+				.addPrefix("j7", TWA_spacetime_extended)
+				.addPrefix("j8", TWA_OntoTransport)
 				.addVar("?Unit_transport_capacity").addVar("?Unit_transport_cost")
 				.addVar("?pollutionTransportTax").addVar("?dieselConsTruck")
 		.addWhere("?entity", "a","j8:TransportationRoute").addWhere("?entity", "j8:suitFor","?truck")
@@ -98,7 +102,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 * Incineration upper bound, CoDigestion upper bound, and Anerobic Digestion upper bound. 
 	 */
 	public static String returnUpperBoundQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste)
 				.addVar("?entity").addVar("?tech1upp").addVar("?tech2upp").addVar("?tech3upp")
 				.addWhere("?entity" ,"j1:hasOffsiteIncinerationUpperBound", "?tech1upp")
 				.addWhere("?entity" ,"j1:hasOffsiteCoDigestionUpperBound", "?tech2upp")
@@ -182,7 +186,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 * @return
 	 */
 	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system)
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
 		String wasteInfo = sb.build().toString();
 
