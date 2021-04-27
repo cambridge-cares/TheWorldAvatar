@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
@@ -20,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -36,8 +36,9 @@ public class EnergyStorageSystem extends JPSAgent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
 	
-	//public static final String AGENT_TAG = "GAMS_NuclearAgent";
 
 	Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
 	@Override
@@ -64,10 +65,8 @@ public class EnergyStorageSystem extends JPSAgent {
 				resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
 				return resultofbattery;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage());
+				throw new JPSRuntimeException("");
 			}
-			return resultofbattery;
 		}
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
@@ -163,7 +162,7 @@ public class EnergyStorageSystem extends JPSAgent {
 	 * @return
 	 */
 	public static OntModel readBatteryGreedy(String batterycatiri) {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system)
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:contains", "?component");
 		String batteryInfo= sb.build().toString();
 		QueryBroker broker = new QueryBroker();
@@ -176,12 +175,21 @@ public class EnergyStorageSystem extends JPSAgent {
 	 * @return
 	 */
 	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system )
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
 		String wasteInfo = sb.build().toString();
 
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, wasteInfo);
+	}
+	public SelectBuilder prepareSelectBuilderForQuery() {
+		return new SelectBuilder().addPrefix("j1",TWA_Ontology+"/ontopowsys/PowSysRealization.owl#" )
+				.addPrefix("j2", TWA_upperlevel_system)
+				.addPrefix("j3", TWA_Ontology+"/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j5", TWA_Ontology+"/ontocape/model/mathematical_model.owl#")				
+				.addPrefix("j6", TWA_Ontology+"/ontopowsys/PowSysBehavior.owl#")
+				.addPrefix("j7", TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#");
+				
 	}
 	/** prepare the max and min power generated as well as state of charge. 
 	 * 
@@ -192,13 +200,7 @@ public class EnergyStorageSystem extends JPSAgent {
 	public void prepareCSVPahigh(List<String> pvGenIRI, String baseUrl) {
 
 		// System.out.println("model= "+model);
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
-				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addVar("?Pa_high").addVar("?Da_low").addVar("?Pa_low").addVar("?Da_high")
+		SelectBuilder sb =prepareSelectBuilderForQuery().addVar("?Pa_high").addVar("?Da_low").addVar("?Pa_low").addVar("?Da_high")
 				.addWhere("?entity" ,"a", "j1:PowerGenerator")
 				.addWhere("?entity" ,"j6:hasMaximumActivePowerGenerated", "?Pmax")
 				.addWhere("?Pmax" ,"j2:hasValue", "?vPmax").addWhere("?vPmax" ,"j5:upperLimit", "?Pa_high")
@@ -246,19 +248,15 @@ public class EnergyStorageSystem extends JPSAgent {
 	 */
 	public void prepareCSVRemaining(String batcal, String baseUrl) {
 		OntModel model=readBatteryGreedy(batcal);		
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
-				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+		SelectBuilder sb = prepareSelectBuilderForQuery()
+				.addPrefix("j9", TWA_Ontology + "/ontopowsys/PowSysPerformance.owl#")
 				.addVar("?entity").addVar("?environment").addVar("?cost").addVar("?maturity")
 				.addVar("?vPtHigh").addVar("?vPtLow").addVar("?DTHigh").addVar("?DTLow")
 				.addWhere("?entity" ,"j2:hasProperty", "?MC")
 				.addWhere("?MC" ,"j2:hasValue", "?vMC")
 				.addWhere("?vMC" ,"j2:numericalValue", "?environment")
 				
-				.addWhere("?entity" ,"j3:hasCost", "?EC")
+				.addWhere("?entity" ,"j9:hasCost", "?EC")
 				.addWhere("?EC" ,"j2:hasValue", "?vEC")
 				.addWhere("?vEC" ,"j2:numericalValue", "?cost")
 				
@@ -388,14 +386,9 @@ public class EnergyStorageSystem extends JPSAgent {
 	 * @return
 	 */
 	public List<String> filterPV (String ENIRI){
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+		SelectBuilder sb = prepareSelectBuilderForQuery().addPrefix("j9", TWA_Ontology + "/ontocape/upper_level/technical_system.owl#")
 				.addVar("?entity").addVar("?valueofx").addVar("?valueofy").addVar("?BusNumbervalue")
-				.addWhere("?entity" ,"a", "j1:PowerGenerator").addWhere("?entity" ,"j9:realizes", "<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SolarGeneration>")
+				.addWhere("?entity" ,"a", "j1:PowerGenerator").addWhere("?entity" ,"j9:realizes", "<"+TWA_Ontology+"/ontoeip/powerplants/PowerPlant.owl#SolarGeneration>")
 				.addWhere("?entity" ,"j2:isModeledBy", "?model").addWhere("?model" ,"j5:hasModelVariable", "?num")
 				.addWhere("?num" ,"a", "j3:BusNumber").addWhere("?num" ,"j2:hasValue", "?vnum")
 				.addWhere("?vnum" ,"j2:numericalValue", "?BusNumbervalue")

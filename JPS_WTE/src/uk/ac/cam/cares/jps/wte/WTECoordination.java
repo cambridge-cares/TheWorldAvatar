@@ -20,8 +20,7 @@ public class WTECoordination extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
-			System.out.println(requestParams.toString());
-			throw new BadRequestException("WTECoordination: Input parameters are non-empty.\n");
+			throw new BadRequestException();
 		}
 	    String baseUrl= QueryBroker.getLocalDataPath();
 		//check name of scenario: 
@@ -33,7 +32,7 @@ public class WTECoordination extends JPSAgent{
 	 @Override
 	    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 	        if (requestParams.isEmpty()) {
-	            throw new BadRequestException();
+	            return false;
 	        }
 	        return true;
 	    }

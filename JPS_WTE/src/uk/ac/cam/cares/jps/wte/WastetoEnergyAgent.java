@@ -112,7 +112,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException("WTE:startSimulationAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		String baseUrl= requestParams.getString("baseUrl");
 		String wasteIRI=requestParams.getString("wastenetwork");
@@ -153,7 +153,7 @@ public class WastetoEnergyAgent extends JPSAgent {
             notifyWatcher(requestParams, baseUrl+"/year by year_NPV.txt",
                     path.replace(COORDINATION_PATH, SIM_PROCESS_PATH));
 		} catch (Exception e) {
-			throw new JPSRuntimeException("WasteToEnergy StartSimulationAgent: Notify watcher had error. ");
+			throw new JPSRuntimeException("");
 		}
 		return requestParams;
 	}

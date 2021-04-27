@@ -126,7 +126,7 @@ public class WTEProcessResult extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    if (!validateInput(requestParams)) {
-			throw new JSONException("WTE:createOWLFileAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
@@ -149,7 +149,7 @@ public class WTEProcessResult extends JPSAgent{
 			updateKBForSystem(wasteIRI, baseUrl, getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		 }catch (Exception e) {
-			 throw new JPSRuntimeException("WTE process result agent: Update to KB files has failed. \n");
+			 throw new JPSRuntimeException("");
 		}			 
 		 
 		return requestParams;
@@ -431,7 +431,7 @@ public class WTEProcessResult extends JPSAgent{
 			if (InputValidator.checkIfValidUpdate(sparql) == true) {
 				new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 			}else {
-				throw new JPSRuntimeException("Update of waste delivery site of FoodCourt " +d+" invalid!");
+				throw new JPSRuntimeException("");
 			}
 		}
 		
