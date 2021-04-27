@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.TimeZone;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -33,7 +31,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException("WeatherIrradiationAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
@@ -44,7 +42,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 
 			return requestParams;
 		} catch (Exception e) {
-			throw new JPSRuntimeException("WeatherIrradiationRetriever: weather retrieval invalid");
+			throw new JPSRuntimeException("");
 		}
  		
 	}
@@ -52,7 +50,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException("WeatherIrradiationRetriever: Input parameters empty.\n");
+            return false;
         }
         try {	      
 	        
@@ -64,7 +62,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	        
 	        return e&r;
         } catch (JSONException ex) {
-        	throw new JSONException("WeatherIrradiationRetriever: Sensor not present in getString");
+        	return false;
         }
 
     }

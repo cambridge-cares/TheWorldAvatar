@@ -53,6 +53,7 @@ public class BatteryEntityCreator extends JPSAgent {
 	static Individual xaxis;
 	static Individual yaxis;
 	static Individual length;
+	private final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
 	
 	/** assign property values to variables
 	 * 
@@ -86,7 +87,7 @@ public class BatteryEntityCreator extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    if (!validateInput(requestParams)) {
-			throw new BadRequestException("Battery Entity Creator: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		String ENIRI=requestParams.getString("electricalnetwork");
 		String storagetype=requestParams.getString("storage");
@@ -99,7 +100,7 @@ public class BatteryEntityCreator extends JPSAgent {
 			listbat = createBatteryOwlFile(model, storagetype,valueboundary);
 			requestParams.put("batterylist", listbat);
 		} catch (IOException e) {
-			throw new JPSRuntimeException("Battery Entity Creator: IOException.\n");
+			throw new JPSRuntimeException("");
 		}
 		return requestParams;
 		

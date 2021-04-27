@@ -48,7 +48,7 @@ public class ResidentialAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    if (!validateInput(requestParams)) {
-    		throw new BadRequestException("ResidentialAgent:  Input parameters not found.\n");
+    		throw new BadRequestException();
     	}
 		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
 		
@@ -62,7 +62,7 @@ public class ResidentialAgent extends JPSAgent {
 			responseParams.put("results", res);
 			}
 		catch (Exception ex) {
-			throw new JPSRuntimeException("ResidentialAgent: Incomplete simulation.\n ");
+			throw new JPSRuntimeException(" ");
 		}
     	
 		return responseParams;
@@ -71,7 +71,7 @@ public class ResidentialAgent extends JPSAgent {
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         } 
         try {
         String iriofdistrict = requestParams.getString("district");

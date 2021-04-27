@@ -32,12 +32,12 @@ public class CoordinationESSAgent extends JPSAgent {
     @Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException("CoordinationAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		try {
 			return startSimulation(requestParams);
 		} catch (IOException e) {
-			throw new JPSRuntimeException("CoordinationESSAgent: IOException.\n");
+			throw new JPSRuntimeException("");
 		}
 	}
     

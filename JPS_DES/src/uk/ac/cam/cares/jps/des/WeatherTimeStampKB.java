@@ -21,7 +21,7 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 /** Old method no longer used by WeatherIrradiationRetriever and Forecast Agent. 
- * Use only when IrradiationSensor/Forecast is gone
+ * Use only when IrradiationSensor/Forecast is missing
  * 
  *
  *

@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.des;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.json.JSONObject;

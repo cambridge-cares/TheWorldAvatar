@@ -20,7 +20,6 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -49,13 +48,13 @@ public class ForecastAgent extends JPSAgent{
             AccuWeatherURL = prop.getProperty("AccuWeatherURL");
 
         } catch (IOException ex) {
-            throw new JPSRuntimeException("ForecastAgent: getProperties: IOException.\n");
+            throw new JPSRuntimeException("");
         }
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
-    		throw new BadRequestException("DESAgent:  Input parameters not found.\n");
+    		throw new BadRequestException();
     	}
     	try {
             String irioftempF=requestParams.getString("temperatureforecast");
@@ -64,7 +63,7 @@ public class ForecastAgent extends JPSAgent{
     		nextForecastDayTemperature(irioftempF);
 		
 		} catch (Exception e) {
-			throw new JPSRuntimeException("Forecast Agent: incomplete forecast simulation");
+			throw new JPSRuntimeException("");
 		}
     	return requestParams;
     }
@@ -72,9 +71,8 @@ public class ForecastAgent extends JPSAgent{
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
-        try {
         String iriofnetwork = requestParams.getString("electricalnetwork");
         boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
 
@@ -86,13 +84,9 @@ public class ForecastAgent extends JPSAgent{
         boolean e = InputValidator.checkIfValidIRI(irioftempF);
         String iriofirrF=requestParams.getString("irradiationforecast");
         boolean r = InputValidator.checkIfValidIRI(iriofirrF);
-        // Till now, there is no system independent to check if a file path is valid or not. 
         
         return q&w&e&r;
-        } catch (JSONException ex) {
-        	ex.printStackTrace();
-        	throw new JSONException("Forecast not present in getString");
-        }
+       
 
     }
     

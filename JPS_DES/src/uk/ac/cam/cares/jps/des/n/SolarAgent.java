@@ -51,7 +51,7 @@ public class SolarAgent extends JPSAgent {
 			responseParams.put("results", result);
 			}
 		catch (Exception ex) {
-			throw new JPSRuntimeException("Solar Agent: Incomplete simulation.\n");
+			throw new JPSRuntimeException("");
 		}
     	return requestParams;
     }
@@ -62,7 +62,7 @@ public class SolarAgent extends JPSAgent {
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 		if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
         String iriofnetwork = requestParams.getString("electricalnetwork");

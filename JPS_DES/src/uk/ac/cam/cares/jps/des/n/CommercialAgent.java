@@ -37,7 +37,7 @@ public class CommercialAgent extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject responseParams = requestParams;	
     	if (!validateInput(requestParams)) {
-    		throw new BadRequestException("CommercialAgent:  Input parameters not found.\n");
+    		throw new BadRequestException();
     	}
         String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
@@ -55,7 +55,7 @@ public class CommercialAgent extends JPSAgent {
 			responseParams.put("results", res);
 			}
 		catch (Exception ex) {
-			throw new JPSRuntimeException("CommercialAgent: Results not returned. ");
+			throw new JPSRuntimeException("");
 		}
 		return responseParams;
     }
@@ -63,7 +63,7 @@ public class CommercialAgent extends JPSAgent {
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
         String iriofnetwork = requestParams.getString("electricalnetwork");

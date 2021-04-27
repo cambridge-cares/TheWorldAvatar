@@ -53,7 +53,7 @@ public class BlockchainWrapper extends JPSAgent{
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
 			System.out.println(requestParams.toString());
-			throw new BadRequestException("BlockchainWrapper: Input parameters are non-empty.\n");
+			throw new BadRequestException();
 		}
 		JSONObject result=new JSONObject();
 		JSONObject graData =new JSONObject();
@@ -164,7 +164,7 @@ public class BlockchainWrapper extends JPSAgent{
 		}
     	
     	}catch (Exception ex) {
-    		throw new JPSRuntimeException("BlockchainWrapper: derivation of values failed\n");
+    		throw new JPSRuntimeException("");
     	}
 
 		return jo;
@@ -314,7 +314,7 @@ public class BlockchainWrapper extends JPSAgent{
 			
 		}
 	}catch (Exception e) {
-			throw new JPSRuntimeException("BlockchainWrapper: Transaction on blockchain failed.\n");
+			throw new JPSRuntimeException("");
 		}
 		jS.put("txHash",totalList.toArray());
 		jS.put("sandr",whoTowho.toArray());
@@ -389,7 +389,7 @@ public class BlockchainWrapper extends JPSAgent{
             credential = prop.getProperty("walletPass");
 
         } catch (IOException ex) {
-            throw new JPSRuntimeException("BlockchainWrapper: getProperties: IOException.\n");
+            throw new JPSRuntimeException("");
         }
 
 	}

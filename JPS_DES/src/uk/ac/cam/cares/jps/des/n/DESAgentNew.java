@@ -57,7 +57,7 @@ public class DESAgentNew extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject responseParams = new JSONObject();	
     	if (!validateInput(requestParams)) {
-    		throw new BadRequestException("DESAgent:  Input parameters not found.\n");
+    		throw new BadRequestException();
     	}
     	String iriofnetwork = requestParams.getString("electricalnetwork");
         String iriofdistrict = requestParams.getString("district");
@@ -81,7 +81,7 @@ public class DESAgentNew extends JPSAgent {
 
 			responseParams.put("result", result);
 		} catch (Exception e) {
-			throw new JPSRuntimeException("DESAgent New: Simulation incomplete\n");
+			throw new JPSRuntimeException("");
 		} 
 		return responseParams;
     }
@@ -89,7 +89,7 @@ public class DESAgentNew extends JPSAgent {
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
         String iriofnetwork = requestParams.getString("electricalnetwork");
@@ -107,7 +107,7 @@ public class DESAgentNew extends JPSAgent {
         
         return q&w&e&r;
         } catch (JSONException ex) {
-        	throw new JSONException("Forecast not present in getString");
+        	return false;
         }
 
     }

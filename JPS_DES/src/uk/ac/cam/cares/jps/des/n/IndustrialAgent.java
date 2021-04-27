@@ -28,7 +28,7 @@ public class IndustrialAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    if (!validateInput(requestParams)) {
-    		throw new BadRequestException("IndustrialAgent:  Input parameters not found.\n");
+    		throw new BadRequestException();
     	}
     	String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
         String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
@@ -49,7 +49,7 @@ public class IndustrialAgent extends JPSAgent {
 			return responseParams;
 			}
 		catch (Exception ex) {
-			throw new JPSRuntimeException("Industrial Agent: Incomplete simulation.\n ");
+			throw new JPSRuntimeException("");
 		}
     }
 	
@@ -59,7 +59,7 @@ public class IndustrialAgent extends JPSAgent {
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 		if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
         String iriofnetwork = requestParams.getString("electricalnetwork");
