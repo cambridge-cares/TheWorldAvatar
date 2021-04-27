@@ -43,7 +43,6 @@ public class TestWTE extends TestCase{
 	@Before
 	public void setUp() {
 		iriofnetwork ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
-		iriofnetwork = FCQuerySource.tempIRItoFile(iriofnetwork);
 		baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
 		usecaseID = UUID.randomUUID().toString();
 	}
@@ -192,9 +191,7 @@ public class TestWTE extends TestCase{
 	@Test
 	public void testInSuccession() throws Exception {
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
-		
 		enableScenario("testScenariosWithWTE");
-		KnowledgeBaseClient.get(null, iriofnetwork, null);
 		String baseUrl = QueryBroker.getLocalDataPath();
 		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		ag.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
@@ -224,7 +221,6 @@ public class TestWTE extends TestCase{
 		ag.copyTemplate(baseUrl, "Main.m");
 		ag.copyTemplate(baseUrl, "D2R.m");		
 		ag.createBat(baseUrl, n_cluster);
-		TimeUnit.MINUTES.sleep(1);
 		System.out.println("Matlab simulation should have finished. ");
 //			Read for next agent
 		WTEProcessResult at = new WTEProcessResult();

@@ -33,8 +33,10 @@
 7. Matlab simulation is called, should finish in five minutes time. 
 ![WasteToEnergy UML Activity Diagram](images/ActivityWasteToEnergy.png)
 
-8. The loading is due to new Onsite Facility instances being created slowly, and added to the knowledge graph. Followed by onsite waste treatment facilities, and lastly, the new costs are calculated
+8. The loading is due to new Onsite Facility instances being created slowly, and added to the knowledge graph. The sequence of events can be located in the diagram below. 
 9. Each is saved to the output file and sent to the visualization. 
+
+![WTEProcessResult UML Activity Diagram](images/ActivityWTEProcessResult.png)
 
 ## There's something wrong? I can't deploy this!
 - WasteToEnergyAgent ran, but WTESingleAgent did not. 

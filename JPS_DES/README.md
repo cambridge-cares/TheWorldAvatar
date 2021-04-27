@@ -118,6 +118,7 @@ Then, it calls upon the BlockchainWrapper agent that communicates with the block
 - The URLs linking the transactions to the webpage are missing!
   1. Check if `testFrontEndTalk()` is working. This just checks the transaction of ether given a set of values. 
   2. Check if you have ether in your wallet. See [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/master/JPS_DES#Metamask) for greater detail. 
+  3. It could also be because your version of JRE HOME got changed due to an unexpected update. Check JRE_HOME on your environmental variables and see if the folder has just lost its bin file. 
 - Why is the webpage blank? Node is running. 
   1. Check if you're reading from the right location. Localhost? Or jparksimulator? The same goes if you have a ConnectException: it's linked to the wrong location and thus change your 'test' value in jps.properties
 - Where's all these other files that are meant to be in config.properties? 
