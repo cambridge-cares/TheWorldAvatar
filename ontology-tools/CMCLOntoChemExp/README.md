@@ -67,14 +67,14 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
 
 ## Update history
 
-### v1.1 to v1.2 (as of 19 April 2021)
+### v1.1 to v1.2 (as of 27 April 2021)
 
 - Concepts
 
   - Removed class `Value`
   - Renamed class `Property` to `DimensionalQuantity`
   - Made class `BibliographyLink` `EQUIVALENT-TO` class `OntoKin:Reference`
-  - Added class `Velocity`, `SootYield`, `MassBurningRate`, `Mass`, `SpecificSurfaceArea`, `Material`, `Fraction`, `Voltage`, `Temperature`, `Length`, `Pressure`, `Density`, `Volume`, `FlowRate`, `Time`, `VolumetricFlowRate`, `ResidenceTime`, `LaminarBurningVelocity`, `Distance`, `InitialComposition`, `IgnitionDelay`, `Composition`, `Concentration`, `EquivalenceRatio`, `TemperatureInReferenceState`, `PressureInReferenceState`, `VolumetricFlowRateInReferenceState`, `ReactorLength`, `Diameter` as subclass of `DimensionalQuantity`
+  - Added class `Velocity`, `SootYield`, `MassBurningRate`, `Mass`, `SpecificSurfaceArea`, `Material`, `Fraction`, `Voltage`, `Temperature`, `Length`, `Pressure`, `Density`, `Volume`, `FlowRate`, `Time`, `VolumetricFlowRate`, `ResidenceTime`, `LaminarBurningVelocity`, `Distance`, `InitialComposition`, `IgnitionDelay`, `Composition`, `Concentration`, `EquivalenceRatio`, `TemperatureInReferenceState`, `PressureInReferenceState`, `VolumetricFlowRateInReferenceState`, `ReactorLength`, `Diameter`, `JunctionArchitecture`, `DonorConstructionType`, `Acceptor`, `Donor`, `HOMO`, `LUMO`, `HOMOLUMOGAP`, `OpticalGap`, `VOC`, `JSC`, `PCE`, `FillFactor` as subclass of `DimensionalQuantity`
   - Added class `http://xmlns.com/foaf/0.1/Agent`, `http://xmlns.com/foaf/0.1/Person`, `http://xmlns.com/foaf/0.1/Organization`, `http://purl.org/ontology/bibo/Journal`
   - Inherited class `OntoKin:PublicationSpecification`, `OntoKin:JournalSpecification`, `OntoKin:ProceedingsSpecification`, `OntoKin:PreprintSpecification` from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
 
@@ -87,6 +87,7 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
     - `<Concentration hasSpeciesLink SpeciesLink>`
     - `<Experiment hasPerformer http://xmlns.com/foaf/0.1/Agent>`
     - `<X refersTo DimensionalQuantity>` to make the direct connection between measured data point `X` with the physical `DimensionalQuantity` it represents
+    - `<Acceptor hasComponent Component>`, `<Donor hasComponent Component>`
   - Inherited publication-related object property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
     - `<OntoKin:JournalSpecification OntoKin:specifies http://purl.org/ontology/bibo/Journal>`
     - `<BibliographyLink OntoKin:hasPublicationSpecification OntoKin:PublicationSpecification>`
