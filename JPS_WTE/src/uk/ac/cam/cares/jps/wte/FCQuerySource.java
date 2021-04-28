@@ -15,19 +15,14 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
  *
  */
 public class FCQuerySource {
-	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
-	private static final String TWA_OntoWaste = TWA_Ontology + "/ontowaste/OntoWaste.owl#";
-	private static final String TWA_OntoTransport= TWA_Ontology + "/ontowaste/OntoTransport.owl#";
-	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
-	private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
 
 	/** gets the food court name, xy coordinates
 	 */
 	public static SelectBuilder getFCQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste )
-				.addPrefix("j2",TWA_upperlevel_system )
-				.addPrefix("j7", TWA_spacetime_extended)
-				.addPrefix("j8", TWA_OntoTransport)
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#")
 				.addVar("?entity").addVar("?name").addVar("?xvalue").addVar("?yvalue")
 				.addWhere("?entity" ,"a", "j1:FoodCourt").addWhere("?entity" ,"j8:hasName", "?name")
 				.addWhere("?entity" ,"j7:hasGISCoordinateSystem", "?coorsys")
@@ -41,9 +36,10 @@ public class FCQuerySource {
 	/** general WasteTreatmentQuery 
 	 */
 	public static SelectBuilder getWasteTreatmentQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste )
-				.addPrefix("j2",TWA_upperlevel_system )
-				.addPrefix("j7", TWA_spacetime_extended).addVar("?entity").addVar("?xvalue").addVar("?yvalue")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+				.addVar("?entity").addVar("?xvalue").addVar("?yvalue")
 				.addWhere("?entity" ,"j7:hasGISCoordinateSystem", "?coorsys")
 				.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
 				.addWhere("?x" ,"j2:hasValue", "?xval").addOptional("?xval" ,"j2:numericalValue", "?xvalue")
@@ -75,9 +71,9 @@ public class FCQuerySource {
 	 * Can be assigned offsite or onsite
 	 */
 	public static SelectBuilder getTechQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste )
-				.addPrefix("j2",TWA_upperlevel_system )
-				.addPrefix("j3", TWA_Ontology + "/ontopowsys/PowSysPerformance.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#")
 				.addVar("?pollutiontreatmenttaxvalue").addVar("?Tech1Capvalue").addVar("?installationcostvalue")
 				.addVar("?operationcostvalue").addVar("?transferrateelectricvalue").addVar("?energyconsumptionvalue")
 				.addVar("?laborcostvalue")
@@ -116,5 +112,17 @@ public class FCQuerySource {
 		return resultListfromquery;
 	}
 	
+	/** Temporary translation fix for switch from KBClient to KGRouter. In the end, it should be querying appropriately from the 
+	 * correct Source
+	 * 
+	 * @param iriofnetwork The file name to be changed. 
+	 * @return iriofnetwork (changed)
+	 */
+	public static String tempIRItoFile(String iriofnetwork) {
+		String translatedIRI = iriofnetwork.replace("http://www.theworldavatar.com", AgentLocator.getProperty("absdir.root"));
+		translatedIRI = ScenarioHelper.cutHash(translatedIRI);
+		iriofnetwork = translatedIRI.replace("C:/", "C:\\");
+		return iriofnetwork;
+	}
 	
 }
