@@ -7,7 +7,7 @@ import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, CSV, JSON, POST
 from shapely import geometry, wkt, ops 
 
-df = pd.read_csv('OntoGasGrid/scotland_lsoa_populations/scottish_LSOA.csv')
+df = pd.read_csv('scotland_lsoa_populations/scottish_LSOA.csv')
 wkt = df['WKT'].values
 code = df['DataZone'].values
 
@@ -49,7 +49,7 @@ for g in tqdm(range(len(len_query)-1)):
     query += '}}'
 
     DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/bigdata"
+    LOCAL_KG = "http://localhost:9999/blazegraph"
     LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
 
     sparql = SPARQLWrapper(LOCAL_KG_SPARQL)

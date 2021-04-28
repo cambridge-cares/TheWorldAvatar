@@ -42,7 +42,7 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
 
  # performing SPARQL query  
   DEF_NAMESPACE = 'ontogasgrid'
-  LOCAL_KG = "http://localhost:9999/bigdata"
+  LOCAL_KG = "http://localhost:9999/blazegraph"
   LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
   KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
   ret = KGClient.executeQuery(queryString)

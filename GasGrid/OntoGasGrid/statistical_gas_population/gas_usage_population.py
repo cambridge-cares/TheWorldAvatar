@@ -20,7 +20,7 @@ def upload_year(year):
                 year_r = year + 'r'
         else:
                 year_r = year
-        data = pd.read_excel('OntoGasGrid/statistical_gas_population/Copy of LSOA_domestic_gas_2010-19.xlsx',sheet_name=year_r,skiprows=1)
+        data = pd.read_excel('statistical_gas_population/Copy of LSOA_domestic_gas_2010-19.xlsx',sheet_name=year_r,skiprows=1)
         LSOA_codes = data['Lower Layer Super Output Area (LSOA) Code'].values
         met_num = data['Number of consuming meters'].values
         consump = data['Consumption (kWh)'].values
@@ -204,7 +204,7 @@ def upload_year(year):
 
 
                 DEF_NAMESPACE = 'ontogasgrid'
-                LOCAL_KG = "http://localhost:9999/bigdata"
+                LOCAL_KG = "http://localhost:9999/blazegraph"
                 LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
 
                 sparql = SPARQLWrapper(LOCAL_KG_SPARQL)

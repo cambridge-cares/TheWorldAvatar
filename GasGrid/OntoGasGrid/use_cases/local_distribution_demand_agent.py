@@ -44,7 +44,7 @@ WHERE{
 
 
 DEF_NAMESPACE = 'ontogasgrid'
-LOCAL_KG = "http://localhost:9999/bigdata"
+LOCAL_KG = "http://localhost:9999/blazegraph"
 LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
 
 sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
@@ -100,8 +100,8 @@ queryString = """PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX ns1:     <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
 PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX gasgrid: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl#>
-PREFIX loc:     <http://www.bigdata.com/rdf/geospatial/literals/v1#>
-PREFIX geo:     <http://www.bigdata.com/rdf/geospatial#>
+PREFIX loc:     <http://www.blazegraph.com/rdf/geospatial/literals/v1#>
+PREFIX geo:     <http://www.blazegraph.com/rdf/geospatial#>
 PREFIX comp:	<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
 
 SELECT ?location ?order ?label
@@ -117,7 +117,7 @@ WHERE
 }
 """
 DEF_NAMESPACE = 'ontogasgrid'
-LOCAL_KG = "http://localhost:9999/bigdata"
+LOCAL_KG = "http://localhost:9999/blazegraph"
 LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
 KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
 ret = KGClient.executeQuery(queryString)

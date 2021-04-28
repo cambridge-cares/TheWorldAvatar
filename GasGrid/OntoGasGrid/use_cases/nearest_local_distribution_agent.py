@@ -49,7 +49,7 @@ def query_usage(limit):
     # jpsBaseLibGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
     # KGRouter = jpsGW_view.KGRouter
     DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/bigdata"
+    LOCAL_KG = "http://localhost:9999/blazegraph"
     LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
     # KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
     # ret = KGClient.executeQuery(query)
@@ -129,7 +129,7 @@ def query_localdistribution():
     # jpsBaseLibGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
     # KGRouter = jpsGW_view.KGRouter
     DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/bigdata"
+    LOCAL_KG = "http://localhost:9999/blazegraph"
     LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
     # KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
     # ret = KGClient.executeQuery(query)
@@ -212,7 +212,7 @@ INSERT DATA
         query += additional
     query += '}}'
     DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/bigdata"
+    LOCAL_KG = "http://localhost:9999/blazegraph"
     LOCAL_KG_SPARQL = LOCAL_KG+'/namespace/'+DEF_NAMESPACE+'/sparql'
 
     sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
