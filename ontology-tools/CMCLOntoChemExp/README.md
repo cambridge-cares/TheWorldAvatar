@@ -67,14 +67,14 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
 
 ## Update history
 
-### v1.1 to v1.2 (as of 27 April 2021)
+### v1.1 to v1.2 (as of 28 April 2021)
 
 - Concepts
 
   - Removed class `Value`
   - Renamed class `Property` to `DimensionalQuantity`
   - Made class `BibliographyLink` `EQUIVALENT-TO` class `OntoKin:Reference`
-  - Added class `Velocity`, `SootYield`, `MassBurningRate`, `Mass`, `SpecificSurfaceArea`, `Material`, `Fraction`, `Voltage`, `Temperature`, `Length`, `Pressure`, `Density`, `Volume`, `FlowRate`, `Time`, `VolumetricFlowRate`, `ResidenceTime`, `LaminarBurningVelocity`, `Distance`, `InitialComposition`, `IgnitionDelay`, `Composition`, `Concentration`, `EquivalenceRatio`, `TemperatureInReferenceState`, `PressureInReferenceState`, `VolumetricFlowRateInReferenceState`, `ReactorLength`, `Diameter`, `JunctionArchitecture`, `DonorConstructionType`, `Acceptor`, `Donor`, `HOMO`, `LUMO`, `HOMOLUMOGAP`, `OpticalGap`, `VOC`, `JSC`, `PCE`, `FillFactor` as subclass of `DimensionalQuantity`
+  - Added class `Velocity`, `SootYield`, `MassBurningRate`, `Mass`, `SpecificSurfaceArea`, `Material`, `Fraction`, `Voltage`, `Temperature`, `Length`, `Pressure`, `Density`, `Volume`, `FlowRate`, `Time`, `VolumetricFlowRate`, `ResidenceTime`, `LaminarBurningVelocity`, `Distance`, `InitialComposition`, `IgnitionDelay`, `Composition`, `Concentration`, `EquivalenceRatio`, `TemperatureInReferenceState`, `PressureInReferenceState`, `VolumetricFlowRateInReferenceState`, `ReactorLength`, `Diameter`, `JunctionArchitecture`, `DonorConstructionType`, `Acceptor`, `Donor`, `HomoEnergy`, `LumoEnergy`, `HomoLumoEnergyGap`, `OpticalEnergyGap`, `OpenCircuitPotential`, `ShortCircuitCurrentDensity`, `PowerConversionEfficiency`, `FillFactor` as subclass of `DimensionalQuantity`
   - Added class `http://xmlns.com/foaf/0.1/Agent`, `http://xmlns.com/foaf/0.1/Person`, `http://xmlns.com/foaf/0.1/Organization`, `http://purl.org/ontology/bibo/Journal`
   - Inherited class `OntoKin:PublicationSpecification`, `OntoKin:JournalSpecification`, `OntoKin:ProceedingsSpecification`, `OntoKin:PreprintSpecification` from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
 
@@ -128,7 +128,7 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
     - `<Provenance createdBy ^^xsd:string>` to `<Provenance createdBy http://xmlns.com/foaf/0.1/Agent>`
     - `<Modification modifiedBy ^^xsd:string>` to `<Modified modifiedBy http://xmlns.com/foaf/0.1/Agent>`
 
-![OntoChemExp core concepts v1.2 as of 19 April 2021](https://lucid.app/publicSegments/view/23814531-dc4e-47f1-81ba-787ff40709bd/image.png)
+![OntoChemExp core concepts v1.2 as of 28 April 2021](https://lucid.app/publicSegments/view/23814531-dc4e-47f1-81ba-787ff40709bd/image.png)
 
 ### v1.0 to v1.1 (as of 1 April 2021)
 
