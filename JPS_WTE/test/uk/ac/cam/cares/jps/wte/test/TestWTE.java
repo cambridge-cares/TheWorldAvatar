@@ -1,16 +1,9 @@
 package uk.ac.cam.cares.jps.wte.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,13 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WTEProcessResult;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
