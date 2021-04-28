@@ -9,8 +9,8 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 April 2021</dc:date>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">e902fbcb9cda5dfe89ab23e0475c43295bb9310d</gitCommitHash>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28 April 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">f92d65a049e9aba5d793467e55ebbe0eeba954a6</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoChemExp is an ontology developed for representing chemical experiments.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
     </owl:Ontology>
@@ -1286,20 +1286,20 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#HOMO -->
+    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#HomoEnergy -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#HOMO">
+    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#HomoEnergy">
         <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#HOMOLUMOGAP -->
+    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#HomoLumoEnergyGap -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#HOMOLUMOGAP">
+    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#HomoLumoEnergyGap">
         <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -1350,16 +1350,6 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#JSC -->
-
-
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#JSC">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#JunctionArchitecture -->
 
 
@@ -1379,16 +1369,6 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#LUMO -->
-
-
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#LUMO">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#LaminarBurningVelocity -->
 
 
@@ -1403,6 +1383,16 @@
 
 
     <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Length">
+        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#LumoEnergy -->
+
+
+    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#LumoEnergy">
         <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -1466,20 +1456,30 @@
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#OpticalGap -->
+    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#OpenCircuitPotential -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#OpticalGap">
+    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#OpenCircuitPotential">
         <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PCE -->
+    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#OpticalEnergyGap -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PCE">
+    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#OpticalEnergyGap">
+        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PowerConversionEfficiency -->
+
+
+    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#PowerConversionEfficiency">
         <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -1544,6 +1544,16 @@
 
 
     <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#ResidenceTime">
+        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#ShortCircuitCurrentDensity -->
+
+
+    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#ShortCircuitCurrentDensity">
         <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -1622,16 +1632,6 @@
 
 
     <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#Uncertainty">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#VOC -->
-
-
-    <owl:Class rdf:about="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#VOC">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#DimensionalQuantity"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl</rdfs:isDefinedBy>
     </owl:Class>
     
