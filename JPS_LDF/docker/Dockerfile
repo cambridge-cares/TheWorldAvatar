@@ -27,7 +27,8 @@ RUN /usr/bin/expect /usr/src/app/download-hdt.sh
 RUN rm /usr/src/app/host.txt 
 RUN rm /usr/src/app/password.txt 
 RUN cp ./kg/* ./
-RUN cp ./ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
+RUN mv ./ontokin_clean.hdt /usr/src/app/ontokin_clean.hdt
+RUN mv ./ontocompchem_clean.hdt /usr/src/app/ontocompchem_clean.hdt
 RUN apt-get install unzip -y
 RUN unzip node_modules.zip -d /usr/src/app
 #########################
@@ -36,6 +37,7 @@ RUN unzip node_modules.zip -d /usr/src/app
 #########################
 # set up the LDF server and the redis cache server  
 #########################
+COPY ./docker/config.json /usr/local/tomcat/WebContent/config.json
 RUN apt install maven -y 
 RUN mvn -Dmaven.javadoc.skip=true install
 RUN mv ./target/ldfserver-0.2.4.war /usr/local/tomcat/webapps/ldfserver.war

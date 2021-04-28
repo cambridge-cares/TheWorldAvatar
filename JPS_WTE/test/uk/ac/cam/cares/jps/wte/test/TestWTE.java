@@ -27,7 +27,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
-import uk.ac.cam.cares.jps.wte.WTESingleAgent;
+import uk.ac.cam.cares.jps.wte.WTEProcessResult;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 public class TestWTE extends TestCase{
@@ -105,7 +105,7 @@ public class TestWTE extends TestCase{
 	public void testWTEKBCreatorWasteSystemOutputQuery() {
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		
-		String query = WTESingleAgent.getWasteSystemOutputQuery();
+		String query = WTEProcessResult.getWasteSystemOutputQuery();
 		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
 		System.out.println("size of result="+resultList.size()); 
         assertEquals(1, resultList.size());
@@ -227,7 +227,7 @@ public class TestWTE extends TestCase{
 		TimeUnit.MINUTES.sleep(1);
 		System.out.println("Matlab simulation should have finished. ");
 //			Read for next agent
-		WTESingleAgent at = new WTESingleAgent();
+		WTEProcessResult at = new WTEProcessResult();
 		List<String[]> resu =   FCQuerySource.queryResult(model,WastetoEnergyAgent.getFCQuery());
 		List<String[]> fcMapping = at.createFoodCourt(resu);
 		List<String[]> propertydataonsite = FCQuerySource.queryResult(model, WTFTechOnsiteQuery);
@@ -239,7 +239,7 @@ public class TestWTE extends TestCase{
 		List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
 		List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );
 		at.updateFCHelper(sitemapping);
-		at.updateKBForSystem(iriofnetwork, baseUrl, WTESingleAgent.getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
+		at.updateKBForSystem(iriofnetwork, baseUrl, WTEProcessResult.getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
 		at.updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		
 	}

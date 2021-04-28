@@ -40,7 +40,11 @@ public class ScenarioModifier extends JPSAgent{
     	processRequestParameters(requestParams);
     	return requestParams;
     }
-
+    /**
+     * Give a random UUID that would rename scenario in a unique manner
+     * And call SCENARIO agent using this new scenario
+     * Used by ESS and WTE to initiate new scenarios 
+     */
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
     	validateInput(requestParams);

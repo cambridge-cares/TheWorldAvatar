@@ -1,4 +1,4 @@
-FROM docker.cmclinnovations.com/nginx:1.19.6 as no_ssl
+FROM nginx:1.19.6 as no_ssl
 
 # Add the contents of conf.d
 ADD conf.d /etc/nginx/conf.d/

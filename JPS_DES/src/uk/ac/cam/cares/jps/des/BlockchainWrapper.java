@@ -1,9 +1,10 @@
 package uk.ac.cam.cares.jps.des;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -12,9 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Properties;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
@@ -32,27 +32,29 @@ import org.web3j.utils.Convert;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns = {"/GetBlock" })
 public class BlockchainWrapper extends JPSAgent{
-	private static String ElectricPublicKey = "0xCB37bDCAfb98463d5bfB573781f022Cd1D2EDB81";
-	private static String SolarPublicKey = "0xAf70f1C1D6B1c0C28cbDCa6b49217Aa6FA17b6A8";
-	private static String addrOfI = "industrial.json";
-	private static String addrOfC = "commercial.json";
-	private static String addrOfR = "residential.json";
+	private static String ElectricPublicKey = null;
+	private static String SolarPublicKey = null;
+	public static String addrOfI = null;
+	private static String addrOfC = null;
+	private static String addrOfR = null;
+	private static String credential = null;
 	private static final long serialVersionUID = 1L;
+	
+	public BlockchainWrapper(){
+		loadProperties();
+	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-    }
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-
+		if (!validateInput(requestParams)) {
+			System.out.println(requestParams.toString());
+			throw new BadRequestException("BlockchainWrapper: Input parameters are non-empty.\n");
+		}
 		JSONObject result=new JSONObject();
 		JSONObject graData =new JSONObject();
 		graData = provideJSONResult(getLastModifiedDirectory());
@@ -66,11 +68,20 @@ public class BlockchainWrapper extends JPSAgent{
 			return graData;
 		
 		} catch (Exception e) {
-			e.printStackTrace();
-			return graData;
+			return graData; //Return graph results otherwise. 
 		}
  
 	}
+	
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (!requestParams.isEmpty()) {
+            return true;
+        }//Even if there are no resources available here, key values are sent
+		//via AgentCaller/put in requestURL, path and so on. 
+        return false;
+	}
+	
 	 /**
      * Gets the latest file created using rdf4j
      * @return last created file
@@ -113,7 +124,7 @@ public class BlockchainWrapper extends JPSAgent{
 		}else if (moneyEth < Math.pow(10, -1)) {
 			moneyEth = 0;
 		}
-		Credentials credentials = WalletUtils.loadCredentials("Caesar1!",AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); //password
+		Credentials credentials = WalletUtils.loadCredentials(credential,AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\"+sender); 
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
 		return  transactionReceipt.getTransactionHash();
 		
@@ -153,11 +164,12 @@ public class BlockchainWrapper extends JPSAgent{
 		}
     	
     	}catch (Exception ex) {
-    		ex.printStackTrace();
+    		throw new JPSRuntimeException("BlockchainWrapper: derivation of values failed\n");
     	}
 
 		return jo;
     }
+    
 	/** helper function to determineValue()s
 	 * 
 	 * @param index
@@ -184,6 +196,7 @@ public class BlockchainWrapper extends JPSAgent{
         }
         return jo;
     }
+    
 	/** parse values of solar, grid supply for that hour, and 
 	 * sends value to doTransact to create Transaction as well as 
 	 * determineValue() to check the value in terms of Ether
@@ -203,7 +216,8 @@ public class BlockchainWrapper extends JPSAgent{
 		try {
 		if (totalsolar == 0) {
 			//if no electricity is generated from the solar powered electricity:
-			//give nominal sum -> Not precisely true because the amount of ether that they need to pay is 220 eth per kwh which no one has so downgrade
+			//give nominal sum -> Not precisely true because the amount of ether that they need to pay is 220 eth per kwh which no one has
+			//Rather than eth, szabo is the currency used. 
 			double ethIndus = totalindus*220;
 			String transactionhash1 = dotransact(addrOfI, ElectricPublicKey,ethIndus);
 			double ethComme = totalcommer*220;
@@ -297,15 +311,16 @@ public class BlockchainWrapper extends JPSAgent{
 				totalList.add(transactionhash3);
 				
 			}
-			jS.put("txHash",totalList.toArray());
-			jS.put("sandr",whoTowho.toArray());
+			
 		}
 	}catch (Exception e) {
-			e.printStackTrace();
-	}
-
+			throw new JPSRuntimeException("BlockchainWrapper: Transaction on blockchain failed.\n");
+		}
+		jS.put("txHash",totalList.toArray());
+		jS.put("sandr",whoTowho.toArray());
 		return jS;
 	}
+    
 	/** provides result in the response of a JSON form
 	 * 
 	 * @param baseUrl
@@ -353,6 +368,30 @@ public class BlockchainWrapper extends JPSAgent{
 		dataresult.put("rh3", rhResult.subList(6, rhResult.size()).toArray());
 
 		return dataresult;
+	}
+	
+	/** load config.properties from resources folder. 
+	 * 
+	 */
+	public void loadProperties() {
+		String fileName = AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\config.properties";
+		try (InputStream input = new FileInputStream(fileName)) {
+
+            Properties prop = new Properties();
+            //load a properties file from class path, inside static method
+            prop.load(input);
+
+            addrOfI = prop.getProperty("industrial");
+            addrOfC = prop.getProperty("commercial");
+            addrOfR = prop.getProperty("residential");
+            SolarPublicKey = prop.getProperty("pkSolar");
+            ElectricPublicKey = prop.getProperty("pkGrid");
+            credential = prop.getProperty("walletPass");
+
+        } catch (IOException ex) {
+            throw new JPSRuntimeException("BlockchainWrapper: getProperties: IOException.\n");
+        }
+
 	}
 	
 }

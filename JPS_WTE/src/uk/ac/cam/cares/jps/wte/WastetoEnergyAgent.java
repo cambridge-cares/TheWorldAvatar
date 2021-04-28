@@ -25,6 +25,7 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -68,6 +69,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 		Query q = sb.build();
 		return q.toString();
 	}
+	
 	/** gets the transportation route, the tax on the route, the capacity of travel, the cost of travel, and
 	 * emission rate of travelling on that route. 
 	 */
@@ -96,8 +98,6 @@ public class WastetoEnergyAgent extends JPSAgent {
 		return q.toString();
 	}
 	
-	
-	
 	/** gets the OffsiteWasteTreatmentFacility's 
 	 * Incineration upper bound, CoDigestion upper bound, and Anerobic Digestion upper bound. 
 	 */
@@ -109,23 +109,13 @@ public class WastetoEnergyAgent extends JPSAgent {
 				.addWhere("?entity" ,"j1:hasOffsiteAnerobicDigestionUpperBound", "?tech3upp");
 		return sb.buildString();
 	}
-//	@Override
-//	public JSONObject processRequestParameters(JSONObject requestParams) {
-//	    requestParams = processRequestParameters(requestParams, null);
-//	    return requestParams;
-//	}
 	
 	/** main function. Reads the values in and copies the templates back. 
 	 * 
 	 */
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		if (!validateInput(requestParams)) {
+	    if (!validateInput(requestParams)) {
 			throw new JSONException("WTE:processSimulationAgent: Input parameters not found.\n");
 		}
 		String baseUrl= requestParams.getString("baseUrl");
@@ -168,10 +158,11 @@ public class WastetoEnergyAgent extends JPSAgent {
             notifyWatcher(requestParams, baseUrl+"/year by year_NPV.txt",
                     path.replace(COORDINATION_PATH, SIM_PROCESS_PATH));
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new JPSRuntimeException("WasteToEnergyStartSimulation Agent: createBat and notifyWatcher has encountered an error.\n");
 		}
 		return requestParams;
 	}
+	
 	/** checks if n_cluster is an integer
 	 * and wastenetwork is an IRI
 	 * 
@@ -210,9 +201,14 @@ public class WastetoEnergyAgent extends JPSAgent {
 		return readModelGreedyCon(result);
 	}
 	
+	/** Submethod for readModelGreedy
+	 * 
+	 * @param greedyResult
+	 * @return
+	 */
 	public static OntModel readModelGreedyCon(String greedyResult) {
 		
-		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("result"));
+		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("results"));
 		
 		List<String> nodesToVisit = new ArrayList<String>();
 		for (int i=0; i<ja.length(); i++) {
@@ -291,6 +287,7 @@ public class WastetoEnergyAgent extends JPSAgent {
     	
         return resultfcmapper;
 	}
+	
 	/** prepares the CSV file for the offsite Waste treatment facility and it's xy coordinates. 
 	 * 
 	 * @param mainquery String
@@ -313,6 +310,7 @@ public class WastetoEnergyAgent extends JPSAgent {
         resultxy.add(0,header);
         new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy)); 	
 	}
+	
 	/** grabs the offsite waste treatment facility's costs, sorted by technology type. 
 	 * 
 	 * @param mainquery String
@@ -332,6 +330,7 @@ public class WastetoEnergyAgent extends JPSAgent {
         resultxy.add(0,keyswt);
         new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy)); 	
 	}
+	
 	/** Creates the CSV file for the upper bound 
 	 * 
 	 * @param mainquery compquery. 
@@ -359,6 +358,7 @@ public class WastetoEnergyAgent extends JPSAgent {
         new QueryBroker().putLocal(baseUrl + "/n_unit_max_offsite.csv",MatrixConverter.fromArraytoCsv(resultTechOffsiteWTF));
         
 	}
+	
 	/** 
 	 * 
 	 * @param mainquery: costs of waste treatment facility, either offsite or onsite
@@ -415,6 +415,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 	
         return resultList;
 	}
+	
 	/** copies over the files in the working directory over to scenario folder. 
 	 * 
 	 * @param newdir
@@ -425,7 +426,9 @@ public class WastetoEnergyAgent extends JPSAgent {
 		
 		String destinationUrl = newdir + "/"+filename;
 		new QueryBroker().putLocal(destinationUrl, file);
-	}/** create the batch file in the mentioned folder. 
+	}
+	
+	/** create the batch file in the mentioned folder. 
 	 * 
 	 * @param baseUrl
 	 * @throws Exception

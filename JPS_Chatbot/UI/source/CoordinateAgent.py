@@ -1,20 +1,16 @@
 import json
-import sys, os
+from UI.source.Wikidata_Query.Interpretation_parser import InterpretationParser
+from UI.source.Wikidata_Query.SearchEngine import SearchEngine
+from UI.source.Wikidata_Query.SPARQLConstructor import SPARQLConstructor
+from UI.source.Wikidata_Query.SPARQLQuery import SPARQLQuery
+from LDA.LDA_classifier import LDAClassifier
+from UI.source.JPS_Query.chatbot_interface import Chatbot
 
-from Chatbot.Interpretation_parser import InterpretationParser
-from Chatbot.SearchEngine import SearchEngine
-from Chatbot.SPARQLConstructor import SPARQLConstructor
-from Chatbot.SPARQLQuery import SPARQLQuery
-from Chatbot.LDA_classifier import LDAClassifier
-from rasa_jps.chatbot_interface import Chatbot
-from functools import lru_cache
-
-from pprint import pprint
 from rasa.nlu.model import Interpreter
 import os
 import tarfile
 
-from location import WIKI_MODELS_DIR
+from UI.source.location import WIKI_MODELS_DIR
 
 
 # 0. get the topic model result, choose which direction it goes
@@ -23,9 +19,8 @@ from location import WIKI_MODELS_DIR
 def extract_nlu_model(extract_dir='../models/'):
     # Identify the newest trained nlu model
     # Disable the function when deployed to production server ... 
-    path = 'models/'
+    path = 'Wikidata_Query/models/'
     files = os.listdir(path)
-    print('the directory of files', files)
     paths = [os.path.join(path, basename) for basename in files if ('.tar' in basename)]
     file_name = max(paths, key=os.path.getctime)
     # Extract the model to a temporary directory
@@ -37,24 +32,12 @@ class CoordinateAgent:
     def __init__(self, socketio):
         # initialize interpreter
         # extract_nlu_model()
+        self.search_engine = SearchEngine()
         self.stopwords = ['all', 'the']
-        # self.stopwords.append('all')
-
         self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
         self.interpreter = Interpreter.load(self.nlu_model_directory)  # load the wiki nlu models
         self.jps_interface = Chatbot(socketio)
-        # try:
-        #     from __main__ import socketio
-        #     print('Importing socketIO from main')
-        # except ImportError:
-        #     from run import socketio
-        #     print('Importing socketIO from run_socket')
         self.socket = socketio
-
-    # TODO: separate the function of topic identifying
-    # TODO: separate the SPARQL query
-    # TODO: show progress
-    # def identify_topics(self, question):
 
     def question_classification(self, question):
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
@@ -72,19 +55,14 @@ class CoordinateAgent:
         self.interpreter_parser = InterpretationParser(self.socket)
         self.interpreter_parser.interpreter = self.interpreter
         print('Loading interpreter')
-        self.search_engine = SearchEngine()
         self.sparql_constructor = SPARQLConstructor()
         self.sparql_query = SPARQLQuery(self.socket)
-
+        print('SPARQL Query init')
         self.lda_classifier = LDAClassifier()
+        print('LDA init')
         topics = self.lda_classifier.classify(question)
         print('============== topics ==============')
         print(topics)
-        if topics == 'ERROR002':
-            self.socket.emit('coordinate_agent', 'This question seems to be outside the chemistry domain')
-        else:
-            self.socket.emit('coordinate_agent', 'The topics identified are: ' + json.dumps(topics))
-
         for topic in topics:
             if topic == 'wiki':
                 try:
@@ -94,29 +72,20 @@ class CoordinateAgent:
                     else:
                         return result
                 except:
+                    print('[Error Coordinate Agent: 73]: Wiki Interface failed to process the question')
                     pass
 
             else:
                 try:
                     result = self.jps_interface.analyse_questions(question)
-                    print('----- the result by jps ----')
                     if result is None:
                         pass
                     else:
                         return result
                 except:
+                    print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
                     pass
         return 'Nothing'
-        # result = self.wiki_query(question)
-        # return result
-        # # for topic in topics:
-        # if topic == 'wiki':
-        #     try:
-        #         result = self.wiki_query(question)
-        #         return result
-        #     except:
-        #         # TODO: add JPS results to it
-        #         pass
 
     # @lru_cache(maxsize=64)
     def wiki_query(self, question):
@@ -126,15 +95,10 @@ class CoordinateAgent:
             return None
         elif intent_and_entities_with_uris == 'Error001':
             # now switch intent to item_attribute_query, and the entity to entity...
-            print(intent_and_entities)
-            print('we have a Error001')
             intent_and_entities['type'] = 'item_attribute_query'
             intent_and_entities['entities']['entity'] = intent_and_entities['entities']['class']
 
-        print('before it breaks 001', intent_and_entities)
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
-        print('================= result with uris ================')
-        pprint(intent_and_entities_with_uris)
         sparqls = self.sparql_constructor.fill_sparql_query(intent_and_entities_with_uris)
         if sparqls is None:
             print('No valid SPARQL is returned')
@@ -145,11 +109,13 @@ class CoordinateAgent:
         result = self.sparql_query.start_queries(sparqls)
         return result[0]
 
-# ca = CoordinateAgent()
-# ca.run('what reactions produce NO2 + O2')
-# ca.run('find all the fatty acids with molecular weight more than 100')
-# ca.run('the kindling point of C2HBrClF3')
-# # # r = ca.run(question='what is the molecular weight of benzene')
-# # ca.run(question='show me the heat capacity of glucose')
-# # ca.run(question='what is the chemical structure of glucose')
-# ca.run('show me the boliing point of ch4')
+
+if __name__ == '__main__':
+    ca = CoordinateAgent(None)
+    ca.run('what reactions produce NO2 + O2')
+    ca.run('find all the fatty acids with molecular weight more than 100')
+    ca.run('the kindling point of C2HBrClF3')
+    ca.run('what is the molecular weight of benzene')
+    ca.run('show me the heat capacity of glucose')
+    ca.run('what is the chemical structure of glucose')
+    ca.run('show me the boliing point of ch4')

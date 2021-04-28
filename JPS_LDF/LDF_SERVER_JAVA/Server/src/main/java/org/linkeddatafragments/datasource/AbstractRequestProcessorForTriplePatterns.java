@@ -88,7 +88,18 @@ public abstract class
         public ILinkedDataFragment createRequestedFragment()
                                                 throws IllegalArgumentException
         {
-            final long limit = ILinkedDataFragmentRequest.TRIPLESPERPAGE;
+        	
+            long limit = ILinkedDataFragmentRequest.TRIPLESPERPAGE;
+
+        	String ontology = request.getDatasetURL();
+        	if (ontology.contains("ontocompchem")) {
+        		limit = 10L;
+        	}
+        	else if (ontology.contains("ontokin")) {
+        		limit = 20000L;
+        	}
+        	
+        	
             final long offset;
             if ( request.isPageRequest() )
                 offset = limit * ( request.getPageNumber() - 1L );

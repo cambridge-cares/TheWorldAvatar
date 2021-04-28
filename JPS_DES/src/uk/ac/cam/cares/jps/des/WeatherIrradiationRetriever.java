@@ -2,19 +2,26 @@ package uk.ac.cam.cares.jps.des;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
+import org.apache.jena.sparql.core.Var;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
@@ -25,12 +32,6 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override 
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-
 		if (!validateInput(requestParams)) {
 			throw new BadRequestException("WeatherIrradiationAgent: Input parameters not found.\n");
 		}
@@ -39,62 +40,64 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		try {
 	    	String iritempsensor=requestParams.getString("temperaturesensor");
 	    	String iriirradiationsensor=requestParams.getString("irradiationsensor");
-	    	String irispeedsensor=requestParams.getString("windspeedsensor");
-	    	readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
+	    	readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor);
 
 			return requestParams;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException("WeatherIrradiationRetriever: weather retrieval invalid");
 		}
-		return requestParams;
  		
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            throw new BadRequestException("WeatherIrradiationRetriever: Input parameters empty.\n");
         }
-        try {
-	        String iriofwindF = requestParams.getString("windspeedsensor");
-	        boolean w = InputValidator.checkIfValidIRI(iriofwindF);
+        try {	      
 	        
-	        String irioftempF=requestParams.getString("temperaturesensor");
-	
+	        String irioftempF=requestParams.getString("temperaturesensor");	
 	        boolean e = InputValidator.checkIfValidIRI(irioftempF);
 	        String iriofirrF=requestParams.getString("irradiationsensor");
 	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
 	        // Till now, there is no system independent to check if a file path is valid or not. 
 	        
-	        return w&e&r;
+	        return e&r;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
-        	throw new JSONException("Sensor not present in getString");
+        	throw new JSONException("WeatherIrradiationRetriever: Sensor not present in getString");
         }
 
     }
-	public static void readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
-		//TODO: I can't figure out how to get this to run without having to copy over a file to create
-		//the location within this folder. If I leave the line below commented
-		// the folder isn't created, and I get an error. 
-		new DESAgentNew().copyFromPython(folder, "ocrv1.py");
-		String res =  new DESAgentNew().runPythonScript("ocrv1.py",folder);
+	
+	/** as the name exemplifies, read and write data to format. 
+	 * In the future, rather than running a python script, another agent should be run to read and receive data from any source. 
+	 * 
+	 * @param folder
+	 * @param iritempsensor
+	 * @param iriirradiationsensor
+	 * @param irispeedsensor
+	 * @throws Exception
+	 */
+	public static void readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor) throws Exception  { 		
+	
+		new DESAgentNew().copyFromPython(folder, "ocrv1.py"); //TODO: In the future, this should be scripted to any collection or query from agent
+		new DESAgentNew().runPythonScript("ocrv1.py",folder);
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 		LocalDateTime now = LocalDateTime.now();
-		String com=dtf.format(now);
-		String date=com.split("/")[2].split(" ")[0];
-		   
+		String com=dtf.format(now);		   
 		String jsonres=new QueryBroker().readFileLocal(folder+"/data.json");
 		JSONObject current= new JSONObject(jsonres);
-		String year=current.optString("year",com.split("/")[0]);
-		String datemonth=current.optString("date",date)+"-"+current.optString("month",com.split("/")[1]);
-		String time=current.optString("time",com.split("/")[2].split(" ")[1]);
-		String speed=current.optString("windspeed","0");
-		String temperature=current.optString("temperature","26");
-		String irradiance=current.optString("irradiance","0");
-		
-		WeatherTimeStampKB converter = new WeatherTimeStampKB();		
+		String temperature=current.optString("temperature","26");	
+		String irradiance=current.optString("irradiance","0.00");		
+		TimeZone timezone = TimeZone.getDefault();
+		int offset = timezone.getRawOffset();
+		String gmtTZ = String.format("%s%02d:%02d", 
+		               offset < 0 ? "-" : "+", 
+		               Math.abs(offset) / 3600000,
+		               Math.abs(offset) / 60000 % 60);
+
+		String timeInXSD =com + gmtTZ;
 		//query the data from the existing owl file
 		
 		 
@@ -108,69 +111,71 @@ public class WeatherIrradiationRetriever extends JPSAgent{
     	
     	SelectBuilder sensorTemp = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-    			.addVar("?entity").addVar("?propval")
-    			.addVar("?proptimeval").addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+    			.addVar("?vprop").addVar("?propval").addVar("?proptime").addVar("?proptimeval")
+    			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
     	Query q= sensorTemp.build(); 
     	String sensorInfo = q.toString();
+    	
     	SelectBuilder sensorIrrad = new SelectBuilder()
     			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-    			.addVar("?entity").addVar("?propval")
-    			.addVar("?proptimeval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
+    			.addVar("?vprop").addVar("?propval").addVar("?proptime").addVar("?proptimeval")
+    			.addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
     	
     	q= sensorIrrad.build(); 
-    	String sensorInfo2 = q.toString();
-    	SelectBuilder sensorWind = new SelectBuilder()
-    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-    			.addVar("?entity").addVar("?propval")
-    			.addVar("?proptimeval").addWhere("?entity","a", "j5:F-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
-    	
-    	q= sensorWind.build(); 
-    	String sensorInfo3 = q.toString();
-		
-		String result = new QueryBroker().queryFile(iritempsensor, sensorInfo);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-
-		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorInfo2);
-		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
-		
-		String result3 = new QueryBroker().queryFile(irispeedsensor, sensorInfo3);
-		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
-		List<String[]> resultListfromqueryspeed = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
-		
-		
-		
-		List<String[]> readingFromCSV = new ArrayList<String[]>();
-		for (int d=0;d<resultListfromqueryirr.size();d++) {
-			String timewholecsv=resultListfromquerytemp.get(d)[2];
-			String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
-			String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
-			String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
-			readingFromCSV.add(e);
-		}
-		
-		
-		
-		//update the array value list
-		readingFromCSV.remove(0); //if with header,later need to be changed TODO KEVIN
-		String[]newline= {year,datemonth,time,"100",temperature,"74.9",speed,"115.7",irradiance,"0"};
-		System.out.println("datemonth="+datemonth);
-		readingFromCSV.add(newline);
-		List<String[]> actualWeather = new ArrayList<String[]>();
-		actualWeather.add(newline);
-		
-		//update the owl file
-		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		String irifortemp=converter.startConversion(readingFromCSV,"temperature","001","SG");
-		System.out.println(irifortemp+" is updated");
-		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation","001","SG");
-		System.out.println(iriforirradiation+" is updated");
-		String iriforwind=converter.startConversion(readingFromCSV,"windspeed","001","SG");
-		System.out.println(iriforwind+" is updated");
-		
+    	String sensorInfo2 = q.toString();	
+    	updateOWLFile(iritempsensor, sensorInfo,timeInXSD,temperature);
+    	updateOWLFile(iriirradiationsensor, sensorInfo2,timeInXSD,irradiance);		
 	}
 	
-
+	/** SubMethod for readWriteToOWL for each type of sensor
+	 * TODO: There's a bug where the returned data comes in UTC format rather than GMT format, but I haven't gotten down to what could have caused this. 
+	 * @param sensorIRI
+	 * @param sparqlQuery
+	 */
+	private static void updateOWLFile(String sensorIRI, String sparqlQuery, String timeInXSD, String reading) {
+		//To be removed afterwards. 
+		String convertedIRI = DESAgentNew.tempIRItoFile(sensorIRI);
+    	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery)
+					.put(JPSConstants.TARGETIRI, convertedIRI );
+		String resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		String[] keysf = {"vprop","propval","proptime","proptimeval"};
+		List<String[]>  resultListfromquery = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
+		UpdateBuilder builder = new UpdateBuilder();
+		
+		int sizeOfUpdate = resultListfromquery.size();
+		String p = "<http://www.w3.org/2006/time#inXSDDateTime>";
+		String d = "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>";
+		for (int i = 0; i < sizeOfUpdate-1; i ++ ) {//We stopped at element 48
+			Var v = Var.alloc(RandomStringUtils.random(5, true, false));
+			Var m = Var.alloc(RandomStringUtils.random(5, true, false)); //random string generate to prevent collision
+			builder.addDelete("<"+resultListfromquery.get(i)[0]+">" ,d, v)
+					.addInsert("<"+resultListfromquery.get(i)[0]+">" ,d, resultListfromquery.get(i+1)[1])
+					.addWhere("<"+resultListfromquery.get(i)[0]+">" ,d,v)					
+					.addDelete("<"+resultListfromquery.get(i)[2]+">" ,p, m)
+					.addInsert("<"+resultListfromquery.get(i)[2]+">" ,p, resultListfromquery.get(i+1)[3])
+					.addWhere("<"+resultListfromquery.get(i)[2]+">" ,p,m);
+			if (i %3 == 0) {
+				requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
+						.put(JPSConstants.TARGETIRI ,convertedIRI);
+				AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+				builder = new UpdateBuilder();
+				
+			}			
+		}
+		//final round
+		builder.addDelete("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, "?o")		
+		.addInsert("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, reading)
+		.addWhere("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d,"?o")	
+		.addDelete("<"+resultListfromquery.get(sizeOfUpdate-1)[2]+">" ,p, "?a")			
+		.addInsert("<"+resultListfromquery.get(sizeOfUpdate-1)[2]+">" ,p, timeInXSD)
+		.addWhere("<"+resultListfromquery.get(sizeOfUpdate-1)[2]+">" ,p,"?a");
+	
+		
+		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
+				.put(JPSConstants.TARGETIRI ,convertedIRI);
+		AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+	}
+	
+	
 
 }

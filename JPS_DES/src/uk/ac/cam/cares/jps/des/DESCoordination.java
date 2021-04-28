@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.des;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
+
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -16,12 +18,7 @@ public class DESCoordination extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-    }
-    @Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
- 			
+		
  	        String scenarioUrl = BucketHelper.getScenarioUrl();
  	        String usecaseUrl = BucketHelper.getUsecaseUrl();
  	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
@@ -31,13 +28,18 @@ public class DESCoordination extends JPSAgent{
  	        requestParams.put("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
  	        requestParams.put("cityIRI", "http://dbpedia.org/page/Singapore");
  	        requestParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
- 	        new DESAgentNew().validateInput(requestParams);
  	        AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData", requestParams.toString());
  	        AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", requestParams.toString());
  	 	      
- 			System.gc();
     	return requestParams;
     }
-   
+	
+	@Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            return false;
+        }
+        return true;
+	}
 
 }

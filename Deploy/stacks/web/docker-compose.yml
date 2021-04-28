@@ -7,7 +7,7 @@ services:
   website:
     image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT
     build: "./website"
-    container_name: "website-${MODE}"
+    container_name: "website"
     restart: unless-stopped
     labels:
       description: "HTTPD hosted static Grav website containing Knowledge Graph content."
@@ -22,7 +22,7 @@ services:
     build:
       context: "./reverse_proxy"
       target: no_ssl
-    container_name: "reverse_proxy-${MODE}"
+    container_name: "reverse_proxy"
     restart: always
     labels:
       description: "Nginx configured as a reverse proxy for SSL handling and redirects."
@@ -40,12 +40,30 @@ services:
     build:
       context: "../../../JPS_Chatbot"
       dockerfile: "./docker/Dockerfile"
-    container_name: "jps-chatbot-${MODE}"
+    container_name: "jps-chatbot"
     restart: unless-stopped
     ports:
       - 5000:5000 
     labels:
       description: "Chemistry chatbot, uses NL processing and KGs to answer chemical queries."
+      authors: "xz378@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+    
+    
+  # JPS LDF Server
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  jps-ldf:
+    image: docker.cmclinnovations.com/jps-ldf:${HASH}
+    build:
+      context: "../../../JPS_LDF"
+      dockerfile: "./docker/Dockerfile"
+    container_name: "jps-ldf"
+    restart: unless-stopped
+    ports:
+      - 3000:3000 
+    labels:
+      description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
       authors: "xz378@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
@@ -55,7 +73,7 @@ services:
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-power-system:
     image: docker.cmclinnovations.com/uk-power-system:e1ce3d6
-    container_name: "uk-power-system-${MODE}"
+    container_name: "uk-power-system"
     restart: unless-stopped
     ports:
       - 3001:3001 
@@ -69,13 +87,49 @@ services:
   # UK Gas Grid
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-gas-grid:
-    image: docker.cmclinnovations.com/uk-gas-grid:3b27c1d
-    container_name: "uk-gas-grid-${MODE}"
+    image: docker.cmclinnovations.com/uk-gas-grid:1.0.0-SNAPSHOT
+    container_name: "uk-gas-grid"
     restart: unless-stopped
     ports:
       - 4001:80
     labels:
       description: "HTTPD hosted mapbox visualisation of UK gas network based on static geoJSON files."
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+    
+    
+  # UN Sustainable Goals
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  un-goals:
+    image: docker.cmclinnovations.com/un-goals:${HASH}
+    build:
+      context: "./sustainable_goals"
+      dockerfile: "./docker/Dockerfile"
+    container_name: "un-goals"
+    restart: unless-stopped
+    ports:
+      - 4002:80
+    labels:
+      description: "HTTPD hosted mapbox visualisation of UN Sustainable Goals based on static geoJSON files."
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+
+    
+  # Land Use Crop Map
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  land-use:
+    image: docker.cmclinnovations.com/land-use:${HASH}
+    build:
+      context: "./land_use"
+      dockerfile: "./docker/Dockerfile"
+    container_name: "land-use"
+    restart: unless-stopped
+    ports:
+      - 4003:80
+    labels:
+      description: "HTTPD hosted mapbox visualisation of Crop Use map using remote data uploaded to MapBox studio."
+      authors: "support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"

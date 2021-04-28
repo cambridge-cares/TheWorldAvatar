@@ -19,11 +19,11 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.ForecastAgent;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
+import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 
 /** Note that forecast agents are disabled in response to restriction
  * on number of solar calls
  * 
- * @author Laura Ong
  */
 public class Test_DESWeatherAgents{
 	
@@ -33,6 +33,8 @@ public class Test_DESWeatherAgents{
 	private String baseUrl = null;
 	private String irioftempS=null;
 	private String iriofirrS=null;
+	private String irioftempF=null;
+	private String iriofirrF=null;
 	private String iriofwindS=null;
 	
     @Before
@@ -42,26 +44,30 @@ public class Test_DESWeatherAgents{
     	baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\solar2";
     	irioftempS="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
         iriofirrS="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
-        iriofwindS="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
-        
+        irioftempF="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
+		iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
+		
     }
-    
+   
 
-	/** test if validateInput method is working in Forecast Agent
+	/** This tests if the forecast was ran correctly when called directly.  
+	 * This test is should not be run due to the limited number of calls alloted to a free account. 
 	 * @throws IOException 
 	 * 
 	 */
     @Test
 	public void testWeatherForecast() throws IOException {
-		ForecastAgent a = new ForecastAgent();
-		assertNotNull( ForecastAgent.GETReq(ENIRI));
-		ArrayList<ArrayList<String>>  result = ForecastAgent.AccuRequest();
-		assertNotNull(result.get(0).get(0));
-		System.out.println(result.get(0).get(0));
-		//Only enable this if the current test runs but Forecast Agent creates an error
-		//Because we have a limited number of API calls
-//		ArrayList<ArrayList<String>>  resultSun = ForecastAgent.SolCastRequest();
-//		assertNotNull(resultSun.get(0).get(0));
+
+		long timeLast = new Date().getTime();
+    	new ForecastAgent().nextForecastDaySolcast(irioftempF,iriofirrF);
+    	String fileStr = DESAgentNew.tempIRItoFile(iriofirrF);
+    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+    	fileStr = DESAgentNew.tempIRItoFile(irioftempF);
+    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+    	timeLast = new Date().getTime();
+    	new ForecastAgent().nextForecastDayTemperature(irioftempF);
+    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+    	
 		
 		
 		
@@ -69,7 +75,7 @@ public class Test_DESWeatherAgents{
 	/**
 	 * Periodic call to run the (Forecast+DESpython wrapper)
 	 * Every four hours, so six calls in a day this would be called
-	 * This test is disabled unless the entire process wants to be called. 
+	 * This test is should not be run due to the limited number of calls alloted to a free account. 
 	 * 
 	 */
     @Test
@@ -82,7 +88,6 @@ public class Test_DESWeatherAgents{
 		jo.put("district", DISIRI);
 		jo.put("temperaturesensor", irioftempS);
     	jo.put("irradiationsensor",iriofirrS);
-    	jo.put("windspeedsensor",iriofwindS);
 		
 		System.out.println(jo.toString());
 		//Disabling this because we don't want solcast to execute each time 
@@ -101,7 +106,6 @@ public class Test_DESWeatherAgents{
 	public void testInputValidatorWeather() {
 		JSONObject jo = new JSONObject()
 				.put("electricalnetwork", ENIRI);
-		jo.put("windspeedsensor", iriofwindS);
 		jo.put("temperaturesensor", irioftempS);
 		jo.put("irradiationsensor", iriofirrS);
 		assertTrue(new WeatherIrradiationRetriever().validateInput(jo));
@@ -115,14 +119,11 @@ public class Test_DESWeatherAgents{
 	public void testWeatherIrradiationDirect() {
 		long timeLast = new Date().getTime();
 		try {
-			WeatherIrradiationRetriever.readWritedatatoOWL(baseUrl,irioftempS,iriofirrS,iriofwindS);
+			WeatherIrradiationRetriever.readWritedatatoOWL(baseUrl,irioftempS,iriofirrS);
 			String destinationUrlWithoutHash = ScenarioHelper.cutHash(irioftempS);
 			String fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
 			assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
 			destinationUrlWithoutHash = ScenarioHelper.cutHash(iriofirrS);
-			fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
-			assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
-			destinationUrlWithoutHash = ScenarioHelper.cutHash(iriofwindS);
 			fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
 			assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
 			// check that OWL is updated
@@ -131,11 +132,12 @@ public class Test_DESWeatherAgents{
 			e.printStackTrace();
 		}
 	}
-	/**
-	 * Calls and runs the hourly weather retriever, that uses OCR (thru TOMCAT)
+	/** Calls and runs the hourly weather retriever, that uses OCR (thru Server run)
+	 *
 	 */
     @Test
 	public void testIrradiationRetreiverAgentCall() throws Exception {
+		long timeLast = new Date().getTime();
 		JSONObject jo = new JSONObject();
 		jo.put("windspeedsensor", iriofwindS);
 		jo.put("temperaturesensor", irioftempS);
@@ -145,10 +147,17 @@ public class Test_DESWeatherAgents{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 		System.out.println(resultStart);
 		JSONObject v = new JSONObject(resultStart);
-		assertNotNull(v.get("windspeedsensor"));
 		assertNotNull(v.get("baseUrl"));
-		assertTrue(InputValidator.checkIfValidIRI(v.getString("windspeedsensor")));
 		assertTrue(InputValidator.checkIfValidFile(v.getString("baseUrl")));
+		String destinationUrlWithoutHash = ScenarioHelper.cutHash(irioftempS);
+		String fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+		assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+		destinationUrlWithoutHash = ScenarioHelper.cutHash(iriofirrS);
+		fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+		assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
+		destinationUrlWithoutHash = ScenarioHelper.cutHash(iriofwindS);
+		fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+		assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
 	}
 	/**
 	 * Calls and runs the Blockchain transaction directly

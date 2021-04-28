@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -25,11 +24,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kg.KnowledgeBaseAgentNew;
 
 public class TestKnowledgeBA   {
@@ -81,11 +78,10 @@ public class TestKnowledgeBA   {
 
         KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
         JSONObject result = jpsa.main(jo);		
-		JSONArray ja = new JSONArray(result.getString("result")); 
+		JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("OH",jo.get("o").toString());
-	}
-	
+	}	
 
 	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
 	 * 
@@ -106,7 +102,7 @@ public class TestKnowledgeBA   {
         		.put(JPSConstants.TARGETIRI,  filePath)
         		.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
         JSONObject result = jpsa.main(jo);
-        JSONArray ja = new JSONArray(result.getString("result")); 
+        JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("TEST",jo.get("o").toString());
 	}
@@ -152,11 +148,11 @@ public class TestKnowledgeBA   {
         		.put(JPSConstants.TARGETIRI,  filePath)
         		.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
         JSONObject result = jpsa.main(jo);
-        JSONArray ja = new JSONArray(result.getString("result")); 
+        JSONArray ja = new JSONArray(result.getString("results")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("TEST",jo.get("o").toString());
 	}
-	/**
+	/** Sub Method for testBaseUpdateAgent()
 	 * Returns the test Sparql update.
 	 * 
 	 * @return UpdateRequest

@@ -6,13 +6,14 @@ import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.sparql.expr.ExprVar;
-
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
-
+/** Util Class to prepare necessary queries
+ * 
+ *
+ */
 public class FCQuerySource {
 
 	/** gets the food court name, xy coordinates
@@ -31,6 +32,7 @@ public class FCQuerySource {
 				.addWhere("?y" ,"j2:hasValue", "?yval").addWhere("?yval" ,"j2:numericalValue", "?yvalue");
 		return sb;
 	}
+	
 	/** general WasteTreatmentQuery 
 	 */
 	public static SelectBuilder getWasteTreatmentQuery() {
@@ -45,6 +47,7 @@ public class FCQuerySource {
 				.addWhere("?y" ,"j2:hasValue", "?yval").addOptional("?yval" ,"j2:numericalValue", "?yvalue");
 		return sb;
 	}
+	
 	/**gets the OffsiteWasteTreatment entity, xy coordinates
 	 */
 	public static String getOffsiteWasteTreatmentQuery() {
@@ -108,6 +111,7 @@ public class FCQuerySource {
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultListfromquery;
 	}
+	
 	/** Temporary translation fix for switch from KBClient to KGRouter. In the end, it should be querying appropriately from the 
 	 * correct Source
 	 * 
