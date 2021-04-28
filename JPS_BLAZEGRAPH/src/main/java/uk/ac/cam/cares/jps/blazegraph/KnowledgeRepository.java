@@ -547,7 +547,9 @@ public class KnowledgeRepository {
 			}
 			json.append("      },\n");
 		}
-		json.replace(json.lastIndexOf(","), json.lastIndexOf(",")+1, "");
+		if (json.toString().contains(",")) {
+			json.replace(json.lastIndexOf(","), json.lastIndexOf(",")+1, "");
+		}
 		}catch(QueryEvaluationException e){
 			log.info(e.getMessage());
 		}
