@@ -1,0 +1,59 @@
+<settings>
+    <interactiveMode>false</interactiveMode>
+    <usePluginRegistry>false</usePluginRegistry>
+    <offline>false</offline>
+ 
+	<!-- Your Nexus credentials provided by CMCL should go here once
+	you've copied the 'settings-template.xml' file to 'settings.xml' -->
+    <servers>
+        <server>
+            <id>all-cmcl-products</id>
+            <username>NEXUS-USERNAME</username>
+            <password>NEXUS-PASSWORD</password>
+        </server>
+		<server>
+            <id>all-third-party</id>
+            <username>NEXUS-USERNAME</username>
+            <password>NEXUS-PASSWORD</password>
+        </server>
+    </servers>
+ 
+    <profiles>
+        <profile>
+            <id>Default Profile</id>
+
+            <repositories>
+                <repository>
+                    <id>all-cmcl-products</id>
+                    <name>All CMCL Products</name>
+                    <url>http://bradman.cmclinnovations.com:8081/nexus/content/groups/cmcl-all/</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+				
+				<repository>
+                    <id>all-third-party</id>
+                    <name>All Third Party</name>
+                    <url>http://bradman.cmclinnovations.com:8081/nexus/content/groups/all-third-party/</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+ 
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>Default Profile</activeProfile>
+    </activeProfiles>
+</settings>

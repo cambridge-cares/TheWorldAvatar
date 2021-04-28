@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>pom</packaging>
+
+	<!-- Required by Maven, not really used -->
+	<groupId>com.cmclinnovations</groupId>
+	<artifactId>docker-uk-gas-grid</artifactId>
+	<version>X.X.X</version>
+
+	<properties>
+		<!-- Version of the geoJSON data to download -->
+		<data.version>1.0.0</data.version>
+	</properties>
+
+	<build>
+		<plugins>
+
+			<!-- Downloads resources for the Nexus repository at CMCL -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+
+					<execution>
+						<!-- Downloads and extracts ZIP archives from CMCL's Nexus server -->
+						<id>download-zip-dependencies</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<!-- Unpack the geoJSON files -->
+									<groupId>uk.ac.cam.ceb.como</groupId>
+									<artifactId>gas-grid-data</artifactId>
+									<version>${data.version}</version>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${basedir}/geoJSON_assets</outputDirectory>
+								</artifactItem>
+						
+							</artifactItems>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+			
+		</plugins>	
+	</build>
+
+</project>
