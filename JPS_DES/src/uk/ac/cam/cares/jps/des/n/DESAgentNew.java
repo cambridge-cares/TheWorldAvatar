@@ -35,7 +35,10 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 
 @WebServlet(urlPatterns = { "/DESAgentNew"})
-
+/** Calls on Solar, Industrial, Residential and Commercial Agents and run Game-theory 
+ * simulation that produces energy profiles of producers and consumers
+ *
+ */
 public class DESAgentNew extends JPSAgent {
 	/**
 	 * 

@@ -24,7 +24,6 @@ import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 /** Note that forecast agents are disabled in response to restriction
  * on number of solar calls
  * 
- * @author Laura Ong
  */
 public class Test_DESWeatherAgents{
 	
@@ -79,7 +78,7 @@ public class Test_DESWeatherAgents{
 	 * This test is should not be run due to the limited number of calls alloted to a free account. 
 	 * 
 	 */
-//    @Test
+    @Test
 	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
 

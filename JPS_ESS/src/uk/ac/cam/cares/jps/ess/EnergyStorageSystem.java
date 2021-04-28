@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
@@ -29,52 +28,46 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 @WebServlet(urlPatterns = { "/ESSAgent"})
-
+/** Acts as a wrapper around the ESS GAMS solver 
+ * 
+ *
+ */
 public class EnergyStorageSystem extends JPSAgent {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	
-	//public static final String AGENT_TAG = "GAMS_NuclearAgent";
 
-	Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
+	Logger logger = null;
+	
 	@Override
 	protected void setLogger() {
 		logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
 	}
 	private String modelname="NESS.gms";
     private List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
-	@Override
+	
+    @Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		requestParams = processRequestParameters(requestParams, null);
-		return requestParams;
-	}
-	    
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		
 		if (!validateInput(requestParams)) {
-			throw new JSONException ("ESSAgent: Input parameters not found.\n");
+			throw new BadRequestException ("ESSAgent: Input parameters not found.\n");
 		}
-			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
-			System.out.println("baseURL: " + baseUrl);
-			
-			String batIRI=requestParams.getString("BatteryCatalog");
-			String ENIRI=requestParams.getString("electricalnetwork");
-			
-			List<String> pvGenIRI=filterPV(ENIRI);						
-			JSONObject resultofbattery = null;
-			try {
-				resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
-				return resultofbattery;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage());
-			}
+		String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
+		System.out.println("baseURL: " + baseUrl);
+		
+		String batIRI=requestParams.getString("BatteryCatalog");
+		String ENIRI=requestParams.getString("electricalnetwork");
+		
+		List<String> pvGenIRI=filterPV(ENIRI);						
+		JSONObject resultofbattery = null;
+		try {
+			resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
 			return resultofbattery;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 		}
+		return resultofbattery;
+	}
+    
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
     	if (requestParams.isEmpty()) {
@@ -90,6 +83,7 @@ public class EnergyStorageSystem extends JPSAgent {
             return false;
         }
     }
+    
     /** code that should run GAMS
      * 
      * @param baseUrl
@@ -124,7 +118,8 @@ public class EnergyStorageSystem extends JPSAgent {
         
         CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
    
- 		}
+ 	}
+ 	
 	/** modifies the GAMS code in workingdir folder to accept the file written in newdir
 	 * 
 	 * @param newdir location of simulation files
@@ -163,6 +158,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		
 		new QueryBroker().putLocal(destinationUrl, fileContext);
 	}
+	
 	/** read the battery to a OntModel of its components
 	 * 
 	 * @param batterycatiri
@@ -189,6 +185,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}
+	
 	/** prepare the max and min power generated as well as state of charge. 
 	 * 
 	 * @param pvGenIRI IRI of Solar generator
@@ -245,6 +242,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
 		new QueryBroker().putLocal(baseUrl + "/Pa_high.csv", s);
 	}
+	
 	/** run through the characteristics of fifteen batteries and print out in csv format in folder baseUrl
 	 * 
 	 * @param batcal battery catalog IRI
@@ -315,6 +313,14 @@ public class EnergyStorageSystem extends JPSAgent {
 		makeBatteryInputParamCSV(baseUrl, resultList, header,"Dtlow.csv",7);
 		
 	}
+	/** Stores the values of the results from querying into parameter csv
+	 * 
+	 * @param baseUrl folder where csv files are located
+	 * @param resultList results taken from querying the parameters of an OntModel
+	 * @param header header of rows
+	 * @param filename name of file to be saved to
+	 * @param index order in the resultList rows. 
+	 */
 	private void makeBatteryInputParamCSV(String baseUrl, List<String[]> resultList, String[] header,String filename,int index) {
 		List<String[]> resultListforcsv = new ArrayList<String[]>();
 		resultListforcsv.add(header);
@@ -327,7 +333,6 @@ public class EnergyStorageSystem extends JPSAgent {
 	
 	/** battery select: Currently hardcoded
 	 * batterylist was created in prepareCSVRemaining() earlier
-	 * TODO: get a better method of selecting the result than a number comparison. 
 	 * @param outputfiledir
 	 * @param batterycat
 	 * @return
@@ -384,10 +389,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		return simulationResult;
 		
 	}
-	
-	
-	
-	
+		
 	/** Constructs an OntModel of Electrical network, and determine the generators, bus numbers and respective locations
 	 * 
 	 * @param ENIRI
@@ -421,6 +423,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		}
 		return pvGenIRI;
 	}
+	
 	/** feeds a query and gets a result
 	 * 
 	 * @param model
@@ -435,6 +438,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultListfromquery;
 	}
+	
 	/** calls on CSVPahigh and CSVRemaining to prepare parameters
 	 * then calls on runGAMS to execute wrapper
 	 * @param baseUrl

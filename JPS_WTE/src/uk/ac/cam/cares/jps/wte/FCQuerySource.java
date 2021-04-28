@@ -12,7 +12,6 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 /** Util Class to prepare necessary queries
  * 
- * @author LONG01
  *
  */
 public class FCQuerySource {
@@ -33,6 +32,7 @@ public class FCQuerySource {
 				.addWhere("?y" ,"j2:hasValue", "?yval").addWhere("?yval" ,"j2:numericalValue", "?yvalue");
 		return sb;
 	}
+	
 	/** general WasteTreatmentQuery 
 	 */
 	public static SelectBuilder getWasteTreatmentQuery() {
@@ -47,6 +47,7 @@ public class FCQuerySource {
 				.addWhere("?y" ,"j2:hasValue", "?yval").addOptional("?yval" ,"j2:numericalValue", "?yvalue");
 		return sb;
 	}
+	
 	/**gets the OffsiteWasteTreatment entity, xy coordinates
 	 */
 	public static String getOffsiteWasteTreatmentQuery() {
@@ -110,6 +111,7 @@ public class FCQuerySource {
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultListfromquery;
 	}
+	
 	/** Temporary translation fix for switch from KBClient to KGRouter. In the end, it should be querying appropriately from the 
 	 * correct Source
 	 * 

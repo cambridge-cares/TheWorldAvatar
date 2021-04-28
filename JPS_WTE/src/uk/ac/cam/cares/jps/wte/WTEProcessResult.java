@@ -29,7 +29,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns= {"/processresult"})
-public class WTESingleAgent extends JPSAgent{
+public class WTEProcessResult extends JPSAgent{
 	
 	private static final long serialVersionUID = 1L;
 
@@ -125,17 +125,12 @@ public class WTESingleAgent extends JPSAgent{
 	 */
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		if (!validateInput(requestParams)) {
+	    if (!validateInput(requestParams)) {
 			throw new JSONException("WTE:createOWLFileAgent: Input parameters not found.\n");
 		}
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
-		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
+		OntModel model= readModelGreedy(wasteIRI);
 		try {
 			//read for FC details
 			List<String[]> resu =  FCQuerySource.queryResult(model,WastetoEnergyAgent.getFCQuery());
@@ -154,12 +149,12 @@ public class WTESingleAgent extends JPSAgent{
 			updateKBForSystem(wasteIRI, baseUrl, getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		 }catch (Exception e) {
-			 //LIKELY IO EXCEPTION
-			logger.info(e.getMessage());
+			 throw new JPSRuntimeException("WTE process result agent: Update to KB files has failed. \n");
 		}			 
 		 
 		return requestParams;
 	}
+	
 	/**
 	 * 
 	 * @param requestParams
@@ -180,9 +175,18 @@ public class WTESingleAgent extends JPSAgent{
 		}catch (JSONException ex) {
 			return false;
 		}
-		
-		
-		
+	}
+	/** reads the topnode into an OntModel of all its subsystems. 
+	 * @param iriofnetwork
+	 * @return
+	 */
+	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
+		String wasteInfo = sb.build().toString();
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}
 	/** reads the result from the csv file produced and returns as List<String[]>
 	 * 
@@ -216,6 +220,7 @@ public class WTESingleAgent extends JPSAgent{
 		}
 		return inputdata;
 	}
+	
 	/** creates the Onsite Waste Treatment Facility OWL file array 
 	 * 
 	 * @param inputdata {[List<String[]>]} list of FC 
@@ -263,6 +268,7 @@ public class WTESingleAgent extends JPSAgent{
 		converter.onsiteiri = mappedonsiteiri;
 		return mappedonsiteiri;
 	}
+	
 	/** updates waste values and location of waste delivery to Foodcourts
 	 * 
 	 * @param baseUrl Scenario Folder
@@ -303,6 +309,7 @@ public class WTESingleAgent extends JPSAgent{
 		}
 		return sitemapping;
 	}
+	
 	/** helper function for updateNewFC, creates the waste production
 	 * 
 	 * @param sitemapping
@@ -430,6 +437,7 @@ public class WTESingleAgent extends JPSAgent{
 		
 		return selectedOnsite;
 	}
+	
 	/** updates the knowledge base of the composite systems. 
 	 * 
 	 * @param iriofnetwork
@@ -464,7 +472,6 @@ public class WTESingleAgent extends JPSAgent{
 		new QueryBroker().put(resultList.get(0)[0], content);
 
 	}
-	
 	
 	/** updates the OWL file for the Offsite Waste Treatment facilities. 
 	 * 

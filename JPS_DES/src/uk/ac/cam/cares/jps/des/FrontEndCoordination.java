@@ -27,9 +27,10 @@ public class FrontEndCoordination  extends JPSAgent{
     
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-		if (requestParams.isEmpty()) {
+		if (!requestParams.isEmpty()) {
             return true;
-        }
+        }//Even if there are no resources available here, key values are sent
+		//via AgentCaller/put in requestURL, path and so on. 
         return false;
 	}
    

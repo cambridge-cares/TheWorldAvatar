@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.wte;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONObject;
 
@@ -18,16 +19,23 @@ public class WTECoordination extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-		String baseUrl= QueryBroker.getLocalDataPath();
+		if (!validateInput(requestParams)) {
+			System.out.println(requestParams.toString());
+			throw new BadRequestException("WTECoordination: Input parameters are non-empty.\n");
+		}
+	    String baseUrl= QueryBroker.getLocalDataPath();
 		//check name of scenario: 
 		requestParams.put("baseUrl", baseUrl);
 		AgentCaller.executeGetWithJsonParameter("JPS_WTE/startSimulationAgent", requestParams.toString()); //I pray hard that this works
 		return requestParams;
 	}
+	
+	 @Override
+	    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+	        if (requestParams.isEmpty()) {
+	            throw new BadRequestException();
+	        }
+	        return true;
+	    }
 
 }

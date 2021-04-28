@@ -7,7 +7,7 @@ services:
   website:
     image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT
     build: "./website"
-    container_name: "website-${MODE}"
+    container_name: "website"
     restart: unless-stopped
     labels:
       description: "HTTPD hosted static Grav website containing Knowledge Graph content."
@@ -22,7 +22,7 @@ services:
     build:
       context: "./reverse_proxy"
       target: no_ssl
-    container_name: "reverse_proxy-${MODE}"
+    container_name: "reverse_proxy"
     restart: always
     labels:
       description: "Nginx configured as a reverse proxy for SSL handling and redirects."
@@ -40,7 +40,7 @@ services:
     build:
       context: "../../../JPS_Chatbot"
       dockerfile: "./docker/Dockerfile"
-    container_name: "jps-chatbot-${MODE}"
+    container_name: "jps-chatbot"
     restart: unless-stopped
     ports:
       - 5000:5000 
@@ -58,7 +58,7 @@ services:
     build:
       context: "../../../JPS_LDF"
       dockerfile: "./docker/Dockerfile"
-    container_name: "jps-ldf-${MODE}"
+    container_name: "jps-ldf"
     restart: unless-stopped
     ports:
       - 3000:3000 
@@ -73,7 +73,7 @@ services:
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-power-system:
     image: docker.cmclinnovations.com/uk-power-system:e1ce3d6
-    container_name: "uk-power-system-${MODE}"
+    container_name: "uk-power-system"
     restart: unless-stopped
     ports:
       - 3001:3001 
@@ -88,7 +88,7 @@ services:
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-gas-grid:
     image: docker.cmclinnovations.com/uk-gas-grid:1.0.0-SNAPSHOT
-    container_name: "uk-gas-grid-${MODE}"
+    container_name: "uk-gas-grid"
     restart: unless-stopped
     ports:
       - 4001:80
@@ -106,7 +106,7 @@ services:
     build:
       context: "./sustainable_goals"
       dockerfile: "./docker/Dockerfile"
-    container_name: "un-goals-${MODE}"
+    container_name: "un-goals"
     restart: unless-stopped
     ports:
       - 4002:80
@@ -124,7 +124,7 @@ services:
     build:
       context: "./land_use"
       dockerfile: "./docker/Dockerfile"
-    container_name: "land-use-${MODE}"
+    container_name: "land-use"
     restart: unless-stopped
     ports:
       - 4003:80

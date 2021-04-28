@@ -20,24 +20,16 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
-import uk.ac.cam.cares.jps.wte.WTESingleAgent;
+import uk.ac.cam.cares.jps.wte.WTEProcessResult;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
 public class WTEVisualization extends JPSAgent{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-		if (!validateInput(requestParams)) {
+	    if (!validateInput(requestParams)) {
 			throw new BadRequestException("WTE:WTEVisualizationAgent: Input parameters not found.\n");
 		}
 		String iriofnetwork = requestParams.getString("wastenetwork");
@@ -59,6 +51,7 @@ public class WTEVisualization extends JPSAgent{
 		System.gc();
 		return responseParams;
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
@@ -76,6 +69,7 @@ public class WTEVisualization extends JPSAgent{
         
         }
     }
+	
 	/** get wastesite arrangement in input
 	 * 
 	 * @param model
@@ -96,6 +90,7 @@ public class WTEVisualization extends JPSAgent{
 		return textcomb;
 		
 	}
+	
 	/** create the onsite markers. 
 	 * 
 	 * @param model
@@ -110,6 +105,7 @@ public class WTEVisualization extends JPSAgent{
 	    jo.put("result", jsArray);
 		return jo.toString();
 	}
+	
 	/** create the food court markers and onsite/offsite markers. 
 	 * 
 	 * @param model
@@ -160,6 +156,7 @@ public class WTEVisualization extends JPSAgent{
 	    jo.put("onsite", jsArray2);
 		return jo.toString();
 	}
+	
 	/** helper function for readInputs
 	 * stores tax, installation and operation costs per off site or onsite
 	 * @param newList list<String[]>
@@ -177,6 +174,7 @@ public class WTEVisualization extends JPSAgent{
 		}
 		return res;
 	}
+	
 	/** reads the topnode into an OntModel of all its subsystems. 
 	 * @param iriofnetwork
 	 * @return

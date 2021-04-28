@@ -131,7 +131,11 @@ document.addEventListener("click", function (evt){
   }
   //run AddWeatherData upon activation)
   function addWeatherData(){
-      document.getElementById("loader").style.display = "block";
+    var weatherjson = {};
+    weatherjson["electricalnetwork"] = ENIRI;
+    weatherjson["district"]=DISIRI;
+    document.getElementById("loader").style.display = "block";
+    console.log(encodeURIComponent(JSON.stringify(weatherjson)))
     var request = $.ajax({
       url: prefix + "/JPS_DES/showDESResult",
       type: 'GET',
