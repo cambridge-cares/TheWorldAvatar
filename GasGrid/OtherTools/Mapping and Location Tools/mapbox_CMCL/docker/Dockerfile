@@ -9,13 +9,25 @@
 # 
 # The following stages are included:
 # 
-#	base			Required software only
+#	production			Required software only
 #
 #########################
 
+##### CREDENTIALS STAGE ######
+FROM maven:3.6.3-openjdk-11 as credentials
+
+# Copy across Maven files
+RUN mkdir -p /tmp/geoJSON_assets
+WORKDIR /tmp
+COPY docker/pom.xml pom.xml
+COPY docker/settings.xml settings.xml
+
+# Run Maven project to download resources
+RUN mvn -X install -s settings.xml
+
 ##### PRODUCTION STAGE #####
 # Using Apache HTTP as the base 
-FROM httpd:2.4.46-alpine as base
+FROM httpd:2.4.46-alpine as production
 
 # Meta data
 LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
@@ -25,6 +37,9 @@ LABEL description = "UK Gas Grid"
 # Create directory for files
 RUN mkdir -p /var/www/html
 WORKDIR /var/www/html
+
+# Copy in the model files downloaded in last stage
+COPY --from=credentials /tmp/geoJSON_assets /var/www/html/geoJSON_assets
 
 # Copy in the files
 COPY . .
