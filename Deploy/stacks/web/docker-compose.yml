@@ -87,7 +87,7 @@ services:
   # UK Gas Grid
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-gas-grid:
-    image: docker.cmclinnovations.com/uk-gas-grid:3b27c1d
+    image: docker.cmclinnovations.com/uk-gas-grid:1.0.0-SNAPSHOT
     container_name: "uk-gas-grid-${MODE}"
     restart: unless-stopped
     ports:
