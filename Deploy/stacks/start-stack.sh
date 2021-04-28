@@ -46,7 +46,7 @@ esac
 up_default_opts="-d"
 case $mode in
   dev)
-    up_default_opts="$up_default_opts --force-recreate --build"
+    up_default_opts="$up_default_opts --force-recreate"
     ;;
   test)
     ;;
