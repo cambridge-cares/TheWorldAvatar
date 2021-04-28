@@ -35,42 +35,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 public class Experiment {
 	@XmlAttribute
 	private String primeID;
-	@XmlAttribute(name="xmlns")
-	private String xmlns;
-	@XmlAttribute(name="xmlns:xsi")
-	private String xmlnsXsi;
-	@XmlAttribute(name="xsi:schemaLocation")
-	private String xsiSchemaLocation;
 	
 	public String getPrimeID() {
 		return primeID;
 	}
 	public void setPrimeID(String primeID) {
 		this.primeID = primeID;
-	}
-	
-	public String getXmlns() {
-		return xmlns;
-	}
-	
-	public void setXmlns(String xmlns) {
-		this.xmlns = xmlns;
-	}
-	
-	public String getXmlnsXsi() {
-		return xmlnsXsi;
-	}
-	
-	public void setXmlnsXsi(String xmlnsXsi) {
-		this.xmlnsXsi = xmlnsXsi;
-	}
-	
-	public String getXsiSchemaLocation() {
-		return xsiSchemaLocation;
-	}
-	
-	public void setXsiSchemaLocation(String xsiSchemaLocation) {
-		this.xsiSchemaLocation = xsiSchemaLocation;
 	}
 	
 	@XmlElement
