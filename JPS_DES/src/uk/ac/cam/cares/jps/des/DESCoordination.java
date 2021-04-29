@@ -14,7 +14,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 public class DESCoordination extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
-	private static String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
+	private static final String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		

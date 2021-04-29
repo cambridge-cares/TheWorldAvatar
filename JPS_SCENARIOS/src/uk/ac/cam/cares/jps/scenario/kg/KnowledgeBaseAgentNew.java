@@ -23,15 +23,9 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		JSONObject result = processRequestParameters(requestParams,null);
-		return result;
-	}
-	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {	
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException("KBAgent: Input parameters not found.\n ");
+			throw new BadRequestException();
 		}
-		System.out.println("KBA: JSONPARAMS: " + requestParams.toString());
 		return main(requestParams);
 		
 		}

@@ -44,15 +44,6 @@ public class DESAgentNew extends JPSAgent {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String cityIRI;
-	private static String producerdata="PV_parameters.csv";
-	private static String consumerdata1="FuelCell.csv";
-	private static String Pmin="Pmin.csv";
-	private static String Pmax="Pmax.csv";
-	private static String bcap="bcap.csv";
-	private static String unwill="unwill.csv";
-	private static String schedule="ApplianceScheduleLoad1.csv";
-	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject responseParams = new JSONObject();	
@@ -144,12 +135,12 @@ public class DESAgentNew extends JPSAgent {
  			//grab forecast results
    	    	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo)
    					.put(JPSConstants.TARGETIRI , tempIRItoFile(irioftempF));
-   			String resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+   			String resultf = AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 			String[] keysf = {"propval"};
 			List<String[]>  resultListfromquerytemp = JenaResultSetFormatter. convertToListofStringArraysWithKeys(resultf, keysf);
    			requestParams.put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo2)
    			.put(JPSConstants.TARGETIRI , tempIRItoFile(iriofirrF));
-   			String result2 = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+   			String result2 = AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
  			List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArraysWithKeys(result2, keysf);
  			List<String[]> readingFromCSV = new ArrayList<String[]>();
  			for (int d=0;d<resultListfromqueryirr.size();d++) {
@@ -174,7 +165,7 @@ public class DESAgentNew extends JPSAgent {
 	    String nodeInfo = q.toString();
 	    JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, nodeInfo)
 				.put(JPSConstants.TARGETIRI , tempIRItoFile(iriofnetwork));
-		String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
+		String result = AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString()); 
 		
 	    return readModelGreedyCon(result);
 	}
@@ -231,7 +222,7 @@ public class DESAgentNew extends JPSAgent {
 	    String electricalnodeInfo = q.toString();
 	    JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, electricalnodeInfo)
 				.put(JPSConstants.TARGETIRI , tempIRItoFile(useriri));
-		String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
+		String result = AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString()); 
 		return readModelGreedyCon(result);
     }
     

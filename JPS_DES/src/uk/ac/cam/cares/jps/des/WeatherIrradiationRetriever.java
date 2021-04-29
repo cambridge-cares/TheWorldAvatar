@@ -135,7 +135,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		String convertedIRI = DESAgentNew.tempIRItoFile(sensorIRI);
     	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery)
 					.put(JPSConstants.TARGETIRI, convertedIRI );
-		String resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		String resultf = AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 		String[] keysf = {"vprop","propval","proptime","proptimeval"};
 		List<String[]>  resultListfromquery = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
 		UpdateBuilder builder = new UpdateBuilder();
@@ -155,7 +155,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 			if (i %3 == 0) {
 				requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
 						.put(JPSConstants.TARGETIRI ,convertedIRI);
-				AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+				AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 				builder = new UpdateBuilder();
 				
 			}			
@@ -171,7 +171,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		
 		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
 				.put(JPSConstants.TARGETIRI ,convertedIRI);
-		AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 	}
 	
 	

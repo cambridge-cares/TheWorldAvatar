@@ -35,6 +35,8 @@ public class ForecastAgent extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	private static String SolCastURL = null;
 	private static String AccuWeatherURL = null;
+	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_CPS =  TWA_Ontology +"/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#";
 	
 	public ForecastAgent() {
 		String fileName = AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\config.properties";
@@ -143,7 +145,6 @@ public class ForecastAgent extends JPSAgent{
 	private static WhereBuilder whereQueryBuilderForSensor() {
 		WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
     			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
-    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
     			.addPrefix("j6", "http://www.w3.org/2006/time#").addWhere("?entity", "j4:observes", "?prop")
     			.addWhere("?prop", "j2:hasValue", "?vprop")
     			.addWhere("?vprop", "j6:hasTime", "?proptime")
@@ -160,7 +161,7 @@ public class ForecastAgent extends JPSAgent{
 		ArrayList<String[]> accuArray = callAccuAPI();
 		WhereBuilder whereB = whereQueryBuilderForSensor();   
 		SelectBuilder sensorTemp = new SelectBuilder()
-    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+    			.addPrefix("j5",TWA_CPS)
     			.addVar("?vprop").addVar("?proptime")
     			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval").setLimit(12);
     	Query q= sensorTemp.build(); 
@@ -185,11 +186,11 @@ public class ForecastAgent extends JPSAgent{
 		ArrayList<String[]> solArray = callSolarAPI();
 		WhereBuilder whereB = whereQueryBuilderForSensor();
 		SelectBuilder sensorIrrad = new SelectBuilder()
-    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+    			.addPrefix("j5",TWA_CPS)
     			.addVar("?vprop").addVar("?propval").addVar("?proptime").addVar("?proptimeval")
     			.addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
 		SelectBuilder sensorTemp = new SelectBuilder()
-    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+    			.addPrefix("j5",TWA_CPS)
     			.addVar("?vprop").addVar("?proptime")
     			.addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval",Order.DESCENDING).setLimit(12);
     	Query q= sensorTemp.build(); 
@@ -200,7 +201,7 @@ public class ForecastAgent extends JPSAgent{
     	String convertedIRIIrrad = DESAgentNew.tempIRItoFile(iriIrradiation);
     	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo)
 				.put(JPSConstants.TARGETIRI, convertedIRITemp);
-		String resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		String resultf = AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 		String[] keysf = {"vprop","proptime"};
 		List<String[]>  resultListfromquery = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
     	Collections.reverse(resultListfromquery);
@@ -210,7 +211,7 @@ public class ForecastAgent extends JPSAgent{
 		int[] indices2 = {1,2};
 		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo2)
 				.put(JPSConstants.TARGETIRI, convertedIRIIrrad);
-		resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		resultf = AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 		resultListfromquery = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
 		updateOWLFileWithResultList(resultListfromquery,solArray, convertedIRIIrrad, indices2); 
     	
@@ -239,7 +240,7 @@ public class ForecastAgent extends JPSAgent{
 			if (i %3 == 0) {
 				requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
 						.put(JPSConstants.TARGETIRI ,sensorIRI);
-				AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+				AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 				builder = new UpdateBuilder();
 				
 			}
@@ -248,7 +249,7 @@ public class ForecastAgent extends JPSAgent{
 		//finally
 		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
 				.put(JPSConstants.TARGETIRI ,sensorIRI);
-		AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 	}
 	
 

@@ -47,7 +47,24 @@ public class BlockchainWrapper extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	
 	public BlockchainWrapper(){
-		loadProperties();
+		String fileName = AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\config.properties";
+		try (InputStream input = new FileInputStream(fileName)) {
+
+            Properties prop = new Properties();
+            //load a properties file from class path, inside static method
+            prop.load(input);
+
+            addrOfI = prop.getProperty("industrial");
+            addrOfC = prop.getProperty("commercial");
+            addrOfR = prop.getProperty("residential");
+            SolarPublicKey = prop.getProperty("pkSolar");
+            ElectricPublicKey = prop.getProperty("pkGrid");
+            credential = prop.getProperty("walletPass");
+
+        } catch (IOException ex) {
+            throw new JPSRuntimeException("");
+        }
+
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -370,28 +387,6 @@ public class BlockchainWrapper extends JPSAgent{
 		return dataresult;
 	}
 	
-	/** load config.properties from resources folder. 
-	 * 
-	 */
-	public void loadProperties() {
-		String fileName = AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\config.properties";
-		try (InputStream input = new FileInputStream(fileName)) {
-
-            Properties prop = new Properties();
-            //load a properties file from class path, inside static method
-            prop.load(input);
-
-            addrOfI = prop.getProperty("industrial");
-            addrOfC = prop.getProperty("commercial");
-            addrOfR = prop.getProperty("residential");
-            SolarPublicKey = prop.getProperty("pkSolar");
-            ElectricPublicKey = prop.getProperty("pkGrid");
-            credential = prop.getProperty("walletPass");
-
-        } catch (IOException ex) {
-            throw new JPSRuntimeException("");
-        }
-
-	}
+	
 	
 }
