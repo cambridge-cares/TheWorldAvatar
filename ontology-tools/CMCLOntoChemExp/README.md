@@ -67,7 +67,7 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
 
 ## Update history
 
-### v1.1 to v1.2 (as of 28 April 2021)
+### v1.1 to v1.2 (as of 29 April 2021)
 
 - Concepts
 
@@ -88,6 +88,7 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
     - `<Experiment hasPerformer http://xmlns.com/foaf/0.1/Agent>`
     - `<X refersTo DimensionalQuantity>` to make the direct connection between measured data point `X` with the physical `DimensionalQuantity` it represents
     - `<Acceptor hasComponent Component>`, `<Donor hasComponent Component>`
+    - Redundant `hasDataPointX` and `hasUncertainty` related to `X1`-`X11`
   - Inherited publication-related object property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
     - `<OntoKin:JournalSpecification OntoKin:specifies http://purl.org/ontology/bibo/Journal>`
     - `<BibliographyLink OntoKin:hasPublicationSpecification OntoKin:PublicationSpecification>`
@@ -106,6 +107,7 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
     - `<Property hasID ^^xsd:string>`
     - `<Property hasMethod ^^xsd:string>`
     - `<Value hasVal ^^xsd:string>`
+    - Redundant `hasValue` related to `X1`-`X11`
   - Inherited publication-related data property from [`OntoKin`](http://theworldavatar.com/ontology/ontokin/OntoKin.owl) ontology
       - `<OntoKin:JournalSpecification http://purl.org/ontology/bibo/volume ^^xsd:integer>`
       - `<OntoKin:PublicationSpecification http://purl.org/ontology/bibo/pageStart ^^xsd:integer>`
@@ -124,11 +126,14 @@ Automated Calibration of a Poly(oxymethylene) Dimethyl Ether Oxidation Mechanism
     - `<Property hasSourceType ^^xsd:string>` to `<DimensionalQuantity hasSourceType ^^xsd:string>`
     - `<Property hasDerivedPropertyExists ^^xsd:string>` to `<DimensionalQuantity hasDerivedPropertyExists ^^xsd:string>`
     - `<owl:Thing hasVal ^^xsd:string>` to `<owl:Thing hasValue ^^xsd:string>`
+    - `<SpeciesLink hasSMILES ^^xsd:string>` to `<SpeciesLink OntoSpecies:SMILES ^^xsd:string>`
+    - `<SpeciesLink hasInChI ^^xsd:string>` to `<SpeciesLink OntoSpecies:inChI ^^xsd:string>`
+    - `<SpeciesLink hasCAS ^^xsd:string>` to `<SpeciesLink OntoSpecies:casRegistryID ^^xsd:string>`
   - Modified below data properties to object properties
     - `<Provenance createdBy ^^xsd:string>` to `<Provenance createdBy http://xmlns.com/foaf/0.1/Agent>`
     - `<Modification modifiedBy ^^xsd:string>` to `<Modified modifiedBy http://xmlns.com/foaf/0.1/Agent>`
 
-![OntoChemExp core concepts v1.2 as of 28 April 2021](https://lucid.app/publicSegments/view/23814531-dc4e-47f1-81ba-787ff40709bd/image.png)
+![OntoChemExp core concepts v1.2 as of 29 April 2021](https://lucid.app/publicSegments/view/23814531-dc4e-47f1-81ba-787ff40709bd/image.png)
 
 ### v1.0 to v1.1 (as of 1 April 2021)
 
