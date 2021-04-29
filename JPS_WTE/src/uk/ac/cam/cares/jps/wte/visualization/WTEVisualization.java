@@ -30,7 +30,7 @@ public class WTEVisualization extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    if (!validateInput(requestParams)) {
-			throw new BadRequestException("WTE:WTEVisualizationAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		String iriofnetwork = requestParams.getString("wastenetwork");
 
@@ -48,7 +48,6 @@ public class WTEVisualization extends JPSAgent{
 			g=searchOnsite(model, requestParams);
 		}
 		JSONObject responseParams = new JSONObject(g);
-		System.gc();
 		return responseParams;
 	}
 	
