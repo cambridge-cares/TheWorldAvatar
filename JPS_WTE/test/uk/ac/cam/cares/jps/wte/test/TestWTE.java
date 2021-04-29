@@ -173,11 +173,11 @@ public class TestWTE extends TestCase{
 	}
 	
 	/** Query in Directly (WTE Agent) in a scenario called testScenariosWithWTE
-	 * This test is to directly pause at each step to figure out where the bug occurs; It does not check for assertion and 
-	 * isn't technically a test. 
+	 * This test is to directly pause at each step to figure out where the bug occurs; 
+	 * And can be used to check if the file was created at the appropriate step in WasteToEnergyAgent
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void testInSuccession() throws Exception {
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
 		enableScenario("testScenariosWithWTE");
@@ -211,19 +211,22 @@ public class TestWTE extends TestCase{
 		ag.copyTemplate(baseUrl, "D2R.m");		
 		ag.createBat(baseUrl, n_cluster);
 		System.out.println("Matlab simulation should have finished. ");
-		//Pause here, and wait for the matlab simulation to complete. 
+		//Set a breakppoint here, and wait for the matlab simulation to complete. 
 //			Read for next agent
 		WTEProcessResult at = new WTEProcessResult();
 		List<String[]> resu =   FCQuerySource.queryResult(model,WastetoEnergyAgent.getFCQuery());
 		List<String[]> fcMapping = at.createFoodCourt(resu);
+		assertEquals(109, fcMapping.size());
 		List<String[]> propertydataonsite = FCQuerySource.queryResult(model, WTFTechOnsiteQuery);
-		
+		assertEquals(propertydataonsite.get(0).length, 7);
 
 		model= FCQuerySource.readModelGreedy(iriofnetwork);
-		//only one year (first year) to minimize the number of OnsiteWTF being created. 15 in the actual site
+		//While in the actual code this is meant to be a for loop of fifteen years, here in the test, we bother with creating
+		// the needed onsite WTF for the current year. 
 		List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
 		List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
 		List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );
+		assertEquals(sitemapping.size(), 1635);//or 109*15 years
 		at.updateFCHelper(sitemapping);
 		at.updateKBForSystem(iriofnetwork, baseUrl, WTEProcessResult.getWasteSystemOutputQuery(),onsiteiricomplete); //for waste system	
 		at.updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
