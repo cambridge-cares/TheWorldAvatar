@@ -36,6 +36,7 @@ public class TestWTE extends TestCase{
 		baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\WTETest";
 		usecaseID = UUID.randomUUID().toString();
 	}
+	
 	@Test
 	public void testQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
@@ -47,6 +48,7 @@ public class TestWTE extends TestCase{
 		File file2 = new File(baseUrl +"\\Waste.csv");
 		assertTrue(file2.exists());
 	}
+	
 	/** get Offsite WTF locations and save in csv file
 	 * 
 	 */
@@ -59,6 +61,7 @@ public class TestWTE extends TestCase{
 		File file = new File(baseUrl +  "\\Location.csv");
 		assertTrue(file.exists());
 	}
+	
 	/** get Transport costs and save in a csv files
 	 * should display four results, all non-null
 	 */
@@ -82,25 +85,23 @@ public class TestWTE extends TestCase{
 		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);
 		String query=WastetoEnergyAgent.getTransportQuery();
 		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
-        System.out.println("size of result="+resultList.size()); 
         assertEquals(1, resultList.size());
-        System.out.println(Arrays.toString(resultList.get(0)));
 	
 	}
+	
 	/** Query Output data. In base scenario, it should be only one
 	 * 
 	 */
 	@Test
-	public void testWTEKBCreatorWasteSystemOutputQuery() {
-		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);
-		
+	public void testWTEWasteSystemOutputQuery() {
+		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);		
 		String query = WTEProcessResult.getWasteSystemOutputQuery();
 		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
 		System.out.println("size of result="+resultList.size()); 
         assertEquals(1, resultList.size());
-        System.out.println(Arrays.toString(resultList.get(0)));
         
 	}
+	
 	/** Query types of technology of offsite. Currently three (anerobic, incineration, co-digestion)
 	 * 
 	 */
@@ -108,26 +109,23 @@ public class TestWTE extends TestCase{
 	public void testQueryTechOffsiteQuery() {
 	String query = FCQuerySource.getTechQuery() 
 			.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
-
-		OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
-		List<String[]> resultList = FCQuerySource.queryResult(model,query);
-		System.out.println("size of result="+resultList.size()); 
-        assertEquals(3, resultList.size());
+	OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
+	List<String[]> resultList = FCQuerySource.queryResult(model,query);
+    assertEquals(3, resultList.size());
 	}
+	
 	/** Query types of technology of onsite. Currently only one. 
 	 * 
 	 */
 	@Test
 	public void testQueryTechOnsiteQuery() {
 		String query = FCQuerySource.getTechQuery() 
-				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
-				.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
-
-			OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
-			List<String[]> resultList = FCQuerySource.queryResult(model,query);
-	        assertEquals(1, resultList.size());
-		}
-
+			.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
+			.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
+		OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
+		List<String[]> resultList = FCQuerySource.queryResult(model,query);
+        assertEquals(1, resultList.size());
+	}
 	
 	/** Run simulation via Scenario Client to get individual scenarios through agent
 	 * 
@@ -137,19 +135,18 @@ public class TestWTE extends TestCase{
 	public void testCreateScenarioAndCallWTEAgent() throws JSONException {
 		
 		String scenarioName = "testwaste2-"+usecaseID;
-		iriofnetwork ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
-		
+		iriofnetwork ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";		
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(iriofnetwork)
 				.key("n_cluster").value("40")
 				.endObject().toString();
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/startsimulationCoordinationWTE", json);
 		assertNotNull(new JSONObject(result).getString("n_cluster"));
-		System.out.println(result);
 		
 	}
-	/** checks input to see if user input was valid
-	 * 
+	
+	/** checks input to see if user input was valid for WasteToEnergyAgent
+	 * WTEProcessResult should not have a test because it looks if the file is already created. 
 	 * @throws JSONException
 	 */
 	@Test
@@ -163,6 +160,7 @@ public class TestWTE extends TestCase{
 		assertTrue(j.validateInput(jo));
 		
 	}
+	
 	/** enables scenarioName in testInSuccession
 	 * 
 	 * @param scenarioName
@@ -173,11 +171,13 @@ public class TestWTE extends TestCase{
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		return scenarioUrl;
 	}
+	
 	/** Query in Directly (WTE Agent) in a scenario called testScenariosWithWTE
-	 * 
+	 * This test is to directly pause at each step to figure out where the bug occurs; It does not check for assertion and 
+	 * isn't technically a test. 
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void testInSuccession() throws Exception {
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
 		enableScenario("testScenariosWithWTE");
@@ -211,6 +211,7 @@ public class TestWTE extends TestCase{
 		ag.copyTemplate(baseUrl, "D2R.m");		
 		ag.createBat(baseUrl, n_cluster);
 		System.out.println("Matlab simulation should have finished. ");
+		//Pause here, and wait for the matlab simulation to complete. 
 //			Read for next agent
 		WTEProcessResult at = new WTEProcessResult();
 		List<String[]> resu =   FCQuerySource.queryResult(model,WastetoEnergyAgent.getFCQuery());

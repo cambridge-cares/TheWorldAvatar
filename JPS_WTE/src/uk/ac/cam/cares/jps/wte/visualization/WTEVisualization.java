@@ -3,7 +3,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -20,9 +19,13 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
-import uk.ac.cam.cares.jps.wte.WTEProcessResult;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
+/** Class is for interaction with frontend under web/CO2WEB/scripts/wte.js
+ * ScenarioAgentOperation is used to select the path under which this is called, and not requestURL or PATHINFO as
+ * this is called by the ScenarioAgent
+ *
+ */
 public class WTEVisualization extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	
@@ -32,6 +35,7 @@ public class WTEVisualization extends JPSAgent{
 	    if (!validateInput(requestParams)) {
 			throw new BadRequestException();
 		}
+	    System.out.println(requestParams);
 		String iriofnetwork = requestParams.getString("wastenetwork");
 
 		String path = requestParams.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
@@ -54,7 +58,7 @@ public class WTEVisualization extends JPSAgent{
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
         String iriofnetwork = requestParams.getString("wastenetwork");
@@ -69,7 +73,7 @@ public class WTEVisualization extends JPSAgent{
         }
     }
 	
-	/** get wastesite arrangement in input
+	/** get locations for relevant query
 	 * 
 	 * @param model
 	 * @param query queryString for search
