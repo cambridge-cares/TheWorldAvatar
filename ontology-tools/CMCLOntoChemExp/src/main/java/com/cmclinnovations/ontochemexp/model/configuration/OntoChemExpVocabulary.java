@@ -98,17 +98,6 @@ public class OntoChemExpVocabulary {
 		this.classAdditionalDataItem = classAdditionalDataItem;
 	}
 
-	@Value("${ontochemexp.class.preferredKey}")
-	private String classPreferredKey;
-
-	public String getClassPreferredKey() {
-		return classPreferredKey;
-	}
-
-	public void setClassPreferredKey(String classPreferredKey) {
-		this.classPreferredKey = classPreferredKey;
-	}
-
 	@Value("${ontochemexp.class.kind}")
 	private String classKind;
 
@@ -142,6 +131,61 @@ public class OntoChemExpVocabulary {
 		this.classProperty = classProperty;
 	}
 
+	@Value("${ontochemexp.class.initialComposition}")
+	private String classInitialComposition;
+	
+	public String getClassInitialComposition() {
+		return classInitialComposition;
+	}
+
+	public void setClassInitialComposition(String classInitialComposition) {
+		this.classInitialComposition = classInitialComposition;
+	}
+		
+	@Value("${ontochemexp.class.donor}")
+	private String classDonor;
+	
+	public String getClassDonor() {
+		return classDonor;
+	}
+
+	public void setClassDonor(String classDonor) {
+		this.classDonor = classDonor;
+	}
+	
+	@Value("${ontochemexp.class.acceptor}")
+	private String classAcceptor;
+	
+	public String getClassAcceptor() {
+		return classAcceptor;
+	}
+
+	public void setClassAcceptor(String classAcceptor) {
+		this.classAcceptor = classAcceptor;
+	}
+
+	@Value("${ontochemexp.class.composition}")
+	private String classComposition;
+	
+	public String getClassComposition() {
+		return classComposition;
+	}
+
+	public void setClassComposition(String classComposition) {
+		this.classComposition = classComposition;
+	}
+	
+	@Value("${ontochemexp.class.concentration}")
+	private String classConcentration;
+	
+	public String getClassConcentration() {
+		return classConcentration;
+	}
+
+	public void setClassConcentration(String classConcentration) {
+		this.classConcentration = classConcentration;
+	}
+	
 	@Value("${ontochemexp.class.dataGroupLink}")
 	private String classDataGroupLink;
 
@@ -476,17 +520,6 @@ public class OntoChemExpVocabulary {
 		this.objPropertyhasDataGroup = objPropertyhasDataGroup;
 	}
 
-	@Value("${ontochemexp.object.property.hasPreferredKey}")
-	private String objPropertyhasPreferredKey;
-
-	public String getObjPropertyhasPreferredKey() {
-		return objPropertyhasPreferredKey;
-	}
-
-	public void setObjPropertyhasPreferredKey(String objPropertyhasPreferredKey) {
-		this.objPropertyhasPreferredKey = objPropertyhasPreferredKey;
-	}
-
 	@Value("${ontochemexp.object.property.hasKind}")
 	private String objPropertyhasKind;
 
@@ -518,17 +551,6 @@ public class OntoChemExpVocabulary {
 
 	public void setObjPropertyhasProperty(String objPropertyhasProperty) {
 		this.objPropertyhasProperty = objPropertyhasProperty;
-	}
-
-	@Value("${ontochemexp.object.property.hasValue}")
-	private String objPropertyhasValue;
-
-	public String getObjPropertyhasValue() {
-		return objPropertyhasValue;
-	}
-
-	public void setObjPropertyhasValue(String objPropertyhasValue) {
-		this.objPropertyhasValue = objPropertyhasValue;
 	}
 
 	@Value("${ontochemexp.object.property.hasUncertainty}")
@@ -672,6 +694,28 @@ public class OntoChemExpVocabulary {
 
 	public void setObjPropertyhasDataPointX(String objPropertyhasDataPointX) {
 		this.objPropertyhasDataPointX = objPropertyhasDataPointX;
+	}
+	
+	@Value("${ontochemexp.object.property.refersTo}")
+	private String objPropertyrefersTo;
+
+	public String getObjPropertyrefersTo() {
+		return objPropertyrefersTo;
+	}
+
+	public void setObjPropertyrefersTo(String objPropertyrefersTo) {
+		this.objPropertyrefersTo = objPropertyrefersTo;
+	}
+
+	@Value("${ontochemexp.object.property.hasUniqueSpecies}")
+	private String objPropertyhasUniqueSpecies;
+
+	public String getObjPropertyhasUniqueSpecies() {
+		return objPropertyhasUniqueSpecies;
+	}
+
+	public void setObjPropertyhasUniqueSpecies(String objPropertyhasUniqueSpecies) {
+		this.objPropertyhasUniqueSpecies = objPropertyhasUniqueSpecies;
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -875,39 +919,6 @@ public class OntoChemExpVocabulary {
 		this.dataPropertyhasDataPointID = dataPropertyhasDataPointID;
 	}
 
-	@Value("${ontochemexp.data.property.hasXmlns}")
-	private String dataPropertyhasXmlns;
-
-	public String getDataPropertyhasXmlns() {
-		return dataPropertyhasXmlns;
-	}
-
-	public void setDataPropertyhasXmlns(String dataPropertyhasXmlns) {
-		this.dataPropertyhasXmlns = dataPropertyhasXmlns;
-	}
-
-	@Value("${ontochemexp.data.property.hasXmlnsXsi}")
-	private String dataPropertyhasXmlnsXsi;
-
-	public String getDataPropertyhasXmlnsXsi() {
-		return dataPropertyhasXmlnsXsi;
-	}
-
-	public void setDataPropertyhasXmlnsXsi(String dataPropertyhasXmlnsXsi) {
-		this.dataPropertyhasXmlnsXsi = dataPropertyhasXmlnsXsi;
-	}
-
-	@Value("${ontochemexp.data.property.hasXsiSchemaLocation}")
-	private String dataPropertyhasXsiSchemaLocation;
-
-	public String getDataPropertyhasXsiSchemaLocation() {
-		return dataPropertyhasXsiSchemaLocation;
-	}
-
-	public void setDataPropertyhasXsiSchemaLocation(String dataPropertyhasXsiSchemaLocation) {
-		this.dataPropertyhasXsiSchemaLocation = dataPropertyhasXsiSchemaLocation;
-	}
-
 	@Value("${ontochemexp.data.property.hasValue}")
 	private String dataPropertyhasValue;
 
@@ -930,14 +941,527 @@ public class OntoChemExpVocabulary {
 		this.dataPropertyhasPropertyID = dataPropertyhasPropertyID;
 	}
 	
-	@Value("${ontochemexp.data.property.hasUniqueSpeciesIRI}")
-	private String dataPropertyhasUniqueSpeciesIRI;
+	@Value("${ontochemexp.data.property.hasSourceType}")
+	private String dataPropertyhasSourceType;
 
-	public String getDataPropertyhasUniqueSpeciesIRI() {
-		return dataPropertyhasUniqueSpeciesIRI;
+	public String getDataPropertyhasSourceType() {
+		return dataPropertyhasSourceType;
 	}
 
-	public void setDataPropertyhasUniqueSpeciesIRI(String dataPropertyhasUniqueSpeciesIRI) {
-		this.dataPropertyhasUniqueSpeciesIRI = dataPropertyhasUniqueSpeciesIRI;
+	public void setDataPropertyhasSourceType(String dataPropertyhasSourceType) {
+		this.dataPropertyhasSourceType = dataPropertyhasSourceType;
+	}
+	
+	@Value("${ontochemexp.data.property.hasCAS}")
+	private String dataPropertyhasCAS;
+	
+	public String getDataPropertyhasCAS() {
+		return dataPropertyhasCAS;
+	}
+
+	public void setDataPropertyhasCAS(String dataPropertyhasCAS) {
+		this.dataPropertyhasCAS = dataPropertyhasCAS;
+	}
+	
+	@Value("${ontochemexp.data.property.hasInChI}")
+	private String dataPropertyhasInChI;
+	
+	public String getDataPropertyhasInChI() {
+		return dataPropertyhasInChI;
+	}
+
+	public void setDataPropertyhasInChI(String dataPropertyhasInChI) {
+		this.dataPropertyhasInChI = dataPropertyhasInChI;
+	}
+	
+	@Value("${ontochemexp.data.property.hasSMILES}")
+	private String dataPropertyhasSMILES;
+	
+	public String getDataPropertyhasSMILES() {
+		return dataPropertyhasSMILES;
+	}
+
+	public void setDataPropertyhasSMILES(String dataPropertyhasSMILES) {
+		this.dataPropertyhasSMILES = dataPropertyhasSMILES;
+	}
+	
+	////////////////////////////////////////////////////////////////
+	///////////////////// Publication-related //////////////////////
+	////////////////////////////////////////////////////////////////
+	@Value("${ontokin.reference.agent}")
+	private String ontoKinReferenceAgent;
+	
+	@Value("${ontokin.reference.person}")
+	private String ontoKinReferencePerson;
+	
+	@Value("${ontokin.reference.organization}")
+	private String ontoKinReferenceOrganization;
+	
+	@Value("${ontokin.reference.journal}")
+	private String ontoKinReferenceJournal;
+	
+	@Value("${ontokin.reference.publication.specification}")
+	private String ontoKinReferencePublicationSpecification;
+	
+	@Value("${ontokin.reference.journal.specification}")
+	private String ontoKinReferenceJournalSpecification;
+	
+	@Value("${ontokin.reference.conference.proceedings.specification}")
+	private String ontoKinReferenceProceedingsSpecification;
+	
+	@Value("${ontokin.reference.preprint.specification}")
+	private String ontoKinReferencePreprintSpecification;
+	
+	@Value("${ontokin.reference.specifies}")
+	private String ontoKinReferenceSpecifies;
+	
+	@Value("${ontokin.reference.has.publication.specification}")
+	private String ontoKinReferencehasPublicationSpecification;
+	
+	@Value("${ontokin.reference.has.contributor}")
+	private String ontoKinReferencehasContributor;
+	
+	@Value("${ontochemexp.bibliographyLink.hasDOI}")
+	private String dataPropertyhasDOI;
+	
+	@Value("${ontokin.reference.issn}")
+	private String ontoKinReferenceISSN;
+	
+	@Value("${ontokin.reference.publisher}")
+	private String ontoKinReferencePublisher;
+	
+	@Value("${ontokin.reference.title}")
+	private String ontoKinReferenceTitle;
+	
+	@Value("${ontokin.reference.family.name}")
+	private String ontoKinReferenceFamilyName;
+	
+	@Value("${ontokin.reference.given.name}")
+	private String ontoKinReferenceGivenName;
+	
+	@Value("${ontokin.reference.name}")
+	private String ontoKinReferenceName;
+	
+	@Value("${ontokin.reference.journal.volume}")
+	private String ontoKinReferenceJournalVolume;
+	
+	@Value("${ontokin.reference.document.page.start}")
+	private String ontoKinReferenceDocumentPageStart;
+	
+	@Value("${ontokin.reference.document.page.end}")
+	private String ontoKinReferenceDocumentPageEnd;
+
+	public String getOntoKinReferenceAgent() {
+		return ontoKinReferenceAgent;
+	}
+
+	public void setOntoKinReferenceAgent(String ontoKinReferenceAgent) {
+		this.ontoKinReferenceAgent = ontoKinReferenceAgent;
+	}
+
+	public String getOntoKinReferencePerson() {
+		return ontoKinReferencePerson;
+	}
+
+	public void setOntoKinReferencePerson(String ontoKinReferencePerson) {
+		this.ontoKinReferencePerson = ontoKinReferencePerson;
+	}
+
+	public String getOntoKinReferenceOrganization() {
+		return ontoKinReferenceOrganization;
+	}
+
+	public void setOntoKinReferenceOrganization(String ontoKinReferenceOrganization) {
+		this.ontoKinReferenceOrganization = ontoKinReferenceOrganization;
+	}
+
+	public String getOntoKinReferenceJournal() {
+		return ontoKinReferenceJournal;
+	}
+
+	public void setOntoKinReferenceJournal(String ontoKinReferenceJournal) {
+		this.ontoKinReferenceJournal = ontoKinReferenceJournal;
+	}
+
+	public String getOntoKinReferencePublicationSpecification() {
+		return ontoKinReferencePublicationSpecification;
+	}
+
+	public void setOntoKinReferencePublicationSpecification(String ontoKinReferencePublicationSpecification) {
+		this.ontoKinReferencePublicationSpecification = ontoKinReferencePublicationSpecification;
+	}
+
+	public String getOntoKinReferenceJournalSpecification() {
+		return ontoKinReferenceJournalSpecification;
+	}
+
+	public void setOntoKinReferenceJournalSpecification(String ontoKinReferenceJournalSpecification) {
+		this.ontoKinReferenceJournalSpecification = ontoKinReferenceJournalSpecification;
+	}
+
+	public String getOntoKinReferenceProceedingsSpecification() {
+		return ontoKinReferenceProceedingsSpecification;
+	}
+
+	public void setOntoKinReferenceProceedingsSpecification(String ontoKinReferenceProceedingsSpecification) {
+		this.ontoKinReferenceProceedingsSpecification = ontoKinReferenceProceedingsSpecification;
+	}
+
+	public String getOntoKinReferencePreprintSpecification() {
+		return ontoKinReferencePreprintSpecification;
+	}
+
+	public void setOntoKinReferencePreprintSpecification(String ontoKinReferencePreprintSpecification) {
+		this.ontoKinReferencePreprintSpecification = ontoKinReferencePreprintSpecification;
+	}
+
+	public String getOntoKinReferenceSpecifies() {
+		return ontoKinReferenceSpecifies;
+	}
+
+	public void setOntoKinReferenceSpecifies(String ontoKinReferenceSpecifies) {
+		this.ontoKinReferenceSpecifies = ontoKinReferenceSpecifies;
+	}
+
+	public String getOntoKinReferencehasPublicationSpecification() {
+		return ontoKinReferencehasPublicationSpecification;
+	}
+
+	public void setOntoKinReferencehasPublicationSpecification(String ontoKinReferencehasPublicationSpecification) {
+		this.ontoKinReferencehasPublicationSpecification = ontoKinReferencehasPublicationSpecification;
+	}
+
+	public String getOntoKinReferencehasContributor() {
+		return ontoKinReferencehasContributor;
+	}
+
+	public void setOntoKinReferencehasContributor(String ontoKinReferencehasContributor) {
+		this.ontoKinReferencehasContributor = ontoKinReferencehasContributor;
+	}
+
+	public String getDataPropertyhasDOI() {
+		return dataPropertyhasDOI;
+	}
+
+	public void setDataPropertyhasDOI(String dataPropertyhasDOI) {
+		this.dataPropertyhasDOI = dataPropertyhasDOI;
+	}
+
+	public String getOntoKinReferenceISSN() {
+		return ontoKinReferenceISSN;
+	}
+
+	public void setOntoKinReferenceISSN(String ontoKinReferenceISSN) {
+		this.ontoKinReferenceISSN = ontoKinReferenceISSN;
+	}
+
+	public String getOntoKinReferencePublisher() {
+		return ontoKinReferencePublisher;
+	}
+
+	public void setOntoKinReferencePublisher(String ontoKinReferencePublisher) {
+		this.ontoKinReferencePublisher = ontoKinReferencePublisher;
+	}
+
+	public String getOntoKinReferenceTitle() {
+		return ontoKinReferenceTitle;
+	}
+
+	public void setOntoKinReferenceTitle(String ontoKinReferenceTitle) {
+		this.ontoKinReferenceTitle = ontoKinReferenceTitle;
+	}
+
+	public String getOntoKinReferenceFamilyName() {
+		return ontoKinReferenceFamilyName;
+	}
+
+	public void setOntoKinReferenceFamilyName(String ontoKinReferenceFamilyName) {
+		this.ontoKinReferenceFamilyName = ontoKinReferenceFamilyName;
+	}
+
+	public String getOntoKinReferenceGivenName() {
+		return ontoKinReferenceGivenName;
+	}
+
+	public void setOntoKinReferenceGivenName(String ontoKinReferenceGivenName) {
+		this.ontoKinReferenceGivenName = ontoKinReferenceGivenName;
+	}
+
+	public String getOntoKinReferenceName() {
+		return ontoKinReferenceName;
+	}
+
+	public void setOntoKinReferenceName(String ontoKinReferenceName) {
+		this.ontoKinReferenceName = ontoKinReferenceName;
+	}
+
+	public String getOntoKinReferenceJournalVolume() {
+		return ontoKinReferenceJournalVolume;
+	}
+
+	public void setOntoKinReferenceJournalVolume(String ontoKinReferenceJournalVolume) {
+		this.ontoKinReferenceJournalVolume = ontoKinReferenceJournalVolume;
+	}
+
+	public String getOntoKinReferenceDocumentPageStart() {
+		return ontoKinReferenceDocumentPageStart;
+	}
+
+	public void setOntoKinReferenceDocumentPageStart(String ontoKinReferenceDocumentPageStart) {
+		this.ontoKinReferenceDocumentPageStart = ontoKinReferenceDocumentPageStart;
+	}
+
+	public String getOntoKinReferenceDocumentPageEnd() {
+		return ontoKinReferenceDocumentPageEnd;
+	}
+
+	public void setOntoKinReferenceDocumentPageEnd(String ontoKinReferenceDocumentPageEnd) {
+		this.ontoKinReferenceDocumentPageEnd = ontoKinReferenceDocumentPageEnd;
+	}
+	
+	////////////////////////////////////////////////////////////////
+	///////////////////// Provenance-related ///////////////////////
+	////////////////////////////////////////////////////////////////
+	@Value("${ontochemexp.provenance}")
+	private String ontoChemExpProvenance;
+	
+	@Value("${ontochemexp.provenance.modification}")
+	private String ontoChemExpProvenanceModification;
+	
+	@Value("${ontochemexp.experiment.hasPerformer}")
+	private String ontoChemExpExperimenthasPerformer;
+	
+	@Value("${ontochemexp.provenance.hasProvenance}")
+	private String ontoChemExpProvenancehasProvenance;
+	
+	@Value("${ontochemexp.provenance.createdBy}")
+	private String ontoChemExpProvenancecreatedBy;
+	
+	@Value("${ontochemexp.provenance.hasModification}")
+	private String ontoChemExpProvenancehasModification;
+	
+	@Value("${ontochemexp.provenance.modification.modifiedBy}")
+	private String ontoChemExpProvenanceModificationmodifiedBy;
+	
+	@Value("${ontochemexp.provenance.createdAt}")
+	private String ontoChemExpProvenancecreatedAt;
+	
+	@Value("${ontochemexp.provenance.hasDataSource}")
+	private String ontoChemExpProvenancehasDataSource;
+	
+	@Value("${ontochemexp.provenance.hasPatent}")
+	private String ontoChemExpProvenancehasPatent;
+	
+	@Value("${ontochemexp.provenance.modification.modifiedAt}")
+	private String ontoChemExpProvenanceModificationmodifiedAt;
+	
+	@Value("${ontochemexp.provenance.modification.hasModificationDetails}")
+	private String ontoChemExpProvenanceModificationhasModificationDetails;
+
+	public String getOntoChemExpProvenance() {
+		return ontoChemExpProvenance;
+	}
+
+	public void setOntoChemExpProvenance(String ontoChemExpProvenance) {
+		this.ontoChemExpProvenance = ontoChemExpProvenance;
+	}
+
+	public String getOntoChemExpProvenanceModification() {
+		return ontoChemExpProvenanceModification;
+	}
+
+	public void setOntoChemExpProvenanceModification(String ontoChemExpProvenanceModification) {
+		this.ontoChemExpProvenanceModification = ontoChemExpProvenanceModification;
+	}
+
+	public String getOntoChemExpExperimenthasPerformer() {
+		return ontoChemExpExperimenthasPerformer;
+	}
+
+	public void setOntoChemExpExperimenthasPerformer(String ontoChemExpExperimenthasPerformer) {
+		this.ontoChemExpExperimenthasPerformer = ontoChemExpExperimenthasPerformer;
+	}
+
+	public String getOntoChemExpProvenancehasProvenance() {
+		return ontoChemExpProvenancehasProvenance;
+	}
+
+	public void setOntoChemExpProvenancehasProvenance(String ontoChemExpProvenancehasProvenance) {
+		this.ontoChemExpProvenancehasProvenance = ontoChemExpProvenancehasProvenance;
+	}
+
+	public String getOntoChemExpProvenancecreatedBy() {
+		return ontoChemExpProvenancecreatedBy;
+	}
+
+	public void setOntoChemExpProvenancecreatedBy(String ontoChemExpProvenancecreatedBy) {
+		this.ontoChemExpProvenancecreatedBy = ontoChemExpProvenancecreatedBy;
+	}
+
+	public String getOntoChemExpProvenancehasModification() {
+		return ontoChemExpProvenancehasModification;
+	}
+
+	public void setOntoChemExpProvenancehasModification(String ontoChemExpProvenancehasModification) {
+		this.ontoChemExpProvenancehasModification = ontoChemExpProvenancehasModification;
+	}
+
+	public String getOntoChemExpProvenanceModificationmodifiedBy() {
+		return ontoChemExpProvenanceModificationmodifiedBy;
+	}
+
+	public void setOntoChemExpProvenanceModificationmodifiedBy(String ontoChemExpProvenanceModificationmodifiedBy) {
+		this.ontoChemExpProvenanceModificationmodifiedBy = ontoChemExpProvenanceModificationmodifiedBy;
+	}
+
+	public String getOntoChemExpProvenancecreatedAt() {
+		return ontoChemExpProvenancecreatedAt;
+	}
+
+	public void setOntoChemExpProvenancecreatedAt(String ontoChemExpProvenancecreatedAt) {
+		this.ontoChemExpProvenancecreatedAt = ontoChemExpProvenancecreatedAt;
+	}
+
+	public String getOntoChemExpProvenancehasDataSource() {
+		return ontoChemExpProvenancehasDataSource;
+	}
+
+	public void setOntoChemExpProvenancehasDataSource(String ontoChemExpProvenancehasDataSource) {
+		this.ontoChemExpProvenancehasDataSource = ontoChemExpProvenancehasDataSource;
+	}
+
+	public String getOntoChemExpProvenancehasPatent() {
+		return ontoChemExpProvenancehasPatent;
+	}
+
+	public void setOntoChemExpProvenancehasPatent(String ontoChemExpProvenancehasPatent) {
+		this.ontoChemExpProvenancehasPatent = ontoChemExpProvenancehasPatent;
+	}
+
+	public String getOntoChemExpProvenanceModificationmodifiedAt() {
+		return ontoChemExpProvenanceModificationmodifiedAt;
+	}
+
+	public void setOntoChemExpProvenanceModificationmodifiedAt(String ontoChemExpProvenanceModificationmodifiedAt) {
+		this.ontoChemExpProvenanceModificationmodifiedAt = ontoChemExpProvenanceModificationmodifiedAt;
+	}
+
+	public String getOntoChemExpProvenanceModificationhasModificationDetails() {
+		return ontoChemExpProvenanceModificationhasModificationDetails;
+	}
+
+	public void setOntoChemExpProvenanceModificationhasModificationDetails(
+			String ontoChemExpProvenanceModificationhasModificationDetails) {
+		this.ontoChemExpProvenanceModificationhasModificationDetails = ontoChemExpProvenanceModificationhasModificationDetails;
+	}
+	
+	@Value("${ontochemexp.expSpecs}")
+	private String ontoChemExpExpSpecs;
+	
+	@Value("${ontochemexp.expSpecs.ignitionType}")
+	private String ontoChemExpExpSpecsIgnitionType;
+	
+	@Value("${ontochemexp.expSpecs.timeShift}")
+	private String ontoChemExpExpSpecsTimeShift;
+	
+	@Value("${ontochemexp.expSpecs.hasExpSpecs}")
+	private String ontoChemExphasExpSpecs;
+	
+	@Value("${ontochemexp.expSpecs.hasIgnitionType}")
+	private String ontoChemExpExpSpecshasIgnitionType;
+	
+	@Value("${ontochemexp.expSpecs.hasTimeShift}")
+	private String ontoChemExpExpSpecshasTimeShift;
+	
+	@Value("${ontochemexp.expSpecs.hasExpType}")
+	private String ontoChemExpExpSpecshasExpType;
+	
+	@Value("${ontochemexp.expSpecs.hasDatTarget}")
+	private String ontoChemExpExpSpecshasDatTarget;
+	
+	@Value("${ontochemexp.expSpecs.hasDatType}")
+	private String ontoChemExpExpSpecshasDatType;
+	
+	@Value("${ontochemexp.expSpecs.hasDatAmount}")
+	private String ontoChemExpExpSpecshasDatAmount;
+
+	public String getOntoChemExpExpSpecs() {
+		return ontoChemExpExpSpecs;
+	}
+
+	public void setOntoChemExpExpSpecs(String ontoChemExpExpSpecs) {
+		this.ontoChemExpExpSpecs = ontoChemExpExpSpecs;
+	}
+
+	public String getOntoChemExpExpSpecsIgnitionType() {
+		return ontoChemExpExpSpecsIgnitionType;
+	}
+
+	public void setOntoChemExpExpSpecsIgnitionType(String ontoChemExpExpSpecsIgnitionType) {
+		this.ontoChemExpExpSpecsIgnitionType = ontoChemExpExpSpecsIgnitionType;
+	}
+
+	public String getOntoChemExpExpSpecsTimeShift() {
+		return ontoChemExpExpSpecsTimeShift;
+	}
+
+	public void setOntoChemExpExpSpecsTimeShift(String ontoChemExpExpSpecsTimeShift) {
+		this.ontoChemExpExpSpecsTimeShift = ontoChemExpExpSpecsTimeShift;
+	}
+
+	public String getOntoChemExphasExpSpecs() {
+		return ontoChemExphasExpSpecs;
+	}
+
+	public void setOntoChemExphasExpSpecs(String ontoChemExphasExpSpecs) {
+		this.ontoChemExphasExpSpecs = ontoChemExphasExpSpecs;
+	}
+
+	public String getOntoChemExpExpSpecshasIgnitionType() {
+		return ontoChemExpExpSpecshasIgnitionType;
+	}
+
+	public void setOntoChemExpExpSpecshasIgnitionType(String ontoChemExpExpSpecshasIgnitionType) {
+		this.ontoChemExpExpSpecshasIgnitionType = ontoChemExpExpSpecshasIgnitionType;
+	}
+
+	public String getOntoChemExpExpSpecshasTimeShift() {
+		return ontoChemExpExpSpecshasTimeShift;
+	}
+
+	public void setOntoChemExpExpSpecshasTimeShift(String ontoChemExpExpSpecshasTimeShift) {
+		this.ontoChemExpExpSpecshasTimeShift = ontoChemExpExpSpecshasTimeShift;
+	}
+
+	public String getOntoChemExpExpSpecshasExpType() {
+		return ontoChemExpExpSpecshasExpType;
+	}
+
+	public void setOntoChemExpExpSpecshasExpType(String ontoChemExpExpSpecshasExpType) {
+		this.ontoChemExpExpSpecshasExpType = ontoChemExpExpSpecshasExpType;
+	}
+
+	public String getOntoChemExpExpSpecshasDatTarget() {
+		return ontoChemExpExpSpecshasDatTarget;
+	}
+
+	public void setOntoChemExpExpSpecshasDatTarget(String ontoChemExpExpSpecshasDatTarget) {
+		this.ontoChemExpExpSpecshasDatTarget = ontoChemExpExpSpecshasDatTarget;
+	}
+
+	public String getOntoChemExpExpSpecshasDatType() {
+		return ontoChemExpExpSpecshasDatType;
+	}
+
+	public void setOntoChemExpExpSpecshasDatType(String ontoChemExpExpSpecshasDatType) {
+		this.ontoChemExpExpSpecshasDatType = ontoChemExpExpSpecshasDatType;
+	}
+
+	public String getOntoChemExpExpSpecshasDatAmount() {
+		return ontoChemExpExpSpecshasDatAmount;
+	}
+
+	public void setOntoChemExpExpSpecshasDatAmount(String ontoChemExpExpSpecshasDatAmount) {
+		this.ontoChemExpExpSpecshasDatAmount = ontoChemExpExpSpecshasDatAmount;
 	}
 }
