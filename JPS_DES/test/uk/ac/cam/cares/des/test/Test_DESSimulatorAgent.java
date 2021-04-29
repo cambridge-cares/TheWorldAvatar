@@ -265,9 +265,9 @@ public class Test_DESSimulatorAgent{
 	@Test
 	public void testInputValidatorFrontEndCoordination(){
 		JSONObject jo = new JSONObject();
-	    assertTrue(new FrontEndCoordination().validateInput(jo));
+	    assertFalse(new BlockchainWrapper().validateInput(jo));	
 	    jo.put("key", "value");
-	    assertFalse(new FrontEndCoordination().validateInput(jo));		
+	    assertTrue(new BlockchainWrapper().validateInput(jo));		
 	}
 	
 	/** checks for empty input using validateInput() for BlockchainWrapper Agent
@@ -276,9 +276,9 @@ public class Test_DESSimulatorAgent{
 	@Test
 	public void testInputValidatorBlockchainWrapper(){
 		JSONObject jo = new JSONObject();
-	    assertTrue(new BlockchainWrapper().validateInput(jo));
+	    assertFalse(new BlockchainWrapper().validateInput(jo));	
 	    jo.put("key", "value");
-	    assertFalse(new BlockchainWrapper().validateInput(jo));		
+	    assertTrue(new BlockchainWrapper().validateInput(jo));	
 	}
 	
 	/** test if validateInput method is working in Residential Agent

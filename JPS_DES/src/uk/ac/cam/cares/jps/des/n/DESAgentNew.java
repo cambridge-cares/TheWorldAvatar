@@ -40,9 +40,11 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
  *
  */
 public class DESAgentNew extends JPSAgent {
-	/**
-	 * 
-	 */
+	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	
+	private static final String TWA_CPS =  TWA_Ontology +"/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#";
+	private static final String W3_TIME = "http://www.w3.org/2006/time#"; 
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -111,21 +113,21 @@ public class DESAgentNew extends JPSAgent {
      */
     public List<String[]> queryForIrradTemp(String irioftempF, String iriofirrF, String baseUrl){
    	    	QueryBroker broker= new QueryBroker();  
-   	    	WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-   	    			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
-   	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-   	    			.addPrefix("j6", "http://www.w3.org/2006/time#").addWhere("?entity", "j4:observes", "?prop")
+   	    	WhereBuilder whereB = new WhereBuilder().addPrefix("j2", TWA_upperlevel_system)
+   	    			.addPrefix("j4", TWA_Ontology +"/ontosensor/OntoSensor.owl#")
+   	    			.addPrefix("j5",TWA_CPS)
+   	    			.addPrefix("j6", W3_TIME).addWhere("?entity", "j4:observes", "?prop")
    	    			.addWhere("?prop", "j2:hasValue", "?vprop").addWhere("?vprop", "j2:numericalValue", "?propval")
    	    			.addWhere("?vprop", "j6:hasTime", "?proptime").addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
 	       
    	    	
    	    	SelectBuilder sensorTemp = new SelectBuilder()
-   	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+   	    			.addPrefix("j5",TWA_CPS)
    	    			.addVar("?propval").addWhere("?entity","a", "j5:T-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
    	    	Query q= sensorTemp.build(); 
    	    	String sensorInfo = q.toString();
    	    	SelectBuilder sensorIrrad = new SelectBuilder()
-   	    			.addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+   	    			.addPrefix("j5",TWA_CPS)
    	    			.addVar("?propval").addWhere("?entity","a", "j5:Q-Sensor").addWhere(whereB).addOrderBy("?proptimeval");
    	    	
    	    	q= sensorIrrad.build(); 
@@ -158,7 +160,7 @@ public class DESAgentNew extends JPSAgent {
     */
     public static OntModel readModelGreedy(String iriofnetwork) {
 	    SelectBuilder modelQ = new SelectBuilder()
-	    .addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+	    .addPrefix("j2",TWA_upperlevel_system)
 	    .addVar("?component")
 	    .addWhere("?entity","j2:hasSubsystem", "?component");
 	    Query q= modelQ.build();
@@ -215,7 +217,7 @@ public class DESAgentNew extends JPSAgent {
     public static OntModel readModelGreedyForUser(String useriri) {
 	
 	    SelectBuilder modelQ = new SelectBuilder()
-	    .addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+	    .addPrefix("j2",TWA_upperlevel_system)
 	    .addVar("?component")
 	    .addWhere("?entity","j2:isConnectedTo", "?component");
 	    Query q= modelQ.build();

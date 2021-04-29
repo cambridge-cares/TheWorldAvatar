@@ -36,8 +36,10 @@ public class ForecastAgent extends JPSAgent{
 	private static String SolCastURL = null;
 	private static String AccuWeatherURL = null;
 	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
-	private static final String TWA_CPS =  TWA_Ontology +"/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#";
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
 	
+	private static final String TWA_CPS =  TWA_Ontology +"/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#";
+	private static final String W3_TIME = "http://www.w3.org/2006/time#"; 
 	public ForecastAgent() {
 		String fileName = AgentLocator.getCurrentJpsAppDirectory(this) + "\\resources\\config.properties";
 		try (InputStream input = new FileInputStream(fileName)) {
@@ -143,9 +145,9 @@ public class ForecastAgent extends JPSAgent{
 	 * @return WhereBuilder for nextForecastDay temperatures. 
 	 */
 	private static WhereBuilder whereQueryBuilderForSensor() {
-		WhereBuilder whereB = new WhereBuilder().addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-    			.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#")
-    			.addPrefix("j6", "http://www.w3.org/2006/time#").addWhere("?entity", "j4:observes", "?prop")
+		WhereBuilder whereB = new WhereBuilder().addPrefix("j2",TWA_upperlevel_system)
+    			.addPrefix("j4", TWA_Ontology +"/ontosensor/OntoSensor.owl#")
+    			.addPrefix("j6", W3_TIME).addWhere("?entity", "j4:observes", "?prop")
     			.addWhere("?prop", "j2:hasValue", "?vprop")
     			.addWhere("?vprop", "j6:hasTime", "?proptime")
     			.addWhere("?proptime", "j6:inXSDDateTime", "?proptimeval");
@@ -170,7 +172,7 @@ public class ForecastAgent extends JPSAgent{
     	
     	JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, sensorInfo)
 				.put(JPSConstants.TARGETIRI, convertedIRI );
-		String resultf = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString());
+		String resultf = AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 		String[] keysf = {"vprop","proptime"};
 		List<String[]>  resultListfromquery = JenaResultSetFormatter.convertToListofStringArraysWithKeys(resultf, keysf);
     	int[] indices = {0,1};
@@ -226,8 +228,8 @@ public class ForecastAgent extends JPSAgent{
 		UpdateBuilder builder = new UpdateBuilder();
 		JSONObject requestParams = new JSONObject();
 		int sizeOfUpdate = resultListfromquery.size();
-		String p = "<http://www.w3.org/2006/time#inXSDDateTime>";
-		String d = "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>";
+		String p = "<"+W3_TIME+"inXSDDateTime>";
+		String d = "<"+TWA_upperlevel_system +"numericalValue>";
 		for (int i = 0; i < sizeOfUpdate; i ++ ) {//We stopped at element 46
 			Var v = Var.alloc(RandomStringUtils.random(5, true, false));
 			Var m = Var.alloc(RandomStringUtils.random(4, true, false)); //random string generate to prevent collusion

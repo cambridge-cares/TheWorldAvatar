@@ -51,11 +51,11 @@ public class Test_DESWeatherAgents{
    
 
 	/** This tests if the forecast was ran correctly when called directly.  
-	 * This test is should not be run due to the limited number of calls alloted to a free account. 
+	 * This test should not be run due to the limited number of calls alloted to a free account. 
 	 * @throws IOException 
 	 * 
 	 */
-    @Test
+//    @Test
 	public void testWeatherForecast() throws IOException {
 
 		long timeLast = new Date().getTime();
@@ -75,7 +75,7 @@ public class Test_DESWeatherAgents{
 	/**
 	 * Periodic call to run the (Forecast+DESpython wrapper)
 	 * Every four hours, so six calls in a day this would be called
-	 * This test is should not be run due to the limited number of calls alloted to a free account. 
+	 * This test should not be run due to the limited number of calls alloted to a free account. 
 	 * 
 	 */
     @Test
