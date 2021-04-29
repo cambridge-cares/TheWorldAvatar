@@ -38,7 +38,7 @@ public class EnergyStorageSystemTest {
 	String usecaseID = UUID.randomUUID().toString();
 	
 	
-	/** test the inputValidate method of Energy Storage System Coordination Agent
+	/** test validateInput() of Energy Storage System Coordination Agent
 	 * 
 	 */
 	@Test
@@ -50,7 +50,8 @@ public class EnergyStorageSystemTest {
         requestParam.put("RenewableEnergyGenerator", ja);
 		assertTrue(new CoordinationESSAgent().validateInput(requestParam));
 	}
-	/** test the inputValidate method of Energy Storage System (aka GAMS runner)
+	
+	/** test validateInput() of Energy Storage System 
 	 * 
 	 */
 	@Test
@@ -61,24 +62,49 @@ public class EnergyStorageSystemTest {
 		
 		
 	}
+
+	/** add validateInput() for OptimizationAgent
+	 * 
+	 */
+	@Test
+	public void testValidateInputOptimizationAgent() {
+		JSONObject jo = new JSONObject();
+		jo.put("storage", storageIRI);
+		assertTrue(new OptimizationAgent().validateInput(jo));
+		
+	}
+	
 	/** test validateInput() of BatteryEntityCreator
 	 * 
 	 */
 	@Test
-	public void testBatteryEntityCreatorInputValidation() {
+	public void testValidateInputBatteryEntityCreator() {
 		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
 		jo.put("storage", storageIRI);
 		assertTrue(new BatteryEntityCreator().validateInput(jo));
 		
 	}
+	
+	/** test validateInput() of BatteryLocator
+	 * 
+	 */
+	@Test
+	public void testValidateInputBatteryLocator() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
+		jo.put("storage", storageIRI);
+		assertTrue(new BatteryEntityCreator().validateInput(jo));
+		
+	}
+	
 	/** test filterPV method of EnergyStorageSystem
 	 * 
 	 */
 	@Test
 	public void testEnergyStorageSystemFilterPV() {
 		List<String> ja = new EnergyStorageSystem().filterPV (ENIRI);
-		assertNotNull(ja.size());
+		assertEquals(ja.size(), 0); //There should be no photovoltaic generators attached to the EnergyStorageSystem at base
 	}
+	
 	/** test prepareCSVPahigh of EnergyStorageSystem
 	 * 
 	 */
@@ -100,8 +126,9 @@ public class EnergyStorageSystemTest {
 		new EnergyStorageSystem(). prepareCSVRemaining( batIRI, baseUrl );
 		File file = new File( baseUrl + "/EnvironmentalScore.csv");
 		assertTrue(file.exists());
-		assertTrue(file.length()> 0);
+		assertTrue(file.length()> 0); //That file is not empty
 	}
+	
 	/** test readOutput of EnergyStorageSystem
 	 * 
 	 */
@@ -111,16 +138,13 @@ public class EnergyStorageSystemTest {
 		List<Double[]> simulationResult=new EnergyStorageSystem().readOutput(outputfiledir);
 
 		System.out.println("simulation element = "+simulationResult.size());
-		assertequal(0.01,simulationResult.get(0)[0]);
-		assertequal(0.53,simulationResult.get(1)[1]);
-		assertequal(61.0,simulationResult.get(0)[2]);
+		assertEquals(0.01,simulationResult.get(0)[0], 0.01);
+		assertEquals(0.53,simulationResult.get(1)[1], 0.01);
+		assertEquals(61.0,simulationResult.get(0)[2], 0.01);
 		//ArrayList<String>removedplant=new ArrayList<String>();
 		JSONObject result = new JSONObject();
-	}
-	private void assertequal(double d, Double double1) {
-		// TODO Auto-generated method stub
-		
-	}
+	}	
+	
 	/** tests  modifyTemplate and runGAMS methods
 	 * 
 	 * @throws IOException
@@ -128,8 +152,6 @@ public class EnergyStorageSystemTest {
 	 */
 	@Test
 	public void testModifyTemplate() throws IOException, InterruptedException{
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_ESS";
 		EnergyStorageSystem a = new EnergyStorageSystem();
 		try {
 			a.runGAMS(baseUrl);
@@ -141,6 +163,7 @@ public class EnergyStorageSystemTest {
 			      e.printStackTrace();
 			   }
 	}
+	
 	/** test optimizedBatteryMatching() of EnergyStorageSystem ().
 	 * 
 	 * @throws IOException
@@ -158,16 +181,7 @@ public class EnergyStorageSystemTest {
 		assertEquals(storageIRI, testres.getString("storage"));
 		
 	}
-	/** add validateInput() for OptimizationAgent
-	 * 
-	 */
-	@Test
-	public void testOptimizationAgentInputValidation() {
-		JSONObject jo = new JSONObject();
-		jo.put("storage", storageIRI);
-		assertTrue(new OptimizationAgent().validateInput(jo));
-		
-	}
+	
 	/** test OptimizationAgent as itself
 	 * 
 	 */
@@ -182,6 +196,7 @@ public class EnergyStorageSystemTest {
 		System.out.println(result2);	
 		assertEquals(result2, jo2.toString());
 	}
+	
 	/** test createBatteryOwlFile() of BatteryEntityCreator
 	 * 
 	 */
@@ -193,7 +208,6 @@ public class EnergyStorageSystemTest {
 			OntModel model = EnergyStorageSystem.readModelGreedy(ENIRI);
 			
 			listbat = new BatteryEntityCreator().createBatteryOwlFile(model, storageIRI,valueboundary);
-
 			assertNotNull(listbat);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -211,6 +225,7 @@ public class EnergyStorageSystemTest {
 		JSONArray ja = new  JSONObject(testres).getJSONArray("batterylist" );
 		assertTrue(ja.length() > 0);
 	}
+	
 	/** test BatteryLocator as an agent
 	 * 
 	 */
@@ -222,6 +237,7 @@ public class EnergyStorageSystemTest {
 		JSONArray ja = new  JSONObject(testres).getJSONArray("batterylist" );
 		assertTrue(ja.length() > 0);
 	}
+	
 	/** calls ESSCoordinate through Agent
 	 * 
 	 * @throws JSONException
@@ -241,6 +257,7 @@ public class EnergyStorageSystemTest {
 		JSONArray ja = testres.getJSONArray("batterylist" );
 		assertTrue(ja.length() > 0);
 	}
+	
 	/** call ESSCoordinate directly
 	 * 
 	 * @throws JSONException
@@ -265,9 +282,5 @@ public class EnergyStorageSystemTest {
 		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStorageRetrofit", jo.toString());
 		
 	}
-	
-	
-	
-	
 	
 }

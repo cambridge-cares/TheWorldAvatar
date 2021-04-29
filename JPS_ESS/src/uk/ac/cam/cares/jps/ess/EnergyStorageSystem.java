@@ -32,21 +32,18 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 public class EnergyStorageSystem extends JPSAgent {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
 	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
-	
+	private String modelname="NESS.gms";
+    private List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
 
 	Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
 	@Override
 	protected void setLogger() {
 		logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
 	}
-	private String modelname="NESS.gms";
-    private List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		
@@ -67,7 +64,8 @@ public class EnergyStorageSystem extends JPSAgent {
 			} catch (IOException e) {
 				throw new JPSRuntimeException("");
 			}
-		}
+	}
+	
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
     	if (requestParams.isEmpty()) {
@@ -94,8 +92,6 @@ public class EnergyStorageSystem extends JPSAgent {
  		baseUrl =baseUrl.replace("//", "/");
 		modifyTemplate(baseUrl,modelname);		
 		logger.info("Start");
-		//If user does not have GAMSDIR on, replace the following with the location of his GAMS
-//		String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
 		String gamsLocation = System.getenv("GAMSDIR").split(";")[0];
 
 
@@ -174,14 +170,18 @@ public class EnergyStorageSystem extends JPSAgent {
 	 * @param iriofnetwork
 	 * @return
 	 */
-	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
+	public static OntModel readModelGreedy(String iriofnetwork) { 
 		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system )
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
-		String wasteInfo = sb.build().toString();
+		String modelQuery = sb.build().toString();
 
 		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, wasteInfo);
+		return broker.readModelGreedy(iriofnetwork, modelQuery);
 	}
+	/** Prepares query for SelectBuilder in prepareCSVPahigh and prepareCSVremaining
+	 * 
+	 * @return SelectBuilder 
+	 */
 	public SelectBuilder prepareSelectBuilderForQuery() {
 		return new SelectBuilder().addPrefix("j1",TWA_Ontology+"/ontopowsys/PowSysRealization.owl#" )
 				.addPrefix("j2", TWA_upperlevel_system)
@@ -191,6 +191,7 @@ public class EnergyStorageSystem extends JPSAgent {
 				.addPrefix("j7", TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#");
 				
 	}
+	
 	/** prepare the max and min power generated as well as state of charge. 
 	 * 
 	 * @param pvGenIRI IRI of Solar generator
@@ -241,6 +242,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
 		new QueryBroker().putLocal(baseUrl + "/Pa_high.csv", s);
 	}
+	
 	/** run through the characteristics of fifteen batteries and print out in csv format in folder baseUrl
 	 * 
 	 * @param batcal battery catalog IRI
@@ -307,6 +309,15 @@ public class EnergyStorageSystem extends JPSAgent {
 		makeBatteryInputParamCSV(baseUrl, resultList, header,"Dtlow.csv",7);
 		
 	}
+	
+	/** converts the inputs into a csv from a List<String[]> arrays
+	 * 
+	 * @param baseUrl
+	 * @param resultList
+	 * @param header
+	 * @param filename
+	 * @param index
+	 */
 	private void makeBatteryInputParamCSV(String baseUrl, List<String[]> resultList, String[] header,String filename,int index) {
 		List<String[]> resultListforcsv = new ArrayList<String[]>();
 		resultListforcsv.add(header);
@@ -375,10 +386,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		}
 		return simulationResult;
 		
-	}
-	
-	
-	
+	}	
 	
 	/** Constructs an OntModel of Electrical network, and determine the generators, bus numbers and respective locations
 	 * 
@@ -408,6 +416,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		}
 		return pvGenIRI;
 	}
+	
 	/** feeds a query and gets a result
 	 * 
 	 * @param model
@@ -422,6 +431,7 @@ public class EnergyStorageSystem extends JPSAgent {
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultListfromquery;
 	}
+	
 	/** calls on CSVPahigh and CSVRemaining to prepare parameters
 	 * then calls on runGAMS to execute wrapper
 	 * @param baseUrl
