@@ -1,10 +1,10 @@
 package uk.ac.cam.cares.des.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.json.JSONObject;
@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
@@ -23,13 +24,12 @@ import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 
 /** Note that forecast agents are disabled in response to restriction
  * on number of solar calls
- * 
+ * Tests for WeatherIrradiationRetriever, BlockchainWrapper, Forecast Agent, and Front End Coordination Agent. 
  */
 public class Test_DESWeatherAgents{
 	
 	
 	private static String ENIRI=null;
-	private String DISIRI=null;
 	private String baseUrl = null;
 	private String irioftempS=null;
 	private String iriofirrS=null;
@@ -40,7 +40,6 @@ public class Test_DESWeatherAgents{
     @Before
     public void setUp() {
     	ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
-    	DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
     	baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\DESTest\\solar2";
     	irioftempS="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
         iriofirrS="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
@@ -48,7 +47,15 @@ public class Test_DESWeatherAgents{
 		iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
 		
     }
-   
+    /** test if validateInput method is working in Weather Retriever
+	 * 
+	 */
+    @Test
+	public void testInputValidatorForecast() {
+		JSONObject jo = new JSONObject().put("temperatureforecast", irioftempF);
+		jo.put("irradiationforecast", iriofirrF);
+		assertTrue(new ForecastAgent().validateInput(jo));		
+	}
 
 	/** This tests if the forecast was ran correctly when called directly.  
 	 * This test should not be run due to the limited number of calls alloted to a free account. 
@@ -66,37 +73,7 @@ public class Test_DESWeatherAgents{
     	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
     	timeLast = new Date().getTime();
     	new ForecastAgent().nextForecastDayTemperature(irioftempF);
-    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
-    	
-		
-		
-		
-	}
-	/**
-	 * Periodic call to run the (Forecast+DESpython wrapper)
-	 * Every four hours, so six calls in a day this would be called
-	 * This test should not be run due to the limited number of calls alloted to a free account. 
-	 * 
-	 */
-    @Test
-	public void testStartCoordinationDESScenariobase() throws IOException  {
-		
-
-		JSONObject jo = new JSONObject();
-	
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("district", DISIRI);
-		jo.put("temperaturesensor", irioftempS);
-    	jo.put("irradiationsensor",iriofirrS);
-		
-		System.out.println(jo.toString());
-		//Disabling this because we don't want solcast to execute each time 
-		//We run a test
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESCoordination", jo.toString());
-		
-//		System.out.println(resultStart);
-//		System.out.println("finished execute");
-
+    	assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));		
 	}
 	
 	/** test if validateInput method is working in Weather Retriever
@@ -108,10 +85,9 @@ public class Test_DESWeatherAgents{
 				.put("electricalnetwork", ENIRI);
 		jo.put("temperaturesensor", irioftempS);
 		jo.put("irradiationsensor", iriofirrS);
-		assertTrue(new WeatherIrradiationRetriever().validateInput(jo));
-		
-		
+		assertTrue(new WeatherIrradiationRetriever().validateInput(jo));		
 	}
+    
 	/**
 	 * Calls and runs the hourly weather retriever, that uses OCR
 	 */
@@ -128,15 +104,15 @@ public class Test_DESWeatherAgents{
 			assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
 			// check that OWL is updated
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException("");
 		}
 	}
+    
 	/** Calls and runs the hourly weather retriever, that uses OCR (thru Server run)
 	 *
 	 */
     @Test
-	public void testIrradiationRetreiverAgentCall() throws Exception {
+	public void testIrradiationRetrieverAgentCall() throws Exception {
 		long timeLast = new Date().getTime();
 		JSONObject jo = new JSONObject();
 		jo.put("windspeedsensor", iriofwindS);
@@ -159,11 +135,43 @@ public class Test_DESWeatherAgents{
 		fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
 		assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
 	}
+    /** checks for empty input using validateInput() for FrontEnd Coordination Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorFrontEndCoordination(){
+		JSONObject jo = new JSONObject();
+	    assertFalse(new BlockchainWrapper().validateInput(jo));	
+	    jo.put("key", "value");
+	    assertTrue(new BlockchainWrapper().validateInput(jo));		
+	}
+	
+	/** checks for empty input using validateInput() for BlockchainWrapper Agent
+	 * 
+	 */
+	@Test
+	public void testInputValidatorBlockchainWrapper(){
+		JSONObject jo = new JSONObject();
+	    assertFalse(new BlockchainWrapper().validateInput(jo));	
+	    jo.put("key", "value");
+	    assertTrue(new BlockchainWrapper().validateInput(jo));	
+	}
+	
+    
+    /** test loadProperties in BlockchainWrapper
+     * 
+     */
+    @Test
+    public void testgetPropertiesFromBlockchainWrapper() {
+    	BlockchainWrapper ab = new BlockchainWrapper();
+    	assertNotNull(ab.addrOfI, "industrial.json");
+    }
+    
 	/**
 	 * Calls and runs the Blockchain transaction directly
 	 */
     @Test
-	public void testBlockchainWrapperDirectCall() throws IOException{
+	public void testBlockchainWrappercalculateTrade() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("industrial", "2.311116263469459966e+01");
 		jo.put("commercial", "5.000000000000000000e+01");
@@ -185,8 +193,53 @@ public class Test_DESWeatherAgents{
 		assertNotNull(new JSONObject(v).get("txHash"));
 		assertNotNull(new JSONObject(v).get("sandr"));
 	}
+    
 	
+	/** test if Blockchain Wrapper works if called directly
+	 * Assuming that a run was completed beforehand
+	 */
+	@Test
+	public void testBlockchainWrapperDirect() {
+		BlockchainWrapper bc = new BlockchainWrapper();
+		//looks for last created directory through the Metadata Query
+		String directorychosen= bc.getLastModifiedDirectory();
+		System.out.println(directorychosen);
+		//looks for the data according to the csvs stored
+		JSONObject graData  = bc.provideJSONResult(directorychosen);
+		JSONObject jo = bc.determineValue (graData);
+		System.out.println(jo.toString());
+		assertNotNull(jo);
+		JSONObject result = bc.calculateTrade(jo);
+		assertNotNull(result.get("txHash"));
+		assertNotNull(result.get("sandr"));
+		
+	}
+	
+	/** test if FrontEndCoordination works if called through agent
+	 * Assuming that a run was completed beforehand
+	 */
+	@Test
+	public void testFrontEndCoordinationAgentCall() {
+		JSONObject jo = new JSONObject().put("key", "value");
+		JSONObject joRes = new JSONObject(AgentCaller
+				.executeGetWithJsonParameter("JPS_DES/showDESResult",
+						jo.toString()));
+		assertNotNull(joRes.get("txHash"));
+	}
 
+    /**
+	 * Periodic call to run the (Forecast+DESpython wrapper)
+	 * Every four hours, so six calls in a day this would be called
+	 * This test should not be run due to the limited number of calls alloted to a free account. 
+	 * This test should not return a result
+	 */
+    @Test
+	public void testStartCoordinationDES() throws IOException  {
+		JSONObject jo = new JSONObject();	
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESCoordination", jo.toString());
+		
+	}
+	
 	
 
 	

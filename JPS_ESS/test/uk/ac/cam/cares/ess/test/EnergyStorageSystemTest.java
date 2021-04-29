@@ -37,15 +37,12 @@ public class EnergyStorageSystemTest {
 	List<String>pvgeniris= new ArrayList<String>();
 	String usecaseID = UUID.randomUUID().toString();
 	
-	public void xxxtestGAMSRun() throws IOException, InterruptedException { //only to test the gums code if it's running automatically
-		EnergyStorageSystem a = new EnergyStorageSystem();
-		a.runGAMS("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\c8e42983-320e-4748-84e0-a49b7628b9db");
-	}
+	
 	/** test the inputValidate method of Energy Storage System Coordination Agent
 	 * 
 	 */
 	@Test
-	public void testValidateCoordinationESSAgent() {
+	public void testValidateInputCoordinationESSAgent() {
 		JSONObject requestParam = new JSONObject().put("electricalnetwork", ENIRI);
 		List<String> lstJA = new ArrayList<String>();
 		lstJA.add(pvGenIRI);
@@ -62,6 +59,16 @@ public class EnergyStorageSystemTest {
 		requestParam.put("BatteryCatalog", batIRI);
 		assertTrue(new EnergyStorageSystem().validateInput(requestParam));
 		
+		
+	}
+	/** test validateInput() of BatteryEntityCreator
+	 * 
+	 */
+	@Test
+	public void testBatteryEntityCreatorInputValidation() {
+		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
+		jo.put("storage", storageIRI);
+		assertTrue(new BatteryEntityCreator().validateInput(jo));
 		
 	}
 	/** test filterPV method of EnergyStorageSystem
@@ -192,16 +199,7 @@ public class EnergyStorageSystemTest {
 			e.printStackTrace();
 		}
 	}
-	/** test validateInput() of BatteryEntityCreator
-	 * 
-	 */
-	@Test
-	public void testBatteryEntityCreatorInputValidation() {
-		JSONObject jo = new JSONObject().put("electricalnetwork", ENIRI);
-		jo.put("storage", storageIRI);
-		assertTrue(new BatteryEntityCreator().validateInput(jo));
-		
-	}
+	
 	/** test BatteryEntityCreator as an agent
 	 * 
 	 */
@@ -267,16 +265,7 @@ public class EnergyStorageSystemTest {
 		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStorageRetrofit", jo.toString());
 		
 	}
-	/** enables scenarioName in testInSuccession
-	 * 
-	 * @param scenarioName
-	 * @return
-	 */
-	private String enableScenario(String scenarioName) {
-		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
-		JPSHttpServlet.enableScenario(scenarioUrl);	
-		return scenarioUrl;
-	}
+	
 	
 	
 	

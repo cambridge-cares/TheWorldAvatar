@@ -55,6 +55,7 @@ public class ForecastAgent extends JPSAgent{
             throw new JPSRuntimeException("");
         }
 	}
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
@@ -76,22 +77,12 @@ public class ForecastAgent extends JPSAgent{
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
             return false;
-        }
-        String iriofnetwork = requestParams.getString("electricalnetwork");
-        boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
-
-        String iriofdistrict = requestParams.getString("district");
-        boolean w = InputValidator.checkIfValidIRI(iriofdistrict);
-        
+        }        
         String irioftempF=requestParams.getString("temperatureforecast");
-
         boolean e = InputValidator.checkIfValidIRI(irioftempF);
         String iriofirrF=requestParams.getString("irradiationforecast");
         boolean r = InputValidator.checkIfValidIRI(iriofirrF);
-        
-        return q&w&e&r;
-       
-
+        return e&r;
     }
     
 	/** reads data from Solcast.com.au (need API key) and stores in ArrayList<String[]>
@@ -117,6 +108,7 @@ public class ForecastAgent extends JPSAgent{
         }   
         return ans;     
 	}
+	
 	/** reads data from AccuWeather for Singapore (need API key) and stores in ArrayList<String[]>
 	 * Length of 12 hours; 24 hours is paid plan. 
 	 * 
@@ -140,6 +132,7 @@ public class ForecastAgent extends JPSAgent{
 		}        
 		return accuArray;
 	}
+	
 	/** Utilize a static method when there is only one right answer and it isn't changing. 
 	 * 
 	 * @return WhereBuilder for nextForecastDay temperatures. 
@@ -179,6 +172,7 @@ public class ForecastAgent extends JPSAgent{
 		updateOWLFileWithResultList(resultListfromquery,accuArray, convertedIRI, indices); 
 		
 	}
+	
 	/** calls solcast API and updates forecast irradiation API
 	 * 
 	 * @param iriTemperature
@@ -218,6 +212,7 @@ public class ForecastAgent extends JPSAgent{
 		updateOWLFileWithResultList(resultListfromquery,solArray, convertedIRIIrrad, indices2); 
     	
 	}
+	
 	/** SubMethod for readWriteToOWL for each type of sensor
 	 * @param sensorIRI
 	 * @param sparqlQuery

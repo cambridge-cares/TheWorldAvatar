@@ -9,7 +9,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -21,13 +20,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
@@ -107,7 +103,7 @@ public class ResidentialAgent extends JPSAgent {
 				groupInfo = q.toString();
 		} catch (ParseException e1) {
 			// parseExpression due to REGEX used in Filter
-			throw new JPSRuntimeException("ResidentialAgent: ParseException: results invalid. ");
+			throw new JPSRuntimeException("");
 		}
 		ResultSet resultSet = JenaHelper.query(model, groupInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);

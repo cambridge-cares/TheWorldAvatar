@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -31,6 +30,7 @@ public class CommercialAgent extends JPSAgent {
 	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
 	private static final String TWA_POWSYSRealization = TWA_Ontology+ "/ontopowsys/PowSysRealization.owl#";
 	private static final String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
+	
 	/** Main Function for processing Commercial Agent. 
 	 * Employs queryForWeather Forecast as well as building constants. 
 	 * @param requestParams

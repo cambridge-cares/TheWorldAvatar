@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.des.test;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -12,14 +11,16 @@ import org.junit.Test;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.des.BlockchainWrapper;
-import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.n.CommercialAgent;
 import uk.ac.cam.cares.jps.des.n.DESAgentNew;
 import uk.ac.cam.cares.jps.des.n.IndustrialAgent;
 import uk.ac.cam.cares.jps.des.n.ResidentialAgent;
 import uk.ac.cam.cares.jps.des.n.SolarAgent;
 
+/** Tests for CommercialAgent, DESAgentNew, IndustrialAgent, ResidentialAgent, SolarAgent
+ * 
+ *
+ */
 public class Test_DESSimulatorAgent{
 	private String iriofnetworkdistrict = null;
 	private String irioftempF= null;
@@ -207,79 +208,7 @@ public class Test_DESSimulatorAgent{
 	        
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", jo.toString());
 		assertNotNull(resultStart);
-		FrontEndTalk();
-	}
-	
-	/** check if FrontEnd Case Scenario works
-	 * 
-	 */
-	public void FrontEndTalk() {
-		BlockchainWrapper bc = new BlockchainWrapper();
-		//looks for last created directory through the Metadata Query
-		String directorychosen= bc.getLastModifiedDirectory();
-		System.out.println(directorychosen);
-		//looks for the data according to the csvs stored
-		JSONObject graData  = bc.provideJSONResult(directorychosen);
-		JSONObject jo = bc.determineValue (graData);
-		System.out.println(jo.toString());
-		assertNotNull(jo);
-		JSONObject result = bc.calculateTrade(jo);
-		assertNotNull(result.get("txHash"));
-		assertNotNull(result.get("sandr"));
-		
-	}
-	
-	/** test if Blockchain Wrapper works if called directly
-	 * Assuming that a run was completed beforehand
-	 */
-	@Test
-	public void testFrontEndTalk() {
-		FrontEndTalk();
-	}
-	
-	/** test if Blockchain Wrapper works if called through agent
-	 * Assuming that a run was completed beforehand
-	 */
-	@Test
-	public void testBlockchainWrapperAgentCall() {
-		JSONObject jo = new JSONObject().put("key", "value");
-		JSONObject joRes = new FrontEndCoordination().processRequestParameters(jo);
-		assertNotNull(joRes.get("txHash"));
-	}
-	
-	/** test if FrontEndCoordination works if called through agent
-	 * Assuming that a run was completed beforehand
-	 */
-	@Test
-	public void testFrontEndCoordinationAgentCall() {
-		JSONObject jo = new JSONObject().put("key", "value");
-		JSONObject joRes = new JSONObject(AgentCaller
-				.executeGetWithJsonParameter("JPS_DES/showDESResult",
-						jo.toString()));
-		assertNotNull(joRes.get("txHash"));
-	}
-
-	/** checks for empty input using validateInput() for FrontEnd Coordination Agent
-	 * 
-	 */
-	@Test
-	public void testInputValidatorFrontEndCoordination(){
-		JSONObject jo = new JSONObject();
-	    assertFalse(new BlockchainWrapper().validateInput(jo));	
-	    jo.put("key", "value");
-	    assertTrue(new BlockchainWrapper().validateInput(jo));		
-	}
-	
-	/** checks for empty input using validateInput() for BlockchainWrapper Agent
-	 * 
-	 */
-	@Test
-	public void testInputValidatorBlockchainWrapper(){
-		JSONObject jo = new JSONObject();
-	    assertFalse(new BlockchainWrapper().validateInput(jo));	
-	    jo.put("key", "value");
-	    assertTrue(new BlockchainWrapper().validateInput(jo));	
-	}
+	}	
 	
 	/** test if validateInput method is working in Residential Agent
 	 * 

@@ -66,6 +66,7 @@ public class BlockchainWrapper extends JPSAgent{
         }
 
 	}
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
@@ -113,11 +114,10 @@ public class BlockchainWrapper extends JPSAgent{
 			fileLocation = Paths.get(new URL(listmap.get(0)[0]).toURI()).toString();
 			return fileLocation;
     	} catch(IOException ex) {
-    		logger.error(ex.getMessage());
+    		throw new JPSRuntimeException(new IOException());
     	} catch (URISyntaxException e) {
-    		logger.error(e.getMessage());
+    		throw new JPSRuntimeException("");
 		}
-    	return "";
     }
 
 	
