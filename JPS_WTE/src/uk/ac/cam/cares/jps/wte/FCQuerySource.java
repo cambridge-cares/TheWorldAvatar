@@ -15,14 +15,20 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
  *
  */
 public class FCQuerySource {
+	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_OntoWaste = TWA_Ontology+"/ontowaste/OntoWaste.owl#"; 
+	private static final String TWA_OntoTransport = TWA_Ontology+"/ontotransport/OntoTransport.owl#";
+	private static final String TWA_POWSYSPerformance= TWA_Ontology + "/ontopowsys/PowSysPerformance.owl#";
 
 	/** gets the food court name, xy coordinates
 	 */
 	public static SelectBuilder getFCQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste)
+				.addPrefix("j2",TWA_upperlevel_system)
+				.addPrefix("j7", TWA_spacetime_extended)
+				.addPrefix("j8", TWA_OntoTransport)
 				.addVar("?entity").addVar("?name").addVar("?xvalue").addVar("?yvalue")
 				.addWhere("?entity" ,"a", "j1:FoodCourt").addWhere("?entity" ,"j8:hasName", "?name")
 				.addWhere("?entity" ,"j7:hasGISCoordinateSystem", "?coorsys")
@@ -36,9 +42,9 @@ public class FCQuerySource {
 	/** general WasteTreatmentQuery 
 	 */
 	public static SelectBuilder getWasteTreatmentQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste )
+				.addPrefix("j2",TWA_upperlevel_system)
+				.addPrefix("j7", TWA_spacetime_extended)
 				.addVar("?entity").addVar("?xvalue").addVar("?yvalue")
 				.addWhere("?entity" ,"j7:hasGISCoordinateSystem", "?coorsys")
 				.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
@@ -71,9 +77,9 @@ public class FCQuerySource {
 	 * Can be assigned offsite or onsite
 	 */
 	public static SelectBuilder getTechQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste )
+				.addPrefix("j2",TWA_upperlevel_system)
+				.addPrefix("j3", TWA_POWSYSPerformance)
 				.addVar("?pollutiontreatmenttaxvalue").addVar("?Tech1Capvalue").addVar("?installationcostvalue")
 				.addVar("?operationcostvalue").addVar("?transferrateelectricvalue").addVar("?energyconsumptionvalue")
 				.addVar("?laborcostvalue")
