@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 import uk.ac.cam.cares.jps.wte.visualization.WTEVisualization;
 
@@ -29,7 +30,7 @@ public class TestVisualization {
 		JSONObject jo = new JSONObject();
 
 		try {
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);
 			String result = a.createMarkers(model, jo);
 			assertNotNull(result);
 			JSONObject fcMap = new JSONObject(result);
@@ -69,7 +70,7 @@ public class TestVisualization {
 		// OnSiteWasteTreatment-0
 		WTEVisualization a = new WTEVisualization();
 		JSONObject jo = new JSONObject();
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);
 		try {
 			String result = a.searchOnsite(model, jo);
 			assertNotNull(result);
@@ -108,7 +109,7 @@ public class TestVisualization {
 	public void testreadInputsDirect(){
 		WTEVisualization a = new WTEVisualization();
 		try {
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);
 		String g = a.readInputs(model);
 		JSONObject jo = new JSONObject(g);
 		System.out.println(g);

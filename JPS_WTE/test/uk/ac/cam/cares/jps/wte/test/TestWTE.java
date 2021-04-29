@@ -39,7 +39,7 @@ public class TestWTE extends TestCase{
 	@Test
 	public void testQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
 		int noOfYears = 15;
 		a.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model, noOfYears);
 		File file = new File( baseUrl + "\\Site_xy.csv");
@@ -54,7 +54,7 @@ public class TestWTE extends TestCase{
 	public void testQueryOffsiteWT() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		
-		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
 		a.prepareCSVWT("Location.csv", baseUrl,model); 
 		File file = new File(baseUrl +  "\\Location.csv");
 		assertTrue(file.exists());
@@ -66,7 +66,7 @@ public class TestWTE extends TestCase{
 	public void testQueryTransportQuery() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		
-		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
 		a.prepareCSVTransport(WastetoEnergyAgent.getTransportQuery(),"transport.csv", baseUrl,model); 
 
 		File file = new File(baseUrl +  "\\transport.csv");
@@ -79,7 +79,7 @@ public class TestWTE extends TestCase{
 	 */
 	@Test
 	public void testQuerytransport() {
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);
 		String query=WastetoEnergyAgent.getTransportQuery();
 		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
         System.out.println("size of result="+resultList.size()); 
@@ -92,7 +92,7 @@ public class TestWTE extends TestCase{
 	 */
 	@Test
 	public void testWTEKBCreatorWasteSystemOutputQuery() {
-		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);
 		
 		String query = WTEProcessResult.getWasteSystemOutputQuery();
 		List<String[]> resultList =  FCQuerySource.queryResult(model, query);
@@ -109,7 +109,7 @@ public class TestWTE extends TestCase{
 	String query = FCQuerySource.getTechQuery() 
 			.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
 
-		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
 		List<String[]> resultList = FCQuerySource.queryResult(model,query);
 		System.out.println("size of result="+resultList.size()); 
         assertEquals(3, resultList.size());
@@ -123,7 +123,7 @@ public class TestWTE extends TestCase{
 				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
 				.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
 
-			OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+			OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
 			List<String[]> resultList = FCQuerySource.queryResult(model,query);
 	        assertEquals(1, resultList.size());
 		}
@@ -182,7 +182,7 @@ public class TestWTE extends TestCase{
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
 		enableScenario("testScenariosWithWTE");
 		String baseUrl = QueryBroker.getLocalDataPath();
-		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
 		ag.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
 		//test if Site_xy.csv is created (can't check if csv file is empty unfortunately)
 		File file = new File(baseUrl +  "/Site_xy.csv");
@@ -218,7 +218,7 @@ public class TestWTE extends TestCase{
 		List<String[]> propertydataonsite = FCQuerySource.queryResult(model, WTFTechOnsiteQuery);
 		
 
-		model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		model= FCQuerySource.readModelGreedy(iriofnetwork);
 		//only one year (first year) to minimize the number of OnsiteWTF being created. 15 in the actual site
 		List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
 		List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");

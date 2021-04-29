@@ -69,10 +69,10 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 */
 	public static String getTransportQuery() {
 		SelectBuilder sb = new SelectBuilder()
-				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#")
+				.addPrefix("j1", FCQuerySource.TWA_OntoWaste)
+				.addPrefix("j2",FCQuerySource.TWA_upperlevel_system)
+				.addPrefix("j7", FCQuerySource.TWA_spacetime_extended)
+				.addPrefix("j8", FCQuerySource.TWA_OntoTransport)
 				.addVar("?Unit_transport_capacity").addVar("?Unit_transport_cost")
 				.addVar("?pollutionTransportTax").addVar("?dieselConsTruck")
 		.addWhere("?entity", "a","j8:TransportationRoute").addWhere("?entity", "j8:suitFor","?truck")
@@ -98,7 +98,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 * Incineration upper bound, CoDigestion upper bound, and Anerobic Digestion upper bound. 
 	 */
 	public static String returnUpperBoundQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",FCQuerySource.TWA_OntoWaste)
 				.addVar("?entity").addVar("?tech1upp").addVar("?tech2upp").addVar("?tech3upp")
 				.addWhere("?entity" ,"j1:hasOffsiteIncinerationUpperBound", "?tech1upp")
 				.addWhere("?entity" ,"j1:hasOffsiteCoDigestionUpperBound", "?tech2upp")
@@ -117,7 +117,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 		String baseUrl= requestParams.getString("baseUrl");
 		String wasteIRI=requestParams.getString("wastenetwork");
 		//render ontological model of waste network
-		OntModel model= readModelGreedy(wasteIRI);
+		OntModel model= FCQuerySource.readModelGreedy(wasteIRI);
 		//creates the csv of FCs, with Site_xy reading for location, waste containing the level of waste in years 1-15
 		//in baseUrl folder
 		 prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
@@ -177,18 +177,7 @@ public class WastetoEnergyAgent extends JPSAgent {
         }
     }
 	
-	/** reads the topnode into an OntModel of all its subsystems. 
-	 * @param iriofnetwork
-	 * @return
-	 */
-	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
-		String wasteInfo = sb.build().toString();
-
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, wasteInfo);
-	}
+	
 	/** Creates the CSV of the foodcourt for the Matlab code to read. 
 	 * a. reading the model and getting the number of FC *number of years of waste levels 
 	 * b. creating the csv file of site locations, and waste levels of those FoodCourts per year

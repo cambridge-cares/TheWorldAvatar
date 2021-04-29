@@ -6,21 +6,20 @@ import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 /** Util Class to prepare necessary queries
  * 
  *
  */
 public class FCQuerySource {
 	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
-	private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
-	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
-	private static final String TWA_OntoWaste = TWA_Ontology+"/ontowaste/OntoWaste.owl#"; 
-	private static final String TWA_OntoTransport = TWA_Ontology+"/ontotransport/OntoTransport.owl#";
-	private static final String TWA_POWSYSPerformance= TWA_Ontology + "/ontopowsys/PowSysPerformance.owl#";
+	public static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
+	public static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	public static final String TWA_OntoWaste = TWA_Ontology+"/ontowaste/OntoWaste.owl#"; 
+	public static final String TWA_OntoTransport = TWA_Ontology+"/ontotransport/OntoTransport.owl#";
+	public static final String TWA_POWSYSPerformance= TWA_Ontology + "/ontopowsys/PowSysPerformance.owl#";
 
 	/** gets the food court name, xy coordinates
 	 */
@@ -118,17 +117,19 @@ public class FCQuerySource {
 		return resultListfromquery;
 	}
 	
-	/** Temporary translation fix for switch from KBClient to KGRouter. In the end, it should be querying appropriately from the 
-	 * correct Source
-	 * 
-	 * @param iriofnetwork The file name to be changed. 
-	 * @return iriofnetwork (changed)
+	
+	/** reads the topnode into an OntModel of all its subsystems.
+	 * This has to be SCENARIO CAPABLE 
+	 * @param iriofnetwork
+	 * @return
 	 */
-	public static String tempIRItoFile(String iriofnetwork) {
-		String translatedIRI = iriofnetwork.replace("http://www.theworldavatar.com", AgentLocator.getProperty("absdir.root"));
-		translatedIRI = ScenarioHelper.cutHash(translatedIRI);
-		iriofnetwork = translatedIRI.replace("C:/", "C:\\");
-		return iriofnetwork;
+	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system )
+				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
+		String wasteInfo = sb.build().toString();
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, wasteInfo);
 	}
 	
 }
