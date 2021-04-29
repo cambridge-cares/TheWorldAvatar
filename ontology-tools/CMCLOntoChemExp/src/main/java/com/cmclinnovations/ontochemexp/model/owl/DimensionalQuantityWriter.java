@@ -62,7 +62,7 @@ public class DimensionalQuantityWriter extends PrimeConverter {
 			
 			try {
 				if (property.getPropertyName() != null && !property.getPropertyName().trim().isEmpty()) {
-					iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(), currentDQInstance);
+					iABoxManagement.createIndividual(name, currentDQInstance);
 					iABoxManagement.addProperty(currentDQInstance, OWLRDFVocabulary.RDFS_LABEL.getIRI(), property.getPropertyName(), STRING);
 				}
 				
