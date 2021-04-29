@@ -166,9 +166,9 @@ hasDescription,Data Property,,,DimensionalQuantity,String,,,http://www.theworlda
 hasSourceType,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDerivedPropertyExists,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDatPreferredKey,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasCAS,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasInChI,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasSMILES,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#inChI,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
 hasUnits,Data Property,,,Amount,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasBound,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDatKind,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
