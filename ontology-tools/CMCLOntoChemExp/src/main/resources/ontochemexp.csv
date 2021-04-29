@@ -93,7 +93,7 @@ http://purl.org/dc/terms/contributor,Object Property,,,BibliographyLink,http://x
 hasApparatus,Object Property,,,Experiment,Apparatus,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasAdditionalDataItem,Object Property,,,Experiment,AdditionalDataItem,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasCommonProperties,Object Property,,,Experiment,CommonProperties,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasCopyright,Object Property,,,Experiment,Copyright,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasCopyright,Object Property,,,Experiment,Copyright,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasBibliographyLink,Object Property,,,Experiment,BibliographyLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDataGroup,Object Property,,,Experiment,DataGroup,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasPerformer,Object Property,,,Experiment,http://xmlns.com/foaf/0.1/Agent,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
@@ -102,8 +102,8 @@ hasProvenance,Object Property,,,Experiment,Provenance,exactly 1,,http://www.thew
 hasModification,Object Property,,,Provenance,Modification,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 createdBy,Object Property,,,Provenance,http://xmlns.com/foaf/0.1/Agent,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 modifiedBy,Object Property,,,Modification,http://xmlns.com/foaf/0.1/Agent,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasIgnitionType,Object Property,,,ExpSpecs,IgnitionType,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasTimeShift,Object Property,,,ExpSpecs,TimeShift,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasIgnitionType,Object Property,,,ExpSpecs,IgnitionType,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasTimeShift,Object Property,,,ExpSpecs,TimeShift,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasKind,Object Property,,,Apparatus,Kind,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasMode,Object Property,,,Apparatus,Mode,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDimensionalQuantity,Object Property,,,Apparatus,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
@@ -113,7 +113,7 @@ hasComponent,Object Property,,,Acceptor,Component,only,,http://www.theworldavata
 hasComponent,Object Property,,,Donor,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasSpeciesLink,Object Property,,,Composition,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasSpeciesLink,Object Property,,,Concentration,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDerivedProperty,Object Property,,,DimensionalQuantity,DerivedProperty,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasDerivedProperty,Object Property,,,DimensionalQuantity,DerivedProperty,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDimensionalQuantity,Object Property,,,CommonProperties,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDimensionalQuantity,Object Property,,,DataGroup,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasDataPoint,Object Property,,,DataGroup,DataPoint,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
@@ -133,7 +133,7 @@ refersTo,Object Property,,,X,DimensionalQuantity,exactly 1,,http://www.theworlda
 hasSpeciesLink,Object Property,,,Component,SpeciesLink,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasAmount,Object Property,,,Component,Amount,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasUncertainty,Object Property,,,Component,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUniqueSpecies,Object Property,,,SpeciesLink,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,max 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
+hasUniqueSpecies,Object Property,,,SpeciesLink,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasFeature,Object Property,,,DerivedProperty,Feature,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasIndicator,Object Property,,,Feature,Indicator,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 hasObservable,Object Property,,,Feature,Observable,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
