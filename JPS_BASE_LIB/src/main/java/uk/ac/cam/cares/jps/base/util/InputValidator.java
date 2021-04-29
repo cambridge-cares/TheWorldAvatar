@@ -16,6 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 public class InputValidator {
 
 	public InputValidator() {
@@ -44,7 +46,7 @@ public class InputValidator {
 				throw new RiotException();
 			}
 			catch (Exception ex) {
-				ex.printStackTrace();
+				throw new JPSRuntimeException("");
 			}
 		return (!f& checkIfURLpattern(iriStr));
 		}

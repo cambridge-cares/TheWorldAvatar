@@ -153,15 +153,8 @@ public class EnergyStorageSystemTest {
 	@Test
 	public void testModifyTemplate() throws IOException, InterruptedException{
 		EnergyStorageSystem a = new EnergyStorageSystem();
-		try {
-			a.runGAMS(baseUrl);
-		   }
-		   catch (InterruptedException e) {
-		      e.printStackTrace();
-		   }
-		catch (Exception e) {
-			      e.printStackTrace();
-			   }
+		a.runGAMS(baseUrl);
+		  
 	}
 	
 	/** test optimizedBatteryMatching() of EnergyStorageSystem ().
@@ -201,17 +194,14 @@ public class EnergyStorageSystemTest {
 	 * 
 	 */
 	@Test
-	public void testBatteryEntityCreator() {
-		try {
-			JSONArray listbat;
-			Double valueboundary=0.3; //later is extracted from the battery type
-			OntModel model = EnergyStorageSystem.readModelGreedy(ENIRI);
-			
-			listbat = new BatteryEntityCreator().createBatteryOwlFile(model, storageIRI,valueboundary);
-			assertNotNull(listbat);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void testBatteryEntityCreator() throws IOException{
+		JSONArray listbat;
+		Double valueboundary=0.3; //later is extracted from the battery type
+		OntModel model = EnergyStorageSystem.readModelGreedy(ENIRI);
+		
+		listbat = new BatteryEntityCreator().createBatteryOwlFile(model, storageIRI,valueboundary);
+		assertNotNull(listbat);
+		
 	}
 	
 	/** test BatteryEntityCreator as an agent

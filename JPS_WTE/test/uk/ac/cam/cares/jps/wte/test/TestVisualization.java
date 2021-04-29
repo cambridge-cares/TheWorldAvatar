@@ -12,12 +12,8 @@ import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
-import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 import uk.ac.cam.cares.jps.wte.visualization.WTEVisualization;
 
 public class TestVisualization {
@@ -93,14 +89,8 @@ public class TestVisualization {
 		JSONObject jo = new JSONObject().put("wastenetwork",
 				iriofnetwork)
 				.put(JPSConstants.SCENARIO_AGENT_OPERATION, "JPS_WTE/WTEVisualization/queryOnsite");
-		try {
-			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_WTE/WTEVisualization/queryOnsite", jo.toString());
-			assertNotNull(resultStart);
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_WTE/WTEVisualization/queryOnsite", jo.toString());
+		assertNotNull(resultStart);		
 	}
 	
 	/** returns tech outputs, separated into JSON Objects
@@ -110,7 +100,6 @@ public class TestVisualization {
 	@Test
 	public void testreadInputsDirect(){
 		WTEVisualization a = new WTEVisualization();
-		try {
 		OntModel model = FCQuerySource.readModelGreedy(iriofnetwork);
 		String g = a.readInputs(model);
 		JSONObject jo = new JSONObject(g);
@@ -119,10 +108,7 @@ public class TestVisualization {
 		assertNotNull(g);
 		assertTrue(jo.has("offsite"));
 		assertTrue(jo.has("onsite"));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 	}
 	
 	/** tests readInputsAgent in scenario enabled. 
@@ -133,14 +119,8 @@ public class TestVisualization {
 	public void testreadInputsAgent(){
 		JSONObject jo = new JSONObject().put("wastenetwork",
 				iriofnetwork);
-		try {			
-			String resultStart = new ScenarioClient().call("testScenariosWithWTE","http://localhost:8080/JPS_WTE/WTEVisualization/readInputs", jo.toString() );
-			assertNotNull(resultStart);
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String resultStart = new ScenarioClient().call("testScenariosWithWTE","http://localhost:8080/JPS_WTE/WTEVisualization/readInputs", jo.toString() );
+		assertNotNull(resultStart);
 	}
 	
 }
