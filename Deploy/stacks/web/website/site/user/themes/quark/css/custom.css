@@ -34,6 +34,12 @@ hr {
     height: 65px;
 }
 
+.linkless {
+	display: block;
+    padding: 7px 30px 7px 20px;
+    text-decoration: none;
+}
+
 .grey-link a {
 	color: Grey;
 }
@@ -137,9 +143,7 @@ hr {
 .accordion.active {
 	border-radius: 6px 6px 0px 0px;
 }
-.active, .accordion:hover {
-  background-color: #dcdcdc;
-}
+
 .accordion-panel {
 	border-style: solid;
 	border-width: 0px 1px 1px 1px;

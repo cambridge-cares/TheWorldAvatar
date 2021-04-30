@@ -1,7 +1,7 @@
 ---
 title: UK Digital Twin
 body_classes: 'title-center title-h1h2'
-nochild: true
+slug: digital-twin
 ---
 
 <table width="100%" style="border-bottom: 1px solid LightGrey; height: 100px;">
@@ -13,10 +13,10 @@ nochild: true
 
 <br><br>
 
-<table class="three-quarter-width" >
+<table class="three-quarter-width" style="margin: auto;">
 	<tr>
 		<td width="350px" style="text-align: center;" markdown="1">![Parallel Worlds](image://digital-twin/agent-layers.jpg?resize=300,225)</td>
-		<td>
+		<td style="font-size: 12pt;">
 			<p>Countries must make significant changes to their infrastructure and energy systems to meet their obligations under the Paris Agreement. A comprehensive approach is required to evaluate possible changes as the challenges posted by climate change are inherently interdisciplinary and interconnected. Digitalisation offers new ways to design and operate infrastructure, and will form an important part of the repsonse to this challenge. Digital Twins composed of distributed collaborative entities that share, and combine data to answer complex questions have been identified as a key aspect of the move towards this digitalisation. Despite this bold vision, it remains unclear how to implement such a Digital Twin.</p>
 			<br>
 			<p>On the pages linked below, we demonstrate how a comprehensive Digital Twin can be implemented as a dynamic Knowledge Graph using technologies from the Semantic Web. The Knowledge Graph includes the notions of a "base world" that describes the current state of the real world, and of "parallel worlds" that support the intelligent exploration of alternative scenarios.</p>
@@ -39,7 +39,7 @@ nochild: true
 			</td>
 			<td colspan="1">
 				<div style="width: 225px; margin: auto; border-bottom: 1px solid LightGrey;">
-					<h4>Scenario Analysis</h4>
+					<h4>Derived Quantities</h4>
 				</div>
 			</td>
 		</tr>

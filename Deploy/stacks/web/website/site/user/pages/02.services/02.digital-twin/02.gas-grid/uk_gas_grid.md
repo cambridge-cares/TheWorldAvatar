@@ -3,12 +3,18 @@ title: Gas Grid
 slug: gas-grid
 ---
 
-<table>
+<table class="three-quarter-width" style="margin: auto;">
 	<tr>
-		<td width="25%" style="text-align: center;" markdown="1">[![UK](image://digital-twin/gas-grid.jpg?forceResize=150,200&classes=header-image)](https://commons.wikimedia.org/wiki/File:National_Grid_LNG_Tank.jpg)</td>
-		<td width="75%"><h2>Gas Grid</h2>This module of the UK Digital Twin provides a map visualisation of the Knowledge Graph containing data on UK power plants. The Knowledge Graph is also queried to provide meta-data on each individual power plant; select a node on the map to view it. Please note that there may be some loading time before nodes are shown on the map.</td>
+		<td width="350px" style="text-align: center;" markdown="1">![UK](image://digital-twin/gas-grid-square.jpg?forceResize=300,300)</td>
+		<td style="font-size: 10pt;">
+			<h2>Gas Grid</h2>
+			<p>The UK Digital Twin supports queries across number of aspects of the UK energy related infrastructure, including the electrical power system, the gas transmission system and land use.</p>
+			<br>
+			<p>The map below shows a sample of the gas grid data in the UK Digital Twin. The nodes on the map show the intakes and offtakes from the gas transmission system. Click on a nodes to see a data feed for the corresponding gas flow.</p>
+		</td>
 	</tr>
 </table>
+
 <br><br>
 
 <div id="map-container" class="full-width" style="height: 800px;">

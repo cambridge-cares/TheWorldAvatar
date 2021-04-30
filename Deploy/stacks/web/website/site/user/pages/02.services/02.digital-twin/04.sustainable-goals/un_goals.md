@@ -3,12 +3,20 @@ title: Sustainable Goals
 slug: sustainable-goals
 ---
 
-<table>
+<table class="three-quarter-width" style="margin: auto;">
 	<tr>
-		<td width="25%" style="text-align: center;" markdown="1">[![UK](image://digital-twin/un-goals.jpg?forceResize=150,200&classes=header-image)](https://commons.wikimedia.org/wiki/File:The_United_Nations_Secretariat_Building.jpg)</td>
-		<td width="75%"><h2>Sustainable Goals</h2>This module of the UK Digital Twin provides a map visualisation of Indicator 9.4.1 (CO<sub>2</sub> emission per unit value). Mouse over a node on the map to view the Capacity, Fuel, and Indicator metrics.</td>
+		<td width="350px" style="text-align: center;" markdown="1">![UK](image://digital-twin/un-goals-triangle.jpg?forceResize=300,300)</td>
+		<td style="font-size: 10pt;">
+			<h2>Sustainable Goals</h2>
+			<p>The UK Digital Twin supports queries across number of aspects of the UK energy related infrastructure, including the electrical power system, the gas transmission system and land use.</p>
+			<br>
+			<p>The knowledge-graph based architecture of the Digital Twin allows the addressing of cross-domain geospatial questions.</p>
+			<br>
+			<p>The map below shows estimates of the emissions intensity of each power generator (over 30 MW) in the UK. Each dot on the map corresponds to a generator, with the size of the dot corresponding to the capacity of the generator and the colour of the dot corresponding to the value of the estimated emissions intensity. The emissions intensity is calculated at the mass of carbon dioxide emitted per unit value of electricity generated and serves as a proxy for Indicator 9.4.1 of the UN Sustainable Development Goals (see left).</p>
+		</td>
 	</tr>
 </table>
+
 <br><br>
 
 <div id="map-container" class="full-width" style="height: 800px;">

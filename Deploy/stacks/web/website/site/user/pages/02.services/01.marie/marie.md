@@ -1,5 +1,6 @@
 ---
 title: Marie
+slug: marie
 ---
 
 <table>
