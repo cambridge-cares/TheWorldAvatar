@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.wte.visualization;
+package uk.ac.cam.cares.jps.wte;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,6 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
-import uk.ac.cam.cares.jps.wte.FCQuerySource;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
 /** Class is for interaction with frontend under web/CO2WEB/scripts/wte.js

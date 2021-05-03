@@ -14,7 +14,7 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
-import uk.ac.cam.cares.jps.wte.visualization.WTEVisualization;
+import uk.ac.cam.cares.jps.wte.WTEVisualization;
 
 public class TestVisualization {
 	static String iriofnetwork= null;
