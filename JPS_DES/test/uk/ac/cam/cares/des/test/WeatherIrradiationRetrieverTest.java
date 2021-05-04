@@ -90,9 +90,6 @@ public class WeatherIrradiationRetrieverTest{
 		destinationUrlWithoutHash = ScenarioHelper.cutHash(iriofirrS);
 		fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
 		assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
-		destinationUrlWithoutHash = ScenarioHelper.cutHash(iriofwindS);
-		fileStr = BucketHelper.getLocalPath(destinationUrlWithoutHash);
-		assertTrue(InputValidator.checkIfFileGotUpdated(fileStr,  timeLast));
 	}
 	
 	

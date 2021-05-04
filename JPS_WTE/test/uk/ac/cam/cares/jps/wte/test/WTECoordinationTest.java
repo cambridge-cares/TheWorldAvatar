@@ -54,7 +54,7 @@ public class WTECoordinationTest {
 	 * @param scenarioName
 	 * @return
 	 */
-	private String enableScenario(String scenarioName) {
+	public String enableScenario(String scenarioName) {
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		return scenarioUrl;
@@ -65,7 +65,7 @@ public class WTECoordinationTest {
 	 * And can be used to check if the file was created at the appropriate step in WasteToEnergyAgent
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void testInSuccession() throws Exception {
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
 		enableScenario("testScenariosWithWTE");

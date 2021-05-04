@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
 
@@ -115,6 +116,21 @@ public class EnergyStorageSystemTest {
 		String baseUrl = dataPath + "/JPS_ESS";
 		pvgeniris.add(pvGenIRI);
 		JSONObject testres= new EnergyStorageSystem ().optimizedBatteryMatching(baseUrl, pvgeniris, batIRI);
+		System.out.println("result battery= "+testres.getString("storage"));
+		pvgeniris.clear();
+		assertEquals(storageIRI, testres.getString("storage"));
+		
+	}
+	
+	
+	@Test (expected = JPSRuntimeException.class)//As there is no renewable energy generator, don't expect this to run. 
+	public void testEnergyStorageSystemAgentCall() throws IOException {
+		
+		JSONObject jo = new JSONObject()
+				.put("BatteryCatalog", batIRI)
+				.put("electricalnetwork", ENIRI);
+		
+		JSONObject testres= new EnergyStorageSystem ().processRequestParameters(jo);
 		System.out.println("result battery= "+testres.getString("storage"));
 		pvgeniris.clear();
 		assertEquals(storageIRI, testres.getString("storage"));
