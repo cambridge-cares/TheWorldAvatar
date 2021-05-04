@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONException;
@@ -63,6 +64,7 @@ public class WTECoordinationTest {
 	/** Debug both WTEAgent and WTEKBCreator and WTEProcessResult in a scenario called testScenariosWithWTE
 	 * This test is to directly pause at each step to figure out where the bug occurs; 
 	 * And can be used to check if the file was created at the appropriate step in WasteToEnergyAgent
+	 * Test disabled; run only when there are issues with WTE. 
 	 * @throws Exception
 	 */
 //	@Test
@@ -99,6 +101,8 @@ public class WTECoordinationTest {
 		ag.copyTemplate(baseUrl, "D2R.m");		
 		ag.createBat(baseUrl, n_cluster);
 		System.out.println("Matlab simulation should have finished. ");
+
+		TimeUnit.MINUTES.sleep(1);
 		//Set a breakpoint here, and wait for the matlab simulation to complete. 
 //			Read for next agent
 		WTEProcessResult at = new WTEProcessResult();

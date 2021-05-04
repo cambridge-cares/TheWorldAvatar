@@ -46,32 +46,6 @@ public class ESSCoordinationTest {
 		assertTrue(new CoordinationESSAgent().validateInput(requestParam));
 	}
 	
-	/** call ESSCoordinate directly
-	 * 
-	 * @throws JSONException
-	 */
-	@Test
-	public void testCreateScenarioAndCallESSCoordinateDirect() throws JSONException {
-		String scenarioName = "testESSTRIAL02";	
-		JSONObject jo = new JSONObject();
-		pvgeniris.add(pvGenIRI);
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("BatteryCatalog", batIRI);
-		jo.put("RenewableEnergyGenerator", pvgeniris);
-		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/RenewableGenRetrofit", jo.toString());
-		result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/ESSAgent", jo.toString());
-		JSONObject res1=new JSONObject(result);
-		jo.put("storage",res1.getString("storage"));
-		String result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/OptimizationAgent", jo.toString());
-		JSONObject res2=new JSONObject(result2);		
-		String optimizationresult=res2.getString("optimization");
-		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/"+optimizationresult, jo.toString());
-		jo.put("batterylist",new JSONObject(result2).getJSONArray("batterylist"));
-		result2 = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/EnergyStorageRetrofit", jo.toString());
-		
-	}
-	
-
 	/** calls ESSCoordinate through Agent
 	 * 
 	 * @throws JSONException

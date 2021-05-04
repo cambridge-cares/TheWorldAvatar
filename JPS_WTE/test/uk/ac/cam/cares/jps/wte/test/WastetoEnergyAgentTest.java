@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.wte.test;
 
+
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
@@ -126,6 +131,46 @@ public class WastetoEnergyAgentTest extends TestCase{
 		assertTrue(j.validateInput(jo));
 		
 	}
-	
-	
+	/** tests entirety of WasteToEnergyAgent up till matlab creation. 
+	 * The entire functionality of WTE would be found with WTECoordination is called by a scenario agent
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testInSuccession() throws Exception {
+		WastetoEnergyAgent ag = new WastetoEnergyAgent();
+		new WTECoordinationTest().enableScenario("testScenariosWithWTE");
+		String baseUrl = QueryBroker.getLocalDataPath();
+		OntModel model= FCQuerySource.readModelGreedy(iriofnetwork);
+		ag.prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
+		//test if Site_xy.csv is created (can't check if csv file is empty unfortunately)
+		File file = new File(baseUrl +  "/Site_xy.csv");
+		assertTrue(file.length() !=0);
+		String n_cluster= "40";
+        new QueryBroker().putLocal(baseUrl + "/n_cluster.txt",n_cluster ); 
+		ag.prepareCSVWT("Location.csv", baseUrl,model); 
+		file = new File(baseUrl +  "/Location.csv");
+		assertTrue(file.length() !=0);
+		ag.prepareCSVTransport(WastetoEnergyAgent.getTransportQuery(),"transport.csv", baseUrl,model); 
+
+		file = new File(baseUrl +  "/transport.csv");
+		assertTrue(file.length() !=0);
+		ag.prepareCSVCompTECHBased(WastetoEnergyAgent.returnUpperBoundQuery(),baseUrl,model);
+		String WTFTechOffsiteQuery = FCQuerySource.getTechQuery() 
+				.addWhere("?entity" ,"a", "j1:OffsiteWasteTreatmentFacility").buildString();
+		ag.prepareCSVTECHBased(WTFTechOffsiteQuery,baseUrl,model,"offsite");
+		String WTFTechOnsiteQuery = FCQuerySource.getTechQuery() 
+				.addWhere("?entity" ,"a", "j1:OnsiteWasteTreatmentFacility")
+				.addWhere("?Tech1" ,"a", "j1:OnSiteDigester").buildString();
+		ag.prepareCSVTECHBased(WTFTechOnsiteQuery,baseUrl,model,"onsite");
+		//TODO: should be able to run Main.m without needing to copy over, but I don't know Matlab well enough how to avoid doing so. 
+		// Should need something like fullfile to use "readmatrix" to read an absolute path. 
+		ag.copyTemplate(baseUrl, "SphereDist.m");
+		ag.copyTemplate(baseUrl, "Main.m");
+		ag.copyTemplate(baseUrl, "D2R.m");		
+		ag.createBat(baseUrl, n_cluster);
+		TimeUnit.MINUTES.sleep(1);
+		String filePath = baseUrl +"/year by year_NPV.txt";
+		assertTrue(InputValidator.checkIfValidFile(filePath));
+	}
 }
