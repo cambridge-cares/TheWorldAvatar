@@ -15,6 +15,12 @@ import org.junit.Test;
 import uk.ac.cam.cares.jps.wte.FCQuerySource;
 import uk.ac.cam.cares.jps.wte.WTEProcessResult;
 
+/** WTEProcessResultTest does not have many tests as it is mostly reliant on updates (which rely on a library)
+ * and WTEKBCreator
+ * The complete test, like WasteToEnergyAgent, can be found in WTECoordinationTest as we cannot call this agent
+ * without a pre-run function 
+ *
+ */
 public class WTEProcessResultTest {
 	static String iriofnetwork=null;
 	static String baseUrl = null;
