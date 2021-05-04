@@ -11,8 +11,8 @@
     <owl:Ontology rdf:about="http://theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl">
         <owl:imports rdf:resource="http://purl.org/ontology/bibo/"/>
         <owl:imports rdf:resource="http://www.w3.org/ns/prov#"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">29 April 2021</dc:date>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">867ad209ee16e67dcf21c340223f10c516d08459</gitCommitHash>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 May 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">875f1e76805086a6bf850307b08265665214170b</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoProvenance is an ontology developed for recording provenance information.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
     </owl:Ontology>
@@ -42,6 +42,16 @@
     
 
 
+    <!-- http://purl.org/dc/terms/provenance -->
+
+
+    <owl:ObjectProperty rdf:about="http://purl.org/dc/terms/provenance">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an entity and its bundle, including the origin of the entity, its interaction with other agents and activities within its lifetime. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/dc/terms/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://purl.org/pav/authoredBy -->
 
 
@@ -56,7 +66,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://purl.org/pav/createdBy">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the derived entity and the agent that responsible for its creation in the current ontological representation. This is to distinguish from the curation process where agent intellectually involved in the generation of the content itself. In OntoProvenance, this object property is used to describe the situation where the original source published its information in a tabular/textual way that the agent responsible for deriving the entity via text mining or related technologies. In this case, the agent curated the source information and created the corresponding digital artifact in ontological representation. However, it should be noticed that the agent responsible for curation and creation can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:curatedOn, pav:createdOn, pav:lastUpdateOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the derived entity and the agent responsible for creating the digital artefact of the curated knowledge expression. In OntoProvenance, this object property is used to describe the situation where an agent creates the ontological representation of the knowledge expression generated in the curation process (pav:curatedBy). It should be noted that the agent responsible for curation (pav:curatedBy) and creation (pav:createdBy) can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:curatedOn, pav:createdOn, pav:lastUpdateOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -66,7 +76,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://purl.org/pav/curatedBy">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the derived entity and the agent that responsible for the content that yield from the curation of the original source. This is to distinguish from the creation process where agent only generate the entity in an as-is manner. In OntoProvenance, this object property is used to describe the situation where the original source published its information in a tabular/textual way that the agent responsible for deriving the entity via text mining or related technologies. In this case, the agent curated the source information and created the corresponding digital artifact in ontological representation. However, it should be noticed that the agent responsible for curation and creation can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedOn, pav:createdBy, pav:createdOn, pav:lastUpdateOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the derived entity and the agent responsible for shaping the content curated from the original source. This often refers to the primary agent responsible for the quality of the knowledge expression as it appears in the knowledge graph. In OntoProvenance, this object property is used to describe the situation where an agent obtains the content in the derived entity via text-mining or related technologies from the original source. It should be noted that the agent responsible for curation (pav:curatedBy) and creation (pav:createdBy) can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedOn, pav:createdBy, pav:createdOn, pav:lastUpdateOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -76,7 +86,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://purl.org/pav/derivedFrom">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the derived entity and its original source from which the information are processed and populated. In OntoProvenance, this object property is used to describe the situation where the original source published its information in a tabular/textual way that the agent responsible for deriving the entity via text mining or related technologies. In this case, the agent curated the source information and created the corresponding digital artifact in ontological representation. However, it should be noticed that the agent responsible for curation and creation can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:curatedOn, pav:createdBy, pav:createdOn and pav:lastUpdateOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the derived entity and its original source from which the information is processed and populated. In OntoProvenance, this object property is used to describe the situation where an agent creates the ontological representation (pav:createdBy) from the knowledge expression generated in the curation process (pav:curatedBy). It should be noted that the agent responsible for curation (pav:curatedBy) and creation (pav:createdBy) can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:curatedOn, pav:createdBy, pav:createdOn and pav:lastUpdateOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -86,7 +96,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://purl.org/pav/importedBy">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the imported entity and the agent that carried out the importing action. In OntoProvenance, this object property is used to describe the situation where the content of the imported entity is taken from certain curated database. In this case, the agent is only responsible for format translation, for example, mapping data recorded in XML format to OWL format. For better provenance, it is recommended to use this property in companion with pav:importedOn, pav:importedFrom and pav:lastRefreshedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the imported entity and the agent that carried out the importing action. In OntoProvenance, this object property is used to describe the situation where the content of the imported entity is taken from a certain curated database. In this case, the agent is only responsible for format translation, for example, mapping data recorded in XML format to OWL format. For better provenance, it is recommended to use this property in companion with pav:importedOn, pav:importedFrom and pav:lastRefreshedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -116,7 +126,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://purl.org/pav/retrievedBy">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the retrieved entity and the agent that responsible for the retrieving action. In OntoProvenance, this object property is used to describe the situation where the original source already published its information in the ontological format following The World Avatar ontologies. In this case, the agent retrieves the file without changing any intellectual content of the original source, for example, saving a copy of the supplementary file in The World Avatar Knowledge Graph. For better provenance, it is recommended to use this property in companion with pav:retrievedFrom and pav:retrievedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the retrieved entity and the agent that is responsible for the retrieving action. In OntoProvenance, this object property is used to describe the situation where the original source already published its information in the ontological format following The World Avatar ontologies. In this case, the agent retrieves the file without changing any intellectual content of the original source, for example, saving a copy of the supplementary file in The World Avatar Knowledge Graph. For better provenance, it is recommended to use this property in companion with pav:retrievedFrom and pav:retrievedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -128,16 +138,6 @@
     <owl:ObjectProperty rdf:about="http://purl.org/pav/retrievedFrom">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between the retrieved entity and its original source, normally a bibliographic document. In OntoProvenance, this object property is used to describe the situation where the original source already published its information in the ontological format following The World Avatar ontologies. In this case, the agent retrieves the file without changing any intellectual content of the original source, for example, saving a copy of the supplementary file in The World Avatar Knowledge Graph. For better provenance, it is recommended to use this property in companion with pav:retrievedBy and pav:retrievedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#hasProvenance -->
-
-
-    <owl:ObjectProperty rdf:about="http://theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#hasProvenance">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an entity and its bundle, including the origin of the entity, its interaction with other agents and activities within its lifetime. [The World Avatar]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
@@ -167,6 +167,18 @@
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/dc/terms/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://purl.org/dc/terms/license -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/dc/terms/license">
+        <rdfs:domain rdf:resource="http://purl.org/ontology/bibo/Document"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that provides the link to the licence under which the bibliographic document is published. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/dc/terms/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
@@ -315,7 +327,7 @@
     <owl:DatatypeProperty rdf:about="http://purl.org/pav/createdOn">
         <rdfs:domain rdf:resource="http://www.w3.org/ns/prov#Entity"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indivates the time when the derived entity is created in an as-is manner based on the curated original source, normally a bibliographic document. In OntoProvenance, this data property is used to describe the situation where the original source published its information in a tabular/textual way that the agent responsible for deriving the entity via text mining or related technologies. In this case, the agent curated the source information and created the corresponding digital artifact in ontological representation. However, it should be noticed that the agent responsible for curation and creation can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:curatedOn, pav:createdBy, pav:lastUpdateOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the derived entity is created based on the curated knowledge expression. In OntoProvenance, this object property is used to describe the situation where an agent creates the ontological representation of the knowledge expression generated in the curation process (pav:curatedBy). It should be noted that the agent responsible for curation (pav:curatedBy) and creation (pav:createdBy) can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:curatedOn, pav:createdBy, pav:lastUpdateOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
@@ -327,7 +339,7 @@
     <owl:DatatypeProperty rdf:about="http://purl.org/pav/curatedOn">
         <rdfs:domain rdf:resource="http://www.w3.org/ns/prov#Entity"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indivates the time when the content in the derived entity is curated from the original source, normally a bibliographic document. In OntoProvenance, this data property is used to describe the situation where the original source published its information in a tabular/textual way that the agent responsible for deriving the entity via text mining or related technologies. In this case, the agent curated the source information and created the corresponding digital artifact in ontological representation. However, it should be noticed that the agent responsible for curation and creation can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:createdBy, pav:createdOn, pav:lastUpdateOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the content in the derived entity is curated from the original source, normally a bibliographic document. This often refers to the primary agent responsible for the quality of the knowledge expression as it appears in the knowledge graph. In OntoProvenance, this data property is used to describe the situation where an agent obtains the content in the derived entity via text-mining or related technologies from the original source. It should be noted that the agent responsible for curation (pav:curatedBy) and creation (pav:createdBy) can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:createdBy, pav:createdOn, pav:lastUpdateOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
@@ -339,7 +351,7 @@
     <owl:DatatypeProperty rdf:about="http://purl.org/pav/importedOn">
         <rdfs:domain rdf:resource="http://www.w3.org/ns/prov#Entity"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the entity is imported from its source entity. In OntoProvenance, this data property is used to describe the situation where the content of the imported entity is taken from certain curated database. In this case, the agent is only responsible for format translation, for example, mapping data recorded in XML format to OWL format. For better provenance, it is recommended to use this property in companion with pav:importedBy, pav:importedFrom and pav:lastRefreshedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the entity is imported from its source entity. In OntoProvenance, this data property is used to describe the situation where the content of the imported entity is taken from a certain curated database. In this case, the agent is only responsible for format translation, for example, mapping data recorded in XML format to OWL format. For better provenance, it is recommended to use this property in companion with pav:importedBy, pav:importedFrom and pav:lastRefreshedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
@@ -351,7 +363,7 @@
     <owl:DatatypeProperty rdf:about="http://purl.org/pav/lastRefreshedOn">
         <rdfs:domain rdf:resource="http://www.w3.org/ns/prov#Entity"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the imported entity is re-imported from its source entity. Please note that the re-imported entity should only have minor updates compared with the previous importing action, otherwise, please create a new imported entity and link the two versions with other recommended properties. In OntoProvenance, this data property is used to describe the situation where the content of the imported entity is taken from certain curated database. In this case, the agent is only responsible for format translation, for example, mapping data recorded in XML format to OWL format. For better provenance, it is recommended to use this property in companion with pav:importedBy, pav:importedFrom and pav:importedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the imported entity is re-imported from its source entity. Please note that the re-imported entity should only have minor updates compared with the previous importing action, otherwise, please create a new imported entity and link the two versions with other recommended properties. In OntoProvenance, this data property is used to describe the situation where the content of the imported entity is taken from a certain curated database. In this case, the agent is only responsible for format translation, for example, mapping data recorded in XML format to OWL format. For better provenance, it is recommended to use this property in companion with pav:importedBy, pav:importedFrom and pav:importedOn as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
@@ -363,7 +375,7 @@
     <owl:DatatypeProperty rdf:about="http://purl.org/pav/lastUpdateOn">
         <rdfs:domain rdf:resource="http://www.w3.org/ns/prov#Entity"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indivates the time when the minor protion of content in the derived entity is updated since its initial generation and does not affect the creation date, for example, fixing a typo. In OntoProvenance, this data property is used to describe the situation where the original source published its information in a tabular/textual way that the agent responsible for deriving the entity via text mining or related technologies. In this case, the agent curated the source information and created the corresponding digital artifact in ontological representation. However, it should be noticed that the agent responsible for curation and creation can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:curatedOn, pav:createdBy, pav:createdOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the minor portion of content in the derived entity is updated since its initial generation and does not affect the creation date, for example, fixing a typo. In OntoProvenance, this data property is used to describe the situation where an agent updates the ontological representation created (pav:createdBy) from the knowledge expression generated in the curation process (pav:curatedBy). It should be noted that the agent responsible for curation (pav:curatedBy) and creation (pav:createdBy) can be different agents. For better provenance, it is recommended to use this property in companion with pav:curatedBy, pav:curatedOn, pav:createdBy, pav:createdOn and pav:derivedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
@@ -377,18 +389,6 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the retrieved entity is retieved from the original source, normally a bibliographic document. In OntoProvenance, this data property is used to describe the situation where the original source already published its information in the ontological format following The World Avatar ontologies. In this case, the agent retrieves the file without changing any intellectual content of the original source, for example, saving a copy of the supplementary file in The World Avatar Knowledge Graph. For better provenance, it is recommended to use this property in companion with pav:retrievedBy and pav:retrievedFrom as utilised in OntoProvenance. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/pav/</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#hasLicence -->
-
-
-    <owl:DatatypeProperty rdf:about="http://theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#hasLicence">
-        <rdfs:domain rdf:resource="http://purl.org/ontology/bibo/Document"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that provides the link to the licence under which the bibliographic document is published. [The World Avatar]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
@@ -416,7 +416,7 @@
                 <owl:allValuesFrom rdf:resource="http://purl.org/ontology/bibo/Issue"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An academic article is an article that published on journal through peer-review process. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An academic article is an article that is published in a journal through a peer-review process. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -439,7 +439,7 @@
                 <owl:allValuesFrom rdf:resource="http://www.w3.org/ns/prov#Agent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A document is a bibliographic item that produced for scholarly purposes. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A document is a bibliographic item that is produced for scholarly purposes. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -480,7 +480,7 @@
 
 
     <owl:Class rdf:about="http://purl.org/ontology/bibo/MultiVolumeBook">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A multi volume book is a collection of proceedings papers. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A multi-volume book is a collection of proceedings papers. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -497,7 +497,7 @@
                 <owl:allValuesFrom rdf:resource="http://purl.org/ontology/bibo/MultiVolumeBook"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A proceesings refers to the papers that accepted for conference publications. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A proceedings refers to papers that are accepted as conference publications. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/ontology/bibo/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -520,7 +520,7 @@
     <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Thing">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl#hasProvenance"/>
+                <owl:onProperty rdf:resource="http://purl.org/dc/terms/provenance"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.w3.org/ns/prov#Bundle"/>
             </owl:Restriction>
@@ -543,7 +543,7 @@
 
 
     <owl:Class rdf:about="http://www.w3.org/ns/prov#Bundle">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A bundle is a collection of provenance information related to a given entity, note that provenance bundle itself is an entity. [The World Avatar]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A bundle is a collection of provenance information related to a given entity. Note that a provenance bundle itself is an entity. [The World Avatar]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/prov-o#</rdfs:isDefinedBy>
     </owl:Class>
     
