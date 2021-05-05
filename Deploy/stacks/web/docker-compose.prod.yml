@@ -9,6 +9,7 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     image: docker.cmclinnovations.com/certbot/certbot:v1.12.0
     container_name: "certbot-${MODE}"
+    restart: unless-stopped
     volumes:
       # Add a bind volume (shared with the reverse_proxy container) for the letsencrypt config dir
       - type: bind
@@ -18,6 +19,10 @@ services:
       - type: volume
         source: certbot-challenge
         target: /var/www/certbot
+      # Add a volume that acts as an alternative location for the verification challenge - not shared with reverse_proxy for now, named here purely for clarity
+      - type: volume
+        source: certbot-challenge_alt
+        target: /var/lib/letsencrypt
 
   # Reverse Proxy
   reverse_proxy:
