@@ -54,3 +54,5 @@ networks:
 volumes:
   certbot-challenge:
     name: certbot-challenge
+  certbot-challenge_alt:
+    name: certbot-challenge_alt
