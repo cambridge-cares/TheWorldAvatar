@@ -19,6 +19,10 @@ services:
       - type: volume
         source: certbot-challenge
         target: /var/www/certbot
+      # Add a volume that acts as an alternative location for the verification challenge - not shared with reverse_proxy for now, named here purely for clarity
+      - type: volume
+        source: certbot-challenge_alt
+        target: /var/lib/letsencrypt
 
   # Reverse Proxy
   reverse_proxy:
