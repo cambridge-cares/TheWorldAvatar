@@ -1,0 +1,139 @@
+{
+  "item_attribute_query": [
+    "what is benezne used for",
+    "c=c=c=c is an exmple of what",
+    "what is heavey water example of",
+    "geometry of c=c=c=c=c",
+    "what iws the geometry of c2h2",
+    "chemical stucuture of c=c=c1",
+    "show me the structure of wwater",
+    "display the weight of water",
+    "give the mass opf hydrogen3",
+    "what can glucose treat",
+    "glucose treates what",
+    "what diseases can glucose treat",
+    "CC1=CC(=N+O-])C quote geometry",
+    "geometry CC1=CC(=N+O-])C",
+    "Standard enthalpy of formation of methane",
+    "Show me the ionization energy of C1=CC=CC=C1",
+    "Show me the chemical structure of C1=CC=CC=C1",
+    "Show me the chemical structure of CC",
+    "Standard enthalpy of formation of methane",
+    "Show me the geometry  C1=CC=CC=CCC1",
+    "Show me the geometry  CC",
+    "Show me the ionization energy of C1=CC=CC=CCC1",
+    "Show me the ionization energy of C1=CC=CC=C1",
+    "Standard enthalpy of formation of methane",
+    "What is HNO3's conjugate acid",
+    "what is hydrogen named after",
+    "homo lumo gap of benzene",
+    "homo lumo gap of methane",
+    "polarity of naphthalene",
+    "what is the antiparticle of hydrogen",
+    "what is the laminar flame speed of ethylene",
+    "what is the median lethal dose of water",
+    "What is the oxidation potential of chloroauric",
+    "what is the precursor of flame synthesis of silica nanoparticles",
+    "what are the isomers of C3H8O",
+    "What is H2PO4-'s conjugate acid",
+    "what is myoglobin encoded by",
+    "What is the formula of chloroethane",
+    "Where is ethylene oxide found",
+    "fabrication method of nitric acid",
+    "what is the boiling point of nitric acid",
+    "what is the vapor pressure of nitric acid,",
+    "what is the pKa of nitric acid",
+    "what is the acid dissociation constant of nitric acid",
+    "what is the InChI of calcium oxide",
+    "what is the InChIKey of calcium oxide",
+    "what medical condition does H2O2 treat",
+    "what medical condition does methotrexate treat",
+    "what does H2O2 physically interacts with",
+    "what roles does H2O2 have",
+    "what part does H2O2 have",
+    "what is the chemical structure of methotrexate",
+    "what is the energy content of Gasoline",
+    "what is the chemical structure of Methyl salicylate",
+    "what does Asprin treat",
+    "what is treated by easprin",
+    "what is the canonical SMILES of nitric acid",
+    "what is the chemical structure of acrolein",
+    "what is the density of hydrogen peroxide",
+    "what is the melting point of H2O2",
+    "what is the boiling point of H2O2",
+    "what is the kinematic viscosity of H2O2",
+    "what is the vapor pressure of H2O2",
+    "what is the pKa of H2O2",
+    "what is the acid dissociation constant of H2O2",
+    "what is the freezing point of H2O2"
+
+
+  ],
+  "query_quantum_chemistry": [
+    "What is the symmetry number of C8H14",
+    "Show me the vibration frequency of H2O2",
+    "Find the gaussian files of c8h14",
+    "What is the spin multiplicity of C8H14",
+    "Show the formal charge of C3H6",
+    "What is the geometry type of C2H2O2",
+    "What is the symmetry number of C8H14",
+    "Show the symmetry number of C44H16",
+    "Show the electronic energy of C7H6O3"
+  ],
+  "batch_attribute_query": [
+    "geometries cyclic compounds",
+    "geometries of cyclic compounds",
+    "geometry of cyclic compounds",
+    "what are the density of lanthanides",
+    "What are examples of polypeptides",
+    "upper flammable limits of flammable liquids",
+    "formula of energy storages",
+    "geometries cyclic compunds",
+    "geometry esters",
+    "geometry ethers",
+    "structure of fatty acids",
+    "weight of aromatic hydrocarbons",
+    "Chemical structure of aromatic hydrocarbons",
+    "Mass of aromatic hydrocarbons"
+  ],
+  "query_thermodynamic": [
+    "What is the dipole moment of C2H2O2",
+    "Rotational relaxation collision number of HOCH2O2H",
+    "What is the dipole moment of C2H2O2",
+    "Dipole moment of C8H18-2",
+    "Find the lennard jones well depth of C12OOH2-OO5-2",
+    "What is the lennard jones well depth of C2H2O2",
+    "Rotational relaxation collision number of HOCH2O2H",
+    "What is the dipole moment of C10OOH5-2B"
+  ],
+  "select_reaction_by_species": [
+    "What reaction produces OH",
+    "What reaction produces H2 add_sign OH"
+  ],
+  "batch_attribute_query_numerical": [
+    "Aromatic hydrocarbons with mass less than 170",
+    "Aromatic hydrocarbons with mass less than 150"
+  ],
+  "query_reaction_property": [
+    "Reaction rate of H add_sign O2 -> O add_sign OH",
+    "What is the reaction rate of H add_sign CO add_sign M -> HCO add_sign M",
+    "Is the reaction H add_sign O2 -> O add_sign OH reversible"
+  ],
+
+  "about_query": [
+    "what is element 92",
+    "describe bezene"
+  ],
+
+  "batch_query": [
+    "find all aromatic hydrocarbons",
+    "show all fatty acids"
+  ],
+
+  "rank_query_list": [
+    "sort ethers by their mass",
+    "sort minerals by their hardness",
+    "rank fatty acids by their molecular weight",
+    "polypeptides instances by solubility"
+  ]
+}

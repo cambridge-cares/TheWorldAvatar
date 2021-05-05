@@ -77,7 +77,7 @@ def test_3000():
 
     start_time = time.time()
 
-    url = "http://localhost:3000/query?"
+    url = " http://kg.cmclinnovations.com:81/marie/ldf/query?"
     values = {"query": q3, "products": json.dumps(products), "reactants": json.dumps(reactants)}
     full_url = url + urllib.parse.urlencode(values)
 
@@ -117,15 +117,15 @@ def test_3000():
     } LIMIT 1
     '''
 
-    start_time = time.time()
-    url = "http://localhost:3000/ontocompchem/query?"
-    values = {"query": q_ontocompchem}
-    full_url = url + urllib.parse.urlencode(values)
-    req = urllib.request.Request(full_url)
-    response = urllib.request.urlopen(req).read()
-    print(response)
-    end_time = time.time()
-    print(round(end_time - start_time, 2), 'seconds')
+    # start_time = time.time()
+    # url = " http://kg.cmclinnovations.com:81/marie/ldf/ontocompchem/query?"
+    # values = {"query": q_ontocompchem}
+    # full_url = url + urllib.parse.urlencode(values)
+    # req = urllib.request.Request(full_url)
+    # response = urllib.request.urlopen(req).read()
+    # print(response)
+    # end_time = time.time()
+    # print(round(end_time - start_time, 2), 'seconds')
 
 
 iterations = 1

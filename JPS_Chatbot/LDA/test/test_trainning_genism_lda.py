@@ -107,17 +107,16 @@ lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                             alpha='auto',
                                             per_word_topics=True)
 
-pprint(lda_model.print_topics(num_words= 10))
+pprint(lda_model.print_topics(num_words=10))
 
-lda_model.save('LDA_MODEL')
+# lda_model.save('LDA_MODEL_TEST')
 doc_lda = lda_model[corpus]
-
 
 # Compute Perplexity
 # question = 'what reaction has ch4 as a reactant'
 question = 'what is the heat capacity of h2o2'
 # question = 'what do you know about china'
-
+topic_dictionary = {0: 'ontocompchem', 1: 'wiki', 2: 'ontospecies', 3: 'ontokin'}
 cmd = ''
 while cmd != 'stop':
     cmd = input('type in the question\t\t')
@@ -126,11 +125,12 @@ while cmd != 'stop':
     print(make_bigrams(question))
     print('==================================')
 
-
     question = lemmatization(make_bigrams(question))
     print(question)
     print('==================================')
     question = question[0]
     bow = lda_model.id2word.doc2bow(question)
     result = lda_model.get_document_topics(bow)
+    topics = [topic_dictionary[i[0]] for i in result]
     print(result)
+    print(topics)

@@ -1,0 +1,4 @@
+{
+"query_quantum_chemistry": ["guassian files", "geometry type", "electronic energy", "spin multiplicity", "vibration frequency"],
+"query_thermodynamic": ["dipole moment"]
+}

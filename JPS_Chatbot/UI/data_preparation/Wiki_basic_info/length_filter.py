@@ -19,7 +19,7 @@ import json
 
 
 # get the files in the directory, their filename should begin with SMILE_
-mypath = './smiles'
+mypath = 'D:/data/smiles'
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f)) and f.startswith('SMILE_')]
 
 counter_all = 0
@@ -37,7 +37,7 @@ duplication_dict = {}
 
 # iterate through the files, each file contains a list of SMILE-URI pairs
 for file in onlyfiles:
-    with open('./smiles/' + file) as f:
+    with open('D:/data/smiles/' + file) as f:
         print('Processing' + file)
         obj = json.loads(f.read())
         for item in obj:

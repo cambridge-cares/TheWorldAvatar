@@ -6,7 +6,7 @@ import json, re, time, random
 
 # get the instance-property mapping of the 5000 selected instances from wikidata
 
-# extra_properties provide extra info for certain property e.g "geometry" for http://www.wikidata.org/entity/P117 (chemical structure)
+# EXTRA_PROPERTIES provide extra info for certain property e.g "geometry" for http://www.wikidata.org/entity/P117 (chemical structure)
 from pprint import pprint
 
 instances = []

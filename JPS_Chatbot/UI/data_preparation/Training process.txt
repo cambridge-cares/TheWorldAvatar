@@ -66,7 +66,7 @@ a list of chemistry-related classes and subclasses
 		
 	take WIKI_URI_LIST, make query to Wikidata and get all properties related to those species. 
 
-	the script produces distinct_properties, containing the properties and their labels and alt labels, 135 labels are expected  
+	the script produces distinct_properties, containing the properties and their labels and alt labels, 135 properties are expected
 
 					    instance_property_mapping_first_2000
 						instance_property_mapping_random_3000, containing the mapping between instances and related properties and the according labels and alt_labels 
