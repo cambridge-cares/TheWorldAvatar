@@ -1,7 +1,7 @@
 Source,Type,Target,Relation,Value
 00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Species,,
 http://purl.org/dc/elements/1.1/identifier,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,00b7e248-ae24-35bf-b7a0-b470b923ddf6
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CO2,,
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,CO2
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Carbon dioxide
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Dry ice
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,124-38-9
