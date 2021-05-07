@@ -6,7 +6,7 @@ body_classes: 'title-center title-h1h2'
 
 <div id="hero-div">
 	<div id="hero-text">
-		<p>Our research on dynamic knowledge graph technology forms the basis of our mission to address complex industrial problems spanning across multiple sectors. Knowledge graphs have come into prominence to solve the problem of data and information silos, while offering modularity and scalability.</p>
+		<p>Our research on dynamic knowledge graph technology forms the basis of our mission to address complex industrial problems spanning multiple sectors. Knowledge graphs have come to prominence to solve the problem of data and information silos, while offering modularity and scalability.</p>
 		<p>Scroll down to find out more.</p>
 	</div>
 	<img src="/user/images/scroll-down.svg" width="32px" height="32px" onclick="scrollDown()" class="scrollButton"/>
