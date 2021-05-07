@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  app_with_maven_dependency:
+    container_name: app_with_maven_dependency
+    image: use_maven_dependency_eg:1.0.0
+    build:
+      context: ./
+    volumes:
+      - external_maven_repo:/root/.m2
+
+
+volumes:
+  external_maven_repo:
+    name: "external_maven_repo"      
