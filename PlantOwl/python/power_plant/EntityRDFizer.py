@@ -127,7 +127,7 @@ def process_data(row):
                                       row[4].strip(), get_data_type(row[5].strip()))
                 else:
                     aboxgen.link_data(g, URIRef(row[0].strip()),
-                                  URIRef(format_iri(row[2].strip())),
+                                  URIRef(row[2].strip()),
                                   row[4].strip())
             elif row[2].strip() in instances and not row[4].strip() == '':
                 if not row[5].strip() == '':
