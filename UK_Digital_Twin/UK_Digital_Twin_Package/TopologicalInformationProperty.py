@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 05 May 2021          #
+# Last Update Date: 06 May 2021          #
 ##########################################
 
 """This class defines the properties of UK Topological Information data"""
@@ -15,11 +15,14 @@ class TopologicalInformation:
         'EBus_num' : 10,
         'ELine_num' : 14, 
         'BusInfo' : DataPath + '10_bus/bus_topological_info.csv',
-        'BranchInfo': DataPath + '10_bus/branch_topological_info.csv'
+        'BranchInfo': DataPath + '10_bus/branch_topological_info.csv',
+        'BranchProperty': DataPath + '10_bus/branch_properties.csv' # the branch prop should be calculated from the raw data
         }
        
     """Data file header"""
-    headerTopologicalInformation = ["BusNumber", "Region", "LargestCity", "y-axis", "x-axis\n"]
+    headerBusTopologicalInformation = ["BusNumber", "Region", "LargestCity", "x-axis", "y-axis\n"]
+    headerBranchTopologicalInformation = ["FromBus", "ToBus", "400kV_PARALLEL_CONNECTIONS", "275kV_PARALLEL_CONNECTIONS\n"]
+    headerBranchProperty = ["voltage_level_kV", "R_MVA/km", "X_MVA/km", "B_MVA/km", "MVA\n"]
     
     """Source Data"""
-    __ENCONSUMPT = DataPath +  "10_bus/-Node-24h-Tax-Auto - Template.xlsx"
+    __TOPOINFO = DataPath +  "10_bus/-Node-24h-Tax-Auto - Template.xlsx"

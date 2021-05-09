@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 05 May 2021          #
+# Last Update Date: 08 May 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
@@ -20,6 +20,7 @@ from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPDLocation
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -42,16 +43,20 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 """Create an object of Class TopologicalInformationProperty"""
 topo_info = TopoInfo.TopologicalInformation()
 
-"""Create an object of Class TopologicalInformationProperty"""
+"""Create an object of Class UKPowerGridModel"""
 uk_ebus_model = UK_PG.UKEbusModel()
+uk_eline_model = UK_PG.UKElineModel()
 
 """Root_node and root_uri"""
 root_node = UKDT.namedGraphURIGenerator(3, dt.gridTopology, 10)
 root_uri = root_node.split('#')[0]
 
+"""NameSpace"""
+tp_namespace = root_uri + HASH
+
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-# ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
+ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
 ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
 # ontoeip_system_function         = owlready2.get_ontology(t_box.ontoeip_system_function).load()
 ontocape_network_system         = owlready2.get_ontology(t_box.ontocape_network_system).load()
@@ -62,12 +67,12 @@ ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordina
 ontoecape_space_and_time        = owlready2.get_ontology(t_box.ontoecape_space_and_time).load()
 ontocape_physical_dimension     = owlready2.get_ontology(t_box.ontocape_physical_dimension).load()
 ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units).load()
+ontocape_geometry               = owlready2.get_ontology(t_box.ontocape_geometry).load()
 
 """Data Array"""
 busInfoArrays = readFile(topo_info.Topo_10_bus['BusInfo'])
-
-# """Number of owl files to be generated"""
-# fileNum = len(elecConDataArrays) # substruct the first header line 
+branchTopoInfoArrays = readFile(topo_info.Topo_10_bus['BranchInfo'])
+branchPropArrays = readFile(topo_info.Topo_10_bus['BranchProperty'])
 
 """User specified folder path"""
 filepath = None
@@ -75,18 +80,10 @@ userSpecified = False
 
 ### Functions ### 
 
-"""create the sub graph represents the Topology"""
+"""Main function: create the sub graph represents the Topology"""
 def createTopologyGraph():
     print('Create the graph for ', topo_info.Topo_10_bus['Name'])
-    # # check the data file header
-    # if elecConDataArrays[0] == engconsump.headerElectricityConsumption:
-    #     pass
     global filepath, userSpecified
-    # counter = 1
-    # print('The counter is:') # starts from 1
-    # print(counter)
-    
-    
     # create a named graph
     g = Graph(store = store, identifier = URIRef(root_uri))
     
@@ -98,77 +95,49 @@ def createTopologyGraph():
     g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
                         URIRef(UKDT.namedGraphURIGenerator(2, dt.gridTopology, None))))
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
-        
-    g = addEBusNodes(g, busInfoArrays)   
-        
-    print(g.serialize(format = 'xml').decode('utf-8'))
-
-
-    # # Add the official region node
-    # numOfRegion = len(engconsump.GovernmentOfficeRegions)
-    # counter_region = 0   
-    # while (counter_region < numOfRegion): # numOfRegion
-    #     region = engconsump.GovernmentOfficeRegions[counter_region]
-    #     print('The region is: ')
-    #     print(region)
-    #     # find the index of region in the data file
-    #     _elecConDataArrays = np.array(elecConDataArrays)
-    #     index_targetRegion = np.argwhere(_elecConDataArrays == region)[0][0]        
-    #     regional_base_uri = root_uri + SLASH + region + OWL # the name of the named graph, will be applied as the identifier in method Graph(), without '#' 
-        
-    #     # Create rdf graph with identifier, regional nodes are named graphs including its local nodes
-    #     graph = Graph('default', URIRef(regional_base_uri)) # graph(store='default', identifier)
-    #     graph = addUKElectricityConsumptionTriples(graph, index_targetRegion)       
-    #     print('Counter and index_targetRegion are:')
-    #     print (counter, index_targetRegion)
-        
-    #     # Add the local nodes under its regional node
-    #     while (counter < index_targetRegion):
-    #         graph = addUKElectricityConsumptionTriples(graph, counter, index_targetRegion)
-    #         counter += 1
-            
-    #     # specify the owl file storage path
-    #     defaultStoredPath = ukec.StoreGeneratedOWLs + 'UK_energy_consumption_' + region + '_UK' + OWL #default path
+       
+    g = addEBusNodes(g, busInfoArrays) 
     
-    #     # Store/update the generated owl files      
-    #     if os.path.exists(ukec.StoreGeneratedOWLs) and not userSpecified:
-    #         print('****Non user specified storage path, will use the default storage path****')
-    #         storeGeneratedOWLs(graph, defaultStoredPath)
-    
-    #     elif filepath == None:
-    #         print('****Needs user to specify a storage path****')
-    #         filepath = selectStoragePath()
-    #         filepath_ = filepath + '\\' + 'UK_energy_consumption_' + region + '_UK' + OWL
-    #         storeGeneratedOWLs(graph, filepath_)
-    #     else: 
-    #         filepath_ = filepath + '\\' +'UK_energy_consumption_' + region + '_UK' + OWL
-    #         storeGeneratedOWLs(graph, filepath_)
+    g = addELineNodes(g, branchTopoInfoArrays, branchPropArrays)
         
-    #     print('counter_region is: ')
-    #     print(counter_region)
-        
-    #     counter_region += 1               
-    # return 
+    # specify the owl file storage path
+    defaultStoredPath = uk_topo.StoreGeneratedOWLs + 'UK_' + topo_info.Topo_10_bus['Name'] + OWL #default path
 
-"""Add nodes represent EBus"""
+    # Store/update the generated owl files      
+    if os.path.exists(uk_topo.StoreGeneratedOWLs) and not userSpecified:
+        print('****Non user specified storage path, will use the default storage path****')
+        storeGeneratedOWLs(g, defaultStoredPath)
+
+    elif filepath == None:
+        print('****Needs user to specify a storage path****')
+        filepath = selectStoragePath()
+        filepath_ = filepath + '\\' + 'UK_' + topo_info.Topo_10_bus['Name'] + OWL
+        storeGeneratedOWLs(g, filepath_)
+    else: 
+        filepath_ = filepath + '\\' +'UK_' + topo_info.Topo_10_bus['Name'] + OWL
+        storeGeneratedOWLs(g, filepath_)
+        
+    return g
+
+"""Add nodes represent Buses"""
 def addEBusNodes(graph, dataArray):  
-    if dataArray[0] == topo_info.headerTopologicalInformation:
+    if dataArray[0] == topo_info.headerBusTopologicalInformation:
         pass
     else:
-        print('The data is not sufficient, please check the data file')
+        print('The data header is not matched, please check the data file')
         return None
     counter = 1
-    # define namespace
-    tp_namespace = root_uri + HASH
-    
-    while counter <= 1: # len(dataArray):
+    while counter < len(dataArray):
+        # print('Counter is ', counter)
         busTopoData = dataArray[counter]
+        
         # the EquipmentConnection_EBus node uri
         bus_context_locator = uk_topo.EquipmentConnection_EBusKey + busTopoData[0].zfill(3) 
         bus_node = tp_namespace + bus_context_locator
         Ebus_context_locator = uk_ebus_model.EBusKey + busTopoData[0].zfill(3) + UNDERSCORE + busTopoData[1]
-        Ebus_node = UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + Ebus_context_locator + OWL + HASH + Ebus_context_locator
-        
+        Model_EBus_context_locator = uk_ebus_model.ModelEBusKey + busTopoData[0].zfill(3) + UNDERSCORE + busTopoData[1]
+        Ebus_node = UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + Model_EBus_context_locator + OWL + HASH + Ebus_context_locator
+        # Link bus node with root node and specify its type
         graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(bus_node)))
         graph.add((URIRef(bus_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerEquipmentConnection.iri)))
         # link EquipmentConnection_EBus node with EBus node
@@ -180,15 +149,15 @@ def addEBusNodes(graph, dataArray):
         graph.add((URIRef(bus_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator)))
         graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), RDF.type, URIRef(ontoecape_space_and_time_extended.ProjectedCoordinateSystem.iri)))       
         graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
-                   URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator)))
-        graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
                    URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator)))
+        graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
+                   URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator)))
         graph.add((URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))   
         graph.add((URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))       
         graph.add((URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
         graph.add((URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
-        graph.add((URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'y-axis')))
-        graph.add((URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'x-axis')))
+        graph.add((URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'y-axis')))
+        graph.add((URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'x-axis')))
         
         graph.add((URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasValue.iri),\
                    URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LantitudeKey + bus_context_locator)))
@@ -204,105 +173,118 @@ def addEBusNodes(graph, dataArray):
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
                    URIRef(ontocape_SI_units.m.iri)))
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                   Literal(float(busTopoData[4].strip('\n')))))
+                   Literal(float(busTopoData[4].strip('\n')))))        
+        counter += 1
+    return graph
+
+"""Add nodes represent Branches"""
+def addELineNodes(graph, branchTopoArray, branchPropArray):  
+    if branchTopoArray[0] == topo_info.headerBranchTopologicalInformation and branchPropArray[0] == topo_info.headerBranchProperty:
+        pass
+    else:
+        print('The data header is not matched, please check the data file')
+        return None   
+    counter = 1
+    # Number of the Elines (branches)
+    Num_Eline = len(branchTopoArray) -1    
+    while counter <= 1: # Num_Eline:
+        branchTopoData = branchTopoArray[counter]
+        FromBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[0].zfill(3)
+        ToBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[1].zfill(3)       
+       
+        # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
+        gpsArray = []
+        res_busGPS = list(queryBusGPS(graph, FromBus_iri, ToBus_iri))
+        for n in str(res_busGPS[0]).split(')),'):
+            gps_ = n.split("\'")[1]
+            gpsArray.append(gps_)
+        # Calculate the Eline length
+        Eline_length = DistanceBasedOnGPDLocation(gpsArray)
         
+        # PowerFlow_ELine node uri
+        branch_context_locator = uk_topo.PowerFlow_ELineKey + str(counter).zfill(3) 
+        branch_node = tp_namespace + branch_context_locator
+        ELine_namespace = UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_eline_model.ModelELineKey + str(counter).zfill(3) + OWL + HASH
+        Eline_context_locator = uk_eline_model.ELineKey + str(counter).zfill(3)
+        Eline_node = ELine_namespace + Eline_context_locator
+        ELine_shape_node = ELine_namespace + uk_eline_model.ShapeKey + Eline_context_locator
+        ELine_length_node = ELine_namespace + uk_eline_model.LengthKey + Eline_context_locator
+        value_ELine_length_node = ELine_namespace + uk_topo.valueKey + uk_eline_model.LengthKey + Eline_context_locator
+        PARALLEL_CONNECTIONS_400kV = ELine_namespace + uk_eline_model.OHL400kVKey + Eline_context_locator
+        PARALLEL_CONNECTIONS_275kV = ELine_namespace + uk_eline_model.OHL275kVKey + Eline_context_locator
+        num_of_PARALLEL_CONNECTIONS_400kV = ELine_namespace + uk_topo.NumberOfKey + uk_eline_model.OHL400kVKey + Eline_context_locator
+        num_of_PARALLEL_CONNECTIONS_275kV = ELine_namespace + uk_topo.NumberOfKey + uk_eline_model.OHL275kVKey + Eline_context_locator
+        
+        # Link line node with root node and specify its type
+        graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(branch_node)))
+        graph.add((URIRef(branch_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerFlow.iri)))
+        # link PowerFlow_ELine node with EBus node
+        graph.add((URIRef(branch_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(Eline_node)))
+        graph.add((URIRef(Eline_node), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
+        # link with leaves(from) bus and enters(to) bus
+        graph.add((URIRef(branch_node), URIRef(ontocape_network_system.leaves.iri), URIRef(FromBus_iri)))
+        graph.add((URIRef(branch_node), URIRef(ontocape_network_system.enters.iri), URIRef(ToBus_iri)))
+        # link buses with its hasOutput and hasInput
+        graph.add((URIRef(FromBus_iri), URIRef(ontocape_network_system.hasOutput.iri), URIRef(branch_node)))
+        graph.add((URIRef(ToBus_iri), URIRef(ontocape_network_system.hasInput.iri), URIRef(branch_node)))
+        # add ShapeRepresentation (length) of ELine
+        graph.add((URIRef(Eline_node), URIRef(ontocape_geometry.hasShapeRepresentation.iri), URIRef(ELine_shape_node)))
+        graph.add((URIRef(ELine_shape_node), RDF.type, URIRef(ontocape_geometry.Cylinder.iri)))
+        graph.add((URIRef(ELine_shape_node), URIRef(ontocape_geometry.has_length.iri), URIRef(ELine_length_node)))
+        graph.add((URIRef(ELine_length_node), RDF.type, URIRef(ontocape_geometry.Height.iri)))
+        # value of branch length
+        graph.add((URIRef(ELine_length_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_ELine_length_node)))
+        graph.add((URIRef(value_ELine_length_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+        graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(ontocape_derived_SI_units.km.iri)))
+        graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(Eline_length))))
+        # the parallel conection of each branch (400kV and 275kV)
+        graph.add((URIRef(Eline_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS_400kV)))
+        graph.add((URIRef(Eline_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS_275kV)))
+        graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
+        graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
+        
+        graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(num_of_PARALLEL_CONNECTIONS_400kV)))
+        graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_400kV), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+        graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_400kV), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(int(branchTopoData[2]))))
+        
+        graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(num_of_PARALLEL_CONNECTIONS_275kV)))
+        graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_275kV), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+        graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_275kV), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(int(branchTopoData[3]))))
+
         counter += 1
         
     return graph   
 
+"""Get FromBus and ToBus locations of a given branch"""
+def queryBusGPS(graph, FromBus_iri, ToBus_iri):
+    queryStr = """
+    PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX space_and_time_extended:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+    SELECT DISTINCT ?FromBus_latitude ?FromBus_longitude ?ToBus_latitude ?ToBus_longitude 
+    WHERE
+    {
+    <%s> space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_FromBus .
+    ?CoordinateSystem_FromBus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_FromBus .
+    ?CoordinateSystem_FromBus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_FromBus .
+    ?x_coordinate_FromBus  system:hasValue ?GPS_x_coordinate_FromBus .
+    ?y_coordinate_FromBus  system:hasValue ?GPS_y_coordinate_FromBus . 
+    ?GPS_x_coordinate_FromBus  system:numericalValue ?FromBus_latitude .
+    ?GPS_y_coordinate_FromBus  system:numericalValue ?FromBus_longitude .
+    
+    <%s> space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_ToBus .
+    ?CoordinateSystem_ToBus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_ToBus .
+    ?CoordinateSystem_ToBus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_ToBus .
+    ?x_coordinate_ToBus  system:hasValue ?GPS_x_coordinate_ToBus .
+    ?y_coordinate_ToBus  system:hasValue ?GPS_y_coordinate_ToBus . 
+    ?GPS_x_coordinate_ToBus  system:numericalValue ?ToBus_latitude .
+    ?GPS_y_coordinate_ToBus  system:numericalValue ?ToBus_longitude .
+    }
+    """ % (FromBus_iri, ToBus_iri)
+    qres = graph.query(queryStr)
+    return qres
+
+#TODO: addEGenNodes func
+
 if __name__ == '__main__':    
-    # print(len(busInfoArrays))
-    # print(UKDT.namedGraphURIGenerator(2, dt.gridTopology, None))
-    # createTopologyGraph()
-    # print(root_uri + HASH)
-    # print(busInfoArrays[1][0].zfill(3))
-    # print( root_uri + HASH + uk_topo.EquipmentConnection_EBusKey + busInfoArrays[1][0].zfill(3))
-    # print( UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10) )
-    # Ebus_locator = uk_ebus_model.EBusKey + busInfoArrays[1][0].zfill(3) + UNDERSCORE + busInfoArrays[1][1]
-    # Ebus_root_node = UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + Ebus_locator + OWL + HASH + Ebus_locator
-    # print(Ebus_root_node)
-    createTopologyGraph()       
-        
-        # # Check node type: reginal or local nodes
-        # if elecConData[0] in engconsump.GovernmentOfficeRegions: # regional node
-        #     print('Regional node name is: ' + elecConData[0].strip('\n'))
-        #     ec_root_node = root_uri + SLASH + elecConData[0].strip('\n') + OWL + HASH + elecConData[0].strip('\n') # top node of the named graph
-        #     ec_namespace = root_uri + SLASH + elecConData[0].strip('\n') + OWL + HASH       
-        #     # Import T-boxes
-        #     graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))
-        #     # Add connection between its father node
-        #     graph.add((URIRef(ec_root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
-        #                 URIRef(UKDT.namedGraphURIGenerator(3, dt.energyConsumption, engconsump.VERSION))))
-        # elif len(counter) > 1: # local node
-        #     print('Local node name is: ' + elecConData[0].strip('\n'))
-        #     ec_root_node = root_uri + SLASH + elecConDataArrays[counter[1]][0].strip('\n') + OWL + HASH + elecConData[0].strip('\n') # sub node of the graph identifying the local node
-        #     ec_namespace = root_uri + SLASH + elecConDataArrays[counter[1]][0].strip('\n') + OWL + HASH       
-        #     # Add connection between its father node
-        #     graph.add((URIRef(root_uri + SLASH + elecConDataArrays[counter[1]][0].strip('\n') + OWL + HASH + elecConDataArrays[counter[1]][0].strip('\n')),\
-        #                URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(ec_root_node)))
-        # else:
-        #     print ('This is not a regional node. The number of counter arguments is expected to be 2.')
-        
-        
-        # # Add rdf.type
-        # graph.add((URIRef(ec_root_node), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri)))
-        
-        # # Add total consumption and value
-        # index_total = elecConDataArrays[0].index('Total\n')
-        # graph.add((URIRef(ec_root_node), URIRef(ontoeip_system_function.consumes.iri), URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0])))
-        # graph.add((URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarQuantity.iri)))
-        
-        # graph.add((URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasValue.iri),\
-        #         URIRef(ec_namespace + ukec.valueKey +ukec.TotalConsumptionKey + elecConData[0])))
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.TotalConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.TotalConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
-        #             URIRef(t_box.ontocape_derived_SI_units + 'GIGAWATT_HOUR'))) # T-box undefined
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.TotalConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-        #             Literal(float(elecConData[index_total].strip('\n')))))
-        
-        # # Add Domestic and IndustrialAndCommercial consumption and value
-        # index_domestic = elecConDataArrays[0].index('Domestic')
-        # index_industrial = elecConDataArrays[0].index('IndustrialAndCommercial')
-        # graph.add((URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0]), URIRef(t_box.ontocape_mathematical_relation + 'ConsistsOf'),\
-        #             URIRef(ec_namespace + ukec.DomesticConsumptionKey + elecConData[0]))) # T-box undefined
-        # graph.add((URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0]), URIRef(t_box.ontocape_mathematical_relation + 'ConsistsOf'),\
-        #             URIRef(ec_namespace + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0])))
-        # graph.add((URIRef(ec_namespace + ukec.DomesticConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarQuantity.iri)))
-        # graph.add((URIRef(ec_namespace + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarQuantity.iri)))
-        
-        # graph.add((URIRef(ec_namespace + ukec.DomesticConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasValue.iri),\
-        #         URIRef(ec_namespace + ukec.valueKey +ukec.DomesticConsumptionKey + elecConData[0])))
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.DomesticConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.DomesticConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
-        #             URIRef(t_box.ontocape_derived_SI_units + 'GIGAWATT_HOUR'))) # T-box undefined
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.DomesticConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-        #             Literal(float(elecConData[index_domestic].strip('\n')))))
-            
-        # graph.add((URIRef(ec_namespace + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasValue.iri),\
-        #         URIRef(ec_namespace + ukec.valueKey +ukec.IndustrialAndCommercialConsumptionKey + elecConData[0])))
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
-        #             URIRef(t_box.ontocape_derived_SI_units + 'GIGAWATT_HOUR'))) # T-box undefined
-        # graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-        #             Literal(float(elecConData[index_industrial].strip('\n')))))
-            
-        # # Add hasAddress and LACODE    
-        # index_LACode = elecConDataArrays[0].index('LACode')
-        # graph.add((URIRef(ec_root_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + elecConData[0])))
-        # if elecConData[0] in engconsump.GovernmentOfficeRegions: # regional node
-        #     graph.add((URIRef(t_box.dbr + elecConData[0]), RDF.type, URIRef(t_box.dbo + 'Region')))
-        # elif len(counter) > 1: # local node
-        #     graph.add((URIRef(t_box.dbr + elecConData[0]), RDF.type, URIRef(ontoecape_space_and_time_extended.AddressArea.iri)))
-        #     # Add subdivision relationship between local areas and its region
-        #     graph.add((URIRef(t_box.dbr + elecConDataArrays[counter[1]][0].strip('\n')), URIRef(t_box.dbo + 'subdivision'), URIRef(t_box.dbr + elecConData[0])))
-        # graph.add((URIRef(t_box.dbr + elecConData[0]), URIRef(t_box.dbo + 'areaCode'), Literal(str(elecConData[index_LACode]))))
-                    
-        # return graph
-
-
-
-
-
-# if __name__ == '__main__':
-#     addRegionalandLocalNodes()
-#     print('terminated')
+    createTopologyGraph()
+    

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 05 May 2021          #
+# Last Update Date: 07 May 2021          #
 ##########################################
 
 """This module declare the properties of generating UK power grid topology A-boxes"""
@@ -12,9 +12,13 @@ class UKPowerGridTopology:
     
     """Bus Node keys"""
     EquipmentConnection_EBusKey = "EquipmentConnection_EBus-"
+    PowerFlow_ELineKey = "PowerFlow_ELine-"
+    
     CoordinateSystemKey = "CoordinateSystem_"
-    LantitudeKey = "y_coordinate_" 
-    LongitudeKey = "x_coordinate_" 
+    
+    LongitudeKey = "y_coordinate_" 
+    LantitudeKey = "x_coordinate_" 
     
     valueKey = "value_"
+    NumberOfKey = "Number_of_"
 

@@ -109,7 +109,7 @@ def addSubGraphtoSecondLevelNode(graph):
     graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), RDF.type, URIRef(ontocape_mathematical_model.MathematicalModel.iri)))
     return graph
 
-# Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)
+"""Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
 def addSubGraphs_fromRawData(graph, filepath, nodeName):
     contentArrays = readFile(filepath)    
     for content in contentArrays:

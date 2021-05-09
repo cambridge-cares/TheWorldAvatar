@@ -197,7 +197,7 @@ if __name__ == "__main__":
         # when query the conjunctive graph which contains the named graphs
         # the named graph can be simply identified by 'GRAPH' and the identifier of the named graph
     
-    # qres = g.query(queryStr5)
+    qres = g.query(queryStr5)
     
     # print('The query results are: ')
     # for n in qres:

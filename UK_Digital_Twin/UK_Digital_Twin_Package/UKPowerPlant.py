@@ -16,8 +16,8 @@ class UKPowerPlant:
     BuiltYearKey = "YearOfBuilt_"
     OwnerKey = "Owner_"
     CoordinateSystemKey = "CoordinateSystem_"
-    LantitudeKey = "y_coordinate_" 
-    LongitudeKey = "x_coordinate_" 
+    LongitudeKey = "y_coordinate_" 
+    LantitudeKey = "x_coordinate_" 
     
     
     valueKey = "value_"

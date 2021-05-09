@@ -28,6 +28,7 @@ class UKDigitalTwinTBox:
     ontocape_coordinate_system = "http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
     ontocape_SI_units = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#"
     ontocape_mathematical_relation = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+    ontocape_geometry = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#"
     
     meta_model_topology = "http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
        

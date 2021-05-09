@@ -167,16 +167,16 @@ def addUKPowerPlantTriples():
             graph.add((URIRef(pp_root_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + region)))
             graph.add((URIRef(pp_root_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname)))
             graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), RDF.type, URIRef(ontoecape_space_and_time_extended.ProjectedCoordinateSystem.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
-                       URIRef(pp_namespace + ukpp.LantitudeKey + plantname)))
             graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
+                       URIRef(pp_namespace + ukpp.LantitudeKey + plantname)))
+            graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
                        URIRef(pp_namespace + ukpp.LongitudeKey + plantname)))
             graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))   
             graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))  
             graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
             graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'y-axis')))
-            graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'x-axis')))
+            graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'x-axis')))
+            graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'y-axis')))
             graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasValue.iri),\
                        URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname)))
             graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname), RDF.type, URIRef(ontocape_coordinate_system.CoordinateValue.iri)))
