@@ -5,7 +5,7 @@ slug: sustainable-goals
 
 <table class="three-quarter-width" style="margin: auto;">
 	<tr>
-		<td width="350px" style="text-align: center;" markdown="1">![UK](image://digital-twin/un-goals-triangle.jpg?forceResize=300,300)</td>
+		<td width="350px" style="text-align: center;" markdown="1">![UK](image://digital-twin/un-goals.jpg?forceResize=300,300)</td>
 		<td style="font-size: 10pt;">
 			<h2>Sustainable Goals</h2>
 			<p>The UK Digital Twin supports queries across number of aspects of the UK energy related infrastructure, including the electrical power system, the gas transmission system and land use.</p>

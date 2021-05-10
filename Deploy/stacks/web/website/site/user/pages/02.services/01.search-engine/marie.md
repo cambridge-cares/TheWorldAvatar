@@ -1,12 +1,12 @@
 ---
-title: Marie
-slug: marie
+title: Search Engine
+slug: search-engine
 ---
 
 <table>
 	<tr>
-		<td width="25%" markdown="1" style="text-align: center;">[![Marie Curie](image://marie-curie.jpg?forceResize=150,200&classes=header-image)](https://commons.wikimedia.org/wiki/Maria_Sk%C5%82odowska-Curie#/media/File:Marie_Curie_c._1920s.jpg)</td>
-		<td width="75%"><h2>Marie</h2>This website presents a proof-of-concept Question Answering system for accessing chemical data from the World Avatar knowledge graph and the Wikidata knowledge graph. The knowledge graphs offers inter-connected data from chemical kinetics to chemical and physical properties of species and many other domains. We trained a question type classification model and an entity extraction model to interpret chemistry-related questions of interest. The system has a novel design which applies a topic model to identify the question-to-ontology affiliation to improve its accuracy.</td>
+		<td width="25%" markdown="1" style="text-align: center;">![Search-Engine](image://search-engine.jpg?forceResize=150,200&classes=header-image)</td>
+		<td width="75%"><h2>Search Engine</h2>This website presents a proof-of-concept search engine system for accessing chemical data from the World Avatar knowledge graph and the Wikidata knowledge graph. The knowledge graphs offers inter-connected data from chemical kinetics to chemical and physical properties of species and many other domains. We trained a question type classification model and an entity extraction model to interpret chemistry-related questions of interest. The system has a novel design which applies a topic model to identify the question-to-ontology affiliation to improve its accuracy.</td>
 	</tr>
 </table>
 

@@ -22,14 +22,14 @@ body_classes: 'title-center title-h1h2'
 
 	<table width="80%" style="margin: auto;">
 		<tr height="300px">
-			<td width="45%" style="text-align: center;" markdown="1">[![Marie](image://marie-300.jpg?forceResize=250,250&classes=header-image)](/services/marie)</td>
+			<td width="45%" style="text-align: center;" markdown="1">[![Search Engine](image://search-engine-300.jpg?forceResize=250,250&classes=header-image)](/services/search-engine)</td>
 			<td width="10%"></td>
 			<td width="45%" style="text-align: center;" markdown="1">[![UK Digital Twin](image://digital-twin/digital-twin-300.jpg?forceResize=250,250&classes=header-image)](/services/digital-twin)</td>
 		</tr>
 		<tr>
 			<td width="45%" style="text-align: center;">
-				<h5><a href="/services/marie">Marie Chatbot</a></h5>
-				<p style="font-size: 80%;">A proof-of-concept Question Answering system for accessing chemical data from the World Avatar knowledge graph and the Wikidata knowledge graph.</p>
+				<h5><a href="/services/search-engine">Search Engine</a></h5>
+				<p style="font-size: 80%;">A proof-of-concept search engine for accessing chemical data from the World Avatar knowledge graph and the Wikidata knowledge graph.</p>
 			</td>
 			<td width="10%"></td>
 			<td width="45%" style="text-align: center; margin-left:15px;">
