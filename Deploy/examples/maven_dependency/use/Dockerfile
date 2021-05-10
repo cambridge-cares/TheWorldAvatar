@@ -1,8 +1,3 @@
-# The purpose of this image is to demonstrate how maven can be used to handle dependencies when building a service (agent, web interface, datastore etc.)
-# It uses a multi-stage build (https://docs.docker.com/develop/develop-images/multistage-build/) to:
-#   1. Download an artifact from a maven repository
-#   2. Copy the artifact into a second image that can be built into a standalone service
-
 # Artifact ID is defined globally so that it can be used in both stages
 ARG artifact_id="model_files"
 
