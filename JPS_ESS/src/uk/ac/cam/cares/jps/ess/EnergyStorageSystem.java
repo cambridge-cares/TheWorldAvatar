@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -28,50 +29,47 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 @WebServlet(urlPatterns = { "/ESSAgent"})
-/** Acts as a wrapper around the ESS GAMS solver 
- * 
- *
- */
+
 public class EnergyStorageSystem extends JPSAgent {
 
 	private static final long serialVersionUID = 1L;
+	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private String modelname="NESS.gms";
+    private List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
 
-	Logger logger = null;
-	
+	Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
 	@Override
 	protected void setLogger() {
 		logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
 	}
-	private String modelname="NESS.gms";
-    private List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
 	
-    @Override
+	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
+		
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException ("ESSAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
-		String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
-		System.out.println("baseURL: " + baseUrl);
-		
-		String batIRI=requestParams.getString("BatteryCatalog");
-		String ENIRI=requestParams.getString("electricalnetwork");
-		
-		List<String> pvGenIRI=filterPV(ENIRI);						
-		JSONObject resultofbattery = null;
-		try {
-			resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
-			return resultofbattery;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-		}
-		return resultofbattery;
+			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
+			System.out.println("baseURL: " + baseUrl);
+			
+			String batIRI=requestParams.getString("BatteryCatalog");
+			String ENIRI=requestParams.getString("electricalnetwork");
+			
+			List<String> pvGenIRI=filterPV(ENIRI);						
+			JSONObject resultofbattery = null;
+			try {
+				resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
+				return resultofbattery;
+			} catch (IOException e) {
+				throw new JPSRuntimeException("");
+			}
 	}
-    
+	
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
     	if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
 	        String ENIRI = requestParams.getString("electricalnetwork");
@@ -83,7 +81,6 @@ public class EnergyStorageSystem extends JPSAgent {
             return false;
         }
     }
-    
     /** code that should run GAMS
      * 
      * @param baseUrl
@@ -95,8 +92,6 @@ public class EnergyStorageSystem extends JPSAgent {
  		baseUrl =baseUrl.replace("//", "/");
 		modifyTemplate(baseUrl,modelname);		
 		logger.info("Start");
-		//If user does not have GAMSDIR on, replace the following with the location of his GAMS
-//		String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
 		String gamsLocation = System.getenv("GAMSDIR").split(";")[0];
 
 
@@ -118,8 +113,7 @@ public class EnergyStorageSystem extends JPSAgent {
         
         CommandHelper.executeSingleCommand(baseUrl, cmdArrayinstring);
    
- 	}
- 	
+ 		}
 	/** modifies the GAMS code in workingdir folder to accept the file written in newdir
 	 * 
 	 * @param newdir location of simulation files
@@ -158,14 +152,13 @@ public class EnergyStorageSystem extends JPSAgent {
 		
 		new QueryBroker().putLocal(destinationUrl, fileContext);
 	}
-	
 	/** read the battery to a OntModel of its components
 	 * 
 	 * @param batterycatiri
 	 * @return
 	 */
 	public static OntModel readBatteryGreedy(String batterycatiri) {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system)
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:contains", "?component");
 		String batteryInfo= sb.build().toString();
 		QueryBroker broker = new QueryBroker();
@@ -177,13 +170,26 @@ public class EnergyStorageSystem extends JPSAgent {
 	 * @param iriofnetwork
 	 * @return
 	 */
-	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
+	public static OntModel readModelGreedy(String iriofnetwork) { 
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system )
 				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
-		String wasteInfo = sb.build().toString();
+		String modelQuery = sb.build().toString();
 
 		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, wasteInfo);
+		return broker.readModelGreedy(iriofnetwork, modelQuery);
+	}
+	/** Prepares query for SelectBuilder in prepareCSVPahigh and prepareCSVremaining
+	 * 
+	 * @return SelectBuilder 
+	 */
+	public SelectBuilder prepareSelectBuilderForQuery() {
+		return new SelectBuilder().addPrefix("j1",TWA_Ontology+"/ontopowsys/PowSysRealization.owl#" )
+				.addPrefix("j2", TWA_upperlevel_system)
+				.addPrefix("j3", TWA_Ontology+"/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j5", TWA_Ontology+"/ontocape/model/mathematical_model.owl#")				
+				.addPrefix("j6", TWA_Ontology+"/ontopowsys/PowSysBehavior.owl#")
+				.addPrefix("j7", TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#");
+				
 	}
 	
 	/** prepare the max and min power generated as well as state of charge. 
@@ -195,13 +201,7 @@ public class EnergyStorageSystem extends JPSAgent {
 	public void prepareCSVPahigh(List<String> pvGenIRI, String baseUrl) {
 
 		// System.out.println("model= "+model);
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
-				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addVar("?Pa_high").addVar("?Da_low").addVar("?Pa_low").addVar("?Da_high")
+		SelectBuilder sb =prepareSelectBuilderForQuery().addVar("?Pa_high").addVar("?Da_low").addVar("?Pa_low").addVar("?Da_high")
 				.addWhere("?entity" ,"a", "j1:PowerGenerator")
 				.addWhere("?entity" ,"j6:hasMaximumActivePowerGenerated", "?Pmax")
 				.addWhere("?Pmax" ,"j2:hasValue", "?vPmax").addWhere("?vPmax" ,"j5:upperLimit", "?Pa_high")
@@ -250,19 +250,15 @@ public class EnergyStorageSystem extends JPSAgent {
 	 */
 	public void prepareCSVRemaining(String batcal, String baseUrl) {
 		OntModel model=readBatteryGreedy(batcal);		
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
-				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+		SelectBuilder sb = prepareSelectBuilderForQuery()
+				.addPrefix("j9", TWA_Ontology + "/ontopowsys/PowSysPerformance.owl#")
 				.addVar("?entity").addVar("?environment").addVar("?cost").addVar("?maturity")
 				.addVar("?vPtHigh").addVar("?vPtLow").addVar("?DTHigh").addVar("?DTLow")
 				.addWhere("?entity" ,"j2:hasProperty", "?MC")
 				.addWhere("?MC" ,"j2:hasValue", "?vMC")
 				.addWhere("?vMC" ,"j2:numericalValue", "?environment")
 				
-				.addWhere("?entity" ,"j3:hasCost", "?EC")
+				.addWhere("?entity" ,"j9:hasCost", "?EC")
 				.addWhere("?EC" ,"j2:hasValue", "?vEC")
 				.addWhere("?vEC" ,"j2:numericalValue", "?cost")
 				
@@ -313,13 +309,14 @@ public class EnergyStorageSystem extends JPSAgent {
 		makeBatteryInputParamCSV(baseUrl, resultList, header,"Dtlow.csv",7);
 		
 	}
-	/** Stores the values of the results from querying into parameter csv
+	
+	/** converts the inputs into a csv from a List<String[]> arrays
 	 * 
-	 * @param baseUrl folder where csv files are located
-	 * @param resultList results taken from querying the parameters of an OntModel
-	 * @param header header of rows
-	 * @param filename name of file to be saved to
-	 * @param index order in the resultList rows. 
+	 * @param baseUrl
+	 * @param resultList
+	 * @param header
+	 * @param filename
+	 * @param index
 	 */
 	private void makeBatteryInputParamCSV(String baseUrl, List<String[]> resultList, String[] header,String filename,int index) {
 		List<String[]> resultListforcsv = new ArrayList<String[]>();
@@ -333,6 +330,7 @@ public class EnergyStorageSystem extends JPSAgent {
 	
 	/** battery select: Currently hardcoded
 	 * batterylist was created in prepareCSVRemaining() earlier
+	 * TODO: get a better method of selecting the result than a number comparison. 
 	 * @param outputfiledir
 	 * @param batterycat
 	 * @return
@@ -388,22 +386,17 @@ public class EnergyStorageSystem extends JPSAgent {
 		}
 		return simulationResult;
 		
-	}
-		
+	}	
+	
 	/** Constructs an OntModel of Electrical network, and determine the generators, bus numbers and respective locations
 	 * 
 	 * @param ENIRI
 	 * @return
 	 */
 	public List<String> filterPV (String ENIRI){
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+		SelectBuilder sb = prepareSelectBuilderForQuery().addPrefix("j9", TWA_Ontology + "/ontocape/upper_level/technical_system.owl#")
 				.addVar("?entity").addVar("?valueofx").addVar("?valueofy").addVar("?BusNumbervalue")
-				.addWhere("?entity" ,"a", "j1:PowerGenerator").addWhere("?entity" ,"j9:realizes", "<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SolarGeneration>")
+				.addWhere("?entity" ,"a", "j1:PowerGenerator").addWhere("?entity" ,"j9:realizes", "<"+TWA_Ontology+"/ontoeip/powerplants/PowerPlant.owl#SolarGeneration>")
 				.addWhere("?entity" ,"j2:isModeledBy", "?model").addWhere("?model" ,"j5:hasModelVariable", "?num")
 				.addWhere("?num" ,"a", "j3:BusNumber").addWhere("?num" ,"j2:hasValue", "?vnum")
 				.addWhere("?vnum" ,"j2:numericalValue", "?BusNumbervalue")

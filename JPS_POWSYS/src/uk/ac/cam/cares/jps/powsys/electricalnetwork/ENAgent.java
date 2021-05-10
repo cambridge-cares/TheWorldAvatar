@@ -64,7 +64,7 @@ public class ENAgent extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		if (!validateInput(requestParams)) {
-			throw new JSONException("ENAgent input parameters invalid");
+			throw new JSONException("");
 		}
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = "OPF";
@@ -74,11 +74,9 @@ public class ENAgent extends JPSAgent{
 			result = startSimulation(iriofnetwork, baseUrl, modeltype);
 			return result;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
+			throw new JPSRuntimeException("");
 			
 		}
-		return null;
 	}
 	/** main function for ENAgent
 	 * 

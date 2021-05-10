@@ -30,7 +30,7 @@ public class OptimizationAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    if (!validateInput(requestParams)) {
-			throw new BadRequestException("ESSOptimizationAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		String path="JPS_ESS/LocateBattery"; //later can be queried from the agent descriptions
 		String gencoordinate = new SelectBuilder()

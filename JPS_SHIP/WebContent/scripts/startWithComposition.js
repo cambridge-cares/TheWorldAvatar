@@ -322,7 +322,7 @@ console.log(result)});
         $.get(agentScenario, {city:locationIRI}).done(function (data) {
             console.log('requested Scenario Agent for folder: '+data);
         folder = data;
-        $.get(agentInformation, {path:folder}).done(function (info) {
+        $.get(agentInformation, {filepath:folder}).done(function (info) {
             info=JSON.parse(info);
         	console.log('requested info agent for:');
             console.log(info);

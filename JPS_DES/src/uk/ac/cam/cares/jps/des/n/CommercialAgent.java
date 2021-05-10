@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -27,6 +26,11 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/CommercialAgent"})
 public class CommercialAgent extends JPSAgent {
+	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_POWSYSRealization = TWA_Ontology+ "/ontopowsys/PowSysRealization.owl#";
+	private static final String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
+	
 	/** Main Function for processing Commercial Agent. 
 	 * Employs queryForWeather Forecast as well as building constants. 
 	 * @param requestParams
@@ -37,11 +41,11 @@ public class CommercialAgent extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject responseParams = requestParams;	
     	if (!validateInput(requestParams)) {
-    		throw new BadRequestException("CommercialAgent:  Input parameters not found.\n");
+    		throw new BadRequestException();
     	}
-        String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
-        String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
-        String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+        String iriofnetwork = requestParams.optString("electricalnetwork", TWA_Singapore +"/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
+        String irioftempF=requestParams.optString("temperatureforecast", TWA_Singapore +"/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
+        String iriofirrF=requestParams.optString("irradiationforecast", TWA_Singapore +"/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
         
         String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
@@ -55,7 +59,7 @@ public class CommercialAgent extends JPSAgent {
 			responseParams.put("results", res);
 			}
 		catch (Exception ex) {
-			throw new JPSRuntimeException("CommercialAgent: Results not returned. ");
+			throw new JPSRuntimeException("");
 		}
 		return responseParams;
     }
@@ -63,7 +67,7 @@ public class CommercialAgent extends JPSAgent {
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
         String iriofnetwork = requestParams.getString("electricalnetwork");
@@ -88,9 +92,9 @@ public class CommercialAgent extends JPSAgent {
 	 * @param baseUrl Folder in which constant.csv is dumped in
 	 */
 	public void queryForBuildingConstants(OntModel model, String baseUrl) {
-        SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("plant", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#")
-				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+        SelectBuilder sb = new SelectBuilder().addPrefix("j2", TWA_upperlevel_system )
+				.addPrefix("plant", TWA_Ontology +"/ontocape/chemical_process_system/CPS_realization/plant.owl#")
+				.addPrefix("j6", TWA_POWSYSRealization)
 				.addVar("?CpropVal").addWhere("?entity" ,"a", "j6:Building")
 				.addWhere("?entity" ,"plant:hasCapacity", "?capacity").addWhere("?capacity" ,"j2:hasValue", "?vProp")
 				.addWhere("?vProp" ,"j2:numericalValue", "?CpropVal").addOrderBy("?capacity");
@@ -98,9 +102,9 @@ public class CommercialAgent extends JPSAgent {
 		ResultSet resultSetx = JenaHelper.query(model, q.toString());
 		String resultListC = JenaResultSetFormatter.convertToCSV(resultSetx);
 		
-		sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("phase_system", "http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#")
-				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+		sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system )
+				.addPrefix("phase_system", TWA_Ontology +"/ontocape/material/phase_system/phase_system.owl#")
+				.addPrefix("j6", TWA_POWSYSRealization)
 				.addPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 				.addVar("?KpropVal").addWhere("?entity" ,"a", "j6:Building")
 				.addWhere("?entity" ,"j2:hasProperty", "?prop").addWhere("?prop" ,"j2:hasValue", "?vProp")

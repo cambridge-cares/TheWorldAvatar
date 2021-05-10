@@ -33,29 +33,28 @@
 7. Matlab simulation is called, should finish in five minutes time. 
 ![WasteToEnergy UML Activity Diagram](images/ActivityWasteToEnergy.png)
 
-8. The loading is due to new Onsite Facility instances being created slowly, and added to the knowledge graph. Followed by onsite waste treatment facilities, and lastly, the new costs are calculated
+8. The loading is due to new Onsite Facility instances being created slowly, and added to the knowledge graph. The sequence of events can be located in the diagram below. 
 9. Each is saved to the output file and sent to the visualization. 
 
+![WTEProcessResult UML Activity Diagram](images/ActivityWTEProcessResult.png)
+
 ## There's something wrong? I can't deploy this!
-- WasteToEnergyAgent ran, but WTESingleAgent did not. 
-
-	Check if you have a Gurobi License (The current version deployed expires every two months)
-	   1. go to this website: https://www.gurobi.com/login/
-	   2. Once you've created an account (sign in with your Cambridge email!) go to licenses page. Check if your licenses are available and whether they've expired: https://www.gurobi.com/downloads/licenses/
-	   3. get yourself a license if your pre-existing license has expired: 
-		https://www.gurobi.com/downloads/free-academic-license/
-	   4. Download it by typing it into your CMD line
-	   5. Downloaded!
+1. WasteToEnergyAgent ran, but WTESingleAgent did not. 
+   - Check if you have a Gurobi License (The current version deployed expires every two months)
+    1. go to this website: https://www.gurobi.com/login/
+	 2. Once you've created an account (sign in with your Cambridge email!) go to licenses page. Check if your licenses are available and whether they've expired: https://www.gurobi.com/downloads/licenses/
+	 3. get yourself a license if your pre-existing license has expired: https://www.gurobi.com/downloads/free-academic-license/
+	 4. Download it by typing it into your CMD line
+	 5. Downloaded!
 		
-	Check if you have Matlab downloaded
-		1. Download using your Cambridge license
-		2. add matlab to your system environment
-- Your Matlab has completed execution and there are newly completed files, but nothing has happened. 
-
-	Check if your Asynchronous Watcher is deployed. This is found under JPS_AWS-git
-	Unfortunately, this means you have to restart the process after deploying Asynchronous Watcher
-- You don't see the visualization. 
-
-	Check your connection to your Tomcat Server
+   - Check if you have Matlab downloaded
+    1. Download using your Cambridge license
+	 2. add matlab to your system environment
+	 
+   - Your Matlab has completed execution and there are newly completed files, but nothing has happened. 
+     Check if your Asynchronous Watcher is deployed. This is found under JPS_AWS-git
+	 Unfortunately, this means you have to restart the process after deploying Asynchronous Watcher
+   - You don't see the visualization. 
+     Check your connection to your Tomcat Server
 ### TODO: 
  - [ ] Remove the need to swap the parameters when running visualization

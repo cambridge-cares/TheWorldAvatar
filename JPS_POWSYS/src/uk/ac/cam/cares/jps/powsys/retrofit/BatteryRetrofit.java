@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
@@ -54,15 +53,7 @@ public class BatteryRetrofit extends JPSAgent {
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		requestParams = processRequestParameters(requestParams, null);
-		return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		
-		if (!validateInput(requestParams)) {
-			throw new JSONException("BatteryRetrofitAgent Input parameters invalid");
-		}
 		String electricalNetwork = requestParams.getString("electricalnetwork");
 		JSONArray ja = requestParams.getJSONArray("batterylist");
 		List<String> BatteryList = MiscUtil.toList(ja);

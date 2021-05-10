@@ -6,6 +6,15 @@ public class Point {
     private double x;
     private double y;
     private String srsname;
+    
+    public Point(Point p) { // copy constructor
+    	this.x = p.getX();
+    	this.y = p.getY();
+    	this.srsname = p.getSrsname();
+    }
+    
+    public Point() {}
+    
 	public double getX() {
 		return x;
 	}

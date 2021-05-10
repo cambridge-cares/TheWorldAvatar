@@ -17,48 +17,35 @@ public class PreferredKeyWriter extends PrimeConverter implements IPreferredKeyW
 
 	private void readPreferredKey(char ch[], int start, int length) throws SAXException {
 		if (preferredKeyParseStatus.isPreferredKey()) {
-			createPreferredKey();
-			addAllAttributes();
-			linkPreferredKeyToExperiment();
+			createExpSpecs();
+			linkExpSpecsToExperiment();
 		}
 	}
 
-	private void createPreferredKey() {
+	private void createExpSpecs() {
 		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassPreferredKey(),
-					"PreferredKey" + UNDERSCORE + preferredKeyID);
+			iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoChemExpExpSpecs(),
+					ontoChemExpVocabulary.getOntoChemExpExpSpecs() + UNDERSCORE + preferredKeyID);
 		} catch (ABoxManagementException e) {
 			logger.error("");
 		}
 	}
 
-	private void addAllAttributes() {
-		if (preferredKey.getType() != null && !preferredKey.getType().trim().isEmpty()) {
-			try {
-				iABoxManagement.addProperty("PreferredKey" + UNDERSCORE + preferredKeyID,
-						ontoChemExpVocabulary.getDataPropertyhasType(), preferredKey.getType(), STRING);
-			} catch (ABoxManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void linkPreferredKeyToExperiment() {
+	private void linkExpSpecsToExperiment() {
 		try {
-			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasPreferredKey(),
-					"Experiment" + UNDERSCORE + experimentInstanceId, "PreferredKey" + UNDERSCORE + preferredKeyID);
+			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExphasExpSpecs(),
+					currentExperimentInstance, ontoChemExpVocabulary.getOntoChemExpExpSpecs() + UNDERSCORE + preferredKeyID);
 		} catch (ABoxManagementException e) {
 			logger.error(
-					"A link could not be established between a preferredKey and an experiment conducted using it.");
+					"A link could not be established between an expSpecs and an experiment.");
 		}
 	}
 
 	public void writeValue() {
 		if (preferredKey.getValue() != null && !preferredKey.getValue().trim().isEmpty()) {
 			try {
-				iABoxManagement.addProperty("PreferredKey" + UNDERSCORE + preferredKeyID,
-						ontoChemExpVocabulary.getDataPropertyhasValue(), preferredKey.getValue(), STRING);
+				iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpExpSpecs() + UNDERSCORE + preferredKeyID,
+						ontoChemExpVocabulary.getOntoChemExpExpSpecshasExpType(), preferredKey.getValue(), STRING);
 //				IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_LABEL));
 //				iABoxManagement.addProperty("PreferredKey"+UNDERSCORE+preferredKeyID, dataPropertyIRI, preferredKey.getValue(), STRING);
 			} catch (ABoxManagementException e) {

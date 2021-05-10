@@ -22,6 +22,11 @@ public class DataGroupPropertyParser extends PrimeConverter implements IDataGrou
 		parsePropertyUnits(qName, attributes);
 		parsePropertyDescription(qName, attributes);
 		parsePropertyDerivedPropertyExists(qName, attributes);
+		parsePropertySourceType(qName, attributes);
+		parsePropertyReference(qName, attributes);
+		parsePropertyBound(qName, attributes);
+		parsePropertyKind(qName, attributes);
+		parsePropertyMethod(qName, attributes);
 	}
 	
 	private void parseProperty(String qName, Attributes attributes) {
@@ -95,7 +100,61 @@ public class DataGroupPropertyParser extends PrimeConverter implements IDataGrou
 			}
 		}
 	}
-
+	
+	private void parsePropertySourceType(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inDataGroup) {
+			String sourceType = attributes.getValue(primeVocabulary.getAttribSourceType());
+			if (sourceType != null) {
+				dataGroupProperty.setSourceType(sourceType);
+				dataGroupPropertyParseStatus.setSourceType(true);
+				dataGroupPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
+	
+	private void parsePropertyReference(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inDataGroup) {
+			String reference = attributes.getValue(primeVocabulary.getAttribReference());
+			if (reference != null) {
+				dataGroupProperty.setReference(reference);
+				dataGroupPropertyParseStatus.setReference(true);
+				dataGroupPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
+	
+	private void parsePropertyBound(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inDataGroup) {
+			String bound = attributes.getValue(primeVocabulary.getAttribBound());
+			if (bound != null) {
+				dataGroupProperty.setBound(bound);
+				dataGroupPropertyParseStatus.setBound(true);
+				dataGroupPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
+	
+	private void parsePropertyKind(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inDataGroup) {
+			String kind = attributes.getValue(primeVocabulary.getAttribKind());
+			if (kind != null) {
+				dataGroupProperty.setKind(kind);;
+				dataGroupPropertyParseStatus.setKind(true);
+				dataGroupPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
+	
+	private void parsePropertyMethod(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inDataGroup) {
+			String method = attributes.getValue(primeVocabulary.getAttribMethod());
+			if (method != null) {
+				dataGroupProperty.setMethod(method);
+				dataGroupPropertyParseStatus.setMethod(true);
+				dataGroupPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
 	/**
 	
 	

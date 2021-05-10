@@ -140,7 +140,6 @@ public class ENVisualization extends JPSAgent{
 
       return new JSONObject(g);
     }
-    System.gc();
     return new JSONObject();
   }
   @Override
@@ -656,7 +655,6 @@ public class ENVisualization extends JPSAgent{
         .buildString();
         
     List<String[]> resultListbranch = Util.queryResult(model, branchInfo);
-    System.gc();
     ArrayList<String> busdata= new ArrayList<String>();   
       ArrayList<String>textcomb=new ArrayList<String>();
     

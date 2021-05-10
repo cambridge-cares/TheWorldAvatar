@@ -1,9 +1,8 @@
-package uk.ac.cam.cares.jps.wte.visualization;
+package uk.ac.cam.cares.jps.wte;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -19,27 +18,23 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
-import uk.ac.cam.cares.jps.wte.FCQuerySource;
-import uk.ac.cam.cares.jps.wte.WTESingleAgent;
 
 @WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
+/** Class is for interaction with frontend under web/CO2WEB/scripts/wte.js
+ * ScenarioAgentOperation is used to select the path under which this is called, and not requestURL or PATHINFO as
+ * this is called by the ScenarioAgent
+ *
+ */
 public class WTEVisualization extends JPSAgent{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-		if (!validateInput(requestParams)) {
-			throw new BadRequestException("WTE:WTEVisualizationAgent: Input parameters not found.\n");
+	    if (!validateInput(requestParams)) {
+			throw new BadRequestException();
 		}
+	    System.out.println(requestParams);
 		String iriofnetwork = requestParams.getString("wastenetwork");
 
 		String path = requestParams.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
@@ -56,13 +51,13 @@ public class WTEVisualization extends JPSAgent{
 			g=searchOnsite(model, requestParams);
 		}
 		JSONObject responseParams = new JSONObject(g);
-		System.gc();
 		return responseParams;
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
         String iriofnetwork = requestParams.getString("wastenetwork");
@@ -76,7 +71,8 @@ public class WTEVisualization extends JPSAgent{
         
         }
     }
-	/** get wastesite arrangement in input
+	
+	/** get locations for relevant query
 	 * 
 	 * @param model
 	 * @param query queryString for search
@@ -96,6 +92,7 @@ public class WTEVisualization extends JPSAgent{
 		return textcomb;
 		
 	}
+	
 	/** create the onsite markers. 
 	 * 
 	 * @param model
@@ -110,6 +107,7 @@ public class WTEVisualization extends JPSAgent{
 	    jo.put("result", jsArray);
 		return jo.toString();
 	}
+	
 	/** create the food court markers and onsite/offsite markers. 
 	 * 
 	 * @param model
@@ -160,6 +158,7 @@ public class WTEVisualization extends JPSAgent{
 	    jo.put("onsite", jsArray2);
 		return jo.toString();
 	}
+	
 	/** helper function for readInputs
 	 * stores tax, installation and operation costs per off site or onsite
 	 * @param newList list<String[]>
@@ -177,6 +176,7 @@ public class WTEVisualization extends JPSAgent{
 		}
 		return res;
 	}
+	
 	/** reads the topnode into an OntModel of all its subsystems. 
 	 * @param iriofnetwork
 	 * @return

@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -60,6 +61,9 @@ import com.cmclinnovations.ontochemexp.model.exception.OntoChemExpException;
 import com.cmclinnovations.ontochemexp.model.utils.PrimeConverterUtils;
 import com.cmclinnovations.ontology.model.exception.ABoxManagementException;
 import com.cmclinnovations.ontology.model.utils.ABoxManagementUtils;
+
+import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
+import uk.ac.cam.cares.jps.blazegraph.KnowledgeRepository;
 
 import org.apache.commons.lang3.text.WordUtils;
 
@@ -202,9 +206,9 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 		if (qName.equalsIgnoreCase(primeVocabulary.getElemBibliographyLink())) {
 			if (bibliographyLinkParseStatus.isBibliographyLink()) {
 				String value = multiLineValue.toString();
-				bibliographyLink.setValue(value);
+//				bibliographyLink.setValue(value);
 
-				iBibliographyLinkWriter.writeValue();
+//				iBibliographyLinkWriter.writeValue();
 				iBibliographyLinkWriter.setUP();
 				bibliographyLinkParseStatus.setBibliographyLink(false);
 			}
@@ -395,6 +399,7 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 		markEndCopyright(qName);
 		markEndDataGroup(qName);
 		markEndPreferredKey(qName);
+		markEndExperiment(qName);
 	}
 
 	private void markEndAdditionalDataItem(String qName) {
@@ -421,7 +426,8 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 
 	private void markEndCommonProperties(String qName) {
 		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inCommonProperties) {
-			componentCount = 0;
+			// below line is commented out to fix the bug of over-written entry of component within CommonProperties
+//			componentCount = 0;
 		}
 
 		if (qName.equalsIgnoreCase(primeVocabulary.getElemCommonProperties())) {
@@ -458,6 +464,10 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 
 		if (qName.equalsIgnoreCase(primeVocabulary.getElemDataGroup())) {
 			inDataGroup = false;
+			if (dataGroupParseStatus.isDataGroup()) {
+				dataGroupParseStatus.setDataGroup(false);
+				xDQMap = new HashMap<String, String>();
+			}
 		}
 
 		if (qName.toLowerCase().equalsIgnoreCase("x1")) {
@@ -523,6 +533,97 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 			if (preferredKeyParseStatus.isPreferredKey()) {
 				preferredKeyParseStatus.setPreferredKey(false);
 			}
+		}
+	}
+	
+	private void markEndExperiment(String qName) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemExperiment())) {
+			if (ontoChemExpKB.getFilesExperimentPerformer() != null && !ontoChemExpKB.getFilesExperimentPerformer().isEmpty()) {
+				try {
+					iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoKinReferenceAgent(), ontoChemExpKB.getFilesExperimentPerformer());
+					iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpExperimenthasPerformer(), 
+							currentExperimentInstance, ontoChemExpKB.getFilesExperimentPerformer());
+				} catch (ABoxManagementException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (ontoChemExpKB.getFilesProvenanceCreatedBy() != null && !ontoChemExpKB.getFilesProvenanceCreatedBy().isEmpty()) {
+				try {
+					iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoChemExpProvenance(), ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID);
+					iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpProvenancehasProvenance(), currentExperimentInstance, ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID);
+					
+					// Adds the current time of the file generation
+					iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+							ontoChemExpVocabulary.getOntoChemExpProvenancecreatedAt(), Long.toString(System.currentTimeMillis()), STRING);
+					
+					if (ontoChemExpKB.getFilesDataSource() != null && !ontoChemExpKB.getFilesDataSource().isEmpty()) {
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoChemExpProvenancehasDataSource(), ontoChemExpKB.getFilesDataSource(), STRING);
+					}
+					
+					if (ontoChemExpKB.getFilesPatent() != null && !ontoChemExpKB.getFilesPatent().isEmpty()) {
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoChemExpProvenancehasPatent(), ontoChemExpKB.getFilesPatent(), STRING);						
+					}
+					
+					if (ontoChemExpKB.getFilesProvenanceCreatedBy().equalsIgnoreCase(ontoChemExpVocabulary.getOntoKinReferencePerson())) {
+						iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoKinReferencePerson(), ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID);
+						
+						// Adds the family name of one of the persons generated the current file
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoKinReferenceFamilyName(), ontoChemExpKB.getFilesPersonFamilyName(), STRING);
+						
+						// Adds the given name of one of the persons generated the current file
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoKinReferenceGivenName(), ontoChemExpKB.getFilesPersonFirstName(), STRING);
+						
+						// Adds the name of one of the persons generated the current file
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoKinReferenceName(), ontoChemExpKB.getFilesPersonFullName(), STRING);
+						
+						iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpProvenancecreatedBy(), 
+								ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+								ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesProvenanceInstanceID);
+					}
+				} catch (ABoxManagementException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (ontoChemExpKB.getFilesModificationModifiedBy() != null && !ontoChemExpKB.getFilesModificationModifiedBy().isEmpty()) {
+				try {
+					// Create and link the Modification to Provenance
+					iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoChemExpProvenanceModification(), ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID);
+					iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpProvenancehasModification(), 
+							ontoChemExpVocabulary.getOntoChemExpProvenance() + UNDERSCORE + filesProvenanceInstanceID, 
+							ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID);
+					
+					// Create the individual of the agent that did the modification
+					iABoxManagement.createIndividual(ontoChemExpVocabulary.getOntoKinReferenceAgent(), ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesModificationInstanceID);
+					
+					// Link the agent to the modification
+					iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getOntoChemExpProvenanceModificationmodifiedBy(), 
+							ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID, ontoChemExpVocabulary.getOntoKinReferenceAgent() + UNDERSCORE + filesModificationInstanceID);
+					
+					// Adds the time of the modification
+					iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID, 
+							ontoChemExpVocabulary.getOntoChemExpProvenanceModificationmodifiedAt(), Long.toString(System.currentTimeMillis()), STRING);
+					
+					if (ontoChemExpVocabulary.getOntoChemExpProvenanceModificationhasModificationDetails() != null && 
+							!ontoChemExpVocabulary.getOntoChemExpProvenanceModificationhasModificationDetails().isEmpty()) {
+						// Adds the modification details
+						iABoxManagement.addProperty(ontoChemExpVocabulary.getOntoChemExpProvenanceModification() + UNDERSCORE + filesModificationInstanceID, 
+								ontoChemExpVocabulary.getOntoChemExpProvenanceModificationhasModificationDetails(), ontoChemExpKB.getFilesModificationhasModificationDetails(), STRING);
+					}
+					
+					filesModificationInstanceID++;
+				} catch (ABoxManagementException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			
 		}
 	}
 
@@ -599,7 +700,7 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 				// is.setEncoding("UTF-8");
 				parser.parse(is);
 				iABoxManagement.saveOntology(basePathTBox);
-				String ontologyFileName = owlFilesPath.concat("\\").concat("kb").concat("\\")
+				String ontologyFileName = owlFilesPath.concat("\\").concat(ontoChemExpKB.getOntoChemExpKbRootDirectory())
 						.concat(generateOwlFileName(primeFile));
 				removeCommentedOut(ontologyFileName);
 			} catch (SAXParseException e) {
@@ -618,6 +719,25 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 			// Saves the generated ABox OWL file and the conversion report.
 			saveOntoKinABox(primeFile, owlFilesPath,
 					PrimeConverterUtils.extractExperimentName(primeFile).concat(opCtrl.getOwlFileExtension()));
+			if (ontoChemExpKB.getFilesGeneration().equalsIgnoreCase("server")) {
+				if (ontoChemExpKB.getUploadTripleStoreServerURL().toLowerCase().contains("blazegraph")) {
+					KnowledgeRepository kr = new KnowledgeRepository();
+					try {
+						kr.uploadOntology(ontoChemExpKB.getUploadTripleStoreServerURL(), 
+								ontoChemExpKB.getUploadTripleStoreRepositoryOntoChemExp(), 
+								owlFilesPath.concat("\\").concat(ontoChemExpKB.getOntoChemExpKbRootDirectory()).concat(generateOwlFileName(primeFile)));
+						logger.info("OWL file uploaded to blazegraph server: " + ontoChemExpKB.getUploadTripleStoreServerURL() + ", under namespece: " + ontoChemExpKB.getUploadTripleStoreRepositoryOntoChemExp());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else if (ontoChemExpKB.getUploadTripleStoreServerURL().toLowerCase().contains("rdf4j-server")) {
+					PrimeConverterUtils.uploadExperiment(generateOwlFileName(primeFile), 
+							owlFilesPath.concat("\\").concat(ontoChemExpKB.getOntoChemExpKbRootDirectory()));
+					logger.info("OWL file uploaded to rdf4j-server: " + ontoChemExpKB.getUploadTripleStoreServerURL() + ", under namespece: " + ontoChemExpKB.getUploadTripleStoreRepositoryOntoChemExp());
+				} else {
+					System.out.println("Please provide an endpoint URL for either rdf4j-server or blazegraph server.");
+				}
+			}
 		}
 	}
 
@@ -835,6 +955,7 @@ public class PrimeConverter extends PrimeConverterState implements IPrimeConvert
 		iCopyrightConverter.parse(qName, attributes);
 		iBibliographyLinkConverter.parse(qName, attributes); // All elements' names are checked
 		iCommonPropertiesConverter.parse(qName, attributes);
+		iPreferredKeyConverter.parse(qName, attributes);
 	}
 
 	/**

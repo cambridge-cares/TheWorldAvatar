@@ -35,7 +35,6 @@ public class TestKnowledgeBA   {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	private String filePath;
-	private String filePathOWL;
 	private String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 
 	
@@ -53,7 +52,7 @@ public class TestKnowledgeBA   {
 		Path testResourcePathOWL = Paths.get(filePathDir+"/testOWL.owl");
 		Path tempFilePathOWL = Paths.get(tempFolder.getRoot().toString() + "/testOWL.owl");
 		Files.copy(testResourcePathOWL, tempFilePathOWL, StandardCopyOption.REPLACE_EXISTING);
-		filePathOWL = tempFilePathOWL.toString();
+		tempFilePathOWL.toString();
 	}
 	/** assert that KBANew is created 
 	 * 
@@ -129,6 +128,22 @@ public class TestKnowledgeBA   {
 		assertTrue(jpsa.validateInput(jo));// Update present
 		
 	}
+	 /** Test Sparql query with String. Should return result as String.
+	  */
+	@Test
+	public void testBaseQueryAgent() {
+		JSONObject jo = new JSONObject()
+				.put(JPSConstants.TARGETIRI, filePath)
+				.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
+		AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, jo.toString());
+
+       KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+       JSONObject result = jpsa.main(jo);		
+		JSONArray ja = new JSONArray(result.getString("results")); 
+		jo = ja.getJSONObject(0); 
+		assertEquals("OH",jo.get("o").toString());
+	}	
+	
 	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
 	 *  Uses AgentCaller
 	 * @throws ParseException
@@ -142,7 +157,7 @@ public class TestKnowledgeBA   {
 		 JSONObject jo = new JSONObject()
 		.put(JPSConstants.TARGETIRI,  filePath)
 		.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
-		AgentCaller.executeGetWithJsonParameter("jps/kb", jo.toString());
+		AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, jo.toString());
 		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
         jo = new JSONObject()
         		.put(JPSConstants.TARGETIRI,  filePath)
