@@ -132,6 +132,6 @@ Then, it calls upon the BlockchainWrapper agent that communicates with the block
 
 
 ## TODO: 
- - [x] Finish backup of visualization
+ - [ ] TesseractOCR isn't the best for weather forecast, and its error rate has been increasing. Find another way of getting real weather data, but the current method works for now. (i.e. incomplete data comprehension due to using OCR as a scraping method)
  - [ ] virtual environment for python
 
