@@ -1,0 +1,545 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:OntoCropEnergy="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">01 March 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing crop energy data.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#gitCommitHash -->
+
+    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#gitCommitHash"/>
+    
+
+
+    <!-- http://www.w3.org/2004/02/skos/core#altLabel -->
+
+    <owl:AnnotationProperty rdf:about="http://www.w3.org/2004/02/skos/core#altLabel"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropSurfacePowerDensity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropSurfacePowerDensity">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that defines the Crop Surface Power Density of a certain crop.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that defines the Annual Yield of a certain crop.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that defines the Gross Calorific Value of a certain crop.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that defines the Net Calorific Value of a certain crop.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifies which Land Use Code (LUcode) this entity belongs to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that defines the weblink of an entity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The address of a web page describing a resource.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The date when a web page was accessed.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#SurfacePowerDensity"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The physical units of a quantity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#SurfacePowerDensity"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The value of a property.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Barley -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Barley">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Barley is part of the grass family; it is a cereal grain which is frequently grown in regions with temperate climates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Beet -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Beet">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Beet is a plant. The species includes sugar beet (used to produce table sugar) and beetroot (a root vegetable).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Cabbage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Cabbage">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cabbage is a biennial plant, which is cultvated as an annual vegetable crop. Heads of cabbages consist of many leaves.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Carrot -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Carrot">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carrot is an orange root vegetable. It can be found in other colours such as purple, black, red, white, and yellow.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Chicory -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Chicory">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chicory is a woody plant, belonging to the dandelion family. It is a perennial plant with bright blue flowers.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropSurfacePowerDensity"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropSurfacePowerDensity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A crop is a plant or animal product which can be cultivated. Raw harvested material as well as its products can be reffered to as crops. In OntoCropEnergy, exclusively plant crops are considered.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropSurfacePowerDensity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropSurfacePowerDensity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#SurfacePowerDensity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Crop Surface Power Density is the (bio)power available per unit land area of a given crop. It is a form of Surface Power Density, based on the surface of land used to grow crops, where the power measured is that provided by the crops.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In agriculture, the yield is the amount of product obtained (e.g. crop grown) per unit area of land. It can be defined on an annual basis as an aggregated value, or as a quantity which varies with time (e.g. seasonally). It is also known as agricultural productivity or agricultural output.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#FieldBeans -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#FieldBeans">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Field beans are a variety of Vicia faba with smaller, harder seeds. Vicia faba is a species of flowering plant in the pea and bean family.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GreenBeans -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GreenBeans">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Green beans are the unripe fruit of the Phaseolus vulgaris plant. Green beans are also known as string beans, French beans, snap beans, and haricot vert (French).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property of a substance which describes the amount of heat energy released upon combustion of a specified amount, bringing all the products of combustion back to the original pre-combustion temperature, and in particular condensing any vapour produced. This quantity is a particular type of heating value, which is also known as higher heating value (HHV) or gross energy or upper heating value or higher calorific value (HCV).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+        <skos:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HHV</skos:altLabel>
+        <skos:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Higher Heating Value</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Lettuce -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Lettuce">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lettuce is a plant in the daisy family. It is generally produced for its leaves, but also more rarely for its stem and seeds. It is an annual plant.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Linseed -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Linseed">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linseed, also known as flax, is a flowering plant. In temperate climates, it is grown as a food and fiber crop.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Maize -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Maize">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maize is a cereal grain, which also known as corn. It is grown for its leafy stalks which yield kernels or seeds, which are fruits.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Miscanthus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Miscanthus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Miscanthus, also known as silvergrass, is a genus of plants in the grass family. A number of different species of miscanthus exist.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A property of a substance which describes the amount of heat energy released upon combustion of a specified amount, without condensing any water vapour produced. It can be defined by bringing all the products of combustion back to a specified temperature. This quantity is a particular type of heating value, which is also known as lower heating value (LHV) or lower calorific value (LCV).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+        <skos:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LHV</skos:altLabel>
+        <skos:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lower Heating Value</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Oats -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Oats">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The oat is a cereal grain grown for its seed, which are referred to as oats.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Oilseed -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Oilseed">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rapeseed comprises winter and spring oilseed, vegetable and fodder rape. It is a yellow plant that is part of the mustard or cabbage family, grown for its oil-rich seed.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Onions -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Onions">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Onion is a very commonly cultivated vegetable.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Peas -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Peas">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Peas are small spherical seeds of the pod fruit Pisum sativum and they can be green or yellow. Botanically speaking, pea pods are fruit.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Potato -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Potato">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Potato is a starchy tuber of the Solanum tuberosum plant.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Rye -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Rye">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rye is a grass which is grown as a grain, a cover crop and a forage crop. It belongs to the wheat tribe and is closely related to wheat and barley.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Strawberry -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Strawberry">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Strawberry is a hybrid species grown for their fruit.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Sunflower -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Sunflower">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sunflower is a large flowering plant, cultivated for its oil and fruits.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#SurfacePowerDensity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#SurfacePowerDensity">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Surface Power Density is the power per unit area of a given surface. This is also known as specific power or power density, although these terms can have different definitions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Tomato -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Tomato">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tomato is the edible berry of the Solanum lycopersicum plant (also called a tomato plant).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Triticale -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Triticale">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triticale is a hybrid of wheat and rye. It combines the favourable aspects of wheat with those of rye.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Turnip -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Turnip">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turnip is a root vegetable that is grown in temperate climates for its taproot.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Wheat -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Wheat">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#Crop"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wheat is a grass that is produced for its seed, which is a type of cereal grain. It is a very prominent food worldwide.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+
