@@ -14,7 +14,7 @@ def DistanceBasedOnGPDLocation(GPSLocationArray): # GPSLocationArray = [Point1_l
     else:
         print('GPS location is not sufficient.')
         return None
-    print('The input [Point1_lat, Point1_long, Point2_lat, Point2_long] are: ', GPSLocationArray)
+    # print('The input [Point1_lat, Point1_long, Point2_lat, Point2_long] are: ', GPSLocationArray)
     # approximate radius of earth in km
     R = 6371.0
         

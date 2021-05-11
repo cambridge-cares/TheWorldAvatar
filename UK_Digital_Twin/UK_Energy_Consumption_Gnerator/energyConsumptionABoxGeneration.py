@@ -9,8 +9,10 @@ import os
 import owlready2
 import numpy as np
 from rdflib.extras.infixowl import OWL_NS
-from rdflib import Graph, URIRef, Literal
+from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
 from rdflib.namespace import RDF
+from rdflib.plugins.sleepycat import Sleepycat
+from rdflib.store import NO_STORE, VALID_STORE
 import sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
@@ -26,9 +28,6 @@ SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
 
-"""Graph store"""
-store = 'default'
-
 """Create an /instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
 
@@ -40,6 +39,17 @@ ukec = UKec.UKEnergyConsumption()
 
 """Create an object of Class EnergyConsumptionDataProperty"""
 engconsump = EngConsump.EnergyConsumptionData()
+
+"""Graph store"""
+# store = 'default'
+store = Sleepycat()
+store.__open = True
+store.context_aware = True
+
+"""Sleepycat storage path"""
+userSpecifiePath_Sleepycat = None # user specified path
+userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
+defaultPath_Sleepycat = ukec.SleepycatStoragePath
 
 """Root_uri"""
 uriSplit = UKDT.namedGraphURIGenerator(3, dt.energyConsumption, engconsump.VERSION).split('.owl') 
@@ -148,8 +158,30 @@ def addUKElectricityConsumptionTriples(graph, *counter):
 
 
 """Add Triples to the regional and local nodes"""
-def addRegionalandLocalNodes():
+def addRegionalandLocalNodes(store, updateLocalOWLFile = True):
     print('Starts adding regional node.')
+    
+    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
+    if isinstance(store, Sleepycat):    
+        # Create Conjunctive graph maintain all power plant graphs
+        eleConConjunctiveGraph = ConjunctiveGraph(store=store)
+        
+        if os.path.exists(defaultPath_Sleepycat) and not userSpecified_Sleepycat:
+            print('****Non user specified Sleepycat storage path, will use the default storage path****')
+            sl = eleConConjunctiveGraph.open(defaultPath_Sleepycat, create = False)
+        
+        elif userSpecifiePath_Sleepycat == None:
+            print('****Needs user to specify a Sleepycat storage path****')
+            userSpecifiePath_Sleepycat = selectStoragePath()
+            userSpecifiePath_Sleepycat_ = userSpecifiePath_Sleepycat + '\\' + 'ConjunctiveGraph_UKElectricityConsumption'
+            sl = eleConConjunctiveGraph.open(userSpecifiePath_Sleepycat_, create = False)   
+        
+        if sl == NO_STORE:
+        # There is no underlying Sleepycat infrastructure, so create it
+            eleConConjunctiveGraph.open(defaultPath_Sleepycat, create=True)
+        else:
+            assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
+            
     # check the data file header
     if elecConDataArrays[0] == engconsump.headerElectricityConsumption:
         pass
@@ -180,30 +212,34 @@ def addRegionalandLocalNodes():
         while (counter < index_targetRegion):
             graph = addUKElectricityConsumptionTriples(graph, counter, index_targetRegion)
             counter += 1
+        
+        # generate/update OWL files
+        if updateLocalOWLFile == True:
+            # specify the owl file storage path
+            defaultStoredPath = ukec.StoreGeneratedOWLs + 'UK_energy_consumption_' + region + '_UK' + OWL #default path
+        
+            # Store/update the generated owl files      
+            if os.path.exists(ukec.StoreGeneratedOWLs) and not userSpecified:
+                print('****Non user specified strorage path, will use the default storage path****')
+                storeGeneratedOWLs(graph, defaultStoredPath)
+        
+            elif filepath == None:
+                print('****Needs user to specify a strorage path****')
+                filepath = selectStoragePath()
+                filepath_ = filepath + '\\' + 'UK_energy_consumption_' + region + '_UK' + OWL
+                storeGeneratedOWLs(graph, filepath_)
+            else: 
+                filepath_ = filepath + '\\' +'UK_energy_consumption_' + region + '_UK' + OWL
+                storeGeneratedOWLs(graph, filepath_)
             
-        # specify the owl file storage path
-        defaultStoredPath = ukec.StoreGeneratedOWLs + 'UK_energy_consumption_' + region + '_UK' + OWL #default path
-    
-        # Store/update the generated owl files      
-        if os.path.exists(ukec.StoreGeneratedOWLs) and not userSpecified:
-            print('****Non user specified strorage path, will use the default storage path****')
-            storeGeneratedOWLs(graph, defaultStoredPath)
-    
-        elif filepath == None:
-            print('****Needs user to specify a strorage path****')
-            filepath = selectStoragePath()
-            filepath_ = filepath + '\\' + 'UK_energy_consumption_' + region + '_UK' + OWL
-            storeGeneratedOWLs(graph, filepath_)
-        else: 
-            filepath_ = filepath + '\\' +'UK_energy_consumption_' + region + '_UK' + OWL
-            storeGeneratedOWLs(graph, filepath_)
-        
         print('counter_region is: ')
-        print(counter_region)
+        print(counter_region)        
+        counter_region += 1  
         
-        counter_region += 1               
+    if isinstance(store, Sleepycat):  
+        eleConConjunctiveGraph.close()               
     return 
 
 if __name__ == '__main__':
-    addRegionalandLocalNodes()
+    addRegionalandLocalNodes(store, False)
     print('terminated')

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 20 April 2021        #
+# Last Update Date: 10 May 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power plant graph."""
@@ -8,8 +8,10 @@
 import os
 import owlready2
 from rdflib.extras.infixowl import OWL_NS
-from rdflib import Graph, URIRef, BNode, Literal, Namespace
-from rdflib.namespace import RDF, RDFS, XSD
+from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
+from rdflib.namespace import RDF
+from rdflib.plugins.sleepycat import Sleepycat
+from rdflib.store import NO_STORE, VALID_STORE
 import sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
@@ -25,9 +27,6 @@ SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
 
-"""Graph store"""
-store = 'default'
-
 """Create an /instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
 
@@ -39,6 +38,17 @@ dukes = DUKES.DUKESData()
 
 """Create an object of Class UKPowerPlantDataProperty"""
 ukpp = UKpp.UKPowerPlant()
+
+"""Graph store"""
+# store = 'default'
+store = Sleepycat()
+store.__open = True
+store.context_aware = True
+
+"""Sleepycat storage path"""
+userSpecifiePath_Sleepycat = None # user specified path
+userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
+defaultPath_Sleepycat = ukpp.SleepycatStoragePath
 
 """Root_uri"""
 uriSplit = UKDT.namedGraphURIGenerator(3, dt.powerPlant, dukes.VERSION).split('.owl') 
@@ -55,7 +65,7 @@ ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space
 ontoecape_space_and_time        = owlready2.get_ontology(t_box.ontoecape_space_and_time).load()
 ontocape_physical_dimension     = owlready2.get_ontology(t_box.ontocape_physical_dimension).load()
 ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordinate_system).load()
-ontocape_SI_units       = owlready2.get_ontology(t_box.ontocape_SI_units).load()
+ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units).load()
 
 """Data Array"""
 plantnameArrays      = readFile(dukes.PlantName)
@@ -81,21 +91,42 @@ userSpecified = False # storage mode: False: default, True: user specified
 
 ### Functions ### 
 """Add Triples to the named graph"""
-def addUKPowerPlantTriples():  
+def addUKPowerPlantTriples(store, updateLocalOWLFile = True):
+    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
+    if isinstance(store, Sleepycat):    
+        # Create Conjunctive graph maintain all power plant graphs
+        powerPlantConjunctiveGraph = ConjunctiveGraph(store=store)
+        
+        if os.path.exists(defaultPath_Sleepycat) and not userSpecified_Sleepycat:
+            print('****Non user specified Sleepycat storage path, will use the default storage path****')
+            sl = powerPlantConjunctiveGraph.open(defaultPath_Sleepycat, create = False)
+        
+        elif userSpecifiePath_Sleepycat == None:
+            print('****Needs user to specify a Sleepycat storage path****')
+            userSpecifiePath_Sleepycat = selectStoragePath()
+            userSpecifiePath_Sleepycat_ = userSpecifiePath_Sleepycat + '\\' + 'ConjunctiveGraph_UKPowerPlant'
+            sl = powerPlantConjunctiveGraph.open(userSpecifiePath_Sleepycat_, create = False)   
+        
+        if sl == NO_STORE:
+        # There is no underlying Sleepycat infrastructure, so create it
+            powerPlantConjunctiveGraph.open(defaultPath_Sleepycat, create=True)
+        else:
+            assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
+    
     counter = 0
     while(counter < fileNum):
         print('The counter is:')
         print(counter)
-        plantname = ''.join(plantnameArrays[counter]).strip('\n')
-        planttype = ''.join(planttypeArrays[counter]).strip('\n')
-        energygen = ''.join(energygenArrays[counter]).strip('\n')
-        gentech = ''.join(gentechArrays[counter]).strip('\n')
-        primaryfuel = ''.join(primaryfuelArrays[counter]).strip('\n')
-        designcapacity = ''.join(designcapacityArrays[counter]).strip('\n')
-        builtyear = ''.join(builtYearArrays[counter]).strip('\n')
-        owner = ''.join(ownerArrays[counter]).strip('\n')
+        plantname = ''.join(plantnameArrays[counter]).strip('\n').strip(' ')
+        planttype = ''.join(planttypeArrays[counter]).strip('\n').strip(' ')
+        energygen = ''.join(energygenArrays[counter]).strip('\n').strip(' ')
+        gentech = ''.join(gentechArrays[counter]).strip('\n').strip(' ')
+        primaryfuel = ''.join(primaryfuelArrays[counter]).strip('\n').strip(' ')
+        designcapacity = ''.join(designcapacityArrays[counter]).strip('\n').strip(' ')
+        builtyear = ''.join(builtYearArrays[counter]).strip('\n').strip(' ')
+        owner = ''.join(ownerArrays[counter]).strip('\n').strip(' ')
         gpslocation = gpslocationArrays[counter]
-        region = ''.join(regionArrays[counter]).strip('\n')
+        region = ''.join(regionArrays[counter]).strip('\n').strip(' ')
         
         if  len(planttypeArrays) != fileNum or len(energygenArrays) != fileNum or len(gentechArrays) != fileNum or len(primaryfuelArrays) != fileNum or\
             len(designcapacityArrays) != fileNum or len(builtYearArrays) != fileNum or len(ownerArrays) != fileNum or len(gpslocationArrays) != fileNum:
@@ -107,7 +138,7 @@ def addUKPowerPlantTriples():
             pp_namespace = root_uri + SLASH + plantname + OWL + HASH
             
             # Create rdf graph with identifier
-            graph = Graph(store = store, identifier = URIRef(pp_base_uri)) # graph(store='default', identifier)
+            graph = Graph(store = store, identifier = URIRef(pp_base_uri))
             
             # Import T-boxes
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoecape_technical_system)))
@@ -127,6 +158,7 @@ def addUKPowerPlantTriples():
             graph.add((URIRef(pp_namespace + ukpp.RealizationAspectKey + plantname), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
             graph.add((URIRef(pp_namespace + ukpp.RealizationAspectKey + plantname), URIRef(ontoecape_technical_system.realizes.iri),\
                         URIRef(pp_namespace + energygen + UNDERSCORE + plantname)))
+            
             graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), RDF.type, URIRef(ontoeip_powerplant.usesGenerationTechnology.iri)))
             graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), URIRef(ontoeip_powerplant.PowerGenerator.iri),\
                         URIRef(t_box.ontoeip_powerplant + gentech)))
@@ -192,27 +224,31 @@ def addUKPowerPlantTriples():
             graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.numericalValue.iri),\
                        Literal(float(gpslocation[1].strip('\n')))))
             
-            # specify the owl file storage path
-            defaultStoredPath = ukpp.StoreGeneratedOWLs + str(counter) + UNDERSCORE + plantname + '_UK' + OWL #default path
-            global filepath, userSpecified
-        
-            # Store/update the generated owl files      
-            if os.path.exists(ukpp.StoreGeneratedOWLs) and not userSpecified:
-                print('****Non user specified storage path, will use the default storage path****')
-                storeGeneratedOWLs(graph, defaultStoredPath)
-        
-            elif filepath == None:
-                print('****Needs user to specify a storage path****')
-                filepath = selectStoragePath()
-                filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
-                storeGeneratedOWLs(graph, filepath_)
-            else: 
-                filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
-                storeGeneratedOWLs(graph, filepath_)
+            # generate/update OWL files
+            if updateLocalOWLFile == True:
+                # specify the owl file storage path
+                defaultStoredPath = ukpp.StoreGeneratedOWLs + str(counter) + UNDERSCORE + plantname + '_UK' + OWL #default path
+                global filepath, userSpecified
             
-        counter += 1        
-    return 
+                # Store/update the generated owl files      
+                if os.path.exists(ukpp.StoreGeneratedOWLs) and not userSpecified:
+                    print('****Non user specified storage path, will use the default storage path****')
+                    storeGeneratedOWLs(graph, defaultStoredPath)
+            
+                elif filepath == None:
+                    print('****Needs user to specify a storage path****')
+                    filepath = selectStoragePath()
+                    filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
+                    storeGeneratedOWLs(graph, filepath_)
+                else: 
+                    filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
+                    storeGeneratedOWLs(graph, filepath_)            
+        counter += 1 
+    
+    if isinstance(store, Sleepycat):  
+        powerPlantConjunctiveGraph.close()
+    return
 
 if __name__ == '__main__':
-   addUKPowerPlantTriples()
-   print('terminated')
+    addUKPowerPlantTriples(store, False)
+    print('terminated')

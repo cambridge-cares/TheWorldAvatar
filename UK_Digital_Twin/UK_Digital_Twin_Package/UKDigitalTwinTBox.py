@@ -3,7 +3,7 @@
 # Date: 16 April 2021                    #
 ##########################################
 
-"""This class defines the T-boxes used by UK digital twin"""
+"""This class lists out the T-boxes used by UK digital twin"""
 
 class UKDigitalTwinTBox:
     """DBPedia"""

@@ -199,9 +199,9 @@ if __name__ == "__main__":
     
     qres = g.query(queryStr5)
     
-    # print('The query results are: ')
-    # for n in qres:
-    #     print(n)
+    print('The query results are: ')
+    for n in qres:
+        print(n)
     
     
     # xx = None
