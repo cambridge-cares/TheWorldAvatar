@@ -12,11 +12,12 @@ from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.extras.infixowl import OWL_NS
 from rdflib.namespace import RDF, RDFS, Namespace, XSD
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askdirectory
 import csv
 import PropertyReader as propread
 import ABoxGeneration as aboxgen
 import os.path as path
+import glob,os
 
 """Declared column headers as constants"""
 COLUMN_1 = 'Source'
@@ -47,11 +48,23 @@ instances = dict()
 g = Graph()
 
 """This shows a file dialog box that enables the user to select a file to convert into RDF"""
-def select_file():
+def select_folder():
     """Suppresses the root window of GUI"""
     Tk().withdraw()
     """Opens a file dialog box to select a file"""
-    return askopenfilename()
+    return askdirectory()
+
+"""This function goes through the folder and writes the files path of all the .csv files into an array """
+def select_files():
+    folder_path=select_folder()
+    os.chdir(folder_path)
+    filepaths=[]
+    abox_name=[]
+    for file in glob.glob("*.csv"):
+        csv_filepath=folder_path+'/'+file
+        abox_name.append(file.strip('.csv'))
+        filepaths.append(csv_filepath)
+    return(filepaths,abox_name)
 
 """This function checks the validity of header in the ABox excel template"""
 def is_header_valid(row):
@@ -205,4 +218,10 @@ def convert_into_rdf(file_path):
 """This block of codes calls the function that converts the content of ABox excel template into RDF"""
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
-    convert_into_rdf(select_file())
+    files=[]
+    abox_filename=[]
+    files,abox_filename=select_files()
+    for (i,j) in zip(files,abox_filename):
+        propread.setABoxFileName(j)
+        propread.setABoxFileExtension('.owl')
+        convert_into_rdf(i)
