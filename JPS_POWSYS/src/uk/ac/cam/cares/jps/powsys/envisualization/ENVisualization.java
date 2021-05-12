@@ -54,43 +54,7 @@ public class ENVisualization extends JPSAgent{
   private Element root;
   private Logger logger = LoggerFactory.getLogger(ENVisualization.class);
   
-  /** Called by createfinalKML()
-   * Create a KML object and assign to root
-   */
-  public void createKML() {
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      doc = builder.newDocument();
-      Element kml = doc.createElementNS("http://www.opengis.net/kml/2.2", "kml");
-      doc.appendChild(kml);
-      root = doc.createElement("Document");
-      kml.appendChild(root);
-      
-      Element style = doc.createElement("Style");
-      style.setAttribute("id", "polyStyID_0");
-      Element linestyle = doc.createElement("LineStyle");
-      Element color = doc.createElement("color");
-      color.appendChild(doc.createTextNode("FF0000FF"));
-      Element width = doc.createElement("width");
-      width.appendChild(doc.createTextNode("5"));
-      linestyle.appendChild(width);
-      linestyle.appendChild(color);
-      
-      Element PolyStyle = doc.createElement("PolyStyle");
-      Element PolyStylecolor = doc.createElement("color");
-      PolyStylecolor.appendChild(doc.createTextNode("660088ff"));
-      PolyStyle.appendChild(PolyStylecolor);
-      style.appendChild(linestyle);
-      style.appendChild(PolyStyle);
-      root.appendChild(style);
-      
-      
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-  
+ 
   @Override
   public JSONObject processRequestParameters(JSONObject requestParams) {
       requestParams = processRequestParameters(requestParams, null);
@@ -142,11 +106,8 @@ public class ENVisualization extends JPSAgent{
     }
     return new JSONObject();
   }
-  @Override
-  /** validates input by checking if path and electricalnetwork parameters are present
-   * 
-   */
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+ 
+  public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
             throw new BadRequestException();
         }
@@ -158,6 +119,44 @@ public class ENVisualization extends JPSAgent{
           throw new JSONException("electrical network not found");
         }
     }
+  
+  /** Called by createfinalKML()
+   * Create a KML object and assign to root
+   */
+  public void createKML() {
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      doc = builder.newDocument();
+      Element kml = doc.createElementNS("http://www.opengis.net/kml/2.2", "kml");
+      doc.appendChild(kml);
+      root = doc.createElement("Document");
+      kml.appendChild(root);
+      
+      Element style = doc.createElement("Style");
+      style.setAttribute("id", "polyStyID_0");
+      Element linestyle = doc.createElement("LineStyle");
+      Element color = doc.createElement("color");
+      color.appendChild(doc.createTextNode("FF0000FF"));
+      Element width = doc.createElement("width");
+      width.appendChild(doc.createTextNode("5"));
+      linestyle.appendChild(width);
+      linestyle.appendChild(color);
+      
+      Element PolyStyle = doc.createElement("PolyStyle");
+      Element PolyStylecolor = doc.createElement("color");
+      PolyStylecolor.appendChild(doc.createTextNode("660088ff"));
+      PolyStyle.appendChild(PolyStylecolor);
+      style.appendChild(linestyle);
+      style.appendChild(PolyStyle);
+      root.appendChild(style);
+      
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
   public static SelectBuilder createLocationQuery() {
     SelectBuilder sb = new SelectBuilder();
     sb.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")

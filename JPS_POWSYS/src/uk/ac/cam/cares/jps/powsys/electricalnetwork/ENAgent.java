@@ -7,8 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,13 +105,13 @@ public class ENAgent extends JPSAgent{
 		}
 		
 		String fileName = baseUrl+"/outputStatus.txt";
-		Path path = Paths.get(fileName);
 		BufferedReader input = new BufferedReader(new FileReader(fileName));
 	    String last, line;
 	    last = "";
 	    while ((line = input.readLine()) != null) { 
 	        last = line;
 	    }
+	    input.close();
 		if (last.contains("Converged")) {
 			resjo.put("status", "converged");
 			try {
@@ -865,10 +863,8 @@ public class ENAgent extends JPSAgent{
 			vgdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[4])));
 
 			Individual vVmout = jenaOwlModel.getIndividual(busoutputlist.get(a)[5]);
-			double basekv = Double.valueOf(buslist.get(amod - 1)[9]);
 			//System.out.println("basekv= " + basekv);
 			//System.out.println("pukv= " + resultfrommodelbus.get(amod - 1)[1]);
-			double originalv = basekv * Double.valueOf(resultfrommodelbus.get(amod - 1)[1]);
 			
 			//vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(originalv)); //if vm is in kv
 			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[1]))); //if vm is in pu

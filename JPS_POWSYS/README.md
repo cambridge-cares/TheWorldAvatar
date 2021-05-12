@@ -42,6 +42,7 @@
 13. The end user could proceed to change the power load and run optimized power flow (OPF) to determine the change in carbon emissions produced by this new system. 
 14. EN Agent is triggered by pressing on the OPF button when the end user clicks on a bus/cable/generator. EN Agent takes in the IRI of the power grid as its input. 
 15. As this replica is modified, the base world remains untouched. 
+16. The Aggregation Emission Agent is involved in calculating the sum total of emissions from each of the five power plants and their generators and is called by the front end as well. 
 
 ## There's something wrong? I can't deploy this!
 - This applies to the visualization portion. 

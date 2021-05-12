@@ -24,7 +24,6 @@ import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
@@ -132,7 +131,6 @@ public class BlockchainWrapper extends JPSAgent{
 	 */
 	public String dotransact(String sender, String recipient, double moneyEth) throws IOException, Exception {
 		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
-		Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
 		//use Transfer class to send ether
 		//check value of moneyEth. if moneyEth is too small, there's a UnsupportedOperationException error thrown. 
 		if (moneyEth < 0) {
