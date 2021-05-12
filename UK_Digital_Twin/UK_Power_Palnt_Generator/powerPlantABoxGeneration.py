@@ -159,8 +159,8 @@ def addUKPowerPlantTriples(store, updateLocalOWLFile = True):
             graph.add((URIRef(pp_namespace + ukpp.RealizationAspectKey + plantname), URIRef(ontoecape_technical_system.realizes.iri),\
                         URIRef(pp_namespace + energygen + UNDERSCORE + plantname)))
             
-            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), RDF.type, URIRef(ontoeip_powerplant.usesGenerationTechnology.iri)))
-            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), URIRef(ontoeip_powerplant.PowerGenerator.iri),\
+            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
+            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), URIRef(ontoeip_powerplant.usesGenerationTechnology.iri),\
                         URIRef(t_box.ontoeip_powerplant + gentech)))
             graph.add((URIRef(t_box.ontoeip_powerplant + gentech), RDF.type, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))
             graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), URIRef(ontoeip_powerplant.consumesPrimaryFuel.iri),\

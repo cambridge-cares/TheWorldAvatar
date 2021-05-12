@@ -9,11 +9,12 @@ class UKPowerGridTopology:
     
     """Default path of storing owl file """
     StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid_Topology\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     
     """Bus Node keys"""
     EquipmentConnection_EBusKey = "EquipmentConnection_EBus-"
     PowerFlow_ELineKey = "PowerFlow_ELine-"
+    PowerGeneration_EGenKey = "PowerGeneration_EGen-"
     
     CoordinateSystemKey = "CoordinateSystem_"
     

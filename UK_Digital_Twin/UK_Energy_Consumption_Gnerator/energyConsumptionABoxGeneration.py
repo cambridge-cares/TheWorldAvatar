@@ -71,6 +71,10 @@ fileNum = len(elecConDataArrays) # substruct the first header line
 filepath = None
 userSpecified = False
 
+"""Energy Consumption Conjunctive graph identifier"""
+ukec_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn2017"
+
+
 ### Functions ### 
 """Add Triples to the target nodes"""
 def addUKElectricityConsumptionTriples(graph, *counter):  
@@ -164,17 +168,18 @@ def addRegionalandLocalNodes(store, updateLocalOWLFile = True):
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
     if isinstance(store, Sleepycat):    
         # Create Conjunctive graph maintain all power plant graphs
-        eleConConjunctiveGraph = ConjunctiveGraph(store=store)
-        
-        if os.path.exists(defaultPath_Sleepycat) and not userSpecified_Sleepycat:
-            print('****Non user specified Sleepycat storage path, will use the default storage path****')
-            sl = eleConConjunctiveGraph.open(defaultPath_Sleepycat, create = False)
-        
-        elif userSpecifiePath_Sleepycat == None:
+        eleConConjunctiveGraph = ConjunctiveGraph(store=store, identifier = ukec_cg_id)
+        if userSpecifiePath_Sleepycat == None and userSpecified_Sleepycat:
             print('****Needs user to specify a Sleepycat storage path****')
             userSpecifiePath_Sleepycat = selectStoragePath()
             userSpecifiePath_Sleepycat_ = userSpecifiePath_Sleepycat + '\\' + 'ConjunctiveGraph_UKElectricityConsumption'
-            sl = eleConConjunctiveGraph.open(userSpecifiePath_Sleepycat_, create = False)   
+            sl = eleConConjunctiveGraph.open(userSpecifiePath_Sleepycat_, create = False) 
+            
+        elif os.path.exists(defaultPath_Sleepycat) and not userSpecified_Sleepycat:
+            print('****Non user specified Sleepycat storage path, will use the default storage path****')
+            sl = eleConConjunctiveGraph.open(defaultPath_Sleepycat, create = False)        
+        else:
+            sl = eleConConjunctiveGraph.open(defaultPath_Sleepycat, create = True)   
         
         if sl == NO_STORE:
         # There is no underlying Sleepycat infrastructure, so create it
@@ -241,5 +246,5 @@ def addRegionalandLocalNodes(store, updateLocalOWLFile = True):
     return 
 
 if __name__ == '__main__':
-    addRegionalandLocalNodes(store, False)
+    addRegionalandLocalNodes(store)
     print('terminated')

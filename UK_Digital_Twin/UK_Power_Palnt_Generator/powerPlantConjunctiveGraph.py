@@ -29,7 +29,8 @@ store.__open = True
 store.context_aware = True
 
 """Create ConjunctiveGraph"""
-powerPlantConjunctiveGraph = ConjunctiveGraph(store=store, identifier = ukpp.identifier_powerPlantConjunctiveGraph)
+# powerPlantConjunctiveGraph = ConjunctiveGraph(store=store, identifier = ukpp.identifier_powerPlantConjunctiveGraph)
+powerPlantConjunctiveGraph = ConjunctiveGraph('Sleepycat')
 
 """Open store"""
 powerPlantConjunctiveGraph.open(ukpp.SleepycatStoragePath, create = False)
@@ -39,7 +40,7 @@ powerPlantConjunctiveGraph.open(ukpp.SleepycatStoragePath, create = False)
 #         # print(q[0])
 #         numOf_pp += 1
 
-print(powerPlantConjunctiveGraph.identifier)
+# print(powerPlantConjunctiveGraph.identifier)
 
 queryStr3 = """
         SELECT DISTINCT ?g
@@ -47,20 +48,40 @@ queryStr3 = """
             {
               graph ?g {?s ?p ?o}
             }    
-        """    
-qres = powerPlantConjunctiveGraph.query(queryStr3)
+        """  
+        
+        
+queryStr1 = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+    SELECT DISTINCT ?PowerGenerator
+    WHERE
+    {
+    ?powerPlant ontocape_upper_level_system:hasAddress <http://dbpedia.org/resource/Scotland> .
+    ?powerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
+    
+    }
+    """   
+    # ?powerPlant rdf:type ontoeip_powerplant:PowerPlant .
+    # ?powerPlant ontocape_upper_level_system:hasAddress <http://dbpedia.org/resource/Scotland> . 
+    # ?powerPlant ontocape_technical_system:hasRealizationAspect ? PowerGenerator .  
+    # ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator .  
+qres = powerPlantConjunctiveGraph.query(queryStr1)
 
 # print('The query results are: ')
 # for n in qres:
 #     print(n)   
 
+
+
 num = 0
 for n in qres:
     num += 1
-print(num)   
-
-
-
+    print(num, n)   
+#print(num) 
 
 """Close the store"""
 powerPlantConjunctiveGraph.close()
+

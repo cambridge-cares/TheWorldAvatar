@@ -20,7 +20,7 @@ class TopologicalInformation:
         }
        
     """Data file header"""
-    headerBusTopologicalInformation = ["BusNumber", "Region", "LargestCity", "x-axis", "y-axis\n"]
+    headerBusTopologicalInformation = ["BusNumber", "Region", "LargestCity", "x-axis", "y-axis", "Agrregated\n"]
     headerBranchTopologicalInformation = ["FromBus", "ToBus", "400kV_PARALLEL_CONNECTIONS", "275kV_PARALLEL_CONNECTIONS\n"]
     headerBranchProperty = ["voltage_level_kV", "R_MVA/km", "X_MVA/km", "B_MVA/km", "MVA\n"]
     
