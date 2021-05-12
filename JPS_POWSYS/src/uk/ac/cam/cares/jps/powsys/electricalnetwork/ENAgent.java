@@ -40,10 +40,19 @@ import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
+/** AKA OPF agent. startSimulation() runs the wrapper around the OPF.py file
+ * 
+ *
+ */
 public class ENAgent extends JPSAgent{
 	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
+	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_PowSysRealization = TWA_Ontology + "/ontopowsys/PowSysRealization.owl#";
+	
     @Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(ENAgent.class);
@@ -52,7 +61,7 @@ public class ENAgent extends JPSAgent{
 
 	public DatatypeProperty getNumericalValueProperty(OntModel jenaOwlModel) {
 		return jenaOwlModel.getDatatypeProperty(
-				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
+				TWA_upperlevel_system+"numericalValue");
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {

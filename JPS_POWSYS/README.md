@@ -58,6 +58,11 @@
   3. Python not being installed
   4. Relevant OWL files not being present. To solve this, please download the relevant folder: kb\sgp\jurongisland\jurongislandpowernetwork into your TOMCAT\webapps\ROOT directory. 
   5. You might need to download your Jurong Island Power Network files under /kb/sgp/jurongisland/jurongislandpowernetwork if you were playing with them in POWSYS. This can be called if it stalls at EN Agent under a `NullPointerException`. So copy a backup from either Claudius at C:\TOMCAT\webapps\ROOT\kb\sgp\jurongisland\jurongislandpowernetwork\BACKUP2021 into C:\JPS_DATA\workingdir\JPS_SCENARIO\scenario\testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10\www_jparksimulator_com\kb\sgp\jurongisland\jurongislandpowernetwork
+- Possible errors on the front end could include: 
+  1. Where has the electric buses gone to? 
+  	 i. Check if the KML file in jparksimulator.com/OntoEN/ is created when createKML() in ENVisualization is newly created. 
+  	 ii. Comment lines 8-9, uncomment lines 6-7 for a quick fix. The server is temporarily buggy. 
+  	 iii. Restart Tomcat if the above two steps fail. 
 
 ## TODO: 
  - [ ] Tests are not fully working! EN Agent, EN Visuzalization and Aggregation Emission Agent are working, but Nuclear has a long run time. 
