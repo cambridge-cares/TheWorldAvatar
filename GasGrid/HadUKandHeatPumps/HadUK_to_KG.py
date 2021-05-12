@@ -45,8 +45,9 @@ def read_nc(var_name,loc=True):
         return var_grid
 
 
-def gridded_data_to_array(lon,lat,nc_vars,month):
-    overall_centroids = []
+def gridded_data_to_array(lon,lat,nc_vars,month,centroids=True):
+    if centroids == True:
+        overall_centroids = []
     var_store = np.array([[0 for i in range(len(nc_vars))]])
     for i in range(len(nc_vars)):
         nc_vars[i] = nc_vars[i].filled(np.nan)
@@ -56,12 +57,16 @@ def gridded_data_to_array(lon,lat,nc_vars,month):
             for k in range(len(nc_vars)):
                 nc_var_temp[k] = nc_vars[k][month,i,j]
             if nc_var_temp[0] > -1e8:
-                point = Point([lon[i,j],lat[i,j]])
-                centroid = point
-                overall_centroids.append(centroid)
+                if centroids == True:
+                    point = Point([lon[i,j],lat[i,j]])
+                    centroid = point
+                    overall_centroids.append(centroid)
                 var_store = np.append(var_store,[nc_var_temp],axis=0)
     var_store = var_store[1:,:]
-    return overall_centroids, var_store
+    if centroids == True:
+        return overall_centroids, var_store
+    else:
+        return var_store
 
 
 def LSOA_polygon_query(limit):
@@ -144,85 +149,98 @@ LSOA = LSOA_polygon_query(limit=False)
 lon,lat,tas = read_nc('tas',loc=True)
 tasmin = read_nc('tasmin',loc=False)
 tasmax = read_nc('tasmax',loc=False)
-month,month_end = month_num('January')
-grid_loc,nc_vars = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month)
+months = ['January','February','March','April','May','June','July','August','September','October','November','December']
 clim_vars = ['tasmin','tas','tasmax']
+
+nc_vars_full = [] 
+for i in range(len(months)):
+    month_str = months[i]
+    month,month_end = month_num(month_str)
+    if i == 0:
+        grid_loc,nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=True)
+    else:
+        nc_vars_add = gridded_data_to_array(lon,lat,[tasmin,tas,tasmax],month,centroids=False)
+    nc_vars_full.append(nc_vars_add)
+
 full_grid = MultiPoint(points=list(grid_loc))
 
 print('Computing associated points...')
+
+
 for i in tqdm(range(int(len(LSOA)))):
-    assoc_mask = [grid_loc[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
+    assoc_mask = [full_grid[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
     if any(assoc_mask) == False:
         assoc_point = nearest_points(full_grid,LSOA[i,2])[0]
         for j in range(len(grid_loc)):
             if assoc_point == grid_loc[j]:
                 assoc_mask[j] = True 
                 break
-    LSOA_vars_full = nc_vars[assoc_mask,:]
-    LSOA_vars = np.mean(LSOA_vars_full,axis=0)
-    LSOA_IRI = LSOA[i,0]
-    month_str = str(month+1)
-    month_str_len = len(month_str)
-    if month_str_len == 1:
-        month_str = '0'+month_str
+    for month_it in range(len(months)):
+        LSOA_vars_full = nc_vars_full[month_it][assoc_mask,:]
+        LSOA_vars = np.mean(LSOA_vars_full,axis=0)
+        LSOA_IRI = LSOA[i,0]
+        month_str = str(month_it+1)
+        month_str_len = len(month_str)
+        if month_str_len == 1:
+            month_str = '0'+month_str
 
-    LSOA_code = LSOA_IRI.split('/')[-1]
-    startUTC = '2019-'+month_str+'-01T00:00:00'
-    endUTC = '2019-'+month_str+'-'+str(month_end)+'T00:00:00'
+        LSOA_code = LSOA_IRI.split('/')[-1]
+        startUTC = '2019-'+month_str+'-01T12:00:00'
+        endUTC = '2019-'+month_str+'-'+str(month_end)+'T12:00:00'
 
-    query = '''
-    PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
-    PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX clima:    <http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/>
-    PREFIX ons:      <http://statistics.data.gov.uk/id/statistical-geography/>
-    PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-    PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
-    PREFIX clim:     <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#>
-    PREFIX gas:      <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
+        query = '''
+        PREFIX xsd:      <http://www.w3.org/2001/XMLSchema#>
+        PREFIX rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX clima:    <http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/>
+        PREFIX ons:      <http://statistics.data.gov.uk/id/statistical-geography/>
+        PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+        PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
+        PREFIX clim:     <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#>
+        PREFIX gas:      <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
 
-    INSERT DATA
-    { 
-    '''
-    for i in range(len(LSOA_vars)):
-        meas_uuid = uuid.uuid4()
-        clim_var = clim_vars[i]
-        temp_uuid = uuid.uuid4()
-        val_uuid = uuid.uuid4()
+        INSERT DATA
+        { 
+        '''
+        for var in range(len(LSOA_vars)):
+            meas_uuid = uuid.uuid4()
+            clim_var = clim_vars[var]
+            temp_uuid = uuid.uuid4()
+            val_uuid = uuid.uuid4()
 
+            query += '''
+            clima:%s rdf:type clim:ClimateMeasurement.
+            ons:%s clim:hasClimateMeasurement clima:%s .
+            clima:%s rdf:type clim:ClimateVariable .
+            clima:%s gas:hasStartUTC "%s"^^xsd:dateTime ;
+                    clim:hasClimateVariable  clima:%s ;
+                    gas:hasEndUTC "%s"^^xsd:dateTime .
+            clima:%s rdf:type om:Temperature ;
+                    om:hasPhenomenon clima:%s ;
+                    om:hasValue      clima:%s .
+            clima:%s rdf:type om:Measure ;
+                    om:hasUnit om:degreeCelsius ;
+                    om:hasNumericalValue %s .
+                '''%(meas_uuid,
+                LSOA_code,
+                meas_uuid,
+                clim_var,
+                meas_uuid,
+                startUTC,
+                clim_var,
+                endUTC,
+                temp_uuid,
+                meas_uuid,
+                val_uuid,
+                val_uuid,
+                LSOA_vars[var])
         query += '''
-        clima:%s rdf:type clim:ClimateMeasurement.
-        ons:%s clim:hasClimateMeasurement clima:%s .
-        clima:%s rdf:type clim:ClimateVariable .
-        clima:%s gas:hasStartUTC "%s"^^xsd:dateTime ;
-                clim:hasClimateVariable  clima:%s ;
-                gas:hasEndUTC "%s"^^xsd:dateTime .
-        clima:%s rdf:type om:Temperature ;
-                om:hasPhenomenon clima:%s ;
-                om:hasValue      clima:%s .
-        clima:%s rdf:type om:Measure ;
-                om:hasUnit om:degreeCelsius ;
-                om:hasNumericalValue %s .
-            '''%(meas_uuid,
-            LSOA_code,
-            meas_uuid,
-            clim_var,
-            meas_uuid,
-            startUTC,
-            clim_var,
-            endUTC,
-            temp_uuid,
-            meas_uuid,
-            val_uuid,
-            val_uuid,
-            LSOA_vars[i])
-    query += '''
-    }
-    '''
-    DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/blazegraph"
-    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+        }
+        '''
+        DEF_NAMESPACE = 'ontogasgrid'
+        LOCAL_KG = "http://localhost:9999/blazegraph"
+        LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
 
-    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-    sparql.setMethod(POST) # POST query, not GET
-    sparql.setQuery(query)
-    ret = sparql.query()
+        sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+        sparql.setMethod(POST) # POST query, not GET
+        sparql.setQuery(query)
+        ret = sparql.query()
