@@ -8,13 +8,14 @@ import org.junit.Test;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.virtualsensor.agents.ShipDataAgent;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 
 public class ShipDataAgentTest {
     @Test
 	public void testShipDataAgent() {
-		JSONObject jo = new JSONObject();
-		Region.putRegionAndStation(jo,2);
-		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/ShipDataAgent", jo.getJSONObject("region").toString());
+    	JSONObject jo = new JSONObject();
+		jo.put(DispSimSparql.SimKey, "http://www.theworldavatar.com/kb/ontodispersionsim/OntoDispersionSim.owl#sim5");
+		AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/ShipDataAgent", jo.toString());
 	}
 
     @Test

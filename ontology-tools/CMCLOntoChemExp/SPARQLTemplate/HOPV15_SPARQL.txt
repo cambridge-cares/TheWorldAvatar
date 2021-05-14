@@ -1,0 +1,14 @@
+PREFIX OntoChemExp: <http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?label ?val ?units
+WHERE {
+  ?exp OntoChemExp:hasExpSpecs ?specs . 
+  ?specs OntoChemExp:hasExpType "organic solar cell"^^xsd:string .
+  ?exp OntoChemExp:hasDataGroup ?c . 
+  ?c OntoChemExp:hasDimensionalQuantity ?prop .
+  ?prop rdfs:label ?label ;
+        OntoChemExp:hasUnits ?units .
+  ?x OntoChemExp:refersTo ?prop ; 
+     OntoChemExp:hasValue ?val .
+}

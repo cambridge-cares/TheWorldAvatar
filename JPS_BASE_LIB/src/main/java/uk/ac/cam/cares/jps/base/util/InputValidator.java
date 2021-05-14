@@ -1,10 +1,19 @@
 package uk.ac.cam.cares.jps.base.util;
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QueryParseException;
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.system.IRIResolver;
+import org.apache.jena.update.UpdateException;
+import org.apache.jena.update.UpdateFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class InputValidator {
 
@@ -27,15 +36,41 @@ public class InputValidator {
 	public static boolean checkIfValidIRI(String iriStr) {
 		boolean f = true;
 		try {
+			//TODO-LO: There is something wrong with IRIResolver.checkIRI, because "abcd" passes just as well as irradiation sensor IRI
 			f = IRIResolver.checkIRI(iriStr);
+			
 			}catch (RiotException ex) {
 				throw new RiotException();
 			}
 			catch (Exception ex) {
-				ex.printStackTrace();
+				throw new JPSRuntimeException("");
 			}
-		return !f;
+		return (!f& checkIfURLpattern(iriStr));
 		}
+	/** check if it fits a URL format
+	 * 
+	 * @param iriStr
+	 * @return
+	 */
+	public static boolean checkIfURLpattern(String iriStr) {
+		try {
+			URL url = new URL(iriStr); 
+			url.toURI(); 
+			return true;
+			} catch (MalformedURLException | URISyntaxException e) {
+				return false;
+				}
+	}
+	/** Check if String represents a file
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public static boolean checkIfFilePath(String filePath) {
+		File file = new File(filePath);
+		return file.isFile();
+		
+	}
 	/** check if file exists in computer
 	 * Can't be used if the directory is not established (aka created)
 	 * @param iri
@@ -62,7 +97,7 @@ public class InputValidator {
 			}else return false;
 		}return false;
 	}
-	/** checks if Integer by throwing exception otherwise
+	/** checks if Integer by throwing Exception otherwise
 	 * 
 	 * @param str
 	 * @return
@@ -75,4 +110,47 @@ public class InputValidator {
 	         return false;
 	     }
 	 }
+	/** checks if JSONOBject by throwing Exception otherwise. 
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static boolean checkIfValidJSONObject(String str) {
+		try {
+	        new JSONObject(str);
+	    } catch (JSONException ex) {
+	            return false;
+	    }
+	    return true;
+	}
+	/** checks if SPARQL Query by throwing Exception otherwise. 
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static boolean checkIfValidQuery(String str) {
+		try{
+			QueryFactory.create(str);
+			return true;
+		}catch (QueryParseException e) {
+			return false;
+		}
+	}
+	/** checks if SPARQL Query by throwing Exception otherwise. 
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static boolean checkIfValidUpdate(String str) {
+		try{
+			UpdateFactory.create(str);
+			return true;
+		}catch (UpdateException e) {
+			return false;
+		}catch (QueryParseException e) {
+			return false;
+		}catch (Exception e) { //Still not sure what the updateException is called. 
+			return false;
+		}
+	}
 }

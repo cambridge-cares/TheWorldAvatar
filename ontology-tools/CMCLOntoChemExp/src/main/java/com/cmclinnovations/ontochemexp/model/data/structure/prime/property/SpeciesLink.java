@@ -10,13 +10,21 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
 @XmlRootElement
-@XmlType(propOrder = { "preferredKey", "primeID" })
+@XmlType(propOrder = { "preferredKey", "primeID", "cas", "inchi", "smiles", "chemName" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SpeciesLink {
 	@XmlAttribute
 	private String preferredKey;
 	@XmlAttribute
 	private String primeID;
+	@XmlAttribute
+	private String cas;
+	@XmlAttribute
+	private String inchi;
+	@XmlAttribute
+	private String smiles;
+	@XmlAttribute
+	private String chemName;
 	
 	public String getSpeciesLinkPreferredKey() {
 		return preferredKey;
@@ -32,6 +40,34 @@ public class SpeciesLink {
 		this.primeID = primeID;
 	}
 	
+	public String getCas() {
+		return cas;
+	}
+	public void setCas(String cas) {
+		this.cas = cas;
+	}
+	
+	public String getInchi() {
+		return inchi;
+	}
+	public void setInchi(String inchi) {
+		this.inchi = inchi;
+	}
+	
+	public String getSmiles() {
+		return smiles;
+	}
+	public void setSmiles(String smiles) {
+		this.smiles = smiles;
+	}
+
+	public String getChemName() {
+		return chemName;
+	}
+	public void setChemName(String chemName) {
+		this.chemName = chemName;
+	}
+
 	@XmlValue
 	private String value;
 

@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.virtualsensor.agents;
 
+import java.net.URL;
 import java.time.Instant;
 import java.util.Arrays;
 
@@ -15,10 +16,15 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.region.Scope;
+import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.virtualsensor.episode.CalculationUtils;
+import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
-import uk.ac.cam.cares.jps.virtualsensor.sparql.WeatherStation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,23 +39,34 @@ public class WeatherAgent extends JPSAgent {
 	Logger logger = LoggerFactory.getLogger(WeatherAgent.class);
 	
 	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject response = new JSONObject();
     	if (validateInput(requestParams)) {
-	        Scope sc = new Scope(requestParams);
-	        double[] centre = sc.getScopeCentre();
+    		String sim_iri = requestParams.getString(DispSimSparql.SimKey);
+	        Scope sc = DispSimSparql.GetScope(sim_iri);
+	        int numsub = DispSimSparql.GetNumSubStations(sim_iri);
 	        
-	        JSONArray queryResult = SensorSparql.queryWeatherStationsWithinScope(sc);
+	        JSONArray queryResult = SensorSparql.queryWeatherStationsWithinScope(sc); // CRS transformed here to 4326, not good?
 	        
+	        if (queryResult.length() < numsub+1) {
+	        	String errormsg = "Not enough weather stations in the specified simulation domain";
+	        	System.out.println(errormsg);
+	        	throw new JPSRuntimeException(errormsg);
+	        }
+	        
+	        Point centre = sc.getScopeCentre();
 	        // initialise weather stations
 	        WeatherStation[] weatherStations = new WeatherStation[queryResult.length()];
 	        for (int i = 0; i < queryResult.length(); i++) {
 	        	weatherStations[i] = new WeatherStation();
-	        	weatherStations[i].setStationiri(queryResult.getJSONObject(i).getString("stationiri"));
+	        	weatherStations[i].setStationiri(queryResult.getJSONObject(i).getString(SensorSparql.keyAirStationIRI));
 	            weatherStations[i].setXcoord(queryResult.getJSONObject(i).getDouble("xvalue"));
 	            weatherStations[i].setYcoord(queryResult.getJSONObject(i).getDouble("yvalue"));
-	            double distance = CalculationUtils.distanceWGS84(weatherStations[i].getYcoord(), weatherStations[i].getYcoord(), 
-	            		centre[1], centre[0], "K");
+	            Point stnloc = new Point();
+	            stnloc.setX(weatherStations[i].getXcoord());
+	            stnloc.setY(weatherStations[i].getYcoord());
+	            stnloc.setSrsname(CRSTransformer.EPSG_4326);
+	            double distance = centre.distance(stnloc);
 	            weatherStations[i].setDistance(distance);
 	        }
 	        
@@ -57,13 +74,16 @@ public class WeatherAgent extends JPSAgent {
 	        Arrays.sort(weatherStations);
 	        
 	        // update stations we are going to use
-	        updateWeatherStationWithAPI(weatherStations[0]);
-	        updateWeatherStationWithAPI(weatherStations[queryResult.length()-1]);
+	        updateWeatherStationWithAPI(weatherStations[0]); // main station
 	        
-	        JSONArray station = new JSONArray();
-	        station.put(weatherStations[0].getStationiri());
-	        station.put(weatherStations[queryResult.length()-1].getStationiri());
-			response.put("stationiri", station);
+	        String[] substations = new String[numsub];
+	        for (int i=0; i<numsub; i++) {
+	        	updateWeatherStationWithAPI(weatherStations[queryResult.length()-1-i]); // start from furthest
+	        	substations[i] = weatherStations[queryResult.length()-1-i].getStationiri();
+	        }
+	        DispSimSparql.AddMainStation(sim_iri, weatherStations[0].getStationiri());
+	        DispSimSparql.AddSubStations(sim_iri, substations);
+			response.put("weatherStatus", "success");
     	}
         return response;
     }
@@ -72,7 +92,7 @@ public class WeatherAgent extends JPSAgent {
     public boolean validateInput(JSONObject requestParams) {
     	boolean valid = false;
     	try {
-    		new Scope(requestParams);
+    		new URL(requestParams.getString(DispSimSparql.SimKey)).toURI();
     		valid = true;
     	} catch (Exception e) {
     		throw new BadRequestException();
@@ -105,9 +125,14 @@ public class WeatherAgent extends JPSAgent {
 			try {
 				double [] xy = {ws.getXcoord(),ws.getYcoord()};
 				JSONObject apiresult = getWeatherDataFromAPI(xy);
-				double precipitation = 0.0; // in mm
+				double precipitation = 0.0; // in mm/h
 				if (apiresult.has("rain")) {
-					precipitation = apiresult.getJSONObject("rain").optDouble("3h", apiresult.getJSONObject("rain").getDouble("1h"));
+					JSONObject rain = apiresult.getJSONObject("rain");
+					try {
+						precipitation = rain.getDouble("1h");
+					} catch (Exception e) {
+						precipitation = rain.getDouble("3h")/3.0;
+					}
 				}
 				// units are set according to mcwind file for Episode
 				double pressure = apiresult.getJSONObject("main").getDouble("pressure"); // in hPa

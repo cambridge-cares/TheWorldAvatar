@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
+import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.AddOntologyAnnotation;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -17,6 +18,7 @@ import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLImportsDeclaration;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
@@ -62,6 +64,9 @@ public class TBoxManagement implements ITBoxManagement{
 	public String BACKSLASH = "\\";
 	public String FILE_EXT_OWL = ".owl";
 	public String FILE_EXT_RDF = ".rdf";
+	
+	public static final String HTTP_PROTOCOL="http://";
+	public static final String HTTPS_PROTOCOL="https://";			
 	
 	/**
 	 * Creates an OWL class using the name provided. If the name of the parent 
@@ -495,8 +500,13 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private void addSingleDataTypeRange(OWLDataProperty dataProperty, String range) throws TBoxManagementException{
-		manager.applyChange(new AddAxiom(ontology,
+		if(range.trim().startsWith(HTTP_PROTOCOL) || range.trim().startsWith(HTTPS_PROTOCOL)){
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLDataPropertyRangeAxiom(dataProperty, dataFactory.getOWLDatatype(range))));
+		}else{
+			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLDataPropertyRangeAxiom(dataProperty, getRange(range))));
+		}
 	}
 	
 	/**
@@ -698,7 +708,7 @@ public class TBoxManagement implements ITBoxManagement{
 		for (String classLabel : classLabels) {
 			if (++labelSequence < 2) {
 				checkClassName(classLabel);
-				if (classLabel.contains("http://")) {
+				if (classLabel.trim().startsWith(HTTP_PROTOCOL)||classLabel.trim().startsWith(HTTPS_PROTOCOL)) {
 					classInOwl = dataFactory.getOWLClass(classLabel.replace(" ", ""));
 				} else {
 					classInOwl = dataFactory.getOWLClass(
@@ -718,7 +728,7 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private OWLDataProperty createDataProperty(String propertyLabel) throws TBoxManagementException {
-		if(propertyLabel.contains("http://")){
+		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLDataProperty(propertyLabel.replace(" ", ""));
 		}
 		return dataFactory.getOWLDataProperty(
@@ -734,7 +744,7 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @throws TBoxManagementException
 	 */
 	private OWLObjectProperty createObjectProperty(String propertyLabel) throws TBoxManagementException {
-		if(propertyLabel.contains("http://")){
+		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLObjectProperty(propertyLabel.replace(" ", ""));
 		}
 		return dataFactory.getOWLObjectProperty(
@@ -811,6 +821,16 @@ public class TBoxManagement implements ITBoxManagement{
 							.concat(getOntologyFileNameFromIri(tBoxConfig.gettBoxIri())));
 			// Adding metadata to the ontology.
 			representOntologyMetadata();
+			// Adding import statements to the ontology.
+			// Adds the import clause to the OntoChem ABox
+			if(tBoxConfig.gettBoxImport()!=null && tBoxConfig.gettBoxImport().length()>HTTP_PROTOCOL.length()){
+				for(String ontologyBeingImported:tBoxConfig.gettBoxImport().split(",")){
+					if(ontologyBeingImported.trim().startsWith(HTTP_PROTOCOL) || ontologyBeingImported.trim().startsWith(HTTPS_PROTOCOL)){
+						OWLImportsDeclaration importDeclarationABox = dataFactory.getOWLImportsDeclaration(IRI.create(ontologyBeingImported.trim()));
+						manager.applyChange(new AddImport(ontology, importDeclarationABox));
+					}
+				}
+			}
 			manager.saveOntology(ontology, manager.getOntologyFormat(ontology), IRI.create(file.toURI()));
 			logger.info("The TBox has been saved under the path "
 					+ System.getProperty("user.dir").concat(File.separator)

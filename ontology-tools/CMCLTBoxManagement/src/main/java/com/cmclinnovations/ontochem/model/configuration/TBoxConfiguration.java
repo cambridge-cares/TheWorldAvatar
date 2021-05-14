@@ -32,6 +32,9 @@ public class TBoxConfiguration {
 	@Value("${tbox.date.of.publication}")
 	private String tBoxCreationDate;
 	
+	@Value("${tbox.import}")
+	private String tBoxImport;
+	
 	public String gettBoxIri() {
 		return tBoxIri;
 	}
@@ -70,5 +73,13 @@ public class TBoxConfiguration {
 
 	public void settBoxCreationDate(String tBoxCreationDate) {
 		this.tBoxCreationDate = tBoxCreationDate;
+	}
+
+	public String gettBoxImport() {
+		return tBoxImport;
+	}
+
+	public void settBoxImport(String tBoxImport) {
+		this.tBoxImport = tBoxImport;
 	}
 }

@@ -9,18 +9,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
-import javax.ws.rs.core.Response;
 
 /**
  * All JPS agents that want to make use of scenario have to inherit from this servlet class.
@@ -47,6 +46,12 @@ public abstract class JPSHttpServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         handleRequest(request, response);
     }
+    /**
+     * @see HttpServlet#doPut(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        handleRequest(request, response);
+    }
 
     /**
      * Handles GET and POST requests processing
@@ -68,6 +73,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
                 doGetJPS(request, response);
             } else if ((request.getMethod().equals(HttpPost.METHOD_NAME))) {
                 doPostJPS(request, response, reqBody);
+            }else if ((request.getMethod().equals(HttpPut.METHOD_NAME))) {
+                doPutJPS(request, response, reqBody);
             }
         } catch (Exception e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -102,6 +109,14 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPostJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws ServletException, IOException {
+        doHttpJPS(request, response, reqBody);
+    }
+    /**
+     * JPS wrapper for HttpServlet#doPut
+     *
+     * @see HttpServlet#doPut(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPutJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws ServletException, IOException {
         doHttpJPS(request, response, reqBody);
     }
 
@@ -154,8 +169,8 @@ public abstract class JPSHttpServlet extends HttpServlet {
     protected String getResponseBody(HttpServletRequest request) {
     	System.out.println("DO GET RESPONSE BODY: 1 ");
         JSONObject requestParams = AgentCaller.readJsonParameter(request);
+        requestParams.put(JPSConstants.PATH, request.getPathInfo());
         System.out.println("DO GET RESPONSE BODY: 2 ");
-        
         JSONObject responseParams;
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
@@ -172,6 +187,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      */
     protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
         JSONObject responseParams;
+        requestParams.put(JPSConstants.PATH, request.getPathInfo());
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
             responseParams = processRequestParameters(requestParams, request);
@@ -202,28 +218,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
         return responseParams;
     }
 
-    /**
-     * Extracts agent input parameters from the request.
-     * - makes a difference between GET and POST requests
-     *
-     * @param request Should contain agent input params
-     * @return extracted parameters
-     */
-    private JSONObject getRequestParameters(HttpServletRequest request) {
-        JSONObject params;
-        try {
-            String request_params = "";
-            if (request.getMethod().equals(HttpPost.METHOD_NAME)) {
-                request_params = IOUtils.toString(request.getReader());
-            } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
-                request_params = request.getParameter(GET_AGENT_INPUT_PARAMS_KEY);
-            }
-            params = new JSONObject(request_params);
-        } catch (IOException e) {
-            throw new JPSRuntimeException(e.getMessage(), e);
-        }
-        return params;
-    }
+    
 
     /**
      * Method to call agents appropriate to the URI paths

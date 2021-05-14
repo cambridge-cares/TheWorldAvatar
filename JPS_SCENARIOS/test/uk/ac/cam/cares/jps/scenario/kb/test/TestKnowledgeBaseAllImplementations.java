@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
@@ -121,7 +122,15 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 				+ "?s system:hasValue/system:numericalValue ?value"
 				+ "} ";
 		String result = client().query(resourceUrl, sparql);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		//Unfortunately, client().query doesn't tell if it's return from agent or direct Query
+		JSONObject simplified;
+		try {
+			simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
+			
+		}catch (JSONException e) {
+			simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		}
+		
 		System.out.println(simplified);
 		String value = simplified.getJSONArray("results").getJSONObject(0).getString("value");
 		return value;
@@ -215,17 +224,12 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		String sparqlquery = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"SELECT ?s ?p ?o WHERE { ?s dcterms:created ?o } ";
 		String result = client().query(target, sparqlquery);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(new JSONObject(result).getString("result"));
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
 		assertEquals("http://example.com/" + provenanceName, subject);
 	}
 	
-	public void testPutAndUpdateRdfFile() throws FileNotFoundException {
-		String provenanceName = UUID.randomUUID().toString();
-		String resourceUrl = "http://www.myhost.com:7778/fancyquerypath/testE-303load.owl";
-		putAndUpdateE303Provenance(resourceUrl, provenanceName);
-	}
 	
 	public void testQueryOwlFileWithImports() throws IOException {
 		

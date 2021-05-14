@@ -1,0 +1,30 @@
+###################### 
+generation technology: ['subcritical'], primary_fuel: ['subbituminous'] 
+cost range: max 67.769, min 67.769 
+emission range: max 665077.03, min 665077.03 
+###################### 
+
+###################### 
+generation technology: ['subcritical'], primary_fuel: ['subbituminous'] 
+cost range: max 67.769, min 67.769 
+emission range: max 665077.03, min 665077.03 
+###################### 
+
+###################### 
+generation technology: ['subcritical'], primary_fuel: ['subbituminous'] 
+cost range: max 67.769, min 67.769 
+emission range: max 665077.03, min 665077.03 
+###################### 
+
+###################### 
+generation technology: ['subcritical'], primary_fuel: ['subbituminous'] 
+cost range: max 67.769, min 67.769 
+emission range: max 665077.03, min 665077.03 
+###################### 
+
+###################### 
+generation technology: ['subcritical'], primary_fuel: ['subbituminous'] 
+cost range: max 67.769, min 67.769 
+emission range: max 665077.03, min 665077.03 
+###################### 
+

@@ -206,9 +206,8 @@ console.log(result)});
     
     //***************************************************************************
     osmb.addMapTiles(
-            'https://api.mapbox.com/styles/v1/osmbuildings/cjt9gq35s09051fo7urho3m0f/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoib3NtYnVpbGRpbmdzIiwiYSI6IjNldU0tNDAifQ.c5EU_3V8b87xO24tuWil0w'
+    	'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'
         );
-    
     // TBC: Building GeoJSON
     // osmb.addGeoJSONTiles('https://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
     //***************************************************************************
@@ -323,7 +322,7 @@ console.log(result)});
         $.get(agentScenario, {city:locationIRI}).done(function (data) {
             console.log('requested Scenario Agent for folder: '+data);
         folder = data;
-        $.get(agentInformation, {path:folder}).done(function (info) {
+        $.get(agentInformation, {filepath:folder}).done(function (info) {
             info=JSON.parse(info);
         	console.log('requested info agent for:');
             console.log(info);

@@ -1,6 +1,7 @@
 package com.cmclinnovations.ontochem.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
@@ -39,9 +40,9 @@ public class CtmlToOwl extends OntoKin{
 	 * @param destinationFilePath String represents the path to OWL file(s),
 	 * which will be generated from CTML.  
 	 */
-	public CtmlToOwl(ArrayList<String> sourceFiles, String destinationFilePath) {
+	public CtmlToOwl(List<String> sourceFiles, String destinationFilePath) {
 		super("CTML to OWL converter started running...");
-		this.sourceFiles = sourceFiles;
+		this.sourceFiles = (ArrayList<String>)sourceFiles;
 		this.destinationFilePath = destinationFilePath;
 	}
 	

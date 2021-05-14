@@ -1,35 +1,81 @@
-/JPS_BMS/workingdir/rdf-xml-output
+# Useful links for more information about ignoring files:
+# https://git-scm.com/docs/gitignore
+# https://github.com/github/gitignore
+# https://www.toptal.com/developers/gitignore
+
+# Binary archives of any kind are not allowed:
+*.tar
+*.gz
+*.zip
+*.7z
+*.rar
+*.tgz
+*.hdt
+
+# Integrated Development Environment (IDE)-specific files/folders:
+.vscode/
+.code-workspace
 .idea/
+.settings/
+.metadata
+.classpath
+.project
+
+# Java:
+*.jar
+*.war
+*.class
+
+# Maven:
+target/
+
+# Python:
+__pycache__/
+*.py[cod]
+*$py.class
+*.pkl
+*.egg-info/
+.venv
+venv/
+.env
+env/
+
+# JavaScript:
+node_modules/
+jspm_packages/
+
+# Compiled/binary output folders:
+bin/
+build/
+dist/
+
+# Mac/OSX-specific files:
+.DS_Store
+
+# Windows-specific files:
+Thumbs.db
+
+# Miscellaneous files/folders:
+/JPS_BMS/workingdir/rdf-xml-output
 /JPS/JPS.iml
-/JPS_BASE/.idea/
 /JPS_BASE/JPS_BASE.iml
-/JPS_BASE_LIB/.idea/
 /JPS_BASE_LIB/jps-base.iml
 /JPS_POSTGRESQL/JPS_POSTGRESQL.iml
-/JPS_SHIP/.idea/
 /JPS_SHIP/JPS_SHIP.iml
 /python/caresjpsadmsinputs/caresjpsadmsinputs.iml
 /JPS_BASE/PythonCustomLibraries/PythonCustomLibraries.iml
-/JPS_BASE/PythonCustomLibraries/build/
-/JPS_BASE/PythonCustomLibraries/caresjpsutil.egg-info/
-/JPS_BASE/PythonCustomLibraries/dist/
 /JPS_BASE_LIB/src/uk/ac/cam/cares/jps/base/util/CRSTransformer.java
 /JPS_COMPOSITION/JPS_COMPOSITION.iml
 /JPS_SHIP/classes/
 /JPS/python/caresjpsadmsinputs/caresjpsadmsinputs.iml
 /JPS_SHIP/workingdir/test.*
-/JPS_ARBITRAGE/build/*
-target
-*.jar
-*.war
+*.index
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/MANIFEST.MF
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/maven/uk.ac.cam.cares.jps/JPS_COMPOSITION_LITE/pom.properties
-*.class
 /JPS_Version_0/ADMS/ADMS_JAVA_END/ADMS-Java-11-10-17/ADMS/ADMS_1/src/kb_dev
-.DS_Store
 JPS_DISPERSION/JPS_DISPERSION.iml
-/*/target
-/*/.settings/
-/*/.project
-/*/.classpath
-/*/bin/
+*.data-00000-of-00001
+geckodriver.log
+/JPS_Chatbot/UI/source/wolfram_alpha_and_google/test/*.html
+geckodriver.log
+/JPS_LDF/LDF_SERVER_JAVA/Server/WebContent/config.json

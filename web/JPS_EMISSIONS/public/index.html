@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JPS Power Plant Emissions</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./stylesheets/styles.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="./javascripts/index.js"></script>
+</head>
+<body>
+    <div class="jumbotron text-center" id="top-banner">
+        <div class="row">
+            <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+                <img src="./images/cam_lang_negativ1%20NEW_0.png"/>
+            </a>
+        </div>
+        <div class="row">
+            <h1 id="title">Emissions</h1>
+            <span id="readme-button">?</span>
+            <span id="readme-text"> This agent assesses the potential of three different decarbonisation technologies (carbon capture and storage (CCS), biomass co-firing (Bioenergy), and biomass with CCS (BECCS)) when applied to fossil fuel power plants in a global context while taking into consideration the impacts of carbon prices and technology learning rates. 
+            Carbon price and technology learning rate (the change in technology’s cost and efficiency as it matures) are two key factors that influence the potential and cost-effectiveness of different decarbonisation technologies. 
+<br><br>The agent utilises a bottom-up approach, i.e. the estimated results are based on the aggregation of the techno-economic modelling of individual fossil fuel power plants around the world. 
+The fossil fuel power plants are obtained from the Global Energy Observatory website (<a href="http://globalenergyobservatory.org">http://globalenergyobservatory.org</a>) where details of each power plant, e.g. generation technology, fuel type, age etc. are provided. 
+The fossil fuel power plants considered by this agent are represented on the world map below. 
+<br><br>The “Installed capacity” heat map visualises the change in installed capacity (GW) of fossil fuel power plants for the top 10 CO<sub>2</sub> emission countries over the past 15 years. 
+A darker indicator represents a higher installed capacity (with reference to the legend). The heat map on its right visualises the change in installed capacity of fossil fuel power plants in a percentage format.
+<br><br>The “Annual generation” heat map visualises the change in annual generation capacity (TWh) of fossil fuel power plants for the top 10 CO<sub>2</sub> emission countries over the past 15 years. 
+A darker indicator represents a higher annual generation capacity (with reference to the legend). 
+The heat map on its right visualises the change in annual generation capacity of fossil fuel power plants in a percentage format. 
+<br><br>From the heat maps, we notice that fossil fuel power plants are still dominating the global power sector and hence it is crucial to study the impacts of decarbonisation technologies and their corresponding economic penalties when applied to fossil fuel power plants. 
+<br><br>The user can modify the carbon price by selecting from the dropdown list and executing the simulation to assess the potential of three different decarbonisation technologies when applied to fossil fuel power plants in a global context. 
+<br><br>The “CO<sub>2</sub> annual emission” graph visualises the annual CO<sub>2</sub> emission rate (Gt/year) from global fossil fuel power plants with different decarbonisation technologies (CCS, biomass (Bioenergy) and BECCS) for a chosen carbon price. Baseline refers to a scenario in which no decarbonisation technology is applied. 
+<br><br>The “Carbon lock-in” graph visualises the corresponding carbon lock-in (Gt), i.e. the committed CO<sub>2</sub> emission which is derived from multiplying the annual CO<sub>2</sub> emission rate by the fossil fuel power plant’s remaining lifetime. The degree of uncertainty in the computation related to the technology learning rate (low, middle or high) is represented by the shaded area.    
+<br><br>The “CO<sub>2</sub> avoidance cost” graph visualises the CO<sub>2</sub> avoidance cost ($/ton), i.e. the cost associated with reducing one tonne of CO<sub>2</sub>, for typical Pulverised Coal (PC) and Natural Gas Combined Cycle (NGCC) power plants. The “Power plant generation cost” graph visualises the corresponding generation cost ($/MWh) when CCS decarbonisation technology is applied. 
+            
+            </span>
+        </div>
+        <p id="description"></p>
+    </div>
+
+    <div class="row">
+        <form>
+            <label for="carbon-price">Carbon Price:</label>
+            <select id="carbon-price" name="carbon-price">
+                <option value="0">0</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>
+
+           <!-- <label for="technology-learning-rate">Technology Learning Rate:</label>
+            <select id="technology-learning-rate" name="technology-learning-rate">
+                <option value="low">low</option>
+                <option value="middle">middle</option>
+                <option value="high">high</option>
+            </select> -->
+
+            <button id="start">Start simulation</button>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 col-lg-offset-5">
+            <img src="" id="annual-baseline">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="row main">
+                <div class="col-lg-6 col-md-6 col-sm-6 emission-fig">
+                    <img class="emission-fig" id="top-left" src="/images/1_top_ten_emission_countries_fossil_ele_cap.png">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 emission-fig">
+                    <img class="emission-fig" id="top-right" src="/images/1_top_ten_emission_countries_fossil_ele_cap_per.png">
+                </div>
+            </div>
+            <div class="row main">
+                <div class="col-lg-6 col-md-6 col-sm-6 emission-fig">
+                    <img class="emission-fig" id="bottom-left" src="/images/1_top_ten_emission_countries_fossil_ele_gen.png">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 emission-fig">
+                    <img class="emission-fig" id="bottom-right" src="/images/1_top_ten_emission_countries_fossil_ele_gen_per.png">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="row main">
+                <div class="col-lg-6 col-md-6 col-sm-6 carbon">
+                    <img class="carbon" id="annual" src="">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 carbon">
+                    <img class="carbon" id="avoidance_cost" src="">
+                </div>
+            </div>
+            <div class="row main">
+                <div class="col-lg-6 col-md-6 col-sm-6 carbon">
+                    <img class="carbon" id="lock" src="">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 carbon">
+                    <img class="carbon" id="price" src="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+			<img  src="/images/world_power_plant.PNG">
+        </div>
+    </div>
+</body>
+</html>

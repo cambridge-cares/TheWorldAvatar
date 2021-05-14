@@ -23,6 +23,7 @@
 5. Expected Result: Open browser page, four graphs should be shown: 
  - Solar Irradiance (taken from solar repository page) under the header of *Inputs*
  - Actual Phase Angle, Actual Voltage, Actual Active Power, and Actual Reactive Power under the header of *Outputs*
+6. For hourly execution, have Semakau.bat called regularly. 
 
 
 ## What's wrong with the visualization? 

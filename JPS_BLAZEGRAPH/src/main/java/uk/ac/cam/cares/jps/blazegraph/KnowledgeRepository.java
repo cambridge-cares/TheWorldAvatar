@@ -137,6 +137,33 @@ public class KnowledgeRepository {
 	}
 
 	/**
+	 * Uploads an ontology file to the current repository.
+	 * 
+	 * @throws Exception
+	 */
+	public void uploadAnOntology() throws Exception {
+		try{
+			checkRepositoryDataAvailability(this.endPointURL, this.repositoryName);
+			checkOntologyUploadDataAvailability(this.ontologyFilePath);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+		RemoteRepository repository = getRepository(this.endPointURL, this.repositoryName, RDFStoreType.BLAZEGRAPH);
+		
+		if (repository != null) {
+			final InputStream is = new FileInputStream(new File(this.ontologyFilePath));
+			try {
+				repository.add(new AddOp(is, RDFFormat.forMIMEType("application/xml")));
+			} finally {
+				is.close();
+			}
+		} else {
+			log.info("The following repository does not exist: " + endPointURL + repositoryName);
+			log.info("Create a repository with this name and try again.");
+		}
+	}
+	
+	/**
 	 * Uploads a single ontology file to the current repository.
 	 * 
 	 * @throws Exception
@@ -149,6 +176,7 @@ public class KnowledgeRepository {
 			throw new Exception(e.getMessage());
 		}
 		RemoteRepository repository = getRepository(this.endPointURL, this.repositoryName, RDFStoreType.BLAZEGRAPH);
+		
 		if (repository != null) {
 			final InputStream is = new FileInputStream(new File(this.ontologyFilePath));
 			try {
@@ -519,7 +547,9 @@ public class KnowledgeRepository {
 			}
 			json.append("      },\n");
 		}
-		json.replace(json.lastIndexOf(","), json.lastIndexOf(",")+1, "");
+		if (json.toString().contains(",")) {
+			json.replace(json.lastIndexOf(","), json.lastIndexOf(",")+1, "");
+		}
 		}catch(QueryEvaluationException e){
 			log.info(e.getMessage());
 		}
@@ -724,7 +754,7 @@ public class KnowledgeRepository {
 				System.exit(0);
 			}
 			if(args[2].isEmpty()){
-				System.out.println("The third argument is empty. Provide the path to the directory where ontologies reside like C:/data/kb");
+				System.out.println("The third argument is empty. Provide the path to the directory where ontologies reside like C:\\data\\kb");
 				System.exit(0);
 			}
 			KnowledgeRepository kr = new KnowledgeRepository();
@@ -733,13 +763,14 @@ public class KnowledgeRepository {
 			kr.ontologyDirectory = args[2];
 			try{
 				kr.uploadOntologies();
+				System.out.println("To upload the already uploaded files, please delete the imported-file.log file.");
 				System.exit(0);
 			}catch(Exception e){
 				System.out.println(e.getMessage());
 			}
 		}else{
 			System.out.println("For uploading ontologies from a directory provide the URL of Endpoint, name of repository and absolute path of the ontology directory as follows:");
-			System.out.println("http://localhost:8080/blazegraph ontokin C:/data/kb");
+			System.out.println("http://localhost:8080/blazegraph ontokin C:\\data\\kb");
 		}
 	}
 }

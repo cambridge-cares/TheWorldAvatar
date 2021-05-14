@@ -1,0 +1,16 @@
+version: "3.8"
+
+# Services
+services:
+
+  # Reverse Proxy
+  reverse_proxy:
+    # Map http to port 82
+    ports:
+      - 82:80
+
+
+# Test network
+networks:
+  default:
+    name: test-web

@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q22693530"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "phosphoramide"}, "x": {"type": "literal", "value": "H\u2086N\u2083OP"}, "altLabel_list": {"type": "literal", "value": "phosphoric triamide"}}]}}

@@ -1,60 +1,93 @@
 package uk.ac.cam.cares.jps.ess.coordination;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
 
 @WebServlet(urlPatterns = { "/startsimulationCoordinationESS" })
-public class CoordinationESSAgent extends JPSHttpServlet{
+public class CoordinationESSAgent extends JPSAgent {
 	
-    @Override
+	private static final long serialVersionUID = 1L;
+	@Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(CoordinationESSAgent.class);
     }
-    Logger logger = LoggerFactory.getLogger(CoordinationESSAgent.class);
-    @Override
-   	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		JSONObject jo = AgentCaller.readJsonParameter(request);
-		String path = request.getServletPath();
-		
-		logger.info("jps request URL="+jo);
-		if ("/startsimulationCoordinationESS".equals(path)) {
-			
-			try {
-				return startSimulation(jo);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage());
-			}
-			
-		}
-		return null;
-	}
 	
+    @Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		if (!validateInput(requestParams)) {
+			throw new BadRequestException();
+		}
+		try {
+			return startSimulation(requestParams);
+		} catch (IOException e) {
+			throw new JPSRuntimeException("");
+		}
+	}
+    
+    /** Note: I've realized that BadRequestException brings out a glassfish
+     * ClassNotFoundException if the library isn't installed. 
+     */
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    	if (requestParams.isEmpty()) {
+            return false;
+        }
+        try {
+	        String ENIRI = requestParams.getString("electricalnetwork");
+	        boolean w = InputValidator.checkIfValidIRI(ENIRI);	        
+	        JSONArray ja =requestParams.getJSONArray("RenewableEnergyGenerator");
+			List<String> RenewableGenerators = MiscUtil.toList(ja);
+			if (ja.length()!= 0) {
+				for (int i = 0; i< RenewableGenerators.size(); i++) {
+					if (RenewableGenerators.get(i)!= null) {
+						boolean t = InputValidator.checkIfValidIRI(RenewableGenerators.get(i));
+						if (t == false) {
+							return false;
+						}
+					}
+				}
+			}else {
+				return false;
+			}
+	        return w;
+        } catch (JSONException ex) {
+        	return false;
+        }
+    }
+    
+    /** Main function, calls on relevant agents. 
+     * 
+     * @param jo requestParams + storage selected, list of batteries being attached. 
+     * @return the list of batteries being produced 
+     * @throws IOException
+     */
 	public JSONObject startSimulation(JSONObject jo) throws IOException {
 		
-		logger.info("starting the ESS ");
-		
 		//retrofit the generator of solar
-		logger.info("sent to the retrofit= "+jo.toString());
 		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/RenewableGenRetrofit", jo.toString());
 		
-		//run the opf
+		//run the battery selection process
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
 		JSONObject res1=new JSONObject(result);
 		jo.put("storage",res1.getString("storage"));
 	
-		
+		//determine the optimal route for choosing placement of battery
 		String result2 = AgentCaller.executeGetWithJsonParameter("JPS_ESS/OptimizationAgent", jo.toString());
 		JSONObject res2=new JSONObject(result2);
 		
@@ -62,25 +95,19 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		//jo.put("optimization",optimizationresult);
 		
 		logger.info("starting the method selected"); //in this case OPF
-		
+		//calls on locatebattery coordination agent
 		String resultStart = AgentCaller.executeGetWithJsonParameter(optimizationresult, jo.toString());
 		
 		logger.info("optimatization end result= "+resultStart);
 						
 		jo.put("batterylist",new JSONObject(resultStart).getJSONArray("batterylist"));
-		
-		String finresult=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
+		// attaches the batteries on the appropriate location in the power grid
+		String finresult=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/EnergyStorageRetrofit", jo.toString());
 	
 		logger.info("started creating battery");
 		JSONObject finres= new JSONObject(finresult); 
 		
-		return finres;
-		
-//JSONObject finres= new JSONObject(resultStartLocator); 
-//		
-//		AgentCaller.writeJsonParameter(response, finres);
-
-		
+		return finres;		
 	}
 	
 

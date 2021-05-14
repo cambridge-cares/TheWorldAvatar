@@ -9,13 +9,15 @@ filled in with example data and that is provided in the following path:
 python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
-from rdflib.namespace import RDF, RDFS, Namespace
+from rdflib.extras.infixowl import OWL_NS
+from rdflib.namespace import RDF, RDFS, Namespace, XSD
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askdirectory
 import csv
 import PropertyReader as propread
 import ABoxGeneration as aboxgen
 import os.path as path
+import glob,os
 
 """Declared column headers as constants"""
 COLUMN_1 = 'Source'
@@ -33,17 +35,36 @@ TYPE_DATA     = 'Data Property'
 HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
+HTTP='http://'
+HTTPS='https://'
+DATA_TYPE_STRING = 'string'
+DATA_TYPE_INTEGER = 'integer'
+DATA_TYPE_FLOAT = 'float'
+DATA_TYPE_DOUBLE = 'double'
+DATA_TYPE_DATE_TIME = 'datetime'
 
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
 g = Graph()
 
 """This shows a file dialog box that enables the user to select a file to convert into RDF"""
-def select_file():
+def select_folder():
     """Suppresses the root window of GUI"""
     Tk().withdraw()
     """Opens a file dialog box to select a file"""
-    return askopenfilename()
+    return askdirectory()
+
+"""This function goes through the folder and writes the files path of all the .csv files into an array """
+def select_files():
+    folder_path=select_folder()
+    os.chdir(folder_path)
+    filepaths=[]
+    abox_name=[]
+    for file in glob.glob("*.csv"):
+        csv_filepath=folder_path+'/'+file
+        abox_name.append(file.strip('.csv'))
+        filepaths.append(csv_filepath)
+    return(filepaths,abox_name)
 
 """This function checks the validity of header in the ABox excel template"""
 def is_header_valid(row):
@@ -69,31 +90,93 @@ def process_data(row):
             if (row[3].strip() is None or row[3].strip() == '') \
                     and (row[4].strip() is None or row[4].strip() == ''):
                 print('Creating an instance:')
-                aboxgen.create_instance(g,
-                                        URIRef(propread.getTBoxIRI()+HASH+format_iri(row[2])),
-                                        propread.getABoxIRI()+SLASH+format_iri(row[0]),
-                                        row[0])
+                instance = propread.getABoxIRI()+SLASH+format_iri(row[0])
+                type = propread.getTBoxIRI()+HASH+format_iri(row[2])
+                http_flag=False
+                if row[0].strip().startswith(HTTP) or row[0].strip().startswith(HTTPS):
+                    instance = row[0]
+                    http_flag=True
+                if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
+                    type = row[2]
+                if http_flag:
+                    aboxgen.create_instance_without_name(g, URIRef(type), URIRef(instance))
+                else:
+                    aboxgen.create_instance(g, URIRef(type), URIRef(instance), row[0])
                 instances[row[0].strip()] = row[2].strip()
 
-            elif row[2].strip() in instances:
+            elif row[2].strip() in instances or row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS):
+                # If no relation is provided in the relation column, then instance linking will be skipped.
                 if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
                     print('link instance 1', instances.get(row[0]))
                     print('link instance 2', instances.get(row[2]))
-                    aboxgen.link_instance(g, URIRef(row[3]),
+                    # If both instance 1 and instance 2 have http or https IRIs, then this block of code will be executed.
+                    if (row[0].strip().startswith(HTTP) or row[0].startswith(HTTPS)) and (row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS)):
+                        aboxgen.link_instance(g, URIRef(row[3]),
+                                              URIRef(row[0].strip()),
+                                              URIRef(row[2].strip()))
+                    # If only instance 1 has an http or https IRI, then this block of code will be executed.
+                    elif (row[0].strip().startswith(HTTP) or row[0].startswith(HTTPS)) and (not (row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS))):
+                        aboxgen.link_instance(g, URIRef(row[3]),
+                                              URIRef(row[0].strip()),
+                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
+                    # If only instance 2 has an http or https IRI, then this block of code will be executed.
+                    elif (not (row[0].strip().startswith(HTTP) or row[0].startswith(HTTPS))) and (row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS)):
+                        aboxgen.link_instance(g, URIRef(row[3]),
+                                              URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
+                                              URIRef(row[2].strip()))
+                    # If both instance 1 and instance 2 don't have http or https IRIs, then this block of code will be executed.
+                    else:
+                        aboxgen.link_instance(g, URIRef(row[3]),
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[0].strip())),
                                               URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())))
 
         elif row[1].strip().lower() == TYPE_DATA.lower():
-            if row[2].strip() in instances and not row[4].strip() == '':
-                aboxgen.link_data(g, URIRef(row[0].strip()),
-                                  URIRef(propread.getABoxIRI()+SLASH+format_iri(row[2].strip())),
+            if (row[2].startswith(HTTP) or row[2].startswith(HTTPS)) and not row[4].strip() == '':
+                if not row[5].strip() == '':
+                    aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
+                                      URIRef(row[2].strip()),
+                                      row[4].strip(), get_data_type(row[5].strip()))
+                else:
+                    aboxgen.link_data(g, URIRef(row[0].strip()),
+                                  URIRef(row[2].strip()),
                                   row[4].strip())
+            elif row[2].strip() in instances and not row[4].strip() == '':
+                if not row[5].strip() == '':
+                    aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
+                                      URIRef(propread.getABoxIRI() + SLASH + format_iri(row[2].strip())),
+                                      row[4].strip(), get_data_type(row[5].strip()))
+                else:
+                    instance = propread.getABoxIRI() + SLASH + format_iri(row[2].strip())
+                    # if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
+                    #     instance = row[2].strip()
+                    if not row[5].strip() == '':
+                        aboxgen.link_data_with_type(g, URIRef(row[0].strip()),
+                                                    URIRef(instance),
+                                                    row[4].strip(), get_data_type(row[5]))
+                    else:
+                        aboxgen.link_data(g, URIRef(row[0].strip()),
+                                          URIRef(propread.getABoxIRI() + SLASH + format_iri(row[2].strip())),
+                                          row[4].strip())
+
+"""Returns the corresponding data type syntax for a given data type"""
+def get_data_type(data_type):
+    if data_type.strip().lower() == DATA_TYPE_STRING:
+        return XSD.string
+    elif data_type.strip().lower() == DATA_TYPE_INTEGER:
+        return XSD.integer
+    elif data_type.strip().lower() == DATA_TYPE_FLOAT:
+        return XSD.float
+    elif data_type.strip().lower() == DATA_TYPE_DOUBLE:
+        return XSD.double
+    elif data_type.strip().lower() == DATA_TYPE_DATE_TIME:
+        return XSD.dateTime
+    else:
+        return data_type
 
 """Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
-    iri = iri.title()
     iri = iri.replace(":"," ")
     iri = iri.replace(",", " ")
     iri = iri.replace(" ","")
@@ -128,9 +211,17 @@ def convert_into_rdf(file_path):
                process_data(row)
            line_count +=1
            print('[', line_count, ']', row)
-    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(), format="application/rdf+xml")
+    g.set((g.identifier, OWL_NS['imports'], URIRef(propread.getTBoxIRI())))
+    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(),
+                format="application/rdf+xml")
 
 """This block of codes calls the function that converts the content of ABox excel template into RDF"""
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
-    convert_into_rdf(select_file())
+    files=[]
+    abox_filename=[]
+    files,abox_filename=select_files()
+    for (i,j) in zip(files,abox_filename):
+        propread.setABoxFileName(j)
+        propread.setABoxFileExtension('.owl')
+        convert_into_rdf(i)

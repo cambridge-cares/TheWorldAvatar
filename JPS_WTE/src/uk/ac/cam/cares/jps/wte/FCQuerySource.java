@@ -6,20 +6,28 @@ import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.sparql.expr.ExprVar;
-
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+/** Util Class to prepare necessary queries
+ * 
+ *
+ */
 public class FCQuerySource {
+	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
+	public static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
+	public static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	public static final String TWA_OntoWaste = TWA_Ontology+"/ontowaste/OntoWaste.owl#"; 
+	public static final String TWA_OntoTransport = TWA_Ontology+"/ontotransport/OntoTransport.owl#";
+	public static final String TWA_POWSYSPerformance= TWA_Ontology + "/ontopowsys/PowSysPerformance.owl#";
 
 	/** gets the food court name, xy coordinates
 	 */
 	public static SelectBuilder getFCQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste)
+				.addPrefix("j2",TWA_upperlevel_system)
+				.addPrefix("j7", TWA_spacetime_extended)
+				.addPrefix("j8", TWA_OntoTransport)
 				.addVar("?entity").addVar("?name").addVar("?xvalue").addVar("?yvalue")
 				.addWhere("?entity" ,"a", "j1:FoodCourt").addWhere("?entity" ,"j8:hasName", "?name")
 				.addWhere("?entity" ,"j7:hasGISCoordinateSystem", "?coorsys")
@@ -29,12 +37,13 @@ public class FCQuerySource {
 				.addWhere("?y" ,"j2:hasValue", "?yval").addWhere("?yval" ,"j2:numericalValue", "?yvalue");
 		return sb;
 	}
+	
 	/** general WasteTreatmentQuery 
 	 */
 	public static SelectBuilder getWasteTreatmentQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste )
+				.addPrefix("j2",TWA_upperlevel_system)
+				.addPrefix("j7", TWA_spacetime_extended)
 				.addVar("?entity").addVar("?xvalue").addVar("?yvalue")
 				.addWhere("?entity" ,"j7:hasGISCoordinateSystem", "?coorsys")
 				.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
@@ -43,6 +52,7 @@ public class FCQuerySource {
 				.addWhere("?y" ,"j2:hasValue", "?yval").addOptional("?yval" ,"j2:numericalValue", "?yvalue");
 		return sb;
 	}
+	
 	/**gets the OffsiteWasteTreatment entity, xy coordinates
 	 */
 	public static String getOffsiteWasteTreatmentQuery() {
@@ -66,9 +76,9 @@ public class FCQuerySource {
 	 * Can be assigned offsite or onsite
 	 */
 	public static SelectBuilder getTechQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_OntoWaste )
+				.addPrefix("j2",TWA_upperlevel_system)
+				.addPrefix("j3", TWA_POWSYSPerformance)
 				.addVar("?pollutiontreatmenttaxvalue").addVar("?Tech1Capvalue").addVar("?installationcostvalue")
 				.addVar("?operationcostvalue").addVar("?transferrateelectricvalue").addVar("?energyconsumptionvalue")
 				.addVar("?laborcostvalue")
@@ -105,6 +115,21 @@ public class FCQuerySource {
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultListfromquery;
-}
+	}
+	
+	
+	/** reads the topnode into an OntModel of all its subsystems.
+	 * This has to be SCENARIO CAPABLE 
+	 * @param iriofnetwork
+	 * @return
+	 */
+	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system )
+				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
+		String wasteInfo = sb.build().toString();
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, wasteInfo);
+	}
 	
 }

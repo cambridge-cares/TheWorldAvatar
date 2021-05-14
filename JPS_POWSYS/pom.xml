@@ -48,24 +48,11 @@
            				<resource>
            					<directory>python</directory>
            					<targetPath>python</targetPath>
-           				</resource>
-						<!--  resource>
-							<directory>WebContent/css</directory>
-							<targetPath>css</targetPath>
-						</resource -->
-						<resource>
-							<directory>WebContent/images</directory>
-							<targetPath>/images</targetPath>
-						</resource>
-					 	<resource>
-							<directory>WebContent/scripts</directory>
-							<targetPath>/scripts</targetPath>
-						</resource>
+           				</resource>						
 						<resource>
 							<directory>workingdir</directory>
 							<targetPath>workingdir</targetPath>
 						</resource>
-
 						<resource>
            					<directory>WebContent</directory>
 				     			<includes>
@@ -107,7 +94,11 @@
 		    <artifactId>opencsv</artifactId>
 		    <version>4.0</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.6</version>
+		</dependency>
 		<dependency>
 		    <groupId>commons-io</groupId>
 		    <artifactId>commons-io</artifactId>

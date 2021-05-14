@@ -11,21 +11,31 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-@WebServlet(urlPatterns = { "/startCoordinationSemakauPV" })
-public class SemakauPVCoordination extends JPSHttpServlet {
-	private Logger logger = LoggerFactory.getLogger(SemakauPVCoordination.class);
-	
+@WebServlet("/PeriodicCoordination")
+public class SemakauPVCoordination extends JPSAgent {
+	/** Error by processRequestParameters -> no result is expected to return 
+	 * @author Laura Ong
+	 */
+	private static final long serialVersionUID = 1L;
+	private String ENIRI="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/SemakauElectricalNetwork.owl#SemakauElectricalNetwork";
+	private String irioftempS="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
+    private String iriofirrS="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
+   
 	@Override
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-	
-		JSONObject jo = AgentCaller.readJsonParameter(request);
-			
-			startSimulation(jo,response);
-		
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		requestParams.put("electricalnetwork",ENIRI);
+		requestParams.put("irradiationsensor",iriofirrS);
+		requestParams.put("temperaturesensor",irioftempS);
+		startSimulation(requestParams);
+	    return new JSONObject();
+	}
+	@Override 
+	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+			return new JSONObject();		
 	}
 	/** Main method coordinating both DES project and JPS Semakau Project
 	 * 
@@ -33,24 +43,13 @@ public class SemakauPVCoordination extends JPSHttpServlet {
 	 * @param response
 	 * @throws IOException
 	 */
-	public void startSimulation(JSONObject jo,HttpServletResponse response) throws IOException {
+	public void startSimulation(JSONObject jo) {
 		
-		logger.info("starting the PV calling ");
-		
-		//Collects Irradiation, wind and temperature data via JPS_DES
-		logger.info("sent to the IrradiationandWeather= "+jo.toString());
-		String result1= AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString()); //sensorirradiri
+		AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString()); //sensorirradiri
 	
-		String iriofirrad = new JSONObject(result1).optString("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
-		jo.put("irradiationsensor",iriofirrad);
-		
-		logger.info("started simulation");
-		String result = AgentCaller.executeGetWithJsonParameter("JPS_SemakauPV/SemakauPV", jo.toString()); //EN of Semakau
+		AgentCaller.executeGetWithJsonParameter("JPS_SemakauPV/SemakauPV", jo.toString()); //EN of Semakau
 	
 	
-		JSONObject finres= new JSONObject(result); 
-		
-		AgentCaller.writeJsonParameter(response, finres);
 
 		
 	}

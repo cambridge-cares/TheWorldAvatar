@@ -1,0 +1,7 @@
+Reaction: ClO_2let: 1.0x"ClO_2let" <-> 0.5x"Cl2" + 0.5x"O2_3let" Calc enthalpy: 115.33724999986589 Ref enthalpy: 101.62936 (error: 13.707889999865884 )
+Reaction: ClClO: 1.0x"ClClO" <-> 0.166667x"Cl2O6" + 0.833333x"Cl2" Calc enthalpy: 109.46402214905186 Ref enthalpy: 90.0 (error: 19.464022149051857 )
+Reaction: TiCl3: 1.0x"TiCl3" <-> 0.333333x"TiCl" + 0.666667x"TiCl4" Calc enthalpy: -514.5350207990997 Ref enthalpy: -508.356 (error: 6.179020799099703 )
+Reaction: Ti(O)(Cl)2: 1.0x"Ti(O)(Cl)2" <-> 0.5x"TiO2" + 0.5x"TiCl4" Calc enthalpy: -591.0400000001117 Ref enthalpy: -593.2912 (error: 2.2511999998882857 )
+Reaction: TiCl2: 1.0x"TiCl2" <-> 0.5x"TiCl" + 0.5x"TiCl3" Calc enthalpy: -198.1336999993071 Ref enthalpy: -205.016 (error: 6.882300000692879 )
+Reaction: TiO: 1.0x"TiO" + 0.3x"Cl2" <-> 0.4x"TiO2" + 0.6x"TiCl" + 0.1x"O2_3let" Calc enthalpy: 63.528610000413494 Ref enthalpy: 54.39 (error: 9.138610000413493 )
+Reaction: Ti(Cl)(O): 1.0x"Ti(Cl)(O)" <-> 0.25x"TiO2" + 0.25x"TiCl4" + 0.5x"TiO" Calc enthalpy: -285.6929999998398 Ref enthalpy: -286.2844 (error: 0.5914000001602062 )

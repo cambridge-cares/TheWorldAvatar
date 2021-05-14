@@ -62,10 +62,10 @@
 2000.0, 2000.0, 10.00,10.00,15.00,25.00,40.00,100.00,300.00,500.00,500.00,500.00,500.00,500.00,500.00       
 *
 * Main grid topography file/value
-../INPUT/other/topo_20191118_20191118.asc
+0
 *
 * Surface roughness file/value (constant value)
-../INPUT/other/surfrough_episode_20191118_20191118.asc
+0.5
 *
 * Surface Albedo file/value (1 = Total reflection; 0 = Black body) Default 0.3?
   inp_xxxnn/albedo.fld
@@ -463,16 +463,6 @@
 *../testdata/cmaq/cbg_isoprene.fld
 *../testdata/cmaq/cbg_pm25.fld
 *../testdata/cmaq/cbg_pm10.fld
-100.0
-760.0
-40.0
-0.0
-0.0
-0.0
-0.0
-15.0
-0.0
-10000.0
 0.0
 0.0
 0.0
@@ -483,8 +473,18 @@
 0.0
 0.0
 0.0
-12.0
-20.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
 *
 * OFFSET Ozone (O3) in BCON file in ug/m^3 for callibration purpose
 0.0

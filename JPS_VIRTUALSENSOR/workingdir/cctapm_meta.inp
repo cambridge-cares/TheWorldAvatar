@@ -1,8 +1,8 @@
  '{Citychem-Singapore--testnotapm-00000}'                ! Simulation-ID, exact 38 characters long
  '../INPUT/mcwind/temp_episode.asc'                    ! Input path of TAPM tapm_YYYYMMDD_YYYYMMDD.outa file ('' if not available)
  ''                                                      ! Input path of CMAQ CONC.surface.YYYYJJJ files       ('' if not available)
- './uect2.3/input/points.csv'               ! Filename of csv-file containing point source yearly emission data (full path)
- './uect2.3/input/lines.csv'                ! Filename of csv-file containing line source yearly emission data  (full path) make it zero emission
+ './points.csv'               ! Filename of csv-file containing point source yearly emission data (full path)
+ './lines.csv'                ! Filename of csv-file containing line source yearly emission data  (full path) make it zero emission
  './uect2.3/input/areas.csv'                ! Filename of csv-file containing area source yearly emission data  (full path)make it zero emission
  '../INPUT/emis'                                        ! Output files path name 
  'user_log_lse.txt'                                          ! Log file (in output path) 

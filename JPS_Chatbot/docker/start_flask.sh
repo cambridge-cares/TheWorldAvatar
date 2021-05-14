@@ -1,0 +1,1 @@
+(cd /usr/local/jps-chatbot/UI/source; nohup python -m flask run)
