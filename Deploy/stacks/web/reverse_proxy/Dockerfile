@@ -12,7 +12,7 @@ ADD conf.d /etc/nginx/conf.d/
 FROM base as dev
 
 # Copy in dev configuration file - includes dev-specific servers (doesn't use SSL)
-COPY nginx_no_ssl.conf /etc/nginx/nginx.conf
+COPY nginx.dev.conf /etc/nginx/nginx.conf
 #==================================================================================================
 
 
@@ -21,5 +21,5 @@ COPY nginx_no_ssl.conf /etc/nginx/nginx.conf
 FROM base as prod
 
 # Copy in prod configuration file - includes prod-specific servers and enables SSL
-COPY nginx_with_ssl.conf /etc/nginx/nginx.conf
+COPY nginx.prod.conf /etc/nginx/nginx.conf
 #==================================================================================================
