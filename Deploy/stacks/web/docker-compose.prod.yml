@@ -28,7 +28,7 @@ services:
   reverse_proxy:
     # Enable ssl
     build:
-      target: with_ssl
+      target: prod
     # Map http and https to standard ports
     ports:
       - 80:80

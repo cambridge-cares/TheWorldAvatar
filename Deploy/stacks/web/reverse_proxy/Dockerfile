@@ -1,13 +1,25 @@
-FROM nginx:1.19.6 as no_ssl
+# Base image
+#==================================================================================================
+FROM nginx:1.19.6 as base
 
 # Add the contents of conf.d
 ADD conf.d /etc/nginx/conf.d/
+#==================================================================================================
 
-# Copy in no-ssl configuration 
+
+# Dev image
+#==================================================================================================
+FROM base as dev
+
+# Copy in dev configuration file - includes dev-specific servers (doesn't use SSL)
 COPY nginx_no_ssl.conf /etc/nginx/nginx.conf
+#==================================================================================================
 
 
-FROM no_ssl as with_ssl
+# Prod image
+#==================================================================================================
+FROM base as prod
 
-# Copy in with-ssl configuration
+# Copy in prod configuration file - includes prod-specific servers and enables SSL
 COPY nginx_with_ssl.conf /etc/nginx/nginx.conf
+#==================================================================================================
