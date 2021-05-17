@@ -40,12 +40,17 @@ mvn install
 
 This zips up the contents of ./model_files and installs it to your local Maven repository at <user_home>/.m2/repository/com/example/model_files/<version_number>/
 
-
-* To deploy the zip file to worldavatar-github:
+To deploy the zip file to worldavatar-github:
 
 ```
 mvn deploy
 ```
 
-Note that, at the time of writing, redeployment was disabled on the World Avatar Maven repository, so attempting to deploy an artifact with a version number that already exists on the server will fail.
+---
+
+Note that, redeployment is disabled for non-snapshot version numbers (those without a '-SNAPSHOT' suffix) on the World Avatar Maven repository.
+Attempting to deploy such an artifact when it already exists on the server will fail with the error message 'Failed to deploy artifacts'.
+
+---
+
 Once you've deployed your files, [this example](../use/README.md) shows how they can be downloaded and built into an image using Docker.
