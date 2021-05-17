@@ -8,12 +8,15 @@ Created on Thu Mar  4 16:10:02 2021
 import uuid
 import json
 import os
+import re
 import csv 
 import cirpy 
 import pybel
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 import openbabel
+import pubchempy as pcp
+from collections import Counter
 
 #print(uuid.uuid4())
 
@@ -57,37 +60,70 @@ def chem_info(data, name):
     inchi = Chem.MolToInchi(m)
     return geom_string, mol_smi, inchi, bond_string, molwt, charge
     
+def get_substructure_cas(smiles):
+    cas_rns = []
+    results = pcp.get_synonyms(smiles, 'smiles', searchtype='substructure')
+    for result in results:
+        for syn in result.get('Synonym', []):
+            match = re.match('(\d{2,7}-\d\d-\d)', syn)
+            if match:
+                cas_rns.append(match.group(1))
+    return cas_rns
 
+def atom_constructor(atom_list):
+    pruned_atoms = list(dict.fromkeys(atom_list))
+    c = Counter(atom_list)
+    atom_counts = [c[x] for x in pruned_atoms]
+    return pruned_atoms, atom_counts
 
-
-def write_abox(data):
-    out_id = uuid.uuid4()
-    label = data['Empirical formula'].replace('1','') #We will take the label as the empirical formula, but without any 1s.
+def write_abox(json_file):
+    data, name = read_json(json_file)
+    gen_id = str(uuid.uuid4())
+    out_id = 'Species_' + gen_id
+    label = data['Empirical formula'].replace('1','') #We will take the label as the molecular formula, but without any 1s.
+    geom_string, mol_smi, inchi, bond_string, molwt, charge = chem_info(data, name)
+    atom_list, atom_counts = atom_constructor(data['Atom types'])
     try:
-        alt_label = cirpy.resolve(label,'names')[0] #Take first name as a sample alternative label for now
-        casid = cirpy.resolve(label,'cas')[0] #Take first CAS registry ID
+        c = pcp.get_compounds(inchi, 'inchi')[0]
+        #alt_label = cirpy.resolve(label,'names')[0] #Take first name as a sample alternative label for now
+        #casid = cirpy.resolve(label,'cas')[0] #Take first CAS registry ID
+        alt_label = c.synonyms[0]
+        casid = get_substructure_cas(mol_smi)[0]
     except:
         alt_label = None
-        casid = None
-    geom_string, mol_smi, inchi, bond_string, molwt, charge = chem_info(data, name)
-    
+        casid = None    
     with open('ABox_' + name + '.csv', 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                   quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        spamwriter.writerow(['Source', 'Type', 'Target', 'Relation','Value'])
-        spamwriter.writerow([out_id, 'Instance','Species','',''])
-        spamwriter.writerow(['http://purl.org/dc/elements/1.1/identifier','Data Property',out_id,'',out_id])
-        spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label])
+        spamwriter.writerow(['Source', 'Type', 'Target', 'Relation','Value','Data Type'])
+        spamwriter.writerow([out_id, 'Instance','Species','','',''])
+        spamwriter.writerow(['http://purl.org/dc/elements/1.1/identifier','Data Property',out_id,'',out_id,'String'])
+        spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])
         if alt_label is not None:
-            spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',alt_label])
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#mass','Data Property',out_id,'',molwt])
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#charge','Data Property',out_id,'',charge])
+            spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',alt_label,'String'])
         if casid is not None:
-            spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#casRegistryID','Data Property',out_id,'',casid])
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#SMILES','Data Property',out_id,'',mol_smi])
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#inChI','Data Property',out_id,'',inchi])
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#hasAtomicBond','Data Property',out_id,'',bond_string])
-        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#hasGeometry','Data Property',out_id,'',geom_string])
-        
-        
+            spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID','Data Property',out_id,'',casid,'String'])
+        spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES','Data Property',out_id,'',mol_smi,'String'])
+        spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#inChI','Data Property',out_id,'',inchi,'String'])
+        spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasAtomicBond','Data Property',out_id,'',bond_string,'String'])
+        spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometry','Data Property',out_id,'',geom_string,'String'])
+        spamwriter.writerow(['Charge_' + gen_id,'Instance','http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge','','',''])
+        spamwriter.writerow([out_id,'Instance','Charge_' + gen_id,'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge','',''])
+        spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value','Data Property','Charge_' + gen_id,'',charge,'String'])
+        spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units','Data Property','Charge_' + gen_id,'','e','String'])
+       # spamwriter.writerow([out_id,'Instance','http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species','','',''])
+        spamwriter.writerow(['MolecularFormula_'+ gen_id,'Instance','http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula','','',''])
+        spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularFormula','',''])
+        for i in range(len(atom_list)):
+            spamwriter.writerow(['Element_' + atom_list[i],'Instance','http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element','','',''])
+            spamwriter.writerow(['MolecularFormula_' + gen_id,'Instance','Element_' + atom_list[i],'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement','',''])
+            spamwriter.writerow(['ElementNumber_' + gen_id + '_' + str(i+1),'Instance','http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber','','',''])
+            spamwriter.writerow(['MolecularFormula_' + gen_id,'Instance','ElementNumber_' + gen_id + '_' + str(i+1),'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber','',''])
+            spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement','Data Property','ElementNumber_' + gen_id + '_' + str(i+1),'',atom_counts[i],'Integer'])
+            spamwriter.writerow(['ElementNumber_' + gen_id + '_' + str(i+1),'Instance','Element_' + atom_list[i],'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf','',''])
+        spamwriter.writerow([out_id,'Instance','http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species','','',''])
+        spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance','http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight','','',''])
+        spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight','',''])
+        spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value','Data Property','MolecularWeight_' + gen_id,'',molwt,'String'])
+        spamwriter.writerow(['http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units','Data Property','MolecularWeight_' + gen_id,'','g/mol','String'])
         
