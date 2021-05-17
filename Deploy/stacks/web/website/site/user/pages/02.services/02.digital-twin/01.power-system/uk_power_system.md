@@ -8,7 +8,11 @@ slug: power-system
 		<td width="350px" style="text-align: center;" markdown="1">![UK](image://digital-twin/power-system-square.jpg?forceResize=300,300)</td>
 		<td style="font-size: 10pt;">
 			<h2>Power System</h2>
-			<p>This module of the UK Digital Twin provides a map visualisation of the Knowledge Graph containing data on UK power plants. The Knowledge Graph is also queried to provide meta-data on each individual power plant; select a node on the map to view it. Please note that there may be some loading time before nodes are shown on the map</p>
+			<p>The UK Digital Twin supports queries across number of aspects of the UK energy related infrastructure, including the electrical power system, the gas transmission system and land use.​</p>
+			<br>
+			<p>The knowledge-graph based architecture of the Digital Twin allows to address cross-domain geospatial questions. The image to the left shows an example that estimates the emissions intensity of each power generator (over 30 MW) in the UK. Each dot on the figure corresponds to a generator, with the size of the dot corresponding to the capacity of the generator and the colour of the dot corresponding to the value of the estimated emissions intensity. In this example, the emissions intensity is calculated at the mass of carbon dioxide emitted per unit value of electricity generated and serves as a proxy for Indicator 9.4.1 of the UN Sustainable Development Goals (see right).</p>
+			<br>
+			<p>The map below shows a sample of the power system data in the UK Digital Twin.</p>
 		</td>
 	</tr>
 </table>
