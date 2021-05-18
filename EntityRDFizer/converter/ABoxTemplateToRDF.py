@@ -27,6 +27,7 @@ COLUMN_5 = 'Value'
 TOTAL_NO_OF_COLUMNS = 5
 
 """Predefined types source entries"""
+TYPE_ONTOLOGY = 'Ontology'
 TYPE_INSTANCE = 'Instance'
 TYPE_DATA     = 'Data Property'
 
@@ -73,7 +74,21 @@ def process_data(row):
                 or row[2].strip() is None or row[2].strip()  == '':
            return
 
-        if row[1].strip().lower() == TYPE_INSTANCE.lower():
+        if row[1].strip().lower() == TYPE_ONTOLOGY.lower():
+            if (not(row[3].strip() is None or row[3].strip() == '')) \
+                    and (row[4].strip() is None or row[4].strip() == '') \
+                    and (row[5].strip() is None or row[5].strip() == ''):
+                print('Creating a statement about the ontology:')
+                """Creating a statement to refer to the TBox"""
+                if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
+                        and row[3].strip() == 'http://www.w3.org/2002/07/owl#imports':
+                    g.set((g.identifier, OWL_NS['imports'], URIRef(row[0])))
+                    """Sets the name of instance of Ontology as the ABox File Name"""
+                    propread.setABoxFileName(row[2])
+                if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
+                        and row[3].strip() == 'base':
+                    propread.setABoxIRI(row[0])
+        elif row[1].strip().lower() == TYPE_INSTANCE.lower():
             if (row[3].strip() is None or row[3].strip() == '') \
                     and (row[4].strip() is None or row[4].strip() == ''):
                 print('Creating an instance:')
@@ -198,8 +213,7 @@ def convert_into_rdf(file_path):
                process_data(row)
            line_count +=1
            print('[', line_count, ']', row)
-    g.set((g.identifier, OWL_NS['imports'], URIRef(propread.getTBoxIRI())))
-    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(),
+    g.serialize(destination=propread.getABoxFileName()+propread.readABoxFileExtension(),
                 format="application/rdf+xml")
 
 """This block of codes calls the function that converts the content of ABox excel template into RDF"""
