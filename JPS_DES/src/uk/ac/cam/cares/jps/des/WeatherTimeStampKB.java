@@ -20,7 +20,12 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-
+/** Old method no longer used by WeatherIrradiationRetriever and Forecast Agent. 
+ * Use only when IrradiationSensor/Forecast is missing
+ * 
+ *
+ *
+ */
 public class WeatherTimeStampKB { //control which location from
 	private OntClass mainobjclass = null;
 	private OntClass mainobj2class = null;

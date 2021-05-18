@@ -46,7 +46,7 @@ esac
 up_default_opts="-d"
 case $mode in
   dev)
-    up_default_opts="$up_default_opts --force-recreate --build"
+    up_default_opts="$up_default_opts --force-recreate"
     ;;
   test)
     ;;
@@ -57,6 +57,13 @@ case $mode in
     exit 3
     ;;
 esac
+
+# Check that we're in the right directory
+stack_dir="./$stack"
+if [ ! -d $stack_dir ]; then
+  echo "Stack directory not found at $stack_dir - make sure you're running this script in the current directory"
+  exit 4
+fi
 
 # Set compose files for this mode
 compose_files="docker-compose.yml docker-compose.$mode.yml"
@@ -73,7 +80,7 @@ printf "\n======================================================================
 printf "Building the $stack stack in $mode mode\n\n"
 
 # Build in stack dir
-cd ./$stack
+cd $stack_dir
 
 # Write some properties (e.g. the current git hash) to a temporary env file so that they can be used
 # in the compose config files
@@ -120,7 +127,7 @@ for compose_file in $compose_files; do
           read -p "  Enter a value for $secret_file_path (or a blank string to abort): " new_secret_val
           if [ -z "$new_secret_val" ]; then
             echo "Aborting..."
-            exit 1
+            exit 5
           else
             if [ -f $secret_file_path ]; then
               \rm -f $secret_file_path

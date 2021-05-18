@@ -23,9 +23,7 @@ td img {
 
 /* Horizontal rules */
 hr {
-	border-color: #dcdcdc;
-	border-width: 1px;
-	border-style: solid;
+	color: LightGrey;
 }
 
 /* ========== Common custom classes ========== */
@@ -36,11 +34,51 @@ hr {
     height: 65px;
 }
 
+.linkless {
+	display: block;
+    padding: 7px 30px 7px 20px;
+    text-decoration: none;
+}
+
+.grey-link a {
+	color: Grey;
+}
+
+.header-image {
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%), 0 6px 20px 0 rgb(0 0 0 / 10%);
+    vertical-align: middle;
+}
+
+.header-image:hover {
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 60%), 0 6px 20px 0 rgb(0 0 0 / 40%);
+    vertical-align: middle;
+}
+
+/* Non-links in the nav menu */
+.dropmenu ul li span {
+    display: block;
+    padding: 7px 30px 7px 20px;
+    text-decoration: none;
+}
+
+/* Prevent drop down symbol */
+.dropmenu ul ul li a:before {
+    content: none !important;
+}
+
 /* Full width element */
 .full-width {
   width: 100vw !important;
   position: relative !important;
   margin-left: -50vw !important;
+  left: 50% !important;
+}
+
+/* 3/4 element */
+.three-quarter-width {
+  width: 75vw !important;
+  position: relative !important;
+  margin-left: -37.5vw !important;
   left: 50% !important;
 }
 
@@ -105,9 +143,7 @@ hr {
 .accordion.active {
 	border-radius: 6px 6px 0px 0px;
 }
-.active, .accordion:hover {
-  background-color: #dcdcdc;
-}
+
 .accordion-panel {
 	border-style: solid;
 	border-width: 0px 1px 1px 1px;

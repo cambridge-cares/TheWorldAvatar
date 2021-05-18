@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +19,15 @@ import org.slf4j.LoggerFactory;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.IdentityRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+import com.jcraft.jsch.agentproxy.AgentProxyException;
+import com.jcraft.jsch.agentproxy.Connector;
+import com.jcraft.jsch.agentproxy.RemoteIdentityRepository;
+import com.jcraft.jsch.agentproxy.connector.PageantConnector;
 
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 
@@ -424,13 +428,13 @@ public class JobSubmission{
 	 * 
 	 */
 	public void monitorJobs() throws SlurmJobException{
-		if(!hostAvailabilityCheck(getHpcAddress(), 22)){
-			System.out.println("The agent cannot connect to the HPC server with address " + getHpcAddress());
-			session = null;
-			return;
-		}
-		scheduledIteration++;
 		try {
+			if(!hostAvailabilityCheck(getHpcAddress(), 22)){
+				System.out.println("The agent cannot connect to the HPC server with address " + getHpcAddress());
+				session = null;
+				return;
+			}
+			scheduledIteration++;
 			if (session == null || scheduledIteration%10==0) {
 				if(session!=null && session.isConnected()){
 					session.disconnect();
@@ -439,6 +443,21 @@ public class JobSubmission{
 				session = jsch.getSession(slurmJobProperty.getHpcServerLoginUserName(), getHpcAddress(), 22);
 				String pwd = slurmJobProperty.getHpcServerLoginUserPassword();
 				session.setPassword(pwd);
+
+				try {
+					// Attempt to connect to a running instance of Pageant
+					Connector con = new PageantConnector();
+					IdentityRepository irepo = new RemoteIdentityRepository(con);
+					jsch.setIdentityRepository(irepo);
+					// If successful then attempt to authenticate using a public key first,
+					// falling back to using the password if no valid key is found
+					session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+				} catch (AgentProxyException e) {
+					// Connecting to Pageant has failed so skip trying to authenticate
+					// using a public key and just try with the password
+					session.setConfig("PreferredAuthentications", "password");
+				}
+
 				session.setConfig("StrictHostKeyChecking", "no");
 				session.connect();
 				scheduledIteration = 0;
@@ -1061,15 +1080,10 @@ public class JobSubmission{
 	 * @param port referes to the port number
 	 * @return
 	 */
-	public boolean hostAvailabilityCheck(String server, int port) {
+	public boolean hostAvailabilityCheck(String server, int port) throws IOException {
 		boolean available = true;
-		try {
-			(new Socket(server, port)).close();
-		} catch (UnknownHostException e) {
-			available = false;
-		} catch (IOException e) {
-			available = false;
-		} catch (NullPointerException e) {
+		try (final Socket dummy = new Socket(server, port)){
+		} catch (UnknownHostException | IllegalArgumentException e) {
 			available = false;
 		}
 		return available;

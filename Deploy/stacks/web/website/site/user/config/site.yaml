@@ -13,7 +13,11 @@ summary:
   format: short
   size: 300
   delimiter: '==='
-redirects: null
+redirects:
+  /services/power-system: '/services/digital-twin/power-system'
+  /services/land-use: '/services/digital-twin/land-use'
+  /services/gas-grid: '/services/digital-twin/gas-grid'
+  /services/marie: '/services/search-engine'
 routes: null
 blog:
   route: /blog

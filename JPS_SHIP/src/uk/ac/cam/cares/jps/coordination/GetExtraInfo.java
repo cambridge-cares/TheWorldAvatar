@@ -35,7 +35,7 @@ public class GetExtraInfo extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		JSONObject r = AgentCaller.readJsonParameter(request);
-		String oripath=r.getString("path");
+		String oripath=r.getString("filepath");
 
 		// this is required because unix file paths do not appear as IRIs to the triple store
         // so we have to add file:/ in front of the path
