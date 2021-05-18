@@ -29,6 +29,10 @@ services:
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
+    volumes:
+      - type: bind
+        source: /var/log/kg-website-logs
+        target: /var/log/nginx/persistent
   
   
   # JPS Chatbot
@@ -82,10 +86,6 @@ services:
       authors: "wx243@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
-    volumes:
-      - type: bind
-        source: /var/log/kg-website-logs
-        target: /var/log/nginx/persistent
     
     
   # UK Gas Grid
