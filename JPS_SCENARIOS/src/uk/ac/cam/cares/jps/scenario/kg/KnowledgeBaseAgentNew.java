@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.scenario.kg;
 
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.json.JSONException;
