@@ -4,9 +4,7 @@
 ##########################################
 
 """This module is designed to convert entities of any domain and their data and metadata into RDF.
-It requires the entities and their data to be provided as inputs in an ABox CSV template, that is
-filled in with example data and that is provided in the following path:
-python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
+It requires the entities and their data to be provided as inputs in an ABox CSV template."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.extras.infixowl import OWL_NS
