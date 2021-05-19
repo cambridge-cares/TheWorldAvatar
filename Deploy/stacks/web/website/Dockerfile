@@ -47,9 +47,6 @@ RUN pecl install apcu \
     && pecl install yaml-2.0.4 \
     && docker-php-ext-enable apcu yaml
 	
-# Install sendmail
-RUN apt-get update && apt-get install -y sendmail sendmail-cf m4
-
 # Install bash
 RUN apt-get update && apt-get install -y bash
 
