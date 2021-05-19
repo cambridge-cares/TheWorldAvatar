@@ -1,5 +1,5 @@
 Source,Type,Target,Relation,Value,Data Type
-http://www.theworldavatar.com/ontology/ontocompchem/OntoCompChem.owl,Ontology,ABoxOntoCompChem-CO2,http://www.w3.org/2002/07/owl#imports,,
+http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl,Ontology,ABoxOntoCompChem-CO2,http://www.w3.org/2002/07/owl#imports,,
 http://www.theworldavatar.com/kb/ontocompchem,Ontology,ABoxOntoCompChem-CO2,base,,
 http://www.theworldavatar.com/kb/ontocompchem/1608b34f-9f9a-37d0-b542-ba9e3152125c/1608b34f-9f9a-37d0-b542-ba9e3152125c.owl/1608b34f-9f9a-37d0-b542-ba9e3152125c,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09,,,
 http://www.theworldavatar.com/kb/ontospecies/00b7e248-ae24-35bf-b7a0-b470b923ddf6-1-co2-1.owl/00b7e248-ae24-35bf-b7a0-b470b923ddf6-1-co2-1,Instance,http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
