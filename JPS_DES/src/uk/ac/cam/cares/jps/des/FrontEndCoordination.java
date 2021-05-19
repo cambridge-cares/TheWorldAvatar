@@ -16,7 +16,7 @@ public class FrontEndCoordination  extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException("FrontEndCoordination: Input parameters are non-empty.\n");
+			throw new BadRequestException();
 		}
     	JSONObject responseParams = requestParams;
     	String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", requestParams.toString());

@@ -1,4 +1,6 @@
 Source,Type,Target,Relation,Value,Data Type
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl,Ontology,ABoxOntoCropEnergy,http://www.w3.org/2002/07/owl#imports,,
+http://www.theworldavatar.com/kb/ontocropenergy,Ontology,ABoxOntoCropEnergy,base,,
 Spring Barley,Instance,Barley,,,
 Spring Barley,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC01,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
 Beet,Instance,Beet,,,

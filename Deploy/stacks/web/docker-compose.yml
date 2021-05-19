@@ -18,7 +18,7 @@ services:
   
   # Reverse Proxy
   reverse_proxy:
-    image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
     build:
       context: "./reverse_proxy"
       target: no_ssl
@@ -29,6 +29,10 @@ services:
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
+    volumes:
+      - type: bind
+        source: /var/log/kg-website-logs
+        target: /var/log/nginx/persistent
   
   
   # JPS Chatbot
@@ -36,7 +40,7 @@ services:
   #        see the JPS_Chatbot/docker/README.txt file for details.
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   jps-chatbot:
-    image: docker.cmclinnovations.com/jps-chatbot:${HASH}
+    image: docker.cmclinnovations.com/jps-chatbot:0e837d
     build:
       context: "../../../JPS_Chatbot"
       dockerfile: "./docker/Dockerfile"
@@ -54,7 +58,7 @@ services:
   # JPS LDF Server
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   jps-ldf:
-    image: docker.cmclinnovations.com/jps-ldf:${HASH}
+    image: docker.cmclinnovations.com/jps-ldf:0e837d
     build:
       context: "../../../JPS_LDF"
       dockerfile: "./docker/Dockerfile"
@@ -102,7 +106,7 @@ services:
   # UN Sustainable Goals
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   un-goals:
-    image: docker.cmclinnovations.com/un-goals:${HASH}
+    image: docker.cmclinnovations.com/un-goals:0ce476
     build:
       context: "./sustainable_goals"
       dockerfile: "./docker/Dockerfile"
@@ -120,7 +124,7 @@ services:
   # Land Use Crop Map
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   land-use:
-    image: docker.cmclinnovations.com/land-use:${HASH}
+    image: docker.cmclinnovations.com/land-use:0ce476
     build:
       context: "./land_use"
       dockerfile: "./docker/Dockerfile"

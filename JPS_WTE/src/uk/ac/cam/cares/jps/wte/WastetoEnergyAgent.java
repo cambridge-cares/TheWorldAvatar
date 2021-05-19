@@ -40,9 +40,7 @@ public class WastetoEnergyAgent extends JPSAgent {
     /**
      *  create logger to log changes attached to WasteToEnergyAgent class. 
      */
-    protected Logger logger = LoggerFactory.getLogger(WastetoEnergyAgent.class);
-	
-	
+    protected Logger logger = null;	
 	private static final long serialVersionUID = 1L;
 	public static final String KEY_WATCH = "watch";
 	public static final String KEY_CALLBACK_URL = "callback";
@@ -90,9 +88,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 		.addWhere("?vTemission", "j2:numericalValue","?dieselConsTruck");
 		Query q = sb.build();
 		return q.toString();
-	}
-	
-	
+	}	
 	
 	/** gets the OffsiteWasteTreatmentFacility's 
 	 * Incineration upper bound, CoDigestion upper bound, and Anerobic Digestion upper bound. 

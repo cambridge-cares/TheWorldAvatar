@@ -14,7 +14,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 public class DESCoordination extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
-	private static String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
+	private static final String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		
@@ -25,7 +25,6 @@ public class DESCoordination extends JPSAgent{
  	        requestParams.put("district", TWA_Singapore +"/District-001.owl#District-001");
  	        requestParams.put("temperatureforecast", TWA_Singapore +"/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
  	        requestParams.put("irradiationforecast", TWA_Singapore +"/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
- 	        requestParams.put("cityIRI", "http://dbpedia.org/page/Singapore");
  	        requestParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
  	        AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData", requestParams.toString());
  	        AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgentNew", requestParams.toString());

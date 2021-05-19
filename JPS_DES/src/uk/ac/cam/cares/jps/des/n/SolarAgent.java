@@ -3,11 +3,9 @@ package uk.ac.cam.cares.jps.des.n;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
@@ -19,13 +17,17 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/SolarAgent"})
 public class SolarAgent extends JPSAgent {
+	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
+	private static final String TWA_POWSYSRealization = TWA_Ontology+ "/ontopowsys/PowSysRealization.owl#";
+	private static final String TWA_POWSYSBEHAVIOR = TWA_Ontology + "/ontopowsys/PowSysBehavior.owl#";
 
 	/** main method. Runs solar radiation data after creating solar constant csv
 	 *
@@ -34,11 +36,11 @@ public class SolarAgent extends JPSAgent {
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject responseParams = requestParams;	
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException("SolarAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
-        String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
-        String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
-        String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+        String iriofnetwork = requestParams.optString("electricalnetwork", TWA_Singapore +"/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
+        String irioftempF=requestParams.optString("temperatureforecast", TWA_Singapore +"/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
+        String iriofirrF=requestParams.optString("irradiationforecast", TWA_Singapore +"/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
         
         String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
@@ -87,10 +89,10 @@ public class SolarAgent extends JPSAgent {
 	 * @param baseUrl
 	 */
 	public void provideGenlist(OntModel model, String baseUrl) { //for file "PV_parameters.csv"
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#")
-				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_POWSYSRealization)
+				.addPrefix("j2", TWA_upperlevel_system)
+				.addPrefix("j8", TWA_Ontology +"/ontocape/material/phase_system/phase_system.owl#")
+				.addPrefix("j9", TWA_POWSYSBEHAVIOR)
 				.addVar("?alphaval").addVar("?aval").addVar("?ilval").addVar("?ioval")
 				.addVar("?rsval").addVar("?rshval").addVar("?tcval").addVar("?gval")
 				.addVar("?egval")

@@ -9,7 +9,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -21,24 +20,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/ResidentialAgent"})
 public class ResidentialAgent extends JPSAgent {
-	public static String bcap="bcap.csv";
-	public static String Pmin="Pmin.csv";
-	public static String Pmax="Pmax.csv";
-	public static String unwill="unwill.csv";
-	public static String schedule="ApplianceScheduleLoad1.csv";
+	private static String bcap="bcap.csv";
+	private static String Pmin="Pmin.csv";
+	private static String Pmax="Pmax.csv";
+	private static String unwill="unwill.csv";
+	private static String schedule="ApplianceScheduleLoad1.csv";
+	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
+	private static final String TWA_POWSYSRealization = TWA_Ontology+ "/ontopowsys/PowSysRealization.owl#";
+	private static final String TWA_POWSYSBEHAVIOR = TWA_Ontology + "/ontopowsys/PowSysBehavior.owl#";
 	
 	/** returns noOfHouseHoulds x  (hourly power consumption profile of all appliances for a given household 
 	 * +hourly charging(+)/discharging(-) profile of all batteries for a given household
@@ -50,7 +51,7 @@ public class ResidentialAgent extends JPSAgent {
 	    if (!validateInput(requestParams)) {
     		throw new BadRequestException();
     	}
-		String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
+		String iriofdistrict = requestParams.optString("district", TWA_Singapore +"/District-001.owl#District-001");
 		
 		String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
@@ -90,10 +91,10 @@ public class ResidentialAgent extends JPSAgent {
 		OntModel model = DESAgentNew.readModelGreedy(iriofnetworkdistrict);
 		String groupInfo ="";
 		try {
-			SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-					.addPrefix("j4", "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#")
-					.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
-					.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+			SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system)
+					.addPrefix("j4", TWA_Ontology +"/ontopowsys/OntoPowSys.owl#")
+					.addPrefix("j5", TWA_Ontology +"/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#")
+					.addPrefix("j6", TWA_POWSYSRealization)
 					.addVar("?entity").addVar("?propval").addVar("?user").addWhere("?entity" ,"a", "j6:Building")
 					.addWhere("?entity" ,"j2:hasProperty", "?prop").addWhere("?prop" ,"j2:hasValue", "?vProp")
 					.addWhere("?vProp" ,"j2:numericalValue", "?propval").addWhere("?entity" ,"j4:isComprisedOf", "?user")
@@ -102,7 +103,7 @@ public class ResidentialAgent extends JPSAgent {
 				groupInfo = q.toString();
 		} catch (ParseException e1) {
 			// parseExpression due to REGEX used in Filter
-			throw new JPSRuntimeException("ResidentialAgent: ParseException: results invalid. ");
+			throw new JPSRuntimeException("");
 		}
 		ResultSet resultSet = JenaHelper.query(model, groupInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -165,9 +166,9 @@ public class ResidentialAgent extends JPSAgent {
 	 */
 	protected List<String[]> readUserforPminPmaxUnwill( String iriOfTypeUser) {
 		//per equipment, per user, extract high, low and actual value
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
-				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system )
+				.addPrefix("j6", TWA_POWSYSRealization)
+				.addPrefix("j9",  TWA_POWSYSBEHAVIOR)
 				.addVar("?entity").addVar("?Pmaxval").addVar("?Pminval").addVar("?unwillval")
 				.addWhere("?entity" ,"a", "j6:Electronics").addWhere("?entity" ,"j9:hasActivePowerAbsorbed", "?Pmax")
 				.addWhere("?Pmax" ,"a", "j9:MaximumActivePower").addWhere("?Pmax" ,"j2:hasValue", "?vPmax")
@@ -208,10 +209,10 @@ public class ResidentialAgent extends JPSAgent {
 	 */
 	protected String[] readUserforAppSch( String iriOfTypeUser) {
 		
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j2",TWA_upperlevel_system)
+				.addPrefix("j6", TWA_POWSYSRealization)
 				.addPrefix("j7", "http://www.w3.org/2006/time#")
-				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+				.addPrefix("j9",  TWA_POWSYSBEHAVIOR)
 				.addVar("?entity").addVar("?Pactval").addVar("?hourval")
 				.addWhere("?entity" ,"a", "j6:Electronics").addWhere("?entity" ,"j9:hasActivePowerAbsorbed", "?Pact")
 				.addWhere("?Pact" ,"a", "j9:AbsorbedActivePower").addWhere("?Pact" ,"j2:hasValue", "?vPact")

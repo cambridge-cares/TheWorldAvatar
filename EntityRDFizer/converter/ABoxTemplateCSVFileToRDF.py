@@ -4,9 +4,7 @@
 ##########################################
 
 """This module is designed to convert entities of any domain and their data and metadata into RDF.
-It requires the entities and their data to be provided as inputs in an ABox excel template, that is
-filled in with example data and that is provided in the following path:
-python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
+It requires the entities and their data to be provided as inputs in an ABox CSV template file."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.extras.infixowl import OWL_NS
@@ -14,9 +12,11 @@ from rdflib.namespace import RDF, RDFS, Namespace, XSD
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
-import PropertyReader as propread
-import ABoxGeneration as aboxgen
+import converter.PropertyReader as propread
+import converter.ABoxGeneration as aboxgen
+import os
 import os.path as path
+import glob
 
 """Declared column headers as constants"""
 COLUMN_1 = 'Source'
@@ -27,6 +27,7 @@ COLUMN_5 = 'Value'
 TOTAL_NO_OF_COLUMNS = 5
 
 """Predefined types source entries"""
+TYPE_ONTOLOGY = 'Ontology'
 TYPE_INSTANCE = 'Instance'
 TYPE_DATA     = 'Data Property'
 
@@ -53,7 +54,7 @@ def select_file():
     """Opens a file dialog box to select a file"""
     return askopenfilename()
 
-"""This function checks the validity of header in the ABox excel template"""
+"""This function checks the validity of header in the ABox CSV template file"""
 def is_header_valid(row):
     if len(row) >= TOTAL_NO_OF_COLUMNS:
         if row[0].strip().lower()==COLUMN_1.lower() \
@@ -73,7 +74,21 @@ def process_data(row):
                 or row[2].strip() is None or row[2].strip()  == '':
            return
 
-        if row[1].strip().lower() == TYPE_INSTANCE.lower():
+        if row[1].strip().lower() == TYPE_ONTOLOGY.lower():
+            if (not(row[3].strip() is None or row[3].strip() == '')) \
+                    and (row[4].strip() is None or row[4].strip() == '') \
+                    and (row[5].strip() is None or row[5].strip() == ''):
+                print('Creating a statement about the ontology:')
+                """Creating a statement to refer to the TBox"""
+                if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
+                        and row[3].strip() == 'http://www.w3.org/2002/07/owl#imports':
+                    g.set((g.identifier, OWL_NS['imports'], URIRef(row[0])))
+                    """Sets the name of instance of Ontology as the ABox File Name"""
+                    propread.setABoxFileName(row[2])
+                if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
+                        and row[3].strip() == 'base':
+                    propread.setABoxIRI(row[0])
+        elif row[1].strip().lower() == TYPE_INSTANCE.lower():
             if (row[3].strip() is None or row[3].strip() == '') \
                     and (row[4].strip() is None or row[4].strip() == ''):
                 print('Creating an instance:')
@@ -174,14 +189,29 @@ def create_namespace(IRI):
     print(IRI)
     return Namespace(IRI)
 
-"""This function checks the validity of the excel template header and iterates over each data row until the whole
-content of the template is converted into RDF"""
-def convert_into_rdf(file_path):
-    print('Provided file path:', file_path)
-    if not path.isfile(file_path):
+"""This function checks the validity of the CSV template header and iterates over each data row until the whole
+content of the template is converted into RDF.
+Some example input and output file paths are provided below:
+input_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABoxOntoSpecies.csv"
+output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles" 
+"""
+def convert_into_rdf(input_file_path, output_file_path):
+    """Checks if the input file path exists. If the path or file does not exist, it skips further processing."""
+    if not path.exists(input_file_path):
+        print('The following input file path does not exist:',input_file_path)
+        return
+    """Checks if the output file path exists. If the path does not exist, it creates the path"""
+    if not path.exists(output_file_path):
+        os.makedirs(output_file_path)
+    """Replaces the user provided file path separator with the default separator supported by
+    the platform (Windows or Linux) where the code runs"""
+    if "\\" in output_file_path:
+        output_file_path = output_file_path.replace("\\", os.path.sep)
+    print('Provided file path:', input_file_path)
+    if not path.isfile(input_file_path):
         print('The provided file path is not valid.')
         return
-    with open(file_path, 'rt') as csvfile:
+    with open(input_file_path, 'rt') as csvfile:
         rows = csv.reader(csvfile, skipinitialspace=True)
         line_count = 0
         for row in rows:
@@ -198,11 +228,10 @@ def convert_into_rdf(file_path):
                process_data(row)
            line_count +=1
            print('[', line_count, ']', row)
-    g.set((g.identifier, OWL_NS['imports'], URIRef(propread.getTBoxIRI())))
-    g.serialize(destination=propread.getABoxFileName()+propread.getABoxFileExtension(),
+    g.serialize(destination=output_file_path+os.path.sep+propread.getABoxFileName()+propread.readABoxFileExtension(),
                 format="application/rdf+xml")
 
-"""This block of codes calls the function that converts the content of ABox excel template into RDF"""
+"""This block of codes calls the function that converts the content of an ABox CSV template file into RDF"""
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
-    convert_into_rdf(select_file())
+    convert_into_rdf(select_file(), "C:\\Users\\msff2\\Documents\\c4eWorkInProgress\\TheWorldAvatar\\JPS_Ontology\\KBTemplates\\ABoxRDFFiles\\test\\path")

@@ -14,7 +14,7 @@
    - RenewableGeneratorRetrofit
    - ENAgent
    - BatteryRetrofit
-3. Have matlab installed. Have java installed
+3. Have java installed
 4. mvn clean install JPS ESS
 5. node app web/CO2WEB/app.js
    - Comment Line 2, Uncomment Line 3 in \web\CO2Web\public\javascripts\pwBaseFile.js when deploying in Claudius
@@ -39,13 +39,13 @@
 9. C then calls a second Coordination Agent, named B, that receives the type of optimization it needs to run.
 10. EN Agent queries the knowledge graph and runs the OPF model, and updates the 'parallel-world' knowledge graph with its new values. 
 11. Additionally, it updates the knowledge graph with optimal locations for the placement of energy storage.
-13. The total power loss is considered as the parameter for the system performance and energy storage are placed based on the extent of the power loss. 
-14. B calls upon another retrofit agent, which would read the optimal locations from the knowledge graph based on the criteria above, and create the corresponding instances which possess the location and type of energy storage the electric grid would possess.    
-15. These instances are retrofitted onto the electric grid in the 'parallel world'. 
-16. Once the knowledge graph is updated with the instances of the energy storage systems, the framework reaches completion. 
-17. The visualization agent reflects the lowered value of carbon emission due to the addition of the renewable generator as well as the energy storage systems on the electrical network,
-18. The end user could proceed to change the power load and run OPF again to determine the change in carbon emissions produced by this new system. 
-19. As this replica is modified, the base world remains untouched. 
+12. The total power loss is considered as the parameter for the system performance and energy storage are placed based on the extent of the power loss. 
+13. B calls upon another retrofit agent, which would read the optimal locations from the knowledge graph based on the criteria above, and create the corresponding instances which possess the location and type of energy storage the electric grid would possess.    
+14. These instances are retrofitted onto the electric grid in the 'parallel world'. 
+15. Once the knowledge graph is updated with the instances of the energy storage systems, the framework reaches completion. 
+16. The visualization agent reflects the lowered value of carbon emission due to the addition of the renewable generator as well as the energy storage systems on the electrical network,
+17. The end user could proceed to change the power load and run OPF again to determine the change in carbon emissions produced by this new system. 
+18. As this replica is modified, the base world remains untouched. 
 
 ![Sequence Diagram](images/SequenceDiagramV1.png) 
 

@@ -51,13 +51,13 @@ public class BatteryEntityCreator extends JPSAgent {
 	static Individual yaxis;
 	static Individual length;
 	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
-	private final String TWA_spacetime= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"; 
-	private final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
-	private final String TWA_coordinate_system = TWA_Ontology+"/ontocape/upper_level/coordinate_system.owl#" ;
-	private final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
-	private final String TWA_POWSYSBEHAVIOR = TWA_Ontology + "/ontopowsys/PowSysBehavior.owl#";
-	private final String TWA_physical_dimension = TWA_Ontology+ "/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#";
-	private final String TWA_SIUNIT= TWA_Ontology+"/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"; 
+	private static final String TWA_spacetime= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"; 
+	private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
+	private static final String TWA_coordinate_system = TWA_Ontology+"/ontocape/upper_level/coordinate_system.owl#" ;
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_POWSYSBEHAVIOR = TWA_Ontology + "/ontopowsys/PowSysBehavior.owl#";
+	private static final String TWA_physical_dimension = TWA_Ontology+ "/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#";
+	private static final String TWA_SIUNIT= TWA_Ontology+"/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"; 
 	
 	/** assign property values to variables
 	 * 
