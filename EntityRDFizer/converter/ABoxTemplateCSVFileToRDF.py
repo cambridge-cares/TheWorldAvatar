@@ -4,7 +4,7 @@
 ##########################################
 
 """This module is designed to convert entities of any domain and their data and metadata into RDF.
-It requires the entities and their data to be provided as inputs in an ABox excel template, that is
+It requires the entities and their data to be provided as inputs in an ABox CSV template, that is
 filled in with example data and that is provided in the following path:
 python/power_plnat/test/resources/ABoxOntoLandUse.csv."""
 
@@ -56,7 +56,7 @@ def select_file():
     """Opens a file dialog box to select a file"""
     return askopenfilename()
 
-"""This function checks the validity of header in the ABox excel template"""
+"""This function checks the validity of header in the ABox CSV template"""
 def is_header_valid(row):
     if len(row) >= TOTAL_NO_OF_COLUMNS:
         if row[0].strip().lower()==COLUMN_1.lower() \
@@ -191,7 +191,7 @@ def create_namespace(IRI):
     print(IRI)
     return Namespace(IRI)
 
-"""This function checks the validity of the excel template header and iterates over each data row until the whole
+"""This function checks the validity of the CSV template header and iterates over each data row until the whole
 content of the template is converted into RDF.
 Some example input and output file paths are provided below:
 input_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABoxOntoSpecies.csv"
