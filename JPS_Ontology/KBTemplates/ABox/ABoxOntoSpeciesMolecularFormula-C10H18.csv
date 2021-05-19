@@ -4,6 +4,7 @@ http://www.theworldavatar.com/kb/ontospecies,Ontology,ABoxOntoSpeciesMolecularFo
 http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/Species_7257805369781300,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
 http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/MolecularFormula_7257805369781300,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula,,,
 http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/Species_7257805369781300,Instance,http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/MolecularFormula_7257805369781300,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularFormula,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/MolecularFormula_7257805369781300,,C10H18,String
 http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/Element_C,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,,,
 http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/MolecularFormula_7257805369781300,Instance,http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/Element_C,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement,,
 http://www.theworldavatar.com/kb/ontospecies/s00000650.owl/ElementNumber_7257805369781301,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,,,
