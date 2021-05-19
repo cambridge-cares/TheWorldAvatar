@@ -18,6 +18,7 @@ import converter.PropertyReader as propread
 import converter.ABoxGeneration as aboxgen
 import os
 import os.path as path
+import glob
 
 """Declared column headers as constants"""
 COLUMN_1 = 'Source'
@@ -231,6 +232,16 @@ def convert_into_rdf(input_file_path, output_file_path):
            print('[', line_count, ']', row)
     g.serialize(destination=output_file_path+os.path.sep+propread.getABoxFileName()+propread.readABoxFileExtension(),
                 format="application/rdf+xml")
+
+"""This function retrieves all CSV files from folder_path and calls the converter function.
+The value of folder_path should be an absolute path as shown below:
+folder_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox" """
+def convert(input_folder_path, output_folder_path):
+    """Retrieves all CSV files from the folder path given"""
+    csv_files = glob.glob(os.path.join(input_folder_path, "*.csv"))
+    """Iterates over the list of CSV files"""
+    for csv_file in csv_files:
+        convert_into_rdf(csv_file, output_folder_path)
 
 """This block of codes calls the function that converts the content of ABox excel template into RDF"""
 if __name__ == '__main__':
