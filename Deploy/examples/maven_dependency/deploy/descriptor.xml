@@ -17,6 +17,11 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>*.model</include>
+        <!--
+          The intent of adding a README to the root of the package is that the contents appear as a
+          package description on github, but that doesn't seem to work.
+        -->
+        <include>README.md</include>
       </includes>
     </fileSet>
   </fileSets>
