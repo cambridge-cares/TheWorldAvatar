@@ -17,7 +17,6 @@ from CropMap import CropMap
 from Envelope import Envelope
 from rdflib import Graph, URIRef, XSD
 
-import PropertyReader as propread
 import GMLParserPropReader as gmlpropread
 import ABoxGeneration as aboxgen
 import EntityRDFizer as rdfizer
@@ -122,7 +121,7 @@ def get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
                     aboxgen.link_instance(g, URIRef(gmlpropread.getLucodeVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
                                              + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      URIRef(propread.getABoxIRI()+rdfizer.SLASH+cropMap.luCode))
+                                      URIRef(gmlpropread.getABoxIRI()+rdfizer.SLASH+cropMap.luCode))
                     #print('lucode', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  REF_DATE.lower():
                     cropMap.refDate = attribute.text
