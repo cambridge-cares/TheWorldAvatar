@@ -4,7 +4,7 @@
 ##########################################
 
 """This module is designed to convert entities of any domain and their data and metadata into RDF.
-It requires the entities and their data to be provided as inputs in an ABox CSV template."""
+It requires the entities and their data to be provided as inputs in an ABox CSV template file."""
 
 from rdflib import Graph, FOAF, URIRef, BNode, Literal
 from rdflib.extras.infixowl import OWL_NS
@@ -54,7 +54,7 @@ def select_file():
     """Opens a file dialog box to select a file"""
     return askopenfilename()
 
-"""This function checks the validity of header in the ABox CSV template"""
+"""This function checks the validity of header in the ABox CSV template file"""
 def is_header_valid(row):
     if len(row) >= TOTAL_NO_OF_COLUMNS:
         if row[0].strip().lower()==COLUMN_1.lower() \
