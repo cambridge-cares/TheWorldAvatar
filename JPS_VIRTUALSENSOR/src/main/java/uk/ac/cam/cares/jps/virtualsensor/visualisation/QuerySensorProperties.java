@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.region.Region;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
@@ -22,7 +21,7 @@ public class QuerySensorProperties extends JPSHttpServlet{
 		if (validateInput(request)) {
 			JSONObject r = AgentCaller.readJsonParameter(request);
 
-			String stationiri = r.getString(Region.keyAirStationIRI);
+			String stationiri = r.getString(SensorSparql.keyAirStationIRI);
 			JSONArray result = SensorSparql.queryAirStationProperties(stationiri);
 			response.setContentType("application/json");
 			response.getWriter().write(result.toString());
@@ -33,7 +32,7 @@ public class QuerySensorProperties extends JPSHttpServlet{
     	boolean valid = false;
     	try {
     		JSONObject r = AgentCaller.readJsonParameter(request);
-    		new URL(r.getString(Region.keyAirStationIRI)).toURI();
+    		new URL(r.getString(SensorSparql.keyAirStationIRI)).toURI();
     		valid = true;
     	} catch (Exception e) {
     		throw new BadRequestException(e);

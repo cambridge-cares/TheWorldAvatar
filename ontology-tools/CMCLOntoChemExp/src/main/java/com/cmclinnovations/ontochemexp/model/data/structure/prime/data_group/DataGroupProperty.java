@@ -21,18 +21,9 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @author Songyi Deng  (sd626@cam.ac.uk)
  *
  */
-@XmlType(propOrder={ "derivedPropertyExists", "component", "speciesLink", "derivedProperty" })
+@XmlType(propOrder={ "component", "speciesLink", "derivedProperty" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DataGroupProperty extends Property {
-	@XmlAttribute
-	private String derivedPropertyExists;
-	
-	public String getPropertyDerivedPropertyExists() {
-		return derivedPropertyExists;
-	}
-	public void setPropertyDerivedPropertyExists(String derivedPropertyExists) {
-		this.derivedPropertyExists = derivedPropertyExists;
-	}
 	@XmlElement
 	private DataGroupPropertyComponent component;
 	@XmlElement

@@ -12,7 +12,8 @@ import Lucode as l
 import numpy as np
 import json
 
-from kgConnection.app_module import doTask
+from Elean_Power_Station_Use_Case.Updates import insert_power_density, delete_power_density
+from kgConnection.app_module import doTask, doUpdate
 
 """Sets the name of the OntoCropMapGML knowledge base"""
 onto_crop_map_gml_kb = "ontocropmapgml"
@@ -148,6 +149,27 @@ def execute_energy_use_case(power_plant_name):
     lucode_crop_map = get_lucode_crop_map(onto_crop_energy_kb)
     calculate_crop_parameters(lucode_crop_map, onto_crop_map_gml_kb, onto_crop_energy_kb, power_plant)
 
+"""If a triple consisting of an instance of crop (subject), the energy property of the crop (predicate), 
+the energy instance of crop (object), and the value and units of the crop energy instance are provided, then
+three triples will be inserted into the ontocropenergy kb"""
+def insert_crop_energy_density(subject,predicate,object,value,units):
+    doUpdate(insert_power_density(subject, predicate, object, value, units), onto_crop_energy_kb, True, True)
+
+"""If a triple consisting of an instance of crop (subject), the energy property of the crop (predicate), 
+the energy instance of crop (object), and the value and units of the crop energy instance are provided, then
+three triples, if available, will be deleted from the ontocropenergy kb"""
+def delete_crop_energy_density(subject,predicate,object,value,units):
+    doUpdate(delete_power_density(subject, predicate, object, value, units), onto_crop_energy_kb, True, True)
+
 """The following block of code runs first if this module is executed"""
 if __name__ == '__main__':
     execute_energy_use_case(power_plant_name)
+    """declaring instances and properties to be included in the ontocropenergy KB"""
+    subject="http://www.theworldavatar.com/kb/ontocropenergy/Miscanthus"
+    predicate="ontocropenergy:hasCropSurfacePowerDensity"
+    object="http://www.theworldavatar.com/kb/ontocropenergy/PowerDensity_1"
+    value=10
+    units="W/m2"
+    """Performing the insert operation to add crop energy"""
+    insert_crop_energy_density(subject,predicate,object,value,units)
+    # delete_crop_energy_density(subject,predicate,object,value,units)

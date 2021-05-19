@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlType(propOrder = { "name", "id", "label", "units", "description", "value", "uncertainty" })
+@XmlType(propOrder = { "name", "id", "label", "units", "description", "derivedPropertyExists", "sourceType", "reference", "kind", "bound", "method", "value", "uncertainty" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Property {
 	@XmlAttribute
@@ -22,6 +22,18 @@ public class Property {
 	private String units;
 	@XmlAttribute
 	private String description;
+	@XmlAttribute
+	private String sourceType;
+	@XmlAttribute
+	private String reference;
+	@XmlAttribute
+	private String kind;
+	@XmlAttribute
+	private String bound;
+	@XmlAttribute
+	private String method;
+	@XmlAttribute
+	private String derivedPropertyExists;
 	
 	public String getPropertyName() {
 		return name;
@@ -58,7 +70,49 @@ public class Property {
 		this.description = description;
 	}
 	
+	public String getSourceType() {
+		return sourceType;
+	}
+	public void setSourceType(String sourceType) {
+		this.sourceType = sourceType;
+	}
 	
+	public String getReference() {
+		return reference;
+	}
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+	
+	public String getKind() {
+		return kind;
+	}
+	public void setKind(String kind) {
+		this.kind = kind;
+	}
+	
+	public String getBound() {
+		return bound;
+	}
+	public void setBound(String bound) {
+		this.bound = bound;
+	}
+	
+	public String getMethod() {
+		return method;
+	}
+	public void setMethod(String method) {
+		this.method = method;
+	}
+	
+	public String getPropertyDerivedPropertyExists() {
+		return derivedPropertyExists;
+	}
+	public void setPropertyDerivedPropertyExists(String derivedPropertyExists) {
+		this.derivedPropertyExists = derivedPropertyExists;
+	}
+
+
 	@XmlElement
 	private Uncertainty uncertainty;
 	@XmlElement

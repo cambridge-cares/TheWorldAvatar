@@ -48,39 +48,9 @@ public class AdditionalDataItemQuery extends OwlConverter implements IAdditional
 	}
 	
 	private void queryValue(String additionalDataItemInstance) throws OntoChemExpException{
-//		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON), 
-//				ontoChemExpKB.getOntoChemExpKbTBoxIri(), 
-//				additionalDataItemInstance, 
-//				ontoChemExpVocabulary.getDataPropertyhasValue());
-//		
-//		performMultilineAnswerQuery(q, 1);
-//		System.out.println("\n------------------------queryResult-------------------------------------------------------------");
-//		System.out.println(queryResult);
-//		System.out.println("\n------------------------queryResult-------------------------------------------------------------");
-//		
-//		queryResult = new ArrayList<String>();
-		
-		
-//		if (value != null && !value.isEmpty()) {
-//			additionalDataItem.setValue(value);
-//		}
-		
-		
 		String value = readDataPropertyValue(additionalDataItemInstance);
 		if (value != null && !value.isEmpty()) {
-//			System.out.println(value);
 			additionalDataItem.setValue(value);
 		}
 	}
-	
-	
-	
-//	private String readValue(String additionalDataItemInstance) {
-////		System.out.println(additionalDataItemInstance);
-////		String q = formQueryWithAStandardVocabulary(RDFS, RDFS_URL, additionalDataItemInstance, RDFS_LABEL);
-////		System.out.println(q);
-////		System.out.println(performQuery(q, 1));
-//		String str = readLabel(additionalDataItemInstance);
-//		return str;
-//	}
 }

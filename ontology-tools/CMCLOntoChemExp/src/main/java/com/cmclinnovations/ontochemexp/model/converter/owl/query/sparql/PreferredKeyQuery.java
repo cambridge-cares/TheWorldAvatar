@@ -16,27 +16,19 @@ public class PreferredKeyQuery extends OwlConverter implements IPreferredKeyQuer
 	public void query() throws OntoChemExpException{
 		queryInstance(ontoChemExpKB.getOntoChemNamespace().concat(COLON), 
 				ontoChemExpKB.getOntoChemExpKbTBoxIri(), 
-				ontoChemExpVocabulary.getClassPreferredKey());
+				ontoChemExpVocabulary.getOntoChemExpExpSpecs());
 		ArrayList<String> preferredKeyInstance = queryResult;
 		queryResult = new ArrayList<>();
 		
 		if (preferredKeyInstance.size()>0 && preferredKeyInstance.size()<2) {
-			queryAllAttributes(preferredKeyInstance.get(0));
 			queryValue(preferredKeyInstance.get(0));
 			experiment.setPreferredKey(preferredKey);
 		}
 		preferredKey = new PreferredKey();
 	}
 	
-	private void queryAllAttributes(String preferredKeyInstance) throws OntoChemExpException{
-		String type = readType(preferredKeyInstance);
-		if (type != null && !type.isEmpty()) {
-			preferredKey.setType(type);
-		}
-	}
-	
 	private void queryValue(String preferredKeyInstance) throws OntoChemExpException{
-		String value = readDataPropertyValue(preferredKeyInstance);
+		String value = readDataPropertyExpType(preferredKeyInstance);
 		if (value != null && !value.isEmpty()) {
 			preferredKey.setValue(value);
 		}

@@ -4,17 +4,16 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QueryParseException;
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.system.IRIResolver;
 import org.apache.jena.update.UpdateException;
 import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateRequest;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class InputValidator {
 
@@ -44,7 +43,7 @@ public class InputValidator {
 				throw new RiotException();
 			}
 			catch (Exception ex) {
-				ex.printStackTrace();
+				throw new JPSRuntimeException("");
 			}
 		return (!f& checkIfURLpattern(iriStr));
 		}
@@ -131,7 +130,7 @@ public class InputValidator {
 	 */
 	public static boolean checkIfValidQuery(String str) {
 		try{
-			Query query = QueryFactory.create(str);
+			QueryFactory.create(str);
 			return true;
 		}catch (QueryParseException e) {
 			return false;
@@ -144,7 +143,7 @@ public class InputValidator {
 	 */
 	public static boolean checkIfValidUpdate(String str) {
 		try{
-			UpdateRequest update = UpdateFactory.create(str);
+			UpdateFactory.create(str);
 			return true;
 		}catch (UpdateException e) {
 			return false;
