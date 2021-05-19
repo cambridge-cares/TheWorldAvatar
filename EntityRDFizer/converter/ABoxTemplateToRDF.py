@@ -16,6 +16,7 @@ from tkinter.filedialog import askopenfilename
 import csv
 import converter.PropertyReader as propread
 import converter.ABoxGeneration as aboxgen
+import os
 import os.path as path
 
 """Declared column headers as constants"""
@@ -190,13 +191,28 @@ def create_namespace(IRI):
     return Namespace(IRI)
 
 """This function checks the validity of the excel template header and iterates over each data row until the whole
-content of the template is converted into RDF"""
-def convert_into_rdf(file_path):
-    print('Provided file path:', file_path)
-    if not path.isfile(file_path):
+content of the template is converted into RDF.
+Some example input and output file paths are provided below:
+input_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABoxOntoSpecies.csv"
+output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles" 
+"""
+def convert_into_rdf(input_file_path, output_file_path):
+    """Checks if the input file path exists. If the path or file does not exist, it skips further processing."""
+    if not path.exists(input_file_path):
+        print('The following input file path does not exist:',input_file_path)
+        return
+    """Checks if the output file path exists. If the path does not exist, it creates the path"""
+    if not path.exists(output_file_path):
+        os.makedirs(output_file_path)
+    """Replaces the user provided file path separator with the default separator supported by
+    the platform (Windows or Linux) where the code runs"""
+    if "\\" in output_file_path:
+        output_file_path = output_file_path.replace("\\", os.path.sep)
+    print('Provided file path:', input_file_path)
+    if not path.isfile(input_file_path):
         print('The provided file path is not valid.')
         return
-    with open(file_path, 'rt') as csvfile:
+    with open(input_file_path, 'rt') as csvfile:
         rows = csv.reader(csvfile, skipinitialspace=True)
         line_count = 0
         for row in rows:
@@ -213,10 +229,10 @@ def convert_into_rdf(file_path):
                process_data(row)
            line_count +=1
            print('[', line_count, ']', row)
-    g.serialize(destination=propread.getABoxFileName()+propread.readABoxFileExtension(),
+    g.serialize(destination=output_file_path+os.path.sep+propread.getABoxFileName()+propread.readABoxFileExtension(),
                 format="application/rdf+xml")
 
 """This block of codes calls the function that converts the content of ABox excel template into RDF"""
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
-    convert_into_rdf(select_file())
+    convert_into_rdf(select_file(), "C:\\Users\\msff2\\Documents\\c4eWorkInProgress\\TheWorldAvatar\\JPS_Ontology\\KBTemplates\\ABoxRDFFiles\\test\\path")
