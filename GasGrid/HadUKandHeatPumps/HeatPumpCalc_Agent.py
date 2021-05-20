@@ -4,11 +4,14 @@ from numpy.core.defchararray import add
 from tqdm import tqdm 
 import numpy as np 
 import matplotlib.pyplot as plt
+import geopandas as gpd
 from datetime import datetime
 import imageio
 import rdflib
+import pandas as pd 
 import uuid 
 import time
+import matplotlib.colors as cl 
 from rdflib.namespace import DC, DCTERMS, DOAP, FOAF, SKOS, OWL, RDF, RDFS, VOID, XMLNS, XSD
 import os
 import pickle
@@ -136,25 +139,97 @@ def region_usage_query(limit):
     usage_vals = res_array[1:,:]
     return usage_vals
 
+def region_meters_query(limit):
+    '''
+    Querying the KG for all regions gas meters in 2019 
+    '''
+    if limit == False:
+        limit = str(10000000000)
+    limit = str(limit)
+    # clearing terminal
+    os.system('clear')
+    
+    query='''
+    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
+    PREFIX clim:     <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#>
+    PREFIX comp:     <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
+    PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+    PREFIX gg:       <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#>
+
+    SELECT ?s ?con ?non
+    WHERE
+    {       
+    ?s rdf:type ons_t:Statistical-Geography;
+     gg:hasGasMeters ?met.
+     ?met gg:hasConsumingGasMeters ?con.
+     ?met gg:hasNonConsumingGasMeters ?non
+    }
+    '''
+    DEF_NAMESPACE = 'ontogasgrid'
+    LOCAL_KG = "http://localhost:9999/blazegraph"
+    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+    # Querying using SPARQLWrapper for now
+    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+    sparql.setMethod(POST) # POST query, not GET
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    print('Starting LSOA Gas Usage Query...')
+    start = time.time()
+    ret = sparql.query().convert()
+    end = time.time()
+    print('Finished in a time of ',np.round(end-start,3),' seconds')
+
+    # parsing JSON into an array 
+    values = ret['results']['bindings']
+    head = ret['head']['vars']
+    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
+    res_array[0,:] = head
+    i = 1
+    print('Parsing result of length '+str(len(res_array)))
+    for row in tqdm(values):
+        j = 0 
+        for val in row.values():
+            res_array[i,j] = val['value']
+            j += 1 
+        i += 1 
+
+    usage_vals = res_array[1:,:]
+    return usage_vals
+
+
 filename = 'temp_array'
 gas_filename = 'gas_array'
+meters_filename = 'meters_array'
+
 # results = region_query(limit=False)
 # #-----------------# 
 # outfile = open(filename,'wb')
 # pickle.dump(results,outfile)
 # outfile.close()
 
-# gas_results = region_query(limit=False)
+# gas_results = region_usage_query(limit=False)
 # #-----------------# 
 # outfile = open(gas_filename,'wb')
 # pickle.dump(gas_results,outfile)
 # outfile.close()
-#-----------------# 
+
+# meters_results = region_meters_query(limit=False)
+# #-----------------# 
+# outfile = open(meters_filename,'wb')
+# pickle.dump(meters_results,outfile)
+# outfile.close()
+# # -----------------# 
+
 infile = open(filename,'rb')
 all_results = pickle.load(infile)
 infile.close()
 infile = open(gas_filename,'rb')
 gas_results = pickle.load(infile)
+infile.close()
+infile = open(meters_filename,'rb')
+meters_results = pickle.load(infile)
 infile.close()
 #-----------------# 
 
@@ -244,6 +319,8 @@ def plot_LSOA_temps(LSOA):
 
 unique_LSOA = np.unique(all_results[:,0])
 results_tensor = np.zeros((3,len(unique_LSOA),12))
+gas_tensor = np.zeros(len(unique_LSOA))
+meters_tensor = np.zeros((len(unique_LSOA),2))
 
 
 t_dict = {'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin':0,\
@@ -275,20 +352,183 @@ for j in tqdm(range(len(all_results[:,0]))):
     d_ind = date_dict[all_results[j,2]]
     lsoa_ind = lsoa_dict[all_results[j,0]]
     results_tensor[t_ind,lsoa_ind,d_ind] = all_results[j,-1]
+for j in tqdm(range(len(gas_results[:,0]))):
+    try:
+        gas_lsoa_ind = lsoa_dict[gas_results[j,0]]
+    except KeyError:
+        print('Invalid region: ',gas_results[j,0])
+    gas_tensor[gas_lsoa_ind] = gas_results[j,1]
 
-def COP(T_h,T_c,n):
-    return n*((T_h+273.15)/(T_h-T_c))
+for j in tqdm(range(len(meters_results[:,0]))):
+    try:
+        gas_lsoa_ind = lsoa_dict[meters_results[j,0]]
+    except KeyError:
+        print('Invalid region: ',meters_results[j,0])
+    meters_tensor[gas_lsoa_ind,0] = int(meters_results[j,1])
+    if meters_results[j,2] != '-':
+        meters_tensor[gas_lsoa_ind,1] = int(meters_results[j,2])
+    else: 
+        meters_tensor[gas_lsoa_ind,1] = 0 
 
 
-month_num = 4
+def COP(T_c):
+    return 0.5*((35+273.15)/(35-T_c))
+
+
+scaled_gas_tensor = np.zeros_like(gas_tensor)
+
+for i in range(len(gas_tensor)):
+    scaled_gas_tensor[i] = gas_tensor[i] + gas_tensor[i] * meters_tensor[i,1] / meters_tensor[i,0]
+
+
+monthly_total_demand = [9.7358,7.389,7.17968,8.073659,5.4084,4.4428,3.93779,3.3926,4.004,6.117,7.989,8.154]
+total_uk_demand = sum(monthly_total_demand)
+
+months = ['January','February','March','April','May','June','July','August','September','October','November','December']
 plt.figure()
 plt.grid()
-plt.hist(COP(35,results_tensor[0,:,month_num],0.5),color='tab:blue',alpha=0.5,bins=100,label='tasmin')
-plt.hist(COP(35,results_tensor[1,:,month_num],0.5),color='k',alpha=0.5,bins=100,label='tas')
-plt.hist(COP(35,results_tensor[2,:,month_num],0.5),color='tab:orange',alpha=0.5,bins=100,label='tasmax')
-plt.legend()
-plt.xlabel('Temperature')
-plt.ylabel('Frequency')
+plt.title('Monthly UK gas demand')
+plt.ylabel('Billion cubic meters')
+plt.plot(np.arange(len(monthly_total_demand)),monthly_total_demand)
+plt.xticks(np.arange(len(months)),months)
 plt.show()
 
+scaled_monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
+for i in range(len(scaled_gas_tensor)):
+    for j in range(len(months)):
+        scaled_monthly_gas_tensor[i,j] = scaled_gas_tensor[i] * monthly_total_demand[j] / total_uk_demand
+    
+
+
+
+temp_tensor = results_tensor[1,:,:]
+cop_tensor = np.array(list(map(COP, temp_tensor)))
+
+energy_in_tensor = np.divide(scaled_monthly_gas_tensor,cop_tensor)
+
+
+def query_poly(limit):
+    '''
+    Querying the KG for all regions gas-usages in 2019 
+    '''
+    if limit == False:
+        limit = str(100000000)
+    limit = str(limit)
+    # clearing terminal
+    os.system('clear')
+    
+
+    query='''
+    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
+
+    SELECT ?s ?geom
+    WHERE
+    {       
+    ?s rdf:type ons_t:Statistical-Geography.
+    OPTIONAL{ ?s gsp:hasGeometry ?o.
+              ?o gsp:asWKT ?geom}
+    }
+    '''
+    DEF_NAMESPACE = 'ontogasgrid'
+    LOCAL_KG = "http://localhost:9999/blazegraph"
+    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+
+    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+    sparql.setMethod(POST) # POST query, not GET
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    print('Starting Gas Usage Query...')
+    start = time.time()
+    ret = sparql.query().convert()
+    end = time.time()
+    print('Finished in a time of ',np.round(end-start,3),' seconds')
+
+    # parsing JSON into an array 
+    values = ret['results']['bindings']
+    head = ret['head']['vars']
+    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
+    res_array[0,:] = head
+    i = 1
+    for row in values:
+        j = 0 
+        for val in row.values():
+            res_array[i,j] = val['value']
+            j += 1 
+        i += 1 
+
+    LSOA_shapes = res_array[1:,:]
+
+    return LSOA_shapes
+
+
+shapes_filename = 'shapes_array'
+# LSOA_shapes = query_poly(limit=False)
+# #-----------------# 
+# outfile = open(shapes_filename,'wb')
+# pickle.dump(LSOA_shapes,outfile)
+# outfile.close()
+
+infile = open(shapes_filename,'rb')
+LSOA_shapes = pickle.load(infile)
+infile.close()
+'''
+check if WKT is valid
+'''
+
+for i in range(len(LSOA_shapes[:,1])):
+    if type(LSOA_shapes[i,1]) == int:
+        del_ind = i 
+
+LSOA_shapes = np.delete(LSOA_shapes,del_ind,axis=0)
+LSOA_shapes = dict(LSOA_shapes)
+
+vals_of_interest = np.zeros(len(energy_in_tensor[:,1]))
+temp_of_interest = np.zeros(len(energy_in_tensor[:,1]))
+energy_of_interest = np.zeros(len(energy_in_tensor[:,1]))
+
+shapes_of_interest = np.zeros(len(energy_in_tensor[:,1]),dtype='object')
+cop_of_interest = np.zeros(len(energy_in_tensor[:,1]),dtype='object')
+
+for i in range(len(vals_of_interest)):
+    key = unique_LSOA[i]
+    shapes_of_interest[i] = LSOA_shapes[key]
+    vals_of_interest[i] = scaled_monthly_gas_tensor[i,2]
+    temp_of_interest[i] = results_tensor[1,i,2]
+    energy_of_interest[i] = energy_in_tensor[i,2]
+    cop_of_interest[i] = cop_tensor[i,2]
+
+
+df = pd.DataFrame(unique_LSOA)
+df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
+df['energy'] = list(energy_of_interest)
+df['gas'] = list(vals_of_interest)
+df['temp'] = list(temp_of_interest)
+df['cop'] = list(cop_of_interest)
+my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
+
+
+
+fig,axs = plt.subplots(1,4)
+my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=10000000),legend=True,cmap='OrRd',antialiased=False,ax=axs[3])
+my_geo_df.plot(column='gas',norm=cl.LogNorm(vmin=10000, vmax=10000000),legend=True,cmap='OrRd',antialiased=False,ax=axs[0])
+my_geo_df.plot(column='temp',legend=True,cmap='OrRd',antialiased=False,ax=axs[2])
+my_geo_df.plot(column='cop',legend=True,cmap='OrRd',antialiased=False,ax=axs[1])
+axs[0].set_title('gas consumption')
+axs[3].set_title('heat pump consumption')
+axs[2].set_title('temperature')
+axs[1].set_title('COP')
+plt.show()
+
+fig,axs = plt.subplots(1,4)
+my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=10000000),cmap='OrRd',antialiased=False,ax=axs[3])
+my_geo_df.plot(column='gas',norm=cl.LogNorm(vmin=10000, vmax=10000000),cmap='OrRd',antialiased=False,ax=axs[0])
+my_geo_df.plot(column='temp',cmap='OrRd',antialiased=False,ax=axs[2])
+my_geo_df.plot(column='cop',cmap='OrRd',antialiased=False,ax=axs[1])
+axs[0].set_title('gas consumption')
+axs[3].set_title('heat pump consumption')
+axs[2].set_title('temperature')
+axs[1].set_title('COP')
+plt.show()
