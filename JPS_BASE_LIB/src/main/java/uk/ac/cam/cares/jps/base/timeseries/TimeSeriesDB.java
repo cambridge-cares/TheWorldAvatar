@@ -23,14 +23,13 @@ import org.jooq.impl.DefaultDataType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
- * Collection of methods to interact with PostgreSQL
+ * Collection of methods to interact with the relational database
+ * At the moment this is written for PostgreSQL
  * @author Kok Foong Lee
  *
  */
 
-public class TimeSeriesPostgres {
-	// endpoint
-	private static final String url = "jdbc:postgresql:timeseries";
+public class TimeSeriesDB {
 	// credentials
 	private static final String user = "postgres";
 	private static final String password = "postgres";
@@ -41,10 +40,9 @@ public class TimeSeriesPostgres {
     private static final Field<Object> timeColumn = DSL.field(timeColumnName);
     private static final SQLDialect dialect = SQLDialect.POSTGRES;
 	
-	public static Connection connect() {
+	public static Connection connect(String url) {
 		Connection conn = null;
 		try {
-        	Class.forName("org.postgresql.Driver");
         	conn = DriverManager.getConnection(url, user, password);
 			return conn;
 		} catch (Exception e) {
@@ -52,15 +50,15 @@ public class TimeSeriesPostgres {
 		}
     }
 	
-	public static void createDatabaseTable() {
-		Connection conn = connect();
+	public static void createDatabaseTable(String url) {
+		Connection conn = connect(url);
 		DSLContext create = DSL.using(conn, dialect);
 		DataType<String> dataType = DefaultDataType.getDataType(dialect,String.class);
 		create.createTableIfNotExists(dbTableName).column(dataIRIColumn,dataType).column("Table",dataType).column("Column",dataType).execute();
 	}
 	
-	public static void updateDatabaseTable(String[] dataIRIs) {
-		Connection conn = connect();
+	public static void updateDatabaseTable(String url, String[] dataIRIs) {
+		Connection conn = connect(url);
 		DSLContext create = DSL.using(conn, dialect);
 		
 		// create/check whether the table exists
@@ -92,8 +90,8 @@ public class TimeSeriesPostgres {
 	 * @param timeClass
 	 * @param valueClassList
 	 */
-	public static void createTimeSeriesTable(String tablename, Class<?> timeClass, List<Class<?>> valueClassList) {
-		Connection conn = connect();
+	public static void createTimeSeriesTable(String url, String tablename, Class<?> timeClass, List<Class<?>> valueClassList) {
+		Connection conn = connect(url);
 		DSLContext create = DSL.using(conn, dialect);    	
 		CreateTableColumnStep createStep = create.createTable(tablename);
     	
@@ -110,12 +108,12 @@ public class TimeSeriesPostgres {
     	createStep.execute();
 	}
 	
-	public static void insertValues(String tablename, TimeSeries ts) {
+	public static void insertValues(String url, String tablename, TimeSeries ts) {
 		// check time and value have the same length
 //		if (ts.getTime().size() != ts.getValues().size()) {
 //			throw new JPSRuntimeException("Array size of time and values are not the same");
 //		}
-		Connection conn = connect();
+		Connection conn = connect(url);
 		DSLContext create = DSL.using(conn, dialect);
 		
 		Table<?> table = DSL.table(tablename);
@@ -128,22 +126,22 @@ public class TimeSeriesPostgres {
 		columnArray[1] = value1Column;
 		columnArray[2] = value2Column;
 		
-		// column
-		InsertValuesStepN<?> insertValueStep = create.insertInto(table, columnArray);
-		for (int i=0; i<ts.getTime().size(); i++) {
-			List<Object> newValues = new ArrayList<>();
-			newValues.add(ts.getTime().get(i)); 
-			
-			for (int j=0; j<2; j++) {
-				newValues.add(ts.getValues().get(j).get(i));
-			}
-			insertValueStep = insertValueStep.values(newValues);
-		}
-		insertValueStep.execute();
+//		// column
+//		InsertValuesStepN<?> insertValueStep = create.insertInto(table, columnArray);
+//		for (int i=0; i<ts.getTime().size(); i++) {
+//			List<Object> newValues = new ArrayList<>();
+//			newValues.add(ts.getTime().get(i)); 
+//			
+//			for (int j=0; j<2; j++) {
+//				newValues.add(ts.getValues().get(j).get(i));
+//			}
+//			insertValueStep = insertValueStep.values(newValues);
+//		}
+//		insertValueStep.execute();
 	}
 	
-	public static void queryTimeSeries(String tablename, long lowerBound, long upperBound) {
-		Connection conn = connect();
+	public static void queryTimeSeries(String url, String tablename, long lowerBound, long upperBound) {
+		Connection conn = connect(url);
 		Table<?> table = DSL.table(tablename);
 		Field<Object> valueColumn = DSL.field("value");
 		DSLContext create = DSL.using(conn, dialect);
@@ -154,23 +152,23 @@ public class TimeSeriesPostgres {
 //		TimeSeries ts = new TimeSeries(timeList,valueList);
 	}
 	
-	public static void deleteRows(String tablename, long lowerBound, long upperBound) {
-		Connection conn = connect();
+	public static void deleteRows(String url, String tablename, long lowerBound, long upperBound) {
+		Connection conn = connect(url);
 		Table<?> table = DSL.table(tablename);
 		DSLContext create = DSL.using(conn, dialect);
 		Field<Object> timeColumn = DSL.field("time");
 		create.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
 	}
 	
-	public static void clearTable(String tablename) {
-		Connection conn = connect();
+	public static void clearTable(String url, String tablename) {
+		Connection conn = connect(url);
 		Table<?> table = DSL.table(tablename);
 		DSLContext create = DSL.using(conn, dialect);
 		create.delete(table).execute();
 	}
 	
-	public static void dropTable(String tablename) {
-		Connection conn = connect();
+	public static void dropTable(String url, String tablename) {
+		Connection conn = connect(url);
 		DSLContext create = DSL.using(conn, dialect);
 		create.dropTable(tablename).execute();
 	}
