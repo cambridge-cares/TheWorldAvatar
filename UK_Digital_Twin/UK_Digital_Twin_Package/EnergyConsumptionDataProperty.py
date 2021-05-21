@@ -12,7 +12,7 @@ class EnergyConsumptionData:
     SECTION = [ "COAL", "MANUFACTURED_FUELS", "PETROLEUM_PRODUCTS", "GAS", "ELECTRICITY", "BIOENERGY_AND_WASTE"]
     
     """ File path """
-    DataPath = '../Data files/EnergyComsunption/'
+    DataPath = '../Data files/EnergyConsumption/'
     RegionandAreas = DataPath + str(VERSION) + '/' + SECTION[4] + '/official_regions.csv'
     ElectricityConsumptionData = DataPath + str(VERSION) + '/' + SECTION[4] + '/electricityConsumptionData.csv'
     

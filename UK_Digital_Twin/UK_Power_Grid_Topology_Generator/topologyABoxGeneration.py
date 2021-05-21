@@ -37,7 +37,7 @@ OWL = '.owl'
 """Graph store"""
 store = 'default'
 
-"""Create an /instance of Class UKDigitalTwin"""
+"""Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
 
 """Create an object of Class UKDigitalTwinTBox"""
@@ -109,14 +109,12 @@ topo_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_top
 
 counter = 1 
 
-# graph = Graph('default')
-
 ### Functions ### 
 
 """Main function: create the sub graph represents the Topology"""
 def createTopologyGraph(store, updateLocalOWLFile = True):
     print('Create the graph for ', topo_info.Topo_10_bus['Name'])
-    global filepath, userSpecified, defaultPath_Sleepycat, graph 
+    global filepath, userSpecified, defaultPath_Sleepycat
     if isinstance(store, Sleepycat): 
         cg_topo_ukec = ConjunctiveGraph(store=store, identifier = topo_cg_id)
         sl = cg_topo_ukec.open(defaultPath_Sleepycat, create = False)
@@ -138,12 +136,6 @@ def createTopologyGraph(store, updateLocalOWLFile = True):
     g = addEBusNodes(g, busInfoArrays) 
         
     g = addELineNodes(g, branchTopoInfoArrays, branchPropArrays)
-    
-    # qres = list(query_topo.queryBusLocation(cg_topo_ukec))
-    
-    # print (qres)
-    
-    # print('length is ', len(qres))
     
     g = addEGenNodes(g, cg_topo_ukec, modelFactorArrays)
     
@@ -336,6 +328,7 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays):
                 graph.add((URIRef(generator_node), URIRef(meta_model_topology.isConnectedTo.iri), URIRef(bus_location[0])))
                 graph.add((URIRef(generator_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerGeneration.iri)))
                 graph.add((URIRef(generator_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(EGen_node)))
+                graph.add((URIRef(EGen_node), RDF.type, URIRef(ontopowsys_PowSysRealization.PowerGenerator.iri)))
                 graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(pg[0])))
                 # Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
                 if pg[1].split('#')[1] in ukmf.Renewable:
@@ -378,28 +371,28 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     graph.add((URIRef(EGen_FixedOandMCost_node), RDF.type, URIRef(ontopowsys_PowSysPerformance.FixMaintenanceCosts.iri)))
     graph.add((URIRef(EGen_FixedOandMCost_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_EGen_FixedOandMCost_node)))
     graph.add((URIRef(value_EGen_FixedOandMCost_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-    graph.add((URIRef(value_EGen_FixedOandMCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'USD_per_MWh'))) # undefined unit
+    graph.add((URIRef(value_EGen_FixedOandMCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'GBP_per_MWh'))) # undefined unit
     graph.add((URIRef(value_EGen_FixedOandMCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelType][1]))))
     # add VariableOperatingCostandMaintenanceCost  
     graph.add((URIRef(EGen_node), URIRef(ontopowsys_PowSysPerformance.hasCost.iri), URIRef(EGen_VarOandMCost_node)))
     graph.add((URIRef(EGen_VarOandMCost_node), RDF.type, URIRef(ontopowsys_PowSysPerformance.OperationalExpenditureCosts.iri)))
     graph.add((URIRef(EGen_VarOandMCost_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_EGen_VarOandMCost_node)))
     graph.add((URIRef(value_EGen_VarOandMCost_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-    graph.add((URIRef(value_EGen_VarOandMCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'USD_per_MWh'))) # undefined unit
+    graph.add((URIRef(value_EGen_VarOandMCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'GBP_per_MWh'))) # undefined unit
     graph.add((URIRef(value_EGen_VarOandMCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelType][2]))))
     # add FuelCost  
     graph.add((URIRef(EGen_node), URIRef(ontopowsys_PowSysPerformance.hasFuelCost.iri), URIRef(EGen_FuelCost_node)))
     graph.add((URIRef(EGen_FuelCost_node), RDF.type, URIRef(ontopowsys_PowSysPerformance.FuelCosts.iri)))
     graph.add((URIRef(EGen_FuelCost_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_EGen_FuelCost_node)))
     graph.add((URIRef(value_EGen_FuelCost_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-    graph.add((URIRef(value_EGen_FuelCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'USD_per_MWh'))) # undefined unit
+    graph.add((URIRef(value_EGen_FuelCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'GBP_per_MWh'))) # undefined unit
     graph.add((URIRef(value_EGen_FuelCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelType][3]))))
     # add CarbonFactor 
     graph.add((URIRef(EGen_node), URIRef(ontoeip_powerplant.hasEmissionFactor.iri), URIRef(EGen_CarbonFactor_node)))
     graph.add((URIRef(EGen_CarbonFactor_node), RDF.type, URIRef(t_box.ontoeip_powerplant + 'CO2EmissionFactor'))) # undefined CO2EmissionFactor
     graph.add((URIRef(EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_EGen_CarbonFactor_node)))
     graph.add((URIRef(value_EGen_CarbonFactor_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-    graph.add((URIRef(value_EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'USD_per_MWh'))) # undefined unit
+    graph.add((URIRef(value_EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'GBP_per_MWh'))) # undefined unit
     graph.add((URIRef(value_EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelType][4].strip('\n')))))
    
     return graph

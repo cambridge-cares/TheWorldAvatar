@@ -27,7 +27,7 @@ SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
 
-"""Create an /instance of Class UKDigitalTwin"""
+"""Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
 
 """Create an object of Class UKDigitalTwinTBox"""

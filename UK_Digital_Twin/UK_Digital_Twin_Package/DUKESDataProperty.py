@@ -5,10 +5,10 @@
 
 """This class defines the properties of DUKES data"""
 
-class DUKESData:
+class DUKESData (version = 2019):
     
     """Data Version"""
-    VERSION = 2019
+    VERSION = version
     
     """ File path """
     DataPath = '../Data files/DUKES/'
