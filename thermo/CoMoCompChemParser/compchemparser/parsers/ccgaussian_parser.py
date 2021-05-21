@@ -653,6 +653,7 @@ class CcGaussianParser():
                     data[SCANTYPE] == 'Dihedral'
                     scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3],scan_line.split()[4]]
                     data[SCANATOMS] = scan_atoms
+            return cur_line
 
         def check_rigid_scan_job(data, cur_line, log_lines):
             
@@ -672,6 +673,7 @@ class CcGaussianParser():
             zmat = [i.rstrip() for i in zmat]
             if 'Variables' not in '\t'.join(zmat):
                 zmat = None 
+                
             def group(seq, sep):
                 g = []
                 for el in seq:
@@ -680,6 +682,7 @@ class CcGaussianParser():
                         g = []
                     g.append(el)
                 yield g
+                
             if zmat:
                 zmol = list(group(zmat, 'Variables'))[0]
                 zvars = list(group(zmat, 'Variables'))[0]
