@@ -5,25 +5,25 @@
 
 """This class defines the properties of DUKES data"""
 
-class DUKESData (version = 2019):
+class DUKESData:
     
-    """Data Version"""
-    VERSION = version
+    def __init__(self, version = 2019):
+        self.VERSION = version
     
-    """ File path """
-    DataPath = '../Data files/DUKES/'
-    PlantName = DataPath + str(VERSION) + '/plantname.csv'
-    PlantType = DataPath + str(VERSION) + '/planttype.csv'
-    EnergyGen = DataPath + str(VERSION) + '/energyGen.csv'
-    GenTech = DataPath + str(VERSION) + '/genTech.csv'
-    Owner = DataPath + str(VERSION) + '/owner.csv'
-    PrimaryFuel = DataPath + str(VERSION) + '/primaryFuel.csv'
-    DesignCapacity = DataPath + str(VERSION) + '/designcapacity.csv'
-    BuiltYear =  DataPath + str(VERSION) + '/builtyear.csv'
-    GPSLocation = DataPath + str(VERSION) + '/gpslocation.csv'
-    Region = DataPath + str(VERSION) + '/regionaladdress.csv'
-    
-    """Source Data"""
-    __DUKES = DataPath + str(VERSION) + "DUKES2019.xls"
-    
-   
+        """ File path """
+        self.DataPath = '../Data files/DUKES/'
+        self.PlantName = self.DataPath + str(self.VERSION) + '/plantname.csv'
+        self.PlantType = self.DataPath + str(self.VERSION) + '/planttype.csv'
+        self.EnergyGen = self.DataPath + str(self.VERSION) + '/energyGen.csv'
+        self.GenTech = self.DataPath + str(self.VERSION) + '/genTech.csv'
+        self.Owner = self.DataPath + str(self.VERSION) + '/owner.csv'
+        self.PrimaryFuel = self.DataPath + str(self.VERSION) + '/primaryFuel.csv'
+        self.DesignCapacity = self.DataPath + str(self.VERSION) + '/designcapacity.csv'
+        self.BuiltYear =  self.DataPath + str(self.VERSION) + '/builtyear.csv'
+        self.GPSLocation = self.DataPath + str(self.VERSION) + '/gpslocation.csv'
+        self.Region = self.DataPath + str(self.VERSION) + '/regionaladdress.csv'
+        
+        """Source Data"""
+        self.__DUKES = self.DataPath + str(self.VERSION) + "DUKES2019.xls"
+        
+       

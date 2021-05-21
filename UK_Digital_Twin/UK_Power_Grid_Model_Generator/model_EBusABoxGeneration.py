@@ -246,13 +246,6 @@ def initialiseModelVar(EBus_Model, EBus):
     EBus_Model.PD_INPUT = round((float(EBus[1]) * 1000 / (24 * 365)), 3) 
     
     return EBus_Model
-    
-    # print('EGen_Model.PMAX is', EGen_Model.PMAX)
-    # print('EGen_Model.PMIN is', EGen_Model.PMIN)
-    # print('EGen_Model.QMAX is', EGen_Model.QMAX)
-    # print('EGen_Model.QMIN is', EGen_Model.QMIN)
-
-    return EGen_Model
 
 if __name__ == '__main__':    
     createModel_EBus(store, 2019)       
