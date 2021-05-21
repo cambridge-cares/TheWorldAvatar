@@ -1,0 +1,43 @@
+/* CSS only for the home page */
+
+#body-wrapper .container {
+    padding: 0 0 2rem;
+}
+
+.scrollButton {
+	position: absolute;
+	bottom: 10px;
+	left: calc(50% - 15px);
+	cursor: pointer;
+}
+
+#hero-div {
+	background-image: url("/user/images/hero.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+	width: 100vw !important;
+	height: calc(100vh - 4rem);
+	position: relative !important;
+	margin-left: -50vw !important;
+	left: 50% !important;
+}
+
+#hero-text {
+	width: 34%;
+	height: 200px;
+	position: absolute;
+	left: 51%;
+	top: calc(50% - 95px);
+	text-align: center;
+	font-weight: 500;
+	font-size: 110%;
+	color: #338cea;
+}
+
+@media (max-width: 800px) {
+	#hero-text {
+		width: 50%;
+		left: 25%;
+	}
+}
