@@ -7,7 +7,7 @@ import compchemparser.helpers.ccutils as ccutils
 import compchemparser.helpers.elements_data as eld
 from itertools import islice
 import json
-
+import math
 
 # keys/values uploaded to the kg
 #-------------------------------------------------
@@ -621,24 +621,27 @@ class CcGaussianParser():
                         data[ATOM_MASSES].append(eld.get_el_wt_by_symbol(at))
                     data[ATOM_MASSES_UNIT] = 'atomic'
         #================================================        
-        def check_scan_job(data, cur_line, log_lines):
-            # tries to extract electronic energy from a log file line
+        def check_relaxed_scan_job(data, cur_line, log_lines):
             line = log_lines[cur_line]
             placeholder_GEOM = None
             placeholder_energy = None
             scan_atoms = None
             scan_type = None
             if "The following ModRedundant input section has been read:".lower() in line.lower():
-                data[SCANFLAG] = True
-                scan_line = log_lines[cur_line + 1]
-                scan_type = scan_line.split()[0]                   
-            if data[SCANFLAG] == True:
+                data[SCANFLAG] = 'Relaxed'
+                cur_line +=1 
+            line = log_lines[cur_line]
+            while line and not line.isspace():
+                if 'S' in line:
+                    scan_line = log_lines[cur_line]
+                    scan_type = scan_line.split()[0]                    
+            if data[SCANFLAG] == 'Relaxed':
                 data[SCANPOINTS] = self.cclib_data.scanparm
                 placeholder_GEOM = self.cclib_data.scancoords
                 placeholder_energy = self.cclib_data.scanenergies
             if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
                 data[SCANFLAG] = None
-            else:
+            elif data[SCANFLAG]:
                 data[GEOM] = placeholder_GEOM
                 data[ELECTRONIC_ENERGY] = placeholder_energy
                 data[GEOM] = data[GEOM].tolist()
@@ -650,7 +653,75 @@ class CcGaussianParser():
                     data[SCANTYPE] == 'Dihedral'
                     scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3],scan_line.split()[4]]
                     data[SCANATOMS] = scan_atoms
-            return cur_line
+
+        def check_rigid_scan_job(data, cur_line, log_lines):
+            
+            line = log_lines[cur_line]
+            placeholder_GEOM = None
+            placeholder_energy = None
+            scan_atoms = None
+            scan_type = None
+            zmat = []
+            if 'Charge =' in line and  'Multiplicity =' in line:
+                cur_line +=1 
+                line = log_lines[cur_line]
+                while line and not line.isspace():
+                    zmat.append(line)
+                    cur_line += 1
+                    line = log_lines[cur_line]
+            zmat = [i.rstrip() for i in zmat]
+            if 'Variables' not in '\t'.join(zmat):
+                zmat = None 
+            def group(seq, sep):
+                g = []
+                for el in seq:
+                    if sep in el:
+                        yield g
+                        g = []
+                    g.append(el)
+                yield g
+            if zmat:
+                zmol = list(group(zmat, 'Variables'))[0]
+                zvars = list(group(zmat, 'Variables'))[0]
+            
+            if zvars and 'Scan' in '\t'.join(zvars):
+                    data[SCANFLAG] = 'Rigid'
+            if data[SCANFLAG] == 'Rigid':           
+                    data[SCANPOINTS] = self.cclib_data.scanparm
+                    placeholder_GEOM = self.cclib_data.scancoords
+                    placeholder_energy = self.cclib_data.scanenergies
+                    
+            if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
+                data[SCANFLAG] = None
+            elif data[SCANFLAG]:    
+                data[GEOM] = placeholder_GEOM
+                data[ELECTRONIC_ENERGY] = placeholder_energy
+                data[GEOM] = data[GEOM].tolist()
+                for z in zvars: 
+                    if 'Scan' in z:
+                        scanvar = z.split()[0]
+                scan_atoms = []
+                for k in range(len(zmol)):
+                    if scanvar in zmol[k]:
+                        line_index = k
+                        scan_line = zmol[k].split() #We will split the line that has the scan variable.
+                scan_atoms.append(str(line_index+1))
+                for j in range(len(scan_line)):
+                    if scanvar in scan_line[j]:
+                        var_index = j
+                if var_index == 2:
+                    scan_type = 'B'        
+                    scan_atoms.append(scan_line[var_index-1])
+                    if scan_type == 'B':
+                        data[SCANTYPE] = 'Bond'
+                    data[SCANATOMS] = scan_atoms
+                if var_index == 6:
+                    scan_type = 'D'
+                    scan_atoms.extend([scan_line[var_index-5],scan_line[var_index-3],scan_line[var_index-1]])
+                    if scan_type == 'D':
+                        data[SCANTYPE] == 'Dihedral'
+                    data[SCANATOMS] = scan_atoms                    
+                return cur_line
         #================================================
         # parse_log body
         #================================================
@@ -689,7 +760,8 @@ class CcGaussianParser():
             cur_line = check_TD_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_Casscf_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_Casscf_MP2_E0(parsedmisc, cur_line,log_lines)
-            cur_line = check_scan_job(parseddata, cur_line,log_lines)
+            cur_line = check_relaxed_scan_job(parseddata, cur_line,log_lines)
+            cur_line = check_rigid_scan_job(parseddata, cur_line,log_lines)
 
             # check if we have reached the log footer
             # if so, record the line number
