@@ -1,9 +1,9 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 20 May 2021          #
+# Last Update Date: 21 May 2021          #
 ##########################################
 
-"""This module is designed to generate and update the A-box of UK power grid model_EBus."""
+"""This module is designed to generate and update the A-box of UK power grid model_ELine."""
 
 import os
 import owlready2
@@ -40,26 +40,26 @@ t_box = T_BOX.UKDigitalTwinTBox()
 """Create an object of Class UKPowerPlantDataProperty"""
 ukpp = UKpp.UKPowerPlant()
 
-"""Create an object of Class UKEbusModel"""
-uk_ebus_model = UK_PG.UKEbusModel()
+"""Create an object of Class UKElineModel"""
+uk_eline_model = UK_PG.UKElineModel()
 
 """Create an object of Class UKPowerGridTopology"""
 uk_topo = UK_Topo.UKPowerGridTopology()
 
 """Graph store"""
-# store = 'default'
-store = Sleepycat()
-store.__open = True
-store.context_aware = True
+store = 'default'
+# store = Sleepycat()
+# store.__open = True
+# store.context_aware = True
 
 """Sleepycat storage path"""
-defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
+defaultPath_Sleepycat = uk_eline_model.SleepycatStoragePath
 topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
 """father node"""
-father_node = UKDT.namedGraphURIGenerator(4, dt.powerGridModel, 10, "EBus")
+father_node = UKDT.namedGraphURIGenerator(4, dt.powerGridModel, 10, "ELine")
 
 # """NameSpace"""
 # father_uri = father_node.split('#')[0]
@@ -76,38 +76,41 @@ filepath = None
 userSpecified = False
 
 """EBus Conjunctive graph identifier"""
-model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus"
+model_ELine_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine"
 
 ### Functions ### 
-"""Main function: create the named graph Model_EBus and their sub graphs each EBus"""
-def createModel_EBus(store, version_of_model, updateLocalOWLFile = True):
+"""Main function: create the named graph Model_EBus and their sub graphs each ELine"""
+def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
     global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
+    # create conjunctive graph storing the generated graphs in a specified Sleepycat on-disc graph store
     if isinstance(store, Sleepycat): 
         print('The store is Sleepycat')
-        cg_model_EBus = ConjunctiveGraph(store=store, identifier = model_EBus_cg_id)
+        cg_model_ELine = ConjunctiveGraph(store=store, identifier = model_ELine_cg_id)
         if userSpecifiePath_Sleepycat == None and userSpecified_Sleepycat:
             print('****Needs user to specify a Sleepycat storage path****')
             userSpecifiePath_Sleepycat = selectStoragePath()
-            userSpecifiePath_Sleepycat_ = userSpecifiePath_Sleepycat + '\\' + 'ConjunctiveGraph_UKPowerGrid_EBus'
-            sl = cg_model_EBus.open(userSpecifiePath_Sleepycat_, create = False) 
+            userSpecifiePath_Sleepycat_ = userSpecifiePath_Sleepycat + '\\' + 'ConjunctiveGraph_UKPowerGrid_ELine'
+            sl = cg_model_ELine.open(userSpecifiePath_Sleepycat_, create = False) 
             
         elif os.path.exists(defaultPath_Sleepycat) and not userSpecified_Sleepycat:
             print('****Non user specified Sleepycat storage path, will use the default storage path****')
-            sl = cg_model_EBus.open(defaultPath_Sleepycat, create = False)        
+            sl = cg_model_ELine.open(defaultPath_Sleepycat, create = False)        
         else:
             print('****Create Sleepycat store with its default path****')
-            sl = cg_model_EBus.open(defaultPath_Sleepycat, create = True)   
+            sl = cg_model_ELine.open(defaultPath_Sleepycat, create = True)   
         
         if sl == NO_STORE:
         # There is no underlying Sleepycat infrastructure, so create it
-            cg_model_EBus.open(defaultPath_Sleepycat, create = True)
+            cg_model_ELine.open(defaultPath_Sleepycat, create = True)
         else:
             assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
     else:
         print('Store is IOMemery')
         
-    EBus = list(query_model.queryEBusandRegionalDemand(topoAndConsumpPath_Sleepycat))
-    EBus = checkAggregatedBus(EBus) # sum up the demand of an AggregatedBus
+    ELine_busRelated, ELine_parallelBranches = list(query_model.queryELineTopologicalInformation(topoAndConsumpPath_Sleepycat))
+    # EBus = checkAggregatedBus(EBus) # sum up the demand of an AggregatedBus
+    #TODO: process the data in the return result--ELine_parallelBranches, read data file: branch properties
+    
     
     if EBus == None:
         print('EBus is empty')

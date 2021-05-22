@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 20 May 2021          #
+# Last Update Date: 21 May 2021          #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
@@ -9,6 +9,7 @@ from rdflib.graph import ConjunctiveGraph
 from rdflib.store import NO_STORE
 
 qres = {}
+qres_ = {}
 qres_capa = {}
 allCapacity = []
 
@@ -284,15 +285,72 @@ def queryEBusandRegionalDemand(SleepycatPath):
     
     ?regionalConsumption ontocape_upper_level_system:hasAddress ?Location .
     ?regionalConsumption ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
-    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption
+    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
     }
     """
     qres = list(ebus_cg.query(queryStr))
     ebus_cg.close()
     return qres  
 
+###############ELine#############
+def queryELineTopologicalInformation(topology_Sleepycat):
+    global qres, qres_
+    eline_cg = ConjunctiveGraph('Sleepycat')
+    sl = eline_cg.open(topology_Sleepycat, create = False)
+    if sl == NO_STORE:
+        print('Cannot find the UK topology sleepycat store')
+        return None
+    queryStr_busConnectionAndLength = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontocape_geometry: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    SELECT  ?ELine ?From_Bus ?To_Bus ?Value_Length_ELine
+    WHERE
+    {
+    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
+    ?PowerFlow_ELine ontocape_network_system:leaves ?From_Bus .
+    ?PowerFlow_ELine ontocape_network_system:enters ?To_Bus .
+    
+    ?ELine ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
+    ?Length_ELine ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Value_Length_ELine .
+    }
+    """
+    
+    queryStr_parallelBranches = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    SELECT  ?ELine ?OHL_400or275kV ?Num_OHL_400or275kV
+    WHERE
+    {
+    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
+    
+    ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_400or275kV . 
+    ?OHL_400or275kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?OHL_400or275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_400or275kV . 
+    
+        
+    }
+    """
+    qres = list(eline_cg.query(queryStr_busConnectionAndLength))
+    qres_ = list(eline_cg.query(queryStr_parallelBranches))
+    eline_cg.close()
+    return qres, qres_  
+
+
 if __name__ == '__main__': 
     sl_path = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
     iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'    
-    res = queryEBusandRegionalDemand(sl_path)
+    res1, res2 = queryELineTopologicalInformation(sl_path)
+    
+    print (res1[0], res1[1])
+    print (res2[0], res2[1], res2[3])
+    print(len(res1), len(res2))

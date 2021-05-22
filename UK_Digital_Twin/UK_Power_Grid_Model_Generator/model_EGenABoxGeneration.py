@@ -64,10 +64,10 @@ userSpecified_Sleepycat = False # storage mode: False: default, True: user speci
 
 """father node"""
 father_node = UKDT.namedGraphURIGenerator(4, dt.powerGridModel, 10, "EGen")
-father_uri = father_node.split('#')[0]
 
-"""NameSpace"""
-model_egen_namespace = father_uri + HASH
+# """NameSpace"""
+# father_uri = father_node.split('#')[0]
+# model_egen_namespace = father_uri + HASH
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -93,7 +93,8 @@ capa_demand_ratio = total_demand/sum_of_capa
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
 def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
     global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat  
-    if isinstance(store, Sleepycat): 
+    if isinstance(store, Sleepycat):
+        print('The store is Sleepycat')
         cg_model_EGen = ConjunctiveGraph(store=store, identifier = model_EGen_cg_id)
         if userSpecifiePath_Sleepycat == None and userSpecified_Sleepycat:
             print('****Needs user to specify a Sleepycat storage path****')
@@ -105,6 +106,7 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
             print('****Non user specified Sleepycat storage path, will use the default storage path****')
             sl = cg_model_EGen.open(defaultPath_Sleepycat, create = False)        
         else:
+            print('****Create Sleepycat store with its default path****')
             sl = cg_model_EGen.open(defaultPath_Sleepycat, create = True)   
         
         if sl == NO_STORE:
@@ -112,7 +114,8 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
             cg_model_EGen.open(defaultPath_Sleepycat, create = True)
         else:
             assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
-            
+    else:
+        print('Store is IOMemery')        
             
     
     EGen = list(query_model.queryEGen(topoAndConsumpPath_Sleepycat))

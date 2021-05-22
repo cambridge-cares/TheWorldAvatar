@@ -11,7 +11,7 @@ class UKEbusModel:
     
     """Default path of storing owl file """
     StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EBus\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EGen\\Sleepycat_EBus"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EBus\\Sleepycat_EBus"
     
     """EBus Node keys"""
     EBusKey = "EBus-"
@@ -66,7 +66,7 @@ class UKElineModel:
     
     """Default path of storing owl file """
     StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\ELine\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EGen\\Sleepycat_ELine"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\ELine\\Sleepycat_ELine"
      
     """ELine Node keys"""
     ELineKey = "ELine-"
