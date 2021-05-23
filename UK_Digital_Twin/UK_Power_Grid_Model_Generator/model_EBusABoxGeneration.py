@@ -20,9 +20,7 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
-from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
-from costFunctionParameterAgent import costFuncPara
 import SPARQLQueryUsedInModel as query_model
 
 """Notation used in URI construction"""
@@ -199,6 +197,7 @@ def createModel_EBus(store, version_of_model, updateLocalOWLFile = True):
         cg_model_EBus.close()       
     return
 
+# The demanding of an AggregatedBus is the sum of their regional consumption (elec demanding)
 def checkAggregatedBus(EBus):
     EBus_ = [ [str(ebus[0]), float(ebus[1])] for ebus in EBus]
     bus_node  = []

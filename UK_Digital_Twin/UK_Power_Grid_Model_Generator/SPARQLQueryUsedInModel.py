@@ -8,9 +8,9 @@
 from rdflib.graph import ConjunctiveGraph
 from rdflib.store import NO_STORE
 
-qres = {}
-qres_ = {}
-qres_capa = {}
+qres = []
+qres_ = []
+qres_capa = []
 allCapacity = []
 
 
@@ -342,15 +342,54 @@ def queryELineTopologicalInformation(topology_Sleepycat):
     qres = list(eline_cg.query(queryStr_busConnectionAndLength))
     qres_ = list(eline_cg.query(queryStr_parallelBranches))
     eline_cg.close()
-    return qres, qres_  
+    
+    # Arrange qres
+    ELineTopoInfo = [[ str(r[0]), str(r[1]), str(r[2]), float(r[3]), 0 , 0 ] for r in qres]
+    for el in ELineTopoInfo:
+        el[1] = int((el[1].split('EBus-')[1]))
+        el[2] = int((el[2].split('EBus-')[1]))
+    
+    # Arrange qres_
+    paraBranch  = [[ str(r_[0]), str(r_[1]), int(r_[2]), 0 , 0 ] for r_ in qres_]
+    elineName = []
+    for p in paraBranch:
+        if p[0] in elineName:
+            counter_1 = elineName.index(p[0])
+            counter_2 = paraBranch.index(p) 
+            if counter_2 > counter_1:
+                paraBranch[counter_1][3] = str(paraBranch[counter_2][1])
+                paraBranch[counter_1][4] = int(paraBranch[counter_2][2])
+                del paraBranch[counter_2]
+            else:
+                print('counter_2 should be larger than counter_1')
+                return None
+        else:
+            elineName.append(p[0])
+    
+    paraBranch_Dict = {pb[0] : [] for pb in paraBranch}
+    counter = 0
+    for key in paraBranch_Dict.keys():
+        if (paraBranch[counter][1].split('#OHL_')[1]).startswith('400') and (paraBranch[counter][3].split('#OHL_')[1]).startswith('275'):
+            paraBranch_Dict[key] = [paraBranch[counter][2], paraBranch[counter][4]] 
+        elif (paraBranch[counter][1].split('#OHL_')[1]).startswith('275') and (paraBranch[counter][3].split('#OHL_')[1]).startswith('400'):
+            paraBranch_Dict[key] = [paraBranch[counter][4], paraBranch[counter][2]] 
+    
+    # Append data in paraBranch_Dict to ELineTopoInfo
+    for el in ELineTopoInfo:
+        if el[0] in paraBranch_Dict.keys():
+            el[4], el[5] = paraBranch_Dict[el[0]]
+        else:
+            print ('Key does not match.')
+            return None    
+    return ELineTopoInfo 
 
 
 if __name__ == '__main__': 
     sl_path = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
     iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'    
-    res1, res2 = queryELineTopologicalInformation(sl_path)
+    res = queryELineTopologicalInformation(sl_path)
     
-    print (res1[0], res1[1])
-    print (res2[0], res2[1], res2[3])
-    print(len(res1), len(res2))
+    print (res[0])
+    
+    

@@ -75,6 +75,40 @@ class UKElineModel:
     LengthKey = "Length_"
     OHL400kVKey = "OHL_400kV_" # Over head line (OHL) with 400kV level
     OHL275kVKey = "OHL_275kV_" # Over head line (OHL) with 275kV level
+    
+    """Model variable keys"""
+    FROMBUSKey = "FromBusNumber_"
+    TOBUSKey = "ToBusNumber_"
+    R_Key = "R_"
+    X_Key = "X_"
+    B_Key = "B_"
+    RateAKey = "RateA_"
+    RateBKey = "RateB_"
+    RateCKey = "RateC_"
+    RATIOKey = "RatioCoeff_"
+    ANGLEKey = "Angle_"
+    STATUSKey = "Status_"
+    ANGMINKey = "AngleMin_"
+    ANGMAXKey = "AngleMax_"
+    
+    def __init__(self, version = 2019):
+        self.version = version
+        self.location = 'http://dbpedia.org/resource/United_Kingdom'
+        self.FROMBUS = None
+        self.TOBUS = None
+        self.R = None
+        self.X = None
+        self.B = None
+        self.RateA = None
+        self.RateB = 0
+        self.RateC = 0
+        self.RATIO = 1
+        self.ANGLE = 0
+        self.STATUS = 1
+        self.ANGMIN = -360
+        self.ANGMAX = 360
+
+        
 
 class UKEGenModel:
     

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 May 2021          #
+# Last Update Date: 23 May 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_ELine."""
@@ -20,9 +20,8 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
-from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
+from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
-from costFunctionParameterAgent import costFuncPara
 import SPARQLQueryUsedInModel as query_model
 
 """Notation used in URI construction"""
@@ -45,6 +44,9 @@ uk_eline_model = UK_PG.UKElineModel()
 
 """Create an object of Class UKPowerGridTopology"""
 uk_topo = UK_Topo.UKPowerGridTopology()
+
+"""Create an object of Class TopologicalInformationProperty"""
+topo_info = TopoInfo.TopologicalInformation()
 
 """Graph store"""
 store = 'default'
@@ -74,6 +76,9 @@ ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerS
 """User specified folder path"""
 filepath = None
 userSpecified = False
+
+"""Data Array"""
+branchPropertyArrays = readFile(topo_info.Topo_10_bus['BranchProperty'])
 
 """EBus Conjunctive graph identifier"""
 model_ELine_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine"
@@ -107,23 +112,20 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
     else:
         print('Store is IOMemery')
         
-    ELine_busRelated, ELine_parallelBranches = list(query_model.queryELineTopologicalInformation(topoAndConsumpPath_Sleepycat))
-    # EBus = checkAggregatedBus(EBus) # sum up the demand of an AggregatedBus
-    #TODO: process the data in the return result--ELine_parallelBranches, read data file: branch properties
-    
-    
-    if EBus == None:
-        print('EBus is empty')
+    ELineTopoInfo = list(query_model.queryELineTopologicalInformation(topoAndConsumpPath_Sleepycat))
+   
+    if ELineTopoInfo == None:
+        print('ELineTopoInfo is empty')
         return None
+
+    # for eline in ELineTopoInfo:         
+    if ELineTopoInfo[0] != None: # test
+        eline = ELineTopoInfo[0] # test
     
-    for ebus in EBus:         
-    # if EBus[0] != None: # test
-    #     ebus = EBus[0] # test
-    
-        print('################START createModel_EBus#################')
-        root_uri = ebus[0].split('#')[0]
+        print('################START createModel_ELine#################')
+        root_uri = eline[0].split('#')[0]
         namespace = root_uri + HASH
-        node_locator = ebus[0].split('#')[1]
+        node_locator = eline[0].split('#')[1]
         root_node = namespace + 'Model_' + node_locator
         
         # create a named graph
@@ -137,56 +139,57 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem .iri), URIRef(root_node)))
-        # link with EBus node in topology
-        g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(ebus[0])))
-        g.add((URIRef(ebus[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
+        # link with ELine node in topology
+        g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(eline[0])))
+        g.add((URIRef(eline[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
             
-        ###add EBus model parametor###
-        uk_ebus_model_ = UK_PG.UKEbusModel(version = version_of_model)
-        uk_ebus_model_ = initialiseModelVar(uk_ebus_model_, ebus) 
+        ###add ELine model parametor###
+        uk_eline_model_ = UK_PG.eline(version = version_of_model)
+        uk_eline_model_ = initialiseModelVar(uk_eline_model_, eline) 
         
-        if uk_ebus_model_ != None:
+        if uk_eline_model_ != None:
             pass
         else: 
-            print ('uk_ebus_model_ is none')
+            print ('uk_eline_model_ is none')
             return None 
         
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BUSNUMKey, int(uk_ebus_model_.BUS), None, \
-                                 ontopowsys_PowerSystemModel.BusNumber.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BUSTYPEKey, int(uk_ebus_model_.TYPE), None, \
-                                 ontopowsys_PowerSystemModel.BusType.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.PD_INPUTKey, float(uk_ebus_model_.PD_INPUT), ontocape_derived_SI_units.MW.iri, \
-                                 ontopowsys_PowerSystemModel.PdBus.iri, ontocape_mathematical_model.InputVariable.iri)    
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.GD_INPUTKey, float(uk_ebus_model_.GD_INPUT), ontocape_derived_SI_units.Mvar.iri, \
-                                 ontopowsys_PowerSystemModel.GdBus.iri, ontocape_mathematical_model.InputVariable.iri)       
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.GSKey, int(uk_ebus_model_.GS), None,\
-                                 ontopowsys_PowerSystemModel.Gs.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BSKey, int(uk_ebus_model_.BS), None,\
-                                 ontopowsys_PowerSystemModel.Bs.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.AREAKey, int(uk_ebus_model_.AREA), None,\
-                                 ontopowsys_PowerSystemModel.Area.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VM_INPUTKey, float(uk_ebus_model_.VM_INPUT), ontocape_derived_SI_units.kV.iri, \
-                                 ontopowsys_PowerSystemModel.Vm.iri, ontocape_mathematical_model.InputVariable.iri)         
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VA_INPUTKey, float(uk_ebus_model_.VA_INPUT), ontocape_derived_SI_units.degree.iri, \
-                                 ontopowsys_PowerSystemModel.Va.iri, ontocape_mathematical_model.InputVariable.iri)         
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BASEKVKey, int(uk_ebus_model_.BASEKV), ontocape_derived_SI_units.kV.iri, \
-                                 ontopowsys_PowerSystemModel.baseKV.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.ZONEKey, int(uk_ebus_model_.ZONE), None, \
-                                 ontopowsys_PowerSystemModel.Zone.iri, ontocape_mathematical_model.Parameter.iri)   
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMAXKey, int(uk_ebus_model_.VMAX), ontocape_derived_SI_units.kV.iri, \
-                                 ontopowsys_PowerSystemModel.VmMax.iri, ontocape_mathematical_model.Parameter.iri) 
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMINKey, int(uk_ebus_model_.VMIN), ontocape_derived_SI_units.kV.iri, \
-                                 ontopowsys_PowerSystemModel.VmMin.iri, ontocape_mathematical_model.Parameter.iri)
-        
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.FROMBUSKey, int(uk_eline_model_.FROMBUS), None, \
+                                 ontopowsys_PowerSystemModel.BusFrom.iri, ontocape_mathematical_model.Parameter.iri)
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.TOBUSKey, int(uk_eline_model_.TOBUS), None, \
+                                 ontopowsys_PowerSystemModel.BusTo.iri, ontocape_mathematical_model.Parameter.iri)   
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.R_Key, float(uk_eline_model_.R), ontocape_derived_SI_units.ohm.iri, \
+                                 ontopowsys_PowerSystemModel.R.iri, ontocape_mathematical_model.Parameter.iri)     
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.X_Key, float(uk_eline_model_.X), ontocape_derived_SI_units.ohm.iri, \
+                                 ontopowsys_PowerSystemModel.X.iri, ontocape_mathematical_model.Parameter.iri) 
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.B_Key, float(uk_eline_model_.B), (t_box.ontocape_derived_SI_units + 'siemens'), \
+                                 ontopowsys_PowerSystemModel.B.iri, ontocape_mathematical_model.Parameter.iri)    
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateAKey, float(uk_eline_model_.RateA), (t_box.ontocape_derived_SI_units + 'MVA'), \
+                                 ontopowsys_PowerSystemModel.RateA.iri, ontocape_mathematical_model.Parameter.iri)       
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateBKey, float(uk_eline_model_.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), \
+                                 ontopowsys_PowerSystemModel.RateB.iri, ontocape_mathematical_model.Parameter.iri)
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateCKey, float(uk_eline_model_.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), \
+                                 ontopowsys_PowerSystemModel.RateC.iri, ontocape_mathematical_model.Parameter.iri)
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RATIOKey, float(uk_eline_model_.RATIO), None, \
+                                 ontopowsys_PowerSystemModel.RatioCoefficient.iri, ontocape_mathematical_model.Parameter.iri)
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGLEKey, float(uk_eline_model_.ANGLE), ontocape_derived_SI_units.degree.iri, \
+                                 ontopowsys_PowerSystemModel.Angle.iri, ontocape_mathematical_model.Parameter.iri)    
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.STATUSKey, int(uk_eline_model_.STATUS), None, \
+                                 ontopowsys_PowerSystemModel.BranchStatus.iri, ontocape_mathematical_model.Parameter.iri)    
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMIN, float(uk_eline_model_.ANGMINKey), ontocape_derived_SI_units.degree.iri, \
+                                 ontopowsys_PowerSystemModel.AngleMin.iri, ontocape_mathematical_model.Parameter.iri)   
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMAX, float(uk_eline_model_.ANGMAXKey), ontocape_derived_SI_units.degree.iri, \
+                                 ontopowsys_PowerSystemModel.AngleMax.iri, ontocape_mathematical_model.Parameter.iri) 
+
+                    
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
                
         # generate/update OWL files
         if updateLocalOWLFile == True:    
             # specify the owl file storage path
-            defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs + 'Model_' + node_locator + OWL #default path
+            defaultStoredPath = uk_eline_model.StoreGeneratedOWLs + 'Model_' + node_locator + OWL #default path
         
             # Store/update the generated owl files      
-            if os.path.exists(uk_ebus_model.StoreGeneratedOWLs) and not userSpecified:
+            if os.path.exists(uk_eline_model.StoreGeneratedOWLs) and not userSpecified:
                 print('****Non user specified storage path, will use the default storage path****')
                 storeGeneratedOWLs(g, defaultStoredPath)
         
@@ -199,28 +202,10 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
                 filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
                 storeGeneratedOWLs(g, filepath_)
     if isinstance(store, Sleepycat):  
-        cg_model_EBus.close()       
+        cg_model_ELine.close()       
     return
 
-def checkAggregatedBus(EBus):
-    EBus_ = [ [str(ebus[0]), float(ebus[1])] for ebus in EBus]
-    bus_node  = []
-    for ebus in EBus_:
-        if ebus[0] in bus_node:
-            counter_1 = bus_node.index(ebus[0])
-            counter_2 = EBus_.index(ebus) 
-            if counter_2 > counter_1:
-                EBus_[counter_1][1] += EBus_[counter_2][1]
-                EBus_[counter_1][1] = round(EBus_[counter_1][1], 2)
-                del EBus_[counter_2]
-            else:
-                print('counter_2 should be larger than counter_1')
-                return None
-        else:
-            bus_node.append(ebus[0])
-    return EBus_
-
-def AddEBusModelVariable(graph, root_node, namespace, node_locator, varKey, varValue, unit, *varType):
+def AddELineModelVariable(graph, root_node, namespace, node_locator, varKey, varValue, unit, *varType):
     # parameter iri
     var_iri = namespace + varKey + node_locator
     value_var_iri = namespace + UK_PG.valueKey + varKey + node_locator
@@ -236,21 +221,38 @@ def AddEBusModelVariable(graph, root_node, namespace, node_locator, varKey, varV
     graph.set((URIRef(value_var_iri), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(varValue)))
     return graph
 
-def initialiseModelVar(EBus_Model, EBus):
-    if isinstance (EBus_Model, UK_PG.UKEbusModel):
+
+# Eline = ['http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-001.owl#ELine-001', 1, 2, 184.8475, 3, 0] , 400kv, 275kv
+def initialiseModelVar(ELine_Model, ELine):
+    if isinstance (ELine_Model, UK_PG.UKElineModel):
         pass
     else:
-        print('The first argument should be an instence of UKEbusModel')
+        print('The first argument should be an instence of UKElineModel')
         return None
-    EBus_Model.BUS = int((EBus[0].split('#EBus-')[1]).split('_')[0])
+    ELine_Model.FROMBUS = ELine[1]
+    ELine_Model.TOBUS = ELine[2]
     
-    if EBus_Model.BUS == 1:
-        EBus_Model.Type = 3
+    if branchPropertyArrays[0] != topo_info.headerBranchProperty or int(branchPropertyArrays[1][0]) != 275 or int(branchPropertyArrays[2][0]) != 400:
+        print('The branch property data header is not matched, please check the data file')
+        return None
     
-    EBus_Model.PD_INPUT = round((float(EBus[1]) * 1000 / (24 * 365)), 3) 
+    if ELine[5] == 0: # Only 400kV lines
+        ELine_Model.R = ELine[3] * float(branchPropertyArrays[2][1]) / ELine[4]
+        ELine_Model.X = ELine[3] * float(branchPropertyArrays[2][2]) / ELine[4]
+        ELine_Model.B = ELine[3] * float(branchPropertyArrays[2][3]) * ELine[4]
+    elif ELine[4] == 0: # Only 275kV lines
+        ELine_Model.R = ELine[3] * float(branchPropertyArrays[1][1]) / ELine[5] 
+        ELine_Model.X = ELine[3] * float(branchPropertyArrays[1][2]) / ELine[5] 
+        ELine_Model.B = ELine[3] * float(branchPropertyArrays[1][3]) * ELine[5] 
+    else: # 400kV and 275kV lines
+        ELine_Model.R = 1 / ((1 / ( ELine[3] * float(branchPropertyArrays[2][1]) / ELine[4])) + (1 / (ELine[3] * float(branchPropertyArrays[1][1]) / ELine[5] )))
+        ELine_Model.X = 1 / ((1 / ( ELine[3] * float(branchPropertyArrays[2][2]) / ELine[4])) + (1 / (ELine[3] * float(branchPropertyArrays[1][2]) / ELine[5] )))
+        ELine_Model.B = (ELine[3] * float(branchPropertyArrays[2][3]) * ELine[4]) + (ELine[3] * float(branchPropertyArrays[1][3]) * ELine[5])
     
-    return EBus_Model
+    ELine_Model.RateA = (float(branchPropertyArrays[2][4]) * ELine[4]) + (float(branchPropertyArrays[1][4]) * ELine[5])
+    
+    return ELine_Model
 
 if __name__ == '__main__':    
-    createModel_EBus(store, 2019)       
+    createModel_ELine(store, 2019)       
     print('Terminated')
