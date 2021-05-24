@@ -51,10 +51,10 @@ uk_egen_model = UK_PG.UKEGenModel()
 uk_topo = UK_Topo.UKPowerGridTopology()
 
 """Graph store"""
-# store = 'default'
-store = Sleepycat()
-store.__open = True
-store.context_aware = True
+store = 'default'
+# store = Sleepycat()
+# store.__open = True
+# store.context_aware = True
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_egen_model.SleepycatStoragePath
@@ -83,17 +83,13 @@ userSpecified = False
 """EGen Conjunctive graph identifier"""
 model_EGen_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen"
 
-"""Calculate the sum of capacity and total demanding"""
-sum_of_capa = sum(query_model.queryAllCapacity(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat))
-print('sum_of_capa is: ', sum_of_capa)
-total_demand = sum(query_model.queryRegionalElecConsumption(topoAndConsumpPath_Sleepycat)) * 1000 / (24 * 365) 
-print('total_demand is: ', total_demand)
-capa_demand_ratio = total_demand/sum_of_capa
+"""EGenInfo array"""
+EGenInfo = []
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
 def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
-    global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat  
+    global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat, EGenInfo  
     if isinstance(store, Sleepycat):
         print('The store is Sleepycat')
         cg_model_EGen = ConjunctiveGraph(store=store, identifier = model_EGen_cg_id)
@@ -119,11 +115,15 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
         print('Store is IOMemery')        
             
     
-    EGen = list(query_model.queryEGen(topoAndConsumpPath_Sleepycat))
+    EGenInfo = list(query_model.queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat))
+                    
+    if EGenInfo == None:
+        print('EGenInfo is empty')
+        return None
     
-    for egen in EGen:         
-    # if EGen[0] != None: # test
-    #     egen = EGen[0] # test
+    for egen in EGenInfo:         
+    # if EGenInfo[0] != None: # test
+    #     egen = EGenInfo[0] # test
         print('################START createModel_EGen#################')
         root_uri = egen[0].split('#')[0]
         namespace = root_uri + HASH
@@ -148,7 +148,7 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
         ###add cost function parameters###
         # calculate a, b, c
         uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version = version_of_model)
-        uk_egen_costFunc = costFuncPara(uk_egen_costFunc, topoAndConsumpPath_Sleepycat, egen, powerPlant_Sleepycat)
+        uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen)
         
         if uk_egen_costFunc != None:
             pass
@@ -173,7 +173,7 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
             
         ###add EGen model parametor###
         uk_egen_model_ = UK_PG.UKEGenModel(version = version_of_model)
-        uk_egen_model_ = initialiseEGenModelVar(uk_egen_model_, topoAndConsumpPath_Sleepycat, egen[0], powerPlant_Sleepycat)
+        uk_egen_model_ = initialiseEGenModelVar(uk_egen_model_, egen)
         
         if uk_egen_model_ != None:
             pass
@@ -246,49 +246,17 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
         cg_model_EGen.close()       
     return
 
-
-# def AddCostFuncParameterValue(graph, root_node, namespace, node_locator, paraKey, paraType, paraValue, unit = None):
-#     # parameter iri
-#     para_iri = namespace + paraKey + node_locator
-#     value_para_iri = namespace + UK_PG.valueKey + paraKey + node_locator
-#     # add para node and type
-#     graph.add((URIRef(root_node), URIRef(ontocape_mathematical_model.hasModelVariable.iri), URIRef(para_iri)))
-#     graph.add((URIRef(para_iri), RDF.type, URIRef(paraType)))
-#     #add para value
-#     graph.add((URIRef(para_iri), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_para_iri)))
-#     graph.add((URIRef(value_para_iri), RDF.type, URIRef(ontocape_mathematical_model.ModelVariableSpecification.iri)))
-#     if unit != None:
-#         graph.add((URIRef(value_para_iri), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(unit)))
-#     graph.set((URIRef(value_para_iri), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(paraValue)))
-   
-#     return graph
-
-# def AddEGenModelVariable(graph, root_node, namespace, node_locator, varKey, varValue, unit, *varType):
-#     # parameter iri
-#     var_iri = namespace + varKey + node_locator
-#     value_var_iri = namespace + UK_PG.valueKey + varKey + node_locator
-#     # add var node and type
-#     graph.add((URIRef(root_node), URIRef(ontocape_mathematical_model.hasModelVariable.iri), URIRef(var_iri)))
-#     for type_ in varType:
-#         graph.add((URIRef(var_iri), RDF.type, URIRef(type_)))
-#     #add var value
-#     graph.add((URIRef(var_iri), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_var_iri)))
-#     graph.add((URIRef(value_var_iri), RDF.type, URIRef(ontocape_mathematical_model.ModelVariableSpecification.iri)))
-#     if unit != None:
-#         graph.add((URIRef(value_var_iri), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(unit)))
-#     graph.set((URIRef(value_var_iri), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(varValue)))
-#     return graph
-
-def initialiseEGenModelVar(EGen_Model, topoAndConsumpPath_Sleepycat, egen_iri, powerPlant_Sleepycat):
+def initialiseEGenModelVar(EGen_Model, egen):
     if isinstance (EGen_Model, UK_PG.UKEGenModel):
         pass
     else:
         print('The first argument should be an instence of UKEGenModel')
         return None
-    EGen_Model.BUS = query_model.queryBusNumber(topoAndConsumpPath_Sleepycat, egen_iri)
-    capa = query_model.queryCapacity(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, egen_iri)
+    EGen_Model.BUS = egen[6]
+    capa = egen[7]
+    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo)
     EGen_Model.PG_INPUT = capa * capa_demand_ratio    
-    primaryFuel = query_model.queryPrimaryFuel(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, egen_iri)
+    primaryFuel = egen[8]
     
     if primaryFuel in ukmf.Renewable:
         EGen_Model.PMAX = EGen_Model.PG_INPUT
@@ -301,6 +269,17 @@ def initialiseEGenModelVar(EGen_Model, topoAndConsumpPath_Sleepycat, egen_iri, p
     EGen_Model.QMIN = -EGen_Model.PMAX
     
     return EGen_Model
+
+"""Calculate the sum of capacity and total demanding"""
+def capa_demand_ratio_calculator(EGenInfo):
+    sum_of_capa = 0
+    for eg in EGenInfo:
+        sum_of_capa += eg[7]
+    print('sum_of_capa is: ', sum_of_capa)
+    total_demand = sum(query_model.queryRegionalElecConsumption(topoAndConsumpPath_Sleepycat)) * 1000 / (24 * 365) 
+    print('total_demand is: ', total_demand)
+    capa_demand_ratio = total_demand/sum_of_capa
+    return capa_demand_ratio
 
 if __name__ == '__main__':    
     createModel_EGen(store, 2019)    
