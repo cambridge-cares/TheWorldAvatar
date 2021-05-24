@@ -49,10 +49,10 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 topo_info = TopoInfo.TopologicalInformation()
 
 """Graph store"""
-store = 'default'
-# store = Sleepycat()
-# store.__open = True
-# store.context_aware = True
+# store = 'default'
+store = Sleepycat()
+store.__open = True
+store.context_aware = True
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_eline_model.SleepycatStoragePath
@@ -118,9 +118,9 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
         print('ELineTopoInfo is empty')
         return None
 
-    # for eline in ELineTopoInfo:         
-    if ELineTopoInfo[0] != None: # test
-        eline = ELineTopoInfo[0] # test
+    for eline in ELineTopoInfo:         
+    # if ELineTopoInfo[0] != None: # test
+    #     eline = ELineTopoInfo[0] # test
     
         print('################START createModel_ELine#################')
         root_uri = eline[0].split('#')[0]
@@ -144,7 +144,7 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
         g.add((URIRef(eline[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
             
         ###add ELine model parametor###
-        uk_eline_model_ = UK_PG.eline(version = version_of_model)
+        uk_eline_model_ = UK_PG.UKElineModel(version = version_of_model)
         uk_eline_model_ = initialiseModelVar(uk_eline_model_, eline) 
         
         if uk_eline_model_ != None:
@@ -175,9 +175,9 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
                                  ontopowsys_PowerSystemModel.Angle.iri, ontocape_mathematical_model.Parameter.iri)    
         g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.STATUSKey, int(uk_eline_model_.STATUS), None, \
                                  ontopowsys_PowerSystemModel.BranchStatus.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMIN, float(uk_eline_model_.ANGMINKey), ontocape_derived_SI_units.degree.iri, \
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMINKey, float(uk_eline_model_.ANGMIN), ontocape_derived_SI_units.degree.iri, \
                                  ontopowsys_PowerSystemModel.AngleMin.iri, ontocape_mathematical_model.Parameter.iri)   
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMAX, float(uk_eline_model_.ANGMAXKey), ontocape_derived_SI_units.degree.iri, \
+        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMAXKey, float(uk_eline_model_.ANGMAX), ontocape_derived_SI_units.degree.iri, \
                                  ontopowsys_PowerSystemModel.AngleMax.iri, ontocape_mathematical_model.Parameter.iri) 
 
                     
