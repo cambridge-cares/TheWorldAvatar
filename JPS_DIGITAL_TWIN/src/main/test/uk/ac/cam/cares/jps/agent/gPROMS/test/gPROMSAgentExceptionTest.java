@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.gPROMS.test;
 
 import junit.framework.TestCase;
 import org.junit.Before;
-import org.junit.Test;
 import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgentException;
 
 public class gPROMSAgentExceptionTest extends TestCase {
