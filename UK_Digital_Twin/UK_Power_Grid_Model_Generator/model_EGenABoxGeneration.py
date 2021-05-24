@@ -83,13 +83,14 @@ userSpecified = False
 """EGen Conjunctive graph identifier"""
 model_EGen_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen"
 
-"""EGenInfo array"""
+"""Global variables EGenInfo array and capa_demand_ratio"""
 EGenInfo = []
+capa_demand_ratio = 0
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
 def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
-    global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat, EGenInfo  
+    global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat, EGenInfo, capa_demand_ratio  
     if isinstance(store, Sleepycat):
         print('The store is Sleepycat')
         cg_model_EGen = ConjunctiveGraph(store=store, identifier = model_EGen_cg_id)
@@ -120,6 +121,8 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
     if EGenInfo == None:
         print('EGenInfo is empty')
         return None
+    
+    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo)
     
     for egen in EGenInfo:         
     # if EGenInfo[0] != None: # test
@@ -254,7 +257,6 @@ def initialiseEGenModelVar(EGen_Model, egen):
         return None
     EGen_Model.BUS = egen[6]
     capa = egen[7]
-    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo)
     EGen_Model.PG_INPUT = capa * capa_demand_ratio    
     primaryFuel = egen[8]
     
