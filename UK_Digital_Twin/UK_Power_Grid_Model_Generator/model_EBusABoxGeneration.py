@@ -22,6 +22,7 @@ from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
 import SPARQLQueryUsedInModel as query_model
+from AddModelVariables import AddModelVariable
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -138,7 +139,7 @@ def createModel_EBus(store, version_of_model, updateLocalOWLFile = True):
             
         ###add EBus model parametor###
         uk_ebus_model_ = UK_PG.UKEbusModel(version = version_of_model)
-        uk_ebus_model_ = initialiseModelVar(uk_ebus_model_, ebus) 
+        uk_ebus_model_ = initialiseEBusModelVar(uk_ebus_model_, ebus) 
         
         if uk_ebus_model_ != None:
             pass
@@ -146,31 +147,31 @@ def createModel_EBus(store, version_of_model, updateLocalOWLFile = True):
             print ('uk_ebus_model_ is none')
             return None 
         
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BUSNUMKey, int(uk_ebus_model_.BUS), None, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BUSNUMKey, int(uk_ebus_model_.BUS), None, \
                                  ontopowsys_PowerSystemModel.BusNumber.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BUSTYPEKey, int(uk_ebus_model_.TYPE), None, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BUSTYPEKey, int(uk_ebus_model_.TYPE), None, \
                                  ontopowsys_PowerSystemModel.BusType.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.PD_INPUTKey, float(uk_ebus_model_.PD_INPUT), ontocape_derived_SI_units.MW.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.PD_INPUTKey, float(uk_ebus_model_.PD_INPUT), ontocape_derived_SI_units.MW.iri, \
                                  ontopowsys_PowerSystemModel.PdBus.iri, ontocape_mathematical_model.InputVariable.iri)    
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.GD_INPUTKey, float(uk_ebus_model_.GD_INPUT), ontocape_derived_SI_units.Mvar.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.GD_INPUTKey, float(uk_ebus_model_.GD_INPUT), ontocape_derived_SI_units.Mvar.iri, \
                                  ontopowsys_PowerSystemModel.GdBus.iri, ontocape_mathematical_model.InputVariable.iri)       
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.GSKey, int(uk_ebus_model_.GS), None,\
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.GSKey, int(uk_ebus_model_.GS), None,\
                                  ontopowsys_PowerSystemModel.Gs.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BSKey, int(uk_ebus_model_.BS), None,\
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BSKey, int(uk_ebus_model_.BS), None,\
                                  ontopowsys_PowerSystemModel.Bs.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.AREAKey, int(uk_ebus_model_.AREA), None,\
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.AREAKey, int(uk_ebus_model_.AREA), None,\
                                  ontopowsys_PowerSystemModel.Area.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VM_INPUTKey, float(uk_ebus_model_.VM_INPUT), ontocape_derived_SI_units.kV.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VM_INPUTKey, float(uk_ebus_model_.VM_INPUT), ontocape_derived_SI_units.kV.iri, \
                                  ontopowsys_PowerSystemModel.Vm.iri, ontocape_mathematical_model.InputVariable.iri)         
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VA_INPUTKey, float(uk_ebus_model_.VA_INPUT), ontocape_derived_SI_units.degree.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VA_INPUTKey, float(uk_ebus_model_.VA_INPUT), ontocape_derived_SI_units.degree.iri, \
                                  ontopowsys_PowerSystemModel.Va.iri, ontocape_mathematical_model.InputVariable.iri)         
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BASEKVKey, int(uk_ebus_model_.BASEKV), ontocape_derived_SI_units.kV.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.BASEKVKey, int(uk_ebus_model_.BASEKV), ontocape_derived_SI_units.kV.iri, \
                                  ontopowsys_PowerSystemModel.baseKV.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.ZONEKey, int(uk_ebus_model_.ZONE), None, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.ZONEKey, int(uk_ebus_model_.ZONE), None, \
                                  ontopowsys_PowerSystemModel.Zone.iri, ontocape_mathematical_model.Parameter.iri)   
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMAXKey, int(uk_ebus_model_.VMAX), ontocape_derived_SI_units.kV.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMAXKey, int(uk_ebus_model_.VMAX), ontocape_derived_SI_units.kV.iri, \
                                  ontopowsys_PowerSystemModel.VmMax.iri, ontocape_mathematical_model.Parameter.iri) 
-        g = AddEBusModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMINKey, int(uk_ebus_model_.VMIN), ontocape_derived_SI_units.kV.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMINKey, int(uk_ebus_model_.VMIN), ontocape_derived_SI_units.kV.iri, \
                                  ontopowsys_PowerSystemModel.VmMin.iri, ontocape_mathematical_model.Parameter.iri)
         
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
@@ -216,23 +217,7 @@ def checkAggregatedBus(EBus):
             bus_node.append(ebus[0])
     return EBus_
 
-def AddEBusModelVariable(graph, root_node, namespace, node_locator, varKey, varValue, unit, *varType):
-    # parameter iri
-    var_iri = namespace + varKey + node_locator
-    value_var_iri = namespace + UK_PG.valueKey + varKey + node_locator
-    # add var node and type
-    graph.add((URIRef(root_node), URIRef(ontocape_mathematical_model.hasModelVariable.iri), URIRef(var_iri)))
-    for type_ in varType:
-        graph.add((URIRef(var_iri), RDF.type, URIRef(type_)))
-    #add var value
-    graph.add((URIRef(var_iri), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_var_iri)))
-    graph.add((URIRef(value_var_iri), RDF.type, URIRef(ontocape_mathematical_model.ModelVariableSpecification.iri)))
-    if unit != None:
-        graph.add((URIRef(value_var_iri), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(unit)))
-    graph.set((URIRef(value_var_iri), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(varValue)))
-    return graph
-
-def initialiseModelVar(EBus_Model, EBus):
+def initialiseEBusModelVar(EBus_Model, EBus):
     if isinstance (EBus_Model, UK_PG.UKEbusModel):
         pass
     else:

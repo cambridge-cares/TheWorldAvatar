@@ -23,6 +23,7 @@ from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
 import SPARQLQueryUsedInModel as query_model
+from AddModelVariables import AddModelVariable
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -49,10 +50,10 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 topo_info = TopoInfo.TopologicalInformation()
 
 """Graph store"""
-# store = 'default'
-store = Sleepycat()
-store.__open = True
-store.context_aware = True
+store = 'default'
+# store = Sleepycat()
+# store.__open = True
+# store.context_aware = True
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_eline_model.SleepycatStoragePath
@@ -145,7 +146,7 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
             
         ###add ELine model parametor###
         uk_eline_model_ = UK_PG.UKElineModel(version = version_of_model)
-        uk_eline_model_ = initialiseModelVar(uk_eline_model_, eline) 
+        uk_eline_model_ = initialiseELineModelVar(uk_eline_model_, eline) 
         
         if uk_eline_model_ != None:
             pass
@@ -153,33 +154,32 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
             print ('uk_eline_model_ is none')
             return None 
         
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.FROMBUSKey, int(uk_eline_model_.FROMBUS), None, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.FROMBUSKey, int(uk_eline_model_.FROMBUS), None, \
                                  ontopowsys_PowerSystemModel.BusFrom.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.TOBUSKey, int(uk_eline_model_.TOBUS), None, \
-                                 ontopowsys_PowerSystemModel.BusTo.iri, ontocape_mathematical_model.Parameter.iri)   
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.R_Key, float(uk_eline_model_.R), ontocape_derived_SI_units.ohm.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.TOBUSKey, int(uk_eline_model_.TOBUS), None, \
+                                 ontopowsys_PowerSystemModel.BusTo.iri, ontocape_mathematical_model.Parameter.iri)  
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.R_Key, float(uk_eline_model_.R), ontocape_derived_SI_units.ohm.iri, \
                                  ontopowsys_PowerSystemModel.R.iri, ontocape_mathematical_model.Parameter.iri)     
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.X_Key, float(uk_eline_model_.X), ontocape_derived_SI_units.ohm.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.X_Key, float(uk_eline_model_.X), ontocape_derived_SI_units.ohm.iri, \
                                  ontopowsys_PowerSystemModel.X.iri, ontocape_mathematical_model.Parameter.iri) 
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.B_Key, float(uk_eline_model_.B), (t_box.ontocape_derived_SI_units + 'siemens'), \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.B_Key, float(uk_eline_model_.B), (t_box.ontocape_derived_SI_units + 'siemens'), \
                                  ontopowsys_PowerSystemModel.B.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateAKey, float(uk_eline_model_.RateA), (t_box.ontocape_derived_SI_units + 'MVA'), \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateAKey, float(uk_eline_model_.RateA), (t_box.ontocape_derived_SI_units + 'MVA'), \
                                  ontopowsys_PowerSystemModel.RateA.iri, ontocape_mathematical_model.Parameter.iri)       
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateBKey, float(uk_eline_model_.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateBKey, float(uk_eline_model_.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), \
                                  ontopowsys_PowerSystemModel.RateB.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateCKey, float(uk_eline_model_.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RateCKey, float(uk_eline_model_.RateB), (t_box.ontocape_derived_SI_units + 'MVA'), \
                                  ontopowsys_PowerSystemModel.RateC.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RATIOKey, float(uk_eline_model_.RATIO), None, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.RATIOKey, float(uk_eline_model_.RATIO), None, \
                                  ontopowsys_PowerSystemModel.RatioCoefficient.iri, ontocape_mathematical_model.Parameter.iri)
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGLEKey, float(uk_eline_model_.ANGLE), ontocape_derived_SI_units.degree.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGLEKey, float(uk_eline_model_.ANGLE), ontocape_derived_SI_units.degree.iri, \
                                  ontopowsys_PowerSystemModel.Angle.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.STATUSKey, int(uk_eline_model_.STATUS), None, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.STATUSKey, int(uk_eline_model_.STATUS), None, \
                                  ontopowsys_PowerSystemModel.BranchStatus.iri, ontocape_mathematical_model.Parameter.iri)    
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMINKey, float(uk_eline_model_.ANGMIN), ontocape_derived_SI_units.degree.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMINKey, float(uk_eline_model_.ANGMIN), ontocape_derived_SI_units.degree.iri, \
                                  ontopowsys_PowerSystemModel.AngleMin.iri, ontocape_mathematical_model.Parameter.iri)   
-        g = AddELineModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMAXKey, float(uk_eline_model_.ANGMAX), ontocape_derived_SI_units.degree.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_eline_model_.ANGMAXKey, float(uk_eline_model_.ANGMAX), ontocape_derived_SI_units.degree.iri, \
                                  ontopowsys_PowerSystemModel.AngleMax.iri, ontocape_mathematical_model.Parameter.iri) 
-
                     
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
                
@@ -205,25 +205,8 @@ def createModel_ELine(store, version_of_model, updateLocalOWLFile = True):
         cg_model_ELine.close()       
     return
 
-def AddELineModelVariable(graph, root_node, namespace, node_locator, varKey, varValue, unit, *varType):
-    # parameter iri
-    var_iri = namespace + varKey + node_locator
-    value_var_iri = namespace + UK_PG.valueKey + varKey + node_locator
-    # add var node and type
-    graph.add((URIRef(root_node), URIRef(ontocape_mathematical_model.hasModelVariable.iri), URIRef(var_iri)))
-    for type_ in varType:
-        graph.add((URIRef(var_iri), RDF.type, URIRef(type_)))
-    #add var value
-    graph.add((URIRef(var_iri), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_var_iri)))
-    graph.add((URIRef(value_var_iri), RDF.type, URIRef(ontocape_mathematical_model.ModelVariableSpecification.iri)))
-    if unit != None:
-        graph.add((URIRef(value_var_iri), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(unit)))
-    graph.set((URIRef(value_var_iri), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(varValue)))
-    return graph
-
-
 # Eline = ['http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-001.owl#ELine-001', 1, 2, 184.8475, 3, 0] , 400kv, 275kv
-def initialiseModelVar(ELine_Model, ELine):
+def initialiseELineModelVar(ELine_Model, ELine):
     if isinstance (ELine_Model, UK_PG.UKElineModel):
         pass
     else:
