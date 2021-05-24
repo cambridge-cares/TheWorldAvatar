@@ -265,6 +265,14 @@
     <systemPath>C:/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/mvn/spin-2.0.0.jar</systemPath>
 </dependency>
 
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>
