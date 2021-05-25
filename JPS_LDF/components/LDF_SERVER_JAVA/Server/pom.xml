@@ -43,6 +43,7 @@
             <timezone>Europe/Brussels</timezone>
         </developer>
     </developers>
+
     <contributors>
         <contributor>
             <name>Bart Hanssens</name>
@@ -53,14 +54,36 @@
             <name>Olaf Hartig</name>
         </contributor>
     </contributors>
+
     <properties>
         <jenaVersion>3.13.1</jenaVersion>
         <jettyVersion>9.4.9.v20180320</jettyVersion>
     </properties>
+
     <dependencies>
+        <!-- Trained model data files -->
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps.agent.ldf-server</groupId>
+            <artifactId>trained_models</artifactId>
+            <type>zip</type>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- Custom node modules -->
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps.agent.ldf-server</groupId>
+            <artifactId>custom_node_modules</artifactId>
+            <type>zip</type>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- HDT data -->
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps.agent.ldf-server</groupId>
+            <artifactId>hdt_data</artifactId>
+            <type>zip</type>
+            <version>1.0.0</version>
+        </dependency>
     
-    
-<!-- https://mvnrepository.com/artifact/dk.brics.automaton/automaton -->
+    <!-- https://mvnrepository.com/artifact/dk.brics.automaton/automaton -->
     <dependency>
         <groupId>com.fulmicoton</groupId>
         <artifactId>multiregexp</artifactId>
@@ -310,6 +333,16 @@
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <!-- Plugin to unpack related dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <outputDirectory>./dependencies/</outputDirectory>
+                    <includeArtifactIds>custom_node_modules,hdt_data,trained_models</includeArtifactIds>
                 </configuration>
             </plugin>
         </plugins>
