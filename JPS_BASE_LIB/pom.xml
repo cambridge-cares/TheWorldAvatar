@@ -263,6 +263,11 @@
 			<artifactId>spring-test</artifactId>
 			<version>${spring-version}</version>
 		</dependency>
+		<dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-sparqlbuilder</artifactId>
+            <version>3.4.3</version>
+        </dependency>
 	</dependencies>
 
 </project>

@@ -37,23 +37,18 @@ public class DerivedQuantitySparql{
 	private static Iri numericPosition = p_time.iri("numericPosition");
 	
 	
-	public static void initAgent(KnowledgeBaseClientInterface kbClient, String agentIRI, String url, String namedGraph) {
+	public static void initAgent(KnowledgeBaseClientInterface kbClient, String agentIRI, String url) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		TriplePattern agent_tp = iri(agentIRI).isA(Service).andHas(hasHttpUrl,url);
 		
 		modify.prefix(p_agent).insert(agent_tp).where();
 		
-		// optional named graph
-		if (namedGraph != null) {
-			modify.with(iri(namedGraph));
-		}
-		
 		kbClient.setQuery(modify.getQueryString());
 		kbClient.executeUpdate();
 	}
 	
-	public static void initParameters(KnowledgeBaseClientInterface kbClient, String derivedQuantity, String[] inputs, String agentIRI, String namedGraph) {
+	public static void initParameters(KnowledgeBaseClientInterface kbClient, String derivedQuantity, String[] inputs, String agentIRI) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		Iri derivedQuantity_iri = iri(derivedQuantity);
@@ -81,11 +76,6 @@ public class DerivedQuantitySparql{
 				modify.insert(inputTime_iri.isA(TimePosition).andHas(numericPosition,0));
 			}
 		}
-	    
-	    // optional named graph if given
-	    if (namedGraph != null) {
-	    	modify.with(iri(namedGraph));
-	    }
 	    
 	    kbClient.setQuery(modify.prefix(p_time,p_derived).getQueryString());
 	    kbClient.executeUpdate();
