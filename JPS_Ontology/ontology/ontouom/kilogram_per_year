@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+  <!-- Ontology of units of Measure (OM) -->
+
+  <!DOCTYPE rdf:RDF [
+    <!ENTITY rdf     "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <!ENTITY rdfs    "http://www.w3.org/2000/01/rdf-schema#">
+    <!ENTITY owl     "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd     "http://www.w3.org/2001/XMLSchema#"> 
+    <!-- <!ENTITY om      "http://www.wurvoc.org/vocabularies/om-2.0/"> -->
+    <!-- <!ENTITY om      "http://www.ontology-of-units-of-measure.org/vocabularies/om-2/"> -->
+    <!ENTITY om      "http://www.ontology-of-units-of-measure.org/resource/om-2/">
+  ]>
+
+  <rdf:RDF
+    xmlns:rdf="&rdf;"
+    xmlns:owl="&owl;"
+    xmlns:xsd="&xsd;"
+    xmlns:rdfs="&rdfs;"
+    xmlns:om="&om;"
+    xmlns="&om;"
+    xml:base="&om;"
+  >
+  
+  <owl:Ontology rdf:about="">
+    <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
+  </owl:Ontology>
+  
+  <!-- Kilogram Per Year Ontology -->
+
+  <om:UnitDivision rdf:about="http://theworldavatar.com/ontouom/kilogram_per_year">
+    <rdfs:label xml:lang="en">kilogram per year</rdfs:label>
+    <om:symbol>kg/yr</om:symbol>
+    <om:alternativeSymbol>kg yr-1</om:alternativeSymbol>
+    <om:hasNumerator rdf:resource="&om;kilogram"/>
+    <om:hasDenominator rdf:resource="&om;year"/>
+    <om:hasDimension rdf:resource="&om;massFlow-Dimension"/>
+  </om:UnitDivision>
+
+</rdf:RDF>
