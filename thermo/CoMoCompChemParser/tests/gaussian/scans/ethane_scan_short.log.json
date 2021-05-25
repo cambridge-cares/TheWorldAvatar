@@ -1,8 +1,32 @@
 {
-    "Empirical formula": "C,-0.86537,-0.0000048258,0.0000059864",
-    "Atom counts": {},
-    "Method": "0,1",
-    "Basis set": "C,0.86537,0.000004823\n 9,-0.0000059857",
+    "Empirical formula": "C2H6",
+    "Atom counts": {
+        "C": 2,
+        "H": 6
+    },
+    "Atom types": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atomic masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RB3LYP",
+    "Basis set": "6-31G(d)",
     "Spin multiplicity": 1,
     "Formal charge": 0,
     "Formal charge unit": "atomic",
@@ -134,11 +158,26 @@
             ]
         ]
     ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational constants": [
+        78.3978617,
+        16.7195688,
+        16.7194971
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
     "Electronic energy": [
         -2172.296297323221,
         -2172.185819099918,
         -2171.9210523233814
     ],
+    "HOMO energy": -0.32329,
+    "HOMO-1 energy": -0.35702,
+    "HOMO-2 energy": -0.35703,
+    "LUMO energy": 0.10498,
+    "LUMO+1 energy": 0.13085,
+    "LUMO+2 energy": 0.176,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
     "Run date": "Mon Mar 22 15:54:10 2021",

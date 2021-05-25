@@ -11,6 +11,7 @@
 <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#ethane_scan_rigid> a ontocompchem:G09,
         owl:Thing ;
     gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_geometry_optimization_C2H6_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_geometry_type_C2H6_fdaeecd5-2035-3a84-8874-7161078bd0c0_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_homo_electronic_energy_C2H6_7bdc9c28-f33d-359c-a265-7ccc679804af_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_homo_minus_one_electronic_energy_C2H6_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_homo_minus_two_electronic_energy_C2H6_227a9315-b21e-3c18-8589-9ed236d5f00a_1>,
@@ -28,18 +29,161 @@
 <http://theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl> a ontocompchem:OutputSource,
         owl:Thing .
 
-table:C a table:Element,
-        owl:Thing .
-
-table:H a table:Element,
-        owl:Thing .
-
 <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_geometry_optimization_C2H6_1> a gc:GeometryOptimization,
         owl:Thing ;
     gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_molecule_C2H6_1> .
 
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_geometry_type_C2H6_fdaeecd5-2035-3a84-8874-7161078bd0c0_1> a ontocompchem:GeometryType,
+        owl:Thing ;
+    ontocompchem:hasGeometryType "nonlinear" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, -0.76537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, -0.81537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, -0.76537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, -0.81537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_x3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, -0.86537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, 0.76537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, 0.81537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, 0.76537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, 0.81537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_y3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[0.0, 0.0, 0.86537]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[1.018496, 0.0, 1.163512]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[1.018496, 0.0, 1.213512]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[1.018496, 0.0, 1.163512]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[1.018496, 0.0, 1.213512]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_coordinate_z3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue "[1.018496, 0.0, 1.263512]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.20107e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.20107e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.20107e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.20107e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_mass_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.00783e+00 .
+
 <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_molecule_C2H6_1> a gc:Molecule,
         owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_atom_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasFormalCharge <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#finalization_module_has_molecule_formal_charge_C2H6_1> ;
     ontocompchem:hasSpinMultiplicity "1"^^xsd:string .
 
@@ -163,4 +307,10 @@ table:H a table:Element,
     gc:hasMoleculeProperty <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#initialization_module_has_molecule_property_C2H6_1> ;
     gc:hasParameter <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#initialization_module_has_basis_set_parameter_C2H6_1>,
         <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_rigid/ethane_scan_rigid.log.owl#initialization_module_has_level_of_theory_parameter_C2H6_1> .
+
+table:C a table:Element,
+        owl:Thing .
+
+table:H a table:Element,
+        owl:Thing .
 

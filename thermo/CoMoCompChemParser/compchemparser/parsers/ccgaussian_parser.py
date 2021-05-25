@@ -278,8 +278,9 @@ class CcGaussianParser():
         def check_geom(data, cur_line,log_lines):
             # tries to extract geometry from a log file line
             line = log_lines[cur_line]
-            if 'Input orientation:' in line and data[GEOM] is None:
-                data[GEOM] = []
+            if 'Input orientation:' in line:
+                if data[SCANFLAG] is None:
+                    data[GEOM] = []
                 data[ATOM_TYPES] = []
 
                 cur_line = cur_line + 2
@@ -290,13 +291,15 @@ class CcGaussianParser():
                 line = log_lines[cur_line].strip()
                 while '---' not in line:
                     line = line.split()
-                    data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
+                    if data[SCANFLAG] is None:
+                        data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
                     el = eld.get_el_symbol_by_atomic_nr(int(line[1].strip()))
                     data[ATOM_TYPES].append(el)
                     cur_line = cur_line + 1
                     line = log_lines[cur_line].strip()
-            elif 'Standard orientation:' in line and data[GEOM] is None:
-                data[GEOM] = []
+            elif 'Standard orientation:' in line:
+                if data[SCANFLAG] is None:
+                    data[GEOM] = []
                 data[ATOM_TYPES] = []
 
                 cur_line = cur_line + 2
@@ -307,7 +310,8 @@ class CcGaussianParser():
                 line = log_lines[cur_line].strip()
                 while '---' not in line:
                     line = line.split()
-                    data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
+                    if data[SCANFLAG] is None:
+                        data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
                     el = eld.get_el_symbol_by_atomic_nr(int(line[1].strip()))
                     data[ATOM_TYPES].append(el)
                     cur_line = cur_line + 1
@@ -622,7 +626,10 @@ class CcGaussianParser():
                     data[ATOM_MASSES_UNIT] = 'atomic'
         #================================================        
         def check_relaxed_scan_job(data, cur_line, log_lines):
-            if data[SCANFLAG] != 'Rigid':
+            if data[SCANFLAG] == 'Relaxed':
+                data[ELECTRONIC_ENERGY] = self.cclib_data.scanenergies
+                return cur_line
+            elif data[SCANFLAG] != 'Rigid':
                 line = log_lines[cur_line]
                 placeholder_GEOM = None
                 placeholder_energy = None
@@ -659,7 +666,10 @@ class CcGaussianParser():
             return cur_line
 
         def check_rigid_scan_job(data, cur_line, log_lines):
-            if data[SCANFLAG] !='Relaxed':
+            if data[SCANFLAG] == 'Rigid':
+                data[ELECTRONIC_ENERGY] = self.cclib_data.scanenergies
+                return cur_line
+            elif data[SCANFLAG] !='Relaxed':
                 line = log_lines[cur_line]
                 placeholder_GEOM = None
                 placeholder_energy = None
