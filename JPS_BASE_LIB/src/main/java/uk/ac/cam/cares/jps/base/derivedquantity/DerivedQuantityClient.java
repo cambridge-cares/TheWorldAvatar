@@ -9,11 +9,6 @@ public class DerivedQuantityClient {
     public DerivedQuantityClient(KnowledgeBaseClientInterface kbClient) {
     	this.kbClient = kbClient;
     }
-
-    public void initDerivedQuantityAgent(String agentIRI, String agentURL) {
-    	// pure triples if namedGraph = null
-    	DerivedQuantitySparql.initAgent(this.kbClient, agentIRI, agentURL);
-    }
     
     /**
      * Links the given derived quantity to its inputs and the agent used to derived it
@@ -21,7 +16,7 @@ public class DerivedQuantityClient {
      * @param inputsIRI
      * @param agentIRI
      */
-    public void initParameters(String derivedQuantityIRI, String[] inputsIRI, String agentIRI) {
-    	DerivedQuantitySparql.initParameters(this.kbClient, derivedQuantityIRI, inputsIRI, agentIRI);
+    public void initParameters(String derivedQuantityIRI, String[] inputsIRI, String agentIRI, String agentURL) {
+    	DerivedQuantitySparql.initParameters(this.kbClient, derivedQuantityIRI, inputsIRI, agentIRI, agentURL);
     }
 }

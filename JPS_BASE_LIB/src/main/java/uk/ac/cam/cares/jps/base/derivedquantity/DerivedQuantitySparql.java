@@ -9,6 +9,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
@@ -36,25 +37,15 @@ public class DerivedQuantitySparql{
 	private static Iri hasTime = p_time.iri("hasTime");
 	private static Iri numericPosition = p_time.iri("numericPosition");
 	
-	
-	public static void initAgent(KnowledgeBaseClientInterface kbClient, String agentIRI, String url) {
-		ModifyQuery modify = Queries.MODIFY();
-		
-		TriplePattern agent_tp = iri(agentIRI).isA(Service).andHas(hasHttpUrl,url);
-		
-		modify.prefix(p_agent).insert(agent_tp).where();
-		
-		kbClient.setQuery(modify.getQueryString());
-		kbClient.executeUpdate();
-	}
-	
-	public static void initParameters(KnowledgeBaseClientInterface kbClient, String derivedQuantity, String[] inputs, String agentIRI) {
+	public static void initParameters(KnowledgeBaseClientInterface kbClient, String derivedQuantity, String[] inputs, String agentIRI, String agentURL) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		Iri derivedQuantity_iri = iri(derivedQuantity);
 		
 		// link to agent
 		modify.insert(derivedQuantity_iri.has(isDerivedUsing,iri(agentIRI)));
+		// add agent url
+		modify.insert(iri(agentIRI).isA(Service).andHas(hasHttpUrl,agentURL));
 		
 		// add time stamp instance for derived quantity
 		String derivedQuantityTime = derivedQuantity+"Time";
@@ -77,7 +68,7 @@ public class DerivedQuantitySparql{
 			}
 		}
 	    
-	    kbClient.setQuery(modify.prefix(p_time,p_derived).getQueryString());
+	    kbClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
 	    kbClient.executeUpdate();
 	}
 	
@@ -95,19 +86,18 @@ public class DerivedQuantitySparql{
 		return timeExist;
 	}
 	
-	public static String getAgentUrl(KnowledgeBaseClientInterface kbClient, String agentIRI, String namedGraph) {
+	public static String getAgentUrl(KnowledgeBaseClientInterface kbClient, String derivedQuantity) {
 		SelectQuery query = Queries.SELECT();
 		
 		String queryKey = "url";
 		Variable url = SparqlBuilder.var(queryKey);
 		
-		GraphPattern queryPattern = iri(agentIRI).has(hasHttpUrl,url);
+		Iri derivedQuantityIRI = iri(derivedQuantity);
 		
-		query.select(url).where(queryPattern).prefix(p_agent);
+		Iri[] predicates = {isDerivedUsing,hasHttpUrl};
+		GraphPattern queryPattern = getQueryGraphPattern(query, predicates, null, derivedQuantityIRI, url);
 		
-		if (namedGraph != null) {
-			query.from(SparqlBuilder.from(iri(namedGraph)));
-		}
+		query.select(url).where(queryPattern).prefix(p_agent,p_derived);
 		
 		kbClient.setQuery(query.getQueryString());
 		
@@ -115,4 +105,55 @@ public class DerivedQuantitySparql{
 		
 		return queryResult;
 	}
+	
+	public static void updateDerivedQuantity(KnowledgeBaseClientInterface kbClient, String derivedQuantity) {
+		
+	}
+	
+	private static GraphPattern getQueryGraphPattern(SelectQuery Query, Iri[] Predicates, Iri[] RdfType, Iri FirstNode, Variable LastNode) {
+        GraphPattern CombinedGP = null;
+    	
+    	Variable[] Variables = new Variable[Predicates.length];
+    	
+    	// initialise intermediate nodes
+    	for (int i=0; i < Variables.length-1; i++) {
+    		Variables[i] = Query.var();
+    	}
+    	Variables[Variables.length-1] = LastNode;
+    	
+    	// first triple
+    	GraphPattern firstTriple = FirstNode.has(Predicates[0],Variables[0]);
+    	if (RdfType != null) {
+    		if (RdfType[0] != null) {
+    			CombinedGP = GraphPatterns.and(firstTriple,FirstNode.isA(RdfType[0]));
+    		} else {
+    			CombinedGP = GraphPatterns.and(firstTriple);
+    		}
+    	} else {
+    		CombinedGP = GraphPatterns.and(firstTriple);
+    	}
+    	
+    	// the remaining
+    	for (int i=0; i < Variables.length-1; i++) {
+    		GraphPattern triple = Variables[i].has(Predicates[i+1],Variables[i+1]);
+    		if (RdfType != null) {
+    			if (RdfType[i+1] != null) {
+    				CombinedGP.and(triple,Variables[i].isA(RdfType[i+1]));
+    			} else {
+    				CombinedGP.and(triple);
+    			}
+    		} else {
+    			CombinedGP.and(triple);
+    		}
+    	}
+    	
+    	// type for the final node, if given
+    	if (RdfType != null) {
+    		if (RdfType[RdfType.length-1] != null) {
+    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
+    		}
+    	}
+    	
+    	return CombinedGP;
+    }
 }
