@@ -1,0 +1,74 @@
+@prefix gc: <http://purl.org/gc/> .
+@prefix ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix unit: <http://data.nasa.gov/qudt/owl/unit#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#> a owl:Ontology ;
+    owl:imports <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#ethane_scan_short> a ontocompchem:G09,
+        owl:Thing ;
+    gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_geometry_optimization_C,-0.86537,-0.0000048258,0.0000059864_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_scf_energy_C,-0.86537,-0.0000048258,0.0000059864_dbb0518a-18e9-3b85-99bc-8a38879462de_1> ;
+    ontocompchem:hasEnvironment <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#job_module_has_environment_module_C,-0.86537,-0.0000048258,0.0000059864_1> ;
+    ontocompchem:hasInitialization <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#job_module_has_initilization_module_C,-0.86537,-0.0000048258,0.0000059864_1> .
+
+<http://theworldavatar.com/data/ontocompchem/ethane_scan_short/ethane_scan_short.log> a ontocompchem:OutputSource,
+        owl:Thing .
+
+<http://theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl> a ontocompchem:OutputSource,
+        owl:Thing .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_geometry_optimization_C,-0.86537,-0.0000048258,0.0000059864_1> a gc:GeometryOptimization,
+        owl:Thing ;
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_has_molecule_C,-0.86537,-0.0000048258,0.0000059864_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_has_molecule_C,-0.86537,-0.0000048258,0.0000059864_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasFormalCharge <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_has_molecule_formal_charge_C,-0.86537,-0.0000048258,0.0000059864_1> ;
+    ontocompchem:hasSpinMultiplicity "1"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_has_molecule_formal_charge_C,-0.86537,-0.0000048258,0.0000059864_1> a gc:IntegerValue,
+        owl:Thing ;
+    gc:hasUnit gc:atomicUnit ;
+    gc:hasValue 0 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_scf_energy_C,-0.86537,-0.0000048258,0.0000059864_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a ontocompchem:ScfEnergy,
+        owl:Thing ;
+    gc:hasElectronicEnergy <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_scf_energy_value_C,-0.86537,-0.0000048258,0.0000059864_dbb0518a-18e9-3b85-99bc-8a38879462de_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#finalization_module_scf_energy_value_C,-0.86537,-0.0000048258,0.0000059864_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue "[-2172.296297323221, -2172.185819099918, -2171.9210523233814]" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#initialization_module_has_basis_set_parameter_C,-0.86537,-0.0000048258,0.0000059864_1> a gc:BasisSet,
+        owl:Thing ;
+    gc:hasBasisSet """C,0.86537,0.000004823
+ 9,-0.0000059857""" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#initialization_module_has_level_of_theory_parameter_C,-0.86537,-0.0000048258,0.0000059864_1> a gc:MethodologyFeature,
+        ontocompchem:LevelOfTheory,
+        owl:Thing ;
+    ontocompchem:hasLevelOfTheory """0,1/C,0.86537,0.000004823
+ 9,-0.0000059857""" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#initialization_module_has_molecule_property_C,-0.86537,-0.0000048258,0.0000059864_1> a gc:MoleculeProperty,
+        owl:Thing ;
+    gc:hasName "C,-0.86537,-0.0000048258,0.0000059864" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#job_module_has_environment_module_C,-0.86537,-0.0000048258,0.0000059864_1> a gc:SourcePackage,
+        owl:Thing ;
+    gc:hasOutputFile <http://theworldavatar.com/data/ontocompchem/ethane_scan_short/ethane_scan_short.log>,
+        <http://theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl> ;
+    ontocompchem:hasProgram "Gaussian"^^xsd:string ;
+    ontocompchem:hasProgramVersion "2009+D.01"^^xsd:string ;
+    ontocompchem:hasRunDate "Mon Mar 22 15:54:10 2021"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#job_module_has_initilization_module_C,-0.86537,-0.0000048258,0.0000059864_1> a ontocompchem:InitializationModule,
+        owl:Thing ;
+    gc:hasMoleculeProperty <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#initialization_module_has_molecule_property_C,-0.86537,-0.0000048258,0.0000059864_1> ;
+    gc:hasParameter <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#initialization_module_has_basis_set_parameter_C,-0.86537,-0.0000048258,0.0000059864_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_scan_short/ethane_scan_short.log.owl#initialization_module_has_level_of_theory_parameter_C,-0.86537,-0.0000048258,0.0000059864_1> .
+

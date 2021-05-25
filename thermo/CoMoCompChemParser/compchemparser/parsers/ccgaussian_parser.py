@@ -278,7 +278,7 @@ class CcGaussianParser():
         def check_geom(data, cur_line,log_lines):
             # tries to extract geometry from a log file line
             line = log_lines[cur_line]
-            if 'Input orientation:' in line:
+            if 'Input orientation:' in line and data[GEOM] is None:
                 data[GEOM] = []
                 data[ATOM_TYPES] = []
 
@@ -622,109 +622,115 @@ class CcGaussianParser():
                     data[ATOM_MASSES_UNIT] = 'atomic'
         #================================================        
         def check_relaxed_scan_job(data, cur_line, log_lines):
-            line = log_lines[cur_line]
-            placeholder_GEOM = None
-            placeholder_energy = None
-            scan_atoms = None
-            scan_type = None
-            if "The following ModRedundant input section has been read:".lower() in line.lower():
-                data[SCANFLAG] = 'Relaxed'
-                cur_line +=1 
-            line = log_lines[cur_line]
-            while line and not line.isspace():
-                if 'S' in line:
-                    scan_line = log_lines[cur_line]
-                    scan_type = scan_line.split()[0]                    
-            if data[SCANFLAG] == 'Relaxed':
-                data[SCANPOINTS] = self.cclib_data.scanparm
-                placeholder_GEOM = self.cclib_data.scancoords
-                placeholder_energy = self.cclib_data.scanenergies
-            if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
-                data[SCANFLAG] = None
-            elif data[SCANFLAG]:
-                data[GEOM] = placeholder_GEOM
-                data[ELECTRONIC_ENERGY] = placeholder_energy
-                data[GEOM] = data[GEOM].tolist()
-                if scan_type == 'B': 
-                    data[SCANTYPE] = 'Bond'
-                    scan_atoms = [scan_line.split()[1],scan_line.split()[2]]
-                    data[SCANATOMS] = scan_atoms
-                elif scan_type == 'D':
-                    data[SCANTYPE] == 'Dihedral'
-                    scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3],scan_line.split()[4]]
-                    data[SCANATOMS] = scan_atoms
-            return cur_line
-
-        def check_rigid_scan_job(data, cur_line, log_lines):
-            
-            line = log_lines[cur_line]
-            placeholder_GEOM = None
-            placeholder_energy = None
-            scan_atoms = None
-            scan_type = None
-            zmat = []
-            if 'Charge =' in line and  'Multiplicity =' in line:
-                cur_line +=1 
+            if data[SCANFLAG] != 'Rigid':
                 line = log_lines[cur_line]
-                while line and not line.isspace():
-                    zmat.append(line)
+                placeholder_GEOM = None
+                placeholder_energy = None
+                scan_atoms = None
+                scan_type = None
+                if "The following ModRedundant input section has been read:".lower() in line.lower():
+                    data[SCANFLAG] = 'Relaxed'
+                    cur_line +=1 
+                line = log_lines[cur_line]
+                while line and data[SCANFLAG] and not scan_type:
+                    if 'S' in line:
+                        scan_line = log_lines[cur_line]
+                        scan_type = scan_line.split()[0]  
                     cur_line += 1
                     line = log_lines[cur_line]
-            zmat = [i.rstrip() for i in zmat]
-            if 'Variables' not in '\t'.join(zmat):
-                zmat = None 
-                
-            def group(seq, sep):
-                g = []
-                for el in seq:
-                    if sep in el:
-                        yield g
-                        g = []
-                    g.append(el)
-                yield g
-                
-            if zmat:
-                zmol = list(group(zmat, 'Variables'))[0]
-                zvars = list(group(zmat, 'Variables'))[0]
-            
-            if zvars and 'Scan' in '\t'.join(zvars):
-                    data[SCANFLAG] = 'Rigid'
-            if data[SCANFLAG] == 'Rigid':           
+                if data[SCANFLAG] == 'Relaxed':
                     data[SCANPOINTS] = self.cclib_data.scanparm
                     placeholder_GEOM = self.cclib_data.scancoords
                     placeholder_energy = self.cclib_data.scanenergies
-                    
-            if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
-                data[SCANFLAG] = None
-            elif data[SCANFLAG]:    
-                data[GEOM] = placeholder_GEOM
-                data[ELECTRONIC_ENERGY] = placeholder_energy
-                data[GEOM] = data[GEOM].tolist()
-                for z in zvars: 
-                    if 'Scan' in z:
-                        scanvar = z.split()[0]
-                scan_atoms = []
-                for k in range(len(zmol)):
-                    if scanvar in zmol[k]:
-                        line_index = k
-                        scan_line = zmol[k].split() #We will split the line that has the scan variable.
-                scan_atoms.append(str(line_index+1))
-                for j in range(len(scan_line)):
-                    if scanvar in scan_line[j]:
-                        var_index = j
-                if var_index == 2:
-                    scan_type = 'B'        
-                    scan_atoms.append(scan_line[var_index-1])
-                    if scan_type == 'B':
+                if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
+                    data[SCANFLAG] = None
+                elif data[SCANFLAG]:
+                    data[GEOM] = placeholder_GEOM
+                    data[ELECTRONIC_ENERGY] = placeholder_energy
+                    data[GEOM] = data[GEOM].tolist()
+                    if scan_type == 'B': 
                         data[SCANTYPE] = 'Bond'
-                    data[SCANATOMS] = scan_atoms
-                if var_index == 6:
-                    scan_type = 'D'
-                    scan_atoms.extend([scan_line[var_index-5],scan_line[var_index-3],scan_line[var_index-1]])
-                    if scan_type == 'D':
+                        scan_atoms = [scan_line.split()[1],scan_line.split()[2]]
+                        data[SCANATOMS] = scan_atoms
+                    elif scan_type == 'D':
                         data[SCANTYPE] == 'Dihedral'
-                    data[SCANATOMS] = scan_atoms                    
-                return cur_line
+                        scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3],scan_line.split()[4]]
+                        data[SCANATOMS] = scan_atoms
+            return cur_line
+
+        def check_rigid_scan_job(data, cur_line, log_lines):
+            if data[SCANFLAG] !='Relaxed':
+                line = log_lines[cur_line]
+                placeholder_GEOM = None
+                placeholder_energy = None
+                scan_atoms = None
+                scan_type = None
+                zmol = None
+                zvars = None
+                zmat = []
+                if 'Charge =' in line and  'Multiplicity =' in line:
+                    cur_line +=1 
+                    line = log_lines[cur_line]
+                    while line and not line.isspace():
+                        zmat.append(line)
+                        cur_line += 1
+                        line = log_lines[cur_line]
+                zmat = [i.rstrip() for i in zmat]
+    
+                if 'Variables' not in '\t'.join(zmat):
+                    zmat = None 
+                    
+                def group(seq, sep):
+                    g = []
+                    for el in seq:
+                        if sep in el:
+                            yield g
+                            g = []
+                        g.append(el)
+                    yield g
+                    
+                if zmat:
+                    zmol = list(group(zmat, 'Variables'))[0]
+                    zvars = list(group(zmat, 'Variables'))[1]
+                if zvars and 'Scan' in '\t'.join(zvars):
+                        data[SCANFLAG] = 'Rigid'
+                if data[SCANFLAG] == 'Rigid':           
+                        data[SCANPOINTS] = self.cclib_data.scanparm
+                        placeholder_GEOM = self.cclib_data.scancoords
+                        placeholder_energy = self.cclib_data.scanenergies
+                        
+                if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
+                    data[SCANFLAG] = None
+                elif data[SCANFLAG]:    
+                    data[GEOM] = placeholder_GEOM
+                    data[ELECTRONIC_ENERGY] = placeholder_energy
+                    data[GEOM] = data[GEOM].tolist()
+                    if zvars and zmol:
+                        for z in zvars: 
+                            if 'Scan' in z:
+                                scanvar = z.split()[0]
+                        scan_atoms = []
+                        for k in range(len(zmol)):
+                            if scanvar in zmol[k]:
+                                line_index = k
+                                scan_line = zmol[k].split() #We will split the line that has the scan variable.
+                        scan_atoms.append(str(line_index+1))
+                        for j in range(len(scan_line)):
+                            if scanvar in scan_line[j]:
+                                var_index = j
+                        if var_index == 2:
+                            scan_type = 'B'        
+                            scan_atoms.append(scan_line[var_index-1])
+                            if scan_type == 'B':
+                                data[SCANTYPE] = 'Bond'
+                            data[SCANATOMS] = scan_atoms
+                        if var_index == 6:
+                            scan_type = 'D'
+                            scan_atoms.extend([scan_line[var_index-5],scan_line[var_index-3],scan_line[var_index-1]])
+                            if scan_type == 'D':
+                                data[SCANTYPE] == 'Dihedral'
+                            data[SCANATOMS] = scan_atoms                    
+            return cur_line
         #================================================
         # parse_log body
         #================================================
@@ -771,12 +777,10 @@ class CcGaussianParser():
             mfooter = FOOTER_RE.match(line)
             if mfooter:
                 footer_line = cur_line
-
             cur_line = cur_line + 1
             if cur_line >= len(log_lines):
                 break
             line = log_lines[cur_line]
-
         # parse the log file footer
         if footer_line > 0:
             parse_footer(parseddata,parsedmisc,footer_line,log_lines)
