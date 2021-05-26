@@ -26,7 +26,7 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
 
-  <om:UnitDivision rdf:about="http://theworldavatar.com/ontouom/kilogram_per_pound_sterling">
+  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/kilogram_per_pound_sterling">
      <rdfs:label xml:lang="en">kilogram per pound sterling</rdfs:label>
      <om:symbol>kg/(£)</om:symbol>
      <om:alternativeSymbol>kg £-1</om:alternativeSymbol>

@@ -26,7 +26,7 @@
     <rdfs:label xml:lang="en">Ontology of units of Measure (OM)</rdfs:label>
   </owl:Ontology>
   
-  <om:UnitDivision rdf:about="http://theworldavatar.com/ontouom/pound_sterling_per_year">
+  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/pound_sterling_per_year">
      <rdfs:label xml:lang="en">pound sterling per year</rdfs:label>
      <om:symbol>£/yr</om:symbol>
      <om:alternativeSymbol>£ yr-1</om:alternativeSymbol>

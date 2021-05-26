@@ -28,7 +28,7 @@
   
   <!-- Kilogram Per Year Ontology -->
 
-  <om:UnitDivision rdf:about="http://theworldavatar.com/ontouom/kilogram_per_year">
+  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/kilogram_per_year">
     <rdfs:label xml:lang="en">kilogram per year</rdfs:label>
     <om:symbol>kg/yr</om:symbol>
     <om:alternativeSymbol>kg yr-1</om:alternativeSymbol>

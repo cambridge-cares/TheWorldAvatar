@@ -28,7 +28,7 @@
   
   <!-- Megajoule per Kilogram Ontology -->
 
-  <om:UnitDivision rdf:about="http://theworldavatar.com/ontouom/megajoule_per_kilogram">
+  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram">
     <rdfs:label xml:lang="en">megajoule per kilogram</rdfs:label>
     <rdfs:label xml:lang="nl">megajoule par kilogramme</rdfs:label>
     <om:symbol>MJ/(kg)</om:symbol>
