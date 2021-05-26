@@ -52,6 +52,7 @@ gevent==1.5.0
 graphviz==0.14.1
 greenlet==0.4.16
 grpcio==1.30.0
+gunicorn==20.0.4
 h11==0.8.1
 h2==3.2.0
 h5py==2.10.0
