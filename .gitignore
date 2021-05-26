@@ -75,10 +75,9 @@ Thumbs.db
 /JPS_Version_0/ADMS/ADMS_JAVA_END/ADMS-Java-11-10-17/ADMS/ADMS_1/src/kb_dev
 JPS_DISPERSION/JPS_DISPERSION.iml
 *.data-00000-of-00001
-geckodriver.log
-/JPS_Chatbot/UI/source/wolfram_alpha_and_google/test/*.html
+/JPS_Chatbot/jps-chatbot/UI/source/wolfram_alpha_and_google/test/*.html
 geckodriver.log
 /JPS_LDF/LDF_SERVER_JAVA/Server/WebContent/config.json
-/JPS_Chatbot/UI/data_preparation/Wiki_basic_info/instance_info
-/JPS_Chatbot/UI/data_preparation/Wiki_basic_info/instance_info
-/JPS_Chatbot/UI/data_preparation/Wiki_basic_info/smiles
+/JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_basic_info/instance_info
+/JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_basic_info/instance_info
+/JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_basic_info/smiles
