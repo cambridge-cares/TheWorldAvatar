@@ -83,6 +83,8 @@ def process_data(row):
                 if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
                         and row[3].strip() == 'http://www.w3.org/2002/07/owl#imports':
                     g.set((g.identifier, OWL_NS['imports'], URIRef(row[0])))
+                    """Sets the IRI of the TBox"""
+                    propread.setTBoxIRI(row[0])
                     """Sets the name of instance of Ontology as the ABox File Name"""
                     propread.setABoxFileName(row[2])
                 if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\

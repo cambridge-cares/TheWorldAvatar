@@ -22,11 +22,6 @@ def setTBoxIRI(iri):
     global tboxIRI
     tboxIRI = iri
 
-def readTBoxIRI():
-    global tboxIRI
-    tboxIRI = config.get('IRISection', 'kb.tbox.iri')
-    return tboxIRI
-
 def getABoxIRI():
     return aboxIRI
 
@@ -34,22 +29,12 @@ def setABoxIRI(iri):
     global aboxIRI
     aboxIRI=iri
 
-def readABoxIRI():
-    global aboxIRI
-    aboxIRI = config.get('IRISection', 'kb.abox.iri')
-    return aboxIRI
-
 def getABoxFileName():
     return aboxFileName
 
 def setABoxFileName(fileName):
     global aboxFileName
     aboxFileName = fileName
-
-def readABoxFileName():
-    global aboxFileName
-    aboxFileName = config.get('FileSection', 'kb.abox.file.name')
-    return aboxFileName
 
 def getABoxFileExtension():
     return aboxFileExtension
