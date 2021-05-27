@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from tqdm import tqdm
 import time
 from py4jps.resources import JpsBaseLib
@@ -12,6 +14,7 @@ from requests_html import HTMLSession
 import datetime
 import uuid
 from datetime import  timezone
+import sys
 
 
 def real_time_intakes():
@@ -124,14 +127,30 @@ def update_triple_store():
                                                            gas_uuid,
                                                            time_UTC)
             DEF_NAMESPACE = 'ontogasgrid'
+			
+	        # Possible KG locations
             LOCAL_KG = "http://localhost:9999/blazegraph"
-            LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+            CMCL_KG = "http://kg.cmclinnovations.com:81/blazegraph"
+			
+            # Determine the location of the KG using an environment variable
+            SPARQL_STRING = ''
+            TARGET_MODE = os.environ['TARGET_MODE']
+            print('TARGET_MODE is \'' + TARGET_MODE + '\'')
+			
+            if TARGET_MODE == 'CMCL' :
+                print('In CMCL mode, using KG at: ' + CMCL_KG)
+                SPARQL_STRING = CMCL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
+            else:
+                print('In Local mode, using KG at: ' + LOCAL_KG)
+                SPARQL_STRING = LOCAL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
+            
             # KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
             # ret = KGClient.executeQuery(query)
             # # --------------------
             # KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid',True , True)
             # ret = KGClient.executeQuery(query)
-            sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+            
+            sparql = SPARQLWrapper(SPARQL_STRING)
             sparql.setMethod(POST) # POST query, not GET
             sparql.setQuery(query)
             ret = sparql.query()
@@ -154,4 +173,16 @@ def single_update():
         update_triple_store()
         return 
 
-single_update()
+
+# Try to detect argument and launch update method
+if len(sys.argv) == 0:
+    single_update()
+elif sys.argv[1] == '-single':
+    print('Detected \'-single\' argument, running single update...')
+    single_update()
+elif sys.argv[1] == '-continuous':
+    print('Detected \'-continuous\' argument, running continuous updates...')
+    continuous()
+else:
+    single_update()
+
