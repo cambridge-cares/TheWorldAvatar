@@ -674,68 +674,116 @@ Net Calorific Value_10_1,Instance,http://theworldavatar.com/resource/ontouom/meg
 Net Calorific Value_10,Instance,Net Calorific Value_10_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_10,,"rye straw (#547), based on ""dry"" value",string
 Net Calorific Value_12,Instance,Weblink_45,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_12,,14.5,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_12,,MJ/kg,string
+Net Calorific Value_12_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_12_1,,14.5,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_12_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_12,Instance,Net Calorific Value_12_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_12,,"wheat + rye (#484), based on ""dry"" value",string
 Net Calorific Value_13,Instance,Weblink_46,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_13,,14.7,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_13,,MJ/kg,string
+Net Calorific Value_13_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_13_1,,14.7,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_13_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_13,Instance,Net Calorific Value_13_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_13,,"wheat straw (#703), based on ""as received"" value",string
 Net Calorific Value_16,Instance,Weblink_49,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_16,,15.73,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_16,,MJ/kg,string
+Net Calorific Value_16_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_16_1,,15.73,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_16_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_16,Instance,Net Calorific Value_16_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_16,,"rape (#539), based on ""as received"" value",string
 Net Calorific Value_18,Instance,Weblink_51,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_18,,-0.73,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_18,,MJ/kg,string
+Net Calorific Value_18_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_18_1,,-0.73,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_18_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_18,Instance,Net Calorific Value_18_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_18,,"tomato plant (#2887), based on ""as received"" value",string
 Net Calorific Value_19,Instance,Weblink_52,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_19,,15.56,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_19,,MJ/kg,string
+Net Calorific Value_19_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_19_1,,15.56,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_19_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_19,Instance,Net Calorific Value_19_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_19,,"barley (#435), based on ""as received"" value",string
 Net Calorific Value_20,Instance,Weblink_53,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_20,,18.07,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_20,,,string
+Net Calorific Value_20_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_20_1,,18.07,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_20_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_20,Instance,Net Calorific Value_20_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_20,,"flax (#521), based on ""dry"" value",string
 Net Calorific Value_21,Instance,Weblink_54,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_21,,16.02,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_21,,MJ/kg,string
+Net Calorific Value_21_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_21_1,,16.02,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_21_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_21,Instance,Net Calorific Value_21_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_21,,"oat straw (#2816), based on ""as received"" value",string
 Net Calorific Value_22,Instance,Weblink_55,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_22,,14.7,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_22,,MJ/kg,string
+Net Calorific Value_22_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_22_1,,14.7,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_22_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_22,Instance,Net Calorific Value_22_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_22,,"wheat straw (#703), based on ""as received"" value",string
 Net Calorific Value_23,Instance,Weblink_56,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_23,,15.73,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_23,,MJ/kg,string
+Net Calorific Value_23_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_23_1,,15.73,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_23_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_23,Instance,Net Calorific Value_23_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_23,,"rape (#539), based on ""as received"" value",string
 Net Calorific Value_24,Instance,Weblink_57,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_24,,17.63,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_24,,MJ/kg,string
+Net Calorific Value_24_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_24_1,,17.63,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_24_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_24,Instance,Net Calorific Value_24_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_24,,"rye straw (#547), based on ""dry"" value",string
 Net Calorific Value_25,Instance,Weblink_58,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_25,,14.5,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_25,,MJ/kg,string
+Net Calorific Value_25_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_25_1,,14.5,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_25_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_25,Instance,Net Calorific Value_25_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_25,,"wheat + rye (#484), based on ""dry"" value",string
 Net Calorific Value_27,Instance,Weblink_60,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_27,,14.23,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_27,,MJ/kg,string
+Net Calorific Value_27_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_27_1,,14.23,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_27_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_27,Instance,Net Calorific Value_27_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_27,,"sunflower pellets (#2747), based on ""as received"" value",string
 Net Calorific Value_28,Instance,Weblink_61,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_28,,0.22,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_28,,MJ/kg,string
+Net Calorific Value_28_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_28_1,,0.22,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_28_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_28,Instance,Net Calorific Value_28_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_28,,"bean plant (#2888), based on ""as received"" value",string
 Net Calorific Value_29,Instance,Weblink_62,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_29,,0.22,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_29,,MJ/kg,string
+Net Calorific Value_29_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_29_1,,0.22,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_29_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_29,Instance,Net Calorific Value_29_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_29,,"bean plant (#2888), based on ""as received"" value",string
 Net Calorific Value_31,Instance,Weblink_64,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_31,,0.22,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_31,,MJ/kg,string
+Net Calorific Value_31_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_31_1,,0.22,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_31_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_31,Instance,Net Calorific Value_31_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_31,,"bean plant (#2888), based on ""as received"" value",string
 Net Calorific Value_33,Instance,Weblink_66,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Net Calorific Value_33,,10.12,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Net Calorific Value_33,,MJ/kg,string
+Net Calorific Value_33_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_33_1,,10.12,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_33_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_33,Instance,Net Calorific Value_33_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_33,,"miscanthus (#573), based on ""as received"" value",string
 Crop Yield_1,Instance,Weblink_67,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_1,,6.926,string
