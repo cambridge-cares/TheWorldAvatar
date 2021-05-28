@@ -53,6 +53,9 @@ SCANFLAG = 'ScanFlag'
 SCANTYPE = 'ScanType'
 SCANATOMS = 'ScanAtoms'
 SCANPOINTS = 'Scan Points'
+MODATOMS = 'ModAtoms'
+MODTYPES = 'ModTypes'
+MODCOMMS = 'ModComms'
 
 
 # misc keys, not uploaded to the kg
@@ -76,7 +79,7 @@ CCKEYS_DATA = [
             ELECTRONIC_ZPE_ENERGY,HOMO_ENERGY,HOMO_MIN_1_ENERGY ,
             HOMO_MIN_2_ENERGY,LUMO_ENERGY,LUMO_PLUS_1_ENERGY,LUMO_PLUS_2_ENERGY,
             PROGRAM_NAME, PROGRAM_VERSION,
-            RUN_DATE, SCANFLAG, SCANTYPE, SCANATOMS, SCANPOINTS
+            RUN_DATE, SCANFLAG, SCANTYPE, SCANATOMS, SCANPOINTS, MODATOMS, MODTYPES, MODCOMMS
         ]
 
 # collate misc keys
@@ -624,6 +627,41 @@ class CcGaussianParser():
                     for at in data[ATOM_TYPES]:
                         data[ATOM_MASSES].append(eld.get_el_wt_by_symbol(at))
                     data[ATOM_MASSES_UNIT] = 'atomic'
+        #================================================    
+        def check_modredundant(data, cur_line, log_lines):
+            line = log_lines[cur_line]
+            mod_lines = []
+            mod_comms = []
+            mod_type = []
+            mod_atoms = []
+            if "The following ModRedundant input section has been read:".lower() in line.lower():
+                cur_line +=1 
+                line = log_lines[cur_line]
+                while line and not line.isspace():
+                    if 'S' not in line: #We don't want to read scans here.
+                        mod_lines.append(line) #Add the Modredundant lines here. 
+                    cur_line += 1
+                    line = log_lines[cur_line]
+                print(mod_lines)
+                for modline in mod_lines:
+                    if modline.split()[0] == 'B':
+                        mod_type.append('Bond')
+                        mod_atoms.append([modline.split()[1], modline.split()[2]])
+                    elif modline.split()[0] == 'A':
+                        mod_type.append('Angle')
+                        mod_atoms.append([modline.split()[1], modline.split()[2],modline.split()[3]])
+                    elif modline.split()[0] == 'D':
+                        mod_type.append('Dihedral')
+                        mod_atoms.append([modline.split()[1], modline.split()[2],modline.split()[3],modline.split()[4]])
+                    if modline.split()[-1] == 'B':
+                        mod_comms.append('Build')
+                    elif modline.split()[-1] == 'F':
+                        mod_comms.append('Freeze')
+                    if all(len(v) > 0 for v in [mod_atoms, mod_type, mod_comms]):
+                           data[MODATOMS] = mod_atoms
+                           data[MODTYPES] = mod_type
+                           data[MODCOMMS] = mod_comms
+            return cur_line
         #================================================        
         def check_relaxed_scan_job(data, cur_line, log_lines):
             if data[SCANFLAG] == 'Relaxed':
@@ -635,16 +673,19 @@ class CcGaussianParser():
                 placeholder_energy = None
                 scan_atoms = None
                 scan_type = None
-                if "The following ModRedundant input section has been read:".lower() in line.lower():
-                    data[SCANFLAG] = 'Relaxed'
+                if "The following ModRedundant input section has been read:".lower() in line.lower() and data[SCANFLAG] is None:
+                    mod_line = cur_line
                     cur_line +=1 
-                line = log_lines[cur_line]
-                while line and data[SCANFLAG] and not scan_type:
-                    if 'S' in line:
-                        scan_line = log_lines[cur_line]
-                        scan_type = scan_line.split()[0]  
-                    cur_line += 1
                     line = log_lines[cur_line]
+                    while line and not line.isspace():
+                        if 'S' in line:
+                            scan_line = log_lines[cur_line]
+                            scan_type = scan_line.split()[0] 
+                            data[SCANFLAG] = 'Relaxed'
+                        cur_line += 1
+                        line = log_lines[cur_line]
+                    if data[SCANFLAG] is None:
+                        cur_line = mod_line
                 if data[SCANFLAG] == 'Relaxed':
                     data[SCANPOINTS] = self.cclib_data.scanparm
                     placeholder_GEOM = self.cclib_data.scancoords
@@ -659,12 +700,16 @@ class CcGaussianParser():
                         data[SCANTYPE] = 'Bond'
                         scan_atoms = [scan_line.split()[1],scan_line.split()[2]]
                         data[SCANATOMS] = scan_atoms
+                    elif scan_type == 'A': 
+                        data[SCANTYPE] = 'Angle'
+                        scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3]]
+                        data[SCANATOMS] = scan_atoms
                     elif scan_type == 'D':
-                        data[SCANTYPE] == 'Dihedral'
+                        data[SCANTYPE] = 'Dihedral'
                         scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3],scan_line.split()[4]]
                         data[SCANATOMS] = scan_atoms
             return cur_line
-
+        #================================================    
         def check_rigid_scan_job(data, cur_line, log_lines):
             if data[SCANFLAG] == 'Rigid':
                 data[ELECTRONIC_ENERGY] = self.cclib_data.scanenergies
@@ -734,11 +779,17 @@ class CcGaussianParser():
                             if scan_type == 'B':
                                 data[SCANTYPE] = 'Bond'
                             data[SCANATOMS] = scan_atoms
+                        if var_index == 4:
+                            scan_type = 'A'        
+                            scan_atoms.extend([scan_line[var_index-3],scan_line[var_index-1]])
+                            if scan_type == 'A':
+                                data[SCANTYPE] = 'Angle'
+                            data[SCANATOMS] = scan_atoms
                         if var_index == 6:
                             scan_type = 'D'
                             scan_atoms.extend([scan_line[var_index-5],scan_line[var_index-3],scan_line[var_index-1]])
                             if scan_type == 'D':
-                                data[SCANTYPE] == 'Dihedral'
+                                data[SCANTYPE] = 'Dihedral'
                             data[SCANATOMS] = scan_atoms                    
             return cur_line
         #================================================
@@ -781,6 +832,7 @@ class CcGaussianParser():
             cur_line = check_Casscf_MP2_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_relaxed_scan_job(parseddata, cur_line,log_lines)
             cur_line = check_rigid_scan_job(parseddata, cur_line,log_lines)
+            cur_line = check_modredundant(parseddata, cur_line,log_lines)
 
             # check if we have reached the log footer
             # if so, record the line number
