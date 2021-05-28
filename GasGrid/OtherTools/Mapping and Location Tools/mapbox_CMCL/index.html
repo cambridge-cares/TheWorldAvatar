@@ -28,10 +28,6 @@
 		<div id="tableContainer"></div>
 	</div>
 	
-	<div id="attribution" style="height:25px; color:white; left:18px; bottom:40px; margin-right:10px; position:fixed; font-size:14px;">
-		<p>Tom Savage - 2021</p>
-	</div>
-
     <script>	
 		// Resets the camera
 		function resetCamera() {
@@ -68,7 +64,7 @@
 	    // Load the map visualisation
         var map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/satellite-v9',
+            style: 'mapbox://styles/mapbox/light-v10',
             zoom: 6.,
             center: [-2, 53.25]
         });
@@ -146,7 +142,7 @@
                     'line-cap': 'round'
                 },
                 'paint': {
-                    'line-color':  '#FFFFFF',
+                    'line-color':  '#C7C7C7',
                     'line-opacity': 0.75,
                     'line-width': 3
                 }
@@ -165,7 +161,7 @@
                 'type': 'fill-extrusion',
                 'source': 'Pipe Buffer',
                 'paint': {
-                    'fill-extrusion-color': '#FFFFFF',
+                    'fill-extrusion-color': '#C7C7C7',
                     'fill-extrusion-height': 15,
                     'fill-extrusion-base': 0,
                     'fill-extrusion-opacity': 1
