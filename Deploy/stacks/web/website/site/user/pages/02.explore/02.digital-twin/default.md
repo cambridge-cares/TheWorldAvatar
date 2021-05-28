@@ -28,11 +28,11 @@ slug: digital-twin
 
 <br><br>
 
-<table width="75%" style="margin: auto; text-align: center;">
+<table width="75%" style="margin: auto; text-align: center; padding: 25px; border: 1px solid LightGrey;">
 	<tr>
 		<td colspan="4">
-			<div style="width: 300px; margin: auto; border-bottom: 1px solid LightGrey;">
-				<h4>Examples</h4>
+			<div style="width: 100%;">
+				<h4>Representations of the base world</h4>
 			</div>
 		</td>
 	</tr>
