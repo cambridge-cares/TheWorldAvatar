@@ -3,30 +3,38 @@ from bz2 import __author__
 
 from rdflib import Graph
 from pathlib import Path
-
 import random
 
-def run(log_file,output_json,file_path):
+import os
+import errno
+import glob
 
-    #r = random.uniform(100000,1000000)
+def run(args):
 
-    #file_name= Path(log_file).stem
+    if os.path.isfile(args['<logFileOrDir>']):
+        parseLog(args['<logFileOrDir>'])
+    elif os.path.isdir(args['<logFileOrDir>']):
+        os.chdir(args['<logFileOrDir>'])
 
-    #create ontocompchem graph
-    #ontocompchem_graph = Graph()
+        for logFile in glob.glob(args["--logExt"]):
+            CompChemObj = OntoCompChemData()
+            CompChemObj.getData(logFile)
+    else:
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), args['<logFileOrDir>'])
 
-    # create OntoCompChemData object
+def parseLog(logFile):
     CompChemObj = OntoCompChemData()
-    # parse the log, and once done upload data to KG
-    # the upload function needs to be defined in the OntoCompChemData class
-    CompChemObj.getData(log_file)
+    CompChemObj.getData(logFile)
+
+
     #CompChemObj.uploadToKG()
-    if output_json:
-        if file_path:
-            if CompChemObj.data:
-                CompChemObj.outputjson(True)
-        elif CompChemObj.data:
-             CompChemObj.outputjson(False)
-             # CompChemObj.outputowl(ontocompchem_graph,file_name, r)
-        else:
-            print('No data to output/upload, check if log file is not empty or quantum job terminated correctly.')
+    #if output_json:
+    #    if file_path:
+    #        if CompChemObj.data:
+    #            CompChemObj.outputjson(True)
+    #    elif CompChemObj.data:
+    #         CompChemObj.outputjson(False)
+    #         # CompChemObj.outputowl(ontocompchem_graph,file_name, r)
+    #    else:
+    #        print('No data to output/upload, check if log file is not empty or quantum job terminated correctly.')
