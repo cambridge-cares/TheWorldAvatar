@@ -1,0 +1,33 @@
+test_parser_00_g1 (__main__.TestGaussianParser) ... ok
+test_parser_01_g2 (__main__.TestGaussianParser) ... ok
+test_parser_02_g2 (__main__.TestGaussianParser) ... ok
+test_parser_03_cbs_4m (__main__.TestGaussianParser) ... ok
+test_parser_04_cbs_apno (__main__.TestGaussianParser) ... ok
+test_parser_05_linked (__main__.TestGaussianParser) ... ok
+test_parser_06_cas (__main__.TestGaussianParser) ... ok
+test_parser_07_cas (__main__.TestGaussianParser) ... ok
+test_parser_08_dft (__main__.TestGaussianParser) ... ok
+test_parser_09_dft (__main__.TestGaussianParser) ... ok
+test_parser_10_dft (__main__.TestGaussianParser) ... ok
+test_parser_11_dft (__main__.TestGaussianParser) ... ok
+test_parser_12_dft (__main__.TestGaussianParser) ... ok
+test_parser_13_ccsd (__main__.TestGaussianParser) ... ok
+test_parser_14_ccsd (__main__.TestGaussianParser) ... ok
+test_parser_15_ci (__main__.TestGaussianParser) ... ok
+test_parser_16_mpn (__main__.TestGaussianParser) ... ok
+test_parser_17_extra (__main__.TestGaussianParser) ... ok
+test_parser_18_extra (__main__.TestGaussianParser) ... ok
+test_parser_19_extra (__main__.TestGaussianParser) ... ok
+test_parser_20_extra (__main__.TestGaussianParser) ... ok
+test_parser_21_extra (__main__.TestGaussianParser) ... ok
+test_parser_22_extra (__main__.TestGaussianParser) ... ok
+test_parser_23_extra (__main__.TestGaussianParser) ... ok
+test_parser_24_extra (__main__.TestGaussianParser) ... ok
+test_parser_25_failed_jobs (__main__.TestGaussianParser) ... ok
+test_parser_26_failed_jobs (__main__.TestGaussianParser) ... ok
+test_parser_27_failed_jobs (__main__.TestGaussianParser) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 6.165s
+
+OK

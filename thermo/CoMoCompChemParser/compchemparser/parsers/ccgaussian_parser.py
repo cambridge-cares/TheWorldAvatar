@@ -300,7 +300,7 @@ class CcGaussianParser():
                     data[ATOM_TYPES].append(el)
                     cur_line = cur_line + 1
                     line = log_lines[cur_line].strip()
-            elif 'Standard orientation:' in line:
+            elif 'Standard orientation:' in line and data[GEOM] is None:
                 if data[SCANFLAG] is None:
                     data[GEOM] = []
                 data[ATOM_TYPES] = []
@@ -642,7 +642,6 @@ class CcGaussianParser():
                         mod_lines.append(line) #Add the Modredundant lines here. 
                     cur_line += 1
                     line = log_lines[cur_line]
-                print(mod_lines)
                 for modline in mod_lines:
                     if modline.split()[0] == 'B':
                         mod_type.append('Bond')
@@ -715,6 +714,7 @@ class CcGaussianParser():
                 data[ELECTRONIC_ENERGY] = self.cclib_data.scanenergies
                 return cur_line
             elif data[SCANFLAG] !='Relaxed':
+                count = 0
                 line = log_lines[cur_line]
                 placeholder_GEOM = None
                 placeholder_energy = None
@@ -724,17 +724,19 @@ class CcGaussianParser():
                 zvars = None
                 zmat = []
                 if 'Charge =' in line and  'Multiplicity =' in line:
+                    count +=1
                     cur_line +=1 
                     line = log_lines[cur_line]
                     while line and not line.isspace():
                         zmat.append(line)
+                        count +=1
                         cur_line += 1
                         line = log_lines[cur_line]
                 zmat = [i.rstrip() for i in zmat]
     
                 if 'Variables' not in '\t'.join(zmat):
                     zmat = None 
-                    
+                    cur_line = cur_line - count #If we don't find any zmatrix scan, we will return back to the start. 
                 def group(seq, sep):
                     g = []
                     for el in seq:
@@ -812,6 +814,7 @@ class CcGaussianParser():
         cur_line = 0
         line = log_lines[cur_line]
         while True:
+           # print(line)
             # sometimes I am passing and retaining cur_line nr to functions
             # that do nothing with it and return it as is. I do it so that
             # in the future we may easily do sth with cur_line in these functions
