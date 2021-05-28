@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from tqdm import tqdm
 import time
 from py4jps.resources import JpsBaseLib
@@ -22,9 +20,7 @@ def real_time_intakes():
     DESCRIPTION:
     Calls the National Grid online publication of incoming flows to the NTS
     Produces table with Terminals, times, and values.
-    '''
-    # clearing terminal
-    os.system('cls' if os.name == 'nt' else 'clear')
+    '''    
     # opening and rendering HTML
     url = 'https://mip-prd-web.azurewebsites.net/InstantaneousView'
     session = HTMLSession()
@@ -64,6 +60,10 @@ def real_time_intakes():
 
 
 def update_triple_store():
+    print("\n========== UPDATE START ==========")
+    today = datetime.datetime.now()
+    print("Performing update at: ", today)
+    
     jpsBaseLibGW = JpsBaseLib()
     jpsBaseLibGW.launchGateway()
 
@@ -73,7 +73,10 @@ def update_triple_store():
     KGRouter = jpsGW_view.KGRouter
     # calling function to get most recent values of terminal gas rate
     data = real_time_intakes()
+
     for terminal_supply in data:
+	
+        print('\n')
         print('Updating Terminal Values for ',terminal_supply.values[0,1],' ...')
 
         # defining namespaces of each terminal
@@ -92,6 +95,7 @@ def update_triple_store():
 
         # iterating over terminals
         for i in range(len(term_uris)):
+		
             # convert to proper datetime format
             time_UTC = str(terminal_supply.values[i,1].strftime("%Y-%m-%dT%H:%M:%S"))
             # get gas volume from MCM/Day to cubicMetrePerSecond
@@ -149,13 +153,16 @@ def update_triple_store():
             # # --------------------
             # KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid',True , True)
             # ret = KGClient.executeQuery(query)
-            
+                       
             sparql = SPARQLWrapper(SPARQL_STRING)
             sparql.setMethod(POST) # POST query, not GET
             sparql.setQuery(query)
+            
+            print("Running query...")
             ret = sparql.query()
-    # clear terminal
-    os.system('cls' if os.name == 'nt' else 'clear')
+            print("Query finished.")
+
+    print("\n==========  UPDATE END  ==========")
     return 
 
 def continuous_update():
@@ -170,12 +177,12 @@ def continuous_update():
     return 
 
 def single_update():
-        update_triple_store()
-        return 
+    update_triple_store()
+    return 
 
 
 # Try to detect argument and launch update method
-if len(sys.argv) == 0:
+if len(sys.argv) <= 1:
     single_update()
 elif sys.argv[1] == '-single':
     print('Detected \'-single\' argument, running single update...')

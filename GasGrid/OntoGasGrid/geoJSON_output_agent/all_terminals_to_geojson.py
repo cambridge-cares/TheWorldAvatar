@@ -40,11 +40,37 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
   ?term loc:lat-lon ?location.
   }"""%(class_namespace,class_name)
 
- # performing SPARQL query  
+
+  # Possible KG locations
   DEF_NAMESPACE = 'ontogasgrid'
   LOCAL_KG = "http://localhost:9999/blazegraph"
-  LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-  KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
+  CMCL_KG = "http://kg.cmclinnovations.com:81/blazegraph"
+
+  # Possible output locations
+  LOCAL_OUT = "OntoGasGrid/geoJSON_output_agent/geoJSON_output"
+  CMCL_OUT = "/var/www/html/gas-grid/"
+
+  # Determine the location of the KG using an environment variable
+  SPARQL_STRING = ''
+  TARGET_MODE = os.environ['TARGET_MODE']
+  print('TARGET_MODE is \'' + TARGET_MODE + '\'')
+
+  if TARGET_MODE == 'CMCL' :
+      print('In CMCL mode...')
+      print('    ...using KG at: ' + CMCL_KG)
+      print('    ...outputting at: ' + CMCL_OUT)
+      SPARQL_STRING = CMCL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
+      OUTPUT_FOLDER = CMCL_OUT
+  else:
+      print('In LOCAL mode...')
+      print('    ...using KG at: ' + LOCAL_KG)
+      print('    ...outputting at: ' + LOCAL_OUT)
+      SPARQL_STRING = LOCAL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
+      OUTPUT_FOLDER = LOCAL_OUT
+  
+ # performing SPARQL query  
+
+  KGClient = jpsGW_view.RemoteKnowledgeBaseClient(SPARQL_STRING)
   ret = KGClient.executeQuery(queryString)
 
   # KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)
@@ -93,12 +119,11 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
   """
   geojson_file += end_geojson
   # saving as geoJSON
-  output_folder = 'OntoGasGrid/geoJSON_output_agent/geoJSON_output'
   try:
-    os.mkdir(output_folder)
+    os.mkdir(OUTPUT_FOLDER)
   except FileExistsError:
     print('Directory already exists')
-  geojson_written = open(output_folder+'/'+class_label+'.geojson','w')
+  geojson_written = open(OUTPUT_FOLDER+'/'+class_label+'.geojson','w')
   geojson_written.write(geojson_file)
   geojson_written.close() 
   print('Succesfully created geoJSON file')
