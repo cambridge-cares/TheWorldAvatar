@@ -50,7 +50,7 @@ class OntoCompChemData:
             print('    uploading json entry '+str(i+1))
             # upload call ...
 
-    def outputjson(self,pathflag):
+    def outputjson(self):
         print('Dumping to JSON, File '+self.log)
         print("self.log : ", self.log)
         k=1
@@ -70,7 +70,20 @@ class OntoCompChemData:
             dict_data = json.loads(json_dat)
             with open(json_name, 'w') as outfile:
                 json.dump(dict_data, outfile, indent = 4)
-            
+
+
+    def output_owls(self):
+        k=1
+        global t
+        for i, json_dat in enumerate(self.data):
+            if len(self.data) > 1:              
+                 owl_name = base=os.path.basename(self.log) + '_' + str(i+1)+'.owl'
+            else:             
+                 owl_name = base=os.path.basename(self.log) + '.owl'
+                
+ 
+        
+            dict_data = json.loads(json_dat)
                  
             ''' Generates knowledge graph as owl file for each generated josn file '''
 #           r = random.uniform(100000,1000000)
@@ -82,20 +95,15 @@ class OntoCompChemData:
             #gives log file name with extension without file path
             log_file_name = os.path.basename(self.log)
             
-            if pathflag == True:
-                self.outputowl(ontocompchem_graph, dict_data, file_name, log_file_name,owl_name,r, k, True)
-                k = k+1
-                for (key, value) in iteritems(dict_data):
-                    print(" - ", key, " : ", value)
-            
-            if pathflag == False:
-                self.outputowl(ontocompchem_graph, dict_data, file_name, log_file_name,owl_name,r, k, False)
-                k = k+1
-                for (key, value) in iteritems(dict_data):
-                    print(" - ", key, " : ", value)
-             
 
-    def outputowl(self,ontocompchem_graph, dict_data,file_name, log_file_name, owl_name,rnd,k,pathflag):
+            self.outputowl(ontocompchem_graph, dict_data, file_name, log_file_name,owl_name,r, k)
+            k = k+1
+            for (key, value) in iteritems(dict_data):
+                print(" - ", key, " : ", value)
+            
+
+
+    def outputowl(self,ontocompchem_graph, dict_data,file_name, log_file_name, owl_name,rnd,k):
 
         print("output owl: ")
 
@@ -142,29 +150,10 @@ class OntoCompChemData:
         g_path = str(os.path.abspath(self.log))
         
         ''' Check the number of jobs found in log file'''
-        if pathflag == True:
-            path = sys.argv[6]
-            if len(self.data) > 1:
-#                owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"                 
-                 #Line below is commented because it causes problem with generating owl file. Commented by Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
-                 #owl_name = Path(self.log).stem + '_' + str(k)+'.owl'                 
-                 #owl_path = g_path+"#"+str(k)+".owl"
-                 owl_path = path + owl_name
-                
-            else:
-#                owl_path = os.path.splitext(g_path)[0]+".owl"
-                 #Line below is commented because it causes problem with generating owl file. Commented by Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
-                 #owl_name = Path(self.log).stem + ".owl"                 
-                 #owl_path = g_path+".owl" 
-                 owl_path = path + owl_name
-        
-        elif pathflag == False:
-            if len(self.data) > 1:
-#                owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
-                 owl_path = g_path+"_"+str(k)+".owl"
-            else:
-#                owl_path = os.path.splitext(g_path)[0]+".owl"
-                 owl_path = g_path+".owl"
+        if len(self.data) > 1:         
+             owl_path = g_path+"_"+str(k)+".owl"
+        else:
+             owl_path = g_path+".owl"
 
 
         print("owl_path: " , owl_path)

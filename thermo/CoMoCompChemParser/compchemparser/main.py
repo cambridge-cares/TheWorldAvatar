@@ -8,8 +8,8 @@ Usage:
 
     options:
         -j                        Generate output json file(s)
-        --p=OUTPATH               Change the output file path [default: .]
-        --logExt=LOGEXT           Log files file extension for log file directory input [default: *]
+        -o                        Generate output owl file(s)
+        --logExt=LOGEXT           Log files file extension for log file directory input [default: *.log]
 """
 
 def main():
@@ -44,12 +44,12 @@ if __name__ == '__main__':
 #    run(args.f,args.j,args.p)
 #    print('finished!')
 #
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-   # try to launch the main func, in case of errors the traceback will provide details
-   try:
-       main()
-       utils.wait()
-   except:
-       traceback.print_exc()
-       utils.wait()
+#    # try to launch the main func, in case of errors the traceback will provide details
+#    try:
+#        main()
+#        utils.wait()
+#    except:
+#        traceback.print_exc()
+#        utils.wait()
