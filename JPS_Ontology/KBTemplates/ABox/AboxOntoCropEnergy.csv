@@ -905,66 +905,114 @@ Crop Yield Value_17,Instance,http://theworldavatar.com/resource/ontouom/megajoul
 Crop Yield_17,Instance,Crop Yield Value_17,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_17,,Potatoes - 2019 data,string
 Crop Yield_18,Instance,Weblink_84,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_18,,354.0291,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_18,,tonnes/hectare,string
+Crop Yield Value_18,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_18,,354.0291,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_18,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_18,Instance,Crop Yield Value_18,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_18,,Tomatoes - 2019 data,string
 Crop Yield_19,Instance,Weblink_85,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_19,,6.926,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_19,,tonnes/hectare,string
+Crop Yield Value_19,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_19,,6.926,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_19,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_19,Instance,Crop Yield Value_19,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_19,,Barley - 2019 data,string
 Crop Yield_20,Instance,Weblink_86,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_20,,1.8,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_20,,tonnes/hectare,string
+Crop Yield Value_20,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_20,,1.8,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_20,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_20,Instance,Crop Yield Value_20,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_20,,Linseed - 2019 data,string
 Crop Yield_21,Instance,Weblink_87,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_21,,5.9121,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_21,,tonnes/hectare,string
+Crop Yield Value_21,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_21,,5.9121,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_21,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_21,Instance,Crop Yield Value_21,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_21,,Oats - 2019 data,string
 Crop Yield_22,Instance,Weblink_88,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_22,,8.9345,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_22,,tonnes/hectare,string
+Crop Yield Value_22,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_22,,8.9345,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_22,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_22,Instance,Crop Yield Value_22,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_22,,Wheat - 2019 data,string
 Crop Yield_23,Instance,Weblink_89,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_23,,3.3057,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_23,,tonnes/hectare,string
+Crop Yield Value_23,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_23,,3.3057,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_23,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_23,Instance,Crop Yield Value_23,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_23,,Rapeseed - 2019 data,string
 Crop Yield_24,Instance,Weblink_90,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_24,,2.3814,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_24,,tonnes/hectare,string
+Crop Yield Value_24,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_24,,2.3814,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_24,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_24,Instance,Crop Yield Value_24,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_24,,Rye - 2019 data,string
 Crop Yield_25,Instance,Weblink_91,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_25,,4.4716,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_25,,tonnes/hectare,string
+Crop Yield Value_25,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_25,,4.4716,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_25,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_25,Instance,Crop Yield Value_25,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_25,,Triticale - 2019 data,string
 Crop Yield_26,Instance,Weblink_92,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_26,,22.245,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_26,,tonnes/hectare,string
+Crop Yield Value_26,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_26,,22.245,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_26,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_26,Instance,Crop Yield Value_26,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_26,,Cabbages and other brassicas - 2019 data,string
 Crop Yield_27,Instance,Weblink_93,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_27,,2.2,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_27,,tonnes/hectare,string
+Crop Yield Value_27,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_27,,2.2,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_27,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_27,Instance,Crop Yield Value_27,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_27,,Average yield for sem-dwarf varieties that are adapted to UK conidtions,string
 Crop Yield_28,Instance,Weblink_94,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_28,,4,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_28,,tonnes/hectare,string
+Crop Yield Value_28,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_28,,4,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_28,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_28,Instance,Crop Yield Value_28,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_28,,"Broad beans, horse beans, dry - 2019 data",string
 Crop Yield_29,Instance,Weblink_95,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_29,,5.5724,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_29,,tonnes/hectare,string
+Crop Yield Value_29,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_29,,5.5724,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_29,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_29,Instance,Crop Yield Value_29,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_29,,"Beans, green - 2019 data",string
 Crop Yield_30,Instance,Weblink_96,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_30,,3.9221,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_30,,tonnes/hectare,string
+Crop Yield Value_30,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_30,,3.9221,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_30,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_30,Instance,Crop Yield Value_30,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_30,,"Peas, green - 2019 data",string
 Crop Yield_31,Instance,Weblink_97,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_31,,4,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_31,,tonnes/hectare,string
+Crop Yield Value_31,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_31,,4,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_31,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_31,Instance,Crop Yield Value_31,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_31,,"Broad beans, horse beans, dry - 2019 data",string
 Crop Yield_32,Instance,Weblink_98,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_32,,3.9221,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_32,,tonnes/hectare,string
+Crop Yield Value_32,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_32,,3.9221,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_32,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_32,Instance,Crop Yield Value_32,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_32,,"Peas, green - 2019 data",string
 Crop Yield_33,Instance,Weblink_99,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Crop Yield_33,,14,string
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Crop Yield_33,,tonnes/hectare,string
+Crop Yield Value_33,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_33,,14,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_33,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_33,Instance,Crop Yield Value_33,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_33,,"Miscanthus yield under UK conditions, although this can vary from 12 to 14 tonnes per hectare from the third year onwards",string
