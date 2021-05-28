@@ -102,7 +102,8 @@ def process_data(row):
                     http_flag=True
                 if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
                     type = row[2]
-                if http_flag:
+                print(propread.readInstanceLabelCreationOption().strip().lower())
+                if http_flag or propread.readInstanceLabelCreationOption().strip().lower() == 'no':
                     aboxgen.create_instance_without_name(g, URIRef(type), URIRef(instance))
                 else:
                     aboxgen.create_instance(g, URIRef(type), URIRef(instance), row[0])

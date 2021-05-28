@@ -14,6 +14,7 @@ tboxIRI=''
 aboxIRI=''
 aboxFileName=''
 aboxFileExtension=''
+instanceLabelCreationOption=''
 
 def getTBoxIRI():
     return tboxIRI
@@ -36,6 +37,18 @@ def setABoxFileName(fileName):
     global aboxFileName
     aboxFileName = fileName
 
+def getInstanceLabelCreationOption():
+    return instanceLabelCreationOption
+
+def setInstanceLabelCreationOption(labelCreationOption):
+    global instanceLabelCreationOption
+    instanceLabelCreationOption = labelCreationOption
+
+def readInstanceLabelCreationOption():
+    global instanceLabelCreationOption
+    instanceLabelCreationOption = config.get('InstanceParameter', 'create.label.using.instance.name')
+    return instanceLabelCreationOption
+
 def getABoxFileExtension():
     return aboxFileExtension
 
@@ -51,17 +64,17 @@ def readABoxFileExtension():
 
 if __name__ == '__main__':
     """Shows the default values available in the property file"""
-    print(readTBoxIRI())
-    print(readABoxIRI())
-    print(readABoxFileName())
+    print(readInstanceLabelCreationOption())
     print(readABoxFileExtension())
     """Sets new values to update the ones read from the property file"""
     setTBoxIRI("http://a/test/tbox/iri")
     setABoxIRI("http://a/test/abox/iri")
     setABoxFileName("a-test-a-box-file-name")
+    setInstanceLabelCreationOption("no")
     setABoxFileExtension("a-test-a-box-file-extension")
     """Shows the new values set via setter functions above"""
     print(getTBoxIRI())
     print(getABoxIRI())
     print(getABoxFileName())
+    print(getInstanceLabelCreationOption())
     print(getABoxFileExtension())
