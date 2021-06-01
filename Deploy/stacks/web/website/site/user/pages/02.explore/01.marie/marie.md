@@ -1,6 +1,6 @@
 ---
-title: Search Engine
-slug: search-engine
+title: Marie
+slug: marie
 ---
 
 <div class="intro-container three-quarter-width">
@@ -8,9 +8,9 @@ slug: search-engine
 		<img src="/user/images/marie/search-engine-large.jpg" class="header-image" alt="Search Engine" />
 	</div>
 	<div class="intro-center">
-		<h2>Search Engine</h2>
+		<h2>Marie</h2>
 		<p>This website presents a proof-of-concept search engine system for accessing chemical data from the World Avatar Knowledge Graph and the Wikidata Knowledge Graph. The Knowledge Graphs offers inter-connected data from chemical kinetics to chemical and physical properties of species and many other domains. We trained a question type classification model and an entity extraction model to interpret chemistry-related questions of interest. The system has a novel design which applies a topic model to identify the question-to-ontology affiliation to improve its accuracy.</p>
-		<p>To use the search engine, type a question into the field below, or select one of the provided sample questions.</p>
+		<p>To use the Marie search engine, type a question into the field below, or select one of the provided sample questions.</p>
 	</div>
 </div>
 

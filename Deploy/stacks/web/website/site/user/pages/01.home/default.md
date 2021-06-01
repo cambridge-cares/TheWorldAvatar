@@ -10,13 +10,13 @@ body_classes: 'title-center title-h1h2'
 
 	<table width="80%" style="margin: auto;">
 		<tr height="300px">
-			<td width="45%" style="text-align: center;" markdown="1">[![Search Engine](image://marie/search-engine-large.jpg?forceResize=250,250&classes=header-image)](/explore/search-engine)</td>
+			<td width="45%" style="text-align: center;" markdown="1">[![Search Engine](image://marie/search-engine-large.jpg?forceResize=250,250&classes=header-image)](/explore/marie)</td>
 			<td width="10%"></td>
 			<td width="45%" style="text-align: center;" markdown="1">[![UK Digital Twin](image://digital-twin/digital-twin-300.jpg?forceResize=250,250&classes=header-image)](/explore/digital-twin)</td>
 		</tr>
 		<tr>
 			<td width="45%" style="text-align: center;">
-				<h5><a href="/explore/search-engine">Search Engine</a></h5>
+				<h5><a href="/explore/marie">Marie</a></h5>
 				<p style="font-size: 80%;">A proof-of-concept search engine for accessing chemical data from the World Avatar Knowledge Graph and the Wikidata Knowledge Graph.</p>
 			</td>
 			<td width="10%"></td>
