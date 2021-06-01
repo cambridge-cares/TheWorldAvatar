@@ -52,21 +52,20 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
 
   # Determine the location of the KG using an environment variable
   SPARQL_STRING = ''
-  TARGET_MODE = os.environ['TARGET_MODE']
-  print('TARGET_MODE is \'' + TARGET_MODE + '\'')
-
-  if TARGET_MODE == 'CMCL' :
-      print('In CMCL mode...')
-      print('    ...using KG at: ' + CMCL_KG)
-      print('    ...outputting at: ' + CMCL_OUT)
-      SPARQL_STRING = CMCL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
-      OUTPUT_FOLDER = CMCL_OUT
-  else:
+  TARGET_MODE = os.getenv('TARGET_MODE', 'LOCAL')
+ 
+  if TARGET_MODE is None or TARGET_MODE != 'CMCL' :
       print('In LOCAL mode...')
       print('    ...using KG at: ' + LOCAL_KG)
       print('    ...outputting at: ' + LOCAL_OUT)
       SPARQL_STRING = LOCAL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
       OUTPUT_FOLDER = LOCAL_OUT
+  else:
+      print('In CMCL mode...')
+      print('    ...using KG at: ' + CMCL_KG)
+      print('    ...outputting at: ' + CMCL_OUT)
+      SPARQL_STRING = CMCL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
+      OUTPUT_FOLDER = CMCL_OUT
   
  # performing SPARQL query  
 

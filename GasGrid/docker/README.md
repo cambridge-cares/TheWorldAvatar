@@ -18,6 +18,6 @@ Be aware that the VERSION tag should match the current version of the software (
 + To build the image:
   + `docker build --rm --no-cache -t docker.cmclinnovations.com/gas-grid-agent:VERSION -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 5005:5000 --restart always --name "gas-grid-agent" -it docker.cmclinnovations.com/gas-grid-agent:VERSION`
+  + `docker run -d -p 4005:80 --restart always --name "gas-grid-agent" -it docker.cmclinnovations.com/gas-grid-agent:VERSION`
 + To push the image to the CMCL registry (after logging in):
   + `docker image push docker.cmclinnovations.com/gas-grid-agent:VERSION`

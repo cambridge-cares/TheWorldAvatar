@@ -1,3 +1,1 @@
-0 0 * * * /usr/bin/python /app/output/all_offtakes_to_geojson.py
-20 0 * * * /usr/bin/python /app/output/all_pipes_query_to_geojson.py
-40 0 * * * /usr/bin/python /app/output/all_terminals_to_geojson.py
+0 0 * * * bash -c "/app/output/run-outputs.sh"
