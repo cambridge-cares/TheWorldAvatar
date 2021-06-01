@@ -1,14 +1,19 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.Query;
@@ -17,12 +22,14 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.TxnType;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -817,12 +824,61 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	@Override
 	public
 	String get(String resourceUrl, String accept) {
-		return null;
+		
+		Var varS = Var.alloc("s");
+		Var varP = Var.alloc("p");
+		Var varO = Var.alloc("o");
+		
+		ConstructBuilder builder = new ConstructBuilder()
+				.addConstruct( varS, varP, varO);
+		
+		//TODO resourceUrl may have been loaded to the default graph 
+		
+		if (resourceUrl == null) {
+			//Default graph
+			builder.addWhere(varS, varP, varO);
+		}else {	
+			//Named graph
+			String graphURI = "<" + resourceUrl + ">";
+			builder.addGraph(graphURI, varS, varP, varO);	
+		}
+		
+		Model model = executeConstruct(builder.build());
+	
+		Lang syntax = RDFLanguages.contentTypeToLang(accept);		
+		
+		StringWriter out = new StringWriter();
+		model.write(out, syntax.getName());
+		return out.toString();
 	}
 	
 	@Override
 	public
 	void put(String resourceUrl, String content, String contentType) {
 		
+		//TODO resourceUrl may be in the default graph
+		
+		Model model = ModelFactory.createDefaultModel();
+		
+		InputStream in = new ByteArrayInputStream(content.getBytes());
+        if (contentType == null) {
+        	//RDF/XML default
+        	//TODO base?
+        	model.read(in, null); 
+		} else {
+			Lang syntax = RDFLanguages.contentTypeToLang(contentType);
+			model.read(in,null,syntax.getName());
+		}
+        
+        UpdateBuilder builder = new UpdateBuilder();
+        
+        if (resourceUrl == null) {
+        	builder.addInsert(model);
+        } else {
+        	String graphURI = "<" + resourceUrl + ">";
+        	builder.addInsert(graphURI, model);
+        }
+        
+		executeUpdate(builder.buildRequest());	
 	}
 }

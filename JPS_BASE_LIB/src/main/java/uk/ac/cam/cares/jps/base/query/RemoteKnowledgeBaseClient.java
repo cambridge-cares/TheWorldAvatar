@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,9 +13,9 @@ import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.jdbc.JenaDriver;
 import org.apache.jena.jdbc.remote.RemoteEndpointDriver;
 import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.TxnType;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import org.apache.jena.rdfconnection.RDFConnectionRemoteBuilder;
@@ -668,34 +670,27 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	public
 	void put(String resourceUrl, String content, String contentType) {
 		
-		//TODO convert content to model, insert model to store
+		Model model = ModelFactory.createDefaultModel();
 		
-		/*
-		UpdateBuilder builder = new UpdateBuilder();
-		
-		// Add select subquery and optional graph
-		
-			if (resourceUrl == null) {
-				select.addVar(varG);
-				select.addGraph(varG, where);
-				builder.addInsert(varG, newS, varP, varO)
-					.addDelete(varG, varS, varP, varO)
-					.addSubQuery(select);
-			}else {	
-				String graphURI = "<" + graph + ">";
-				select.addGraph(graphURI, where);
-				// Graph
-				builder.addInsert(graphURI, newS, varP, varO)
-					.addDelete(graphURI, varS, varP, varO)
-					.addSubQuery(select);	
-			}
-		}else {
-			select.addWhere(where);
-			builder.addInsert(newS, varP, varO)
-				.addDelete(varS, varP, varO)
-				.addSubQuery(select);
+		InputStream in = new ByteArrayInputStream(content.getBytes());
+        if (contentType == null) {
+        	//RDF/XML default
+        	//TODO base?
+        	model.read(in, null); 
+		} else {
+			Lang syntax = RDFLanguages.contentTypeToLang(contentType);
+			model.read(in,null,syntax.getName());
 		}
-		return builder.buildRequest();
-		*/
+        
+        UpdateBuilder builder = new UpdateBuilder();
+        
+        if (resourceUrl == null) {
+        	builder.addInsert(model);
+        } else {
+        	String graphURI = "<" + resourceUrl + ">";
+        	builder.addInsert(graphURI, model);
+        }
+        
+		executeUpdate(builder.buildRequest());
 	}
 }
