@@ -21,7 +21,7 @@ services:
     image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
     build:
       context: "./reverse_proxy"
-      target: no_ssl
+      target: dev
     container_name: "reverse_proxy"
     restart: always
     labels:

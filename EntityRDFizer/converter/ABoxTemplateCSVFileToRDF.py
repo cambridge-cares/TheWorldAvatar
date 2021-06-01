@@ -83,6 +83,8 @@ def process_data(row):
                 if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
                         and row[3].strip() == 'http://www.w3.org/2002/07/owl#imports':
                     g.set((g.identifier, OWL_NS['imports'], URIRef(row[0])))
+                    """Sets the IRI of the TBox"""
+                    propread.setTBoxIRI(row[0])
                     """Sets the name of instance of Ontology as the ABox File Name"""
                     propread.setABoxFileName(row[2])
                 if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
@@ -100,7 +102,8 @@ def process_data(row):
                     http_flag=True
                 if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
                     type = row[2]
-                if http_flag:
+                print(propread.readInstanceLabelCreationOption().strip().lower())
+                if http_flag or propread.readInstanceLabelCreationOption().strip().lower() == 'no':
                     aboxgen.create_instance_without_name(g, URIRef(type), URIRef(instance))
                 else:
                     aboxgen.create_instance(g, URIRef(type), URIRef(instance), row[0])
