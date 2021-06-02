@@ -134,7 +134,7 @@ def update_triple_store():
 			
 	        # Possible KG locations
             LOCAL_KG = "http://localhost:9999/blazegraph"
-            CMCL_KG = "http://kg.cmclinnovations.com:81/blazegraph"
+            CMCL_KG = "http://kg.cmclinnovations.com:8055/blazegraph"
 			
             # Determine the location of the KG using an environment variable
             SPARQL_STRING = ''
@@ -189,7 +189,7 @@ elif sys.argv[1] == '-single':
     single_update()
 elif sys.argv[1] == '-continuous':
     print('Detected \'-continuous\' argument, running continuous updates...')
-    continuous()
+    continuous_update()
 else:
     single_update()
 

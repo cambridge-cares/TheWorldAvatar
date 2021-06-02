@@ -6,5 +6,5 @@ cd /var/www/html/geoJSON_assets
 
 wget --quiet http://kg.cmclinnovations.com/digital-twin/gas-grid-agent/terminals.geojson
 wget --quiet http://kg.cmclinnovations.com/digital-twin/gas-grid-agent/offtakes.geojson
-wget --quiet http://kg.cmclinnovations.com/digital-twin/gas-grid-agent/pipes.geojson
+wget --quiet http://kg.cmclinnovations.com/digital-twin/gas-grid-agent/pipe_network.geojson
 echo Production files downloaded at `date` >> /var/log/gas-grid/downloads.log

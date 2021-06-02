@@ -44,7 +44,7 @@ def query_to_geoJSON(class_namespace,class_name,class_label,endpoint):
   # Possible KG locations
   DEF_NAMESPACE = 'ontogasgrid'
   LOCAL_KG = "http://localhost:9999/blazegraph"
-  CMCL_KG = "http://kg.cmclinnovations.com:81/blazegraph"
+  CMCL_KG = "http://kg.cmclinnovations.com:8055/blazegraph"
 
   # Possible output locations
   LOCAL_OUT = "OntoGasGrid/geoJSON_output_agent/geoJSON_output"
