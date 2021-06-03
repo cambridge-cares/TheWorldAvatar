@@ -68,8 +68,8 @@ RUN mkdir /var/log/gas-grid
 RUN chmod 777 /var/log/gas-grid
 
 # Set environment variable
-# Note that this should really be done from the compose file
-ENV TARGET_MODE="CMCL"
+# TODO: Read this from the docker-compose file in future.
+ENV KG_LOCATION="http://kg.cmclinnovations.com:8055/blazegraph"
 
 # Expose port for HTTP server
 EXPOSE 80

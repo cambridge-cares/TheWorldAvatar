@@ -23,7 +23,7 @@ LABEL version = "1.0.0-SNAPSHOT"
 LABEL description = "UK Gas Grid"
 
 # Install utilities
-RUN apt update && apt-get install -y cron procps nano wget
+RUN apk update && apk add procps nano wget bash busybox-initscripts
 
 # Create directory for files
 RUN mkdir -p /var/www/html
@@ -38,7 +38,8 @@ RUN chmod 755 /usr/local/download.sh
 
 # Copy in the start-up script
 COPY docker/start-up.sh /usr/local/start-up.sh
-RUN chmod 755 /usr/local/start-up.sh
+RUN chmod 777 /usr/local/start-up.sh
+RUN chmod +x /usr/local/start-up.sh
 
 # Copy in the cron-jobs file
 COPY docker/cron-jobs /usr/local/cron-jobs
@@ -54,7 +55,7 @@ RUN chmod -R 775 /var/www/
 EXPOSE 80
 
 # Run cron daemon and boot script at start
-CMD [ "sh", "-c", "cron && /usr/local/start-up.sh" ]
+CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh && exec crond -f" ]
 
 # Finish
 RUN echo -e "Image installation completed."

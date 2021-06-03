@@ -203,9 +203,9 @@
                 var coordinates = e.features[0].geometry.coordinates.slice();
 				coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
 				
-                var name = e.features[0].properties["Offtake Point (Licence Name)"];
+                var name = e.features[0].properties["Offtake Point (License Name)"];
                 var type = e.features[0].properties["Type of Offtake"];
-
+				
 				// Update the side panel
 				plotLiveData(name, "Offtake Type: " + type, coordinates);
 				
