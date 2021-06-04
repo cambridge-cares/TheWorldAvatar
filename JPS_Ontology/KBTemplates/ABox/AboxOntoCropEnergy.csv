@@ -67,7 +67,7 @@ Winter Peas,Instance,Peas,,,
 Winter Peas,Instance,http://www.theworldavatar.com/kb/ontolanduse/LG21,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
 Miscanthus,Instance,Miscanthus,,,
 Miscanthus,Instance,http://www.theworldavatar.com/kb/ontolanduse/TC01,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Miscanthus,"Many different crops are included in the TC01 Land Use Code classification; for simplicity, it has been assumed that miscanthus can be taken to represent this Lucode.",,string
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Miscanthus,,"Many different crops are included in the TC01 Land Use Code classification; for simplicity, it has been assumed that miscanthus can be taken to represent this Lucode.",string
 Gross Calorific Value_1,Instance,Gross Calorific Value,,,
 Gross Calorific Value_2,Instance,Gross Calorific Value,,,
 Gross Calorific Value_6,Instance,Gross Calorific Value,,,
