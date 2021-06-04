@@ -18,7 +18,7 @@ To build the image:
 	docker build --rm -t docker.cmclinnovations.com/website:1.0.0-SNAPSHOT .
 	
 To run the image and generate a container:
-	docker run -d -p 80:80 -p 443:443 --restart always --network dev-web --name "website" -it docker.cmclinnovations.com/website:1.0.0-SNAPSHOT
+	docker run -d --restart always --network dev-web --name "website" -it docker.cmclinnovations.com/website:1.0.0-SNAPSHOT
 
 
 ===== Development ======

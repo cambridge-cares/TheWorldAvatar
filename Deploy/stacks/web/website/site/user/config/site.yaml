@@ -14,10 +14,14 @@ summary:
   size: 300
   delimiter: '==='
 redirects:
-  /services/power-system: '/services/digital-twin/power-system'
-  /services/land-use: '/services/digital-twin/land-use'
-  /services/gas-grid: '/services/digital-twin/gas-grid'
-  /services/marie: '/services/search-engine'
+  /services/power-system: '/explore/digital-twin/power-system'
+  /services/land-use: '/explore/digital-twin/land-use'
+  /services/gas-grid: '/explore/digital-twin/gas-grid'
+  /services/digital-twin/power-system: '/explore/digital-twin/power-system'
+  /services/digital-twin/land-use: '/explore/digital-twin/land-use'
+  /services/digital-twin/gas-grid: '/explore/digital-twin/gas-grid'
+  /services/marie: '/explore/marie'
+  /services/search-engine: '/explore/marie'
 routes: null
 blog:
   route: /blog
