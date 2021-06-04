@@ -22,8 +22,8 @@ Once the requirements have been addressed, the Image can be build using the foll
 Be aware that the VERSION tag should match the current version of the visualisation (which is listed within the 'version' file).
 
 + To build the image:
-  + `docker build --rm --no-cache -t docker.cmclinnovations.com/uk-gas-grid:VERSION -f docker/Dockerfile .`
+  + `docker build --rm --no-cache -t docker.cmclinnovations.com/gas-grid-vis:VERSION -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 4001:80 --restart always --name "uk-gas-grid" -it docker.cmclinnovations.com/uk-gas-grid:VERSION`
+  + `docker run -d -p 4001:80 --restart always --name "gas-grid-vis" -it docker.cmclinnovations.com/gas-grid-vis:VERSION`
 + To push the image to the CMCL registry:
-  + `docker image push docker.cmclinnovations.com/uk-gas-grid:VERSION`
+  + `docker image push docker.cmclinnovations.com/gas-grid-vis:VERSION`

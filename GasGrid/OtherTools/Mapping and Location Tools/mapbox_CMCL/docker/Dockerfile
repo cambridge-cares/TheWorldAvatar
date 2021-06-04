@@ -7,39 +7,43 @@
 # not from within the "docker" directory. See the README
 # for more details.
 # 
-# The following stages are included:
-# 
-#	production			Required software only
+# Stages:
+#	- development:	copies in download-dev.sh
+#	- production:	copies in download-prod.sh
 #
 #########################
 
-##### CREDENTIALS STAGE ######
-FROM maven:3.6.3-openjdk-11 as credentials
-
-# Copy across Maven files
-RUN mkdir -p /tmp/geoJSON_assets
-WORKDIR /tmp
-COPY docker/pom.xml pom.xml
-COPY docker/settings.xml settings.xml
-
-# Run Maven project to download resources
-RUN mvn -X install -s settings.xml
-
-##### PRODUCTION STAGE #####
+##### DEVELOPMENT STAGE #####
 # Using Apache HTTP as the base 
-FROM httpd:2.4.46-alpine as production
+FROM httpd:2.4.46-alpine as development
 
 # Meta data
 LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
-LABEL version = "0.0.1"
+LABEL version = "1.0.0-SNAPSHOT"
 LABEL description = "UK Gas Grid"
+
+# Install utilities
+RUN apk update && apk add procps nano wget bash busybox-initscripts
 
 # Create directory for files
 RUN mkdir -p /var/www/html
 WORKDIR /var/www/html
 
-# Copy in the model files downloaded in last stage
-COPY --from=credentials /tmp/geoJSON_assets /var/www/html/geoJSON_assets
+# Make a directory for the gas-grid logs
+RUN mkdir /var/log/gas-grid
+
+# Copy in the download script specific to the DEVELOPMENT setup
+COPY docker/download-dev.sh /usr/local/download.sh
+RUN chmod 755 /usr/local/download.sh
+
+# Copy in the start-up script
+COPY docker/start-up.sh /usr/local/start-up.sh
+RUN chmod 777 /usr/local/start-up.sh
+RUN chmod +x /usr/local/start-up.sh
+
+# Copy in the cron-jobs file
+COPY docker/cron-jobs /usr/local/cron-jobs
+RUN chmod 755 /usr/local/cron-jobs
 
 # Copy in the files
 COPY . .
@@ -50,5 +54,17 @@ RUN chmod -R 775 /var/www/
 # Expose port 80
 EXPOSE 80
 
+# Run cron daemon and boot script at start
+CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh && exec crond -f" ]
+
 # Finish
 RUN echo -e "Image installation completed."
+
+
+##### PRODUCTION STAGE #####
+# Using development as the base 
+FROM development as production
+
+# Copy in the download script specific to the PRODUCTION setup
+COPY docker/download-prod.sh /usr/local/download.sh
+RUN chmod 755 /usr/local/download.sh

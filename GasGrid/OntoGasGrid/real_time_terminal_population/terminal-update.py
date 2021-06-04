@@ -12,6 +12,7 @@ from requests_html import HTMLSession
 import datetime
 import uuid
 from datetime import  timezone
+import sys
 
 
 def real_time_intakes():
@@ -19,9 +20,7 @@ def real_time_intakes():
     DESCRIPTION:
     Calls the National Grid online publication of incoming flows to the NTS
     Produces table with Terminals, times, and values.
-    '''
-    # clearing terminal
-    os.system('cls' if os.name == 'nt' else 'clear')
+    '''    
     # opening and rendering HTML
     url = 'https://mip-prd-web.azurewebsites.net/InstantaneousView'
     session = HTMLSession()
@@ -61,6 +60,10 @@ def real_time_intakes():
 
 
 def update_triple_store():
+    print("\n========== UPDATE START ==========")
+    today = datetime.datetime.now()
+    print("Performing update at: ", today)
+    
     jpsBaseLibGW = JpsBaseLib()
     jpsBaseLibGW.launchGateway()
 
@@ -70,7 +73,10 @@ def update_triple_store():
     KGRouter = jpsGW_view.KGRouter
     # calling function to get most recent values of terminal gas rate
     data = real_time_intakes()
+
     for terminal_supply in data:
+	
+        print('\n')
         print('Updating Terminal Values for ',terminal_supply.values[0,1],' ...')
 
         # defining namespaces of each terminal
@@ -89,6 +95,7 @@ def update_triple_store():
 
         # iterating over terminals
         for i in range(len(term_uris)):
+		
             # convert to proper datetime format
             time_UTC = str(terminal_supply.values[i,1].strftime("%Y-%m-%dT%H:%M:%S"))
             # get gas volume from MCM/Day to cubicMetrePerSecond
@@ -124,19 +131,38 @@ def update_triple_store():
                                                            gas_uuid,
                                                            time_UTC)
             DEF_NAMESPACE = 'ontogasgrid'
+			
+	        # Possible KG locations
             LOCAL_KG = "http://localhost:9999/blazegraph"
-            LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+            CMCL_KG = "http://kg.cmclinnovations.com:8055/blazegraph"
+			
+            # Determine the location of the KG using an environment variable
+            SPARQL_STRING = ''
+            TARGET_MODE = os.environ['TARGET_MODE']
+            print('TARGET_MODE is \'' + TARGET_MODE + '\'')
+			
+            if TARGET_MODE == 'CMCL' :
+                print('In CMCL mode, using KG at: ' + CMCL_KG)
+                SPARQL_STRING = CMCL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
+            else:
+                print('In Local mode, using KG at: ' + LOCAL_KG)
+                SPARQL_STRING = LOCAL_KG + '/namespace/' + DEF_NAMESPACE + '/sparql'
+            
             # KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
             # ret = KGClient.executeQuery(query)
             # # --------------------
             # KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid',True , True)
             # ret = KGClient.executeQuery(query)
-            sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+                       
+            sparql = SPARQLWrapper(SPARQL_STRING)
             sparql.setMethod(POST) # POST query, not GET
             sparql.setQuery(query)
+            
+            print("Running query...")
             ret = sparql.query()
-    # clear terminal
-    os.system('cls' if os.name == 'nt' else 'clear')
+            print("Query finished.")
+
+    print("\n==========  UPDATE END  ==========")
     return 
 
 def continuous_update():
@@ -151,7 +177,19 @@ def continuous_update():
     return 
 
 def single_update():
-        update_triple_store()
-        return 
+    update_triple_store()
+    return 
 
-single_update()
+
+# Try to detect argument and launch update method
+if len(sys.argv) <= 1:
+    single_update()
+elif sys.argv[1] == '-single':
+    print('Detected \'-single\' argument, running single update...')
+    single_update()
+elif sys.argv[1] == '-continuous':
+    print('Detected \'-continuous\' argument, running continuous updates...')
+    continuous_update()
+else:
+    single_update()
+
