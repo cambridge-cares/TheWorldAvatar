@@ -2,6 +2,8 @@
 <html lan="eng">
 
 <head>
+	<title>Gas Grid Visualisation</title>
+	
 	<!-- JS libraries -->
 	<script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -26,6 +28,7 @@
 		<div id="subtitleContainer"></div>
 		<div id="chartContainer"></div>
 		<div id="tableContainer"></div>
+		<div id="dateContainer"></div>
 	</div>
 	
     <script>	
@@ -57,7 +60,7 @@
 			}
 		}
 		closePanel();
-		
+						
 		// MapBox API Token
 		mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
        
@@ -73,6 +76,9 @@
 
 		// On load...
         map.on('load', function () {
+		
+			// Pre-load the flow data
+			loadFlowData();
 		
             // Sky layer that will show when the map is highly pitched
             map.addLayer({
@@ -125,7 +131,7 @@
 				labelLayerId
 			);
 		
-			// ============ NTS ===========	
+			// ============ PIPES ===========	
 			// Add the geoJSON data for NTS
             map.addSource('National Transmission System', {
                 type: 'geojson',
@@ -147,28 +153,6 @@
                     'line-width': 3
                 }
             });
-
-			/*
-			// ============ PIPES ===========	
-			// Add the geoJSON data for pipes
-            map.addSource('Pipe Buffer', {
-                type: 'geojson',
-                data: '/geoJSON_assets/pipe_buffer.geojson'
-            });
-
-			// Add layer style for pipes
-            map.addLayer({
-                'id': 'Pipe Extrusion',
-                'type': 'fill-extrusion',
-                'source': 'Pipe Buffer',
-                'paint': {
-                    'fill-extrusion-color': '#C7C7C7',
-                    'fill-extrusion-height': 15,
-                    'fill-extrusion-base': 0,
-                    'fill-extrusion-opacity': 1
-                }
-            });
-			*/
 
 			// ============ OFFTAKES ===========	
 			// Add the geoJSON data for offtakes
@@ -262,7 +246,7 @@
                 var type = "Terminal";
 
 				// Update the side panel
-				plotLiveData(name, type, coordinates);
+				showTerminal(name, type, coordinates);
 				
                 map.flyTo({
                     center: coordinates,

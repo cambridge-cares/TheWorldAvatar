@@ -19,11 +19,11 @@ Please note the caveats below before attempting to build the service using Docke
 
 Once the requirements have been addressed, the Image can be build using the following methods. Note that once this visualisation has been merged to the develop branch, it should be built as part of one of the existing Docker stacks.
 
-Be aware that the VERSION tag should match the current version of the visualisation (which is listed within the 'version' file).
+Be aware that the VERSION tag should match the current version of the visualisation (which is listed within the 'version' file), and that these examples use the 'development' version of the image (if deploying in production, use '--target production' and '-prod' in the image tag).
 
 + To build the image:
-  + `docker build --rm --no-cache -t docker.cmclinnovations.com/gas-grid-vis:VERSION -f docker/Dockerfile .`
+  + `docker build --rm --no-cache --target development -t docker.cmclinnovations.com/gas-grid-vis:VERSION-dev -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 4001:80 --restart always --name "gas-grid-vis" -it docker.cmclinnovations.com/gas-grid-vis:VERSION`
+  + `docker run -d -p 4001:80 --restart always --name "gas-grid-vis" -it docker.cmclinnovations.com/gas-grid-vis:VERSION-dev`
 + To push the image to the CMCL registry:
   + `docker image push docker.cmclinnovations.com/gas-grid-vis:VERSION`

@@ -9,10 +9,13 @@
 	Author: support<@>cmclinnovations.com
 """
 
-from py4jps.resources import JpsBaseLib
 import os 
 import sys
-import datetime
+import json
+import shutil
+from datetime import datetime as dt
+from datetime import timedelta as td
+from py4jps.resources import JpsBaseLib
 
 # Output directory for JSON files
 OUTPUT_DIR = "/var/www/html/gas-grid"
@@ -53,6 +56,7 @@ def buildQuery():
 	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 	PREFIX gas: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
 	PREFIX om: 	<http://www.ontology-of-units-of-measure.org/resource/om-2/>
+	PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 	SELECT ?s ?label ?UTC ?num_val
 	WHERE
@@ -64,7 +68,18 @@ def buildQuery():
 		?taken gas:atUTC ?UTC.
 		?phenom om:hasValue ?val.
 		?val om:hasNumericalValue ?num_val
-	}"""
+	"""
+	
+	# Get the date 24 hours ago
+	dayAgo = dt.now() - td(hours=24)
+	
+	# Format to string in "2021-06-04T02:58:00.000Z" format
+	timestampString = dayAgo.strftime("%Y-%m-%dT%H:%M:%S")
+	timestampString += ".000Z"
+	
+	# Append SPARQL filter
+	filterString = "FILTER (?UTC > \"" + timestampString + "\"^^xsd:dateTime)"
+	queryString += "\t" + filterString + "\n}"	
 	return queryString
 
 
@@ -100,14 +115,15 @@ def submitQuery(namespace, callbackSuccess, callbackFailure):
 	KGClient = jpsView.RemoteKnowledgeBaseClient(kgLocation)
 		
 	# Submit the query and await the result
-	today = datetime.datetime.now()
-	print("INFO: Submitting request at ", today)
+	today = dt.now()
+	print("INFO: Submitting request at", today)
 	
 	try:
 		result = KGClient.executeQuery(queryString)
-		callbackSuccess(result.toList())
 	except Exception as error:
 		callbackFailure(error)
+		
+	callbackSuccess(result.toList())
 
 
 def onSuccess(data):
@@ -118,17 +134,33 @@ def onSuccess(data):
 			data - resulting data from KG
 	"""
 	print("INFO: SPARQL query successful, data received.")
-	print("INFO: Type of returned data is ", type(data))
+	print("INFO: Number of results is", len(data))
+		
+	# Convert to JSON
+	dataString = str(data).replace("'", "\"")		
+	jsonData = json.loads(dataString)
 	
-	# TODO: Write this to a reasonable file format that the
-	#		visualisation could read (JSON maybe?).
+	# Write to a dated file
+	now = dt.now()
+	filename = "flow-data-" + now.strftime("%Y-%m-%d") + ".json"
+	filepath = os.path.join(OUTPUT_DIR, filename)
 	
-	numResults = len(data)
-	print("Number of results is ", len(data))
-	
-	with open("result.txt", "w") as file:
-		file.write(str(data))
-		file.close()
+	try:
+		print("INFO: Writing data to file at", filepath)
+		with open(filepath, "w") as file:
+			json.dump(jsonData, file)
+			file.close()
+			
+		# Also make a copy to flow-data-latest.json (so we don't have to
+		# write a dynamic wget call to download it later).
+		latestCopy = os.path.join(OUTPUT_DIR, "flow-data-latest.json")
+		shutil.copy(filepath, latestCopy)
+		print("INFO: Data also written to file at", latestCopy)
+		
+	except Exception:
+		print("ERROR: Could not write data to file!")
+		
+	print("SUCCESS: Script completed.")
 		
 
 def onFailure(error):
@@ -139,18 +171,15 @@ def onFailure(error):
 			error - thrown errot
 	"""
 	print("ERROR: Could not complete SPARQL query, error is as follows...")
-	print("\n")
-	print(error)
-	print("\n")
-	
+	print("\n" + error + "\n")
+	sys.exit()
 
 
 def main():
 	"""
 		Main function.
 	"""
-	
-	# Execute main logic
+	print("\n")
 	submitQuery("ontogasgrid", onSuccess, onFailure)
 
 
