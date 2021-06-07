@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#"
+     xml:base="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:space_and_time_extended="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:PowSysRealization="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV1-CoordinateSystem"/>
+        <PowSysRealization:hasTiltAngle rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#TiltAngle"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV1-CoordinateSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV1-CoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#x_PV1"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#y_PV1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV2_CoordinateSystem"/>
+        <PowSysRealization:hasNumberOfPanels rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#Panel"/>
+        <PowSysRealization:hasTiltAngle rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#TiltAngle"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV2_CoordinateSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#PV2_CoordinateSystem">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#x_PV2"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#y_PV2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#Panel -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#Panel">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NumberOfPanels"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">387</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#TiltAngle -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#TiltAngle">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Tilt"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#degree"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">10</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_x_PV1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_x_PV1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#degree"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.209830</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_x_PV2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_x_PV2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#degree"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.357006</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_y_PV1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_y_PV1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#degree"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">103.776920</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_y_PV2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_y_PV2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#degree"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">103.672324</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#degree -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#degree">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#x_PV1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#x_PV1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_x_PV1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#x_PV2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#x_PV2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_x_PV2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#y_PV1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#y_PV1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_y_PV1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#y_PV2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#y_PV2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#V_y_PV2"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+
