@@ -1,14 +1,8 @@
 {% extends 'partials/base.html.twig' %}
 
 {% block javascripts %}
-	{# JQuery libraries #}
-    {% do assets.addJs('https://code.jquery.com/jquery-3.5.1.min.js', 101) %}
-	{% do assets.addJs('https://code.jquery.com/ui/1.12.1/jquery-ui.min.js', {group:'bottom'}) %}
-    {% do assets.addJs('theme://js/jquery.treemenu.js', {group:'bottom'}) %}
-	
-	{# Theme provided JS #}
-    {% do assets.addJs('theme://js/site.js', {group:'bottom'}) %}
-	
+	{{ parent() }}
+		
 	{# Custom JS #}
 	{% do assets.addJs('theme://js/uk_gas_grid.js', {group:'bottom'}) %}
 {% endblock %}
