@@ -58,6 +58,7 @@ RUN chmod +x input/terminal-update.py
 # Scripts relating to querying data in the KG and formatting it
 RUN mkdir output
 COPY docker/run-outputs.sh /app/output/run-outputs.sh
+COPY OntoGasGrid/flow_data_generator/output_flow_data.py output/output_flow_data.py
 COPY OntoGasGrid/geoJSON_output_agent/all_offtakes_to_geojson.py output/all_offtakes_to_geojson.py
 COPY OntoGasGrid/geoJSON_output_agent/all_pipes_query_to_geojson.py output/all_pipes_query_to_geojson.py
 COPY OntoGasGrid/geoJSON_output_agent/all_terminals_to_geojson.py output/all_terminals_to_geojson.py
@@ -69,6 +70,7 @@ RUN chmod 777 /var/log/gas-grid
 
 # Set environment variable
 # TODO: Read this from the docker-compose file in future.
+ENV TARGET_MODE="CMCL"
 ENV KG_LOCATION="http://kg.cmclinnovations.com:8055/blazegraph"
 
 # Expose port for HTTP server
