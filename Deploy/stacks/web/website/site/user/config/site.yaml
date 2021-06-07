@@ -24,8 +24,8 @@ redirects:
   /services/digital-twin/gas-grid: '/explore/digital-twin/gas-grid'
   /services/gas-grid: '/explore/digital-twin/gas-grid'
   
-  /services/digital-twin/sustainable_goals: '/explore/digital-twin/sdg'
-  /services/sustainable_goals: '/explore/digital-twin/sdg'
+  /services/digital-twin/sustainable-goals: '/explore/digital-twin/sdg'
+  /services/sustainable-goals: '/explore/digital-twin/sdg'
   /services/digital-twin/un_goals: '/explore/digital-twin/sdg'
   /services/un_goals: '/explore/digital-twin/sdg'
   
