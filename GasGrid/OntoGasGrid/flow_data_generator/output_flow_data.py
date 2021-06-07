@@ -78,10 +78,8 @@ def buildQuery():
 	timestampString += ".000Z"
 	
 	# Append SPARQL filter
-	#filterString = "FILTER (?UTC > \"" + timestampString + "\"^^xsd:dateTime)"
-	#queryString += "\t" + filterString + "\n}"	
-	
-	queryString += "}"
+	filterString = "FILTER (?UTC > \"" + timestampString + "\"^^xsd:dateTime)"
+	queryString += "\t" + filterString + "\n}"	
 	return queryString
 
 

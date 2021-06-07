@@ -31,6 +31,9 @@ const noDataTable = "<div id=\"noData\"><p>No available data.</p></div>";
 // Line Chart object
 var lineChart = null;
 
+// Cached flow data
+var flowData = null;
+
 
 // Reset
 function reset() {
@@ -47,8 +50,22 @@ function reset() {
 	tableContainer.innerHTML = noDataTable;
 }
 
-// Creates a line-graph with the input chart name
-function plotLiveData(nodeName, nodeType, nodePosition) {
+// Runs when an offtake is selected, shows meta-data
+function showOfftake(nodeName, nodeType, nodePosition) {
+	console.log("Offtake selected, will only show metadata...");
+	reset(); 
+	
+	
+	
+	
+	
+	
+}
+
+
+// Runs when a terminal is selected, shows recent live data.
+function showTerminal(nodeName, nodeType, nodePosition) {
+	console.log("Terminal selected, will plot data...");
 	reset(); 
 	
 	// Set the chart title
@@ -70,51 +87,109 @@ function plotLiveData(nodeName, nodeType, nodePosition) {
 	mapPanel.style.width = "calc(100% - 405px)";
 	
 	// Build the line graph and table
+	// Find the relevant flow data entries
+	var flows = findFlowData(nodeName);
+	console.log(flows.length + " flow data points found.");
+	
 	lineChart = null;
-	buildChart();
+	buildChart(flows);
+}
+
+
+// Loads the flow data json file
+function loadFlowData() {
+	if(flowData == null) {
+		$.getJSON( "geoJSON_assets/flow-data.json", function(data) {
+			flowData = data;
+					
+			var dateContainer = document.getElementById('dateContainer');
+			var dateString = "Unknown";
+			
+			try {
+				var req = new XMLHttpRequest();
+				req.open("HEAD", "geoJSON_assets/flow-data.json", false);
+				req.send(null);
+				if(req.status== 200){
+					dateString = req.getResponseHeader("Last-Modified");
+				} 
+			} catch(er) {
+				console.log("Could not get modified date of flow-data.json");
+				console.log(er.message);
+			}
+			
+			dateContainer.innerHTML = "Data refreshed on: " + dateString;
+			console.log("Flow data has been loaded.");
+		});
+	}
+}
+
+
+// Searches the cached flow data for all entries relating to the input terminal name
+function findFlowData(nodeName) {
+	var flows = [];
+	
+	for(var i = 0; i < flowData.length; i++) {
+		entry = flowData[i];
+		label = entry["label"];
+		
+		if (label.toLowerCase() === nodeName.toLowerCase()) {
+			datetime = entry["UTC"];
+			value = entry["num_val"];
+			flows.push([datetime, value]);
+		}
+	}
+	
+	return flows;
+}
+
+
+// Sorts a 2D array by the first entry
+function sortFunction(a, b) {
+    if (a[0] === b[0]) {
+        return 0;
+    }
+    else {
+        return (a[0] < b[0]) ? -1 : 1;
+    }
 }
 
 
 // Generates the line chart
-function buildChart() {
+function buildChart(dataPoints) {
 	// Determine the size of the chart
 	var width = document.getElementById('chartContainer').offsetWidth;
 	var height = document.getElementById('chartContainer').offsetHeight;
 	
-	// Copy the data as we're going to edit it
-	var data = JSON.parse(JSON.stringify(sampleData));
-	
-	// Parse datetimes within the sample data
+    // Parse datetimes within the sample data
 	var timeParse = d3.timeParse("%Y-%m-%dT%H:%M:%S");
-	data.forEach(function(d) {
-		var newDate = timeParse(d.datetime);
-		if (newDate != null) d.datetime = newDate;
+	dataPoints.forEach(function(point) {
+		var originalDate = point[0].replace(".000Z", "");
+		var newDate = timeParse(originalDate);
+		if (newDate != null) point[0] = newDate;
+		
+		point[1] = parseFloat(point[1]);
 	});
-
 	
-	// Add some noise to each value in the sample data
-	data.forEach(function(d) {
-		var noise = (((Math.floor(Math.random() * 40)) - 20) / 100);
-		d.value *= (1.0 + noise);
-	});
+	// Sort the data based on datetime
+	sortedData = dataPoints.sort(sortFunction);
 	
 	// Setup axis ranges/mapping
-	var xRange = d3.extent(data, function(d) { 
-		return d.datetime; 
+	var xRange = d3.extent(dataPoints, function(d) { 
+		return d[0];
 	});
-	var yRange = d3.max(data, function(d) { 
-		return d.value; 
+	var yRange = d3.max(dataPoints, function(d) { 
+		return d[1];
 	});
 		
 	// Set up axis scales
 	var x = d3.scaleTime()
 		.range([0, (width - 50)])
-		.domain(d3.extent(data, function(d){return d.datetime}));
+		.domain(d3.extent(dataPoints, function(d){return d[0]}));
 	var y = d3.scaleLinear()
 		.range([height - 90, 0])
 		.domain([
-			d3.min(data, function(d){return d.value}) - 1.0, 
-			d3.max(data, function(d){return d.value}) + 1.0
+			d3.min(dataPoints, function(d){return d[1]}) - 1.0, 
+			d3.max(dataPoints, function(d){return d[1]}) + 1.0
 		]);
 
 	// Setup axes themselves
@@ -124,8 +199,8 @@ function buildChart() {
 	
 	// Setup the line generator
 	var line = d3.line()
-		.x(function(d) { return x(d.datetime); })
-		.y(function(d) { return y(d.value); });
+		.x(function(d) { return x(d[0]); })
+		.y(function(d) { return y(d[1]); });
 		
 	// Create the chart	
 	var vis = d3.select("#chartContainer").append("svg")
@@ -159,29 +234,30 @@ function buildChart() {
 	// Add the line
 	vis.append("path")
 		.attr("transform", "translate(30, 30)")
-		.datum(data) 
+		.datum(dataPoints) 
 		.attr("class", "line")
 		.attr("d", line);
+	
 		
 	// Add the markers	
 	vis.selectAll(".circle")
-        .data(data)
+        .data(dataPoints)
 		.enter()
 		.append("circle")
 		.attr("transform", "translate(30, 30)")
 		.attr("class", "points")
 		.attr("r", 2)
-		.attr("cx", function(d) { return x(d.datetime) })
-		.attr("cy", function(d) { return y(d.value) })
+		.attr("cx", function(d) { return x(d[0]) })
+		.attr("cy", function(d) { return y(d[1]) })
 		.attr("fill", "#FF5733")
 		
 	// Build the table
-	buildTable(data);
+	buildTable(dataPoints);
 }
 
 
 // Generates the raw data table	
-function buildTable(data) {
+function buildTable(dataPoints) {
 	
 	// Build the HTML table of raw data
 	var htmlTable = "<table id=\"dataTable\">";
@@ -189,17 +265,17 @@ function buildTable(data) {
 	htmlTable += "<th>" + sampleHeadings[1] + "</th></tr>";
 	
 	// Add the rows
-	for (var i = 0; i < data.length; i++) {
-		var rowData = data[i];
+	for (var i = 0; i < dataPoints.length; i++) {
+		var rowData = dataPoints[i];
 		
 		// Get data (add some noise for variability)
-		var dateTime = prettyPrintDate(rowData.datetime);
-		var flow = rowData.value;
+		var dateTime = prettyPrintDate(rowData[0]);
+		var flow = rowData[1];
 		
 		// Build HTML row
 		htmlTable += "<tr>";
 		htmlTable += "<td>" + dateTime + "</td>";
-		htmlTable += "<td>" + roundN(flow, 2) + "</td>";
+		htmlTable += "<td>" + roundN(flow, 3) + "</td>";
 		htmlTable += "</tr>";
 	}
 	htmlTable += "</table>"

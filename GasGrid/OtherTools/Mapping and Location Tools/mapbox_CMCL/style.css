@@ -95,12 +95,27 @@ h3 {
 
 #tableContainer {
 	width: auto;
-	height: calc(100% - 500px);
+	height: calc(100% - 550px);
 	overflow: auto;
 	overflow-x: hidden;
 	margin-left: 10px;
 	margin-right: 10px;
 	margin-top: 50px;
+	border: 1px solid #e1e1e1;
+}
+
+#dateContainer {
+	width: 375px;
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	
+	height: 20px;
+	margin: 10px;
+	text-align: center;
+	font-size: 9pt;
+	font-style: italic;
+	color: grey;
 }
 
 .line {

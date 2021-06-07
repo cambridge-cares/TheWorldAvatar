@@ -19,10 +19,10 @@ LABEL version = "1.0.0-SNAPSHOT"
 LABEL description = "Gas Grid Agent"
 
 # Install Java
-RUN apt update && apt install -y openjdk-11-jdk
+RUN apt update && apt install -y openjdk-11-jdk-headless
 
 # Install utilities
-RUN apt update && apt-get install -y cron procps nano screen
+RUN apt update && apt-get install -y cron procps nano
 
 # Install web server (to host geojson files for download)
 RUN apt update && apt install -y apache2

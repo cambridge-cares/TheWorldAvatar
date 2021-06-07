@@ -20,7 +20,7 @@ FROM httpd:2.4.46-alpine as development
 # Meta data
 LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
 LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "UK Gas Grid"
+LABEL description = "Gas Grid Visualisation"
 
 # Install utilities
 RUN apk update && apk add procps nano wget bash busybox-initscripts
