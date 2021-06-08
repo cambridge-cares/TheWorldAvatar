@@ -18,7 +18,7 @@ RUN python -m pip install -r requirements.txt
 
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
-COPY . /app
+ADD python_agent /app/python_agent
 
 # Switch to a non-root user before running the server, for security reasons
 # (See https://code.visualstudio.com/docs/containers/python-user-rights)
