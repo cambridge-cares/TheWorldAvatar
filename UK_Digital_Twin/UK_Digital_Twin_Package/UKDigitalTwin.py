@@ -22,7 +22,7 @@ class UKDigitalTwin:
     SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     
     """ Node Names """
-    baseNode = "http://www.theworldavatar.com/kb" # root URL
+    baseURL = "http://www.theworldavatar.com/kb" 
     
     topNode = "UK_Digital_Twin"  # Top level node
     
@@ -52,8 +52,7 @@ class UKDigitalTwin:
         "EGen": "Model_EGen",
         "EBus": "Model_EBus",
         "ELine": "Model_ELine"
-        }
-    
+        }    
     
     """ Node identifiers(keys) """
     topLevelNode = 1
@@ -61,13 +60,13 @@ class UKDigitalTwin:
     thirdLevelNode = 3
     fourthLevelNode = 4
     
-    """NameSpace"""
-    ukdigitaltwin = baseNode + SLASH + topNode
+    """Root URL"""
+    ukdigitaltwin = baseURL + SLASH + topNode
     
     
 """ Named-graphs URI generator"""   
 # 'namedGraphURIGenerator' is defined as a funciton belongs to the module 'UKDigitalTwin' instead of a method of class UKDigitalTwin
-def namedGraphURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName = None):
+def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName = None):
     if nodeIdentifier == UKDigitalTwin.topLevelNode and nodeName == UKDigitalTwin.topNode and dataOrModelVersion == None:
         _topNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.topNode
         return _topNode
@@ -91,7 +90,7 @@ def namedGraphURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subMod
                       + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.Model[dataOrModelVersion]
                   return _thirdLevelNode
               else:
-                  print ('Cannot construct the Named Graph (nodeLevel 3) URI, please check the input data')
+                  print ('Cannot construct the nodeLevel 3 URI, please check the input data')
                   
         elif nodeIdentifier == UKDigitalTwin.fourthLevelNode: # the return of the fourth level node is an array
               if nodeName == UKDigitalTwin.powerGridModel and dataOrModelVersion in UKDigitalTwin.Model.keys() and subModelName==None:
@@ -107,15 +106,15 @@ def namedGraphURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subMod
                           + UKDigitalTwin.SLASH + UKDigitalTwin.SubModel[subModelName] + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.SubModel[subModelName] 
                    return _fourthLevelNode
               else:
-                  print ('Cannot construct the Named Graph (nodeLevel 4) URI, please check the input data') 
+                  print ('Cannot construct the nodeLevel 4 URI, please check the input data') 
         else:
-            print ('Cannot construct the Named Graph (nodeLevel 2/3) URI, please check the input data') 
+            print ('Cannot construct the nodeLevel 2/3 URI, please check the input data') 
     else:
-        print ('Cannot construct the Named Graph (nodeLevel 1/2/3) URI, please check the input data')
+        print ('Cannot construct the nodeLevel 1/2/3 URI, please check the input data')
         return
     
 if __name__ == '__main__':
-    uri = namedGraphURIGenerator(4, UKDigitalTwin.powerGridModel, 10)
+    uri = nodeURIGenerator(4, UKDigitalTwin.powerGridModel, 10)
     print (uri)
 
 

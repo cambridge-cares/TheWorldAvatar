@@ -19,6 +19,7 @@ from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import DUKESDataProperty as DUKES
 from UK_Digital_Twin_Package import EnergyConsumptionDataProperty as EngConsump
+import SPARQLQueryUsedInTopNode as query_topNode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
 
 """Notation used in URI construction"""
@@ -47,24 +48,24 @@ engconsump = EngConsump.EnergyConsumptionData()
 
 """NodeURI"""
 Top_Level_Node = {
-    "UKDigitalTwin" : UKDT.namedGraphURIGenerator(1, dt.topNode, None)
+    "UKDigitalTwin" : UKDT.nodeURIGenerator(1, dt.topNode, None)
     }
 
 Second_Level_Node = {
-    "UKPowerPlant" : UKDT.namedGraphURIGenerator(2, dt.powerPlant, None),
-    "UKEnergyConsumption": UKDT.namedGraphURIGenerator(2, dt.energyConsumption, None),
-    "UKGridTopology": UKDT.namedGraphURIGenerator(2, dt.gridTopology, None),
-    "UKPowerGrid": UKDT.namedGraphURIGenerator(2, dt.powerGridModel, None)
+    "UKPowerPlant" : UKDT.nodeURIGenerator(2, dt.powerPlant, None),
+    "UKEnergyConsumption": UKDT.nodeURIGenerator(2, dt.energyConsumption, None),
+    "UKGridTopology": UKDT.nodeURIGenerator(2, dt.gridTopology, None),
+    "UKPowerGrid": UKDT.nodeURIGenerator(2, dt.powerGridModel, None)
     }
 
 Third_Level_Node = {
-    "UKPowerPlant2019" : UKDT.namedGraphURIGenerator(3, dt.powerPlant, dukes.VERSION),
-    "UKEnergyConsumption2017" : UKDT.namedGraphURIGenerator(3, dt.energyConsumption, engconsump.VERSION),
-    "UKTopology10Bus" : UKDT.namedGraphURIGenerator(3, dt.gridTopology, 10),
-    "UKGrid10Bus" : UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10)
+    "UKPowerPlant2019" : UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION),
+    "UKEnergyConsumption2017" : UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION),
+    "UKTopology10Bus" : UKDT.nodeURIGenerator(3, dt.gridTopology, 10),
+    "UKGrid10Bus" : UKDT.nodeURIGenerator(3, dt.powerGridModel, 10)
     }
 
-Fourth_Level_Node = UKDT.namedGraphURIGenerator(4, dt.powerGridModel, 10)
+Fourth_Level_Node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10)
 
 """T-Box URI"""
 #OntoCAPE_upper_level_system
@@ -77,7 +78,7 @@ defaultStoredPath = dt.StoreGeneratedOWLs + dt.topNode + OWL # default path
 filepath = None # user specified path
 userSpecified = False # storage mode: False: default, True: user specified
 
-"""Sleepycat storage path"""
+"""Sleepycat storage config"""
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 defaultPath_Sleepycat = dt.SleepycatStoragePath
@@ -89,6 +90,7 @@ ukdt_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin"
 """Add Top Level node"""
 def addTopLevelNode(graph):    
     # Import T-boxes
+    graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
     graph.set((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))
     
     # Add topnode triples
@@ -124,18 +126,34 @@ def addSubGraphtoSecondLevelNode(graph):
     graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), RDF.type, URIRef(ontocape_mathematical_model.MathematicalModel.iri)))
     return graph
 
-"""Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
-def addSubGraphs_fromRawData(graph, filepath, nodeName):
-    contentArrays = readFile(filepath)    
-    for content in contentArrays:
-        uriSplit = Third_Level_Node[nodeName].split('.owl') 
-        uri = uriSplit[0] + SLASH + content[0].strip('\n') + OWL + HASH + content[0].strip('\n')        
-        graph.add((URIRef(Third_Level_Node[nodeName]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
-                   URIRef(uri))) 
-        graph.add((URIRef(uri), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
-    return graph
 
-"""Add Fourth level nodes (EGen, Eline and EBus) to Third Level node (grdi model)"""
+#TODO: finish the addThirdLevelNode func
+"""Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
+def addThirdLevelNode(graph, nodeName, SleepycatPath = None, *localQuery):
+    if nodeName == "UKPowerPlant2019": 
+        nodeList = list(query_topNode.queryPowerPlantNodeURL())
+        contentArrays = readFile(filepath)    
+        for content in contentArrays:
+            uriSplit = Third_Level_Node[nodeName].split('.owl') 
+            uri = uriSplit[0] + SLASH + content[0].strip('\n') + OWL + HASH + content[0].strip('\n')        
+            graph.add((URIRef(Third_Level_Node[nodeName]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
+                       URIRef(uri))) 
+            graph.add((URIRef(uri), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
+        return graph
+
+# """Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
+# def addThirdLevelNode(graph, filepath, nodeName):
+    
+#     contentArrays = readFile(filepath)    
+#     for content in contentArrays:
+#         uriSplit = Third_Level_Node[nodeName].split('.owl') 
+#         uri = uriSplit[0] + SLASH + content[0].strip('\n') + OWL + HASH + content[0].strip('\n')        
+#         graph.add((URIRef(Third_Level_Node[nodeName]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
+#                    URIRef(uri))) 
+#         graph.add((URIRef(uri), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
+#     return graph
+
+"""Add Fourth level nodes (EGen, Eline and EBus) to Third Level node (grid model)"""
 def addFourthLevelNode(graph): 
     # Link fourth level nodes with third level nodes
     for fourtlevelnode in Fourth_Level_Node: 
@@ -143,7 +161,7 @@ def addFourthLevelNode(graph):
         graph.add((URIRef(fourtlevelnode), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
     return graph
 
-"""Create or update the top node owl file"""
+"""####Main function: Create or update the top node owl file####"""
 def generateTopNodeOWL(store, updateLocalOWLFile = True):
     baseURI = (Top_Level_Node['UKDigitalTwin'].split('#'))[0]
     

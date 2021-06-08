@@ -1,17 +1,16 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Date: 16 April 2021                    #
+# Date: 27 May 2021                      #
 ##########################################
 
 """This class lists out the T-boxes used by UK digital twin"""
 
 class UKDigitalTwinTBox:
+    
     """DBPedia"""
     dbr = "http://dbpedia.org/resource/"
     dbp = "https://dbpedia.org/property/"
     dbo = "https://dbpedia.org/ontology/"
-    
-    """DBPedia property"""
     
     """DBPedia class"""
     UK = dbr + "United_Kingdom"
@@ -46,3 +45,9 @@ class UKDigitalTwinTBox:
     ontopowsys_PowSysFunction = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#"
     ontopowsys_PowerSystemModel = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"
     ontopowsys_PowSysPerformance = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#"
+    
+    """OntoSDG"""
+    ontoSDG = "http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl#"
+    
+    """OntoSpecies"""
+    ontospecies = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"

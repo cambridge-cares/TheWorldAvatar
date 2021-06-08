@@ -52,7 +52,7 @@ userSpecified_Sleepycat = False # storage mode: False: default, True: user speci
 defaultPath_Sleepycat = ukec.SleepycatStoragePath
 
 """Root_uri"""
-uriSplit = UKDT.namedGraphURIGenerator(3, dt.energyConsumption, engconsump.VERSION).split('.owl') 
+uriSplit = UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION).split('.owl') 
 root_uri = uriSplit[0]
 
 """T-Box URI"""
@@ -92,7 +92,7 @@ def addUKElectricityConsumptionTriples(graph, *counter):
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))
             # Add connection between its father node
             graph.add((URIRef(ec_root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
-                        URIRef(UKDT.namedGraphURIGenerator(3, dt.energyConsumption, engconsump.VERSION))))
+                        URIRef(UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION))))
         elif len(counter) > 1: # local node
             print('Local node name is: ' + elecConData[0].strip('\n'))
             ec_root_node = root_uri + SLASH + elecConDataArrays[counter[1]][0].strip('\n') + OWL + HASH + elecConData[0].strip('\n') # sub node of the graph identifying the local node

@@ -4,6 +4,7 @@
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EGen."""
+# run time: around 20 mins
 
 import os
 import owlready2
@@ -64,7 +65,7 @@ userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
 """father node"""
-father_node = UKDT.namedGraphURIGenerator(4, dt.powerGridModel, 10, "EGen")
+father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, "EGen")
 
 # """NameSpace"""
 # father_uri = father_node.split('#')[0]

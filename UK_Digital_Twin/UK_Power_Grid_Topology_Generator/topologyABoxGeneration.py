@@ -70,7 +70,7 @@ store.context_aware = True
 defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
 
 """Root_node and root_uri"""
-root_node = UKDT.namedGraphURIGenerator(3, dt.gridTopology, 10)
+root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, 10)
 root_uri = root_node.split('#')[0]
 
 """NameSpace"""
@@ -130,7 +130,7 @@ def createTopologyGraph(store, updateLocalOWLFile = True):
     
     # Add root node type and the connection between root node and its father node   
     g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
-                        URIRef(UKDT.namedGraphURIGenerator(2, dt.gridTopology, None))))
+                        URIRef(UKDT.nodeURIGenerator(2, dt.gridTopology, None))))
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
        
     g = addEBusNodes(g, busInfoArrays) 
@@ -179,7 +179,7 @@ def addEBusNodes(graph, dataArray):
         bus_node = tp_namespace + bus_context_locator
         Ebus_context_locator = uk_ebus_model.EBusKey + busTopoData[0].zfill(3) + UNDERSCORE + busTopoData[1]
         Model_EBus_context_locator = uk_ebus_model.ModelEBusKey + busTopoData[0].zfill(3) + UNDERSCORE + busTopoData[1]
-        Ebus_node = UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + Model_EBus_context_locator + OWL + HASH + Ebus_context_locator
+        Ebus_node = UKDT.nodeURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + Model_EBus_context_locator + OWL + HASH + Ebus_context_locator
         # Link bus node with root node and specify its type
         graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(bus_node)))
         graph.add((URIRef(bus_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerEquipmentConnection.iri)))
@@ -249,7 +249,7 @@ def addELineNodes(graph, branchTopoArray, branchPropArray):
         # PowerFlow_ELine node uri
         branch_context_locator = uk_topo.PowerFlow_ELineKey + str(counter).zfill(3) 
         branch_node = tp_namespace + branch_context_locator
-        ELine_namespace = UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_eline_model.ModelELineKey + str(counter).zfill(3) + OWL + HASH
+        ELine_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_eline_model.ModelELineKey + str(counter).zfill(3) + OWL + HASH
         Eline_context_locator = uk_eline_model.ELineKey + str(counter).zfill(3)
         Eline_node = ELine_namespace + Eline_context_locator
         ELine_shape_node = ELine_namespace + uk_eline_model.ShapeKey + Eline_context_locator
@@ -319,7 +319,7 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays):
                 # build up iris
                 generator_context_locator = uk_topo.PowerGeneration_EGenKey + str(counter).zfill(3) 
                 generator_node = tp_namespace + generator_context_locator
-                EGen_namespace = UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
+                EGen_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
                 EGen_context_locator = uk_egen_model.EGenKey + str(counter).zfill(3)
                 EGen_node = EGen_namespace + EGen_context_locator
                 
@@ -354,7 +354,7 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays):
     return graph   
 
 def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
-    EGen_namespace = UKDT.namedGraphURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
+    EGen_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
     EGen_context_locator = uk_egen_model.EGenKey + str(counter).zfill(3)
     EGen_node = EGen_namespace + EGen_context_locator
     EGen_FixedOandMCost_node = EGen_namespace + ukmf.headerModelFactor[1] + UNDERSCORE + EGen_context_locator

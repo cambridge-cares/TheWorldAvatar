@@ -58,7 +58,7 @@ userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
 """father node"""
-father_node = UKDT.namedGraphURIGenerator(4, dt.powerGridModel, 10, "EBus")
+father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, "EBus")
 
 # """NameSpace"""
 # father_uri = father_node.split('#')[0]

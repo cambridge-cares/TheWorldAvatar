@@ -3,7 +3,7 @@
 # Last Update Date: 20 April 2021        #
 ##########################################
 
-"""This module declare the properties of generating UK Power Plant A-boxes"""
+"""This module declare the properties of generating UK Power Plant A-boxes OWL files"""
 
 class UKPowerPlant:
     
@@ -22,6 +22,5 @@ class UKPowerPlant:
     CoordinateSystemKey = "CoordinateSystem_"
     LongitudeKey = "y_coordinate_" 
     LantitudeKey = "x_coordinate_" 
-    
     
     valueKey = "value_"
