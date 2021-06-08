@@ -12,4 +12,5 @@ echo "Registering cron jobs..."
 crontab /usr/local/cron-jobs
 
 # Run the download script at start-up (in addition to via cron)
-/usr/local/download.sh
+chmod o+r /etc/resolv.conf
+/usr/local/download.sh > /var/log/gas-grid/download.log 2>&1

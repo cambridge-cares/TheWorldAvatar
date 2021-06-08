@@ -1,1 +1,1 @@
-0 1 * * * /usr/local/download.sh
+0 1 * * * "/usr/local/download.sh > /var/log/gas-grid/download.log 2>&1"
