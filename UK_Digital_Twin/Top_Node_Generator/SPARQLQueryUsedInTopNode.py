@@ -14,16 +14,16 @@ capa_PrimaryFuel = []
 qres_capa = []
 allCapacity = []
 
-def queryPowerPlantNodeURL(SleepycatPath, localQuery = True):
+def queryPowerPlantNodeURL(SleepycatPath, localQuery):
     queryStr = """
     PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> 
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     SELECT DISTINCT ?powerPlantIRI 
     WHERE { ?powerPlantIRI rdf:type powerplant:PowerPlant .} 
     """
-    if SleepycatPath == None and localQuery == False:    
+    if localQuery == False:    
         return queryStr
-    elif SleepycatPath != None:
+    elif SleepycatPath != None and localQuery == True:
         global qres
         dt_cg = ConjunctiveGraph('Sleepycat')
         sl = dt_cg.open(SleepycatPath, create = False)
@@ -34,10 +34,8 @@ def queryPowerPlantNodeURL(SleepycatPath, localQuery = True):
         dt_cg.close()
         return qres
 
-def queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery = True):
-    queryStr = """
-    PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> 
-    
+def queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery):
+    queryStr = """    
     PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
@@ -61,11 +59,80 @@ def queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery = True):
         dt_cg.close()
         return qres
 
+def queryEGenNodeURL(SleepycatPath, localQuery):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+    PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
+    PREFIX ontocape_mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    SELECT DISTINCT ?Model_EGen  
+    WHERE 
+    {
+    ?Model_EGen rdf:type ontopowsys_PowerSystemModel:PowerFlowModelAgent .
+    ?Model_EGen ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:StartCost .
+    } 
+    """
+    if SleepycatPath == None and localQuery == False:    
+        return queryStr
+    elif SleepycatPath != None:
+        global qres
+        dt_cg = ConjunctiveGraph('Sleepycat')
+        sl = dt_cg.open(SleepycatPath, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the Model_EGen sleepycat store')
+            return None
+        qres = list(dt_cg.query(queryStr))
+        dt_cg.close()
+        return qres
 
+def queryEBusNodeURL(SleepycatPath, localQuery):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+    PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
+    PREFIX ontocape_mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    SELECT DISTINCT ?Model_EBus  
+    WHERE 
+    {
+    ?Model_EBus rdf:type ontopowsys_PowerSystemModel:PowerFlowModelAgent .
+    ?Model_EBus ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:PdBus . 
+    } 
+    """
+    if SleepycatPath == None and localQuery == False:    
+        return queryStr
+    elif SleepycatPath != None:
+        global qres
+        dt_cg = ConjunctiveGraph('Sleepycat')
+        sl = dt_cg.open(SleepycatPath, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the Model_EBus sleepycat store')
+            return None
+        qres = list(dt_cg.query(queryStr))
+        dt_cg.close()
+        return qres
 
-
-
-
+def queryELineNodeURL(SleepycatPath, localQuery):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+    PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
+    PREFIX ontocape_mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    SELECT DISTINCT ?Model_ELine  
+    WHERE 
+    {
+    ?Model_ELine rdf:type ontopowsys_PowerSystemModel:PowerFlowModelAgent .
+    ?Model_ELine ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:R . 
+    } 
+    """
+    if SleepycatPath == None and localQuery == False:    
+        return queryStr
+    elif SleepycatPath != None:
+        global qres
+        dt_cg = ConjunctiveGraph('Sleepycat')
+        sl = dt_cg.open(SleepycatPath, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the Model_EBus sleepycat store')
+            return None
+        qres = list(dt_cg.query(queryStr))
+        dt_cg.close()
+        return qres
 
 
 

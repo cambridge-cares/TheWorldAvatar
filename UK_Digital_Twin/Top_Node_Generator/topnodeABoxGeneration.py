@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 April 2021        #
+# Last Update Date: 08 June 2021         #
 ##########################################
 
 """This module is designed to generate the top node of UK digital twin."""
@@ -19,8 +19,13 @@ from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import DUKESDataProperty as DUKES
 from UK_Digital_Twin_Package import EnergyConsumptionDataProperty as EngConsump
+from UK_Digital_Twin_Package import UKPowerPlant as UKpp
+from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
+from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
+from UK_Digital_Twin_Package import BlazegraphRepoLable
 import SPARQLQueryUsedInTopNode as query_topNode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -28,11 +33,13 @@ SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
 
-"""Graph store"""
+"""Local Graph store"""
 # store = 'default'
 store = Sleepycat()
 store.__open = True
 store.context_aware = True
+
+#TODO: check with Feroz about how to lable the graph store in Blazgraph
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -45,6 +52,17 @@ dukes = DUKES.DUKESData()
 
 """Create an object of Class EnergyConsumptionDataProperty"""
 engconsump = EngConsump.EnergyConsumptionData()
+
+"""Create an object of Class UKPowerPlantDataProperty"""
+ukpp = UKpp.UKPowerPlant()
+
+"""Create an object of Class UKPowerGridTopology"""
+uk_topo = UK_Topo.UKPowerGridTopology()
+
+"""Create an object of Class UKPowerGridModel"""
+uk_egen_model = UK_PG.UKEGenModel()
+uk_ebus_model = UK_PG.UKEbusModel()
+uk_eline_model = UK_PG.UKElineModel()
 
 """NodeURI"""
 Top_Level_Node = {
@@ -83,12 +101,19 @@ userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 defaultPath_Sleepycat = dt.SleepycatStoragePath
 
+"""Sleepycat storage path"""
+powerPlant_Sleepycat = ukpp.SleepycatStoragePath
+topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
+uk_egen_model_Sleepycat = uk_egen_model.SleepycatStoragePath
+uk_ebus_model_Sleepycat = uk_ebus_model.SleepycatStoragePath
+uk_eline_model_Sleepycat = uk_eline_model.SleepycatStoragePath
+
 """UK digital twin top node Conjunctive graph identifier"""
 ukdt_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin"
 
 ### Functions ###  
 """Add Top Level node"""
-def addTopLevelNode(graph):    
+def addTopAndSecondLevelNode(graph):    
     # Import T-boxes
     graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
     graph.set((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))
@@ -102,13 +127,13 @@ def addTopLevelNode(graph):
     # Link Second Level Nodes
     for node in Second_Level_Node.keys():
         graph.add((URIRef(Top_Level_Node['UKDigitalTwin']), URIRef(ontocape_upper_level_system.hasDirectSubsystem.iri), URIRef(Second_Level_Node[node])))
-    # Add system type of second level nodes  
+        # Add system type of second level nodes  
         graph.add((URIRef(Second_Level_Node[node]), RDF.type, URIRef(ontocape_upper_level_system.FirstLevelSubsystem.iri))) 
-        graph.add((URIRef(Second_Level_Node["UKPowerGrid"]), RDF.type, URIRef(ontocape_mathematical_model.ModeledObject.iri))) 
+    graph.add((URIRef(Second_Level_Node["UKPowerGrid"]), RDF.type, URIRef(ontocape_mathematical_model.ModeledObject.iri))) 
     return graph
 
 """Add Sub-graphs to Second Level node"""
-def addSubGraphtoSecondLevelNode(graph): 
+def addThirdLevelNode(graph): 
     # Link second level nodes with third level nodes
     graph.add((URIRef(Second_Level_Node['UKPowerPlant']),\
                URIRef(ontocape_upper_level_system.hasDirectSubsystem.iri), URIRef(Third_Level_Node['UKPowerPlant2019'])))
@@ -127,42 +152,61 @@ def addSubGraphtoSecondLevelNode(graph):
     return graph
 
 
-#TODO: finish the addThirdLevelNode func
+#TODO: finish the addThirdLevelNode func, have not test the remote query and the query result should be formatted as list
 """Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
-def addThirdLevelNode(graph, nodeName, SleepycatPath = None, *localQuery):
-    if nodeName == "UKPowerPlant2019": 
-        nodeList = list(query_topNode.queryPowerPlantNodeURL())
-        contentArrays = readFile(filepath)    
-        for content in contentArrays:
-            uriSplit = Third_Level_Node[nodeName].split('.owl') 
-            uri = uriSplit[0] + SLASH + content[0].strip('\n') + OWL + HASH + content[0].strip('\n')        
-            graph.add((URIRef(Third_Level_Node[nodeName]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
-                       URIRef(uri))) 
-            graph.add((URIRef(uri), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
-        return graph
+def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery, SleepycatPath = None):
+    if localQuery == False:
+        if nodeName == "UKPowerPlant2019": 
+            queryString = query_topNode.queryPowerPlantNodeURL(SleepycatPath, localQuery)
+            nodeList = list(performQuery(BlazegraphRepoLable.UKPowerPlantKG, queryString))
+        elif nodeName == "UKEnergyConsumption2017": 
+            queryString = query_topNode.queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery)
+            nodeList = list(performQuery(BlazegraphRepoLable.UKEnergyConsumptionKG, queryString))       
+    elif SleepycatPath != None and localQuery == True:   
+        if nodeName == "UKPowerPlant2019": 
+            nodeList = list(query_topNode.queryPowerPlantNodeURL(SleepycatPath, localQuery))
+        elif nodeName == "UKEnergyConsumption2017": 
+            nodeList = list(query_topNode.queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery))       
+    for node in nodeList:
+        graph.add((URIRef(Third_Level_Node[nodeName]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
+                   URIRef(node[0]))) 
+        graph.add((URIRef(node[0]), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
+    return graph
 
-# """Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
-# def addThirdLevelNode(graph, filepath, nodeName):
-    
-#     contentArrays = readFile(filepath)    
-#     for content in contentArrays:
-#         uriSplit = Third_Level_Node[nodeName].split('.owl') 
-#         uri = uriSplit[0] + SLASH + content[0].strip('\n') + OWL + HASH + content[0].strip('\n')        
-#         graph.add((URIRef(Third_Level_Node[nodeName]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
-#                    URIRef(uri))) 
-#         graph.add((URIRef(uri), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
-#     return graph
-
-"""Add Fourth level nodes (EGen, Eline and EBus) to Third Level node (grid model)"""
-def addFourthLevelNode(graph): 
-    # Link fourth level nodes with third level nodes
+"""Add Fourth level nodes (Model_EGen, Model_Eline and Model_EBus) to Third Level node (grid model)"""
+def addFourthLevelNode_gridModel(graph): 
     for fourtlevelnode in Fourth_Level_Node: 
         graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(fourtlevelnode)))
         graph.add((URIRef(fourtlevelnode), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
     return graph
 
+#TODO: fulfill the addFivethLevelNode_gridModel, have not tested the remote query, the query results should be formatted in list 
+"""Add Fifth level nodes (Model_EGen-001, Model_Eline-001, Model_EBus-001, etc.) to Fourth Level node (Model_EGen, Model_Eline and Model_EBus)"""
+def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = None):     
+   if localQuery == False:
+        if nodeName == "EGen": 
+            queryString = query_topNode.queryEGenNodeURL(SleepycatPath, localQuery)            
+        elif nodeName == "EBus": 
+            queryString = query_topNode.queryEBusNodeURL(SleepycatPath, localQuery)
+        elif nodeName == "ELine": 
+            queryString = query_topNode.queryELineNodeURL(SleepycatPath, localQuery)
+        nodeList = list(performQuery(BlazegraphRepoLable.UKPowerGridModelKG, queryString))
+   elif SleepycatPath != None and localQuery == True:   
+        if nodeName == "EGen": 
+            nodeList = list(query_topNode.queryEGenNodeURL(SleepycatPath, localQuery))
+        elif nodeName == "EBus": 
+            nodeList = list(query_topNode.queryEBusNodeURL(SleepycatPath, localQuery))       
+        elif nodeName == "ELine": 
+            nodeList = list(query_topNode.queryELineNodeURL(SleepycatPath, localQuery))       
+   for node in nodeList:
+        graph.add((URIRef(UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, nodeName)), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
+                   URIRef(node[0]))) 
+        graph.add((URIRef(node[0]), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
+   return graph
+    
+
 """####Main function: Create or update the top node owl file####"""
-def generateTopNodeOWL(store, updateLocalOWLFile = True):
+def generateTopNodeOWL(store, localQuery, updateLocalOWLFile = True):
     baseURI = (Top_Level_Node['UKDigitalTwin'].split('#'))[0]
     
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
@@ -189,11 +233,14 @@ def generateTopNodeOWL(store, updateLocalOWLFile = True):
     
     
     g = Graph(store = store, identifier = URIRef(baseURI)) # graph(store='default', identifier)
-    g = addTopLevelNode(g)
-    g = addSubGraphtoSecondLevelNode(g)
-    g = addSubGraphs_fromRawData(g, dukes.PlantName,"UKPowerPlant2019")
-    g = addSubGraphs_fromRawData(g, engconsump.RegionandAreas, "UKEnergyConsumption2017")
-    g = addFourthLevelNode(g)
+    g = addTopAndSecondLevelNode(g)
+    g = addThirdLevelNode(g)
+    g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKPowerPlant2019", localQuery, powerPlant_Sleepycat)
+    g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKEnergyConsumption2017", localQuery, topoAndConsumpPath_Sleepycat)
+    g = addFourthLevelNode_gridModel(g)    
+    g = addFifthLevelNode_gridModel(g, "EGen", localQuery, uk_egen_model_Sleepycat)
+    g = addFifthLevelNode_gridModel(g, "EBus", localQuery, uk_egen_model_Sleepycat)
+    g = addFifthLevelNode_gridModel(g, "ELine", localQuery, uk_egen_model_Sleepycat)
     
     global filepath, userSpecified
     
@@ -217,5 +264,5 @@ def generateTopNodeOWL(store, updateLocalOWLFile = True):
     return
 
 if __name__ == '__main__':
-   generateTopNodeOWL(store, False)
+   generateTopNodeOWL(store, False, True)
    

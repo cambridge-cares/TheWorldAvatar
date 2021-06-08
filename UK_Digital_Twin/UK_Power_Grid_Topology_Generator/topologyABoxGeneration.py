@@ -80,7 +80,6 @@ tp_namespace = root_uri + HASH
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
 ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
-# ontoeip_system_function         = owlready2.get_ontology(t_box.ontoeip_system_function).load()
 ontocape_network_system         = owlready2.get_ontology(t_box.ontocape_network_system).load()
 ontopowsys_PowSysFunction       = owlready2.get_ontology(t_box.ontopowsys_PowSysFunction).load()
 ontoecape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load()
