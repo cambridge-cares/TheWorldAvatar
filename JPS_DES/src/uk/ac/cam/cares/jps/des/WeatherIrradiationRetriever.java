@@ -156,14 +156,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 					.addWhere("<"+resultListfromquery.get(i)[0]+">" ,d,v)					
 					.addDelete("<"+resultListfromquery.get(i)[2]+">" ,p, m)
 					.addInsert("<"+resultListfromquery.get(i)[2]+">" ,p, resultListfromquery.get(i+1)[3])
-					.addWhere("<"+resultListfromquery.get(i)[2]+">" ,p,m);
-			if (i %3 == 0) {
-				requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
-						.put(JPSConstants.TARGETIRI ,convertedIRI);
-				AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
-				builder = new UpdateBuilder();
-				
-			}			
+					.addWhere("<"+resultListfromquery.get(i)[2]+">" ,p,m);		
 		}
 		//final round
 		builder.addDelete("<"+resultListfromquery.get(sizeOfUpdate-1)[0]+">" ,d, "?o")		
@@ -176,7 +169,7 @@ public class WeatherIrradiationRetriever extends JPSAgent{
 		
 		requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_UPDATE, builder.build().toString())
 				.put(JPSConstants.TARGETIRI ,convertedIRI);
-		AgentCaller.executeGetWithJsonParameter(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
+		AgentCaller.executePost(JPSConstants.KNOWLEDGE_BASE_URL, requestParams.toString());
 	}
 	
 	

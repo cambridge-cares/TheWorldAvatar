@@ -1,0 +1,1019 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:Maintenance="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Maintenance&amp;"
+     xmlns:SI_unit1="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/"
+     xmlns:fundamental_concepts="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#"
+     xmlns:mereology="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:plant="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#"
+     xmlns:physical_dimension="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#"
+     xmlns:Catalyst="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#Catalyst&amp;"
+     xmlns:economic_performance="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.</terms:license>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;economic_performance&apos; evaluates certain chemical process systems with respect to economics perspectives.
+The following classes and relations from other ontology modules are used within &apos;economic_performance&apos;:
+
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Equipment&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Instrumentation&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#Piping&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System&quot;/&gt;
+&lt;owl:Class rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PlantItem&quot;/&gt;
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty&quot;/&gt;
+
+&lt;phys_dim:SupplementaryDimension rdf:about=&quot;http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_money&quot;/&gt;
+
+The following classes and relations from the Meta Model are refined within &apos;economic_performance&apos;:
+
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart&quot;/&gt;
+&lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation&quot;/&gt;</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/terms/license -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/license"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation addsUp indicates that a partial cost belongs to particular AccumulatedCosts.</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasDegradationCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasDegradationCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasDirectCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasDirectCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasEnvironmentalCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasEnvironmentalCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasEquipmentCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasEquipmentCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasFixedMaintenanceCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasFixedMaintenanceCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasMaintenanceCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasFuelCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasFuelCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasInstallationCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasInstallationCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasLaborCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasLaborCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasMaintenanceCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasMaintenanceCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasManufacturingCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasManufacturingCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasPrice -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasPrice">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasRevenue -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasRevenue">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasShutdownCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasShutdownCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ShutdownCosts"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasStartupCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasStartupCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#StartupCosts"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasUtilityCost -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasUtilityCost">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EquipmentCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstrumentationCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AccumulatedCosts summarize all partial costs that may occur in a ChemicalProcessSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CapitalExpenditureCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CapitalExpenditureCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CostsForLand -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CostsForLand">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CostsForSystemsRealization"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#GeneralExpense"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstallationCostsForSystemsRealization"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CostsForLand cover the land price and the yard improvement costs.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CostsForSystemsRealization -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CostsForSystemsRealization">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstallationCostsForSystemsRealization"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstallationCostsForSystemsRealization"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FixedCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingFixedCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductionCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalENCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CostsForSystemsRealization are directly associated with the ProcessingSubsystem and the OperatingSubsystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#DegradationCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#DegradationCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts"/>
+        <rdfs:comment>cost that is related to the degradation of the equipment along the operation</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#DirectManufacturingCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#DirectManufacturingCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperatingLaborCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperatingSupervisionCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#UtilityCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#Maintenance&amp;RepairCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#Earnings -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#Earnings">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>The earning refer to the total amount of capital received as a result of the sales of good and services</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EconomicPerformance -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EconomicPerformance">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#Earnings"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">EconomicPerformance evaluates an ElectricalNetworkSystem from an economic perspective</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cost describes all kinds of costs that may arise with respect to the ElectricalNetworkSystem economic evaluation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EnergyPrice -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EnergyPrice">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>The price electricity needed to be paid by the user for using it per unit</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EnvironmentalCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EnvironmentalCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts"/>
+        <rdfs:comment>costs reflecting the qualitative deterioration of the natural environment by economic activities</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EquipmentCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EquipmentCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CapitalExpenditureCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstrumentationCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">EquipmentCosts are related costs to the Equipment</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FixMaintenanceCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FixMaintenanceCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CapitalExpenditureCosts"/>
+        <rdfs:comment>fix cost that is related to the maintenance of the network system</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FixedCapitalInvestment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FixedCapitalInvestment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingFixedCapitalInvestment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingFixedCapitalInvestment"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingFixedCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductionCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalENCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FixedCapitalInvestment is the capital needed to supply the manufacturing and plant facilities.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FuelCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FuelCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts"/>
+        <rdfs:comment>cost of the fuel to operate the devices</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#GeneralExpense -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#GeneralExpense">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstallationCostsForSystemsRealization"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GeneralExpenses are involved in any company’s operation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstrumentationCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IndividualCosts represent costs that do not add up any other Costs.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstallationCostsForSystemsRealization -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstallationCostsForSystemsRealization">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CapitalExpenditureCosts"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">InstallationCostsForSystemsRealization involve for example the costs for labor, platforms, and construction.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstrumentationCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstrumentationCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">InstrumentationCosts are related to the ProcessControlSystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InternalRateofReturn -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InternalRateofReturn">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CapitalExpenditureCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#DirectManufacturingCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ManufacturingCosts are expenses which are directly connected with the manufacturing operation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingFixedCapitalInvestment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingFixedCapitalInvestment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CostsForLand"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CostsForSystemsRealization"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">4</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductionCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalENCosts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#NonManufacturingFixedCapitalInvestment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperatingLaborCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperatingLaborCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperatingSupervisionCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperatingSupervisionCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PayBackTime -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PayBackTime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductEarnings -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductEarnings">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#Earnings"/>
+        <rdfs:comment>earnings that can be obtained from the sales of the end products of the processing system</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductionCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductionCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#GeneralExpense"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#GeneralExpense"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ManufacturingCosts"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalENCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ProductionCosts cover the costs for operating the Electrical Network component Realization and selling the Electricity.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#PurchaseCostsForSystemsRealization">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EquipmentCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstrumentationCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">3</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalENCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PurchaseCostsForSystemsRealization are the costs for purchasing the realization elements of the ProcessingSubsystem and the OperatingSubsystem.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ServiceFacility costs are related to the costs connected with utilities for supplying stream, water, power, etc., waste disposal, fire protection and other service items.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ShutdownCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ShutdownCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts"/>
+        <rdfs:comment>Cost that is related to the shut down process of a generator</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#StartupCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#StartupCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts"/>
+        <rdfs:comment>Cost that is related to the starting up process of a generator</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FixedCapitalInvestment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#FixedCapitalInvestment"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalENCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TotalCapitalInvestment is the sum of the FixedCapitalInvestment and the WorkingCapital.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalENCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalENCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#AccumulatedCosts"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductionCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ProductionCosts"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#TotalCapitalInvestment"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#addsUp"/>
+                <owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">2</owl:maxCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TotalENCosts of an electrical network system include all costs that are related to design, construction, and maintenance of the electrical network , and the generation and selling of Electricity.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#UtilityCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#UtilityCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#VirtualIntermediateEarnings -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#VirtualIntermediateEarnings">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#Earnings"/>
+        <rdfs:comment>the virutal intermediate earnings are used to characterize the value feed or an intermediate product within the process</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#WorkingCapital">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WorkingCapital is the capital needed for the operations of a plant.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#Maintenance&amp;RepairCosts -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#Maintenance&amp;RepairCosts">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#IndividualCosts"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts"/>
+        <rdfs:comment>Maintenance and repair costs are related to maintenance and repair work on production facilities</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalEquipment">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#CapitalExpenditureCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasCost"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#OperationalExpenditureCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#EnergyStorageSystem -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#EnergyStorageSystem">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:complementOf>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasShutdownCost"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ShutdownCosts"/>
+                    </owl:Restriction>
+                </owl:complementOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:complementOf>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasStartupCost"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#StartupCosts"/>
+                    </owl:Restriction>
+                </owl:complementOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasShutdownCost"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ShutdownCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasStartupCost"/>
+                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#StartupCosts"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Substation -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Substation">
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:complementOf>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasShutdownCost"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ShutdownCosts"/>
+                    </owl:Restriction>
+                </owl:complementOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:complementOf>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasStartupCost"/>
+                        <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#StartupCosts"/>
+                    </owl:Restriction>
+                </owl:complementOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="http://www.w3.org/2002/07/owl#Thing"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

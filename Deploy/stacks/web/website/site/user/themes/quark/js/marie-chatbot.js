@@ -64,12 +64,16 @@ function linkSampleQuestions() {
 
 
 /*
- Pipe the input text into the 'input-field' element.
+ Pipe the input text into the 'input-field' element and fire it off.
  */
 function pipeQuestion(question) {
+	// Pipe question to text field
 	document.getElementById('input-field').value = question;
 	$('#input-field').css("color", "inherit");
 	window.scrollTo(0, 0);
+	
+	// Fire query automatically (requested by MK)
+	askQuestion();
 }
 
 
