@@ -4,13 +4,14 @@
 <head>
   <meta charset='utf-8' />
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
   <style>
     body {
       margin: 0;
       padding: 0;
     }
+
     .quakeInfo {
       position: absolute;
       font-family: sans-serif;
@@ -24,122 +25,226 @@
       background-color: #fff;
       border-radius: 3px;
     }
+
     #map {
       position: absolute;
       top: 0;
       bottom: 0;
       width: 100%;
     }
+
+    #tiltShift {
+      display: none;
+      /* this gets turned on by the javascript */
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
+      pointer-events: none;
+      /* Ensure the mouse pointer can't interact with this layer */
+    }
+
+    body.effectsOff #tiltShift body.effectsOff #map {
+      filter: none !important;
+      -webkit-filter: none !important;
+    }
+
   </style>
 </head>
+
 <body>
 
+  <nav id="menu"></nav>
   <div id='map'></div>
+  <div id="tiltShift"></div>
 
-  <div class='quakeInfo'>
-  <div><strong>UK GENERATORS</strong>
-  <div><strong>Name:</strong> <span id='name'></span></div>
-  <div><strong>Capacity:</strong> <span id='capacity'></span></div>
-  <div><strong>Fuel:</strong> <span id='fuel'></span></div>
-  </div>
 
   <script>
+
+
     mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
-    var map = new mapboxgl.Map({
+    var tiltShiftMaxBlur = 3; // The maximum blur, in pixels, when the tilt-shift effect is fully on. 3 pixels is subtle and nice
+    var tiltShiftBlur = document.getElementById("tiltShift");
+    var mapDiv = document.getElementById("map");
+
+    var bodyTag = document.getElementById("bodyTag");
+
+
+    // These easing functions are useful to ensure the amount of blur is 
+    // not applied in a linear fashion when zooming in and out. 
+    function easeInCubic(x) {
+      return x * x * x;
+    }
+
+    function easeOutCubic(x) {
+      return 1 - Math.pow(1 - x, 3);
+    }
+    function easeInExpo(x) {
+      return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
+    }
+    function easeOutExpo(x) {
+      return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+    }
+
+    function degreesToRadians(degrees) {
+      var pi = Math.PI;
+      return degrees * (pi / 180);
+    }
+
+    function addPhotoEffects() {
+      // Get the map state and preapare some useful normalized values of zoom and pitch
+      // ==============================================================================
+      var pitch = map.getPitch();
+      var pitchNormalized = pitch / 85;
+
+      var bearing = map.getBearing() + 180;
+      var zoom = map.getZoom() - 4;
+      var fractionZoomedOut = 1 - (zoom / 18);
+      var fractionPitched = (pitch / 80);
+      var fractionPitchedBackwards = Math.max(1 - (pitch / 80), 0);
+
+      var tiltShiftBackdropFilter = 'blur(' + ((tiltShiftMaxBlur * easeInCubic(fractionPitched)) * fractionZoomedOut) + 'px)';
+      var tiltShiftGradientBlackPoint = (75 + (25 * easeOutCubic(fractionPitchedBackwards)));
+
+      tiltShiftBlur.style.backdropFilter = tiltShiftBackdropFilter;
+      tiltShiftBlur.style.webkitBackdropFilter = tiltShiftBackdropFilter;
+
+      // this needs to be styled in two different ways to support the most browsers
+      tiltShiftBlur.style.webkitMaskImage = '-webkit-gradient(linear, left bottom, left top, from(black), color-stop(5%, black), color-stop(45%, rgba(0, 0, 0, 0)), color-stop(55%, rgba(0, 0, 0, 0)), color-stop(' + tiltShiftGradientBlackPoint + '%, black), to(black))';
+      tiltShiftBlur.style.maskImage = 'linear-gradient(0deg, black 0%, black 5%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 55%, black ' + tiltShiftGradientBlackPoint + '%)';
+    }
+
+    const map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/light-v9', // stylesheet location
+      style: 'mapbox://styles/mapbox/satellite-v9?optimize=true', // stylesheet location
       center: [-3, 54.25], // starting position [lng, lat]
       zoom: 5, // starting zoom
       pitch: 0,
-      bearing: 0,
+      bearing: 0
     });
+    // Resets the camera
+
+
 
     map.on('load', function () {
 
+      // Add fog
+      map.setFog({
+        'color': 'white',
+        'horizon-blend': 0.1
+      });
 
-        // This section is concerned with plotting the geojson file
-        map.addSource('powerplants', {
-            type: 'geojson',
-            data: 'UK_PowerPlants.geojson'
+      map.addSource('mapbox-dem', {
+        'type': 'raster-dem',
+        'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        'tileSize': 512,
+        'maxzoom': 14
+      });
+      map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5});
+
+      map.addLayer({
+        'id': 'sky',
+        'type': 'sky',
+        'paint': {
+          'sky-type': 'atmosphere',
+          'sky-atmosphere-color': '#6687eb',
+          'sky-atmosphere-sun': [0.0, 0.0],
+          'sky-atmosphere-sun-intensity': 15
+        }
+      });
+
+      addPhotoEffects();
+
+      tiltShiftBlur.style.display = "block";
+      map.on('move', function () {
+        addPhotoEffects();
+
+      });
+
+
+      // This section is concerned with plotting the geojson file
+      map.addSource('powerplants', {
+        type: 'geojson',
+        data: 'UK_PowerPlants.geojson'
+      });
+
+      map.on('click', 'powerplants', function (e) {
+        coordinates = e.features[0].geometry.coordinates;
+        map.flyTo({
+          center: coordinates,
+          curve: 1.9,
+          speed: 1.6,
+          pitch: 45,
+          zoom: 16
         });
-
-        map.addLayer({
-            'id': 'plant_locations',
-            'type': 'circle',
-            'source': 'powerplants',
-            'layout': {},
-            'paint': {
-                'circle-radius':["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
-		'circle-color': ["get", "marker-color"]
-            }
-            });
-
-        var plantID = null;
-
-        map.on('mousemove', 'plant_locations', (e) => {
-
-          map.getCanvas().style.cursor = 'crosshair';
-          // Set variables equal to the current feature's magnitude, location, and time
-          var plantName = e.features[0].properties.name;
-          var plantCapacity = e.features[0].properties.capacity;
-          var plantFuel = e.features[0].properties.fuel;
-
-          // Check whether features exist
-          if (e.features.length > 0) {
-            // Display the magnitude, location, and time in the sidebar
-            nameDisplay.textContent = plantName;
-            capacityDisplay.textContent = plantCapacity + ' MW';
-            fuelDisplay.textContent = plantFuel;
+      });
 
 
-            // If plantID for the hovered feature is not null,
-            // use removeFeatureState to reset to the default behavior
-            if (plantID) {
-              map.removeFeatureState({
-                source: "powerplants",
-                id: plantID
-              });
-            }
 
-            plantID = e.features[0].id;
+      map.addLayer({
+        'id': 'plant_locations',
+        'type': 'circle',
+        'source': 'powerplants',
+        'layout': {},
+        'paint': {
+          'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
+          'circle-color': ["get", "marker-color"],
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#FFFFFF',
+        }
+      });
 
-            // When the mouse moves over the earthquakes-viz layer, update the
-            // feature state for the feature under the mouse
-            map.setFeatureState({
-              source: 'powerplants',
-              id: plantID,
-            }, {
-              hover: true
-            });
-          }
+
+
+      map.addLayer({
+        id: 'capac_label',
+        type: 'symbol',
+        source: 'powerplants',
+        layout: {
+          'text-field': ['concat',
+            ['get', 'name'],
+            '\n Capacity ',
+            ['get', 'capacity'],
+            ' MW \n | \n | \n | \n | \n |']
+
+          ,
+          'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+          'text-size': 14,
+          'text-offset': [0, -4],
+        },
+        "paint": {
+          "text-color": "#FFFFFF",
+          "text-halo-color": "#3E3E3E",
+          "text-halo-width": 0.8,
+          "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8, 0, 10, 1]
+        }
+      });
+      map.on('mouseenter', 'plant_locations', function () {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+
+      map.on('mouseleave', 'plant_locations', function () {
+        map.getCanvas().style.cursor = '';
+      });
+
+      map.on('click', 'plant_locations', function (e) {
+        var coordinates = e.features[0].geometry.coordinates;
+        map.flyTo({
+          center: coordinates,
+          curve: 1.9,
+          speed: 1.6,
+          pitch: 75,
+          zoom: 14,
+          bearing: Math.random() * 90
         });
-
-        map.on("mouseleave", "plant_locations", function() {
-          map.getCanvas().style.cursor = 'crosshair';
-          if (plantID) {
-            map.setFeatureState({
-              source: 'powerplants',
-              id: plantID
-            }, {
-              hover: false
-            });
-          }
-
-          plantID = null;
-          // Remove the information from the previously hovered feature from the sidebar
-          nameDisplay.textContent = '';
-          capacityDisplay.textContent = '';
-          fuelDisplay.textContent = '';
-          // Reset the cursor style
-          map.getCanvas().style.cursor = '';
-        });
+      });
     });
 
-    var nameDisplay = document.getElementById('name');
-    var capacityDisplay = document.getElementById('capacity');
-    var fuelDisplay = document.getElementById('fuel');
 
   </script>
 
 </body>
+
 </html>
