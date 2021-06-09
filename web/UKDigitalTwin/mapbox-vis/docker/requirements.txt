@@ -1,0 +1,14 @@
+#
+# This file lists the library requirements for the scripts that
+# will be copied into the Power System visualisation Image.
+#
+# At the time of writing, only requirements for the following 
+# scripts are covered:
+#
+#	- JSON_Generator.py
+#
+
+numpy
+pandas
+SPARQLWrapper
+tqdm
