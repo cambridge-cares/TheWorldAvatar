@@ -18,20 +18,25 @@
 <body>
     <div id="map"></div>
 	
-	<div id="resetContainer" style="height:25px; color:white; left:18px; top:18px; position:fixed; font-size:14px;">
-		<a href="javascript:void(0)" onclick="resetCamera()">Reset View</a>
+	<div id="resetContainer">
+        <a href="javascript:void(0)" onclick="resetCamera()">Reset View</a>
 	</div>
 	
 	<div id="side-panel" style="height:100%; width:400px; float:right;">
-		<a href="javascript:void(0)" id="closebtn" onclick="closePanel()">Hide</a>
-		<div id="titleContainer"></div>
-		<div id="subtitleContainer"></div>
+		<div id="titleContainer">
+            <h2>UK Gas Grid</h2>
+        </div>
+		<div id="metadataContainer"></div>
+        <div id="textContainer"></div>
 		<div id="chartContainer"></div>
 		<div id="tableContainer"></div>
 		<div id="dateContainer"></div>
 	</div>
 	
     <script>	
+        // Initial state of UI elements
+        resetSidePanel();
+
 		// Resets the camera
 		function resetCamera() {
 			if(typeof map !== 'undefined') {
@@ -44,23 +49,10 @@
 					bearing: 0.0,
 					center: [-2, 53.25]
                 });
+                resetSidePanel();
 			}
 		}
-		
-		// Closes the side panel
-		function closePanel() {
-			var sidePanel = document.getElementById('side-panel');
-			sidePanel.style.display = "none";
-			
-			var mapPanel = document.getElementById('map');
-			mapPanel.style.width = "100%";
-			
-			if(typeof map !== 'undefined') {
-				map.resize();
-			}
-		}
-		closePanel();
-						
+								
 		// MapBox API Token
 		mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
        
@@ -76,7 +68,7 @@
 
 		// On load...
         map.on('load', function () {
-		
+		           
 			// Pre-load the flow data
 			loadFlowData();
 		
@@ -185,11 +177,14 @@
 				lastClick = nowClick;
 				
                 var coordinates = e.features[0].geometry.coordinates.slice();
-				coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+				//coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
 				
                 var name = e.features[0].properties["Offtake Point (License Name)"];
                 var type = e.features[0].properties["Type of Offtake"];
 				
+                // Fire selection logic
+                showOfftake(name, type, coordinates);
+
                 map.flyTo({
                     center: coordinates,
                     curve: 1.9,

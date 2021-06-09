@@ -10,89 +10,118 @@
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // Hardcoded sample data
-const sampleHeadings = ["Datetime", "Instantaneous Flow"];
-const sampleData = [
-	{datetime:"2021-04-22T23:55:00", value:5.00},
-	{datetime:"2021-04-22T23:56:00", value:5.00},
-	{datetime:"2021-04-22T23:57:00", value:5.00},
-	{datetime:"2021-04-22T23:58:00", value:5.00},
-	{datetime:"2021-04-22T23:59:00", value:5.00},
-	{datetime:"2021-04-23T00:00:00", value:5.00},
-	{datetime:"2021-04-23T00:01:00", value:5.00},
-	{datetime:"2021-04-23T00:02:00", value:5.00},
-	{datetime:"2021-04-23T00:03:00", value:5.00},
-	{datetime:"2021-04-23T00:04:00", value:5.00},
-	{datetime:"2021-04-23T00:05:00", value:5.00}
-];
+const sampleHeadings = ["Time", "Instantaneous Flow<br><span style='font-size: 75%;'>[mcm/day]</span>"];
 
 // Table HTML when no data is available
 const noDataTable = "<div id=\"noData\"><p>No available data.</p></div>";
 
-// Line Chart object
-var lineChart = null;
+// Last selected location
+var lastLocation = null;
 
 // Cached flow data
 var flowData = null;
 
+// Setup initial state of UI elements
+function resetSidePanel() {
+	document.getElementById('chartContainer').style.display = "none";
+	document.getElementById('metadataContainer').style.display = "none";
+	document.getElementById('tableContainer').style.display = "none";
 
-// Reset
-function reset() {
-	var titleContainer = document.getElementById('titleContainer');
-	titleContainer.innerHTML = "";
-	
-	var subtitleContainer = document.getElementById('subtitleContainer');
-	subtitleContainer.innerHTML = "";
-	
-	var chartContainer = document.getElementById('chartContainer');
-	chartContainer.innerHTML = "";
-	
-	var tableContainer = document.getElementById('tableContainer');
-	tableContainer.innerHTML = noDataTable;
+	document.getElementById('titleContainer').innerHTML = `
+		<h2>UK Gas Grid</h2>
+	`;
+
+	document.getElementById('textContainer').style.display = "block";
+	document.getElementById('textContainer').innerHTML = `
+		<p>The map to the left shows a sample of gas grid data within the UK Digital Twin.
+		Intake Terminals (<span style="color:#108dcc;">blue</span>), Offtakes (<span style="color:#B42222;">red</span>), and Pipes from the gas transmission system are shown for the mainland UK.</p>
+		<p>Select an Intake node (<span style="color:#108dcc;">blue</span>) to see its recent Instantaneous Flow data. This data is pulled from the UK Digital Twin
+		and is updated on a daily basis.</p>
+		`;
 }
 
 // Runs when an offtake is selected, shows meta-data
 function showOfftake(nodeName, nodeType, nodePosition) {
+	lastLocation = nodePosition;
 	console.log("Offtake selected, will only show metadata...");
-	reset(); 
+	resetSidePanel(); 
 	
-	
-	
-	
-	
-	
-}
+	// Set title to offtake name
+	document.getElementById('titleContainer').innerHTML = `
+		<h2 style="color: #B42222 !important;">` + nodeName + `</h2>
+	`;
 
+	// Pretty-print location
+	var prettyLocation = "lat: " + roundN(nodePosition[1], 5) + ", long: " + roundN(nodePosition[0], 5);
+	prettyLocation = "<a href='javascript:void(0)' onclick='panToLast()'>" + prettyLocation + "</a>"
+
+	// Show meta data
+	document.getElementById('metadataContainer').style.display = "block";
+	document.getElementById('metadataContainer').innerHTML = `
+		<table width="100%">
+			<tr>
+				<td width="30%">Type:</td>
+				<td width="70%" style="text-align: right;">` + nodeType + `, Offtake</td>
+			</tr>
+			<tr>
+				<td width="30%">Location:</td>
+				<td width="70%" style="text-align: right;">` + prettyLocation + `</td>
+			</tr>
+		</table>
+	`;
+
+	// Update text container 
+	document.getElementById('textContainer').innerHTML = `
+		<p style='font-style: italic; color: grey;'>Select an Intake Terminal (<span style="color:#108dcc;">blue</span>) to view Instantaneous Flow data.</p>
+	`;
+}
 
 // Runs when a terminal is selected, shows recent live data.
 function showTerminal(nodeName, nodeType, nodePosition) {
+	lastLocation = nodePosition;
 	console.log("Terminal selected, will plot data...");
-	reset(); 
+	resetSidePanel(); 
 	
-	// Set the chart title
-	var titleContainer = document.getElementById('titleContainer');
-	titleContainer.innerHTML = nodeName;
-	
-	// Set the chart subtitle
-	var subtitleContainer = document.getElementById('subtitleContainer');
-	var lat = roundN(nodePosition[0], 3);
-	var lon = roundN(nodePosition[1], 3);
-	subtitleContainer.innerHTML = nodeType + " (" + lat + ", " + lon + ")";
-	
-	// Show the side panel
-	var sidePanel = document.getElementById('side-panel');
-	sidePanel.style.display = "block";
-	
-	// Resize the map
-	var mapPanel = document.getElementById('map');
-	mapPanel.style.width = "calc(100% - 405px)";
-	
-	// Build the line graph and table
+	// Set title to terminal name
+	document.getElementById('titleContainer').innerHTML = `
+		<h2 style="color: #108dcc !important;">` + nodeName + `</h2>
+	`;
+
+	// Pretty-print location
+	var prettyLocation = "lat: " + roundN(nodePosition[1], 5) + ", long: " + roundN(nodePosition[0], 5);
+	prettyLocation = "<a href='javascript:void(0)' onclick='panToLast()'>" + prettyLocation + "</a>"
+
+	// Show meta data
+	document.getElementById('metadataContainer').style.display = "block";
+	document.getElementById('metadataContainer').innerHTML = `
+		<table width="100%">
+			<tr>
+				<td width="30%">Type:</td>
+				<td width="70%" style="text-align: right;">Intake</td>
+			</tr>
+			<tr>
+				<td width="30%">Location:</td>
+				<td width="70%" style="text-align: right;">` + prettyLocation + `</td>
+			</tr>
+		</table>
+	`;
+
+	// Hide default text
+	document.getElementById('textContainer').style.display = "none";
+
+	// Show elements to display flow data
+	document.getElementById('chartContainer').style.display = "block";
+	document.getElementById('tableContainer').style.display = "block";
+
 	// Find the relevant flow data entries
 	var flows = findFlowData(nodeName);
 	console.log(flows.length + " flow data points found.");
 	
-	lineChart = null;
+	// Build the line graph and table
+	document.getElementById('chartContainer').innerHTML = "";
+
 	buildChart(flows);
+	buildTable(flows);
 }
 
 
@@ -117,7 +146,7 @@ function loadFlowData() {
 				console.log(er.message);
 			}
 			
-			dateContainer.innerHTML = "Data refreshed on: " + dateString;
+			dateContainer.innerHTML = "Data last updated on " + dateString;
 			console.log("Flow data has been loaded.");
 		});
 	}
@@ -157,9 +186,9 @@ function sortFunction(a, b) {
 // Generates the line chart
 function buildChart(dataPoints) {
 	// Determine the size of the chart
-	var width = document.getElementById('chartContainer').offsetWidth;
-	var height = document.getElementById('chartContainer').offsetHeight;
-	
+	var width = 370;
+	var height = 370;
+
     // Parse datetimes within the sample data
 	var timeParse = d3.timeParse("%Y-%m-%dT%H:%M:%S");
 	dataPoints.forEach(function(point) {
@@ -171,30 +200,31 @@ function buildChart(dataPoints) {
 	});
 	
 	// Sort the data based on datetime
-	sortedData = dataPoints.sort(sortFunction);
-	
+	var currentChartData = dataPoints.sort(sortFunction);
+
 	// Setup axis ranges/mapping
-	var xRange = d3.extent(dataPoints, function(d) { 
+	var xRange = d3.extent(currentChartData, function(d) { 
 		return d[0];
 	});
-	var yRange = d3.max(dataPoints, function(d) { 
+	var yRange = d3.max(currentChartData, function(d) { 
 		return d[1];
 	});
 		
 	// Set up axis scales
 	var x = d3.scaleTime()
-		.range([0, (width - 50)])
-		.domain(d3.extent(dataPoints, function(d){return d[0]}));
+		.range([0, (width - 60)])
+		.domain(d3.extent(currentChartData, function(d){return d[0]}));
 	var y = d3.scaleLinear()
-		.range([height - 90, 0])
+		.range([height - 50, 0])
 		.domain([
-			d3.min(dataPoints, function(d){return d[1]}) - 1.0, 
-			d3.max(dataPoints, function(d){return d[1]}) + 1.0
+			d3.min(currentChartData, function(d){return d[1]}) - 1.0, 
+			d3.max(currentChartData, function(d){return d[1]}) + 1.0
 		]);
 
 	// Setup axes themselves
 	var xAxis = d3.axisBottom(x)
-		.scale(x);
+		.scale(x)
+		.tickFormat(d3.timeFormat("%H:%M"));
 	var yAxis = d3.axisLeft(y);
 	
 	// Setup the line generator
@@ -209,50 +239,41 @@ function buildChart(dataPoints) {
 		
 	// Add the X axis
 	vis.append("g")
-			.attr("class", "x axis")
-			.attr("transform", "translate(30," + (height - 60) + ")")
-			.call(xAxis)
-		.selectAll("text")
-			.attr("y", 0)
-			.attr("x", 8)
-			.attr("dy", ".30em")
-			.attr("transform", "rotate(90)")
-			.style("text-anchor", "start");
+		.attr("class", "axis")
+		.attr("transform", "translate(50, " + (height - 50) + ")")
+		.call(xAxis)
+	.selectAll("text")
+		.attr("y", -3)
+		.attr("x", 8)
+		.attr("transform", "rotate(90)")
+		.style("text-anchor", "start");
 			
 	// Label for the X axis
 	vis.append("text")             
-		.attr("transform", "translate(" + (width/2) + " , " + (height) + ")")
+		.attr("transform", "translate(" + ((width / 2) + 15) + " , " + (height) + ")")
 		.style("text-anchor", "middle")
-		.attr("class", "xlabel")
-		.text("Datetime");
+		.attr("class", "axisLabel")
+		.text("Time");
 	
+	// Add the Y axis
 	vis.append("g")
-		.attr("class", "y axis")
-		.attr("transform", "translate(30, 30)")
+		.attr("class", "axis")
+		.attr("transform", "translate(50, 0)")
 		.call(yAxis);
+
+	// Label for the Y axis
+	vis.append("text")        
+		.attr("transform", "rotate(-90)translate(" + (-1 * (height/2) + 25) + ", 10)")
+		.style("text-anchor", "middle")
+		.attr("class", "axisLabel")
+		.text("Instantaneous Flow [mcm/day]");
 		
 	// Add the line
 	vis.append("path")
-		.attr("transform", "translate(30, 30)")
+		.attr("transform", "translate(50, 5)")
 		.datum(dataPoints) 
 		.attr("class", "line")
 		.attr("d", line);
-	
-		
-	// Add the markers	
-	vis.selectAll(".circle")
-        .data(dataPoints)
-		.enter()
-		.append("circle")
-		.attr("transform", "translate(30, 30)")
-		.attr("class", "points")
-		.attr("r", 2)
-		.attr("cx", function(d) { return x(d[0]) })
-		.attr("cy", function(d) { return y(d[1]) })
-		.attr("fill", "#FF5733")
-		
-	// Build the table
-	buildTable(dataPoints);
 }
 
 
@@ -286,6 +307,20 @@ function buildTable(dataPoints) {
 }
 
 
+// Pans back to the last selected location
+function panToLast() {
+	if(lastLocation != null) {
+		map.flyTo({
+			center: lastLocation,
+			curve: 1.9,
+			speed: 1.6,
+			pitch: 45,
+			zoom: 16
+		});
+	}
+}
+
+
 // Pretty print date
 function prettyPrintDate(date) {
 	var day = "" + date.getDate();
@@ -302,12 +337,14 @@ function prettyPrintDate(date) {
 	return addOrd(day) + " " + month + ", " + hour + ":" + minute;
 }
 
+
 // Get number with ordinal
 function addOrd(n) {
   var ords = [, 'st', 'nd', 'rd'];
   var ord, m = n % 100;
   return n + ((m > 10 && m < 14) ? 'th' : ords[m % 10] || 'th');
 }
+
 
 // Round digit to N decimal places
 function roundN(value, digits) {

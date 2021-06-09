@@ -16,49 +16,31 @@ h1 {
 	font-family: Helvetica, sans-serif;
 }
 
-h2 {
-	text-align: center;
-	color: #C4C4C4;
-}
-
-h3 {
-	text-align: center;
-	color: #C4C4C4;
-}
-
 #map {
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	width: calc(100% - 405px);
+	width: calc(100% - 400px);
+	height: 100%;
 }
 
 #side-panel {
-	text-align: center; 
-	box-sizing: border-box; 
-	border-left: 2px solid #707070;
-	background-color: #ffffff;
-	z-index: 1;
+	width: 100px;
 	position: fixed;
 	top: 0;
 	right: 0;
+	display: block;
+	z-index: 1;
+	box-sizing: border-box; 
 	overflow-x: hidden;
+
+	text-align: center; 
+	border-left: 2px solid #707070;
+	background-color: #ffffff;
 	transition: 0.5s;
 }
 
-#closebtn {
-	position: fixed;
-	top: 0;
-	right: 0;
-	font-size: 14px;
-	padding-top: 10px;
-	padding-right: 10px;
-	color: grey;
-	text-decoration: none;
-}
-
 #titleContainer {
-	width: auto;
 	height: 40px;
 	
 	margin-right: 50px;
@@ -74,20 +56,34 @@ h3 {
 }
 
 
-#subtitleContainer {
-	width: auto;
-	height: 25px;
-	
+#metadataContainer {
+	text-align: left;
+	margin-top: 15px;
+	margin-bottom: 10px;
 	margin-right: 50px;
 	margin-left: 50px;
-	margin-bottom: 10px;
-	
-	font-size: 65%;
+	font-size: 11pt;
+}
+
+#metadataContainer a {
+	color: black;
+}
+
+#metadataContainer a:hover {
+	color: blue;
+}
+
+#textContainer {
+	margin-top: 20px;
+	margin-left: 20px;
+	margin-right: 20px;
+	font-size: 11pt;
 }
 
 #chartContainer {
 	width: auto;
 	height: 350px;
+	margin-top: 15px;
 	margin-right: 10px;
 	margin-left: 10px;
 	margin-bottom: 10px;
@@ -95,12 +91,12 @@ h3 {
 
 #tableContainer {
 	width: auto;
-	height: calc(100% - 550px);
+	height: calc(100% - 575px);
 	overflow: auto;
 	overflow-x: hidden;
 	margin-left: 10px;
 	margin-right: 10px;
-	margin-top: 50px;
+	margin-top: 40px;
 	border: 1px solid #e1e1e1;
 }
 
@@ -118,6 +114,10 @@ h3 {
 	color: grey;
 }
 
+.listening-rect {
+	fill: transparent;
+  }
+  
 .line {
 	fill: none;
 	stroke: #199edf;
@@ -128,8 +128,12 @@ h3 {
 	stroke: #199edf;
 }
 
-.xlabel {
-	font-size: 10pt;
+.axis text {
+	color: grey;
+	font-size: 6.5pt;
+}
+.axisLabel {
+	font-size: 9pt;
 }
 
 #dataTable {
@@ -169,11 +173,26 @@ h3 {
 	color: #707070;
 }
 
+
+#resetContainer {
+	height: 25px; 
+	width: 100px;
+	position: fixed; 
+	left: 15px;
+	top: 15px; 
+	line-height: 25px;
+	font-size: 11pt;
+	text-align: center;
+	border-radius: 6px;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
 #resetContainer a {
 	color: white;
 	text-decoration: none;
 }
 
-#resetContainer a:hover {
+#resetContainer:hover {
+	background-color: rgba(0, 0, 0, 0.4);
 	text-decoration: underline;
 }
