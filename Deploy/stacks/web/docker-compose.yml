@@ -94,8 +94,6 @@ services:
     image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT
     container_name: "uk-gas-grid"
     restart: unless-stopped
-    ports:
-      - 4001:80
     labels:
       description: "HTTPD hosted mapbox visualisation of UK gas network based on static geoJSON files."
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
@@ -112,8 +110,6 @@ services:
       dockerfile: "./docker/Dockerfile"
     container_name: "un-goals"
     restart: unless-stopped
-    ports:
-      - 4002:80
     labels:
       description: "HTTPD hosted mapbox visualisation of UN Sustainable Goals based on static geoJSON files."
       authors: "support@cmclinnovations"

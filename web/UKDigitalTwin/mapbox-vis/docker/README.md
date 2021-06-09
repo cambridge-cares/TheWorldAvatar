@@ -19,6 +19,6 @@ Be aware that the VERSION tag should match the current version of the visualisat
 + To build the image:
   + `docker build --rm --no-cache -t docker.cmclinnovations.com/power-system-vis:VERSION -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 3001:80 --restart always --name "power-system-vis" -it docker.cmclinnovations.com/power-system-vis:VERSION`
+  + `docker run -d -p 80:80 --restart always --name "power-system-vis" -it docker.cmclinnovations.com/power-system-vis:VERSION`
 + To push the image to the CMCL registry:
   + `docker image push docker.cmclinnovations.com/power-system-vis:VERSION`
