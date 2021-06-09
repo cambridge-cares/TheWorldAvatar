@@ -12,8 +12,8 @@ Please note the caveats below before attempting to build the service using Docke
 	- The service installed within the Docker image will be based on the current commit 
 	of this repository, please ensure you're on the right one.
 
-	- The "docker build" command should be run from the UKDigitalTwin directory (not this one); 
-	this is so that a copy of the UKDigitalTwin directory can be copied into the image.
+	- The "docker build" command should be run from the google-vis directory (not this one); 
+	this is so that a copy of the google-vis directory can be copied into the image.
 	
 	- As part of the current git hash is used to tag the image, please do not attempt to push any
 	images to the CMCL registry unless all pending changes are committed to a branch. If you don't
