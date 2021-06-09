@@ -1,0 +1,36 @@
+title: null
+default_lang: en
+author:
+  name: 'Joe Bloggs'
+  email: joe@example.com
+taxonomies:
+  - category
+  - tag
+metadata:
+  description: 'Grav is an easy to use, yet powerful, open source flat-file CMS'
+summary:
+  enabled: true
+  format: short
+  size: 300
+  delimiter: '==='
+redirects:
+  /services/digital-twin/land-use: '/explore/digital-twin/land-use'
+  /services/land-use: '/explore/digital-twin/land-use'
+  /services/land_use: '/explore/digital-twin/land-use'
+  
+  /services/digital-twin/power-system: '/explore/digital-twin/power-system'
+  /services/power-system: '/explore/digital-twin/power-system'
+  
+  /services/digital-twin/gas-grid: '/explore/digital-twin/gas-grid'
+  /services/gas-grid: '/explore/digital-twin/gas-grid'
+  
+  /services/digital-twin/sustainable-goals: '/explore/digital-twin/sdg'
+  /services/sustainable-goals: '/explore/digital-twin/sdg'
+  /services/digital-twin/un_goals: '/explore/digital-twin/sdg'
+  /services/un_goals: '/explore/digital-twin/sdg'
+  
+  /services/search-engine: '/explore/marie'
+  /services/marie: '/explore/marie'
+routes: null
+blog:
+  route: /blog

@@ -1,0 +1,4 @@
+# Website version
+1.0.0-SNAPSHOT
+
+# NOTE: When changing this version, ensure the version listed in the docker-compose.yml file matches!

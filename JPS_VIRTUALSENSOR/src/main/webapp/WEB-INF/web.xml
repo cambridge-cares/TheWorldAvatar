@@ -4,7 +4,7 @@
   <servlet>
     <servlet-name>auto-executor</servlet-name>
     <servlet-class>
-            uk.ac.cam.cares.jps.virtualsensor.general.DispersionModellingAgent
+			uk.ac.cam.cares.jps.virtualsensor.agents.EpisodeAgent
         </servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>

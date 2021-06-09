@@ -3,11 +3,17 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QueryParseException;
 import org.apache.jena.riot.RiotException;
 import org.apache.jena.riot.system.IRIResolver;
-import org.json.JSONArray;
+import org.apache.jena.update.UpdateException;
+import org.apache.jena.update.UpdateFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class InputValidator {
 
@@ -37,11 +43,16 @@ public class InputValidator {
 				throw new RiotException();
 			}
 			catch (Exception ex) {
-				ex.printStackTrace();
+				throw new JPSRuntimeException("");
 			}
-		return (!f& checkURLpattern(iriStr));
+		return (!f& checkIfURLpattern(iriStr));
 		}
-	public static boolean checkURLpattern(String iriStr) {
+	/** check if it fits a URL format
+	 * 
+	 * @param iriStr
+	 * @return
+	 */
+	public static boolean checkIfURLpattern(String iriStr) {
 		try {
 			URL url = new URL(iriStr); 
 			url.toURI(); 
@@ -49,6 +60,16 @@ public class InputValidator {
 			} catch (MalformedURLException | URISyntaxException e) {
 				return false;
 				}
+	}
+	/** Check if String represents a file
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public static boolean checkIfFilePath(String filePath) {
+		File file = new File(filePath);
+		return file.isFile();
+		
 	}
 	/** check if file exists in computer
 	 * Can't be used if the directory is not established (aka created)
@@ -101,5 +122,35 @@ public class InputValidator {
 	            return false;
 	    }
 	    return true;
+	}
+	/** checks if SPARQL Query by throwing Exception otherwise. 
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static boolean checkIfValidQuery(String str) {
+		try{
+			QueryFactory.create(str);
+			return true;
+		}catch (QueryParseException e) {
+			return false;
+		}
+	}
+	/** checks if SPARQL Query by throwing Exception otherwise. 
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static boolean checkIfValidUpdate(String str) {
+		try{
+			UpdateFactory.create(str);
+			return true;
+		}catch (UpdateException e) {
+			return false;
+		}catch (QueryParseException e) {
+			return false;
+		}catch (Exception e) { //Still not sure what the updateException is called. 
+			return false;
+		}
 	}
 }

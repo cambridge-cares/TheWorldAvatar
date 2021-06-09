@@ -22,7 +22,6 @@ public class BibliographyLinkQuery extends OwlConverter implements IBibliography
 		queryResult = new ArrayList<>();
 		for (String bibliographyLinkInstance : bibliographyLinkInstances) {
 			queryAllAttributes(bibliographyLinkInstance);
-			queryValue(bibliographyLinkInstance);
 			bibliographyLinkList.add(bibliographyLink);
 			bibliographyLink = new BibliographyLink();
 		}
@@ -40,12 +39,10 @@ public class BibliographyLinkQuery extends OwlConverter implements IBibliography
 		if (primeID != null && !primeID.isEmpty()) {
 			bibliographyLink.setPrimeID(primeID);
 		}
-	}
-	
-	private void queryValue(String bibliographyLinkInstance) throws OntoChemExpException{
-		String value = readDataPropertyValue(bibliographyLinkInstance);
-		if (value != null && !value.isEmpty()) {
-			bibliographyLink.setValue(value);
+		
+		String doi = readDataPropertyDOI(bibliographyLinkInstance);
+		if (doi != null && !doi.isEmpty()) {
+			bibliographyLink.setDoi(doi);
 		}
 	}
 }

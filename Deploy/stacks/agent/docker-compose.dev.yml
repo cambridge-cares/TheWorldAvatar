@@ -1,0 +1,23 @@
+version: "3.8"
+
+# Services
+services:
+  
+  # Kinetics Agent.
+  # Note: This Image mounts a volume so that it can access the SRM Driver and
+  #        Intel MPI files stored within the 'srm-driver' Image.
+  kinetics-agent:
+    build: "./KineticsAgent"
+    ports:
+      - 8081:8080
+    
+    
+  # Slurm compute node
+  slurm:
+    build: "./Slurm"
+
+   
+# Networks
+networks:
+  default:
+    name: dev-agent

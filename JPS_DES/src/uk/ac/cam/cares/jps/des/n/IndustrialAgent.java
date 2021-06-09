@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.des.n;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -15,27 +14,30 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = {"/IndustrialAgent"})
 public class IndustrialAgent extends JPSAgent {
+	private static final String TWA_Ontology = "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_Singapore = "http://www.theworldavatar.com/kb/sgp/singapore";
+	private static final String TWA_POWSYSRealization = TWA_Ontology+ "/ontopowsys/PowSysRealization.owl#";
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_POWSYSBEHAVIOR = TWA_Ontology + "/ontopowsys/PowSysBehavior.owl#";
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-		if (!validateInput(requestParams)) {
-    		throw new JSONException("IndustrialAgent:  Input parameters not found.\n");
+	    if (!validateInput(requestParams)) {
+    		throw new BadRequestException();
     	}
-    	String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
-        String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
-        String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+    	String iriofnetwork = requestParams.optString("electricalnetwork",TWA_Singapore +"/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork");
+        String irioftempF=requestParams.optString("temperatureforecast", TWA_Singapore +"/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
+        String iriofirrF=requestParams.optString("irradiationforecast", TWA_Singapore +"/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
         
         String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
         
@@ -49,20 +51,37 @@ public class IndustrialAgent extends JPSAgent {
 			String res =  new DESAgentNew().runPythonScript("industrial.py", baseUrl);
 			
 			responseParams.put("results", res);
+			return responseParams;
 			}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			throw new JPSRuntimeException("");
 		}
-		return responseParams;
     }
+	
 	/** uses Commercial Agent's validate Input method since they're 
 	 * using the same variables
 	 */
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        return new CommercialAgent().validateInput(requestParams);
+		if (requestParams.isEmpty()) {
+            return false;
+        }
+        try {
+        String iriofnetwork = requestParams.getString("electricalnetwork");
+        boolean q = InputValidator.checkIfValidIRI(iriofnetwork);
+
+        String irioftempF=requestParams.getString("temperatureforecast");
+
+        boolean e = InputValidator.checkIfValidIRI(irioftempF);
+        String iriofirrF=requestParams.getString("irradiationforecast");
+        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
+        return q&e&r;
+        } catch (JSONException ex) {
+        	return false;
+        }
     }
-	/** submethod to call on Chemical and Fuel Cell constants
+	
+	/** sub method to call on Chemical and Fuel Cell constants
 	 * 
 	 * @param model
 	 * @param baseUrl
@@ -72,23 +91,24 @@ public class IndustrialAgent extends JPSAgent {
         queryForFuelCellConstants(model, baseUrl);
         
 	}
+	
 	/** Creates ElectrolyzerConstant.csv for IndustrialAgent to run 
-	 * 
+	 * Queries OntModel for electrolyzer parameters, switch to KBAgent if applicable
 	 * @param model
 	 * @param baseUrl
 	 */
 	public void queryForChemicalConstants(OntModel model, String baseUrl) {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_POWSYSRealization)
+				.addPrefix("j2", TWA_upperlevel_system)
+				.addPrefix("j9", TWA_POWSYSBEHAVIOR)
 				.addVar("?max").addVar("?tvalmax")
 				.addWhere("?entity" ,"a", "j1:Electrolizer")
 				.addWhere("?entity" ,"j2:hasProperty", "?max")
 				.addWhere("?max" ,"j2:hasValue", "?vmax").addWhere("?vmax" ,"j2:numericalValue", "?tvalmax")
 				.addOrderBy("?max")
 				.addUnion( new WhereBuilder()
-						.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-						.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+						.addPrefix("j1",TWA_POWSYSRealization)
+						.addPrefix("j2", TWA_upperlevel_system)
 						.addWhere("?entity" ,"a", "j1:Electrolizer")
 						.addWhere( "?entity" ,"j1:hasResistance", "?max")
 				        .addWhere("?max" ,"j2:hasValue", "?vmax").addWhere("?vmax" ,"j2:numericalValue", "?tvalmax")
@@ -104,15 +124,16 @@ public class IndustrialAgent extends JPSAgent {
 		
 				
 	}
+	
 	/** Creates FuelCell.csv for IndustrialAgent to run 
-	 * 
+	 * Queries OntModel for fuel cell parameters, switch to KBAgent if applicable
 	 * @param model
 	 * @param baseUrl
 	 */
 	public void queryForFuelCellConstants(OntModel model, String baseUrl) {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-				.addPrefix("j9", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",TWA_POWSYSRealization)
+				.addPrefix("j2", TWA_upperlevel_system)
+				.addPrefix("j9",  TWA_POWSYSBEHAVIOR)
 				.addPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
 				.addVar("?nocellval").addVar("?effval").addVar("?tvalmin").addVar("?tvalmax").addVar("?voltVal").addVar("?currVal")
 				.addWhere("?entity" ,"a", "j1:FuelCell").addWhere("?entity" ,"j1:hasNumberOfCells", "?no")

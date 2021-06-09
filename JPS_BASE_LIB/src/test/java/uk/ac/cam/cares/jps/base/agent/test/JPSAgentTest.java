@@ -6,7 +6,6 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.ws.rs.BadRequestException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

@@ -82,17 +82,11 @@ public class CommonPropertiesQuery extends OwlConverter implements ICommonProper
 	}
 	
 	private void queryPropertyValue(String propertyInstance) throws OntoChemExpException {		
-		ArrayList<String> valueInstance = readObjPropertyValue(propertyInstance);
-		
-		if (valueInstance.size() > 0 && valueInstance.size() < 2) {
-			String propertyValue = readDataPropertyValue(valueInstance.get(0));
-			if (propertyValue != null && !propertyValue.isEmpty()) {
-				commonPropertiesPropertyValue.setValueValue(propertyValue);
-				commonPropertiesProperty.setPropertyValue(commonPropertiesPropertyValue);
-				commonPropertiesPropertyValue = new Value();
-			}
-		} else if (valueInstance.size() > 1) {
-			logger.error("There should not be more than one instance of property value of commonPropertiesProperty.");
+		String propertyValue = readDataPropertyValue(propertyInstance);
+		if (propertyValue != null && !propertyValue.isEmpty()) {
+			commonPropertiesPropertyValue.setValueValue(propertyValue);
+			commonPropertiesProperty.setPropertyValue(commonPropertiesPropertyValue);
+			commonPropertiesPropertyValue = new Value();
 		}
 	}
 	
@@ -183,6 +177,21 @@ public class CommonPropertiesQuery extends OwlConverter implements ICommonProper
 			String primeID = readDataPropertyPrimeID(speciesLinkInstance.get(0));
 			if (primeID != null && !primeID.isEmpty()) {
 				commonPropertiesPropertyComponentSpeciesLink.setSpeciesLinkPrimeID(primeID);
+			}
+			
+			String cas = readDataPropertyCAS(speciesLinkInstance.get(0));
+			if (cas != null && !cas.isEmpty()) {
+				commonPropertiesPropertyComponentSpeciesLink.setCas(cas);
+			}
+			
+			String inchi = readDataPropertyInChI(speciesLinkInstance.get(0));
+			if (inchi != null && !inchi.isEmpty()) {
+				commonPropertiesPropertyComponentSpeciesLink.setInchi(inchi);
+			}
+			
+			String smiles = readDataPropertySMILES(speciesLinkInstance.get(0));
+			if (smiles != null && !smiles.isEmpty()) {
+				commonPropertiesPropertyComponentSpeciesLink.setSmiles(smiles);
 			}
 			
 			String value = readDataPropertyValue(speciesLinkInstance.get(0));

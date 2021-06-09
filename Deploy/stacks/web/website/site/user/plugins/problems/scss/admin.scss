@@ -1,0 +1,151 @@
+@import "variables";
+
+$error-color: #F45857;
+
+.report-output {
+
+  #admin-main .admin-block & {
+    h1 {
+      margin-top: 2rem;
+    }
+
+    .toast {
+      .btn {
+        float: right;
+        margin-top: -2px;
+        margin-right: 0.5rem;
+
+
+        color: $light-color;
+        font-size: 90%;
+        padding: 2px 7px;
+        border-radius: 3px;
+
+        border: 1px solid darken($success-color, 5%);
+        background-color: darken($success-color, 3%);
+
+        &:hover {
+          border-color: darken($success-color, 7%);
+          background-color: darken($success-color, 5%);
+        }
+
+        &.btn-error {
+          border: 1px solid darken($error-color, 5%);
+          background-color: darken($error-color, 3%);
+
+          &:hover {
+            border-color: darken($error-color, 7%);
+            background-color: darken($error-color, 5%);
+          }
+        }
+
+        &.btn-warning {
+          border: 1px solid darken($warning-color, 5%);
+          background-color: darken($warning-color, 3%);
+
+          &:hover {
+            border-color: darken($warning-color, 7%);
+            background-color: darken($warning-color, 5%);
+          }
+        }
+      }
+    }
+  }
+
+  ul.problems {
+
+    margin: 1rem 0;
+    list-style: none;
+    padding: 0;
+    background-color: #f7f7f7;
+
+    h5 {
+      margin: 0;
+    }
+
+    li.menu {
+      margin-bottom: 1rem;
+      box-shadow: 0 10px 20px -10px rgba(0,0,0,0.2);
+    }
+
+    .toast {
+      font-size: 1rem;
+      padding: 0.5rem 1.5rem;
+      color: $light-color;
+
+      &.toast-success {
+        background-color: $success-color;
+      }
+
+      &.toast-error {
+        background-color: $error-color;
+      }
+
+      &.toast-warning {
+        background-color: $warning-color;
+      }
+
+      .btn {
+        margin-left: 1rem;
+        text-decoration: none !important;
+        i {
+          margin-right: 0.3rem;
+        }
+      }
+    }
+
+    ul.details {
+      list-style: none;
+      padding-left: 0;
+      padding-bottom: 1rem;
+      background-color: #fff;
+
+      li {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+
+      code {
+        font-size: 90%;
+        line-height: 1.2;
+        padding: .1rem .2rem;
+        color: #288fed;
+        border-radius: .1rem;
+        background: #f0f7fe;
+        vertical-align: middle;
+      }
+
+      .menu-item {
+        margin-top: .5rem !important;
+        border-top: 1px solid #f7f7f7;
+        padding-top: 0.5rem;
+
+        &:first-child {
+          border: none;
+        }
+      }
+
+      .menu-badge {
+        padding: 0;
+        display: inline;
+        float: right;
+
+        .label {
+          font-size: 1rem;
+          height: 1.5rem;
+          width: 1.5rem;
+          line-height: 1.5rem;
+          border-radius: 3px;
+
+          &.label-success {
+            background: $success-color;
+          }
+
+          &.label-error {
+            background: $error-color;
+          }
+        }
+      }
+    }
+  }
+}

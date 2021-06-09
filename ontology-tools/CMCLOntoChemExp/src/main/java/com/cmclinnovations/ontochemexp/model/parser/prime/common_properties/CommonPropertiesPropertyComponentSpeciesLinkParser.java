@@ -9,6 +9,10 @@ public class CommonPropertiesPropertyComponentSpeciesLinkParser extends PrimeCon
 		parseCommonPropertiesPropertyComponentSpeciesLink(qName, attributes);
 		parseCommonPropertiesPropertyComponentSpeciesLinkPreferredKey(qName, attributes);
 		parseCommonPropertiesPropertyComponentSpeciesLinkPrimeID(qName, attributes);
+		parseCommonPropertiesPropertyComponentSpeciesLinkCAS(qName, attributes);
+		parseCommonPropertiesPropertyComponentSpeciesLinkInChI(qName, attributes);
+		parseCommonPropertiesPropertyComponentSpeciesLinkSMILES(qName, attributes);
+		parseCommonPropertiesPropertyComponentSpeciesLinkChemName(qName, attributes);
 	}
 	
 	private void parseCommonPropertiesPropertyComponentSpeciesLink(String qName, Attributes attributes) {
@@ -34,6 +38,50 @@ public class CommonPropertiesPropertyComponentSpeciesLinkParser extends PrimeCon
 			if (primeID != null) {
 				commonPropertiesPropertyComponentSpeciesLink.setSpeciesLinkPrimeID(primeID);
 				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setPrimeID(true);
+				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setSpeciesLink(true);
+			}
+		}
+	}
+	
+	private void parseCommonPropertiesPropertyComponentSpeciesLinkCAS(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemSpeciesLink()) && inCommonProperties) {
+			String cas = attributes.getValue(primeVocabulary.getAttribCAS());
+			if (cas != null) {
+				commonPropertiesPropertyComponentSpeciesLink.setCas(cas);
+				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setCas(true);
+				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setSpeciesLink(true);
+			}
+		}
+	}
+	
+	private void parseCommonPropertiesPropertyComponentSpeciesLinkInChI(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemSpeciesLink()) && inCommonProperties) {
+			String inchi = attributes.getValue(primeVocabulary.getAttribInChI());
+			if (inchi != null) {
+				commonPropertiesPropertyComponentSpeciesLink.setInchi(inchi);
+				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setInchi(true);
+				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setSpeciesLink(true);
+			}
+		}
+	}
+	
+	private void parseCommonPropertiesPropertyComponentSpeciesLinkSMILES(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemSpeciesLink()) && inCommonProperties) {
+			String smiles = attributes.getValue(primeVocabulary.getAttribSMILES());
+			if (smiles != null) {
+				commonPropertiesPropertyComponentSpeciesLink.setSmiles(smiles);
+				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setSmiles(true);
+				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setSpeciesLink(true);
+			}
+		}
+	}
+	
+	private void parseCommonPropertiesPropertyComponentSpeciesLinkChemName(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemSpeciesLink()) && inCommonProperties) {
+			String chemName = attributes.getValue(primeVocabulary.getAttribChemName());
+			if (chemName != null) {
+				commonPropertiesPropertyComponentSpeciesLink.setChemName(chemName);
+				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setChemName(true);
 				commonPropertiesPropertyComponentSpeciesLinkParseStatus.setSpeciesLink(true);
 			}
 		}
