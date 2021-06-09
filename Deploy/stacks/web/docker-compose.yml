@@ -76,14 +76,14 @@ services:
   # UK Power System
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-power-system:
-    image: docker.cmclinnovations.com/uk-power-system:e1ce3d6
+    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT
     container_name: "uk-power-system"
     restart: unless-stopped
     ports:
-      - 3001:3001 
+      - 3001:80
     labels:
-      description: "NodeJS hosted google maps visualisation of UK power plant data pulled from KG."
-      authors: "wx243@cam.ac.uk, support@cmclinnovations"
+      description: "MapBox visualisation of UK power plant data pulled from KG."
+      authors: " support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
     
