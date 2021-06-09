@@ -37,8 +37,6 @@ store = Sleepycat()
 store.__open = True
 store.context_aware = True
 
-#TODO: check with Feroz about how to lable the graph store in Blazgraph
-
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
 

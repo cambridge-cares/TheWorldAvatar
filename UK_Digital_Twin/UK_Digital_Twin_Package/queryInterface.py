@@ -22,11 +22,3 @@ def performUpdate(kb, query, isQuery = True, isUpdate = True):
     KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+ str(kb), isQuery, isUpdate)
     response = KGClient.executeUpdate((query))
     return str(response)
-
-# def performUpdateOfKGRouter(kb, endpoint, query, isQuery = True, isUpdate = True):
-#     # perform an example sparqle query, see the jps-base-lib docs for further details
-#     KGRouter = jpsBaseLib_view.KGRouter
-#     KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+ str(kb), isQuery, isUpdate)
-#     KGClient.setUpdateEndpoint(endpoint)
-#     response = KGClient.executeUpdate((query))
-#     return str(response)

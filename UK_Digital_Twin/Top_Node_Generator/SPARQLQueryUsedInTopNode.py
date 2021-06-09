@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 June 2021         #
+# Last Update Date: 09 June 2021         #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK top node graph"""
@@ -12,7 +12,7 @@ from rdflib.store import NO_STORE
 import sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-from UK_Digital_Twin_Package import BlazegraphRepoLable
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
 from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate
 
 qres = []
@@ -30,7 +30,7 @@ def queryPowerPlantNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if localQuery == False:   
-        res = json.loads(performQuery(BlazegraphRepoLable.UKPowerPlantKG, queryStr))
+        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKPowerPlantKG['lable'], queryStr))
         for r in res:
             qres.append(r["powerPlantIRI"])
         return qres
@@ -58,7 +58,7 @@ def queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if SleepycatPath == None and localQuery == False:  
-        res = json.loads(performQuery(BlazegraphRepoLable.UKEnergyConsumptionKG, queryStr))
+        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG['lable'], queryStr))
         for r in res:
             qres.append(r["place"])
         return qres    
@@ -86,7 +86,7 @@ def queryEGenNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if SleepycatPath == None and localQuery == False:    
-        res = json.loads(performQuery(BlazegraphRepoLable.UKEnergyConsumptionKG, queryStr))
+        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG['lable'], queryStr))
         for r in res:
             qres.append(r["Model_EGen"])
         return qres    
@@ -114,7 +114,7 @@ def queryEBusNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if SleepycatPath == None and localQuery == False:    
-        res = json.loads(performQuery(BlazegraphRepoLable.UKEnergyConsumptionKG, queryStr))
+        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG['lable'], queryStr))
         for r in res:
             qres.append(r["Model_EBus"])
         return qres
@@ -142,7 +142,7 @@ def queryELineNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if SleepycatPath == None and localQuery == False:    
-        res = json.loads(performQuery(BlazegraphRepoLable.UKEnergyConsumptionKG, queryStr))
+        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG['lable'], queryStr))
         for r in res:
             qres.append(r["Model_ELine"])
         return qres
