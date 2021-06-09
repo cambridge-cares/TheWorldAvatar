@@ -148,7 +148,7 @@
                     'line-cap': 'round'
                 },
                 'paint': {
-                    'line-color':  '#C7C7C7',
+                    'line-color':  '#3E3E3E',
                     'line-opacity': 0.75,
                     'line-width': 3
                 }
@@ -189,9 +189,6 @@
 				
                 var name = e.features[0].properties["Offtake Point (License Name)"];
                 var type = e.features[0].properties["Type of Offtake"];
-				
-				// Update the side panel
-				showOfftake(name, "Offtake Type: " + type, coordinates);
 				
                 map.flyTo({
                     center: coordinates,
@@ -259,6 +256,43 @@
                     zoom: 16
                 });
             });
+
+
+            map.addLayer({
+                id: 'terminals_name',
+                type: 'symbol',
+                source: 'terminals_s',
+                layout: {
+                    'text-field': ['get','name'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
+                    'text-offset':[0,1.5],
+                    },
+                "paint": {
+                    "text-color": "#3E3E3E",
+                    "text-halo-color": "#FFFFFF",
+                    "text-halo-width": 1,
+                    "text-opacity": ['interpolate', ['exponential',2], ['zoom'], 6, 0, 8, 1]
+                    }
+                });
+
+                map.addLayer({
+                id: 'offtakes_name',
+                type: 'symbol',
+                source: 'offtakes',
+                layout: {
+                    'text-field': ['get','Offtake Point (License Name)'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12,
+                    'text-offset':[0,1.5]
+                    },
+                "paint": {
+                    "text-color": "#3E3E3E",
+                    "text-halo-color": "#FFFFFF",
+                    "text-halo-width": 1,
+                    "text-opacity": ['interpolate', ['exponential',2], ['zoom'], 6, 0, 8, 1]
+                }
+                });
 
             // On mouse enter within offtake layer
             map.on('mouseenter', 'terminals', function (e) {
