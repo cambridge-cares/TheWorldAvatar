@@ -21,7 +21,7 @@ capa_PrimaryFuel = []
 qres_capa = []
 allCapacity = []
 
-def queryPowerPlantNodeURL(SleepycatPath, localQuery):
+def queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """
     PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> 
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 

@@ -1,15 +1,22 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 07 May 2021          #
+# Last Update Date: 09 June 2021         #
 ##########################################
 
 """This module declare the properties of generating UK power grid topology A-boxes"""
+
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
 
 class UKPowerGridTopology:
     
     """Default path of storing owl file """
     StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid_Topology\\"
+    
+    """Default path of SleepycatStoragePath"""
     SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
+    
+    """Default remote endpoint"""
+    endpoint = EndPointConfigAndBlazegraphRepoLable.UKPowerGridTopology
     
     """Bus Node keys"""
     EquipmentConnection_EBusKey = "EquipmentConnection_EBus-"

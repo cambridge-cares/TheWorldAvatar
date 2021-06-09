@@ -1,11 +1,16 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 20 May 2021          #
+# Last Update Date: 09 June 2021         #
 ##########################################
 
 """This module declare the properties of generating UK power grid model A-boxes"""
 
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
+
 valueKey = "value_"
+
+"""Default remote endpoint"""
+endpoint = EndPointConfigAndBlazegraphRepoLable.UKPowerGridModelKG
 
 class UKEbusModel:
     
