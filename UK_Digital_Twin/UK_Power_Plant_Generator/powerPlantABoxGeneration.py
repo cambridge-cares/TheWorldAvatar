@@ -141,6 +141,7 @@ def addUKPowerPlantTriples(store, updateLocalOWLFile = True):
             graph = Graph(store = store, identifier = URIRef(pp_base_uri))
             
             # Import T-boxes
+            graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoecape_technical_system)))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoeip_powerplant)))
             

@@ -83,12 +83,13 @@ def addUKElectricityConsumptionTriples(graph, *counter):
         return None
     else:
         elecConData = elecConDataArrays[counter[0]]
-        # Check node type: reginal or local nodes
+        # Check node type: regional or local nodes
         if elecConData[0] in engconsump.GovernmentOfficeRegions: # regional node
             print('Regional node name is: ' + elecConData[0].strip('\n'))
             ec_root_node = root_uri + SLASH + elecConData[0].strip('\n') + OWL + HASH + elecConData[0].strip('\n') # top node of the named graph
             ec_namespace = root_uri + SLASH + elecConData[0].strip('\n') + OWL + HASH       
             # Import T-boxes
+            graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))
             # Add connection between its father node
             graph.add((URIRef(ec_root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
@@ -101,7 +102,7 @@ def addUKElectricityConsumptionTriples(graph, *counter):
             graph.add((URIRef(root_uri + SLASH + elecConDataArrays[counter[1]][0].strip('\n') + OWL + HASH + elecConDataArrays[counter[1]][0].strip('\n')),\
                        URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(ec_root_node)))
         else:
-            print ('This is not a regional node. The number of counter arguments is expected to be 2.')
+            print ('This is neither a local node or a regional node. Please check the number of counter arguments.')
         
         
         # Add rdf.type
@@ -162,8 +163,8 @@ def addUKElectricityConsumptionTriples(graph, *counter):
 
 
 """Add Triples to the regional and local nodes"""
-def addRegionalandLocalNodes(store, updateLocalOWLFile = True):
-    print('Starts adding regional node.')
+def addRegionalAndLocalNodes(store, updateLocalOWLFile = True):
+    print('Starts adding regional and local nodes.')
     
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
     if isinstance(store, Sleepycat):    
@@ -200,8 +201,7 @@ def addRegionalandLocalNodes(store, updateLocalOWLFile = True):
     counter_region = 0   
     while (counter_region < numOfRegion): # numOfRegion
         region = engconsump.GovernmentOfficeRegions[counter_region]
-        print('The region is: ')
-        print(region)
+        print('The region is: ' + str(region))
         # find the index of region in the data file
         _elecConDataArrays = np.array(elecConDataArrays)
         index_targetRegion = np.argwhere(_elecConDataArrays == region)[0][0]        
@@ -246,5 +246,5 @@ def addRegionalandLocalNodes(store, updateLocalOWLFile = True):
     return 
 
 if __name__ == '__main__':
-    addRegionalandLocalNodes(store)
+    addRegionalAndLocalNodes(store)
     print('terminated')

@@ -22,10 +22,8 @@ from UK_Digital_Twin_Package import EnergyConsumptionDataProperty as EngConsump
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
-from UK_Digital_Twin_Package import BlazegraphRepoLable
 import SPARQLQueryUsedInTopNode as query_topNode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
-from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -152,25 +150,25 @@ def addThirdLevelNode(graph):
     return graph
 
 
-#TODO: finish the addThirdLevelNode func, have not test the remote query and the query result should be formatted as list
+#TODO: upload the energy consumption data to the como rdf4j and test the remote query
 """Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
 def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery, SleepycatPath = None):
     if localQuery == False:
         if nodeName == "UKPowerPlant2019": 
-            queryString = query_topNode.queryPowerPlantNodeURL(SleepycatPath, localQuery)
-            nodeList = list(performQuery(BlazegraphRepoLable.UKPowerPlantKG, queryString))
+            nodeList = query_topNode.queryPowerPlantNodeURL(SleepycatPath, localQuery)
         elif nodeName == "UKEnergyConsumption2017": 
-            queryString = query_topNode.queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery)
-            nodeList = list(performQuery(BlazegraphRepoLable.UKEnergyConsumptionKG, queryString))       
+            nodeList = query_topNode.queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery)       
     elif SleepycatPath != None and localQuery == True:   
         if nodeName == "UKPowerPlant2019": 
             nodeList = list(query_topNode.queryPowerPlantNodeURL(SleepycatPath, localQuery))
         elif nodeName == "UKEnergyConsumption2017": 
             nodeList = list(query_topNode.queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery))       
     for node in nodeList:
+        if SleepycatPath != None and localQuery == True:  
+            node = node[0]
         graph.add((URIRef(Third_Level_Node[nodeName]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
-                   URIRef(node[0]))) 
-        graph.add((URIRef(node[0]), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
+                   URIRef(node))) 
+        graph.add((URIRef(node), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
     return graph
 
 """Add Fourth level nodes (Model_EGen, Model_Eline and Model_EBus) to Third Level node (grid model)"""
@@ -180,17 +178,16 @@ def addFourthLevelNode_gridModel(graph):
         graph.add((URIRef(fourtlevelnode), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
     return graph
 
-#TODO: fulfill the addFivethLevelNode_gridModel, have not tested the remote query, the query results should be formatted in list 
+#TODO: up load the model KG to the remote triple store in como
 """Add Fifth level nodes (Model_EGen-001, Model_Eline-001, Model_EBus-001, etc.) to Fourth Level node (Model_EGen, Model_Eline and Model_EBus)"""
 def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = None):     
    if localQuery == False:
         if nodeName == "EGen": 
-            queryString = query_topNode.queryEGenNodeURL(SleepycatPath, localQuery)            
+            nodeList = query_topNode.queryEGenNodeURL(SleepycatPath, localQuery)            
         elif nodeName == "EBus": 
-            queryString = query_topNode.queryEBusNodeURL(SleepycatPath, localQuery)
+            nodeList = query_topNode.queryEBusNodeURL(SleepycatPath, localQuery)
         elif nodeName == "ELine": 
-            queryString = query_topNode.queryELineNodeURL(SleepycatPath, localQuery)
-        nodeList = list(performQuery(BlazegraphRepoLable.UKPowerGridModelKG, queryString))
+            nodeList = query_topNode.queryELineNodeURL(SleepycatPath, localQuery)
    elif SleepycatPath != None and localQuery == True:   
         if nodeName == "EGen": 
             nodeList = list(query_topNode.queryEGenNodeURL(SleepycatPath, localQuery))
@@ -199,9 +196,11 @@ def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = Non
         elif nodeName == "ELine": 
             nodeList = list(query_topNode.queryELineNodeURL(SleepycatPath, localQuery))       
    for node in nodeList:
-        graph.add((URIRef(UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, nodeName)), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
-                   URIRef(node[0]))) 
-        graph.add((URIRef(node[0]), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
+       if SleepycatPath != None and localQuery == True:  
+            node = node[0]
+       graph.add((URIRef(UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, nodeName)), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
+                   URIRef(node))) 
+       graph.add((URIRef(node), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
    return graph
     
 
