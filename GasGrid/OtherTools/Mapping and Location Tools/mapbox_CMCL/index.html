@@ -74,11 +74,6 @@
 		
 		var lastClick = new Date();
 
-        // On load finish
-        map.on('idle', function() {
-            resetSidePanel();
-        });
-
 		// On load start...
         map.on('load', function () {
 		           
@@ -278,9 +273,9 @@
                     "text-halo-width": 1,
                     "text-opacity": ['interpolate', ['exponential',2], ['zoom'], 6, 0, 8, 1]
                     }
-                });
+            });
 
-                map.addLayer({
+            map.addLayer({
                 id: 'offtakes_name',
                 type: 'symbol',
                 source: 'offtakes',
@@ -296,7 +291,7 @@
                     "text-halo-width": 1,
                     "text-opacity": ['interpolate', ['exponential',2], ['zoom'], 6, 0, 8, 1]
                 }
-                });
+            });
 
             // On mouse enter within offtake layer
             map.on('mouseenter', 'terminals', function (e) {
@@ -308,7 +303,6 @@
                 map.getCanvas().style.cursor = '';
             });
 
-			
             var layers = map.getStyle().layers;
             var labelLayerId;
             for (var i = 0; i < layers.length; i++) {
@@ -317,6 +311,8 @@
                     break;
                 }
             }
+
+            resetSidePanel();
         });
     </script>
 </body>

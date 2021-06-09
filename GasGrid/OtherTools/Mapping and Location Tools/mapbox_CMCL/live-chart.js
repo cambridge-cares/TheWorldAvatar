@@ -215,7 +215,7 @@ function buildChart(dataPoints) {
 		.range([0, (width - 60)])
 		.domain(d3.extent(currentChartData, function(d){return d[0]}));
 	var y = d3.scaleLinear()
-		.range([height - 50, 0])
+		.range([height - 60, 0])
 		.domain([
 			d3.min(currentChartData, function(d){return d[1]}) - 1.0, 
 			d3.max(currentChartData, function(d){return d[1]}) + 1.0
@@ -258,7 +258,7 @@ function buildChart(dataPoints) {
 	// Add the Y axis
 	vis.append("g")
 		.attr("class", "axis")
-		.attr("transform", "translate(50, 0)")
+		.attr("transform", "translate(50, 10)")
 		.call(yAxis);
 
 	// Label for the Y axis
@@ -270,7 +270,7 @@ function buildChart(dataPoints) {
 		
 	// Add the line
 	vis.append("path")
-		.attr("transform", "translate(50, 5)")
+		.attr("transform", "translate(50, 10)")
 		.datum(dataPoints) 
 		.attr("class", "line")
 		.attr("d", line);
