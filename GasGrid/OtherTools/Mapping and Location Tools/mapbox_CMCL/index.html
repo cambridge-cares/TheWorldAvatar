@@ -37,6 +37,14 @@
         // Initial state of UI elements
         resetSidePanel();
 
+        // Loading icon
+        document.getElementById("textContainer").innerHTML += `
+            <br><br><br><br><br>
+            <img width='150' src='loading.gif'></img>
+            <br>
+            <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+        `;
+
 		// Resets the camera
 		function resetCamera() {
 			if(typeof map !== 'undefined') {
@@ -66,7 +74,12 @@
 		
 		var lastClick = new Date();
 
-		// On load...
+        // On load finish
+        map.on('idle', function() {
+            resetSidePanel();
+        });
+
+		// On load start...
         map.on('load', function () {
 		           
 			// Pre-load the flow data
@@ -177,8 +190,6 @@
 				lastClick = nowClick;
 				
                 var coordinates = e.features[0].geometry.coordinates.slice();
-				//coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-				
                 var name = e.features[0].properties["Offtake Point (License Name)"];
                 var type = e.features[0].properties["Type of Offtake"];
 				
@@ -234,9 +245,7 @@
 				if(millis < 1000) return;
 				lastClick = nowClick;
 				
-				var coordinates = e.features[0].geometry.coordinates.slice();
-				coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-				
+				var coordinates = e.features[0].geometry.coordinates.slice();			
                 var name = e.features[0].properties.name;
                 var type = "Terminal";
 
