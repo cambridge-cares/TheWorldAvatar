@@ -20,6 +20,7 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import DUKESDataProperty as DUKES
 from UK_Digital_Twin_Package import EnergyConsumptionDataProperty as EngConsump
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
+from UK_Digital_Twin_Package import UKEnergyConsumption as UK_con
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 import SPARQLQueryUsedInTopNode as query_topNode
@@ -51,6 +52,9 @@ engconsump = EngConsump.EnergyConsumptionData()
 
 """Create an object of Class UKPowerPlantDataProperty"""
 ukpp = UKpp.UKPowerPlant()
+
+"""Create an object of Class UKEnergyConsumption"""
+ukcon = UK_con.UKEnergyConsumption()
 
 """Create an object of Class UKPowerGridTopology"""
 uk_topo = UK_Topo.UKPowerGridTopology()
@@ -104,6 +108,12 @@ uk_egen_model_Sleepycat = uk_egen_model.SleepycatStoragePath
 uk_ebus_model_Sleepycat = uk_ebus_model.SleepycatStoragePath
 uk_eline_model_Sleepycat = uk_eline_model.SleepycatStoragePath
 
+"""Remote Endpoint lable"""
+powerPlant_Endpoint = ukpp.endpoint['lable']
+energyConsumption_Endpoint = ukcon.endpoint['lable']
+topology_Endpoint = uk_topo.endpoint['lable']
+gridModel_Endpoint = UK_PG.endpoint['lable']
+
 """UK digital twin top node Conjunctive graph identifier"""
 ukdt_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin"
 
@@ -150,17 +160,17 @@ def addThirdLevelNode(graph):
 
 #TODO: upload the energy consumption data to the como rdf4j and test the remote query
 """Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
-def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery, SleepycatPath = None):
-    if localQuery == False:
+def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery, SleepycatPath = None, remoteEndPoint = None):
+    if localQuery == False and remoteEndPoint != None:
         if nodeName == "UKPowerPlant2019": 
-            nodeList = query_topNode.queryPowerPlantNodeURL(SleepycatPath, localQuery)
+            nodeList = query_topNode.queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery)
         elif nodeName == "UKEnergyConsumption2017": 
-            nodeList = query_topNode.queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery)       
+            nodeList = query_topNode.queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery)       
     elif SleepycatPath != None and localQuery == True:   
         if nodeName == "UKPowerPlant2019": 
-            nodeList = list(query_topNode.queryPowerPlantNodeURL(SleepycatPath, localQuery))
+            nodeList = list(query_topNode.queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery))
         elif nodeName == "UKEnergyConsumption2017": 
-            nodeList = list(query_topNode.queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery))       
+            nodeList = list(query_topNode.queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery))       
     for node in nodeList:
         if SleepycatPath != None and localQuery == True:  
             node = node[0]
@@ -178,21 +188,21 @@ def addFourthLevelNode_gridModel(graph):
 
 #TODO: up load the model KG to the remote triple store in como
 """Add Fifth level nodes (Model_EGen-001, Model_Eline-001, Model_EBus-001, etc.) to Fourth Level node (Model_EGen, Model_Eline and Model_EBus)"""
-def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = None):     
+def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = None, remoteEndPoint = None):     
    if localQuery == False:
         if nodeName == "EGen": 
-            nodeList = query_topNode.queryEGenNodeURL(SleepycatPath, localQuery)            
+            nodeList = query_topNode.queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery)            
         elif nodeName == "EBus": 
-            nodeList = query_topNode.queryEBusNodeURL(SleepycatPath, localQuery)
+            nodeList = query_topNode.queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery)
         elif nodeName == "ELine": 
-            nodeList = query_topNode.queryELineNodeURL(SleepycatPath, localQuery)
+            nodeList = query_topNode.queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery)
    elif SleepycatPath != None and localQuery == True:   
         if nodeName == "EGen": 
-            nodeList = list(query_topNode.queryEGenNodeURL(SleepycatPath, localQuery))
+            nodeList = list(query_topNode.queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery))
         elif nodeName == "EBus": 
-            nodeList = list(query_topNode.queryEBusNodeURL(SleepycatPath, localQuery))       
+            nodeList = list(query_topNode.queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery))       
         elif nodeName == "ELine": 
-            nodeList = list(query_topNode.queryELineNodeURL(SleepycatPath, localQuery))       
+            nodeList = list(query_topNode.queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery))       
    for node in nodeList:
        if SleepycatPath != None and localQuery == True:  
             node = node[0]
@@ -232,12 +242,12 @@ def generateTopNodeOWL(store, localQuery, updateLocalOWLFile = True):
     g = Graph(store = store, identifier = URIRef(baseURI)) # graph(store='default', identifier)
     g = addTopAndSecondLevelNode(g)
     g = addThirdLevelNode(g)
-    g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKPowerPlant2019", localQuery, powerPlant_Sleepycat)
-    g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKEnergyConsumption2017", localQuery, topoAndConsumpPath_Sleepycat)
+    g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKPowerPlant2019", localQuery, powerPlant_Sleepycat, powerPlant_Endpoint)
+    g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKEnergyConsumption2017", localQuery, topoAndConsumpPath_Sleepycat, energyConsumption_Endpoint)
     g = addFourthLevelNode_gridModel(g)    
-    g = addFifthLevelNode_gridModel(g, "EGen", localQuery, uk_egen_model_Sleepycat)
-    g = addFifthLevelNode_gridModel(g, "EBus", localQuery, uk_egen_model_Sleepycat)
-    g = addFifthLevelNode_gridModel(g, "ELine", localQuery, uk_egen_model_Sleepycat)
+    g = addFifthLevelNode_gridModel(g, "EGen", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+    g = addFifthLevelNode_gridModel(g, "EBus", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+    g = addFifthLevelNode_gridModel(g, "ELine", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
     
     global filepath, userSpecified
     

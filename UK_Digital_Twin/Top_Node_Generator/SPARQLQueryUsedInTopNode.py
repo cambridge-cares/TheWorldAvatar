@@ -12,7 +12,6 @@ from rdflib.store import NO_STORE
 import sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
 from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate
 
 qres = []
@@ -29,8 +28,8 @@ def queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     WHERE { ?powerPlantIRI rdf:type powerplant:PowerPlant .} 
     """
     global qres
-    if localQuery == False:   
-        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKPowerPlantKG['lable'], queryStr))
+    if localQuery == False and remoteEndPoint != None:   
+        res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["powerPlantIRI"])
         return qres
@@ -44,7 +43,7 @@ def queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery):
         dt_cg.close()
         return qres
 
-def queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery):
+def queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """    
     PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
@@ -58,7 +57,7 @@ def queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if SleepycatPath == None and localQuery == False:  
-        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG['lable'], queryStr))
+        res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["place"])
         return qres    
@@ -72,7 +71,7 @@ def queryUKEnergyConsumptionNodeURL(SleepycatPath, localQuery):
         dt_cg.close()
         return qres
 
-def queryEGenNodeURL(SleepycatPath, localQuery):
+def queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
@@ -86,7 +85,7 @@ def queryEGenNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if SleepycatPath == None and localQuery == False:    
-        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG['lable'], queryStr))
+        res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["Model_EGen"])
         return qres    
@@ -100,7 +99,7 @@ def queryEGenNodeURL(SleepycatPath, localQuery):
         dt_cg.close()
         return qres
 
-def queryEBusNodeURL(SleepycatPath, localQuery):
+def queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
@@ -114,7 +113,7 @@ def queryEBusNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if SleepycatPath == None and localQuery == False:    
-        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG['lable'], queryStr))
+        res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["Model_EBus"])
         return qres
@@ -128,7 +127,7 @@ def queryEBusNodeURL(SleepycatPath, localQuery):
         dt_cg.close()
         return qres
 
-def queryELineNodeURL(SleepycatPath, localQuery):
+def queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
@@ -142,7 +141,7 @@ def queryELineNodeURL(SleepycatPath, localQuery):
     """
     global qres
     if SleepycatPath == None and localQuery == False:    
-        res = json.loads(performQuery(EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG['lable'], queryStr))
+        res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["Model_ELine"])
         return qres
@@ -160,7 +159,7 @@ def queryELineNodeURL(SleepycatPath, localQuery):
 if __name__ == '__main__': 
     sl_path_topo = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
-    res = queryPowerPlantNodeURL(sl_path_pp, False)
+    res = queryPowerPlantNodeURL('ukpowerplant', sl_path_pp, False)
     print (len(res))
     print (res[0], res[1])
 

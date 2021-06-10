@@ -41,10 +41,10 @@ ukec = UKec.UKEnergyConsumption()
 engconsump = EngConsump.EnergyConsumptionData()
 
 """Graph store"""
-# store = 'default'
-store = Sleepycat()
-store.__open = True
-store.context_aware = True
+store_io = 'default'
+store_sl = Sleepycat()
+store_sl.__open = True
+store_sl.context_aware = True
 
 """Sleepycat storage path"""
 userSpecifiePath_Sleepycat = None # user specified path
@@ -162,7 +162,7 @@ def addUKElectricityConsumptionTriples(graph, *counter):
 
 
 
-"""Add Triples to the regional and local nodes"""
+"""Main function: Add Triples to the regional and local nodes"""
 def addRegionalAndLocalNodes(store, updateLocalOWLFile = True):
     print('Starts adding regional and local nodes.')
     
@@ -246,5 +246,5 @@ def addRegionalAndLocalNodes(store, updateLocalOWLFile = True):
     return 
 
 if __name__ == '__main__':
-    addRegionalAndLocalNodes(store)
+    addRegionalAndLocalNodes(store_io)
     print('terminated')

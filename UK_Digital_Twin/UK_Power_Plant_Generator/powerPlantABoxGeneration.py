@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 10 May 2021          #
+# Last Update Date: 09 June 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power plant graph."""
@@ -19,6 +19,7 @@ from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import DUKESDataProperty as DUKES
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
+from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
 
 """Notation used in URI construction"""
@@ -33,26 +34,14 @@ dt = UKDT.UKDigitalTwin()
 """Create an object of Class UKDigitalTwinTBox"""
 t_box = T_BOX.UKDigitalTwinTBox()
 
-"""Create an object of Class DUKESDataProperty"""
-dukes = DUKES.DUKESData()
-
-"""Create an object of Class UKPowerPlantDataProperty"""
+"""Create an object of Class UKPowerPlant"""
 ukpp = UKpp.UKPowerPlant()
-
-"""Graph store"""
-# store = 'default'
-store = Sleepycat()
-store.__open = True
-store.context_aware = True
 
 """Sleepycat storage path"""
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 defaultPath_Sleepycat = ukpp.SleepycatStoragePath
 
-"""Root_uri"""
-uriSplit = UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION).split('.owl') 
-root_uri = uriSplit[0]
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -67,32 +56,40 @@ ontocape_physical_dimension     = owlready2.get_ontology(t_box.ontocape_physical
 ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordinate_system).load()
 ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units).load()
 
-"""Data Array"""
-plantnameArrays      = readFile(dukes.PlantName)
-planttypeArrays      = readFile(dukes.PlantType)
-energygenArrays      = readFile(dukes.EnergyGen)
-gentechArrays        = readFile(dukes.GenTech)
-primaryfuelArrays    = readFile(dukes.PrimaryFuel)
-designcapacityArrays = readFile(dukes.DesignCapacity)
-builtYearArrays      = readFile(dukes.BuiltYear)
-ownerArrays          = readFile(dukes.Owner)
-gpslocationArrays    = readFile(dukes.GPSLocation)
-regionArrays         = readFile(dukes.Region)
-
-# """Counter"""
-# counter = 0
-
-"""Number of owl files to be generated"""
-fileNum = len(plantnameArrays)
 
 """User specified folder path"""
 filepath = None # user specified path
 userSpecified = False # storage mode: False: default, True: user specified
 
 ### Functions ### 
-"""Add Triples to the named graph"""
-def addUKPowerPlantTriples(store, updateLocalOWLFile = True):
+""" Create the DUKESDataProperty Instance by specifying its version """
+def createDUKESDataPropertyInstance(version):
+    dukes = DUKES.DUKESData(version)
+    
+    plantnameArrays      = readFile(dukes.PlantName)
+    planttypeArrays      = readFile(dukes.PlantType)
+    energygenArrays      = readFile(dukes.EnergyGen)
+    gentechArrays        = readFile(dukes.GenTech)
+    primaryfuelArrays    = readFile(dukes.PrimaryFuel)
+    designcapacityArrays = readFile(dukes.DesignCapacity)
+    builtYearArrays      = readFile(dukes.BuiltYear)
+    ownerArrays          = readFile(dukes.Owner)
+    gpslocationArrays    = readFile(dukes.GPSLocation)
+    regionArrays         = readFile(dukes.Region)
+    
+    uriSplit = UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION).split('.owl') 
+    root_uri = uriSplit[0]
+    
+    fileNum = len(plantnameArrays)
+    
+    return dukes, plantnameArrays, planttypeArrays, energygenArrays, gentechArrays, primaryfuelArrays, \
+        designcapacityArrays, builtYearArrays, ownerArrays, gpslocationArrays, regionArrays, root_uri, fileNum
+
+"""Main Function: Add Triples to the named graph"""
+def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
+    store = LocalGraphStore(storeType)
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
+    # store = LocalGraphStore(store, storeType)
     if isinstance(store, Sleepycat):    
         # Create Conjunctive graph maintain all power plant graphs
         powerPlantConjunctiveGraph = ConjunctiveGraph(store=store)
@@ -112,7 +109,10 @@ def addUKPowerPlantTriples(store, updateLocalOWLFile = True):
             powerPlantConjunctiveGraph.open(defaultPath_Sleepycat, create=True)
         else:
             assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
-    
+            
+    dukes, plantnameArrays, planttypeArrays, energygenArrays, gentechArrays, primaryfuelArrays, designcapacityArrays, builtYearArrays, ownerArrays, \
+        gpslocationArrays, regionArrays, root_uri, fileNum = createDUKESDataPropertyInstance(version)     
+        
     counter = 0
     while(counter < fileNum):
         print('The counter is:')
@@ -251,5 +251,5 @@ def addUKPowerPlantTriples(store, updateLocalOWLFile = True):
     return
 
 if __name__ == '__main__':
-    addUKPowerPlantTriples(store, False)
+    addUKPowerPlantTriples('default', 2019, False)
     print('terminated')
