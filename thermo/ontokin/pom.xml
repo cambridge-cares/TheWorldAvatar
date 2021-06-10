@@ -24,15 +24,22 @@
           <target>1.8</target>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
         <version>3.0.0</version>
         <configuration>
           <warSourceDirectory>WebContent</warSourceDirectory>
         </configuration>
       </plugin>
+      <plugin>
+			<artifactId>maven-war-plugin</artifactId>
+				<version>3.2.1</version>
+				<configuration>
+					<warName>ontokin</warName>
+					<outputDirectory>${tomcatPath}/webapps</outputDirectory>
+				</configuration>
+			</plugin>
     </plugins>
-
     <finalName>ontokin</finalName>
   </build>
   
