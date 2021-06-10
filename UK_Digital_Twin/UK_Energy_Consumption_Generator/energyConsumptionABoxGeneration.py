@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 26 April 2021        #
+# Last Update Date: 10 June 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
@@ -20,6 +20,7 @@ from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import EnergyConsumptionDataProperty as EngConsump
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
+from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
 
 """Notation used in URI construction"""
@@ -37,35 +38,16 @@ t_box = T_BOX.UKDigitalTwinTBox()
 """Create an object of Class UKEnergyConsumption"""
 ukec = UKec.UKEnergyConsumption()
 
-"""Create an object of Class EnergyConsumptionDataProperty"""
-engconsump = EngConsump.EnergyConsumptionData()
-
-"""Graph store"""
-store_io = 'default'
-store_sl = Sleepycat()
-store_sl.__open = True
-store_sl.context_aware = True
-
 """Sleepycat storage path"""
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 defaultPath_Sleepycat = ukec.SleepycatStoragePath
-
-"""Root_uri"""
-uriSplit = UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION).split('.owl') 
-root_uri = uriSplit[0]
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
 ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
 ontoeip_system_function         = owlready2.get_ontology(t_box.ontoeip_system_function).load()
-
-"""Data Array"""
-elecConDataArrays = readFile(engconsump.ElectricityConsumptionData)
-
-"""Number of owl files to be generated"""
-fileNum = len(elecConDataArrays) # substruct the first header line 
 
 """User specified folder path"""
 filepath = None
@@ -76,8 +58,19 @@ ukec_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consump
 
 
 ### Functions ### 
-"""Add Triples to the target nodes"""
-def addUKElectricityConsumptionTriples(graph, *counter):  
+""" The Energy Consumption DataProperty Instance constructor"""
+def createEnergyConsumptionDataPropertyInstance(version):
+    engconsump = EngConsump.EnergyConsumptionData()   
+    elecConDataArrays = readFile(engconsump.ElectricityConsumptionData)   
+    uriSplit = UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION).split('.owl') 
+    root_uri = uriSplit[0]   
+    fileNum = len(elecConDataArrays)  # substruct the first header line 
+    
+    return engconsump, elecConDataArrays, root_uri, fileNum
+
+
+"""Add Triples to the target nodes""" 
+def addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, *counter):  
     if len(elecConDataArrays[counter[0]]) != len(engconsump.headerElectricityConsumption):
         print('The data is not sufficient, please check the data file')
         return None
@@ -163,9 +156,10 @@ def addUKElectricityConsumptionTriples(graph, *counter):
 
 
 """Main function: Add Triples to the regional and local nodes"""
-def addRegionalAndLocalNodes(store, updateLocalOWLFile = True):
+def addUKElectricityConsumptionTriples(storeType, version, updateLocalOWLFile = True):
     print('Starts adding regional and local nodes.')
-    
+
+    store = LocalGraphStore(storeType)
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
     if isinstance(store, Sleepycat):    
         # Create Conjunctive graph maintain all power plant graphs
@@ -187,19 +181,22 @@ def addRegionalAndLocalNodes(store, updateLocalOWLFile = True):
             eleConConjunctiveGraph.open(defaultPath_Sleepycat, create=True)
         else:
             assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
-            
+    
+    engconsump, elecConDataArrays, root_uri, fileNum = createEnergyConsumptionDataPropertyInstance(version)  
+    
     # check the data file header
     if elecConDataArrays[0] == engconsump.headerElectricityConsumption:
         pass
-    global fileNum, filepath, userSpecified
+    global filepath, userSpecified
     counter = 1
-    print('The counter is:') # starts from 1
-    print(counter)
+    counter_region = 0  
     
     # Add the official region node
-    numOfRegion = len(engconsump.GovernmentOfficeRegions)
-    counter_region = 0   
+    numOfRegion = len(engconsump.GovernmentOfficeRegions) 
     while (counter_region < numOfRegion): # numOfRegion
+        
+        print('The counter is:') # starts from 1
+        print(counter)
         region = engconsump.GovernmentOfficeRegions[counter_region]
         print('The region is: ' + str(region))
         # find the index of region in the data file
@@ -209,13 +206,13 @@ def addRegionalAndLocalNodes(store, updateLocalOWLFile = True):
         
         # Create rdf graph with identifier, regional nodes are named graphs including its local nodes
         graph = Graph(store = store, identifier = URIRef(regional_base_uri)) # graph(store='default', identifier)
-        graph = addUKElectricityConsumptionTriples(graph, index_targetRegion)       
+        graph = addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, index_targetRegion)       
         print('Counter and index_targetRegion are:')
         print (counter, index_targetRegion)
         
         # Add the local nodes under its regional node
         while (counter < index_targetRegion):
-            graph = addUKElectricityConsumptionTriples(graph, counter, index_targetRegion)
+            graph = addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, counter, index_targetRegion)
             counter += 1
         
         # generate/update OWL files
@@ -238,13 +235,15 @@ def addRegionalAndLocalNodes(store, updateLocalOWLFile = True):
                 storeGeneratedOWLs(graph, filepath_)
             
         print('counter_region is: ')
-        print(counter_region)        
+        print(counter_region, "the attributes of this reginal node has been all added")    
+        
         counter_region += 1  
+        counter = index_targetRegion + 1 
         
     if isinstance(store, Sleepycat):  
         eleConConjunctiveGraph.close()               
     return 
 
 if __name__ == '__main__':
-    addRegionalAndLocalNodes(store_io)
+    addUKElectricityConsumptionTriples('default', 2017, False)
     print('terminated')

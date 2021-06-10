@@ -8,31 +8,36 @@
 """The lables of different repositories maintained in RDF4j triple store deployed in CoMo server"""
 
 UKDigitalTwinKG = { # the repo used to store the top node graph (lookup table)
-    'lable': 'ukdigitaltwin',
+    'lable': 'ukdigitaltwin', # lable is used in Blazegraph while ID for CoMo RDF4j
+    'ID': 'UKDigitalTwin',
     'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukdigitaltwin",
     'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin",
     'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"}
 
 UKPowerPlantKG = { # level 1
-    'lable': 'ukpowerplant',
+    'lable': 'ukpowerplantkg',
+    'ID': 'UKPowerPlantKG',
     'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukpowerplant",
-    'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant",
-    'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant/statements"}
+    'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG",
+    'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG/statements"}
 
 UKEnergyConsumptionKG = { # level 1
     'lable': 'ukenergyconsumptionkg',
+    'ID': 'UKEnergyConsumptionKG',
     'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukenergyconsumptionkg",
     'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG",
     'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG/statements"}
 
 UKGridTopologylKG = { # level 2
     'lable': 'ukpowergridtopology',
+    'ID': 'UKPowerGridTopology',
     'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukpowergridtopology",
     'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology",
     'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology/statements"}
 
 UKPowerGridModelKG = { # level 3
-    'lable': 'ukpowergridmodel',
+    'lable': 'ukpowergridmodel', 
+    'ID': 'UKPowerGridModel',
     'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukpowergridmodel",
     'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel",
     'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel/statements"}
