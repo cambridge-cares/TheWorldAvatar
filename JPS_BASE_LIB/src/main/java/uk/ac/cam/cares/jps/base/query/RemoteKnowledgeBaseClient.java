@@ -632,8 +632,6 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 				.concat("=");
 	}
 	
-	//TODO new get/put methods
-	
 	/**
 	 * Performs a construct query on the store and returns the model as a string.
 	 */
@@ -675,7 +673,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 		InputStream in = new ByteArrayInputStream(content.getBytes());
         if (contentType == null) {
         	//RDF/XML default
-        	//TODO base?
+        	//TODO base uri?
         	model.read(in, null); 
 		} else {
 			Lang syntax = RDFLanguages.contentTypeToLang(contentType);

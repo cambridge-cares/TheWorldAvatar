@@ -83,7 +83,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	// Default graph
 	private GraphData defaultGraph = new GraphData();
 	
-	// Dataset written to file after sparql update by default
+	// Dataset written to file after sparql update by default unless default constructor used
 	private boolean autoWrite = true;	
 	
 	///////////////////////////
@@ -95,7 +95,8 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 */
 	public FileBasedKnowledgeBaseClient() {
 		init();
-	}	//TODO autowrite false if no file provided?
+		autoWrite = false;
+	}
 	
 	/**
 	 * Constructor loads a triples to the default graph and quads to a named graph.
@@ -633,10 +634,10 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		return executeUpdate(this.query);
 	}
 	
-	//TODO
 	/**
 	 * Executes the update operation supplied by the calling method.
-	 * writeToFile() or end() must be called to save changes to file.
+	 * Changes are saved to file automatically if autoWrite = true
+	 * This is the default if file loaded by the constructor 
 	 * 
 	 * @param update as String
 	 * @return
@@ -853,14 +854,12 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	public
 	void put(String resourceUrl, String content, String contentType) {
 		
-		//TODO resourceUrl may be in the default graph
-		
 		Model model = ModelFactory.createDefaultModel();
 		
 		InputStream in = new ByteArrayInputStream(content.getBytes());
         if (contentType == null) {
         	//RDF/XML default
-        	//TODO base?
+        	//TODO base uri?
         	model.read(in, null); 
 		} else {
 			Lang syntax = RDFLanguages.contentTypeToLang(contentType);

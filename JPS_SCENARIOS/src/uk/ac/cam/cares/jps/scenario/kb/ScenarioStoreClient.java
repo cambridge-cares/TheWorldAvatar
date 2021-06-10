@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 
-
 public class ScenarioStoreClient {
 
 	private static Logger logger = LoggerFactory.getLogger(ScenarioStoreClient.class);
@@ -36,7 +35,7 @@ public class ScenarioStoreClient {
 		
 		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient();
 		kbClient.setAutoWrite(false);
-		kbClient.put(resourceUrl, content, contentType);
+		kbClient.put(null, content, contentType); //Put to default graph
 		kbClient.writeToFile(null, filePath, Lang.RDFXML);
 	}
 
@@ -52,8 +51,8 @@ public class ScenarioStoreClient {
 		logger.info("get resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
 		String filePath = BucketHelper.getLocalPath(resourceUrl, scenarioUrl);
 
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
-		String result = kbClient.get(resourceUrl, accept);
+		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath); //load to default graph
+		String result = kbClient.get(null, accept);
 		return result;
 	}
 
@@ -67,7 +66,7 @@ public class ScenarioStoreClient {
 	}
 	
 	/**
-	 * Does the file already exist in the scenario folder
+	 * Does the file already exist in the scenario folder?
 	 * @param resourceUrl
 	 * @return
 	 */
