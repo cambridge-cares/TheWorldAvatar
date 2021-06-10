@@ -65,7 +65,7 @@
 
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
-    var tiltShiftMaxBlur = 3; // The maximum blur, in pixels, when the tilt-shift effect is fully on. 3 pixels is subtle and nice
+    var tiltShiftMaxBlur = 2; // The maximum blur, in pixels, when the tilt-shift effect is fully on. 3 pixels is subtle and nice
     var tiltShiftBlur = document.getElementById("tiltShift");
     var mapDiv = document.getElementById("map");
 
@@ -118,7 +118,7 @@
 
     const map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/satellite-v9?optimize=true', // stylesheet location
+      style: 'mapbox://styles/mapbox/satellite-streets-v9?optimize=true', // stylesheet location
       center: [-3, 54.25], // starting position [lng, lat]
       zoom: 5, // starting zoom
       pitch: 0,
@@ -130,11 +130,7 @@
 
     map.on('load', function () {
 
-      // Add fog
-      map.setFog({
-        'color': 'white',
-        'horizon-blend': 0.1
-      });
+
 
       map.addSource('mapbox-dem', {
         'type': 'raster-dem',
