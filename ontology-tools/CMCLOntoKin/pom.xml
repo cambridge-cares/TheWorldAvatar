@@ -6,7 +6,7 @@
     <artifactId>CMCLOntoKin</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
-    <name>OntoKin</name>
+    <name>CMCLOntoKin</name>
 
     <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -177,8 +177,8 @@
 		<configuration>     
 		    <arg>-verbose</arg>
 		    <arg>-Xlint:all,-options,-path, unchecked</arg>
-		    <source>1.7</source>
-		    <target>1.7</target>
+		    <source>1.8</source>
+		    <target>1.8</target>
 		    <showDeprecation>true</showDeprecation>
 		</configuration>
 	    </plugin>
