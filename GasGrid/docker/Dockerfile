@@ -22,7 +22,7 @@ LABEL description = "Gas Grid Agent"
 RUN apt update && apt install -y openjdk-11-jdk-headless
 
 # Install utilities
-RUN apt update && apt-get install -y cron procps nano
+RUN apt update && apt-get install -y rsyslog cron procps nano 
 
 # Install web server (to host geojson files for download)
 RUN apt update && apt install -y apache2
@@ -77,4 +77,4 @@ ENV KG_LOCATION="http://kg.cmclinnovations.com:8055/blazegraph"
 EXPOSE 80
 
 # Run cron daemon and boot script at start
-CMD [ "sh", "-c", "cron && /app/start-up.sh" ]
+CMD [ "sh", "-c", "rsyslogd && /app/start-up.sh" ]
