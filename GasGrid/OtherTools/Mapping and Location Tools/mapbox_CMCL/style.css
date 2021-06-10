@@ -223,6 +223,7 @@ body.effectsOff #tiltShift body.effectsOff #map {
 	padding: 10px;
 	fill-opacity: 0.5;
 	border-radius: 6px;
+	color: white;
 	background-color: rgba(0, 0, 0, 0.2);
 	font-family: 'Open Sans', sans-serif;	
       }
