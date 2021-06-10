@@ -39,7 +39,9 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 import uk.ac.cam.cares.jps.scenario.kb.NewKnowledgeBaseManager;
+import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
 public class ScenarioAgent extends KnowledgeBaseAgent {
@@ -193,16 +195,16 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			
 			
 			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			KnowledgeBaseClientInterface kb = NewKnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
+			ScenarioStoreClient storeClient = new ScenarioStoreClient(scenarioUrl);
 			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
 			
 			String result = "";	
 			if (sparql == null) {
 				//result = kb.get(resourceUrl, accept);
-				result = getFromKnowledgeBase(kb, paramDatasetUrl, resourceUrl, copyOnRead, accept);
+				result = getFromKnowledgeBase(storeClient, paramDatasetUrl, resourceUrl, copyOnRead, accept);
 			} else {
 				//result = kb.query(resourceUrl, sparql);
-				result = queryKnowledgeBase(kb, resourceUrl, sparql, copyOnRead);
+				result = queryKnowledgeBase(storeClient, resourceUrl, sparql, copyOnRead);
 			}
 			
 			Http.printToResponse(result, resp);
@@ -655,11 +657,11 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		}
 	}
 	
-	protected void updateKnowledgeBase(KnowledgeBaseClientInterface kb, String resourceUrl, String sparql) {
+	protected void updateKnowledgeBase(ScenarioStoreClient storeClient, String resourceUrl, String sparql) {
 		
 		logger.info("updateKnowledgeBase");
 		
-		String datasetUrl = kb.getDatasetUrl();
+		String datasetUrl = storeClient.getScenarioUrl(); //TODO check this
 		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
 		
 		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
@@ -671,36 +673,31 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			return;
 		}
 		
-		if (!kb.exists(resourceUrl)) {
+		if (!storeClient.exists(resourceUrl)) {
 			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
-			kb.put(resourceUrl, content, null);
+			storeClient.put(resourceUrl, content, null);
 		}
-		if(resourceUrl==null) {
-			kb.executeUpdate(sparql);
-		}else {
-			//TODO filebased and rdf4jserver were previously supported
-			throw new UnsupportedOperationException();
-		}
+		storeClient.update(resourceUrl, sparql);
 	}
 	
-	protected String getFromKnowledgeBase(KnowledgeBaseClientInterface kb, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
-		if (kb.exists(resourceUrl)) {
-			return kb.get(resourceUrl, accept);
+	protected String getFromKnowledgeBase(ScenarioStoreClient storeClient, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
+		if (storeClient.exists(resourceUrl)) {
+			return storeClient.get(resourceUrl, accept);
 		} 
 		
 		String content = KnowledgeBaseClient.get(externalDatasetUrl, resourceUrl, accept);
 		if (copyOnRead) {
-			kb.put(resourceUrl, content, accept);
+			storeClient.put(resourceUrl, content, accept);
 			if (accept != null) {
 				// read it again but this time form the knowledge base and in the correct format
-				return kb.get(resourceUrl, accept);
+				return storeClient.get(resourceUrl, accept);
 			} 
 		}
 
 		return content;
 	}
 	
-	protected String queryKnowledgeBase(KnowledgeBaseClientInterface kb, String resourceUrl, String sparql, boolean copyOnRead) {
+	protected String queryKnowledgeBase(ScenarioStoreClient storeClient, String resourceUrl, String sparql, boolean copyOnRead) {
 
 		logger.info("queryKnowledgeBase");
 		
@@ -712,19 +709,17 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			return KnowledgeBaseClient.query(metadatasetUrl, null, sparql);
 		}
 		
-		if (kb.exists(resourceUrl)) {
-			return kb.query(resourceUrl, sparql);
+		if (storeClient.exists(resourceUrl)) {
+			return storeClient.query(resourceUrl, sparql);
 		} 
 		
-		String content = KnowledgeBaseClient.get(null, resourceUrl, null);
 		if (copyOnRead) {
-			kb.put(resourceUrl, content, null);
-			return kb.query(resourceUrl, sparql);
+			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+			storeClient.put(resourceUrl, content, null);
+			return storeClient.query(resourceUrl, sparql);
 		} else {
-			logger.info("query from KnowledgeBaseClient");
-			InputStream inputStream = FileUtil.stringToInputStream(content);
-			RDFFormat format =  KnowledgeBaseClientInterface.getRDFFormatFromFileType(resourceUrl);
-			return KnowledgeBaseClientInterface.query(inputStream, format, sparql);
+			logger.info("query from KnowledgeBaseClient");	
+			return KnowledgeBaseClient.query(null, resourceUrl, sparql);
 		}
 	}
 	
@@ -744,16 +739,16 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			
 			
 			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			KnowledgeBaseClientInterface kb = NewKnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
+			ScenarioStoreClient storeClient = new ScenarioStoreClient(scenarioUrl);
 			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
 			
 			String result = "";	
 			if (sparql == null) {
 				//result = kb.get(resourceUrl, accept);
-				result = getFromKnowledgeBase(kb, paramDatasetUrl, resourceUrl, copyOnRead, accept);
+				result = getFromKnowledgeBase(storeClient, paramDatasetUrl, resourceUrl, copyOnRead, accept);
 			} else {
 				//result = kb.query(resourceUrl, sparql);
-				result = queryKnowledgeBase(kb, resourceUrl, sparql, copyOnRead);
+				result = queryKnowledgeBase(storeClient, resourceUrl, sparql, copyOnRead);
 			}
 			
 			return result;

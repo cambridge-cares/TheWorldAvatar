@@ -95,7 +95,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 */
 	public FileBasedKnowledgeBaseClient() {
 		init();
-	}
+	}	//TODO autowrite false if no file provided?
 	
 	/**
 	 * Constructor loads a triples to the default graph and quads to a named graph.
@@ -633,6 +633,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		return executeUpdate(this.query);
 	}
 	
+	//TODO
 	/**
 	 * Executes the update operation supplied by the calling method.
 	 * writeToFile() or end() must be called to save changes to file.
@@ -819,8 +820,6 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		}
 	}
 	
-	//TODO new get/put methods
-	
 	@Override
 	public
 	String get(String resourceUrl, String accept) {
@@ -831,8 +830,6 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		
 		ConstructBuilder builder = new ConstructBuilder()
 				.addConstruct( varS, varP, varO);
-		
-		//TODO resourceUrl may have been loaded to the default graph 
 		
 		if (resourceUrl == null) {
 			//Default graph
