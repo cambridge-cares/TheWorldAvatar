@@ -196,3 +196,22 @@ h1 {
 	background-color: rgba(0, 0, 0, 0.4);
 	text-decoration: underline;
 }
+
+#tiltShift {
+	display: none;
+	/* this gets turned on by the javascript */
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+	pointer-events: none;
+	/* Ensure the mouse pointer can't interact with this layer */
+      }
+
+
+body.effectsOff #tiltShift body.effectsOff #map {
+	filter: none !important;
+	-webkit-filter: none !important;
+      }
