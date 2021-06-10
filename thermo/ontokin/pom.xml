@@ -236,11 +236,13 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20180813</version>
+</dependency>
 <dependency>  
 		    <groupId>javax</groupId>    
 		    <artifactId>javaee-web-api</artifactId>    
 		    <version>7.0</version> <!-- Put here the version of your Java EE app, in my case 7.0 -->
 		    <scope>provided</scope>
+</dependency>
 <dependency>
 			<groupId>com.cmclinnovations</groupId>
 			<artifactId>CMCLOntoKin</artifactId>
