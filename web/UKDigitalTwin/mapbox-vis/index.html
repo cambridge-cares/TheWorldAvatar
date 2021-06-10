@@ -57,8 +57,23 @@
       padding: 10px;
       fill-opacity: 0.5;
       font-family: 'Open Sans', sans-serif;
+      
     }
 
+    #resetContainer {
+      height: 25px;
+      width: 100px;
+      position: fixed;
+      left: 5px;
+      top: 50px;
+      line-height: 25px;
+      font-size: 11pt;
+      font-family: 'Open Sans', sans-serif;
+      text-align: center;
+      border-radius: 6px;
+      color: '#FFFFFF';
+      background-color: rgba(0, 0, 0, 0.2);
+    }
   </style>
 </head>
 
@@ -66,6 +81,9 @@
 
   <div id='map'></div>
   <div id="tiltShift"></div>
+  <div id="resetContainer">
+    <a href="javascript:void(0)" onclick="resetCamera()">Reset View</a>
+  </div>
   <div id="menu">
     <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" checked="checked">
     <label for="satellite-v9">Satellite</label>
@@ -82,7 +100,7 @@
 
 
     mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
-    var tiltShiftMaxBlur = 2; // The maximum blur, in pixels, when the tilt-shift effect is fully on. 3 pixels is subtle and nice
+    var tiltShiftMaxBlur = 3; // The maximum blur, in pixels, when the tilt-shift effect is fully on. 3 pixels is subtle and nice
     var tiltShiftBlur = document.getElementById("tiltShift");
     var mapDiv = document.getElementById("map");
 
@@ -148,28 +166,37 @@
     var inputs_style = layerList.getElementsByTagName('input');
 
     var inner_text = '#FFFFFF';
-    var outer_text =  '#000000';
+    var outer_text = '#000000';
 
     function switchLayer(layer) {
       var layerId = layer.target.id;
       map.setStyle('mapbox://styles/mapbox/' + layerId);
-      if (layerId == 'satellite-v9' || layerId == 'satellite-streets-v9'){
+      if (layerId == 'satellite-v9' || layerId == 'satellite-streets-v11') {
         inner_text = '#FFFFFF';
-        outer_text =  '#000000';
-      } 
-      else{
+        outer_text = '#000000';
+      }
+      else {
         outer_text = '#FFFFFF';
-        inner_text =  '#3E3E3E' ;
+        inner_text = '#3E3E3E';
       }
     }
 
-
+    function resetCamera() {
+      if (typeof map !== 'undefined') {
+        map.flyTo({
+          center: [-3, 54.25], // starting position [lng, lat]
+          zoom: 5, // starting zoom
+          pitch: 0,
+          bearing: 0
+        });
+      }
+    }
 
     map.on('style.load', function () {
 
       for (var i = 0; i < inputs_style.length; i++) {
-      inputs_style[i].onclick = switchLayer;
-    }
+        inputs_style[i].onclick = switchLayer;
+      }
 
       map.addSource('mapbox-dem', {
         'type': 'raster-dem',
