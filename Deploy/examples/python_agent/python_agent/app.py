@@ -8,8 +8,9 @@ app = Flask(__name__)
 @app.route('/')
 def default():
     msg  = "To see the result of an API call, enter a URL of the form:<BR>"
-    msg += "&nbsp&nbsp localhost:5000/api/v1/evaluate?val=[VAL]&order=[ORDER]<BR><BR>"
+    msg += "&nbsp&nbsp [this_url]/api/v1/evaluate?val=[VAL]&order=[ORDER]<BR><BR>"
     msg += "&nbsp&nbsp (where [VAL] is a float and [ORDER] is an integer between 0 and 2)"
+    msg += "&nbsp&nbsp [this_url] is the host and port currently shown in the address bar"
     return msg
 
 # Define a route for API requests
