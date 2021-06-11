@@ -20,3 +20,4 @@ requests_html
 SPARQLWrapper
 tabulate
 tqdm
+wget
