@@ -86,8 +86,8 @@ def get_flow_data_from_csv():
                 terminalName = row[0]
                 
                 dateTimeObj = datetime.datetime.strptime(row[3], "%d/%m/%Y %H:%M:%S")
-                dateTimeStr = dateTimeObj.strftime("%y-%m-%dT%H:%M:%S.000Z")
-                
+                dateTimeStr = dateTimeObj.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
                 flowValue = row[2]
                 data.append([terminalName, dateTimeStr, flowValue])
 
