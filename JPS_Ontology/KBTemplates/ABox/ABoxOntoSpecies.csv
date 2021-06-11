@@ -1,19 +1,44 @@
-Source,Type,Target,Relation,Value
-00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Species,,
-http://purl.org/dc/elements/1.1/identifier,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,00b7e248-ae24-35bf-b7a0-b470b923ddf6
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CO2,,
-http://www.w3.org/2004/02/skos/core#altLabel,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Carbon dioxide
-http://www.w3.org/2004/02/skos/core#altLabel,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Dry ice
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,124-38-9
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,C(=O)=O
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasAtomicBond,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,1 2 2 1 3 2
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometry,Data Property,00b7e248-ae24-35bf-b7a0-b470b923ddf6,,C 17.0000 10.0000 0.0000 O 18.0221 10.5679 0.0000 O 15.9779 9.4321 0.0000
-StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,StandardEnthalpyOfFormation,,
-00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasStandardEnthalpyOfFormation,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,-393.51 ± 0.13
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,kJ/mol
-Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Temperature,,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,298.15
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,K
-StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasReferenceTemperature,
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,http://www.theworldavatar.com/kb/ontospecies/s00000049.owl#Species_669961921657800,,[Ar]
+Source,Type,Target,Relation,Value,Data Type
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,Ontology,ABoxOntoSpecies,http://www.w3.org/2002/07/owl#imports,,
+http://www.theworldavatar.com/kb/ontospecies,Ontology,ABoxOntoSpecies,base,,
+Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Species,,,
+http://purl.org/dc/elements/1.1/identifier,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,String
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,CO2,String
+http://www.w3.org/2004/02/skos/core#altLabel,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Carbon dioxide,String
+http://www.w3.org/2004/02/skos/core#altLabel,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Dry ice,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,124-38-9,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,C(=O)=O,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasAtomicBond,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,1 2 2 1 3 2,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometry,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,C 17.0000 10.0000 0.0000 O 18.0221 10.5679 0.0000 O 15.9779 9.4321 0.0000,String
+StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,StandardEnthalpyOfFormation,,,
+Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasStandardEnthalpyOfFormation,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,-393.51 ± 0.13,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,kJ/mol,String
+Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Temperature,,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,298.15,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,K,String
+StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasReferenceTemperature,,
+Charge_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge,,,
+Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Charge_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Charge_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,0,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Charge_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,e,String
+Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
+MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula,,,
+Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularFormula,,
+Element_C,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,,,
+MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Element_C,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement,,
+ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_1,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,,,
+MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_1,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber,,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement,Data Property,ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_1,,1,Integer
+ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_1,Instance,Element_C,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf,,
+Element_O,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,,,
+MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Element_O,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement,,
+ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_2,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,,,
+MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_2,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber,,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement,Data Property,ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_2,,2,Integer
+ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_2,Instance,Element_O,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf,,
+Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
+MolecularWeight_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight,,,
+Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,MolecularWeight_00b7e248-ae24-35bf-b7a0-b470b923ddf6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,MolecularWeight_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,44.009,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,MolecularWeight_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,g/mol,String

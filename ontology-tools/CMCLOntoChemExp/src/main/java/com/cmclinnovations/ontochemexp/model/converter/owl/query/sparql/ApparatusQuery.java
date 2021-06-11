@@ -124,19 +124,12 @@ public class ApparatusQuery extends OwlConverter implements IApparatusQuery {
 	}
 
 	private void queryPropertyValue(String propertyInstance) throws OntoChemExpException {
-		ArrayList<String> valueInstance = readObjPropertyValue(propertyInstance);
-
-		if (valueInstance.size() > 0 && valueInstance.size() < 2) {
-			String propertyValue = readDataPropertyValue(valueInstance.get(0));
-			if (propertyValue != null && !propertyValue.isEmpty()) {
-				apparatusPropertyValue.setValueValue(propertyValue);
-				apparatusProperty.setPropertyValue(apparatusPropertyValue);
-				apparatusPropertyValue = new Value();
-			}
-		} else if (valueInstance.size() > 1) {
-			logger.error("There should not be more than one instance of property value of apparatusProperty.");
+		String propertyValue = readDataPropertyValue(propertyInstance);
+		if (propertyValue != null && !propertyValue.isEmpty()) {
+			apparatusPropertyValue.setValueValue(propertyValue);
+			apparatusProperty.setPropertyValue(apparatusPropertyValue);
+			apparatusPropertyValue = new Value();
 		}
-		
 	}
 	
 	private void queryPropertyUncertainty(String propertyInstance) throws OntoChemExpException {

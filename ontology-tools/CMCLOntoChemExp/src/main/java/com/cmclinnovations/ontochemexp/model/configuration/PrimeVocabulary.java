@@ -497,39 +497,6 @@ public class PrimeVocabulary {
 		this.attribDataPointID = attribDataPointID;
 	}
 	
-	@Value("${prime.attribute.hasXmlns}")
-	private String attribXmlns;
-	
-	public String getAttribXmlns() {
-		return attribXmlns;
-	}
-	
-	public void setAttribXmlns(String attribXmlns) {
-		this.attribXmlns = attribXmlns;
-	}
-	
-	@Value("${prime.attribute.hasXmlnsXsi}")
-	private String attribXmlnsXsi;
-	
-	public String getAttribXmlnsXsi() {
-		return attribXmlnsXsi;
-	}
-	
-	public void setAttribXmlnsXsi(String attribXmlnsXsi) {
-		this.attribXmlnsXsi = attribXmlnsXsi;
-	}
-	
-	@Value("${prime.attribute.hasXsiSchemaLocation}")
-	private String attribXsiSchemaLocation;
-	
-	public String getAttribXsiSchemaLocation() {
-		return attribXsiSchemaLocation;
-	}
-	
-	public void setAttribXsiSchemaLocation(String attribXsiSchemaLocation) {
-		this.attribXsiSchemaLocation = attribXsiSchemaLocation;
-	}
-	
 	@Value("${prime.attribute.hasPropertyID}")
 	private String attribPropertyID;
 	
@@ -539,5 +506,93 @@ public class PrimeVocabulary {
 	
 	public void setAttribPropertyID(String attribPropertyID) {
 		this.attribPropertyID = attribPropertyID;
+	}
+	
+	@Value("${prime.attribute.hasSourceType}")
+	private String attribSourceType;
+	
+	@Value("${prime.attribute.hasReference}")
+	private String attribReference;
+	
+	@Value("${prime.attribute.hasMethod}")
+	private String attribMethod;
+
+	public String getAttribSourceType() {
+		return attribSourceType;
+	}
+
+	public void setAttribSourceType(String attribSourceType) {
+		this.attribSourceType = attribSourceType;
+	}
+
+	public String getAttribReference() {
+		return attribReference;
+	}
+
+	public void setAttribReference(String attribReference) {
+		this.attribReference = attribReference;
+	}
+
+	public String getAttribMethod() {
+		return attribMethod;
+	}
+
+	public void setAttribMethod(String attribMethod) {
+		this.attribMethod = attribMethod;
+	}
+	
+	@Value("${prime.attribute.hasCAS}")
+	private String attribCAS;
+	
+	@Value("${prime.attribute.hasInChI}")
+	private String attribInChI;
+	
+	@Value("${prime.attribute.hasSMILES}")
+	private String attribSMILES;
+
+	public String getAttribCAS() {
+		return attribCAS;
+	}
+
+	public void setAttribCAS(String attribCAS) {
+		this.attribCAS = attribCAS;
+	}
+
+	public String getAttribInChI() {
+		return attribInChI;
+	}
+
+	public void setAttribInChI(String attribInChI) {
+		this.attribInChI = attribInChI;
+	}
+
+	public String getAttribSMILES() {
+		return attribSMILES;
+	}
+
+	public void setAttribSMILES(String attribSMILES) {
+		this.attribSMILES = attribSMILES;
+	}
+	
+	@Value("${prime.attribute.hasChemName}")
+	private String attribChemName;
+
+	public String getAttribChemName() {
+		return attribChemName;
+	}
+
+	public void setAttribChemName(String attribChemName) {
+		this.attribChemName = attribChemName;
+	}
+	
+	@Value("${prime.attribute.hasDOI}")
+	private String attribDOI;
+
+	public String getAttribDOI() {
+		return attribDOI;
+	}
+
+	public void setAttribDOI(String attribDOI) {
+		this.attribDOI = attribDOI;
 	}
 }

@@ -7,8 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,10 +40,19 @@ import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
+/** AKA OPF agent. startSimulation() runs the wrapper around the OPF.py file
+ * 
+ *
+ */
 public class ENAgent extends JPSAgent{
 	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
+	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_PowSysRealization = TWA_Ontology + "/ontopowsys/PowSysRealization.owl#";
+	
     @Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(ENAgent.class);
@@ -54,7 +61,7 @@ public class ENAgent extends JPSAgent{
 
 	public DatatypeProperty getNumericalValueProperty(OntModel jenaOwlModel) {
 		return jenaOwlModel.getDatatypeProperty(
-				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
+				TWA_upperlevel_system+"numericalValue");
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -64,7 +71,7 @@ public class ENAgent extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		if (!validateInput(requestParams)) {
-			throw new JSONException("ENAgent input parameters invalid");
+			throw new JSONException("");
 		}
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String modeltype = "OPF";
@@ -74,11 +81,9 @@ public class ENAgent extends JPSAgent{
 			result = startSimulation(iriofnetwork, baseUrl, modeltype);
 			return result;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
+			throw new JPSRuntimeException("");
 			
 		}
-		return null;
 	}
 	/** main function for ENAgent
 	 * 
@@ -109,13 +114,13 @@ public class ENAgent extends JPSAgent{
 		}
 		
 		String fileName = baseUrl+"/outputStatus.txt";
-		Path path = Paths.get(fileName);
 		BufferedReader input = new BufferedReader(new FileReader(fileName));
 	    String last, line;
 	    last = "";
 	    while ((line = input.readLine()) != null) { 
 	        last = line;
 	    }
+	    input.close();
 		if (last.contains("Converged")) {
 			resjo.put("status", "converged");
 			try {
@@ -867,10 +872,8 @@ public class ENAgent extends JPSAgent{
 			vgdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[4])));
 
 			Individual vVmout = jenaOwlModel.getIndividual(busoutputlist.get(a)[5]);
-			double basekv = Double.valueOf(buslist.get(amod - 1)[9]);
 			//System.out.println("basekv= " + basekv);
 			//System.out.println("pukv= " + resultfrommodelbus.get(amod - 1)[1]);
-			double originalv = basekv * Double.valueOf(resultfrommodelbus.get(amod - 1)[1]);
 			
 			//vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(originalv)); //if vm is in kv
 			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[1]))); //if vm is in pu

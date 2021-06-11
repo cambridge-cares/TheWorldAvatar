@@ -12,8 +12,9 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.region.Region;
-import uk.ac.cam.cares.jps.base.region.Scope;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
+import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
 /**
@@ -28,19 +29,21 @@ public class GetSensorsWithinBounds extends JPSHttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if (validateInput(request)) {
 			JSONObject r = AgentCaller.readJsonParameter(request);
-			JSONObject joUppercorner = new JSONObject();
-			JSONObject joLowercorner = new JSONObject();
-			JSONObject joScope = new JSONObject();
-	
-			joUppercorner.put(Region.keyUpperx, r.get(Region.keyUpperx));
-			joUppercorner.put(Region.keyUppery, r.get(Region.keyUppery));
-			joLowercorner.put(Region.keyLowerx, r.get(Region.keyLowerx));
-			joLowercorner.put(Region.keyLowery, r.get(Region.keyLowery));
-			joScope.put(Region.keyUppercorner, joUppercorner);
-			joScope.put(Region.keyLowercorner, joLowercorner);
-			joScope.put(Region.keySrsname, "EPSG:4326");
 
-			Scope sc = new Scope(joScope);
+			Scope sc = new Scope();
+			Point lowerCorner = new Point();
+			lowerCorner.setX(r.getDouble(Region.keyLowerx));
+			lowerCorner.setY(r.getDouble(Region.keyLowery));
+			lowerCorner.setSrsname("EPSG:4326");
+			
+			Point upperCorner = new Point();
+			upperCorner.setX(r.getDouble(Region.keyUpperx));
+			upperCorner.setY(r.getDouble(Region.keyUppery));
+			upperCorner.setSrsname("EPSG:4326");
+			
+			sc.setLowerCorner(lowerCorner);
+			sc.setUpperCorner(upperCorner);
+			sc.setSrsName("EPSG:4326");
 
 			JSONArray result = SensorSparql.queryAirStationsWithinScope(sc);
 			response.setContentType("application/json");
@@ -52,10 +55,10 @@ public class GetSensorsWithinBounds extends JPSHttpServlet{
     	boolean valid = false;
     	try {
     		JSONObject r = AgentCaller.readJsonParameter(request);
-    		Double.parseDouble(String.valueOf(r.get(Region.keyUpperx)));
-    		Double.parseDouble(String.valueOf(r.get(Region.keyUppery)));
-    		Double.parseDouble(String.valueOf(r.get(Region.keyLowerx)));
-    		Double.parseDouble(String.valueOf(r.get(Region.keyLowery)));
+    		r.getDouble(Region.keyUpperx);
+    		r.getDouble(Region.keyUppery);
+    		r.getDouble(Region.keyLowerx);
+    		r.getDouble(Region.keyLowery);
     		valid = true;
     	} catch (NumberFormatException e) {
     		throw new BadRequestException(e);

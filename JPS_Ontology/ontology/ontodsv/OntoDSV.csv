@@ -1,0 +1,22 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+dsvFile,Class,,,,,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+column,Class,,,,,,Column of the CSV file,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+fileName,Class,,,,,,Full path to the CSV file,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+numberOfColumns,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,Number of columns in the CSV file,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+numberOfRows,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,IS-A,,,,Number of rows in the CSV file,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+time,Class,http://www.w3.org/2006/time#Instant,IS-A,,,,Time stamp of the CSV file,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+timeRange,Class,,,,,,Time range of a time series data,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+delimiter,Class,,,,,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+hasColumn,Object Property,,,dsvFile,column,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+hasFileName,Object Property,,,dsvFile,fileName,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+hasNumberOfColumns,Object Property,,,dsvFile,numberOfColumns,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+hasNumberOfRows,Object Property,,,dsvFile,numberOfRows,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+hasTime,Object Property,,,dsvFile,time,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+hasTimeRange,Object Property,,,dsvFile,timeRange,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+hasDelimiter,Object Property,,,dsvFile,delimiter,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+name,Data Property,,,column,String,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+name,Data Property,,,fileName,String,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+timeStamp,Data Property,,,time,http://www.w3.org/2006/time#inXSDTimeStamp,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+maxTime,Data Property,,,timeRange,http://www.w3.org/2006/time#inTimePosition,,"Developed for ship data, time stamp is in unix time",http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+minTime,Data Property,,,timeRange,http://www.w3.org/2006/time#inTimePosition,,"Developed for ship data, time stamp is in unix time",http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl
+name,Data Property,,,delimiter ,String,,,http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl

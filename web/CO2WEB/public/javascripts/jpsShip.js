@@ -113,7 +113,7 @@ function initCreateNewSensor(map) {
         infoWindow = new google.maps.InfoWindow({
             position: mapsMouseEvent.latLng,
         });
-        let createSensorURL = prefix + "/JPS_DISPERSION/CreateNewSensor";
+        let createSensorURL = prefix + "/JPS_VIRTUALSENSOR/CreateNewSensor";
         let lat = mapsMouseEvent.latLng.lat;
         let lng = mapsMouseEvent.latLng.lng;
         $.get(createSensorURL, { lat, lng }).done(function (r) {
@@ -129,7 +129,7 @@ function initCreateNewSensor(map) {
 }
 
 function renderSensorsWithinBounds(bounds) {
-    var getSensors = prefix + "/JPS_DISPERSION/GetSensorsWithinBounds";
+    var getSensors = prefix + "/JPS_VIRTUALSENSOR/GetSensorsWithinBounds";
     var upperx = bounds.getNorthEast().lng;
     var uppery = bounds.getNorthEast().lat;
     var lowerx = bounds.getSouthWest().lng;
@@ -142,7 +142,7 @@ function renderSensorsWithinBounds(bounds) {
 }
 
 function createStation(lat, lng, airStationIRI) {
-    var querySensorProperties = prefix + "/JPS_DISPERSION/QuerySensorProperties";
+    var querySensorProperties = prefix + "/JPS_VIRTUALSENSOR/QuerySensorProperties";
     let marker = new google.maps.Marker({
         position: new google.maps.LatLng(lat, lng),
         map: map,
@@ -172,7 +172,7 @@ function getRelevantFolder(typeOfEmission, city){
         var agentInfo = prefix +  "/JPS_SHIP/GetExtraInfo";
         // Part 2: get the relevant IRIs for ship, as well as for airStationIRIs
         console.log(agentInfo)
-        $.get(agentInfo, {path:data}).done(function (data) {
+        $.get(agentInfo, {filepath:data}).done(function (data) {
             var info=JSON.parse(data);
             //Part 3: Handle Ships if they are there
             var shipsIRI = info.ship.collection.items; 

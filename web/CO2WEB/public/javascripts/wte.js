@@ -1,8 +1,8 @@
 scenario = "testFW";
 /* prefix to be changed according to local or testing 
 */
-var prefix = "http://localhost:8080";
-// prefix = "http://www.jparksimulator.com";
+// var prefix = "http://localhost:8080";
+prefix = "http://www.jparksimulator.com";
 markers = []
 var infowindow;
 var listOfIRIs = [];

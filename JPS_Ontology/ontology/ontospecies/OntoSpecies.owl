@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:OntoSpecies="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">13 February 2020</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2021</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ce46cbbad4054a9c725889bee0278e90abc3b167</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoSpecies is an ontology developed for representing chemical species.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
@@ -77,10 +77,45 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species or molecular entity and the overall net charge of this species or molecular entity in units of elementary charge.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasEmpiricalFormula -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasEmpiricalFormula">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#EmpiricalFormula"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species or molecular entity and the chemical formula describing the relative number of each constituting chemical element of the species or molecular entity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularFormula -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularFormula">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species or molecular entity and the chemical formula describing the number of atoms of each constituting chemical element of the species or molecular entity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a species or molecular entity and the total mass of one mole of this species or molecular entity in g/mol.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -296,14 +331,6 @@
     <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#StandardEnthalpyOfFormation"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Temperature"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The physical units of a quantity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -314,15 +341,6 @@
     <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#StandardEnthalpyOfFormation"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Temperature"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The value of a property. Also in OntoCAPE, http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#value is designed as a data type property.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
@@ -388,6 +406,15 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The overall net charge of a molecule or ion in units of elementary charge.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#EmpiricalFormula -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#EmpiricalFormula">
@@ -418,6 +445,24 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A chemical compound formula expressing the number of atoms of each element present in a compound, without indicating how they are linked.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The mass of one mole of a species in units of g/mol.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Provenance -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Provenance">
@@ -442,8 +487,20 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species">
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasEmpiricalFormula"/>
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#EmpiricalFormula"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chemical entities which represent real physical molecules.</rdfs:comment>

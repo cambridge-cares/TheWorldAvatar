@@ -49,14 +49,6 @@ fuzzywuzzy==0.18.0
 gast==0.2.2
 gensim==3.8.3
 gevent==1.5.0
-google-api-core==1.22.2
-google-api-python-client==1.11.0
-google-auth==1.21.1
-google-auth-httplib2==0.0.4
-google-auth-oauthlib==0.4.1
-google-pasta==0.2.0
-google-search-results-serpwow==1.1.11
-googleapis-common-protos==1.52.0
 graphviz==0.14.1
 greenlet==0.4.16
 grpcio==1.30.0
@@ -102,7 +94,7 @@ numpy==1.19.1
 oauth2client==4.1.3
 oauthlib==3.1.0
 opt-einsum==3.3.0
-Owlready2==0.24
+# Owlready2==0.24
 packaging==20.0
 pandas==1.1.0
 pathtools==0.1.2

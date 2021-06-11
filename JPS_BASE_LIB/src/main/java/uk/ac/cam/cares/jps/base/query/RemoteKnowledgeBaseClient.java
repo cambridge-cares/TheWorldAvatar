@@ -294,7 +294,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 			System.out.println(query);
 			return stmt.executeUpdate(query);
 		} catch (SQLException e) {
-			throw new JPSRuntimeException(e.getMessage());
+			throw new JPSRuntimeException(e.getMessage(),e);
 		}
 	}
 	
@@ -362,7 +362,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 			java.sql.ResultSet rs = stmt.executeQuery(query);
 			results = convert(rs);
 		} catch (SQLException e) {
-			throw new JPSRuntimeException(e.getMessage());
+			throw new JPSRuntimeException(e.getMessage(),e);
 		}
 		return results;
 	}
@@ -388,9 +388,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 		if (conn != null) {
 			conn.begin( TxnType.READ );	
 			try {
-				QueryExecution queryExec = conn.query(sparql);
-				Model results = queryExec.execConstruct();
-				return results;
+				return conn.queryConstruct(sparql);
 			} finally {
 				conn.end();
 			}

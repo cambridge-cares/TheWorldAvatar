@@ -1146,12 +1146,6 @@ public class WTEKBCreator {
 		converter.startConversion("transport",null,null,null);
 		converter.startConversion("wtf",null,null,null);
 		transportiri="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
-//		for(int x=1;x<=7;x++) {
-//		foodcourt.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-"+x+".owl#FoodCourt-"+x);
-//		}
-//		for(int x=1;x<=4;x++) {
-//			wtf.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/WasteTreatment-"+x+".owl#WasteTreatment-"+x);
-//		}
 		converter.startConversion("system",null,null,null); //it is completed no need to be rerun again
 		
 	}

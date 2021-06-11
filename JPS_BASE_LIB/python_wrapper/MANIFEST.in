@@ -1,2 +1,3 @@
 include py4jps/resources/resources_registry.json
 recursive-include py4jps/resources/jpsBaseLib *
+global-exclude *.py[cod] __pycache__

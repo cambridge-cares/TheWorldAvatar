@@ -9,18 +9,30 @@
 # 
 # The following stages are included:
 # 
+#	credentials			Downloads protected files
 #	production			Required software only
-#
-# NOTE: the below files are required to be in the same
-# directory as this file before execution (these files
-# should be available already in the JPS git repository.)
-#
-#	download_model.sh	(Downloads the trained model files)
-# 	start_flask.sh 		(Starts the flask process)
-# 	install_nltk.py		(Installs the NLTK module)
 #
 #########################
 
+
+##### CREDENTIALS STAGE #####
+FROM alpine:3.13.4 as credentials
+
+RUN apk update
+RUN apk add expect
+RUN apk add openssh-client
+
+
+# Copy in the credentials folder
+COPY ./docker/credentials /tmp/credentials
+WORKDIR /tmp/credentials
+
+# Locations for file downloads
+RUN mkdir /tmp/models_wiki
+RUN mkdir /tmp/models_jps/
+
+# Run download script
+RUN /usr/bin/expect ./download-models.sh
 
 ##### PRODUCTION STAGE #####
 # Use the 20.04 Ubuntu image as a base
@@ -29,12 +41,16 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Updates and software installation
 RUN echo -e "Installing required software..."
-RUN apt-get update
-RUN apt-get install git -y
-RUN apt-get install expect -y
-RUN apt-get install software-properties-common -y
-RUN apt-get install dos2unix -y
-RUN echo -e "Required software installed."
+RUN apt-get update && apt-get install -y git dos2unix software-properties-common
+
+# Set the locale to UK 
+RUN apt-get -y install locales
+RUN sed -i '/en_GB.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_GB.UTF-8  
+ENV LANGUAGE en_GB:en  
+ENV LC_ALL en_GB.UTF-8  
+
 
 # Set installation directory
 RUN mkdir -p /usr/local/jps-chatbot
@@ -44,17 +60,16 @@ WORKDIR /usr/local/jps-chatbot
 COPY . .
 RUN chmod +x ./docker/start_flask.sh
 
-# Run scripts
-RUN echo -e "Downloading models..."
-RUN /usr/bin/expect docker/download_model.sh
-RUN rm -f docker/download_model.sh
-RUN echo -e "Model download completed."
+# Copy in the model files downloaded in last stage
+COPY --from=credentials /tmp/models_wiki /usr/local/jps-chatbot/UI/source/Wikidata_Query
+COPY --from=credentials /tmp/models_jps /usr/local/jps-chatbot/UI/source/JPS_Query
+
 
 # Python setup
 RUN echo -e "Installing Python..."
-RUN apt-get install python3.6 -y
 RUN add-apt-repository ppa:deadsnakes/ppa -y
-RUN apt-get install python3.7 -y
+RUN apt-get install -y python3.6 python3.7
+
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
 RUN apt-get install python3-pip -y
 RUN pip3 install virtualenv
@@ -64,10 +79,10 @@ RUN echo -e "Python installed."
 # Geckodriver and Firefox setup
 RUN apt-get install wget -y
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-RUN tar -xvzf geckodriver*
+RUN tar -xvzf geckodriver*.gz
 RUN chmod +x geckodriver
 RUN cp geckodriver /usr/local/bin
-RUN apt-get install firefox -y
+RUN apt-get install firefox -y --fix-missing
 
 # JPS Chatbot installation
 RUN echo -e "Installing the chatbot..."
@@ -85,9 +100,12 @@ RUN chmod +x /etc/init.d/flask
 RUN update-rc.d flask defaults
 RUN echo -e "Flask started."
 
+
+
+
 # Reset arguments and finish
 ARG DEBIAN_FRONTEND=newt
 RUN echo -e "Image installation completed."
 
 # Set the entrypoint (start flask on container creation)
-ENTRYPOINT ["/bin/bash", "-c", "cd /usr/local/jps-chatbot/UI/source && python -m flask run --host=0.0.0.0"]
+# ENTRYPOINT ["/bin/bash", "-c", "cd /usr/local/jps-chatbot/UI/source && python -m flask run --host=0.0.0.0"]

@@ -1,8 +1,13 @@
 package uk.ac.cam.cares.jps.base.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,11 +67,40 @@ public class MiscUtil {
 		};
 		return result;
 	}
-	
+	/** returns null if key: value does not exist in JSONObject jo
+	 * 
+	 * @param jo
+	 * @param key
+	 * @return
+	 */
 	public static String optNullKey(JSONObject jo, String key) {
 		if (jo.isNull(key)) {
 			return null;
 		}
 		return jo.getString(key);
+	}
+	/** Converts UTC time to TimeZone of Server, with offset
+	 * e.g. 2021-04-15T06:59:08Z to 2021-04-15T13:59:08+08:00
+	 * @param currDate in UTC
+	 * @return local time with offset
+	 */
+	public static String convertToTimeZoneXSD(String currDate) {
+		String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+		try {
+			SimpleDateFormat utcFormat = new SimpleDateFormat(DATE_FORMAT);
+			utcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+			
+			Date date = utcFormat.parse(currDate); //parse date in terms of time zone
+			TimeZone timezone = TimeZone.getDefault();
+			int offset = timezone.getRawOffset();
+			String gmtTZ = String.format("%s%02d:%02d", 
+			               offset < 0 ? "-" : "+", 
+			               Math.abs(offset) / 3600000,
+			               Math.abs(offset) / 60000 % 60);
+			DateFormat newFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss" +  gmtTZ);
+			return newFormat.format(date);
+		}catch (ParseException e) {
+			throw new JPSRuntimeException("WeatherIrradiationRetriever: Parse Exception for date");
+		}
 	}
 }
