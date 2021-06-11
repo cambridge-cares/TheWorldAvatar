@@ -84,9 +84,12 @@ def get_flow_data_from_csv():
             
                 # Parse the CSV rows
                 terminalName = row[0]
-                time = row[1].replace(" ", "T").replace("/", "-") + ":00"
+                
+                dateTimeObj = datetime.datetime.strptime(row[3], "%d/%m/%Y %H:%M:%S")
+                dateTimeStr = dateTimeObj.strftime("%y-%m-%dT%H:%M:%S.000Z")
+                
                 flowValue = row[2]
-                data.append([terminalName, time, flowValue])
+                data.append([terminalName, dateTimeStr, flowValue])
 
     print("Finished reading flow data CSV, removing file...")
     os.remove(filename)
