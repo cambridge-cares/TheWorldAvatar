@@ -23,15 +23,15 @@ FALLBACK_KG = "http://localhost:9999/blazegraph/"
 
 # Defining namespaces of each terminal
 TERMINAL_DICTIONARY = {
-    "BACTON IPs Terminal": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonIPsTerminal>",
-    "BACTON UKCS Terminal": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonUKCSTerminal>",
-    "BARROW TERMINAL": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BarrowTerminal>",
-    "EASINGTON TERMINAL": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EasingtonTerminal>",
-    "ISLE OF GRAIN TERMINAL": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/IsleofGrainTerminal>",
-    "MILFORD HAVEN TERMINAL": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MilfordHavenTerminal>",
-    "ST FERGUS TERMINAL": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergusTerminal>",
-    "TEESSIDE TERMINAL": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideTerminal>",
-    "THEDDLETHORPE TERMINAL": "http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin>"
+    "BACTON IPs Terminal": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonIPsTerminal>",
+    "BACTON UKCS Terminal": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonUKCSTerminal>",
+    "BARROW TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BarrowTerminal>",
+    "EASINGTON TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EasingtonTerminal>",
+    "ISLE OF GRAIN TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/IsleofGrainTerminal>",
+    "MILFORD HAVEN TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MilfordHavenTerminal>",
+    "ST FERGUS TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergusTerminal>",
+    "TEESSIDE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideTerminal>",
+    "THEDDLETHORPE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin>"
 }
         
 def getKGLocation(namespace):
@@ -84,9 +84,12 @@ def get_flow_data_from_csv():
             
                 # Parse the CSV rows
                 terminalName = row[0]
-                time = row[1].replace(" ", "T").replace("/", "-") + ":00"
+                
+                dateTimeObj = datetime.datetime.strptime(row[3], "%d/%m/%Y %H:%M:%S")
+                dateTimeStr = dateTimeObj.strftime("%y-%m-%dT%H:%M:%S.000Z")
+                
                 flowValue = row[2]
-                data.append([terminalName, time, flowValue])
+                data.append([terminalName, dateTimeStr, flowValue])
 
     print("Finished reading flow data CSV, removing file...")
     os.remove(filename)
@@ -105,11 +108,16 @@ def update_triple_store():
 
     KGRouter = jpsGW_view.KGRouter
     
+    # Build the correct KG URL
+    kgURL = getKGLocation("ontogasgrid")
+    print("Determined KG URL as", kgURL)
+        
     # Get the flow data from CSV
     # 2D array of tiples ([terminal-name, time, flow])
     data = get_flow_data_from_csv()
    
-    for dataRow in data:
+    for i in range(0, len(data)):
+        dataRow = data[i]
         terminalURI = TERMINAL_DICTIONARY[dataRow[0]]
         time = dataRow[1]
             
@@ -148,21 +156,17 @@ def update_triple_store():
                                                        gas_uuid,
                                                        time)
         
-        
-        # Build the correct KG URL
-        """
-        kgURL = getKGLocation("ontogasgrid")
-        print("Determined KG URL as", kgURL)
+
                    
         sparql = SPARQLWrapper(kgURL)
         sparql.setMethod(POST) # POST query, not GET
         sparql.setQuery(query)
         
-        print("Running query...")
+        print("Running SPARQL update " + str(i + 1) + " of " + str(len(data)) + "...")
         ret = sparql.query()
-        print("Query finished.\n")
-        """
+        
 
+    print("All SPARQL updates finished.")
     return 
 
 def continuous_update():
