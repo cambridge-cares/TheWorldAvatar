@@ -96,7 +96,7 @@ for i in range(len(offtake_types)):
 
   for i in range(num_ret):
     if len(ret[i,0]) > 1:
-      new_array = [color,ret[i,2],ret[i,3],ret[i,4],ret[i,5],ret[i,6],ret[i,7],ret[i,1],ret[i,0]]
+      new_array = [color,ret[i,2],offtake_type,ret[i,4],ret[i,5],ret[i,6],ret[i,7],ret[i,1],ret[i,0]]
       for j in range(len(new_array)):
         if new_array[j] is None:
           new_array[j] = 'N/A'
@@ -110,7 +110,7 @@ for i in range(len(offtake_types)):
           "Type of Offtake": "%s",
           "Linepack Zone": "%s",
           "NTS Exit Area": "%s",
-          "NTS Exit Zone": "%s,
+          "NTS Exit Zone": "%s",
           "Connected to Pipeline": "%s"
         },
         "geometry": {
@@ -134,7 +134,7 @@ for i in range(len(offtake_types)):
           "Type of Offtake": "%s",
           "Linepack Zone": "%s",
           "NTS Exit Area": "%s",
-          "NTS Exit Zone": "%s,
+          "NTS Exit Zone": "%s",
           "Connected to Pipeline": "%s"
         },
         "geometry": {
