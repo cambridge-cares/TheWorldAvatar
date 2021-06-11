@@ -4,6 +4,7 @@
 
 The purpose of this image is to demonstrate how [Maven](https://maven.apache.org) can be used to handle dependencies when building a service (agent, web interface, datastore etc.).
 It should be useful as a template if the application you're deploying has dependencies that aren't suitable for managing with git, e.g. binary training data for an agent.
+For Java applications where *all* of the dependencies are managed with Maven, the [Java agent template](../../java_agent/README.md) might be a more suitable starting point.
 
 The dependency is assumed to consist of one or more target files stored in a single Maven artifact, but it should be easy enough to adapt this example if you have multiple artifacts.
 
