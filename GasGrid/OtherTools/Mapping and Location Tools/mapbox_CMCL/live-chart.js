@@ -42,6 +42,12 @@ function resetSidePanel() {
 
 // Runs when an offtake is selected, shows meta-data
 function showOfftake(nodeName, nodeType, nodePosition) {
+	
+	if(nodeName == null) {
+		// Do nothing
+		return;
+	}
+	
 	lastLocation = nodePosition;
 	console.log("Offtake selected, will only show metadata...");
 	resetSidePanel(); 
@@ -78,6 +84,12 @@ function showOfftake(nodeName, nodeType, nodePosition) {
 
 // Runs when a terminal is selected, shows recent live data.
 function showTerminal(nodeName, nodeType, nodePosition) {
+	
+	if(nodeName == null) {
+		// Do nothing
+		return;
+	}
+	
 	lastLocation = nodePosition;
 	console.log("Terminal selected, will plot data...");
 	resetSidePanel(); 
