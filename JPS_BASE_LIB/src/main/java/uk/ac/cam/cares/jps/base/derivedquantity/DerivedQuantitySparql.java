@@ -19,7 +19,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
@@ -36,8 +35,6 @@ public class DerivedQuantitySparql{
 	// types
 	private static Iri Service = p_agent.iri("Service");
     private static Iri TimePosition = p_time.iri("TimePosition");
-    private static String derivedQuantityClass = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#DerivedQuantity";
-    private static Iri DerivedQuantity = iri(derivedQuantityClass);
 	
 	// relations
 	private static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
@@ -55,18 +52,12 @@ public class DerivedQuantitySparql{
 	 * @param agentURL
 	 */
 	public static void initDerivedQuantity(KnowledgeBaseClientInterface kbClient, String derivedQuantity, String agentIRI, String agentURL, String... inputs) {
-		if (checkDerivedQuantityInitialised(kbClient, derivedQuantity)) {
-			throw new JPSRuntimeException("DerivedQuantityClient: Quantity already initialised");
-		}
-		
 		ModifyQuery modify = Queries.MODIFY();
 		
 		Iri derivedQuantity_iri = iri(derivedQuantity);
 		
-		long timestamp = Instant.now().getEpochSecond();
+		long timestamp = 0;
 
-		// tag class
-		modify.insert(derivedQuantity_iri.isA(DerivedQuantity));
 		// link to agent
 		modify.insert(derivedQuantity_iri.has(isDerivedUsing,iri(agentIRI)));
 		// add agent url
@@ -96,6 +87,7 @@ public class DerivedQuantitySparql{
 	
 	/**
 	 * add a time stamp instance to your input if it does not exist
+	 * this should be dealt with by a class specifically for input agents
 	 * @param kbClient
 	 * @param input
 	 */
@@ -111,10 +103,13 @@ public class DerivedQuantitySparql{
 			inputTime = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#time" + numTime;
 		}
 
-		long timestamp = 1;
+		long timestamp = Instant.now().getEpochSecond();
 		Iri inputTime_iri = iri(inputTime);
 	    modify.insert(iri(input).has(hasTime,inputTime_iri));
 	    modify.insert(inputTime_iri.isA(TimePosition).andHas(numericPosition,timestamp));
+	    
+	    kbClient.setQuery(modify.prefix(p_time).getQueryString());
+	    kbClient.executeUpdate();
 	}
 	
 	/**
@@ -130,14 +125,7 @@ public class DerivedQuantitySparql{
 		boolean timeExist = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
 		return timeExist;
 	}
-	
-	private static boolean checkDerivedQuantityInitialised(KnowledgeBaseClientInterface kbClient, String derivedQuantity) {
-		String query = String.format("ask {<%s> a <%s>}",derivedQuantity,derivedQuantityClass);
-		kbClient.setQuery(query);
-		boolean quantityExist = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-		return quantityExist;
-	}
-	
+
 	public static int countTimeInstance(KnowledgeBaseClientInterface kbClient) {
 		SelectQuery query = Queries.SELECT();
     	String queryKey = "numtime";
@@ -284,7 +272,7 @@ public class DerivedQuantitySparql{
 		
 		// sub query to find related IRIs
 		SubSelect sub = GraphPatterns.select();
-		sub.select(agentIRI,input,quantity).where(delete_tp1,delete_tp2,delete_tp3,delete_tp4);
+		sub.select(agentIRI,input,quantity,time).where(delete_tp1,delete_tp2,delete_tp3,delete_tp4);
 		
 		modify.prefix(p_derived,p_time).delete(delete_tp1,delete_tp2,delete_tp3,delete_tp4).insert(insert_tp1,insert_tp2,insert_tp3,insert_tp4).where(sub);
 		
