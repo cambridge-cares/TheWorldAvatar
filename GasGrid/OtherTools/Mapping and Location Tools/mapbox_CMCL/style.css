@@ -177,9 +177,9 @@ h1 {
 
 #resetContainer {
 	height: 25px; 
-	width: 100px;
+	width: 120px;
 	position: fixed; 
-	left: 15px;
+	left: 10px;
 	top: 45px; 
 	line-height: 25px;
 	font-size: 11pt;
@@ -198,6 +198,34 @@ h1 {
 	background-color: rgba(0, 0, 0, 0.4);
 	text-decoration: underline;
 }
+
+#pitchedContainer {
+	height: 25px; 
+	width: 100px;
+	position: fixed; 
+	left: 140px;
+	top: 45px; 
+	line-height: 25px;
+	font-size: 11pt;
+	text-align: center;
+	border-radius: 6px;
+	background-color: rgba(0, 0, 0, 0.2);
+	font-family: 'Open Sans', sans-serif;	
+}
+
+#pitchedContainer a {
+	color: white;
+	text-decoration: none;
+}
+
+#pitchedContainer:hover {
+	background-color: rgba(0, 0, 0, 0.4);
+	text-decoration: underline;
+}
+
+
+
+
 
 #tiltShift {
 	display: none;

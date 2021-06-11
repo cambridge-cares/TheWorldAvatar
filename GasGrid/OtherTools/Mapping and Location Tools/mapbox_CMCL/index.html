@@ -20,8 +20,13 @@
     <div id="tiltShift"></div>
 
     <div id="resetContainer">
-        <a href="javascript:void(0)" onclick="resetCamera()">Reset View</a>
+        <a href="javascript:void(0)" onclick="resetCamera()">Birds Eye View</a>
     </div>
+
+    <div id="pitchedContainer">
+        <a href="javascript:void(0)" onclick="pitchedCamera()">Pitched View</a>
+    </div>
+
 
 
     <div id="side-panel" style="height:100%; width:400px; float:right;">
@@ -57,6 +62,7 @@
             <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
         `;
 
+
         // Resets the camera
         function resetCamera() {
             if (typeof map !== 'undefined') {
@@ -64,14 +70,34 @@
                 map.flyTo({
                     curve: 1.9,
                     speed: 1.6,
-                    zoom: 6.,
+                    zoom: 5,
                     pitch: 0.0,
                     bearing: 0.0,
-                    center: [-2, 53.25]
+                    center: [-2, 54.5]
                 });
                 resetSidePanel();
             }
         }
+
+        function pitchedCamera() {
+            if (typeof map !== 'undefined') {
+
+                map.flyTo({
+                    curve: 1.9,
+                    speed: 1.6,
+                    zoom: 7,
+                    pitch: 65,
+                    bearing: -30,
+                    center: [-1.5, 52.5]
+                });
+                resetSidePanel();
+            }
+        }
+
+
+
+
+
         var tiltShiftMaxBlur = 3; // The maximum blur, in pixels, when the tilt-shift effect is fully on. 3 pixels is subtle and nice
         var tiltShiftBlur = document.getElementById("tiltShift");
         var mapDiv = document.getElementById("map");
@@ -122,7 +148,6 @@
         }
 
 
-
         // MapBox API Token
         mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
 
@@ -130,9 +155,13 @@
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/satellite-v9',
-            zoom: 6.,
-            center: [-2, 53.25]
+            zoom: 7,
+            pitch: 65,
+            bearing: -30,
+            center: [-1.5, 52.5]
         });
+        map.addControl(new mapboxgl.NavigationControl());
+
         var layerList = document.getElementById('menu');
         var inputs_style = layerList.getElementsByTagName('input');
 
@@ -301,9 +330,10 @@
                     center: coordinates,
                     curve: 1.9,
                     speed: 1.6,
-                    pitch: 60,
-                    zoom: 16
+                    pitch: 75,
+                    zoom: 15.5
                 });
+
             });
             // On mouse enter within offtake layer
             map.on('mouseenter', 'offtakes_loc', function (e) {
@@ -373,10 +403,10 @@
                     'text-offset': [0, -2.5],
                 },
                 "paint": {
-                    "text-color":inner_text,
+                    "text-color": inner_text,
                     "text-halo-color": outer_text,
                     "text-halo-width": 1,
-                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 6, 0, 8, 1]
+                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 5, 0, 7, 1]
                 }
             });
 
@@ -394,7 +424,7 @@
                     "text-color": inner_text,
                     "text-halo-color": outer_text,
                     "text-halo-width": 1,
-                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 6, 0, 8, 1]
+                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 5, 0, 7, 1]
                 }
             });
 
