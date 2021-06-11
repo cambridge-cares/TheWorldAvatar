@@ -23,6 +23,7 @@
         <a href="javascript:void(0)" onclick="resetCamera()">Reset View</a>
     </div>
 
+
     <div id="side-panel" style="height:100%; width:400px; float:right;">
         <div id="titleContainer">
             <h2>UK Gas Grid</h2>
@@ -33,6 +34,16 @@
         <div id="tableContainer"></div>
         <div id="dateContainer"></div>
     </div>
+
+    <div id="menu">
+        <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" checked="checked">
+        <label for="satellite-v9">Satellite</label>
+        <input id="light-v10" type="radio" name="rtoggle" value="light">
+        <label for="light-v10">Light</label>
+        <input id="satellite-streets-v11" type="radio" name="rtoggle" value="streets">
+        <label for="satellite-streets-v11">Satellite with streets</label>
+    </div>
+
 
     <script>
         // Initial state of UI elements
@@ -122,12 +133,32 @@
             zoom: 6.,
             center: [-2, 53.25]
         });
+        var layerList = document.getElementById('menu');
+        var inputs_style = layerList.getElementsByTagName('input');
+
+        var inner_text = '#FFFFFF';
+        var outer_text = '#000000';
+
+        function switchLayer(layer) {
+            var layerId = layer.target.id;
+            map.setStyle('mapbox://styles/mapbox/' + layerId);
+            if (layerId == 'satellite-v9' || layerId == 'satellite-streets-v11') {
+                inner_text = '#FFFFFF';
+                outer_text = '#000000';
+            }
+            else {
+                outer_text = '#FFFFFF';
+                inner_text = '#3E3E3E';
+            }
+        }
 
         var lastClick = new Date();
 
         // On load start...
-        map.on('load', function () {
-
+        map.on('style.load', function () {
+            for (var i = 0; i < inputs_style.length; i++) {
+                inputs_style[i].onclick = switchLayer;
+            }
 
             // Pre-load the flow data
             loadFlowData();
@@ -193,11 +224,10 @@
 
             });
 
-            // Add fog
-            map.setFog({
-                'color': 'white',
-                'horizon-blend': 0.05
-            });
+            // map.setFog({
+            //     'color': 'white',
+            //     'horizon-blend': 0.05
+            // });
             // Add terrain 
             map.addSource('mapbox-dem', {
                 'type': 'raster-dem',
@@ -207,17 +237,6 @@
             });
             map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
 
-            // Add sky 
-            map.addLayer({
-                'id': 'sky',
-                'type': 'sky',
-                'paint': {
-                    'sky-type': 'atmosphere',
-                    'sky-atmosphere-color': '#6687eb',
-                    'sky-atmosphere-sun': [0.0, 0.0],
-                    'sky-atmosphere-sun-intensity': 15
-                }
-            });
 
             // ============ PIPES ===========	
             // Add the geoJSON data for NTS
@@ -236,7 +255,7 @@
                     'line-cap': 'round'
                 },
                 'paint': {
-                    'line-color': '#FFFFFF',
+                    'line-color': inner_text,
                     'line-width': 4
                 }
             });
@@ -348,14 +367,14 @@
                 type: 'symbol',
                 source: 'terminals_s',
                 layout: {
-                    'text-field': ['concat',['get', 'name'],'\n |\n|\n|'],
+                    'text-field': ['concat', ['get', 'name'], '\n |\n|\n|'],
                     'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                     'text-size': 14,
                     'text-offset': [0, -2.5],
                 },
                 "paint": {
-                    "text-color": "#FFFFFF",
-                    "text-halo-color": "#000000",
+                    "text-color":inner_text,
+                    "text-halo-color": outer_text,
                     "text-halo-width": 1,
                     "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 6, 0, 8, 1]
                 }
@@ -372,8 +391,8 @@
                     'text-offset': [0, -3.5]
                 },
                 "paint": {
-                    "text-color": "#FFFFFF",
-                    "text-halo-color": "#000000",
+                    "text-color": inner_text,
+                    "text-halo-color": outer_text,
                     "text-halo-width": 1,
                     "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 6, 0, 8, 1]
                 }
