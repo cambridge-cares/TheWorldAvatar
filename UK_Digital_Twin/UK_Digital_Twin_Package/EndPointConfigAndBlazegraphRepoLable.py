@@ -17,7 +17,7 @@ UKDigitalTwinKG = { # the repo used to store the top node graph (lookup table)
 UKPowerPlantKG = { # level 1
     'lable': 'ukpowerplantkg',
     'ID': 'UKPowerPlantKG',
-    'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukpowerplant",
+    'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukpowerplantkg",
     'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG",
     'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG/statements"}
 

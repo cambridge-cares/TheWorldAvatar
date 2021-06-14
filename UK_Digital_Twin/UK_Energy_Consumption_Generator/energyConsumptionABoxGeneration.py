@@ -245,5 +245,5 @@ def addUKElectricityConsumptionTriples(storeType, version, updateLocalOWLFile = 
     return 
 
 if __name__ == '__main__':
-    addUKElectricityConsumptionTriples('default', 2017, False)
+    addUKElectricityConsumptionTriples('sleepycat', 2017, False)
     print('terminated')

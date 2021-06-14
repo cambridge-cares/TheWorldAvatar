@@ -1,12 +1,16 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 10 May 2021          #
+# Last Update Date: 10 June 2021         #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Topology A-boxes"""
 
+import os, sys, json
 from rdflib.graph import ConjunctiveGraph
 from rdflib.store import NO_STORE
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE)
+from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate
 
 qres_pp = []
 
@@ -53,16 +57,11 @@ def queryBusLocation(ConjunctiveGraph):
     }
     """
     #GRAPH ?g { ?Location_region rdf:type <https://dbpedia.org/ontology/Region> .}
-    qres = ConjunctiveGraph.query(queryStr)
+    res = ConjunctiveGraph.query(queryStr)
+    qres = [[ str(r[0]), str(r[1])] for r in res]   
     return qres
 
-def queryPowerPlantLocatedInSameRegion(SleepycatPath, location_iri):
-    global qres_pp
-    pp_cg = ConjunctiveGraph('Sleepycat')
-    sl = pp_cg.open(SleepycatPath, create = False)
-    if sl == NO_STORE:
-        print('Cannot find the UK PowerPlant sleepycat store')
-        return None
+def queryPowerPlantLocatedInSameRegion(remoteEndPoint, SleepycatPath, location_iri, localQuery):
     queryStr = """
     PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
@@ -76,15 +75,35 @@ def queryPowerPlantLocatedInSameRegion(SleepycatPath, location_iri):
     ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnology .  
     }
     """ % location_iri  
-    qres_pp = list(pp_cg.query(queryStr))
-    pp_cg.close()
-    return qres_pp
+    
+    global qres_pp
+    
+    if localQuery == False and remoteEndPoint != None: 
+        print('remoteQuery')
+        res = json.loads(performQuery(remoteEndPoint, queryStr))
+        print('query is done')
+        qres_pp = [[ str(r['PowerGenerator']), str(r['PrimaryFuel']), str(r['GenerationTechnology'])] for r in res]
+        return qres_pp
+    elif SleepycatPath != None and localQuery == True:  
+        print('localQuery')
+        pp_cg = ConjunctiveGraph('Sleepycat')
+        sl = pp_cg.open(SleepycatPath, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the UK PowerPlant sleepycat store')
+            return None
+        qres_pp = list(pp_cg.query(queryStr))
+        pp_cg.close()
+        return qres_pp
 
-# if __name__ == '__main__':    
-#    res = queryPowerPlantLocatedInSameRegion("C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp", 'http://dbpedia.org/resource/Scotland') 
-#    # for n in res:
-#    #  print(n)
+if __name__ == '__main__':
+    sl_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"
+    iri = "http://dbpedia.org/resource/West_Midlands_(county)"  
+    scot_iri = 'http://dbpedia.org/resource/Scotland'
+    res = queryPowerPlantLocatedInSameRegion('ukpowerplantkg', sl_pp, iri, False) 
+    # for n in res:
+    #   print(n)
 #    print(res[0][1].split('#')[1] == 'Hydro')
+    print(len(res), res[0])
    
    
    

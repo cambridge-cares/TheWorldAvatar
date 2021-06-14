@@ -24,9 +24,10 @@ from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPDLocation
 
-import SPARQLQueriesUsedInTopologyABox as query_topo
+import UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox as query_topo
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -46,28 +47,26 @@ t_box = T_BOX.UKDigitalTwinTBox()
 """Create an object of Class UKPowerGridTopology"""
 uk_topo = UK_Topo.UKPowerGridTopology()
 
-"""Create an object of Class TopologicalInformationProperty"""
-topo_info = TopoInfo.TopologicalInformation()
-
-"""Create an object of Class UKPowerPlantDataProperty"""
+"""Create an object of Class UKPowerPlant"""
 ukpp = UKpp.UKPowerPlant()
 
 """Create an object of Class CO2FactorAndGenCostFactor"""
 ukmf = ModelFactor.ModelFactor()
+
+# """Create an object of Class TopologicalInformationProperty"""
+# topo_info = TopoInfo.TopologicalInformation()
+
 
 """Create an object of Class UKPowerGridModel"""
 uk_ebus_model = UK_PG.UKEbusModel()
 uk_eline_model = UK_PG.UKElineModel()
 uk_egen_model = UK_PG.UKEGenModel()
 
-"""Graph store"""
-# store = 'default'
-store = Sleepycat()
-store.__open = True
-store.context_aware = True
-
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
+
+"""Remote Endpoint lable"""
+powerPlant_Endpoint = ukpp.endpoint['lable']
 
 """Root_node and root_uri"""
 root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, 10)
@@ -94,9 +93,9 @@ ontopowsys_PowSysPerformance    = owlready2.get_ontology(t_box.ontopowsys_PowSys
 ontoeip_powerplant              = owlready2.get_ontology(t_box.ontoeip_powerplant).load()
 
 """Data Array"""
-busInfoArrays = readFile(topo_info.Topo_10_bus['BusInfo'])
-branchTopoInfoArrays = readFile(topo_info.Topo_10_bus['BranchInfo'])
-branchPropArrays = readFile(topo_info.Topo_10_bus['BranchProperty'])
+# busInfoArrays = readFile(topo_info.Topo_10_bus['BusInfo'])
+# branchTopoInfoArrays = readFile(topo_info.Topo_10_bus['BranchInfo'])
+# branchPropArrays = readFile(topo_info.Topo_10_bus['BranchProperty'])
 modelFactorArrays = readFile(ukmf.CO2EmissionFactor)
 
 """User specified folder path"""
@@ -110,9 +109,21 @@ counter = 1
 
 ### Functions ### 
 
+""" Create the TopologicalInformationProperty Instance by specifying its numOfBus and numOfBranch"""
+def createTopologicalInformationPropertyInstance(numOfBus, numOfBranch):
+    topo_info = TopoInfo.TopologicalInformation(numOfBus, numOfBranch)
+    
+    busInfoArrays = readFile(topo_info.BusInfo)
+    branchTopoInfoArrays = readFile(topo_info.BranchInfo)
+    branchPropArrays = readFile(topo_info.BranchProperty)
+    
+    return topo_info, busInfoArrays, branchTopoInfoArrays, branchPropArrays
+
 """Main function: create the sub graph represents the Topology"""
-def createTopologyGraph(store, updateLocalOWLFile = True):
-    print('Create the graph for ', topo_info.Topo_10_bus['Name'])
+def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNodes, addELineNodes, addEGenNodes, updateLocalOWLFile = True):
+    store = LocalGraphStore(storeType)
+    topo_info, busInfoArrays, branchTopoInfoArrays, branchPropArrays = createTopologicalInformationPropertyInstance(numOfBus, numOfBranch)
+    print('Create the graph for ', topo_info.EBus_num, ' buses and ', topo_info.ELine_num, ' branches topology' )
     global filepath, userSpecified, defaultPath_Sleepycat
     if isinstance(store, Sleepycat): 
         cg_topo_ukec = ConjunctiveGraph(store=store, identifier = topo_cg_id)
@@ -131,17 +142,19 @@ def createTopologyGraph(store, updateLocalOWLFile = True):
     g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
                         URIRef(UKDT.nodeURIGenerator(2, dt.gridTopology, None))))
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
-       
-    g = addEBusNodes(g, busInfoArrays) 
-        
-    g = addELineNodes(g, branchTopoInfoArrays, branchPropArrays)
     
-    g = addEGenNodes(g, cg_topo_ukec, modelFactorArrays)
+    if addEBusNodes != None:
+        g = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays) 
+# TODO: improve the func addELineNodes
+    if addELineNodes != None:    
+        g = addELineNodes(g, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty)
+    if addEGenNodes != None:
+        g = addEGenNodes(g, cg_topo_ukec, modelFactorArrays, localQuery)
     
     # generate/update OWL files
     if updateLocalOWLFile == True:    
         # specify the owl file storage path
-        defaultStoredPath = uk_topo.StoreGeneratedOWLs + 'UK_' + topo_info.Topo_10_bus['Name'] + OWL #default path
+        defaultStoredPath = uk_topo.StoreGeneratedOWLs + 'UK_' + topo_info.Name + OWL #default path
     
         # Store/update the generated owl files      
         if os.path.exists(uk_topo.StoreGeneratedOWLs) and not userSpecified:
@@ -151,10 +164,10 @@ def createTopologyGraph(store, updateLocalOWLFile = True):
         elif filepath == None:
             print('****Needs user to specify a storage path****')
             filepath = selectStoragePath()
-            filepath_ = filepath + '\\' + 'UK_' + topo_info.Topo_10_bus['Name'] + OWL
+            filepath_ = filepath + '\\' + 'UK_' + topo_info.Name + OWL
             storeGeneratedOWLs(g, filepath_)
         else: 
-            filepath_ = filepath + '\\' +'UK_' + topo_info.Topo_10_bus['Name'] + OWL
+            filepath_ = filepath + '\\' +'UK_' + topo_info.Name + OWL
             storeGeneratedOWLs(g, filepath_)
     if isinstance(store, Sleepycat):  
         cg_topo_ukec.close()       
@@ -162,8 +175,9 @@ def createTopologyGraph(store, updateLocalOWLFile = True):
 
 
 """Add nodes represent Buses"""
-def addEBusNodes(graph, dataArray):  
-    if dataArray[0] == topo_info.headerBusTopologicalInformation:
+def addEBusNodes(graph, header, dataArray): 
+    print('Start adding bus node triples in the topology graph')
+    if dataArray[0] == header:
         pass
     else:
         print('The bus topoinfo data header is not matched, please check the data file')
@@ -222,8 +236,8 @@ def addEBusNodes(graph, dataArray):
     return graph
 
 """Add nodes represent Branches"""
-def addELineNodes(graph, branchTopoArray, branchPropArray):  
-    if branchTopoArray[0] == topo_info.headerBranchTopologicalInformation and branchPropArray[0] == topo_info.headerBranchProperty:
+def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader):  
+    if branchTopoArray[0] == branchTopoHeader and branchPropArray[0] == branchPropHeader:
         pass
     else:
         print('The branch topoinfo data header is not matched, please check the data file')
@@ -297,10 +311,29 @@ def addELineNodes(graph, branchTopoArray, branchPropArray):
 
         counter += 1
         
-    return graph   
+    return graph 
+
+##########################################################BUG FIXING############################################
+def test():   
+    print('#########BUG TESTING##############')
+    res_BusLocatedRegion = ["https://dbpedia.org/page/South_East_England", "https://dbpedia.org/page/South_West_England", "https://dbpedia.org/page/London", "https://dbpedia.org/page/East_of_England", \
+                            "https://dbpedia.org/page/East_Midlands", "https://dbpedia.org/page/West_Midlands_(county)", "https://dbpedia.org/page/North_West_England", \
+                                "https://dbpedia.org/page/Yorkshire_and_the_Humber", "https://dbpedia.org/page/Wales", "https://dbpedia.org/page/Scotland" ]
+  
+    
+    for bus_location in res_BusLocatedRegion: # bus_location[0]: bus node; bus_location[1]: located region
+        print(bus_location)
+        # if str(bus_location[1]) == "http://dbpedia.org/resource/West_Midlands_(county)":
+        #     print('bug point')
+        # else:
+        res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(powerPlant_Endpoint, ukpp.SleepycatStoragePath, str(bus_location), False))        
+           
+    return    
+##########################################################BUG FIXING############################################
+
 
 """Add nodes represent Branches"""
-def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays): 
+def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery): 
     global counter
     if modelFactorArrays[0] == ukmf.headerModelFactor:
         pass
@@ -311,7 +344,8 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays):
     res_BusLocatedRegion= list(query_topo.queryBusLocation(ConjunctiveGraph))
     print('#########START addEGenNodes##############')
     for bus_location in res_BusLocatedRegion: # bus_location[0]: bus node; bus_location[1]: located region
-        res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(ukpp.SleepycatStoragePath, bus_location[1]))        
+        print(bus_location[1])       
+        res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(powerPlant_Endpoint, ukpp.SleepycatStoragePath, str(bus_location[1]), localQuery))        
         local_counter = 1
         while local_counter <= len(res_powerplant):
             for pg in res_powerplant: # pg[0]: powerGenerator, pg[1]: PrimaryFuel; pg[2]: GenerationTechnology
@@ -397,5 +431,8 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    createTopologyGraph(store)
+    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
+    # res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion('ukpowerplantkg', ukpp.SleepycatStoragePath, "http://dbpedia.org/resource/West_Midlands_(county)", False))
+    # print (len(res_powerplant))
+    # test()
     print('Terminated')

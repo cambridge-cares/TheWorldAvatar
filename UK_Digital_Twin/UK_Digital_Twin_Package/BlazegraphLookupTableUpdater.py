@@ -56,7 +56,7 @@ def updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label
             print ('The repository has already been recorded by the lookup table in Blazegraph.')
             return
         elif repo_endpoint_iri[0]['repo_endpoint_iri'] == endpoint_iri and isDelete == True:
-            update_repo_info = """
+            delete_repo_info = """
                     PREFIX ontokgrouter: <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#>
                     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
                     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -68,8 +68,8 @@ def updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label
                     }
                     """ % (endpoint_iri, queryendpoint_iri, endpoint_iri, updateendpoint_iri, endpoint_iri, endpoint_iri, label)
             
-            performUpdate(lookupTableLable, update_repo_info)      
-            print ('The repository information has already been deleted from Blazegraph lookup table.')
+            performUpdate(lookupTableLable, delete_repo_info)      
+            print ('The repository information has been deleted from Blazegraph lookup table.')
             return
     elif isModification == True and modificationQueryStr != None:
         # running in modification mode
@@ -79,8 +79,8 @@ def updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label
         
 if __name__ == '__main__': 
     # new repo
-    endpoint_iri = "http://www.theworldavatar.com/kb/ontokgrouter/ukdigitaltwin"
-    queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin"
-    updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"
-    label = "ukdigitaltwin"
-    updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, False, True)
+    endpoint_iri = "http://www.theworldavatar.com/kb/ontokgrouter/ukpowerplantkg"
+    queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG"
+    updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG/statements"
+    label = "ukpowerplantkg"
+    updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, True ,False)

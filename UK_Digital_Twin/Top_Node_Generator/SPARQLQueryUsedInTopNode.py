@@ -159,7 +159,7 @@ def queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery):
 if __name__ == '__main__': 
     sl_path_topo = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
-    res = queryPowerPlantNodeURL('ukpowerplant', sl_path_pp, False)
+    res = queryPowerPlantNodeURL('ukpowerplantkg', sl_path_pp, False)
     print (len(res))
     print (res[0], res[1])
 

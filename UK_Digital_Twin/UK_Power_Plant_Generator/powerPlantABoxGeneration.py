@@ -89,7 +89,6 @@ def createDUKESDataPropertyInstance(version):
 def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
     store = LocalGraphStore(storeType)
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
-    # store = LocalGraphStore(store, storeType)
     if isinstance(store, Sleepycat):    
         # Create Conjunctive graph maintain all power plant graphs
         powerPlantConjunctiveGraph = ConjunctiveGraph(store=store)

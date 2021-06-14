@@ -213,7 +213,7 @@ def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = Non
     
 
 """####Main function: Create or update the top node owl file####"""
-def generateTopNodeOWL(store, localQuery, updateLocalOWLFile = True):
+def generateTopNodeGraph(store, localQuery, updateLocalOWLFile = True):
     baseURI = (Top_Level_Node['UKDigitalTwin'].split('#'))[0]
     
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
@@ -271,5 +271,5 @@ def generateTopNodeOWL(store, localQuery, updateLocalOWLFile = True):
     return
 
 if __name__ == '__main__':
-   generateTopNodeOWL(store, False, True)
+   generateTopNodeGraph(store, False, True)
    
