@@ -12,7 +12,7 @@ slug: gas-grid
 	<div class="intro-center">
 	<h2>Gas Grid</h2>
 		<p>The UK Digital Twin supports queries across number of aspects of the UK energy related infrastructure, including the electrical power system, the gas transmission system and land use.</p>
-		<p>The map below shows a sample of the gas grid data in the UK Digital Twin. The nodes on the map show the intakes and offtakes from the gas transmission system. Click on a nodes to see a data feed for the corresponding gas flow.</p>
+		<p>The map below shows a sample of the gas grid data in the UK Digital Twin. The nodes on the map show the intakes and offtakes from the gas transmission system. Click on a node to see a data feed for the corresponding gas flow.</p>
 	</div>
 </div>
 
