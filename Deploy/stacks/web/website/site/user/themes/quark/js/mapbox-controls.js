@@ -55,6 +55,17 @@ const defaultPitch = {
 	center: [-1.5, 52.5]
 };
 
+// Default options that should be used when initialising
+// a new MapBox map instance
+const defaultOptions = {
+	container: "map",
+	style: "mapbox://styles/mapbox/light-v10?optimize=true",
+	center: [-2, 54.5],
+	zoom: 5,
+	pitch: 0.0,
+	bearing: 0.0
+};
+
 // The maximum blur, in pixels, when the tilt-shift effect is fully on.
 const tiltShiftMaxBlur = 3;
 
@@ -67,6 +78,16 @@ var cameraCallback = null;
 // Optional call back to fire after terrain change
 var terrainCallback = null;
 
+var doneOnce = false;
+
+/**
+ * Map options to be used for new maps.
+ * 
+ * @returns Default map options
+ */
+function getDefaultMapOptions() {
+	return defaultOptions;
+}
 
 /**
  * Returns as HTML string containing the map controls that can be injected into 
@@ -85,25 +106,45 @@ function getControls() {
  * @param myCameraCallback - optional call back to fire after camera change
  * @param myTerrainCallback - optional call back to fire after terrain change
  */
-function initialise(myMap, myCameraCallback, myTerrainCallback) {
+function setup(myMap, myCameraCallback, myTerrainCallback) {
 	map = myMap;
 	cameraCallback = myCameraCallback;
 	terrainCallback = myTerrainCallback;
 
-	// Default terrain (light)
-	changeTerrain("light");
-
-	// Default camera (bird)
-	// Note: Do a jump here otherwise the page will
-	// load in the middle of the fly animation.
-	map.jumpTo({
-		center: defaultBird.center,
-		zoom: defaultBird.zoom
-	});
-
 	// Enable MapBox's own controls
 	map.addControl(new mapboxgl.NavigationControl());
-	console.log("Initialised 'mapbox-controls.js' script.");
+}
+
+/**
+ * Refresh the terrain and sky settings after the map's style is changed.
+ */
+function refresh() {
+	// Add terrain
+	map.addSource('terrain-source', {
+		'type': 'raster-dem',
+		'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+		'tileSize': 512,
+		'maxzoom': 14
+	});
+
+	map.setTerrain({ 
+		'source': 'terrain-source',
+		'exaggeration': 2
+	});
+
+	// Add the sky 
+	map.addLayer({
+		'id': 'sky',
+		'type': 'sky',
+		'paint': {
+			'sky-type': 'atmosphere',
+			'sky-atmosphere-color': '#6687eb',
+			'sky-atmosphere-sun': [0.0, 0.0],
+			'sky-atmosphere-sun-intensity': 15
+		}
+	});
+
+	console.log("INFO: Terrain and sky layers have been added.");
 }
 
 /**
@@ -120,6 +161,7 @@ function addTiltShiftSupport() {
 		throw new Error("Cannot find div with id of 'tiltShift', will not enable effects!");
 	}
 
+	// Add photo effects and update on map movement
 	addPhotoEffects();
 	map.on('move', function () {
 		addPhotoEffects();
@@ -151,6 +193,11 @@ function changeTerrain(terrainType) {
 	} else {
 		console.log("Unknown terrain type '" + terrainType + "', ignoring.");
 	}
+
+	// Fire the callback (if present)
+	if(terrainCallback != null) {
+		terrainCallback(terrainType);
+	}
 }
 
 /**
@@ -173,6 +220,11 @@ function changeCamera(viewType) {
 
 	} else {
 		console.log("Unknown view type'" + viewType + "', ignoring.");
+	}
+
+	// Fire the callback (if present)
+	if(cameraCallback != null) {
+		cameraCallback(viewType);
 	}
 }
 
@@ -202,6 +254,7 @@ function addPhotoEffects() {
 	// this needs to be styled in two different ways to support the most browsers
 	tiltShiftDiv.style.webkitMaskImage = '-webkit-gradient(linear, left bottom, left top, from(black), color-stop(5%, black), color-stop(45%, rgba(0, 0, 0, 0)), color-stop(55%, rgba(0, 0, 0, 0)), color-stop(' + tiltShiftGradientBlackPoint + '%, black), to(black))';
 	tiltShiftDiv.style.maskImage = 'linear-gradient(0deg, black 0%, black 5%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 55%, black ' + tiltShiftGradientBlackPoint + '%)';
+	console.log("Tiltshift applied");
 }
 
 function easeInCubic(x) {
