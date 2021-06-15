@@ -8,7 +8,6 @@ from .locations import RASA_JPS_DIR
 word_map = {'hydrogen': 'H2', 'water': 'H2O', 'oxygen': 'O2', 'benzene': 'C6H6', 'methane': 'CH4',
             'hydrogen peroxide': 'H2O2'}
 
-
 class SpeciesValidator:
 
     def __init__(self):

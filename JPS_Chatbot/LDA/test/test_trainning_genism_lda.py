@@ -109,7 +109,7 @@ lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
 
 pprint(lda_model.print_topics(num_words=10))
 
-# lda_model.save('LDA_MODEL_TEST')
+lda_model.save('LDA_MODEL_TEST')
 doc_lda = lda_model[corpus]
 
 # Compute Perplexity

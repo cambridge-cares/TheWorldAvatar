@@ -39,7 +39,9 @@ def process_equations(equation):
         if r in FORMULA_NAME_DICT:
             r = random.choice([r, random.choice(FORMULA_NAME_DICT[r])])
         tmp.append('[%s](species)' % r.strip())
-    reactants_string = ' add_sign '.join(tmp)
+
+    add_sign = random.choice([' add_sign ', ' and '])
+    reactants_string = add_sign.join(tmp)
 
     tmp = []
     products = [s.strip() for s in products]
@@ -47,13 +49,15 @@ def process_equations(equation):
         if r in FORMULA_NAME_DICT:
             r = random.choice([r, random.choice(FORMULA_NAME_DICT[r])])
         tmp.append('[%s](species)' % r.strip())
-    products_string = ' add_sign '.join(tmp)
 
-    equation = reactants_string + ' separator(separator) ' + products_string
+    add_sign = random.choice([' add_sign ', ' and '])
+    products_string = add_sign.join(tmp)
+
+    equation = reactants_string + ' [equation-splitter](separator) ' + products_string
     half_equation = random.choice([reactants_string, products_string]).replace(' add_sign ',
                                                                                random.choice([' add_sign ', ' and ']))
 
-    return equation, random_species, half_equation
+    return equation, random_species, half_equation, reactants_string, products_string
 
 
 # 'what is the reaction rate of xx + xx '
@@ -61,7 +65,7 @@ def process_equations(equation):
 def query_reaction_property():
     name = 'query_reaction_property'
     questions = []
-    for equation in random.sample(ontokin_equations, round(200 * factor)):
+    for equation in random.sample(ontokin_equations, min(round(200 * factor), len(ontokin_equations))):
         processed_equation = process_equations(equation)
         equation = processed_equation[0]
         half_equation = processed_equation[2]
@@ -86,7 +90,7 @@ def query_reaction_property():
 def select_mechanism_by_reaction():
     name = 'select_mechanism_by_reaction'
     questions = []
-    for equation in random.sample(ontokin_equations, round(200 * factor)):
+    for equation in random.sample(ontokin_equations, min(round(200 * factor), len(ontokin_equations))):
         processed_equation = process_equations(equation)
         equation = processed_equation[0]
         half_equation = processed_equation[2]
@@ -106,37 +110,85 @@ def select_mechanism_by_reaction():
 def select_reaction_by_species():
     name = 'select_reaction_by_species'
     questions = []
-    for equation in random.sample(ontokin_equations,  round(200 * factor)):
+    for equation in random.sample(ontokin_equations, min(round(200 * factor), len(ontokin_equations))):
         processed_equation = process_equations(equation)
         equation = processed_equation[0]
         random_species = processed_equation[1]
         half_equation = processed_equation[2]
+        reactant_string = processed_equation[3]
+        product_string = processed_equation[4]
+
         equation = random.choice([equation, half_equation])
         # 'what reaction have xxx and xxx as reactants and xxx and xxx as products'
         # reaction that produces xxx
         # reaction produces xxx
         # reaction that uses xxx as reactants
-        use_and_produce = [' [that produces](produce) ',
-                           ' [producing](produce) ',
-                           ' [give](produce) ',
-                           ' [gives](produce) ',
-                           ' [yield](produce) ',
-                           ' [yields](produce) ',
-                           ' [produce](produce) ',
-                           ' [uses](use) ',
-                           ' [take](use) ',
-                           ' [takes](use) ',
-                           ' [that uses](use) ']
+        connecting_words = ['containing', 'contains', 'that contains', 'which contain',
+                            'which contains', 'that contain', 'has', 'have', 'having', 'with']
 
-        q = random.choice(heads) + ' reaction ' + random.choice(use_and_produce) + random.choice(
-            [random_species, half_equation])
+        produce_words = [
+            '[uses](reaction use)',
+            '[take](reaction use)',
+            '[takes](reaction use)',
+            '[that uses](reaction use)']
 
-        q2 = random.choice(heads) + ' reaction ' + random.choice(use_and_produce) + random.choice(
-            [random_species, half_equation]) + ' as reactants(use) and ' + random.choice(
-            [random_species, half_equation]) + ' as products(produce) '
+        use_words = [
+            '[that produce](reaction produce)',
+            '[that produces](reaction produce)',
+            '[producing](reaction produce)',
+            '[give](reaction produce)',
+            '[gives](reaction produce)',
+            '[yield](reaction produce)',
+            '[yields](reaction produce)',
+            '[produce](reaction produce)',
+            '[produces](reaction produce)']
 
-        questions.append(' - ' + q)
-        questions.append(' - ' + q2)
+        # reaction and reactions
+        reaction_word = random.choice(['reaction', 'reactions', 'chemical reaction', 'chemical reactions'])
+        head = random.choice(heads)
+        # reaction_component = random.choice([random_species, half_equation])
+        connecting_word = random.choice(connecting_words)
+
+        reactant_string = random.choice([random_species, reactant_string])
+        product_string = random.choice([random_species, product_string])
+
+        reactant_word = random.choice(['reactants', 'a reactant', 'reactant', 'material'])
+        product_word = random.choice(['product', 'a product', 'products'])
+        # 1. reactions that produces/uses xx (species/ reactant string/ product string )
+        # 2. reactions that produces/uses xx and xx (reactant string/ product string)
+        # 3. reactions that uses xx/(xx and xx) and produces xx/ (xx and xx)
+
+        # 4. reactions with xxx/(xx and xx) as reactant(s)
+        # 5. reactions containing xx/(xx and xx) as product(s)
+        # 6. reactions with xxx/(xx and xx) as reactant and xxx/(xx and xx) as products
+
+        use_word = random.choice(use_words)
+        produce_word = random.choice(produce_words)
+        q_1 = '%s %s %s' % (reaction_word, use_word, reactant_string)  # 1,2
+        q_2 = '%s %s %s' % (reaction_word, produce_word, product_string)  # 1,2
+        q_3 = '%s %s %s and %s %s' % (reaction_word, use_word, reactant_string, produce_word, product_string) #3
+
+        # reactions with xx/ (xx and xx) as reactants
+        q_4 = '%s %s %s [as %s](reaction use ahead)' % (reaction_word, connecting_word, reactant_string, reactant_word)
+        # reactions with xx/ (xx and xx) as products
+        q_5 = '%s %s %s [as %s](reaction produce ahead)' % (reaction_word, connecting_word, product_string, product_word)
+        q_6 = '%s %s %s [as %s](reaction use ahead) and %s [as %s](reaction produce ahead)' \
+              % (reaction_word, connecting_word, reactant_string, reactant_word, product_string, product_word)
+        #
+        #
+        # q = '%s %s %s %s' % (head, reaction_word, use_and_produce_word, reaction_component)
+        # # q = random.choice(heads) + ' reaction ' + random.choice(use_and_produce) + random.choice(
+        # #     [random_species, half_equation])
+        #
+        # # q2 = '%s %s %s %s as [%s](reaction use)' %(head, reaction_word, use_and_produce_word, reaction_component,  )
+        # q2 = head + reaction_word + use_and_produce_word + reaction_component + ' [as %s](reaction use) and ' % (
+        #     random.choice(['reactants', 'reactant'])) + random.choice(
+        #     [random_species, half_equation]) + ' [as %s](reaction produce) ' % (random.choice(['product', 'products']))
+        # reaction that produces xx and xx (half component)
+        # reaction that uses xx
+        candidates = [q_1, q_2, q_3, q_4, q_5, q_6]
+        for q in candidates:
+            questions.append(' - ' + q)
     block = '\n ## intent:%s\n' % name + '\n ' + '\n'.join(questions)
     return block
 
@@ -148,7 +200,7 @@ def create_simple_questions(name, species_list, properties):
     print('EXTRA_PROPERTIES', EXTRA_PROPERTIES)
     print('name', name)
     if name in EXTRA_PROPERTIES:
-        for i in range(5):
+        for i in range(40):
             extra_properties = EXTRA_PROPERTIES[name]
             properties = properties + extra_properties
     for _property in properties:
@@ -164,10 +216,16 @@ def create_simple_questions(name, species_list, properties):
 
             q = random.choice(heads) + ' [' + _property + '](attribute) ' + random.choice(
                 ['of', ' ']) + ' [' + species + '](species)'
-            q2 = random.choice(heads) + ' [' + species + '](species) [' + _property + '](attribute)'
-            questions.append(' - ' + random.choice([q, q2]))
+            q2 = random.choice(heads) + ' [' + species + '](species)' + random.choice(
+                [' ', ' quote ']) + '[' + _property + '](attribute)'
+            flag = False
+            for stop_p in stop_properties:
+                if stop_p in q + q2:
+                    flag = True
+            if not flag:
+                questions.append(' - ' + random.choice([q, q2]))
 
-    questions = random.sample(questions, round(len(questions) / 5 * factor))
+    questions = random.sample(questions, min(round(len(questions) / 5 * factor), len(questions)))
     block = '\n ## intent:%s\n' % name + '\n ' + '\n'.join(questions)
     return block
 
@@ -182,6 +240,7 @@ def query_thermodynamic():
 def query_quantum_chemistry():
     name = "query_quantum_chemistry"
     return create_simple_questions(name, ontocompchem_species, ontocompchem_properties)
+
 
 factor = 1
 
@@ -214,8 +273,11 @@ with open('../Wiki_basic_info/FORMULA_NAME_DICT') as f:
     FORMULA_NAME_DICT = json.loads(f.read())
     f.close()
 
-heads = ['what is ', 'show ', 'show me ', 'give ', 'provide ', 'find ', 'find me ', 'get ', '']
-connects = [' containing ', ' that contains ', ' with ', ' having ', ' that has ']
+stop_properties = ['reactant', 'molecular', 'name', 'pressure', 'geometry', 'element']
+
+# heads = ['what is ', 'show ', 'show me ', 'give ', 'provide ', 'find ', 'find me ', 'get ', '']
+heads = ['']
+connects = [' containing ', ' that contains ', ' with ', ' having ', ' that has ', 'contains']
 ontokin_species = json.loads(ontokin_species_and_equations['species'])
 ontokin_equations = json.loads(ontokin_species_and_equations['equations'])
 
@@ -225,6 +287,19 @@ full_block = full_block.lower()
 
 _RE_COMBINE_WHITESPACE = re.compile(r"[ ]+")
 full_block = _RE_COMBINE_WHITESPACE.sub(" ", full_block).strip()
+
+ontokin_part = query_thermodynamic() + query_reaction_property() + \
+               select_mechanism_by_reaction() +  select_reaction_by_species() # reactions and thermo
+
+ontocompchem_part = query_quantum_chemistry()
+
+with open('ontokin_corpus', 'w', encoding='utf-8') as f:
+    f.write(ontokin_part)
+    f.close()
+
+with open('ontocompchem_corpus', 'w', encoding='utf-8') as f:
+    f.write(ontocompchem_part)
+    f.close()
 
 with open('test/data/nlu.md', 'w', encoding="utf-8") as f:
     f.write(full_block)

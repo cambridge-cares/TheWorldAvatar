@@ -1,8 +1,6 @@
 {
   "item_attribute_query": "SELECT ?o\nWHERE \n{\n  wd:%s wdt:%s ?o .  \n\n} LIMIT 50",
-  "batch_restriction_query_numerical_and_attribute":
-  "
-       SELECT ?oLabel ?v ?unitLabel
+  "batch_restriction_query_numerical_and_attribute":"SELECT ?oLabel ?v ?unitLabel
        WHERE {?o wdt:P31  wd:%s .
        ?o wdt:%s ?x .
        ?o p:%s/psv:%s ?value .
