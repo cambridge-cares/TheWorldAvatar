@@ -33,8 +33,8 @@
 		var map = new mapboxgl.Map(getDefaultMapOptions());
 
 		// Change text color depending on selected style
-		var inner_text = '#FFFFFF';
-		var outer_text = '#000000';
+		var inner_text = '#3E3E3E';
+		var outer_text = '#FFFFFF';
 
 		function terrainCallback(terrainType) {
 			if(terrainType === "light") {
@@ -42,7 +42,7 @@
 				inner_text = '#3E3E3E';
 			} else {
 				inner_text = '#FFFFFF';
-				outer_text = '#000000';
+				outer_text = '#3E3E3E';
 			}
 			console.log("INFO: Updated label colors.");
 		}		
