@@ -41,8 +41,7 @@ function resetSidePanel() {
 }
 
 // Runs when an offtake is selected, shows meta-data
-function showOfftake(nodeName, nodeType, nodePosition,LinepackZoneStr,NTSExitArea,NTSExitZone,Pipeline) {
-	
+function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitArea, NTSExitZone, Pipeline) {
 	if(nodeName == null) {
 		// Do nothing
 		return;
@@ -63,31 +62,61 @@ function showOfftake(nodeName, nodeType, nodePosition,LinepackZoneStr,NTSExitAre
 
 	// Show meta data
 	document.getElementById('metadataContainer').style.display = "block";
-	document.getElementById('metadataContainer').innerHTML = `
+
+	var newHTML = `
 		<table width="100%">
 			<tr>
-				<td width="30%">Type:</td>
-				<td width="70%" style="text-align: right;">` + nodeType + `, Offtake</td>
+				<td width="25%">Type:</td>
+				<td width="75%" style="text-align: right;">` + nodeType + `, Offtake</td>
 			</tr>
 			<tr>
-				<td width="30%">Location:</td>
-				<td width="70%" style="text-align: right;">` + prettyLocation + `</td>
+				<td width="25%">Location:</td>
+				<td width="75%" style="text-align: right;">` + prettyLocation + `</td>
 			</tr>
-			<tr>
-				<td width="50%">Linepack Zone:</td>
-				<td width="50%" style="text-align: right;">` + LinepackZoneStr + `</td>
-			</tr>
-			<tr>
-				<td width="50%">NTS Exit Area:</td>
-				<td width="50%" style="text-align: right;">` + NTSExitArea + `</td>
-			</tr>
-			<tr>
-				<td width="50%">NTS Exit Zone:</td>
-				<td width="50%" style="text-align: right;">` + NTSExitZone + `</td>
-			</tr>
-
-		</table>
 	`;
+
+	// Only add if present
+	if(LinepackZoneStr != null) {
+		newHTML += `
+			<tr>
+				<td width="35%">Linepack Zone:</td>
+				<td width="65%" style="text-align: right;">` + LinepackZoneStr + `</td>
+			</tr>
+		`;
+	}
+
+	// Only add if present
+	if(NTSExitArea != null) {
+		newHTML += `
+			<tr>
+				<td width="35%">NTS Exit Area:</td>
+				<td width="65%" style="text-align: right;">` + NTSExitArea + `</td>
+			</tr>
+		`;
+	}
+
+	// Only add if present
+	if(NTSExitZone != null) {
+		newHTML += `
+			<tr>
+				<td width="35%">NTS Exit Zone:</td>
+				<td width="65%" style="text-align: right;">` + NTSExitZone + `</td>
+			</tr>
+		`;
+	}
+
+	// Only add if present
+	if(Pipeline != null) {
+		newHTML += `
+			<tr>
+				<td width="35%">Connection:</td>
+				<td width="65%" style="text-align: right;">` + Pipeline + `</td>
+			</tr>
+		`;
+	}
+		
+	newHTML += "</table>";
+	document.getElementById('metadataContainer').innerHTML = newHTML;
 
 	// Update text container 
 	document.getElementById('textContainer').innerHTML = `
@@ -97,7 +126,6 @@ function showOfftake(nodeName, nodeType, nodePosition,LinepackZoneStr,NTSExitAre
 
 // Runs when a terminal is selected, shows recent live data.
 function showTerminal(nodeName, nodeType, nodePosition) {
-	
 	if(nodeName == null) {
 		// Do nothing
 		return;

@@ -16,6 +16,19 @@ h1 {
 	font-family: Helvetica, sans-serif;
 }
 
+.mapboxgl-popup-content {
+	text-align: center;
+	font-size: 9pt;
+	min-width: 150px;
+	max-width: 300px;
+	height: 65px;
+}
+
+.mapboxgl-popup-content p {
+	font-style: italic;
+	color: grey;
+}
+
 #map {
 	position: absolute;
 	top: 0;
@@ -63,7 +76,7 @@ h1 {
 	margin-bottom: 10px;
 	margin-right: 50px;
 	margin-left: 50px;
-	font-size: 11pt;
+	font-size: 10pt;
 }
 
 #metadataContainer a {
@@ -92,7 +105,7 @@ h1 {
 
 #tableContainer {
 	width: auto;
-	height: calc(100% - 575px);
+	height: calc(100% - 600px);
 	overflow: auto;
 	overflow-x: hidden;
 	margin-left: 10px;
@@ -222,37 +235,3 @@ h1 {
 	background-color: rgba(0, 0, 0, 0.4);
 	text-decoration: underline;
 }
-
-
-
-
-
-#tiltShift {
-	display: none;
-	/* this gets turned on by the javascript */
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 0;
-	pointer-events: none;
-	/* Ensure the mouse pointer can't interact with this layer */
-      }
-
-
-body.effectsOff #tiltShift body.effectsOff #map {
-	filter: none !important;
-	-webkit-filter: none !important;
-      }
-
-#menu {
-	position: absolute;
-	background: #efefef;
-	padding: 10px;
-	fill-opacity: 0.5;
-	border-radius: 6px;
-	color: white;
-	background-color: rgba(0, 0, 0, 0.2);
-	font-family: 'Open Sans', sans-serif;	
-      }

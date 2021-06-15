@@ -3,32 +3,26 @@
 
 <head>
     <title>Gas Grid Visualisation</title>
+	<meta charset="utf-8">
 
     <!-- JS libraries -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v6.min.js"></script>
-    <script src='live-chart.js'></script>
+    <script src='gas-grid-vis.js'></script>
 
     <!-- Stylesheets -->
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+	<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
     <link href='style.css' rel='stylesheet' />
 </head>
 
 <body>
     <div id="map"></div>
     <div id="tiltShift"></div>
-
-    <div id="resetContainer">
-        <a href="javascript:void(0)" onclick="resetCamera()">Birds Eye View</a>
-    </div>
-
-    <div id="pitchedContainer">
-        <a href="javascript:void(0)" onclick="pitchedCamera()">Pitched View</a>
-    </div>
-
-
-
+	<div id="controlsParent"></div>
+	
     <div id="side-panel" style="height:100%; width:400px; float:right;">
         <div id="titleContainer">
             <h2>UK Gas Grid</h2>
@@ -40,19 +34,17 @@
         <div id="dateContainer"></div>
     </div>
 
-    <div id="menu">
-        <input id="satellite-v9" type="radio" name="rtoggle" value="satellite" checked="checked">
-        <label for="satellite-v9">Satellite</label>
-        <input id="light-v10" type="radio" name="rtoggle" value="light">
-        <label for="light-v10">Light</label>
-        <input id="satellite-streets-v11" type="radio" name="rtoggle" value="streets">
-        <label for="satellite-streets-v11">Satellite with streets</label>
-    </div>
-
-
     <script>
+		// Add map controls
+		window.addEventListener("load", function(){
+			document.getElementById("controlsParent").innerHTML = getControls();
+		});
+
         // Initial state of UI elements
         resetSidePanel();
+
+		// Pre-load the flow data
+		loadFlowData();
 
         // Loading icon
         document.getElementById("textContainer").innerHTML += `
@@ -62,210 +54,50 @@
             <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
         `;
 
-
-        // Resets the camera
-        function resetCamera() {
-            if (typeof map !== 'undefined') {
-
-                map.flyTo({
-                    curve: 1.9,
-                    speed: 1.6,
-                    zoom: 5,
-                    pitch: 0.0,
-                    bearing: 0.0,
-                    center: [-2, 54.5]
-                });
-                resetSidePanel();
-            }
-        }
-
-        function pitchedCamera() {
-            if (typeof map !== 'undefined') {
-
-                map.flyTo({
-                    curve: 1.9,
-                    speed: 1.6,
-                    zoom: 7,
-                    pitch: 65,
-                    bearing: -30,
-                    center: [-1.5, 52.5]
-                });
-                resetSidePanel();
-            }
-        }
-
-
-
-
-
-        var tiltShiftMaxBlur = 3; // The maximum blur, in pixels, when the tilt-shift effect is fully on. 3 pixels is subtle and nice
-        var tiltShiftBlur = document.getElementById("tiltShift");
-        var mapDiv = document.getElementById("map");
-        var bodyTag = document.getElementById("bodyTag");
-
-
-        // These easing functions are useful to ensure the amount of blur is 
-        // not applied in a linear fashion when zooming in and out. 
-        function easeInCubic(x) {
-            return x * x * x;
-        }
-
-        function easeOutCubic(x) {
-            return 1 - Math.pow(1 - x, 3);
-        }
-        function easeInExpo(x) {
-            return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
-        }
-        function easeOutExpo(x) {
-            return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
-        }
-
-        function degreesToRadians(degrees) {
-            var pi = Math.PI;
-            return degrees * (pi / 180);
-        }
-        function addPhotoEffects() {
-            // Get the map state and preapare some useful normalized values of zoom and pitch
-            // ==============================================================================
-            var pitch = map.getPitch();
-            var pitchNormalized = pitch / 85;
-
-            var bearing = map.getBearing() + 180;
-            var zoom = map.getZoom() - 4;
-            var fractionZoomedOut = 1 - (zoom / 18);
-            var fractionPitched = (pitch / 80);
-            var fractionPitchedBackwards = Math.max(1 - (pitch / 80), 0);
-
-            var tiltShiftBackdropFilter = 'blur(' + ((tiltShiftMaxBlur * easeInCubic(fractionPitched)) * fractionZoomedOut) + 'px)';
-            var tiltShiftGradientBlackPoint = (75 + (25 * easeOutCubic(fractionPitchedBackwards)));
-
-            tiltShiftBlur.style.backdropFilter = tiltShiftBackdropFilter;
-            tiltShiftBlur.style.webkitBackdropFilter = tiltShiftBackdropFilter;
-
-            // this needs to be styled in two different ways to support the most browsers
-            tiltShiftBlur.style.webkitMaskImage = '-webkit-gradient(linear, left bottom, left top, from(black), color-stop(5%, black), color-stop(45%, rgba(0, 0, 0, 0)), color-stop(55%, rgba(0, 0, 0, 0)), color-stop(' + tiltShiftGradientBlackPoint + '%, black), to(black))';
-            tiltShiftBlur.style.maskImage = 'linear-gradient(0deg, black 0%, black 5%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 55%, black ' + tiltShiftGradientBlackPoint + '%)';
-        }
-
-
         // MapBox API Token
         mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
 
-        // Load the map visualisation
-        var map = new mapboxgl.Map({
-            container: 'map',
-            style: 'mapbox://styles/mapbox/satellite-v9',
-            zoom: 7,
-            pitch: 65,
-            bearing: -30,
-            center: [-1.5, 52.5]
-        });
-        map.addControl(new mapboxgl.NavigationControl());
+        // Create map (options may be overriden later)
+        var map = new mapboxgl.Map(getDefaultMapOptions());
+        
+		// MapBox popup
+		var popup =  popup = new mapboxgl.Popup({
+			closeButton: false,
+			closeOnClick: false
+		});
 
-        var layerList = document.getElementById('menu');
-        var inputs_style = layerList.getElementsByTagName('input');
+        // Change colors depending on selected style
+		var inner_text = '#FFFFFF';
+		var outer_text = '#333333';
+		var pipe_color = '#A9B8A5';
 
-        var inner_text = '#FFFFFF';
-        var outer_text = '#000000';
+		function terrainCallback(terrainType) {
+			if(terrainType === "light") {
+				pipe_color = '#A9B8A5';
+			} else {
+				pipe_color = '#C9C9C9';
+			}
+			console.log("INFO: Updated label colors.");
+		}	
+		
+		function cameraCallback() {
+			popup.remove();
+			resetSidePanel();
+		}
 
-        function switchLayer(layer) {
-            var layerId = layer.target.id;
-            map.setStyle('mapbox://styles/mapbox/' + layerId);
-            if (layerId == 'satellite-v9' || layerId == 'satellite-streets-v11') {
-                inner_text = '#FFFFFF';
-                outer_text = '#000000';
-            }
-            else {
-                outer_text = '#FFFFFF';
-                inner_text = '#3E3E3E';
-            }
-        }
+		// Setup map with mapbox-controls.js
+		setup(map, cameraCallback, terrainCallback);
+		addTiltShiftSupport();
 
-        var lastClick = new Date();
+		// On initial load...
+		map.on("load", function() {
+			resetSidePanel();
+		});
 
-        // On load start...
+        // On style loaded...
         map.on('style.load', function () {
-            for (var i = 0; i < inputs_style.length; i++) {
-                inputs_style[i].onclick = switchLayer;
-            }
-
-            // Pre-load the flow data
-            loadFlowData();
-
-            // Sky layer that will show when the map is highly pitched
-            map.addLayer({
-                'id': 'sky',
-                'type': 'sky',
-                'paint': {
-                    'sky-type': 'atmosphere'
-                }
-            });
-
-            // 3D buildings data
-            if (!map.getSource('composite')) {
-                map.addSource('composite', {
-                    type: 'vector',
-                    url: 'mapbox://mapbox.mapbox-streets-v7'
-                }
-                );
-            }
-
-            // Layer style for 3D buildings
-            map.addLayer({
-                'id': '3d-buildings',
-                'source': 'composite',
-                'source-layer': 'building',
-                'filter': ['==', 'extrude', 'true'],
-                'type': 'fill-extrusion',
-                'minzoom': 15,
-                'paint': {
-                    'fill-extrusion-color': '#919191',
-                    'fill-extrusion-height': [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        15,
-                        0,
-                        15.05,
-                        ['get', 'height']
-                    ],
-                    'fill-extrusion-base': [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        15,
-                        0,
-                        15.05,
-                        ['get', 'max_height']
-                    ],
-                    'fill-extrusion-opacity': 0.75
-                }
-            },
-                labelLayerId
-            );
-
-            // ADDING CSS TILT-SHIFT 
-            addPhotoEffects();
-
-            tiltShiftBlur.style.display = "block";
-            map.on('move', function () {
-                addPhotoEffects();
-
-            });
-
-            // map.setFog({
-            //     'color': 'white',
-            //     'horizon-blend': 0.05
-            // });
-            // Add terrain 
-            map.addSource('mapbox-dem', {
-                'type': 'raster-dem',
-                'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
-                'tileSize': 512,
-                'maxzoom': 14
-            });
-            map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
-
+			console.log("INFO: New style has been loaded.");
+			refresh();
 
             // ============ PIPES ===========	
             // Add the geoJSON data for NTS
@@ -284,7 +116,7 @@
                     'line-cap': 'round'
                 },
                 'paint': {
-                    'line-color': inner_text,
+                    'line-color': pipe_color,
                     'line-width': 4
                 }
             });
@@ -304,7 +136,6 @@
                 'paint': {
                     'circle-radius': 6,
                     'circle-color': '#B42222',
-                    'circle-opacity': 0.9,
                     "circle-stroke-width": 1,
                     "circle-stroke-color": '#FFFFFF',
                 }
@@ -312,13 +143,6 @@
 
             // On click handler within offtake layer
             map.on('click', 'offtakes_loc', function (e) {
-                // Prevent if within a second of last click
-                var nowClick = new Date();
-                var millis = Math.abs(nowClick.getTime() - lastClick.getTime());
-
-                if (millis < 1000) return;
-                lastClick = nowClick;
-
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var name = e.features[0].properties["Offtake Point (License Name)"];
                 var type = e.features[0].properties["Type of Offtake"];
@@ -338,16 +162,49 @@
                     pitch: 75,
                     zoom: 15.5
                 });
-
             });
+
+			map.addLayer({
+                id: 'offtakes_name',
+                type: 'symbol',
+                source: 'offtakes',
+				minzoom: 8.5,
+                layout: {
+                    'text-field': ['concat', ['get', 'Offtake Point (License Name)'], '\n Offtake Type: ', ['get', 'Type of Offtake'], '\n | \n | \n |'],
+                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                    'text-size': 12,
+                    'text-offset': [0, -3.5],
+					'text-max-width': 25
+                },
+                "paint": {
+                    "text-color": inner_text,
+                    "text-halo-color": outer_text,
+                    "text-halo-width": 1,
+                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 5, 0, 7, 1]
+                }
+            });
+
+
             // On mouse enter within offtake layer
             map.on('mouseenter', 'offtakes_loc', function (e) {
                 map.getCanvas().style.cursor = 'pointer';
+
+				if(map.getZoom() < 8.5) {
+					var coordinates = e.features[0].geometry.coordinates.slice();
+					var name = e.features[0].properties["Offtake Point (License Name)"];
+					var type = e.features[0].properties["Type of Offtake"];
+
+					var html = `
+						<span style='color: #B42222;'> ` + name + `</span><br>` + type +
+						`<br><p>Click for more details.</p>`;
+					popup.setLngLat(coordinates).setHTML(html).addTo(map);
+				} 
             });
 
             // On mouse leave within offtake layer
             map.on('mouseleave', 'offtakes_loc', function () {
                 map.getCanvas().style.cursor = '';
+				popup.remove();
             });
 
             // ============ TERMINALS ===========	
@@ -365,7 +222,6 @@
                 'paint': {
                     'circle-radius': 8,
                     'circle-color': '#108dcc',
-                    'circle-opacity': 0.9,
                     "circle-stroke-width": 1,
                     "circle-stroke-color": '#FFFFFF',
                 }
@@ -373,16 +229,10 @@
 
             // On click handler within offtake layer
             map.on('click', 'terminals', function (e) {
-                // Prevent if within a second of last click
-                var nowClick = new Date();
-                var millis = Math.abs(nowClick.getTime() - lastClick.getTime());
-
-                if (millis < 1000) return;
-                lastClick = nowClick;
-
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var name = e.features[0].properties.name;
                 var type = "Terminal";
+
                 map.flyTo({
                     center: coordinates,
                     curve: 1.9,
@@ -390,40 +240,22 @@
                     pitch: 60,
                     zoom: 16
                 });
+
                 // Update the side panel
                 showTerminal(name, type, coordinates);
-
-
             });
-
 
             map.addLayer({
                 id: 'terminals_name',
                 type: 'symbol',
                 source: 'terminals_s',
+				minzoom: 7.5,
                 layout: {
                     'text-field': ['concat', ['get', 'name'], '\n |\n|\n|'],
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 14,
-                    'text-offset': [0, -2.5],
-                },
-                "paint": {
-                    "text-color": inner_text,
-                    "text-halo-color": outer_text,
-                    "text-halo-width": 1,
-                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 5, 0, 7, 1]
-                }
-            });
-
-            map.addLayer({
-                id: 'offtakes_name',
-                type: 'symbol',
-                source: 'offtakes',
-                layout: {
-                    'text-field': ['concat', ['get', 'Offtake Point (License Name)'], '\n Offtake Type: ', ['get', 'Type of Offtake'], '\n | \n | \n |'],
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
                     'text-size': 12,
-                    'text-offset': [0, -3.5]
+                    'text-offset': [0, -2.5],
+					'text-max-width': 25
                 },
                 "paint": {
                     "text-color": inner_text,
@@ -433,26 +265,30 @@
                 }
             });
 
-            // On mouse enter within offtake layer
-            map.on('mouseenter', 'terminals', function (e) {
+             // On mouse enter within terminals layer
+			 map.on('mouseenter', 'terminals', function (e) {
                 map.getCanvas().style.cursor = 'pointer';
+
+				if(map.getZoom() < 7.5) {
+					var coordinates = e.features[0].geometry.coordinates.slice();
+					var name = e.features[0].properties["name"];
+
+					var html = `
+						<span style='color: #108dcc;'> ` + name + `</span><br>Terminal
+						<br><p>Click for more details.</p>`;
+					popup.setLngLat(coordinates).setHTML(html).addTo(map);
+				}
             });
 
-            // On mouse leave within offtake layer
+            // On mouse leave within terminals layer
             map.on('mouseleave', 'terminals', function () {
                 map.getCanvas().style.cursor = '';
+				popup.remove();
             });
 
-            var layers = map.getStyle().layers;
-            var labelLayerId;
-            for (var i = 0; i < layers.length; i++) {
-                if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
-                    labelLayerId = layers[i].id;
-                    break;
-                }
-            }
-
-            resetSidePanel();
+			// Ensure the terminal and offtake markers are the top layers
+			map.moveLayer('offtakes_loc');
+			map.moveLayer('terminals');
         });
     </script>
 </body>

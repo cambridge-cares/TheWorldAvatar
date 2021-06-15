@@ -27,8 +27,3 @@ Be aware that the VERSION tag should match the current version of the visualisat
   + `docker run -d -p 4001:80 --restart always --name "gas-grid-vis" -it docker.cmclinnovations.com/gas-grid-vis:VERSION-dev`
 + To push the image to the CMCL registry:
   + `docker image push docker.cmclinnovations.com/gas-grid-vis:VERSION`
-
-
-
-
-docker run -d -p 4001:80 --restart always -v -v "$(pwd)":/var/www/html  --name "gas-grid-vis" -it docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT-dev
