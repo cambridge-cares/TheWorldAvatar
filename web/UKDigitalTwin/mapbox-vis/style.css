@@ -1,0 +1,66 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.quakeInfo {
+    position: absolute;
+    font-family: sans-serif;
+    margin-top: 5px;
+    margin-left: 5px;
+    padding: 5px;
+    width: 40%;
+    border: 2px solid black;
+    font-size: 25px;
+    color: #222;
+    background-color: #fff;
+    border-radius: 3px;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+#tiltShift {
+    display: none;
+    /* this gets turned on by the javascript */
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+    pointer-events: none;
+    /* Ensure the mouse pointer can't interact with this layer */
+}
+
+body.effectsOff #tiltShift body.effectsOff #map {
+    filter: none !important;
+    -webkit-filter: none !important;
+}
+
+#menu {
+    position: absolute;
+    background: #efefef;
+    padding: 10px;
+    fill-opacity: 0.5;
+    font-family: 'Open Sans', sans-serif;
+}
+
+#resetContainer {
+    height: 25px;
+    width: 100px;
+    position: fixed;
+    left: 5px;
+    top: 50px;
+    line-height: 25px;
+    font-size: 11pt;
+    font-family: 'Open Sans', sans-serif;
+    text-align: center;
+    border-radius: 6px;
+    color: '#FFFFFF';
+    background-color: rgba(0, 0, 0, 0.2);
+}
