@@ -58,3 +58,26 @@ consult with the administrators as soon as possible so that they can understand 
 * Non-public binaries are required within the Image.
   * As binaries should not be committed to the source code repositories, any publicly available ones should be downloaded within the Image build process.
   * If binaries are required within your Image (and are not available for download from the web within the Image), we may need to set up a protected hosting solution so that they can be downloaded during the Image build.
+  
+  
+## Versioning
+
+All software to be deployed using Docker should use the below version number convention. The current version number should be listed in the 'version' file; it is important that this number is correct and is updated appropriately upon release (i.e. just before branch merges). If this is version is incorrect, versions of the Docker Image hosted on the Image registry may contain invalid versions of the application.
+
+Versions consist of 3 integers and an optional qualifier (see below).
+
+	`X.Y.Z-QUALIFIER`
+	
+* The first integer (X) denotes the _major_ version number, this should be incremented when a major feature is added. When it is incremented, the Y and Z numbers should be reset to 0.
+* The second integer (Y) denotes the _minor_ version number, this should be incremented when a minor feature is added. When it is incremented, the Z number should be reset to 0.
+* The third integer (Z) denotes the _hotfix_ number, when a fix is made (without changing any other functionality), this number should be incremented.
+* The optional qualifier is a string used to denote special versions of the code. In standard use, only the 'SNAPSHOT' qualifier should be used.
+** The 'SNAPSHOT' qualifier denotes a WIP/Development version. For example, version "1.0.0-SNAPSHOT" denotes the development version of 1.0.0 (i.e. what will eventually be released as 1.0.0).
+** Versions without the qualifier are taken to be the publically released version of the code (i.e. that taken from the master branch).
+
+This means that to identify the latest production version of the tool, one only needs to look for the highest non-SNAPSHOT version number. To identify the latest in-development version (i.e. the cutting-edge), the highest SNAPSHOT version should be used. When new developments are made (without a release), a new SNAPSHOT image should be produced to overwrite the oldest one (i.e. the "1.0.0-SNAPSHOT" version should always be the latest developments towards the release of version "1.0.0").
+
+After a release (i.e. a merge to master), it is best practice to immediately change the version number on the develop branch to the next SNAPSHOT version. This ensures that if the development code is built again after the release, it will not override the released Image. For example, if version "1.0.0" is release by merging to the master branch, straight afterwards the develop branch version should be updated to "2.0.0-SNAPSHOT" or "1.1.0-SNAPSHOT".
+
+For more details on the version number syntax and use, please contact the system administrators at CMCL.
+

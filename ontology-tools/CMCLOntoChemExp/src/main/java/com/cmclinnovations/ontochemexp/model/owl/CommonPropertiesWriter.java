@@ -77,8 +77,15 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	 */
 	private void readCommonPropertiesProperty(char ch[], int start, int length) throws SAXException {
 		if (commonPropertiesPropertyParseStatus.isProperty()) {
-			createProperty();
-			linkPropertyToEquipment();
+//			createProperty();
+//			linkPropertyToEquipment();
+			DimensionalQuantityWriter dQ = new DimensionalQuantityWriter(commonPropertiesID, commonPropertiesPropertyCount, "CommonProperties"+UNDERSCORE+commonPropertiesID, 
+					commonPropertiesProperty);
+			try {
+				dQ.createDimensionalQuantityInOWL();
+			} catch (OntoChemExpException e) {
+				e.printStackTrace();
+			}
 			commonPropertiesPropertyParseStatus.setProperty(false);
 			commonPropertiesPropertyList.add(commonPropertiesProperty);
 			commonPropertiesProperty = new CommonPropertiesProperty();
@@ -92,7 +99,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 			String value = new String(ch, start, length);
 			commonPropertiesPropertyValue.setValueValue(value);
 			createPropertyValue();
-			linkPropertyValueToProperty();
+//			linkPropertyValueToProperty();
 			commonPropertiesPropertyValueParseStatus.setValue(false);
 			commonPropertiesProperty.setPropertyValue(commonPropertiesPropertyValue);
 			commonPropertiesPropertyValue = new Value();
@@ -113,9 +120,14 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	}
 	
 	private void readCommonPropertiesPropertyComponent(char ch[], int start, int length) throws SAXException {
-		if (commonPropertiesPropertyComponentParseStatus.isComponent()) {
-			createPropertyComponent();
-			linkPropertyComponentToProperty();
+		if (commonPropertiesPropertyComponentParseStatus.isComponent() && inCommonProperties) {
+			// Component is only allowed to be linked with InitialComposition, Donor, and Acceptor
+			if (currentDQInstance.startsWith(ontoChemExpVocabulary.getClassInitialComposition()) || 
+					currentDQInstance.startsWith(ontoChemExpVocabulary.getClassDonor()) || 
+					currentDQInstance.startsWith(ontoChemExpVocabulary.getClassAcceptor())) {
+				createPropertyComponent();
+				linkPropertyComponentToProperty();
+			}
 			commonPropertiesPropertyComponentParseStatus.setComponent(false);
 			commonPropertiesPropertyComponentList.add(commonPropertiesPropertyComponent);
 			commonPropertiesPropertyComponent = new Component();
@@ -182,67 +194,13 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 			}
 	}
 	
-	private void createProperty() {
-		commonPropertiesPropertyCount += 1;
-		
-		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassProperty(), 
-					"Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
-			
-			if (commonPropertiesProperty.getPropertyName() != null && !commonPropertiesProperty.getPropertyName().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasName(), 
-						commonPropertiesProperty.getPropertyName(), STRING);
-			}
-			
-			if (commonPropertiesProperty.getPropertyId() != null && !commonPropertiesProperty.getPropertyId().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasID(), 
-						commonPropertiesProperty.getPropertyId(), STRING);
-			}
-			
-			if (commonPropertiesProperty.getPropertyLabel() != null && !commonPropertiesProperty.getPropertyLabel().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasLabel(), 
-						commonPropertiesProperty.getPropertyLabel(), STRING);
-			}
-			
-			if (commonPropertiesProperty.getPropertyUnits() != null && !commonPropertiesProperty.getPropertyUnits().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasUnits(), 
-						commonPropertiesProperty.getPropertyUnits(), STRING);
-			}
-			
-			if (commonPropertiesProperty.getPropertyDescription() != null && !commonPropertiesProperty.getPropertyDescription().trim().isEmpty()) {
-				iABoxManagement.addProperty("Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
-						ontoChemExpVocabulary.getDataPropertyhasDescription(), 
-						commonPropertiesProperty.getPropertyDescription(), STRING);
-			}
-			
-		} catch (ABoxManagementException e) {
-			logger.error(
-					"An individual of Property could not be created.");
-		}
-	}
-	
-	private void linkPropertyToEquipment() {
-		try {
-			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasProperty(), 
-					"CommonProperties"+UNDERSCORE+commonPropertiesID, 
-					"Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
-		} catch (ABoxManagementException e) {
-			logger.error(
-					"A link could not be established between an equipment and its commonProperties property.");
-		}
-	}
-	
 	private void createPropertyValue() {
 		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassValue(), 
-					"Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
-			
+//			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassValue(), 
+//					"Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
+//			
 			if (commonPropertiesPropertyValue.getValueValue() != null && !commonPropertiesPropertyValue.getValueValue().trim().isEmpty()) {
-				iABoxManagement.addProperty("Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
+				iABoxManagement.addProperty(currentDQInstance, 
 						ontoChemExpVocabulary.getDataPropertyhasValue(), 
 						commonPropertiesPropertyValue.getValueValue(), STRING);
 //				IRI dataPropertyIRI = IRI.create(RDFS_URL.concat(RDFS_LABEL));
@@ -252,17 +210,6 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 		} catch (ABoxManagementException e) {
 			logger.error(
 					"An individual of PropertyValue could not be created.");
-		}
-	}
-	
-	private void linkPropertyValueToProperty() {
-		try {
-			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasValue(), 
-					"Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
-					"Value"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount);
-		} catch (ABoxManagementException e) {
-			logger.error(
-					"A link could not be established between the apparatus property and its value.");
 		}
 	}
 	
@@ -312,7 +259,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	private void linkPropertyUncertaintyToProperty() {
 		try {
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUncertainty(), 
-					"Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, "Uncertainty"+UNDERSCORE+(commonPropertiesID+commonPropertiesPropertyCount));
+					currentDQInstance, "Uncertainty"+UNDERSCORE+(commonPropertiesID+commonPropertiesPropertyCount));
 		} catch (ABoxManagementException e) {
 			logger.error(
 					"A link could not be established between the apparatus property and its uncertainty.");
@@ -334,7 +281,7 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 	private void linkPropertyComponentToProperty() {
 		try {
 			iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasComponent(), 
-					"Property"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount, 
+					currentDQInstance, 
 					"Component"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount);
 		} catch (ABoxManagementException e) {
 			logger.error(
@@ -352,27 +299,57 @@ public class CommonPropertiesWriter extends PrimeConverter implements ICommonPro
 				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
 						ontoChemExpVocabulary.getDataPropertyhasPreferredKey(), 
 						commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPreferredKey(), STRING);
-			}		
+			}
 			
+			String uniqueSpeciesIRI = new String();
 			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID() != null 
 					&& !commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID().trim().isEmpty()) {
 //				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
 //						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), 
 //						commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID(), STRING);
 				
-				String uniqueSpeciesIRI;
 				try {
-					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRI(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
+					uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRIFromPrimeID(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBAboxIRI()
 							.concat(commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkPrimeID()));
-					if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
-						iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
-							ontoChemExpVocabulary.getDataPropertyhasUniqueSpeciesIRI(), 
-							uniqueSpeciesIRI, STRING);
-					}
 				} catch (OntoChemExpException e) {
 					logger.error("The uniqueSpeciesIRI could not be retrieved.");
 					e.printStackTrace();
 				}
+			}
+			
+			if (commonPropertiesPropertyComponentSpeciesLink.getCas() != null 
+					&& !commonPropertiesPropertyComponentSpeciesLink.getCas().trim().isEmpty()) {
+				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+						ontoChemExpVocabulary.getDataPropertyhasCAS(), 
+						commonPropertiesPropertyComponentSpeciesLink.getCas(), STRING);
+			}
+			
+			if (commonPropertiesPropertyComponentSpeciesLink.getInchi() != null 
+					&& !commonPropertiesPropertyComponentSpeciesLink.getInchi().trim().isEmpty()) {
+				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+						ontoChemExpVocabulary.getDataPropertyhasInChI(), 
+						commonPropertiesPropertyComponentSpeciesLink.getInchi(), STRING);
+				if (uniqueSpeciesIRI == null || uniqueSpeciesIRI.isEmpty()) {
+					try {
+						uniqueSpeciesIRI = PrimeConverterUtils.retrieveSpeciesIRIFromInChI(commonPropertiesPropertyComponentSpeciesLink.getInchi());
+					} catch (OntoChemExpException e) {
+						logger.error("The uniqueSpeciesIRI could not be retrieved.");
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			if (commonPropertiesPropertyComponentSpeciesLink.getSmiles() != null 
+					&& !commonPropertiesPropertyComponentSpeciesLink.getSmiles().trim().isEmpty()) {
+				iABoxManagement.addProperty("SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+						ontoChemExpVocabulary.getDataPropertyhasSMILES(), 
+						commonPropertiesPropertyComponentSpeciesLink.getSmiles(), STRING);
+			}
+			
+			if (uniqueSpeciesIRI.trim() != null && !uniqueSpeciesIRI.trim().isEmpty()) {
+				iABoxManagement.addObjectProperty(ontoChemExpVocabulary.getObjPropertyhasUniqueSpecies(), 
+						"SpeciesLink"+UNDERSCORE+commonPropertiesID+UNDERSCORE+commonPropertiesPropertyCount+UNDERSCORE+componentCount, 
+					uniqueSpeciesIRI);
 			}
 			
 			if (commonPropertiesPropertyComponentSpeciesLink.getSpeciesLinkValue() != null 

@@ -17,6 +17,7 @@ public class BibliographyLinkParser extends PrimeConverter implements IBibliogra
 		parseBibliographyLink(qName, attributes);
 		parseBibliPreferredKey(qName, attributes);
 		parseBibliPrimeID(qName, attributes);
+		parseBibliDOI(qName, attributes);
 	}
 
 	/**
@@ -48,6 +49,17 @@ public class BibliographyLinkParser extends PrimeConverter implements IBibliogra
 			if (bibliPrimeID != null) {
 				bibliographyLink.setPrimeID(bibliPrimeID);
 				bibliographyLinkParseStatus.setPrimeID(true);
+				bibliographyLinkParseStatus.setBibliographyLink(true);
+			}
+		}
+	}
+	
+	private void parseBibliDOI(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemBibliographyLink())) {
+			String bibliDoi = attributes.getValue(primeVocabulary.getAttribDOI());
+			if (bibliDoi != null) {
+				bibliographyLink.setDoi(bibliDoi);
+				bibliographyLinkParseStatus.setDoi(true);
 				bibliographyLinkParseStatus.setBibliographyLink(true);
 			}
 		}

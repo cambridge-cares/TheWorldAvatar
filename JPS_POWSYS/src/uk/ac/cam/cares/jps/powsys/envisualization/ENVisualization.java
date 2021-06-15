@@ -1,11 +1,8 @@
 package uk.ac.cam.cares.jps.powsys.envisualization;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +12,6 @@ import java.util.ListIterator;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,56 +37,26 @@ import org.w3c.dom.Node;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 @WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" ,"/ENVisualization/readGenerator/*"})
+/** Interacts with parallelWorld.js, pwBaseFile.js, and ess.js in front end visualization. 
+ * 
+ *
+ */
 public class ENVisualization extends JPSAgent{
   
-  private static final long serialVersionUID = 1446386963475656702L;
+  private static final long serialVersionUID = 1L;
   private Document doc;
   private Element root;
-  private Logger logger = LoggerFactory.getLogger(ENVisualization.class);
-  
-  /** Called by createfinalKML()
-   * Create a KML object and assign to root
-   */
-  public void createKML() {
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      doc = builder.newDocument();
-      Element kml = doc.createElementNS("http://www.opengis.net/kml/2.2", "kml");
-      doc.appendChild(kml);
-      root = doc.createElement("Document");
-      kml.appendChild(root);
-      
-      Element style = doc.createElement("Style");
-      style.setAttribute("id", "polyStyID_0");
-      Element linestyle = doc.createElement("LineStyle");
-      Element color = doc.createElement("color");
-      color.appendChild(doc.createTextNode("FF0000FF"));
-      Element width = doc.createElement("width");
-      width.appendChild(doc.createTextNode("5"));
-      linestyle.appendChild(width);
-      linestyle.appendChild(color);
-      
-      Element PolyStyle = doc.createElement("PolyStyle");
-      Element PolyStylecolor = doc.createElement("color");
-      PolyStylecolor.appendChild(doc.createTextNode("660088ff"));
-      PolyStyle.appendChild(PolyStylecolor);
-      style.appendChild(linestyle);
-      style.appendChild(PolyStyle);
-      root.appendChild(style);
-      
-      
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-  
+  private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
+  private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
+  private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+  private static final String TWA_PowSysRealization = TWA_Ontology + "/ontopowsys/PowSysRealization.owl#";
+	
+ 
   @Override
   public JSONObject processRequestParameters(JSONObject requestParams) {
       requestParams = processRequestParameters(requestParams, null);
@@ -140,14 +106,10 @@ public class ENVisualization extends JPSAgent{
 
       return new JSONObject(g);
     }
-    System.gc();
     return new JSONObject();
   }
-  @Override
-  /** validates input by checking if path and electricalnetwork parameters are present
-   * 
-   */
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+ 
+  public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
             throw new BadRequestException();
         }
@@ -159,10 +121,48 @@ public class ENVisualization extends JPSAgent{
           throw new JSONException("electrical network not found");
         }
     }
+  
+  /** Called by createfinalKML()
+   * Create a KML object and assign to root, which is an element of a Document to be written to file
+   */
+  public void createKML() {
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      doc = builder.newDocument();
+      Element kml = doc.createElementNS("http://www.opengis.net/kml/2.2", "kml");
+      doc.appendChild(kml);
+      root = doc.createElement("Document");
+      kml.appendChild(root);
+      
+      Element style = doc.createElement("Style");
+      style.setAttribute("id", "polyStyID_0");
+      Element linestyle = doc.createElement("LineStyle");
+      Element color = doc.createElement("color");
+      color.appendChild(doc.createTextNode("FF0000FF"));
+      Element width = doc.createElement("width");
+      width.appendChild(doc.createTextNode("5"));
+      linestyle.appendChild(width);
+      linestyle.appendChild(color);
+      
+      Element PolyStyle = doc.createElement("PolyStyle");
+      Element PolyStylecolor = doc.createElement("color");
+      PolyStylecolor.appendChild(doc.createTextNode("660088ff"));
+      PolyStyle.appendChild(PolyStylecolor);
+      style.appendChild(linestyle);
+      style.appendChild(PolyStyle);
+      root.appendChild(style);
+      
+      
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  
   public static SelectBuilder createLocationQuery() {
     SelectBuilder sb = new SelectBuilder();
-    sb.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-    .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+    sb.addPrefix("j7", TWA_spacetime_extended)
+    .addPrefix("j2", TWA_upperlevel_system)
     .addVar("?entity").addVar("?xvalue").addVar("?yvalue")
     .addWhere("?entity" ,"j7:hasGISCoordinateSystem", "?coorsys")
     .addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
@@ -173,50 +173,13 @@ public class ENVisualization extends JPSAgent{
     
     return sb;
   }
-  public void writeToResponse(HttpServletResponse response, String content,String n) {
-    try {
-      
-      logger.info("uploading file");
-      
-        String fileName = "C:/TOMCAT/webapps/ROOT/OntoEN/testfinal.kml";
-        String fileType = "text/xml; charset=utf-8";
-        // Find this file id in database to get file name, and file type
-    
-        // You must tell the browser the file type you are going to send
-        // for example application/pdf, text/plain, text/html, image/jpg
-        response.setContentType(fileType);
-    
-        // Make sure to show the download dialog
-//        response.setHeader("Content-disposition","attachment; filename=en"+n+".kml");
-    
-        // Assume file name is retrieved from database
-        // For example D:\\file\\test.pdf
-    
-        File my_file = new File(fileName);
-    
-        // This should send the file to browser
-        OutputStream out = response.getOutputStream();
-        FileInputStream in = new FileInputStream(my_file);
-        
-        //InputStream in = new ByteArrayInputStream(content.getBytes());
-        
-        byte[] buffer = new byte[4096];
-        int length;
-        while ((length = in.read(buffer)) > 0){
-           out.write(buffer, 0, length);
-        }
-        in.close();
-        out.flush();
-        
-        
-        logger.info("uploading file successful");
-        
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new JPSRuntimeException(e.getMessage(), e);
-    }
-  }
-  
+
+  /** creates the KML document and stores it under ROOT/ontoen folder for reference in front end. 
+   * depends on the createKML() method
+   * @param model
+   * @return
+   * @throws TransformerException
+   */
   public String createfinalKML(OntModel model) throws TransformerException {
     createKML();
 
@@ -539,6 +502,7 @@ public class ENVisualization extends JPSAgent{
     String textcomb = "{\"actual\": "+Float.toString(actual)+", \"design\": "+Float.toString(design)+ "}";
     return textcomb;
   }
+  
   /** return the locations of generators/buses/batteries when applicable
    * 
    * @param model
@@ -549,14 +513,14 @@ public class ENVisualization extends JPSAgent{
   //String[]typelist= {"PowerGenerator","BusNode"};
     
     String gencoordinate = createLocationQuery()
-        .addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+        .addPrefix("j1",TWA_PowSysRealization)
         .addWhere("?entity", "a", "j1:"+type).buildString();
         
     
     if (type.toLowerCase().contains("battery")) {
       //to take care of ESS scenario, create locations where battery is located. 
       gencoordinate = createLocationQuery()
-          .addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+          .addPrefix("j1",TWA_PowSysRealization)
           .addPrefix("rdfs","http://www.w3.org/2000/01/rdf-schema#")
           .addWhere("?entity", "a", "?class")
           .addWhere("?class", "rdfs:subClassOf", "j1:Battery")
@@ -572,6 +536,7 @@ public class ENVisualization extends JPSAgent{
     
     return resultList;
   }
+  
   /** creates markers for PowerPlant (icon) visualization
    * 
    * @param model
@@ -591,6 +556,7 @@ public class ENVisualization extends JPSAgent{
       jo.put("result", jsArray);
     return jo.toString();
   }
+  
   /** helper function for createMarkers()
    * 
    * @param model
@@ -598,14 +564,14 @@ public class ENVisualization extends JPSAgent{
    */
   public static List<String[]> queryPowerPlant(OntModel model) {
     SelectBuilder sb = createLocationQuery()
-        .addPrefix("j1", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#")
+        .addPrefix("j1", TWA_PowSysRealization)
         ;
     String genInfo = sb.setDistinct(true)
         .addWhere("?entity", "a", "j1:PowerGenerator").buildString();
     List<String[]> resultListfromquery = Util.queryResult(model, genInfo);
       //used to get distinct emissions and fuel types
     String plantinfo = sb.addVar("?generation")
-        .addPrefix("j3", "http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#")
+        .addPrefix("j3", TWA_Ontology +"/ontocape/upper_level/technical_system.owl#")
         .addWhere("?entity", "a", "j1:PowerGenerator")
         .addWhere("?entity","j3:realizes", "?generation")
         .buildString();
@@ -622,6 +588,7 @@ public class ENVisualization extends JPSAgent{
 
       return plantDict;
   }
+  
   /** Create Line to be rendered in map js
    * 
    * @param model OntModel created from electrical network IRI
@@ -629,10 +596,10 @@ public class ENVisualization extends JPSAgent{
    */
   public String createLineJS(OntModel model){
     SelectBuilder sb = new SelectBuilder()
-        .addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-        .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
-        .addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-        .addPrefix("j5","http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")
+        .addPrefix("j7", TWA_spacetime_extended)
+        .addPrefix("j2", TWA_upperlevel_system)
+        .addPrefix("j3", TWA_Ontology +"/ontopowsys/model/PowerSystemModel.owl#")
+        .addPrefix("j5",TWA_Ontology +"/ontocape/model/mathematical_model.owl#")
         .addVar("?VoltMagvalue").addVar("?xvalue").addVar("?yvalue").addVar("?BaseKVvalue")
         .addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")
         .addWhere("?x" ,"j2:hasValue", "?xval").addOptional("?xval" ,"j2:numericalValue", "?xvalue")
@@ -656,7 +623,6 @@ public class ENVisualization extends JPSAgent{
         .buildString();
         
     List<String[]> resultListbranch = Util.queryResult(model, branchInfo);
-    System.gc();
     ArrayList<String> busdata= new ArrayList<String>();   
       ArrayList<String>textcomb=new ArrayList<String>();
     
@@ -671,8 +637,8 @@ public class ENVisualization extends JPSAgent{
       }
       
       SelectBuilder sb2 = sb.clone();
-        String busInfo = sb2.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-              .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+        String busInfo = sb2.addPrefix("j1",TWA_PowSysRealization )
+              .addPrefix("j2", TWA_upperlevel_system)
               .addWhere(iri, "a", "j1:BusNode")
               .addWhere(iri, "j2:isModeledBy", "?model")
               .addWhere(iri, "j7:hasGISCoordinateSystem", "?coorsys")
@@ -719,8 +685,8 @@ public class ENVisualization extends JPSAgent{
           iri="<"+resultListbranch.get(a)[2]+">";
         }       
         SelectBuilder sb2 = sb.clone();
-          String busInfo = sb2.addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-                .addPrefix("j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#")
+          String busInfo = sb2.addPrefix("j1",TWA_PowSysRealization )
+                .addPrefix("j2",  TWA_upperlevel_system)
                 .addWhere(iri, "a", "j1:BusNode")
                 .addWhere(iri, "j2:isModeledBy", "?model")
                 .addWhere(iri, "j7:hasGISCoordinateSystem", "?coorsys")
