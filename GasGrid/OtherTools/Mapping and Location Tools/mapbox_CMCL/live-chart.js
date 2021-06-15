@@ -41,7 +41,7 @@ function resetSidePanel() {
 }
 
 // Runs when an offtake is selected, shows meta-data
-function showOfftake(nodeName, nodeType, nodePosition) {
+function showOfftake(nodeName, nodeType, nodePosition,LinepackZoneStr,NTSExitArea,NTSExitZone,Pipeline) {
 	
 	if(nodeName == null) {
 		// Do nothing
@@ -73,6 +73,19 @@ function showOfftake(nodeName, nodeType, nodePosition) {
 				<td width="30%">Location:</td>
 				<td width="70%" style="text-align: right;">` + prettyLocation + `</td>
 			</tr>
+			<tr>
+				<td width="50%">Linepack Zone:</td>
+				<td width="50%" style="text-align: right;">` + LinepackZoneStr + `</td>
+			</tr>
+			<tr>
+				<td width="50%">NTS Exit Area:</td>
+				<td width="50%" style="text-align: right;">` + NTSExitArea + `</td>
+			</tr>
+			<tr>
+				<td width="50%">NTS Exit Zone:</td>
+				<td width="50%" style="text-align: right;">` + NTSExitZone + `</td>
+			</tr>
+
 		</table>
 	`;
 

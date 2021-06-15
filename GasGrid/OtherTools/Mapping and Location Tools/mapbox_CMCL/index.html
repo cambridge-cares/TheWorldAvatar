@@ -322,9 +322,14 @@
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var name = e.features[0].properties["Offtake Point (License Name)"];
                 var type = e.features[0].properties["Type of Offtake"];
+                var LinepackZone = e.features[0].properties["Linepack Zone"];
+                var NTSExitArea = e.features[0].properties["NTS Exit Area"];
+                var NTSExitZone = e.features[0].properties["NTS Exit Zone"];
+                var Pipeline = e.features[0].properties["Connected to Pipeline"];
+                console.log(coordinates,LinepackZone,NTSExitArea,NTSExitZone,Pipeline)
 
                 // Fire selection logic
-                showOfftake(name, type, coordinates);
+                showOfftake(name, type, coordinates,LinepackZone,NTSExitArea,NTSExitZone,Pipeline);
 
                 map.flyTo({
                     center: coordinates,

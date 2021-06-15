@@ -34,13 +34,17 @@ for i in range(len(offtake_types)):
   PREFIX geo:     <http://www.bigdata.com/rdf/geospatial#>
   PREFIX comp:	<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
 
-  SELECT ?location ?label
+  SELECT ?location ?label ?type ?zone ?area ?ntszone ?pipe 
   WHERE
   {
   ?term rdf:type comp:%s.
   ?term rdfs:label ?label.
   ?term loc:lat-lon ?location.
-  }"""%(offtake_type)
+  ?term rdf:type ?type.
+  ?term comp:hasLinepackZone ?zone.
+  ?term comp:hasNTSExitArea ?area.
+  ?term comp:hasNTSExitZone ?ntszone.
+  ?term comp:isConnectedToPipeline ?pipe}"""%(offtake_type)
 
   
   # Possible KG locations
@@ -77,14 +81,14 @@ for i in range(len(offtake_types)):
 
   ret = ret.toList()
   num_ret = len(ret)
-  ret_array = np.zeros((num_ret,3),dtype='object')
-  header = ['lat','lon','name']
+  ret_array = np.zeros((num_ret,8),dtype='object')
+  header = ['lat','lon','name','type','zone','area','ntszone','pipe']
   for i in tqdm(range(num_ret)):
       try:
           lat,lon = ret[i]['location'].split('#')
-          ret_array[i,:] = [lat,lon+',',ret[i]['label']]
+          ret_array[i,:] = [lat,lon+',',ret[i]['label'],ret[i]['type'],ret[i]['zone'],ret[i]['area'],ret[i]['ntszone'],ret[i]['pipe']]
       except:
-          ret_array[i,:] = ['','',ret[i]['label']]
+          ret_array[i,:] = ['','',ret[i]['label'],ret[i]['type'],ret[i]['zone'],ret[i]['area'],ret[i]['ntszone'],ret[i]['pipe']]
   ret = pd.DataFrame(ret_array,columns=header).values
   
 
@@ -92,7 +96,10 @@ for i in range(len(offtake_types)):
 
   for i in range(num_ret):
     if len(ret[i,0]) > 1:
-
+      new_array = [color,ret[i,2],offtake_type,ret[i,4],ret[i,5],ret[i,6],ret[i,7],ret[i,1],ret[i,0]]
+      for j in range(len(new_array)):
+        if new_array[j] is None:
+          new_array[j] = 'N/A'
       feature = """{
         "type": "Feature",
         "properties": {
@@ -100,7 +107,11 @@ for i in range(len(offtake_types)):
           "marker-size": "medium",
           "marker-symbol": "",
           "Offtake Point (License Name)": "%s",
-          "Type of Offtake": "%s"
+          "Type of Offtake": "%s",
+          "Linepack Zone": "%s",
+          "NTS Exit Area": "%s",
+          "NTS Exit Zone": "%s",
+          "Connected to Pipeline": "%s"
         },
         "geometry": {
           "type": "Point",
@@ -109,7 +120,7 @@ for i in range(len(offtake_types)):
             %s
           ]
         }
-      },"""%(color,ret[i,2],offtake_type,ret[i,1],ret[i,0])
+      },"""%(new_array[0],new_array[1],new_array[2],new_array[3],new_array[4],new_array[5],new_array[6],new_array[7],new_array[8])
       geojson_file += '\n'+feature
 
     else:
@@ -120,13 +131,17 @@ for i in range(len(offtake_types)):
           "marker-size": "medium",
           "marker-symbol": "",
           "Offtake Point (License Name)": "%s",
-          "Type of Offtake": "%s"
+          "Type of Offtake": "%s",
+          "Linepack Zone": "%s",
+          "NTS Exit Area": "%s",
+          "NTS Exit Zone": "%s",
+          "Connected to Pipeline": "%s"
         },
         "geometry": {
           "type": "Polygon",
           "coordinates": []
         }
-      },"""%(color,ret[i,2],offtake_type)
+      },"""%(new_array[0],new_array[1],new_array[2],new_array[3],new_array[4],new_array[5],new_array[6])
       geojson_file += '\n'+feature
 
 # removing last comma as is last line
