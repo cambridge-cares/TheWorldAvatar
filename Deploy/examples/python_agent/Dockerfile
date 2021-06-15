@@ -23,4 +23,5 @@ RUN useradd appuser && chown -R appuser /app
 USER appuser
 
 # Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the 'python_agent' module
+# Note that port 5000 is *inside the container*; this can be mapped to a port on the host when running the container on the command line or in docker-compose.yml
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "python_agent:app"]
