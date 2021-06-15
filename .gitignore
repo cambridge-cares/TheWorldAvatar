@@ -84,3 +84,4 @@ geckodriver.log
 /JPS_Chatbot/UI/data_preparation/Wiki_basic_info/instance_info
 /JPS_Chatbot/UI/data_preparation/Wiki_basic_info/instance_info
 /JPS_Chatbot/UI/data_preparation/Wiki_basic_info/smiles
+/JPS_Chatbot/UI/data_preparation/Wiki_basic_info/test/data/nlu.md
