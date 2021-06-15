@@ -31,11 +31,12 @@ def rank_query(classes, quantity_properties):
     # rank xxx by their
     _questions = []
     dts = ['their', 'the', '']
-    ranks = ['rank', 'sort', 'list', 'show']
+    # ranks = ['rank', 'sort', 'list', 'show']
+    ranks = ['rank', 'sort']
     for c in classes:
         c = process_instance_brackets(c)
         pc = pluralize_class(c)
-        c = random.choice([c, pc])
+        # c = random.choice([c, pc])
         for p in quantity_properties:
             p = p.strip()
             q = '%s %s [%s](class) by %s [%s](attribute)' % (
@@ -62,7 +63,7 @@ def item_multi_attribute_query(instances, properties):
             p = '[%s](attribute)' % p
             attribute_chain = (AND + ' ').join([attribute_chain, p])
         q = '%s %s %s %s %s' % (
-        random.choice(heads), random.choice(['the', '']), attribute_chain, random.choice(['of', '']), i)
+            random.choice(heads), random.choice(['the', '']), attribute_chain, random.choice(['of', '']), i)
         q2 = '%s %s quote %s' % (random.choice(heads), i, attribute_chain)
         _questions = _questions + [q, q2]
 
@@ -73,7 +74,8 @@ def item_multi_attribute_query(instances, properties):
 def about_query(instances):
     _questions = []
     for i in instances:
-        _heads = ['what is', 'describe', 'introduce']
+        # _heads = ['what is', 'describe', 'introduce']
+        _heads = ['']
         h = random.choice(_heads)
         q = '%s [%s](species)' % (h, i)
         _questions.append(q)
@@ -86,7 +88,7 @@ def batch_query(classes):
     for c in classes:
         c = process_instance_brackets(c)
         pc = pluralize_class(c)
-        c = random.choice([c, pc])
+        # c = random.choice([c, pc])
         q = '%s %s [%s](class)' % (random.choice(heads), random.choice(ALLs), c)
         _questions.append(q)
     return _questions
@@ -98,6 +100,9 @@ def item_attribute_query(ID, instances, properties):
         i = process_instance_brackets(i)
         i = '[%s](species)' % i
         for p in properties:
+            if ' ' not in p.strip():  # the attribute has only one word
+                p = random.choice([p, singularize(p.replace(' of ', ' ')), pluralize_class(p.replace(' of ', ' '))
+                                   + ' of'])
             rst = get_pos_tags(p)
             if rst:
                 tag_chain = rst[0]
@@ -113,11 +118,18 @@ def batch_attribute_query(ID, classes, properties):
     for c in classes:
         c = process_instance_brackets(c)
         pc = pluralize_class(c)
-        c = random.choice([c, pc])
+        # c = random.choice([c, pc])
         c = '[%s](class)' % c
         for p in properties:
-            if ' ' not in p.strip():  # the attribute has only one word
-                p = random.choice([p, pluralize_class(p)])
+            # if ' ' not in p.strip():  # the attribute has only one word
+            #     p = random.choice([p, pluralize_class(p.replace(' of', '')), pluralize_class(p.replace(' of', ' '))
+            #                        + 'of'])
+            # chemical structure -> chemical structures
+            # else:
+            #     last_bit = p.split(' ')[-1]
+            #     p_last_bit = pluralize_class(last_bit)
+            #     p = p.replace(' ' + last_bit, ' ' + p_last_bit)
+
             rst = get_pos_tags(p)
             if rst:
                 tag_chain = rst[0]
@@ -134,7 +146,7 @@ def batch_attribute_query_numerical(classes, properties):
     for c in classes:
         c = process_instance_brackets(c)
         pc = pluralize_class(c)
-        c = random.choice([c, pc])
+        # c = random.choice([c, pc])
         c = '[%s](class)' % c
         for p in properties:
             number = round(random.uniform(-100, 100), random.choice([0, 1, 2]))
@@ -186,6 +198,9 @@ def get_class_labels():
 
 
 def get_property_labels(ID):
+    stop_properties = ['electric dipole moment','dipole moment', 'formal charge', 'electronic energy',
+                       'lennard jones well depth', 'polarizability', 'rotational relaxation']
+
     property_labels = []
     quantity_property_labels = []
     properties = INSTANCE_PROPERTY_DICT[ID]['properties']
@@ -214,6 +229,8 @@ def get_property_labels(ID):
                     if uri in EXTRA_PROPERTIES:
                         quantity_property_labels = quantity_property_labels + EXTRA_PROPERTIES[uri]
 
+    property_labels = [l for l in property_labels if l.lower() not in stop_properties]
+    quantity_property_labels = [l for l in quantity_property_labels if l.lower() not in stop_properties]
     return property_labels, quantity_property_labels
 
 
@@ -273,10 +290,11 @@ batch_query_list = []
 about_query_list = []
 item_multi_attribute_query_list = []
 counter = 0
-factor = 1
+factor = 5
 total = len(INSTANCE_PROPERTY_DICT.keys())
 RUN_SAMPLE = list(INSTANCE_PROPERTY_DICT.keys())
-# RUN_SAMPLE = random.sample(RUN_SAMPLE, 100)
+# test
+RUN_SAMPLE = random.sample(RUN_SAMPLE, 600)
 for ID in RUN_SAMPLE:
     print(ID)
     counter = counter + 1
@@ -297,41 +315,81 @@ for ID in RUN_SAMPLE:
                                                                                                    PROPERTY_LABELS)
 
 # ====================================== generate the blocks in the nlu.md file ==============================
+
+# other_whs = ['who', 'where', 'when', 'what', 'at what time', 'at what place', '']
+other_whs = ['']
 questions = random.sample(item_attribute_query_list, math.ceil(len(item_attribute_query_list) / 200 * factor))
 item_attribute_block = '\n ## intent:%s\n' % 'item_attribute_query' + '\n - ' + '\n - '.join(questions)
+for i in range(10):
+    item_attribute_block = item_attribute_block.replace('what ', random.choice(other_whs) + ' ', 1)
+
+with open('test/data/item_attribute_block', 'w', encoding='utf-8') as f:
+    f.write(item_attribute_block)
+
 
 questions = random.sample(batch_attribute_query_list, math.ceil(len(batch_attribute_query_list) / 800 * factor))
-batch_attribute_block = '\n ## intent:%s\n' % 'batch_attribute_query' + '\n - ' + '\n - '.join(questions).replace(
-    ' is ', ' are ')
+batch_attribute_block = '\n ## intent:%s\n' % 'batch_attribute_query' + '\n - ' + '\n - '.join(questions)
+
+
+# .replace(
+  #  ' is ', ' are ')
+for i in range(10):
+    batch_attribute_block = batch_attribute_block.replace('what ', random.choice(other_whs) + ' ', 1)
+
+with open('test/data/batch_attribute_block', 'w', encoding='utf-8') as f:
+    f.write(batch_attribute_block)
 
 questions = random.sample(batch_attribute_query_numerical_list,
-                          math.ceil(len(batch_attribute_query_numerical_list) / 200 * factor))
+                          math.ceil(len(batch_attribute_query_numerical_list) / 20 * factor))
 batch_attribute_query_numerical_block = '\n ## intent:%s\n' % 'batch_attribute_query_numerical' + '\n - ' + \
                                         '\n - '.join(questions)
+for i in range(10):
+    batch_attribute_query_numerical_block = batch_attribute_query_numerical_block.replace('what ',
+                                                                                      random.choice(other_whs) + ' ', 1)
+
+
+with open('test/data/batch_attribute_query_numerical_block', 'w', encoding='utf-8') as f:
+    f.write(batch_attribute_query_numerical_block)
 
 questions = random.sample(rank_query_list, math.ceil(len(rank_query_list) / 200 * factor))
 rank_query_list_block = '\n ## intent:%s\n' % 'rank_query_list' + '\n - ' + '\n - '.join(questions)
+for i in range(10):
+    rank_query_list_block = rank_query_list_block.replace('what ', random.choice(other_whs) + ' ', 1)
 
-questions = random.sample(batch_query_list, math.ceil(len(rank_query_list) / 200 * factor))
+
+with open('test/data/rank_query_list_block', 'w', encoding='utf-8') as f:
+    f.write(rank_query_list_block)
+
+questions = random.sample(batch_query_list, math.ceil(len(batch_query_list) / 200 * factor))
 batch_query_block = '\n ## intent:%s\n' % 'batch_query' + '\n - ' + '\n - '.join(questions)
+for i in range(10):
+    batch_query_block = batch_query_block.replace('what ', random.choice(other_whs) + ' ', 1)
 
-questions = random.sample(about_query_list, math.ceil(len(about_query_list) / 20 * factor))
+with open('test/data/batch_query_block', 'w', encoding='utf-8') as f:
+    f.write(batch_query_block)
+
+sample_number = min(len(about_query_list) / 20 * factor, len(about_query_list))
+questions = random.sample(about_query_list, math.ceil(sample_number))
 about_query_block = '\n ## intent:%s\n' % 'about_query' + '\n - ' + '\n - '.join(questions)
+for i in range(10):
+    about_query_block = about_query_block.replace('what ', random.choice(other_whs) + ' ', 1)
 
-questions = random.sample(item_multi_attribute_query_list,
-                          math.ceil(len(item_multi_attribute_query_list) / 20 * factor))
-item_multi_attribute_query_block = '\n ## intent:%s\n' % 'item_multi_attribute_query' + '\n - ' + '\n - '.join(
-    questions)
+# questions = random.sample(item_multi_attribute_query_list,
+#                           math.ceil(len(item_multi_attribute_query_list) / 20 * factor))
+# item_multi_attribute_query_block = '\n ## intent:%s\n' % 'item_multi_attribute_query' + '\n - ' + '\n - '.join(
+#     questions)
+# for i in range(10):
+#     item_multi_attribute_query_block = item_multi_attribute_query_block.replace('what ', random.choice(other_whs) + ' ', 1)
 
 # ========================================================================================================
 
 block = item_attribute_block + '\n' + batch_attribute_block + '\n' + batch_attribute_query_numerical_block + \
         '\n' + rank_query_list_block + '\n' + batch_query_block + '\n' + about_query_block + '\n' \
-        + item_multi_attribute_query_block
+        # + item_multi_attribute_query_block
 
 _RE_COMBINE_WHITESPACE = re.compile(r"[ ]+")
 block = _RE_COMBINE_WHITESPACE.sub(" ", block).strip()
-block = block.replace('[[', '[').replace(']]', ']').lower()
+block = block.replace('[[', '[').replace(']]', ']').lower().replace('what ', '').replace(' are ', ' is ').replace(' is ', '')
 
 print(len(questions))
 print(len(item_attribute_query_list))

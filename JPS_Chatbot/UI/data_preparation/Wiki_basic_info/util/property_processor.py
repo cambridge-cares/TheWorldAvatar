@@ -1,19 +1,24 @@
 import json
 import random
+from pattern.en import pluralize, singularize
 
 import nltk
 connects = ['containing', 'that contains', 'with', 'having', 'that has', 'of']
-heads = ['what is ', 'show ', 'show me ', 'give ', 'give me', 'provide ', 'find ', 'find me ', 'get ', '']
-whs = ['who', 'where', 'when', 'what', 'at what time', 'at what place']
+# heads = ['what is ', 'show ', 'show me ', 'give ', 'give me', 'provide ', 'find ', 'find me ', 'get ', '']
+# whs = ['who', 'where', 'when', 'what', 'at what time', 'at what place']
+heads = ['']
+whs = ['']
+
 skip_tags = ['NN : NN', 'WRB', 'VBZ ( NN )', 'NN ( JJ NNS )', 'RB JJ TO']
 DTs = ['a', 'an', '']
 the = ['the', '']
-ALLs = ['all', '', 'all the']
+#ALLs = ['all', '', 'all the']
+ALLs = ['']
 smaller_than = ['smaller than', 'less', 'less than', 'under', 'smaller', 'beneath', 'lower', 'lower than', 'fewer']
 larger_than = ['bigger', 'bigger than', 'larger than', 'larger', 'over', 'above', 'beyond', 'broader', 'broader ',
                'than', 'more than', 'more']
 
-simple_properties = ['RBR JJ NN', 'JJ NN IN NN', 'JJ JJ NN', 'JJ JJ NN NN', 'JJ NN NN', 'JJ NNP', 'JJ NN', 'VBG NN'] + ['NN', 'NN NN', 'NN NN NN']
+simple_properties = ['RBR JJ NN', 'JJ NN IN NN', 'JJ JJ NN', 'JJ JJ NN NN', 'JJ NN NN', 'JJ NNP', 'JJ NN', 'VBG NN'] + ['NN NN', 'NN NN NN']
 PROPERTY_TAG_DICT = {}
 with open('FULL_PROPERTY_TAG_DICT') as f:
     _FULL_PROPERTY_TAG_DICT = json.loads(f.read())
@@ -62,6 +67,11 @@ def generate_simple_questions(tag_chain, property_tags_dict, i, p):
     else:
         of = random.choice(['of', ''])
 
+    # if 'treat' in p:
+    #     print('----------')
+    #     print(p)
+    #     print(tag_chain)
+
     if tag_chain.endswith(' IN'):
         if tag_chain == 'VBN IN':  # e.g. used for, developed from
             IN = property_tags_dict['IN']
@@ -98,6 +108,7 @@ def generate_simple_questions(tag_chain, property_tags_dict, i, p):
 
         elif tag_chain == 'NNS IN':
             NNS = property_tags_dict['NNS']
+
             IN = property_tags_dict['IN']
             p_label = '[%s %s](attribute)' % (NNS, IN)
             q = '%s does %s %s' % (random.choice(heads), i, p_label)
@@ -128,17 +139,60 @@ def generate_simple_questions(tag_chain, property_tags_dict, i, p):
         questions.append(q)
 
     elif tag_chain == 'NNS':
+        sp = singularize(p)
+        labelled_p = '[%s](attribute)' % random.choice([sp, p])
         q = 'what does %s %s' % (i, labelled_p)
         q2 = '%s %s what' % (i, labelled_p)
         questions = questions + [q, q2]
+
+    elif tag_chain == 'NN':
+        pp = pluralize(p)
+        labelled_p = '[%s](attribute)' % random.choice([pp, p])
+        q = 'what does %s %s' % (i, labelled_p)
+        q2 = '%s %s what' % (i, labelled_p)
+        questions = questions + [q, q2]
+
+    elif tag_chain == 'NNS VBP': # treats disease
+        NNS = property_tags_dict['NNS'] # treats
+        VBP = property_tags_dict['VBP'] # disease
+        VBP = random.choice([VBP, pluralize(VBP)])
+        NNS = random.choice([NNS, singularize(NNS)])
+        # what disease (VBP) does xxx treat (NNS)
+        q = 'what [%s](attribute) does %s [%s](attribute)' % (VBP, i, NNS)
+        # xxx treat(s)(NNS) what disease (VBP)
+        q2 = '%s [%s](attribute) what [%s](attribute)' % (i, NNS, VBP)
+        q3 = 'what is the [%s](attribute) of %s' % (labelled_p, i)
+        questions = questions + [q, q2, q3]
+
+    elif tag_chain == 'NNS JJ NN': # treats medical condition
+        NNS = property_tags_dict['NNS'] # treats
+        NNS = random.choice([NNS, singularize(NNS)])# treats/treat
+        JJ = property_tags_dict['JJ'] # medical
+        NN = property_tags_dict['NN'] # condition
+        NN = random.choice([NN, pluralize(NN)])
+
+        # what medical condition does xx treat(s)
+        q = 'what [%s %s](attribute) does %s [%s](attribute)' % (JJ, NN, i, NNS)
+        q2 = '%s [%s](attribute) what [%s %s](attribute)' % (i, NNS, JJ, NN)
+        q3 = 'what is the [%s](attribute) of %s' % (labelled_p, i)
+        questions = questions + [q, q2, q3]
+        # if 'condition' in NN:
+        #     print('GOT NN')
+        #     print('pluralized', pluralize(NN))
+        #     print(questions)
+
+
+
     elif tag_chain == 'VBZ NN':
         VBZ = property_tags_dict['VBZ']
         NN = property_tags_dict['NN']
         if 'has' in p:
             verb = 'have'
+            q = 'what [%s](attribute) does %s %s' % (NN, i, verb)
+
         else:
             verb = VBZ[:-1]
-        q = 'what [%s](attribute) does %s [%s](attribute)' % (NN, i, verb)
+            q = 'what [%s](attribute) does %s [%s](attribute)' % (NN, i, verb)
         # 'show the role of xxx '
         q2 = '%s %s [%s](attribute) %s %s' % (random.choice(heads), random.choice(the), NN, of, i)
         questions = questions + [q, q2]
@@ -146,8 +200,8 @@ def generate_simple_questions(tag_chain, property_tags_dict, i, p):
         VBN = property_tags_dict['VBN']
         IN = property_tags_dict['IN']
         NN = property_tags_dict['NN']
-        q = '[%s](attribute) what [%s](attribute) is %s [%s](attribute)' % (IN, NN, i, VBN)
-        q2 = '%s is [%s](attribute) [%s](attribute) what [%s](attribute)' % (i, VBN, IN, NN)
+        q = '%s what [%s](attribute) is %s [%s](attribute)' % (IN, NN, i, VBN)
+        q2 = '%s is [%s](attribute) %s what [%s](attribute)' % (i, VBN, IN, NN)
         questions = questions + [q, q2]
     elif tag_chain in ['VBZ', 'NNS TO']:
         q = 'what does %s %s' % (i, labelled_p)
@@ -168,6 +222,8 @@ def generate_simple_questions(tag_chain, property_tags_dict, i, p):
         be_word = random.choice(['does', 'can', 'do'])
         VBD = property_tags_dict['VBD']
         if 'JJ' in property_tags_dict:
+            if VBD.endswith('ed'):
+                VBD = random.choice([VBD, VBD.replace('ed', '')])
             JJ = property_tags_dict['JJ']
             NN = property_tags_dict['NN']
             p1 = '[%s %s](attribute)' % (JJ, NN)
