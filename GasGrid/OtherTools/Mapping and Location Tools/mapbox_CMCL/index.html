@@ -91,7 +91,11 @@
 
 		// Setup map with mapbox-controls.js
 		setup(map, cameraCallback, terrainCallback);
-		addTiltShiftSupport();
+
+		// Add tilt shift effect
+		// Note: I've disabled this for now as the map is becoming unresponsive.
+		// Once we've had time for some optimisation, we can enable it.
+		//addTiltShiftSupport();
 
 		// On initial load...
 		map.on("load", function() {
