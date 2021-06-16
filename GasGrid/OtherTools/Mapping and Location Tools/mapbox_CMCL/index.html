@@ -67,15 +67,19 @@
 		});
 
         // Change colors depending on selected style
-		var inner_text = '#FFFFFF';
-		var outer_text = '#333333';
-		var pipe_color = '#A9B8A5';
+		var inner_text = '#3E3E3E';
+		var outer_text = '#FFFFFF';
+		var pipe_color = '#B1B1B1';
 
 		function terrainCallback(terrainType) {
 			if(terrainType === "light") {
-				pipe_color = '#A9B8A5';
+				pipe_color = '#B1B1B1';
+                inner_text = '#3E3E3E';
+		        outer_text = '#FFFFFF'; 
 			} else {
-				pipe_color = '#C9C9C9';
+				pipe_color = '#F6F6F4';
+                inner_text = '#FFFFFF';
+		        outer_text = '#000000'; 
 			}
 			console.log("INFO: Updated label colors.");
 		}	
@@ -171,8 +175,8 @@
 				minzoom: 8.5,
                 layout: {
                     'text-field': ['concat', ['get', 'Offtake Point (License Name)'], '\n Offtake Type: ', ['get', 'Type of Offtake'], '\n | \n | \n |'],
-                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-                    'text-size': 12,
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
                     'text-offset': [0, -3.5],
 					'text-max-width': 25
                 },
@@ -252,8 +256,8 @@
 				minzoom: 7.5,
                 layout: {
                     'text-field': ['concat', ['get', 'name'], '\n |\n|\n|'],
-                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-                    'text-size': 12,
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
                     'text-offset': [0, -2.5],
 					'text-max-width': 25
                 },
