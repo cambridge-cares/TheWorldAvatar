@@ -1,9 +1,12 @@
 from SPARQLWrapper import SPARQLWrapper, CSV, JSON
-import json 
+import json
+from matplotlib.pyplot import colormaps 
 from tqdm import tqdm
 import time
 import numpy as np 
 import pandas as pd
+import matplotlib.cm 
+import matplotlib.colors
 
 def gen_fuel_col(gen_fuel):
   #returns a colour code for each generator fuel type.
@@ -139,7 +142,7 @@ def query_to_geoJSON(endpoint, class_label):
   A file of the form class_label.geoJSON in the working directory. 
   '''
   # defining the query string given the class URI
-  query = """
+  query_pow = """
         PREFIX powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX coordinate: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
@@ -147,6 +150,9 @@ def query_to_geoJSON(endpoint, class_label):
         PREFIX space_and_time_extended:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
         PREFIX technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
         PREFIX system_realization: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#>
+        PREFIX ontosdg: <http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#>
+        PREFIX ontospecies:<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> 
+
         SELECT DISTINCT ?numericalValue_y ?numericalValue_x  ?powerPlantIRI ?Primary_Fuel_type ?value_of_Designed_Capacity
         WHERE
         {
@@ -165,15 +171,33 @@ def query_to_geoJSON(endpoint, class_label):
         ?Capacity system:hasValue ?Capacity_value .
         ?Capacity_value system:numericalValue ?value_of_Designed_Capacity .
         ?Capacity_value system:hasUnitOfMeasure ?unit_of_Designed_Capacity .
+
+        
+
+
         } LIMIT 1200
         """
+
+  query_sdg = """
+        PREFIX ontosdg: <http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl#>
+        PREFIX ontospecies:<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> 
+
+        SELECT *
+        WHERE
+        {
+        ?powerPlantIRI ontosdg:hasIndicator ?941 .
+        ?941 ontospecies:value ?941Value .
+        } LIMIT 1200
+        """
+        
  # performing SPARQL query  
-  sparql = SPARQLWrapper(endpoint)
-  sparql.setReturnFormat(JSON) 
-  sparql.setQuery(query) 
+  sparql_sdg= SPARQLWrapper('http://www.theworldavatar.com/blazegraph/namespace/ontosdg/sparql')
+  sparql_pow= SPARQLWrapper('https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant')
+  sparql_pow.setReturnFormat(JSON) 
+  sparql_pow.setQuery(query_pow) 
   start = time.time()
   print('Querying...')
-  ret = sparql.queryAndConvert()
+  ret = sparql_pow.queryAndConvert()
   end = time.time()
   # parsing JSON SPARQL results into an array
   print('Finished in ',np.round(end-start,2),' seconds')
@@ -191,17 +215,59 @@ def query_to_geoJSON(endpoint, class_label):
       fuel = ret[i]['Primary_Fuel_type']['value'].split('#')
       capacity = ret[i]['value_of_Designed_Capacity']['value']
       ret_array[i,:] = [name[1], lon, lat, fuel[1], capacity]
-  ret = ret_array
+  ret_pow = ret_array
+
+  sparql_sdg.setReturnFormat(JSON) 
+  sparql_sdg.setQuery(query_sdg) 
+  start = time.time()
+  print('Querying...')
+  ret = sparql_sdg.queryAndConvert()
+  end = time.time()
+  # parsing JSON SPARQL results into an array
+  print('Finished in ',np.round(end-start,2),' seconds')
+  ret = ret['results']['bindings']
+  #print(ret) #Unformatted
+  num_ret = len(ret)
+  # assigning memory to results array 
+  ret_array = np.zeros((num_ret,2),dtype='object')
+  header = ['name', '941']
+  # iterating over results and allocating properties from query
+  for i in tqdm(range(num_ret)):
+      name = ret[i]['powerPlantIRI']['value'].split('/')
+      ind_val = ret[i]['941Value']['value']
+      ret_array[i,:] = [name[-1], float(ind_val)]
+  ret_sdg = ret_array
+
   #print(ret) #Formatted
-  ret = check_GPS(ret)
-  print(ret) #GPS compatibility fixed (if required)
+  ret_pow = check_GPS(ret_pow)
+  print(ret_pow,ret_sdg) #GPS compatibility fixed (if required)
+
+
+  sdg_addition = [] 
+  for i in range(len(ret_pow)):
+    for j in range(len(ret_sdg)):
+      if ret_pow[i,0] == ret_sdg[j,0]:
+        sdg_addition.append(ret_sdg[j,1])
+
+  sdg_addition_col = np.array([sdg_addition]).T
+  colors_ar = []
+  cmap = matplotlib.cm.get_cmap('RdYlGn')
+  scaled_sdg = sdg_addition / np.max(sdg_addition)
+  for i in range(len(sdg_addition)):
+    rgba = cmap(scaled_sdg[i])
+    colors_ar.append(matplotlib.colors.rgb2hex(rgba))
+
+  colors_ar = np.array([colors_ar]).T
+
+  ret = np.concatenate((ret_pow,sdg_addition_col,colors_ar),axis=1)
+
   # allocating start of .geoJSON file 
   geojson_file = """
   {
     "type": "FeatureCollection",
     "features": ["""
   # iterating over features (rows in results array)
-  for i in range(num_ret):
+  for i in range(len(ret)):
       # creating point feature 
       feature = """{
         "type": "Feature",
@@ -211,7 +277,9 @@ def query_to_geoJSON(endpoint, class_label):
           "marker-symbol": "",
           "name": "%s",
           "fuel": "%s",
-          "capacity": "%s"
+          "capacity": "%s",
+          "sdg941": "%s",
+          "sdgcolor": "%s"
         },
         "geometry": {
           "type": "Point",
@@ -220,7 +288,7 @@ def query_to_geoJSON(endpoint, class_label):
             %s
           ]
         }
-      },"""%(gen_fuel_col(ret[i, 3]), ret[i,0], ret[i,3], ret[i,4], ret[i,1], ret[i,2])
+      },"""%(gen_fuel_col(ret[i, 3]), ret[i,0], ret[i,3], ret[i,4],str(ret[i,5]),ret[i,6], ret[i,1], ret[i,2])
       # adding new line 
       geojson_file += '\n'+feature
 
@@ -239,6 +307,6 @@ def query_to_geoJSON(endpoint, class_label):
   return 
 
 # querying terminals from ontogasgrid
-endpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant"
+endpoint = ""
 class_label = 'UK_PowerPlants'
 query_to_geoJSON(endpoint, class_label)
