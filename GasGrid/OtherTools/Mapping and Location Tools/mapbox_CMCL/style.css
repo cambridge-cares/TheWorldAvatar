@@ -76,7 +76,7 @@ h1 {
 	margin-bottom: 10px;
 	margin-right: 50px;
 	margin-left: 50px;
-	font-size: 10pt;
+	font-size: 9pt;
 }
 
 #metadataContainer a {
@@ -234,4 +234,20 @@ h1 {
 #pitchedContainer:hover {
 	background-color: rgba(0, 0, 0, 0.4);
 	text-decoration: underline;
+}
+
+#tiltShift {
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	pointer-events: none;
+}
+
+body.effectsOff #tiltShift body.effectsOff #map {
+	filter: none !important;
+	-webkit-filter: none !important;
 }

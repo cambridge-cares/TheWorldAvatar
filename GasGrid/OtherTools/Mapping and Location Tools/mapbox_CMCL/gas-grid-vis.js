@@ -10,7 +10,7 @@
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 // Hardcoded sample data
-const sampleHeadings = ["Time", "Instantaneous Flow<br><span style='font-size: 75%;'>[mcm/day]</span>"];
+const sampleHeadings = ["Time", "Instantaneous Flow<br><span style='font-size: 75%;'>[m<sup>2</sup>/s]</span>"];
 
 // Table HTML when no data is available
 const noDataTable = "<div id=\"noData\"><p>No available data.</p></div>";
@@ -107,6 +107,9 @@ function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitA
 
 	// Only add if present
 	if(Pipeline != null) {
+		var parts = Pipeline.split("/");
+		Pipeline = parts[parts.length - 1].replace("Connection", "");
+
 		newHTML += `
 			<tr>
 				<td width="35%">Connection:</td>
@@ -319,7 +322,7 @@ function buildChart(dataPoints) {
 		.attr("transform", "rotate(-90)translate(" + (-1 * (height/2) + 25) + ", 10)")
 		.style("text-anchor", "middle")
 		.attr("class", "axisLabel")
-		.text("Instantaneous Flow [mcm/day]");
+		.text("Instantaneous Flow [m^2/s]");
 		
 	// Add the line
 	vis.append("path")
