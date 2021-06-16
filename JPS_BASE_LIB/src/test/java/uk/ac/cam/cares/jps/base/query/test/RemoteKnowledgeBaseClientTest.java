@@ -4,14 +4,22 @@ import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 
+import org.apache.jena.query.Query;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mockito.Mockito;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
 
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 
 /**
@@ -244,6 +252,62 @@ public class RemoteKnowledgeBaseClientTest {
 		assertEquals(jsonArray.toString(), result);
 		verify(kbClient).execute(formMechanismCountQuery());
 	}
+	
+	/**
+	 * Test insert
+	 */
+	@Test
+	public void testInsert() {
+		
+		String content = 
+		"<rdf:RDF\r\n"+
+		"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
+		"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">\r\n"+
+		"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
+		"</rdf:RDF>\r\n";
+		
+		RemoteKnowledgeBaseClient kbClient = Mockito.spy(RemoteKnowledgeBaseClient.class);
+		Mockito.doReturn(1).when(kbClient).executeUpdate(any(UpdateRequest.class));
+		
+		kbClient.insert(null, content, null);
+		
+		Mockito.verify(kbClient).insert(null, content, null);
+		Mockito.verify(kbClient).executeUpdate(any(UpdateRequest.class));
+	}
+	
+	/**
+	 * Test get method
+	 */
+	@Test
+	public void testGet() {
+		
+		String actual = 
+		"<rdf:RDF\r\n"+
+				"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
+				"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">\r\n"+
+				"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
+				"</rdf:RDF>\r\n";
+				
+		//mock result
+		Model model = ModelFactory.createDefaultModel();
+		Statement s = ResourceFactory.createStatement(ResourceFactory.createResource("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001"), 
+				ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), ResourceFactory.createResource("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#FoodCourt"));
+		model.add(s);
+		
+		RemoteKnowledgeBaseClient kbClient = Mockito.spy(RemoteKnowledgeBaseClient.class);
+		Mockito.doReturn(model).when(kbClient).executeConstruct(any(Query.class));
+		
+		String resourceUrl = null;
+		String accept = null;
+		
+		String result = kbClient.get(resourceUrl, accept);
+		
+		verify(kbClient).get(resourceUrl, accept);
+		verify(kbClient).executeConstruct(any(Query.class));
+		
+		assertEquals(result, actual);
+	}
+	
 	
 	/**
 	 * A SPARQL query to count the total number of mechanisms in a repository.

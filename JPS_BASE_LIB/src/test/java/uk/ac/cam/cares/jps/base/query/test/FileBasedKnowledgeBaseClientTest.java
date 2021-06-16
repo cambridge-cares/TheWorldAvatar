@@ -755,6 +755,44 @@ public class FileBasedKnowledgeBaseClientTest {
 	}	
 	
 	/**
+	 * Test insert and get methods
+	 */
+	@Test
+	public void testInsertAndGet() {
+		
+		String content = 
+		"<rdf:RDF\r\n"+
+		"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
+		"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">\r\n"+
+		"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
+		"</rdf:RDF>\r\n";
+		
+		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.insert(null, content, null);
+		
+		//check insert was successful
+		String result = kbClient.execute("SELECT ?o WHERE {?s ?p ?o}");
+		assertEquals("[{\"o\":\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#FoodCourt\"}]",result);
+		
+		//test get
+		
+		//rdfxml
+		result = kbClient.get(null, null);
+		assertEquals(content, result);
+		
+		result = kbClient.get(null, "application/rdf+xml");
+		assertEquals(content, result);		
+		
+		//n-triples
+		String contentNT = 
+		"<http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001> "+
+		"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#FoodCourt> .\n";
+		
+		result = kbClient.get(null, "application/n-triples");
+		assertEquals(contentNT, result);
+	}
+	
+	/**
 	 * Returns the test Sparql update.
 	 * 
 	 * @return UpdateRequest

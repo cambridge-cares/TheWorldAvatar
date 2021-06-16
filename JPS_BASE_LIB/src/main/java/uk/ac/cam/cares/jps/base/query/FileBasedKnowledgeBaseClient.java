@@ -848,8 +848,14 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		}
 		
 		Model model = executeConstruct(builder.build());
-	
-		Lang syntax = RDFLanguages.contentTypeToLang(accept);		
+		
+		Lang syntax;
+		if (accept != null) {
+			syntax = RDFLanguages.contentTypeToLang(accept);
+		}else {
+			//default to application/rdf+xml
+			syntax = Lang.RDFXML; 
+		}
 		
 		StringWriter out = new StringWriter();
 		model.write(out, syntax.getName());
