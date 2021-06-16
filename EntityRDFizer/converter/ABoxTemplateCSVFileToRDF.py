@@ -80,16 +80,16 @@ def process_data(row):
                     and (row[5].strip() is None or row[5].strip() == ''):
                 print('Creating a statement about the ontology:')
                 """Creating a statement to refer to the TBox"""
-                if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
+                if (row[2].startswith(HTTP) or row[2].startswith(HTTPS))\
                         and row[3].strip() == 'http://www.w3.org/2002/07/owl#imports':
-                    g.set((g.identifier, OWL_NS['imports'], URIRef(row[0])))
+                    g.set((g.identifier, OWL_NS['imports'], URIRef(row[2])))
                     """Sets the IRI of the TBox"""
-                    propread.setTBoxIRI(row[0])
+                    propread.setTBoxIRI(row[2])
                     """Sets the name of instance of Ontology as the ABox File Name"""
-                    propread.setABoxFileName(row[2])
-                if (row[0].startswith(HTTP) or row[0].startswith(HTTPS))\
+                    propread.setABoxFileName(row[0])
+                if (row[2].startswith(HTTP) or row[2].startswith(HTTPS))\
                         and row[3].strip() == 'base':
-                    propread.setABoxIRI(row[0])
+                    propread.setABoxIRI(row[2])
         elif row[1].strip().lower() == TYPE_INSTANCE.lower():
             if (row[3].strip() is None or row[3].strip() == '') \
                     and (row[4].strip() is None or row[4].strip() == ''):
@@ -237,4 +237,4 @@ def convert_into_rdf(input_file_path, output_file_path):
 """This block of codes calls the function that converts the content of an ABox CSV template file into RDF"""
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
-    convert_into_rdf(select_file(), "C:\\Users\\msff2\\Documents\\c4eWorkInProgress\\TheWorldAvatar\\JPS_Ontology\\KBTemplates\\ABoxRDFFiles\\test\\path")
+    convert_into_rdf(select_file(), "C:\\Users\\msff2\\Documents\\TestSolveMechConversion\\TheWorldAvatar\\JPS_Ontology\\KBTemplates\\ABoxRDFFiles\\test\\path")
