@@ -121,7 +121,7 @@ def update_triple_store():
         terminalURI = TERMINAL_DICTIONARY[dataRow[0]]
         time = dataRow[1]
             
-        # Convert flow from MCM/Day to M^2/S
+        # Convert flow from MCM/Day to M^3/S
         flow = dataRow[2]
         gasVolume = str( (float(flow) * 1000000) / (24*60*60) )
             
